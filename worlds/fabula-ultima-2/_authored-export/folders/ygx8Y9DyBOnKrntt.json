@@ -1,0 +1,19 @@
+{
+  "_id": "ygx8Y9DyBOnKrntt",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1763288539600,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "ao7MvDYKSVhEwWj3",
+  "name": "UI Toggle",
+  "sort": 1400000,
+  "sorting": "a",
+  "type": "Macro"
+}

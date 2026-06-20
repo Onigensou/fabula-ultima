@@ -1,0 +1,57 @@
+{
+  "_id": "LBqkjOIfj4oMkplG",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757433022096,
+    "duplicateSource": "Item.vRWqziomvuxZXBCr",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "2OplVa9fwLYbzD8b",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/minor_arcana.png",
+  "name": "Duel Master",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 3100000,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Ace of Cards",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>When you resolve the <strong>Magic Pair</strong> effect, if you attack with a weapon belonging to the <strong>arcane</strong> or <strong>thrown</strong> Category, you deal extra damage equal to <strong>[the common value of the resolved cards]</strong> and regain <strong>[twice the common value of the resolved cards]</strong> Mind Points (for instance, resolving a pair of 5s allows you to deal <strong>5</strong> extra damage and regain <strong>10</strong> Mind Points).</p>\n",
+      "duration": "",
+      "heroic_requirement": "you must have mastered one or more Classes among Ace of Cards, Fury, Rogue, Sharpshooter, and Weaponmaster, and you must have acquired the Magic Cards Skill.",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Duel Master",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "LBqkjOIfj4oMkplG"
+  },
+  "type": "equippableItem"
+}

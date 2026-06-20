@@ -1,0 +1,19 @@
+{
+  "_id": "5UrrA7j0xrzcXLZu",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1756954154636,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "Bh30MRdF5PnQZJu1",
+  "name": "Symbols",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

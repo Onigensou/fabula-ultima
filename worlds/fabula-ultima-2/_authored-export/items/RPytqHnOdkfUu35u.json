@@ -1,0 +1,62 @@
+{
+  "_id": "RPytqHnOdkfUu35u",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1743301002098,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "RPytqHnOdkfUu35u",
+        "itemName": "Major Fortuna",
+        "pickedOldProps": {
+          "cost": "0",
+          "martial": true
+        },
+        "ts": 1769647435979
+      }
+    }
+  },
+  "folder": "g71iW4dQCbZlery7",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/spread.png",
+  "name": "Major Fortuna",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "category": "Thrown",
+      "check_bonus": "0",
+      "damage_bonus": "5",
+      "description": "<ul>\n<li>You may perform&nbsp;<strong>Two-Weapon Fighting&nbsp;</strong>with this weapon.</li>\n<li>Transform into <strong><img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/lightspeed.png\" width=\"21\" height=\"21\">@UUID[Item.k9yMxh4GMjFZSfc8]{Caelestis Oculus}</strong></li>\n</ul>",
+      "hand_slots": "Two-handed",
+      "isMartial": true,
+      "item_cost": "0",
+      "item_type": "weapon",
+      "name": "Major Fortuna",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "MIG",
+      "set_name": "",
+      "skill_target": "One Enemy",
+      "type_damage": "Physical",
+      "weapon_range": "Ranged"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "RPytqHnOdkfUu35u"
+  },
+  "type": "equippableItem"
+}

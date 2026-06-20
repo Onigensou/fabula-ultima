@@ -1,0 +1,337 @@
+{
+  "_id": "5retEBY46NCv0ECe",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1701042470750,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.5.0"
+    },
+    "theatre": {
+      "settings": {
+        "emote": null,
+        "textcolor": null,
+        "textflyin": null,
+        "textfont": null,
+        "textsize": null,
+        "textstanding": null
+      }
+    }
+  },
+  "folder": "Cj3PsdCco0e7gpZF",
+  "img": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Character%20Tokens/Duo%20%26%20Doble/Duo_Token_sep_s.png",
+  "name": "Duo",
+  "ownership": {
+    "9sFgrDy4MvAgoCmQ": 3,
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "prototypeToken": {
+    "actorLink": true,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": null
+    },
+    "detectionModes": [],
+    "displayBars": 30,
+    "displayName": 30,
+    "disposition": 1,
+    "flags": {
+      "token-variants": {
+        "disableHUDButton": false,
+        "randomImgDefault": ""
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Duo",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1.4,
+      "scaleY": 1.4,
+      "src": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Character%20Tokens/Duo%20%26%20Doble/Duo_Token_sep_s.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 0,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "activeEffects": {},
+    "props": {
+      "arcanism": false,
+      "bond_1": "",
+      "bond_2": "",
+      "bond_3": "",
+      "bond_4": "",
+      "bond_5": "",
+      "bond_6": "",
+      "char_identity": "Taurus Performer",
+      "check_roller": "Roll!",
+      "chimerism": false,
+      "class_list": {
+        "0": {
+          "$deleted": false,
+          "benefit": "ip",
+          "class_name": "Wayfarer",
+          "level": "5"
+        },
+        "1": {
+          "$deleted": false,
+          "benefit": "ip",
+          "class_name": "Rogue",
+          "level": "3"
+        },
+        "2": {
+          "$deleted": false,
+          "benefit": "hp",
+          "class_name": "Dancer",
+          "level": "4"
+        }
+      },
+      "crisis_hp": "ERROR",
+      "current_hp": "67",
+      "current_ip": "10",
+      "current_mp": "42",
+      "dex_base": "10",
+      "dex_current": 10,
+      "elementalism": false,
+      "emotion_1_1": "",
+      "emotion_1_2": "",
+      "emotion_1_3": "",
+      "emotion_2_1": "",
+      "emotion_2_2": "",
+      "emotion_2_3": "",
+      "emotion_3_1": "",
+      "emotion_3_2": "",
+      "emotion_3_3": "",
+      "emotion_4_1": "",
+      "emotion_4_2": "",
+      "emotion_4_3": "",
+      "emotion_5_1": "",
+      "emotion_5_2": "",
+      "emotion_5_3": "",
+      "emotion_6_1": "",
+      "emotion_6_2": "",
+      "emotion_6_3": "",
+      "entropism": false,
+      "experience": "0",
+      "fp": "3",
+      "ins_base": "10",
+      "ins_current": 10,
+      "inventory_label": "💼 Inventory",
+      "inventory_list": {
+        "0": {
+          "$deleted": false,
+          "item_amount": "0",
+          "item_description": "",
+          "item_name": "",
+          "item_roll": ""
+        }
+      },
+      "isDazed": false,
+      "isEnraged": false,
+      "isPoisoned": false,
+      "isShaken": false,
+      "isSlow": false,
+      "isWeak": false,
+      "level": "12",
+      "max_hp": "ERROR",
+      "max_ip": "ERROR",
+      "max_mp": "ERROR",
+      "mig_base": "6",
+      "mig_current": 6,
+      "name": "Duo",
+      "normal_spell_list": {},
+      "origin": "Eizenberg",
+      "passive_label": "Passives",
+      "passive_list": {
+        "0": {
+          "$deleted": false,
+          "passive_description": "<p><span style=\"text-decoration: underline;\"><strong>Requirements:</strong></span> you must have <strong>Skill Level 2 or higher </strong>in<strong> Dodge</strong> (see <strong>Rogue</strong>).</p>\n<hr>\n<p>As long as you have <strong>no shields</strong> and <strong>no martial armor</strong> equipped, you gain all of the following benefits:</p>\n<p>+ You may ignore the MP cost of the <strong>Provoke</strong> Skill (see <strong>Fury</strong>).<br>+ You may ignore the MP cost of the <strong>Peacock Dance</strong> (see <strong>Dancer</strong>).<br>+ You may use the <strong>Protect</strong> Skill (see <strong>Guardian</strong>) even if you have not acquired it.<br>+ Your Magic Defense score is increased by 【<strong>your Skill Level in Dodge</strong>】.<br>Additionally, your <strong>maximum Hit Points</strong> and <strong>Crisis</strong> score are now calculated based on your <strong>base Dexterity die size</strong>, instead of your <strong>base Might die size</strong>.</p>",
+          "passive_name": "Agile Defender",
+          "passive_roll": "",
+          "passive_source": "heroic_style"
+        },
+        "1": {
+          "$deleted": false,
+          "passive_description": "<hr>\n<h3><strong>Protect</strong></h3>\n<p>When another creature is threatened by an <strong>attack, spell</strong> or other <strong>danger</strong>, you may take&nbsp;<br>their place (any Checks that are part of the danger will be performed against you; you&nbsp;<br>may declare the use of this Skill <strong>before or after</strong> the Checks have been made).</p>\n<p>If the danger already affected you, it affects you <strong>twice</strong> (resolve both instances separately);&nbsp;<br>you also cannot protect multiple creatures from the same danger. If you use this Skill&nbsp;<br>during a conflict, you cannot use it again until the start of your next turn</p>",
+          "passive_name": "Duo is Here !!",
+          "passive_roll": "",
+          "passive_source": "heroic_style"
+        },
+        "2": {
+          "$deleted": false,
+          "passive_description": "<hr>\n<p>Once before the next rest, when you lose Hit Points for whatever reason, you may&nbsp;<br>choose to <strong>halve</strong> that HP loss.</p>",
+          "passive_name": "Daydream",
+          "passive_roll": "",
+          "passive_source": "camp_activity"
+        },
+        "3": {
+          "$deleted": false,
+          "passive_description": "<hr>\n<p>Once before the next rest, you may perform an additional action on your turn during&nbsp;<br>a conflict scene. This action <strong>must</strong> be used to perform the <strong>Equipment, Hinder,</strong> or&nbsp;<br><strong>Inventory</strong> action.</p>",
+          "passive_name": "Sleep Soundly",
+          "passive_roll": "",
+          "passive_source": "camp_activity"
+        },
+        "4": {
+          "$deleted": false,
+          "passive_description": "",
+          "passive_name": "",
+          "passive_roll": "",
+          "passive_source": "quirk"
+        }
+      },
+      "pronouns": "He / Him",
+      "ritualism": false,
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "skill_hp": "20",
+      "skill_list": {
+        "0": {
+          "$deleted": false,
+          "class": "Wayfarer",
+          "description": "<p>Together with the rest of your group, design a level 5 <strong>beast, construct, elemental</strong> or <strong>plant</strong> creature (see page 302) that becomes your <strong>companion</strong>. This creature has <strong>no Initiative score</strong> and <strong>does not level up</strong>, can have <strong>up to two basic attacks</strong>, gains a bonus equal to 【<strong>SL</strong>】 to Accuracy Checks and Magic Checks, and their maximum Hit Points are equal to 【<strong>(SL multiplied by the companion's base Might die size) + half your level</strong>】.</p>\n<hr>\n<p>Your companion doesn't get a turn during conflicts, but on your turn you can use an action to have the companion perform an action (only once per turn). If you leave a scene, your companion leaves with you.</p>\n<p>If your companion falls to 0 Hit Points, they flee and rejoin you at the start of the next scene in which you are present, with HP equal to their <strong>Crisis</strong> score.<br>When you <strong>rest</strong>, your companion also gains the full benefits of resting.</p>",
+          "level": "5",
+          "roll": "",
+          "skill_name": "Faithful Companion"
+        },
+        "1": {
+          "$deleted": false,
+          "class": "Rogue",
+          "description": "<p>As long as you have <strong>no shields</strong> and <strong>no martial armor</strong> equipped, your Defense score is increased by 【<strong>SL</strong>】.</p>",
+          "level": "3",
+          "roll": "",
+          "skill_name": "Dodge"
+        },
+        "2": {
+          "$deleted": false,
+          "class": "Dancer",
+          "description": "<p>Each time you take this Skill, you learn a <strong>dance</strong>.&nbsp;</p>\n<hr>\n<p><br>On your turn during a conflict scene, if you have no <strong>martial armor</strong> equipped, you may spend 10 Mind Points to <strong>perform a </strong><strong>dance</strong> you have learned. This doesn&rsquo;t require an action, but it can only be done <strong>before or after</strong> an action, and only <strong>once per turn</strong>.</p>\n<p>If you already performed a <strong>different dance</strong> during your previous turn in this scene, the cost of the new <strong>dance</strong> is reduced to 5 Mind Points.</p>\n<p>Some <strong>dances</strong> are <strong>instantaneous</strong> and resolve immediately, while others have effects that last <strong>until the start of your next turn</strong>.</p>",
+          "level": "4",
+          "roll": "",
+          "skill_name": "Dance"
+        },
+        "3": {
+          "$deleted": false,
+          "class": "Dancer",
+          "description": "<h3><strong>Peacock Dance&nbsp;</strong></h3>\n<p>Choose another creature that is able to see you. The next time that creature performs an attack or casts an offensive spell during this scene, that attack or spell must include you among its targets if possible.</p>\n<hr>\n<p>[ Instantaneous ]</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "\"Spotlight on me !!\""
+        },
+        "4": {
+          "$deleted": false,
+          "class": "Dancer",
+          "description": "<h3><strong>Lion Dance</strong></h3>\n<p>You immediately recover from a single status effect of your choice.&nbsp;</p>\n<hr>\n<p>[ Instantaneous ]</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "\"The Show Must Go On !!\""
+        },
+        "5": {
+          "$deleted": false,
+          "class": "Dancer",
+          "description": "<h3><strong>Unicorn Dance</strong></h3>\n<p>Choose an ally that is able to see you and has a Bond towards you: you and that ally both recover an amount of Hit Points equal to your current <strong>Dexterity die</strong> size.&nbsp;</p>\n<p>The restored amount increases by 5 Hit Points if you are <strong>level 20 or higher</strong>, or by 10 Hit Points if you are <strong>level 40 or higher</strong>.</p>\n<hr>\n<p>[ Instantaneous ]</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "\"This Show is Totally Safe !\""
+        },
+        "6": {
+          "$deleted": false,
+          "class": "Dancer",
+          "description": "<h3><strong>Ouroboros Dance</strong></h3>\n<p>Choose one ally you can see who has yet to take a turn during this round. That ally may take their turn immediately after yours during this round.</p>\n<hr>\n<p>[ Instantaneous ]</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "\"Time for Our Guest !!\""
+        }
+      },
+      "skill_mp": "0",
+      "spiritism": false,
+      "theme": "Person or Monster",
+      "wlp_base": "6",
+      "wlp_current": 6,
+      "zenit": "0",
+      "zero_effect_label": "Zero Effect",
+      "zero_power_label": "💥Zero Power:",
+      "zero_power_label1": "💥 Zero Power : ",
+      "zero_power_max_value": "/ 6",
+      "zero_power_name": "",
+      "zero_power_value": "0",
+      "zero_trigger_label": "⚔️ Zero Trigger"
+    },
+    "statusEffects": {},
+    "template": "Z1r6hn2K7q4SQ1yL",
+    "templateSystemUniqueVersion": 1165654311
+  },
+  "type": "character"
+}

@@ -1,0 +1,19 @@
+{
+  "_id": "cSLVeZ3TavIe40F1",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": null,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "2.4.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "8VHBObYtwGPFESMC",
+  "name": "Rare Armor",
+  "sort": 200000,
+  "sorting": "a",
+  "type": "Item"
+}

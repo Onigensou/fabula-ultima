@@ -1,0 +1,55 @@
+{
+  "_id": "BXB2fkuzzAidzZNt",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1753923916717,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "z7NLbCmTWrDRsqk6",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/aetherial_manipulation.png",
+  "name": "Arcane Regeneration",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Arcanist",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>When you summon an <strong>Arcanum</strong>, you immediately recover <strong>【SL × 5】</strong> Hit Points.</p>",
+      "duration": "",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "level": "0",
+      "max_level": "2",
+      "name": "Arcane Regeneration",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "BXB2fkuzzAidzZNt"
+  },
+  "type": "equippableItem"
+}

@@ -1,0 +1,62 @@
+{
+  "_id": "Ry9CRZqWNn503ZQl",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1756715915693,
+    "duplicateSource": "Item.VfYBK7KslLW3P41u",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "2OplVa9fwLYbzD8b",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/VoidPrincessSkill4.png",
+  "name": "Comet",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 8900000,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "check_bonus": "0",
+      "class": "Entropist",
+      "cost": "50 MP",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>You rip open a large portal to the Cosmos, calling down astral debris from the gaping void. <strong>Choose on option:</strong></p><ul><li><p>One creature you can see suffers <strong>60 damage</strong></p></li><li><p>You choose any number of creatures you can see, and each of them suffers <strong>40 damage.</strong></p></li></ul><p>Damage dealt by this spell has no type <strong>(thus being unaffected by damage Affinities).</strong></p><p>Damage dealt by this spell ignores Resistances and Immunities.</p><hr contenteditable=\"false\"><p><strong>Skill Enhancement Lv. 20 ― </strong>This spell damage increase by 5</p><p><strong>Skill Enhancement Lv. 40 ― </strong>This spell damage increase by 10</p>",
+      "duration": "Instantaneous",
+      "heroic_requirement": "You must have mastered the Entropist Class.",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Comet",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "Range",
+      "skill_target": "Special",
+      "skill_type": "Spell",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "Ry9CRZqWNn503ZQl"
+  },
+  "type": "equippableItem"
+}

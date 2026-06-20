@@ -1,0 +1,56 @@
+{
+  "_id": "jHWcsmZZGzbfiLue",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1747680541314,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.4.2"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "consumable",
+        "fromTemplate": "xdZPhVF8AnmwQEPM",
+        "itemId": "jHWcsmZZGzbfiLue",
+        "itemName": "White Lady",
+        "pickedOldProps": {
+          "consumable_cost": "800",
+          "consumable_description": "<p><span style=\"font-family: Roboto, Arial, sans-serif\">Resist all physical damage until the end of this scene.</span></p>",
+          "consumable_flavor": "<p><em>Hope it or Cope it.</em></p>",
+          "consumable_ip": "0",
+          "consumable_label": ""
+        },
+        "ts": 1769647436742
+      }
+    }
+  },
+  "folder": "S6wUD2ILTn8gBIvp",
+  "img": "systems/pf2e/icons/equipment/alchemical-items/alchemical-poisons/repulsion-resin.webp",
+  "name": "White Lady",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 112500,
+  "system": {
+    "container": null,
+    "props": {
+      "description": "<p><span style=\"font-family: Roboto, Arial, sans-serif\">Resist all physical damage until the end of this scene.</span></p>",
+      "flavor_text": "<p><em>Hope it or Cope it.</em></p>",
+      "ip_cost": "0",
+      "item_cost": "800",
+      "item_type": "consumable",
+      "name": "White Lady"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "jHWcsmZZGzbfiLue"
+  },
+  "type": "equippableItem"
+}

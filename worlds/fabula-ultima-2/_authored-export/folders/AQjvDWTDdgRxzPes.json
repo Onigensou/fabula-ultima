@@ -1,0 +1,19 @@
+{
+  "_id": "AQjvDWTDdgRxzPes",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": null,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "2.4.4"
+  },
+  "color": "#2b2b2b",
+  "description": "",
+  "flags": {},
+  "folder": "JkuUv7T8PCSZgcEO",
+  "name": "Basic Shield",
+  "sort": 100000,
+  "sorting": "a",
+  "type": "Item"
+}

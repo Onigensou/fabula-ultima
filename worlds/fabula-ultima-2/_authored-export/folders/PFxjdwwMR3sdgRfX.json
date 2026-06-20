@@ -1,0 +1,19 @@
+{
+  "_id": "PFxjdwwMR3sdgRfX",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1747773155564,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.4.2"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "The Ominious Passenger",
+  "sort": 200000,
+  "sorting": "a",
+  "type": "Macro"
+}

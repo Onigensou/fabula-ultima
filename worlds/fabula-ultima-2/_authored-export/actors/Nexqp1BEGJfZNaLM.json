@@ -1,0 +1,957 @@
+{
+  "_id": "Nexqp1BEGJfZNaLM",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1746434259150,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.5.0"
+    }
+  },
+  "folder": "79YVmB2p5sT1OBDH",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/prin.png",
+  "items": [
+    {
+      "_id": "02fjMbgvqwd3JwnE",
+      "_stats": {
+        "compendiumSource": "Item.lRk4pXxACoezIlOD",
+        "coreVersion": "12.343",
+        "createdTime": 1751186733005,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/School%20Swimsuit.png",
+      "name": "Swimsuit",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 2
+      },
+      "sort": 2600000,
+      "system": {
+        "container": null,
+        "props": {
+          "acess": false,
+          "cost": "1000",
+          "def_bonus": "+1",
+          "defense": "0",
+          "defense_include_dex": true,
+          "description": "<ul><li><p>When you're <strong>@UUID[JournalEntry.2rh5lyMNU5yL8Btk]{Wet}, </strong>Treat your <strong>【DEX】</strong>size as <strong>D12,&nbsp; </strong>gain +3 to all Skill Checks and Opposed Checks that require <strong>【DEX】</strong></p></li></ul><hr contenteditable=\"false\"><p>&nbsp;</p><p><strong>【Set Bonus】</strong></p><p><strong>2-Piece</strong></p><ul><li><p>You're always <span style=\"font-family: var(--font-primary)\"><strong style=\"font-family: var(--font-primary); font-size: var(--font-size-14);\">@UUID[JournalEntry.2rh5lyMNU5yL8Btk]{Wet}</strong></span></p><hr contenteditable=\"false\"></li></ul>",
+          "initiative": "0",
+          "magic_defense": "0",
+          "magic_defense_include_ins": true,
+          "martial": false,
+          "mdef_bonus": "+1",
+          "name": "Swimsuit",
+          "set_name": "Swift Swimmers",
+          "shield": false
+        },
+        "template": "5Z0gKtN5R51ebJOa",
+        "templateSystemUniqueVersion": 2929120018,
+        "unique": false,
+        "uniqueId": "lRk4pXxACoezIlOD"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "2OKeVOM65sNpDPAM",
+      "_stats": {
+        "compendiumSource": "Item.JgAHGewfef49F7tx",
+        "coreVersion": "12.343",
+        "createdTime": 1751461173113,
+        "duplicateSource": "Item.JXezG8T9yiKaJ3jd",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/item%20icon.pngmush.png",
+      "name": "Magic Mushroom",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 37500,
+      "system": {
+        "container": null,
+        "props": {
+          "name": "Magic Mushroom",
+          "recipe_description": "<ul><li>Inflicts a <strong>Random Status Effect </strong>to you. <em>(Randomize from all status in the game)</em></li></ul>",
+          "recipe_ip": "1",
+          "recipe_label": ""
+        },
+        "template": "VJCHYWOx1mPsMSip",
+        "templateSystemUniqueVersion": 1621258142,
+        "unique": false,
+        "uniqueId": "JgAHGewfef49F7tx"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "dscnIM2lMbQZPNZg",
+      "_stats": {
+        "compendiumSource": "Item.K33p1P1Eb3RtLNLe",
+        "coreVersion": "12.343",
+        "createdTime": 1751186709834,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Rope.gif",
+      "name": "Old Rod",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 2
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "category": "Flail",
+          "check": "Check",
+          "check_bonus": "0",
+          "cost": "0",
+          "damage_bonus": "3",
+          "description": "<ul><li><p>When you <strong>hit&nbsp;</strong>an <strong>aquatic</strong> creature with this weapon, inflicts @UUID[JournalEntry.FV8JefaHsehzgXR7]{Grappled} to the target</p></li></ul>",
+          "hand_slots": "One-handed",
+          "martial": false,
+          "name": "Old Rod",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "type_damage": "Physical",
+          "weapon_range": "Melee"
+        },
+        "template": "gIRU9XGqYeMBwBN9",
+        "templateSystemUniqueVersion": 2814471460,
+        "unique": false,
+        "uniqueId": "K33p1P1Eb3RtLNLe"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "DtwTFgkHckOaphiX",
+      "_stats": {
+        "compendiumSource": "Item.urmUwVqxwm3jXENi",
+        "coreVersion": "12.343",
+        "createdTime": 1752338759510,
+        "duplicateSource": "Item.pJGT7NB0fQhri3Ji",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.4.2"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Mineral.png",
+      "name": "Golem Fragment",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 2
+      },
+      "sort": 50000,
+      "system": {
+        "container": null,
+        "props": {
+          "name": "Golem Fragment",
+          "recipe_description": "<ul><li><p>Give <strong>5 </strong><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shield</span></strong></a></span></span><strong> </strong>to target ally, if the target already have a <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shield</span></strong></a><strong><span style=\"text-decoration: underline;\">,</span></strong></span></span> increase that shield value by 5 instead.</p></li></ul>",
+          "recipe_ip": "1",
+          "recipe_label": ""
+        },
+        "template": "VJCHYWOx1mPsMSip",
+        "templateSystemUniqueVersion": 1621258142,
+        "unique": false,
+        "uniqueId": "urmUwVqxwm3jXENi"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "KfkZTzzuKN8psCmR",
+      "_stats": {
+        "compendiumSource": "Item.vfHGsdplGlAOzKNF",
+        "coreVersion": "12.343",
+        "createdTime": 1751649020392,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion%20of%20healing.png",
+      "name": "Remedy",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "name": "Remedy",
+          "recipe_description": "<ul><li><p>Target creature recovers <strong>50</strong> Hit Points.</p></li></ul>",
+          "recipe_ip": "3"
+        },
+        "template": "VJCHYWOx1mPsMSip",
+        "templateSystemUniqueVersion": 1621258142,
+        "unique": false,
+        "uniqueId": "vfHGsdplGlAOzKNF"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "Le9m4uRqgtbx9DlI",
+      "_stats": {
+        "compendiumSource": "Item.5K7TTYa2uNQcmaEJ",
+        "coreVersion": "12.343",
+        "createdTime": 1751461157897,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cryst.png",
+      "name": "Elemental Shard",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "name": "Elemental Shard",
+          "recipe_description": "<ul><li><p>Target creature suffers <strong>10</strong> damage of a type of your choice <em>(air, bolt, earth, fire, or ice)</em>.</p></li></ul>",
+          "recipe_ip": "2"
+        },
+        "template": "VJCHYWOx1mPsMSip",
+        "templateSystemUniqueVersion": 1621258142,
+        "unique": false,
+        "uniqueId": "5K7TTYa2uNQcmaEJ"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "lQ1scTVTb0MkcOl2",
+      "_stats": {
+        "compendiumSource": "Item.XHGBM5xt57tAvOpT",
+        "coreVersion": "12.343",
+        "createdTime": 1751461159189,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Backpack.png",
+      "name": "Magic Tent",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "name": "Magic Tent",
+          "recipe_description": "<ul><li><p>Allows the entire group to <strong>rest</strong> in the wilderness.</p></li></ul>",
+          "recipe_ip": "4"
+        },
+        "template": "VJCHYWOx1mPsMSip",
+        "templateSystemUniqueVersion": 1621258142,
+        "unique": false,
+        "uniqueId": "XHGBM5xt57tAvOpT"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "lYpi1L6j08PRm2Kt",
+      "_stats": {
+        "compendiumSource": "Item.zR8XK1LQJdxKOx9D",
+        "coreVersion": "12.343",
+        "createdTime": 1751461156358,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/aphr.png",
+      "name": "Tonic",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "name": "Tonic",
+          "recipe_description": "<ul><li><p>Target creature recovers from a single status effect.</p></li></ul>",
+          "recipe_ip": "2"
+        },
+        "template": "VJCHYWOx1mPsMSip",
+        "templateSystemUniqueVersion": 1621258142,
+        "unique": false,
+        "uniqueId": "zR8XK1LQJdxKOx9D"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "rWRDTQUwtEsPTBrE",
+      "_stats": {
+        "compendiumSource": "Item.CnueY54QHD80cmph",
+        "coreVersion": "12.343",
+        "createdTime": 1751186752158,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Diver%20Goggle.gif",
+      "name": "Diver Goggle",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 2
+      },
+      "sort": 10700000,
+      "system": {
+        "container": null,
+        "props": {
+          "acess": true,
+          "cost": "900",
+          "def_bonus": "",
+          "defense": "0",
+          "defense_include_dex": false,
+          "description": "<ul><li><p>When you're <strong>@UUID[JournalEntry.2rh5lyMNU5yL8Btk]{Wet}&nbsp;</strong>increase your Accuracy Checks by 3</p></li></ul><hr contenteditable=\"false\"><p>&nbsp;</p><p><strong>【Set Bonus】</strong></p><p><strong>2-Piece</strong></p><ul><li><p>You're always <span style=\"font-family: var(--font-primary)\"><strong style=\"font-family: var(--font-primary); font-size: var(--font-size-14);\">@UUID[JournalEntry.2rh5lyMNU5yL8Btk]{Wet}</strong></span></p><hr contenteditable=\"false\"></li></ul>",
+          "details_roller": "Show",
+          "initiative": "0",
+          "magic_defense": "0",
+          "magic_defense_include_ins": false,
+          "mdef_bonus": "",
+          "name": "Diver Goggle",
+          "set_name": "Swift Swimmers"
+        },
+        "template": "r0yZpLPAK9VXhM2p",
+        "templateSystemUniqueVersion": 1853581118,
+        "unique": false,
+        "uniqueId": "CnueY54QHD80cmph"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "YNZOIM8M1bb6QPsU",
+      "_stats": {
+        "compendiumSource": "Item.ZYHVemO7N3YJ5HZG",
+        "coreVersion": "12.343",
+        "createdTime": 1751461161351,
+        "duplicateSource": "Item.y61V2VLRAwlVDgcM",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
+      "name": "Blue Bovine",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 100000,
+      "system": {
+        "container": null,
+        "props": {
+          "name": "Blue Bovine",
+          "recipe_description": "<ul><li><p><em>Gain <strong>Strong (</strong>Increase your <strong>【MIG】</strong> die by 1 stage </em>(to a maximum for D12))<em> for the rest of the scene.</em></p></li></ul>",
+          "recipe_ip": "2",
+          "recipe_label": ""
+        },
+        "template": "VJCHYWOx1mPsMSip",
+        "templateSystemUniqueVersion": 1621258142,
+        "unique": false,
+        "uniqueId": "ZYHVemO7N3YJ5HZG"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "ZnxOND3o6axTWGil",
+      "_stats": {
+        "compendiumSource": "Item.H4XNJ67N8XSVnRcj",
+        "coreVersion": "12.343",
+        "createdTime": 1751649017567,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion2.png",
+      "name": "Elixir",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "name": "Elixir",
+          "recipe_description": "<ul><li><p>Target creature recovers <strong>50</strong> Mind Points.</p></li></ul>",
+          "recipe_ip": "3"
+        },
+        "template": "VJCHYWOx1mPsMSip",
+        "templateSystemUniqueVersion": 1621258142,
+        "unique": false,
+        "uniqueId": "H4XNJ67N8XSVnRcj"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "The Party",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "prototypeToken": {
+    "actorLink": true,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": null
+    },
+    "bar2": {
+      "attribute": null
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {}
+      },
+      "hex-size-support": {
+        "hideBorder": true,
+        "hideFill": true
+      },
+      "token-variants": {
+        "disableHUDButton": false,
+        "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Overworld%20Tokens/FJORD1.png"
+      },
+      "token-z": {
+        "zIndex": 0
+      },
+      "wall-height": {
+        "tokenHeight": 0
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.05,
+      "angle": 360,
+      "animation": {
+        "intensity": 7,
+        "reverse": false,
+        "speed": 4,
+        "type": "flame"
+      },
+      "attenuation": 0.5,
+      "bright": 0.5,
+      "color": "#edb02c",
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 5,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "The Party",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": true,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 0,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": true,
+      "range": 3.5,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1.1,
+      "scaleY": 1.1,
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Overworld%20Tokens/*",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 0,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "activeEffects": {},
+    "member_current_hp_1": 0,
+    "member_current_hp_2": 0,
+    "member_current_hp_3": 0,
+    "member_current_hp_4": 0,
+    "member_current_ip_1": 0,
+    "member_current_ip_2": 0,
+    "member_current_ip_3": 0,
+    "member_current_ip_4": 0,
+    "member_current_mp_1": 0,
+    "member_current_mp_2": 0,
+    "member_current_mp_3": 0,
+    "member_current_mp_4": 0,
+    "member_currenthp_1": "82",
+    "member_currenthp_2": 0,
+    "member_currenthp_3": "71",
+    "member_currenthp_4": "10",
+    "member_currentip_1": "2",
+    "member_currentip_2": 0,
+    "member_currentip_3": "5",
+    "member_currentip_4": "0",
+    "member_currentmp_1": "0",
+    "member_currentmp_2": 0,
+    "member_currentmp_3": "71",
+    "member_currentmp_4": "48",
+    "member_currentzp_1": "0",
+    "member_currentzp_2": 0,
+    "member_currentzp_3": "3",
+    "member_currentzp_4": "2",
+    "member_exp_1": "13",
+    "member_exp_2": 0,
+    "member_exp_3": "16",
+    "member_exp_4": "16",
+    "member_level_1": "36",
+    "member_level_2": 0,
+    "member_level_3": "36",
+    "member_level_4": "35",
+    "member_max_hp_1": 0,
+    "member_max_hp_2": 0,
+    "member_max_hp_3": 0,
+    "member_max_hp_4": 0,
+    "member_max_ip_1": 0,
+    "member_max_ip_2": 0,
+    "member_max_ip_3": 0,
+    "member_max_ip_4": 0,
+    "member_max_mp_1": 0,
+    "member_max_mp_2": 0,
+    "member_max_mp_3": 0,
+    "member_max_mp_4": 0,
+    "member_maxhp_1": 111,
+    "member_maxhp_2": 0,
+    "member_maxhp_3": 116,
+    "member_maxhp_4": 77,
+    "member_maxip_1": 6,
+    "member_maxip_2": 0,
+    "member_maxip_3": 8,
+    "member_maxip_4": 14,
+    "member_maxmp_1": 101,
+    "member_maxmp_2": 0,
+    "member_maxmp_3": 91,
+    "member_maxmp_4": 75,
+    "member_maxzp_1": 6,
+    "member_maxzp_2": 6,
+    "member_maxzp_3": 6,
+    "member_maxzp_4": 6,
+    "member_name_1": "Fjord",
+    "member_name_2": "",
+    "member_name_3": "St. Reefesia",
+    "member_name_4": "Yuri",
+    "props": {
+      "bench_currenthp_1": "0",
+      "bench_currenthp_2": "0",
+      "bench_currenthp_3": "0",
+      "bench_currenthp_4": "0",
+      "bench_currentip_1": "0",
+      "bench_currentip_2": "0",
+      "bench_currentip_3": "0",
+      "bench_currentip_4": "0",
+      "bench_currentmp_1": "0",
+      "bench_currentmp_2": "0",
+      "bench_currentmp_3": "0",
+      "bench_currentmp_4": "0",
+      "bench_currentzp_1": "0",
+      "bench_currentzp_2": "0",
+      "bench_currentzp_3": "0",
+      "bench_currentzp_4": "0",
+      "bench_exp_1": "0",
+      "bench_exp_2": "0",
+      "bench_exp_3": "0",
+      "bench_exp_4": "0",
+      "bench_level_1": "0",
+      "bench_level_2": "0",
+      "bench_level_3": "0",
+      "bench_level_4": "0",
+      "bench_maxhp_1": "0",
+      "bench_maxhp_2": "0",
+      "bench_maxhp_3": "0",
+      "bench_maxhp_4": "0",
+      "bench_maxip_1": "0",
+      "bench_maxip_2": "0",
+      "bench_maxip_3": "0",
+      "bench_maxip_4": "0",
+      "bench_maxmp_1": "0",
+      "bench_maxmp_2": "0",
+      "bench_maxmp_3": "0",
+      "bench_maxmp_4": "0",
+      "bench_maxzp_1": "6",
+      "bench_maxzp_2": "6",
+      "bench_maxzp_3": "6",
+      "bench_maxzp_4": "6",
+      "bench_name_1": "",
+      "bench_name_2": "",
+      "bench_name_3": "",
+      "bench_name_4": "",
+      "bench_zenit_1": "0",
+      "bench_zenit_2": "0",
+      "bench_zenit_3": "0",
+      "bench_zenit_4": "0",
+      "fish_bluepickle_check": true,
+      "fish_crystalclam_check": true,
+      "fish_crystalnailfugu_check": true,
+      "fish_crystalurchin_check": true,
+      "fish_earthencore_check": false,
+      "fish_elementaleel_check": true,
+      "fish_frozentuna_check": true,
+      "fish_glaciercore_check": false,
+      "fish_icebreakermarlin_check": false,
+      "fish_icefaerie_check": true,
+      "fish_icemedusa_check": true,
+      "fish_magitechwaterpurifiermkii_check": true,
+      "fish_marimo_check": true,
+      "fish_reward_table": {
+        "02fjMbgvqwd3JwnE": {
+          "id": "02fjMbgvqwd3JwnE",
+          "name": "Swimsuit",
+          "uuid": "Actor.Nexqp1BEGJfZNaLM.Item.02fjMbgvqwd3JwnE"
+        },
+        "dscnIM2lMbQZPNZg": {
+          "id": "dscnIM2lMbQZPNZg",
+          "name": "Old Rod",
+          "uuid": "Actor.Nexqp1BEGJfZNaLM.Item.dscnIM2lMbQZPNZg"
+        },
+        "rWRDTQUwtEsPTBrE": {
+          "id": "rWRDTQUwtEsPTBrE",
+          "name": "Diver Goggle",
+          "uuid": "Actor.Nexqp1BEGJfZNaLM.Item.rWRDTQUwtEsPTBrE"
+        }
+      },
+      "fish_rimeeater_check": false,
+      "fish_sharan_check": false,
+      "fish_silvantrout_check": true,
+      "fish_smugglerfish_check": true,
+      "fish_stormcore_check": true,
+      "fish_winterlandssalmon_check": true,
+      "fishing_exp": "88",
+      "fishing_rank": "<span style=\"\n  font-size: 28px;          /* make it MUCH larger – adjust the number to taste */\n  font-weight: bold;        /* bold */\n font-style: italic;       /* italic */\n  text-decoration: underline;\n  color: #4087a8;           /* your teal */\n  text-shadow: 0 0 5px #99d4f0;\">\n  Rank&nbsp;C\n</span>",
+      "isParty_boolean": true,
+      "lacusfrysta_fish_meter": 5,
+      "member_currenthp_1": "0",
+      "member_currenthp_2": "0",
+      "member_currenthp_3": "0",
+      "member_currenthp_4": "0",
+      "member_currentip_1": "0",
+      "member_currentip_2": "0",
+      "member_currentip_3": "0",
+      "member_currentip_4": "0",
+      "member_currentmp_1": "0",
+      "member_currentmp_2": "0",
+      "member_currentmp_3": "0",
+      "member_currentmp_4": "0",
+      "member_currentzp_1": "0",
+      "member_currentzp_2": "0",
+      "member_currentzp_3": "0",
+      "member_currentzp_4": "0",
+      "member_exp_1": "0",
+      "member_exp_2": "0",
+      "member_exp_3": "0",
+      "member_exp_4": "0",
+      "member_level_1": "0",
+      "member_level_2": "0",
+      "member_level_3": "0",
+      "member_level_4": "0",
+      "member_maxhp_1": "0",
+      "member_maxhp_2": "0",
+      "member_maxhp_3": "0",
+      "member_maxhp_4": "0",
+      "member_maxip_1": "0",
+      "member_maxip_2": "0",
+      "member_maxip_3": "0",
+      "member_maxip_4": "0",
+      "member_maxmp_1": "0",
+      "member_maxmp_2": "0",
+      "member_maxmp_3": "0",
+      "member_maxmp_4": "0",
+      "member_maxzp_1": "6",
+      "member_maxzp_2": "6",
+      "member_maxzp_3": "6",
+      "member_maxzp_4": "6",
+      "member_name_1": "",
+      "member_name_2": "",
+      "member_name_3": "",
+      "member_name_4": "",
+      "member_zenit_1": "0",
+      "member_zenit_2": "0",
+      "member_zenit_3": "0",
+      "member_zenit_4": "0",
+      "name": "The Party",
+      "party_update_macro": "Update",
+      "recipe_list": {
+        "2OKeVOM65sNpDPAM": {
+          "id": "2OKeVOM65sNpDPAM",
+          "name": "Magic Mushroom",
+          "recipe_description": "<ul><li>Inflicts a <strong>Random Status Effect </strong>to you. <em>(Randomize from all status in the game)</em></li></ul>",
+          "recipe_ip_cost": 1,
+          "recipe_roll": "",
+          "uuid": "Actor.Nexqp1BEGJfZNaLM.Item.2OKeVOM65sNpDPAM"
+        },
+        "DtwTFgkHckOaphiX": {
+          "id": "DtwTFgkHckOaphiX",
+          "name": "Golem Fragment",
+          "recipe_description": "<ul><li><p>Give <strong>5 </strong><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shield</span></strong></a></span></span><strong> </strong>to target ally, if the target already have a <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shield</span></strong></a><strong><span style=\"text-decoration: underline;\">,</span></strong></span></span> increase that shield value by 5 instead.</p></li></ul>",
+          "recipe_ip_cost": 1,
+          "recipe_roll": "",
+          "uuid": "Actor.Nexqp1BEGJfZNaLM.Item.DtwTFgkHckOaphiX"
+        },
+        "KfkZTzzuKN8psCmR": {
+          "id": "KfkZTzzuKN8psCmR",
+          "name": "Remedy",
+          "recipe_description": "<ul><li><p>Target creature recovers <strong>50</strong> Hit Points.</p></li></ul>",
+          "recipe_ip_cost": 3,
+          "recipe_roll": "",
+          "uuid": "Actor.Nexqp1BEGJfZNaLM.Item.KfkZTzzuKN8psCmR"
+        },
+        "Le9m4uRqgtbx9DlI": {
+          "id": "Le9m4uRqgtbx9DlI",
+          "name": "Elemental Shard",
+          "recipe_description": "<ul><li><p>Target creature suffers <strong>10</strong> damage of a type of your choice <em>(air, bolt, earth, fire, or ice)</em>.</p></li></ul>",
+          "recipe_ip_cost": 2,
+          "recipe_roll": "",
+          "uuid": "Actor.Nexqp1BEGJfZNaLM.Item.Le9m4uRqgtbx9DlI"
+        },
+        "YNZOIM8M1bb6QPsU": {
+          "id": "YNZOIM8M1bb6QPsU",
+          "name": "Blue Bovine",
+          "recipe_description": "<ul><li><p><em>Gain <strong>Strong (</strong>Increase your <strong>【MIG】</strong> die by 1 stage </em>(to a maximum for D12))<em> for the rest of the scene.</em></p></li></ul>",
+          "recipe_ip_cost": 2,
+          "recipe_roll": "",
+          "uuid": "Actor.Nexqp1BEGJfZNaLM.Item.YNZOIM8M1bb6QPsU"
+        },
+        "ZnxOND3o6axTWGil": {
+          "id": "ZnxOND3o6axTWGil",
+          "name": "Elixir",
+          "recipe_description": "<ul><li><p>Target creature recovers <strong>50</strong> Mind Points.</p></li></ul>",
+          "recipe_ip_cost": 3,
+          "recipe_roll": "",
+          "uuid": "Actor.Nexqp1BEGJfZNaLM.Item.ZnxOND3o6axTWGil"
+        },
+        "lQ1scTVTb0MkcOl2": {
+          "id": "lQ1scTVTb0MkcOl2",
+          "name": "Magic Tent",
+          "recipe_description": "<ul><li><p>Allows the entire group to <strong>rest</strong> in the wilderness.</p></li></ul>",
+          "recipe_ip_cost": 4,
+          "recipe_roll": "",
+          "uuid": "Actor.Nexqp1BEGJfZNaLM.Item.lQ1scTVTb0MkcOl2"
+        },
+        "lYpi1L6j08PRm2Kt": {
+          "id": "lYpi1L6j08PRm2Kt",
+          "name": "Tonic",
+          "recipe_description": "<ul><li><p>Target creature recovers from a single status effect.</p></li></ul>",
+          "recipe_ip_cost": 2,
+          "recipe_roll": "",
+          "uuid": "Actor.Nexqp1BEGJfZNaLM.Item.lYpi1L6j08PRm2Kt"
+        }
+      },
+      "smugglerport_fish_meter": 6,
+      "total_zenit": "0"
+    },
+    "snapshot": {
+      "bench_chp_1": "67",
+      "bench_chp_2": 0,
+      "bench_chp_3": 0,
+      "bench_chp_4": 0,
+      "bench_cip_1": "6",
+      "bench_cip_2": 0,
+      "bench_cip_3": 0,
+      "bench_cip_4": 0,
+      "bench_cmp_1": "127",
+      "bench_cmp_2": 0,
+      "bench_cmp_3": 0,
+      "bench_cmp_4": 0,
+      "bench_czp_1": "0",
+      "bench_czp_2": 0,
+      "bench_czp_3": 0,
+      "bench_czp_4": 0,
+      "bench_exp_1": "7",
+      "bench_exp_2": 0,
+      "bench_exp_3": 0,
+      "bench_exp_4": 0,
+      "bench_lvl_1": "37",
+      "bench_lvl_2": 0,
+      "bench_lvl_3": 0,
+      "bench_lvl_4": 0,
+      "bench_mhp_1": 67,
+      "bench_mhp_2": 0,
+      "bench_mhp_3": 0,
+      "bench_mhp_4": 0,
+      "bench_mip_1": 10,
+      "bench_mip_2": 0,
+      "bench_mip_3": 0,
+      "bench_mip_4": 0,
+      "bench_mmp_1": 127,
+      "bench_mmp_2": 0,
+      "bench_mmp_3": 0,
+      "bench_mmp_4": 0,
+      "bench_mzp_1": 6,
+      "bench_mzp_2": 6,
+      "bench_mzp_3": 6,
+      "bench_mzp_4": 6,
+      "bench_name_1": "Koshka",
+      "bench_name_2": "",
+      "bench_name_3": "",
+      "bench_name_4": "",
+      "bench_znt_1": "500",
+      "bench_znt_2": 0,
+      "bench_znt_3": 0,
+      "bench_znt_4": 0,
+      "member_chp_1": 0,
+      "member_chp_2": "120",
+      "member_chp_3": "82",
+      "member_chp_4": "67",
+      "member_cip_1": 0,
+      "member_cip_2": "8",
+      "member_cip_3": "13",
+      "member_cip_4": "6",
+      "member_cmp_1": 0,
+      "member_cmp_2": "105",
+      "member_cmp_3": 80,
+      "member_cmp_4": "127",
+      "member_czp_1": 0,
+      "member_czp_2": "6",
+      "member_czp_3": "1",
+      "member_czp_4": "0",
+      "member_exp_1": 0,
+      "member_exp_2": "7",
+      "member_exp_3": 1,
+      "member_exp_4": "7",
+      "member_lvl_1": 0,
+      "member_lvl_2": "40",
+      "member_lvl_3": "40",
+      "member_lvl_4": "37",
+      "member_mhp_1": 0,
+      "member_mhp_2": 120,
+      "member_mhp_3": 82,
+      "member_mhp_4": 67,
+      "member_mip_1": 0,
+      "member_mip_2": 8,
+      "member_mip_3": 16,
+      "member_mip_4": 10,
+      "member_mmp_1": 0,
+      "member_mmp_2": 105,
+      "member_mmp_3": 80,
+      "member_mmp_4": 127,
+      "member_mzp_1": 6,
+      "member_mzp_2": 6,
+      "member_mzp_3": 6,
+      "member_mzp_4": 6,
+      "member_name_1": "",
+      "member_name_2": "St. Reefesia",
+      "member_name_3": "Yuri",
+      "member_name_4": "Koshka",
+      "member_znt_1": 0,
+      "member_znt_2": "3300",
+      "member_znt_3": 1402,
+      "member_znt_4": "500",
+      "timestamp": 1755517752830
+    },
+    "statusEffects": {},
+    "template": "06d9Kr2Yd1bJURIl",
+    "templateSystemUniqueVersion": 1291703736
+  },
+  "type": "character"
+}

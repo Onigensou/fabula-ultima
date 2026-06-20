@@ -1,0 +1,19 @@
+{
+  "_id": "5BViRJTo7UMhSADJ",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1767918567292,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "oVRjRmlshSvb68gK",
+  "name": "Shops",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Actor"
+}

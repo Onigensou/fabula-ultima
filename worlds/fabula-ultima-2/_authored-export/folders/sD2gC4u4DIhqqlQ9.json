@@ -1,0 +1,19 @@
+{
+  "_id": "sD2gC4u4DIhqqlQ9",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1767839386439,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "dDUDRyua0YhbSGGC",
+  "name": "Basic Attack",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

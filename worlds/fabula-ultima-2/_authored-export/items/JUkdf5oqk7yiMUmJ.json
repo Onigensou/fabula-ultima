@@ -1,0 +1,57 @@
+{
+  "_id": "JUkdf5oqk7yiMUmJ",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757104649022,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "psfnGsn4Yf9vLVKe",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rose/MHSActive1.png",
+  "name": "Personal Vehicle",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Pilot",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>When you acquire this Skill, you gain a <em>personal vehicle</em> with a frame of your choice and <strong>three</strong> different modules of your choice (see Facet).</p><p>Whenever you acquire this Skill again, you acquire <strong>two</strong> additional modules of your choice.</p>",
+      "duration": "",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "5",
+      "name": "Personal Vehicle",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Other",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "JUkdf5oqk7yiMUmJ"
+  },
+  "type": "equippableItem"
+}

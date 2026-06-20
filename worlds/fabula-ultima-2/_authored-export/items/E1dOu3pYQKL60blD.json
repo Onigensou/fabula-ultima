@@ -1,0 +1,57 @@
+{
+  "_id": "E1dOu3pYQKL60blD",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1756862689058,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "xVf09WErwuUjr7rE",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Gatherer-Crafter/12_BTN/stealth.png",
+  "name": "Well-Traveled",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Wayfarer",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>You reduce the die rolled for your <strong>travel rolls</strong> by one size (to a minimum of <strong>d6</strong>). If multiple characters have this Skill, the effects are <strong>not</strong> cumulative.</p>",
+      "duration": "",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Well-Traveled",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "E1dOu3pYQKL60blD"
+  },
+  "type": "equippableItem"
+}

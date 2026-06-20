@@ -1,0 +1,19 @@
+{
+  "_id": "FXvx1GCGhUWCMScV",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1753458732100,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "w7jZN8CMjtlWQtyW",
+  "name": "Custom Skill",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

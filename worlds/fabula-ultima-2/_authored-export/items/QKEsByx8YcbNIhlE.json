@@ -1,0 +1,57 @@
+{
+  "_id": "QKEsByx8YcbNIhlE",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757053306153,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "2OplVa9fwLYbzD8b",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Raven/IA.png",
+  "name": "Greater Akromorphosis",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 3400000,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Mutant",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>You gain the following benefits based on the current Category of your <strong>unarmed strikes</strong>.</p><ul><li><strong>Arcane, brawling, dagger, thrown:</strong> your attacks with <strong>unarmed strikes</strong> treat the <strong>Defense</strong> of each target as being equal to their current <strong>Insight</strong> die size.</li><li><strong>Bow, sword:</strong> your attacks with <strong>unarmed strikes</strong> that target <strong>two or more creatures</strong> deal <strong>5</strong> extra damage.</li><li><strong>Firearm, heavy:</strong> your <strong>unarmed strikes</strong> deal <strong>5</strong> extra damage to <strong>constructs</strong>, and <strong>5</strong> extra damage to <strong>non-construct</strong> creatures who have at least one <strong>shield</strong> and/or <strong>martial armor</strong> equipped.</li><li><strong>Flail, spear:</strong> you gain a <strong>+2</strong> bonus to <strong>Defense</strong>, and your attacks with <strong>unarmed strikes</strong> may target <strong>flying</strong> creatures.</li></ul><p>If your <strong>unarmed strikes</strong> are treated as belonging to more than one Category, you gain all the benefits of the corresponding Categories.</p>",
+      "duration": "",
+      "heroic_requirement": "You must have mastered the Mutant Class.",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Greater Akromorphosis",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "QKEsByx8YcbNIhlE"
+  },
+  "type": "equippableItem"
+}

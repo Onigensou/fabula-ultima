@@ -1,0 +1,57 @@
+{
+  "_id": "r5LhzlmVvDlZ8XxG",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757424406758,
+    "duplicateSource": "Item.43HnRNN8cWeAgSmr",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "o96A4KbgobOXBh9e",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/Impalement.png",
+  "name": "Rondo of Nightmare",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Necromancer",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>When you cast an 【⚡Offensive Spell】 with a target of <strong>“One creature”</strong>, you may spend <strong>2 Grave Points</strong> to have the spell target <strong>all creatures you can see</strong> that are present on the scene (perform a single <strong>Magic Check</strong> and confront it with the <strong>Magic Defense</strong> of each target). If you do, all damage dealt by the spell becomes \n<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-type=\"Item\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#b666d2 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span>\n and its type <strong>cannot change</strong>.</p>\n",
+      "duration": "",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Rondo of Nightmare",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "r5LhzlmVvDlZ8XxG"
+  },
+  "type": "equippableItem"
+}

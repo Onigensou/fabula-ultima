@@ -1,0 +1,58 @@
+{
+  "_id": "tw0RAtSvucvUC4VG",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757283881683,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "Gbn6vXIF7FdH7EdG",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/Huntersability.png",
+  "name": "Chrolomancy",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Floralist",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>Each time you acquire this Skill, you discover a new type of <strong>magiseed</strong> from the list found in the next pages.</p><p>During a conflict, if there are no <strong>magiseeds</strong> in your <strong>garden</strong>, you may use an action and spend <strong>20 Mind Points</strong> to <strong>plant</strong> a magiseed of a type you have discovered. The rules for the garden and for <strong>magiseed growth</strong> can be found on the Unique Mechanic page.</p>",
+      "duration": "",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "10",
+      "name": "Chrolomancy",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Total Magiseeds Discovered</strong></p></td></tr><tr><td><p>1</p></td><td><p>1</p></td></tr><tr><td><p>2</p></td><td><p>2</p></td></tr><tr><td><p>3</p></td><td><p>3</p></td></tr><tr><td><p>4</p></td><td><p>4</p></td></tr><tr><td><p>5</p></td><td><p>5</p></td></tr><tr><td><p>6</p></td><td><p>6</p></td></tr><tr><td><p>7</p></td><td><p>7</p></td></tr><tr><td><p>8</p></td><td><p>8</p></td></tr><tr><td><p>9</p></td><td><p>9</p></td></tr><tr><td><p>10</p></td><td><p>10</p></td></tr></tbody></table>",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Other",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "tw0RAtSvucvUC4VG"
+  },
+  "type": "equippableItem"
+}

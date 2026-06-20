@@ -1,0 +1,53 @@
+{
+  "_id": "qmbx3RsUKBsWTuRY",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1751637079591,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "recipe",
+        "fromTemplate": "VJCHYWOx1mPsMSip",
+        "itemId": "qmbx3RsUKBsWTuRY",
+        "itemName": "Turbo Remedy",
+        "pickedOldProps": {
+          "recipe_description": "<ul><li><p>All ally recovers <strong>50</strong> Hit Points.</p></li></ul>",
+          "recipe_flavor": "",
+          "recipe_ip": "6",
+          "recipe_label": ""
+        },
+        "ts": 1769647436615
+      }
+    }
+  },
+  "folder": "MOf4y5KdI6ZvNBHg",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion3.png",
+  "name": "Turbo Remedy",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "description": "<ul><li><p>All ally recovers <strong>50</strong> Hit Points.</p></li></ul>",
+      "ip_cost": "6",
+      "item_type": "recipe",
+      "name": "Turbo Remedy"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "qmbx3RsUKBsWTuRY"
+  },
+  "type": "equippableItem"
+}

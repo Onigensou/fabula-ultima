@@ -1,0 +1,54 @@
+{
+  "_id": "D9p5ccfG93b8zlO8",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1738331740296,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "consumable",
+        "fromTemplate": "xdZPhVF8AnmwQEPM",
+        "itemId": "D9p5ccfG93b8zlO8",
+        "itemName": "Hot Chocolate Recipe",
+        "pickedOldProps": {
+          "consumable_cost": "500",
+          "consumable_description": "<ul>\n<li>Learned how to create&nbsp;<strong>Hot Chocolate&nbsp;</strong>with <strong>2 </strong><strong>IP</strong></li>\n</ul>",
+          "consumable_ip": "0",
+          "consumable_label": ""
+        },
+        "ts": 1769647435754
+      }
+    }
+  },
+  "folder": "3xHGNagIXPyzukcU",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/book.png",
+  "name": "Hot Chocolate Recipe",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 500000,
+  "system": {
+    "container": null,
+    "props": {
+      "description": "<ul>\n<li>Learned how to create&nbsp;<strong>Hot Chocolate&nbsp;</strong>with <strong>2 </strong><strong>IP</strong></li>\n</ul>",
+      "ip_cost": "0",
+      "item_cost": "500",
+      "item_type": "consumable",
+      "name": "Hot Chocolate Recipe"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "D9p5ccfG93b8zlO8"
+  },
+  "type": "equippableItem"
+}

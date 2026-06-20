@@ -1,0 +1,1511 @@
+{
+  "_id": "ed5SXJdyj3NlY31u",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1704411246524,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "61f7h6ieHIVKzuHI",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.331",
+        "createdTime": 1769830001393,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>This creature has less than 50% HP</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "4ldx00srGNv5AJBr",
+          "originalParentId": "0gIBYzSpjdXS6f25",
+          "originalUuid": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-crisis",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": false
+        },
+        "fabula-ultima-companion": {
+          "autoCrisis": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/08_DRG/blood_for_blood.png",
+      "name": "Crisis",
+      "origin": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr",
+      "sort": 0,
+      "statuses": [
+        "5jkr80zqdzaR003d"
+      ],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.5.0"
+    },
+    "theatre": {
+      "baseinsert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Juno/junoporSmilefix.png",
+      "disabledefault": true,
+      "emotes": {
+        "angry": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Juno/junoporAngry.png"
+        },
+        "annoyed": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Juno/junoporAnnoyed.png"
+        },
+        "awe-struck": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Juno/junoporAwestruck.png"
+        },
+        "blushing": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Juno/junoporBlushed.png"
+        },
+        "carefree": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Juno/junoporCarefree.png"
+        },
+        "confused": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Juno/junoporConfused.png"
+        },
+        "cry": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Juno/junoporCry.png"
+        },
+        "dissatisfied": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Juno/junoporDissatisfied.png"
+        },
+        "dizzy": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Juno/junoporDizzy.png"
+        },
+        "frown": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Juno/junoporFrownFix.png"
+        },
+        "frustrated": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Juno/junoporFrustated.png"
+        },
+        "grin": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Juno/junoporGrin.png"
+        },
+        "happy": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Juno/junoporHappy.png"
+        },
+        "happytears": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Juno/junoporHappyToTears.png"
+        },
+        "hearts": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Juno/junoporHearts.png"
+        },
+        "idea": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Juno/junoporIdea.png"
+        },
+        "innocent": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Juno/junoporInnocent.png"
+        },
+        "kiss": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Juno/junoporBlowkiss.png"
+        },
+        "laughing": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Juno/junoporLaughing.png"
+        },
+        "laughingsquint": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Juno/junoporLaughing.png"
+        },
+        "meh": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Juno/junoporMeh.png"
+        },
+        "mischevious": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Juno/junoporMischevious.png"
+        },
+        "panic": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Juno/junoporPanic.png"
+        },
+        "playful": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Juno/junoporPlayful.png"
+        },
+        "rofl": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Juno/junoporLaughing.png"
+        },
+        "sad": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Juno/junoporSad.png"
+        },
+        "scared": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Juno/junoporScared.png"
+        },
+        "serious": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Juno/junoporSerious.png"
+        },
+        "sleeping": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Juno/junoporSleeping.png"
+        },
+        "smile": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Juno/junoporSmilefix.png"
+        },
+        "smug": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Juno/junoporSmug.png"
+        },
+        "speechless": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Juno/junoporSpeechless.png"
+        },
+        "surprised": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Juno/junoporSurprised.png"
+        },
+        "thinking": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Juno/junoporThinking.png"
+        },
+        "tongue": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Juno/junoporTongue.png"
+        },
+        "wink": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Juno/junoporWink.png"
+        },
+        "worried": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Juno/junoporWorried.png"
+        }
+      },
+      "name": "",
+      "optalign": "top",
+      "settings": {
+        "emote": "serious",
+        "textcolor": null,
+        "textflyin": null,
+        "textfont": null,
+        "textsize": null,
+        "textstanding": null
+      }
+    }
+  },
+  "folder": "KWnuOptf4pQKCX5g",
+  "img": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Juno/junoporSmilefix.png",
+  "items": [
+    {
+      "_id": "0vMkQFO6emyGj2Lr",
+      "_stats": {
+        "compendiumSource": "Item.C1FR55h1SsY8GEpF",
+        "coreVersion": "12.343",
+        "createdTime": 1702144891794,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.C1FR55h1SsY8GEpF"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "hIrlKsiyq3vuA7ZM",
+      "img": "icons/magic/water/projectile-ice-chunks-salvo.webp",
+      "name": "Snowstorm Drone(Glacies)",
+      "ownership": {
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "5",
+          "class": "Elementalist",
+          "cost": "10 × T",
+          "damage_bonus": "15",
+          "description": "<p>You coat your foes under a thick layer of frost. Each target hit by this spell suffers <strong>【HR + 15】ice</strong> damage.</p>\n<p><strong>Opportunity</strong>: Each target hit by this spell suffers <strong>slow</strong>.</p>",
+          "duration": "Instantaneous",
+          "name": "Snowstorm Drone(Glacies)",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "INS",
+          "target": "Up to 3 creature",
+          "type_damage": "Ice"
+        },
+        "template": "FZmpKcQRP7hZQqbV",
+        "templateSystemUniqueVersion": 1700837225,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "as566WXKdB968KBk",
+      "_stats": {
+        "compendiumSource": "Item.1aeasNGWSCTtjxMt",
+        "coreVersion": "12.343",
+        "createdTime": 1674802897033,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.1aeasNGWSCTtjxMt"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "HwP13CJoWTpllhwM",
+      "img": "icons/magic/unholy/orb-glowing-purple.webp",
+      "name": "Void Drone(Umbra)",
+      "ownership": {
+        "JvF9tXvr7aaiS06m": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "default": 3
+      },
+      "sort": 100000,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "5",
+          "class": "Entropist",
+          "cost": "10 x T",
+          "damage_bonus": "15",
+          "description": "<p>A storm of dark energy turns matter into ash. Each target hit by this spell suffers<br>【HR + 15】 dark damage.<br>Opportunity: Each target hit by this spell suffers weak.</p>",
+          "duration": "Instantaneous",
+          "name": "Void Drone(Umbra)",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "INS",
+          "target": "Up to 3 creature",
+          "type_damage": "dark"
+        },
+        "template": "FZmpKcQRP7hZQqbV",
+        "templateSystemUniqueVersion": 1700837225,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "C4C75KaeCSBX4LtC",
+      "_stats": {
+        "compendiumSource": "Item.C1FR55h1SsY8GEpF",
+        "coreVersion": "12.343",
+        "createdTime": 1702144891794,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.C1FR55h1SsY8GEpF"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "hIrlKsiyq3vuA7ZM",
+      "img": "icons/magic/lightning/bolt-strike-blue.webp",
+      "name": "Chain Lightning Drone (Fulgur)",
+      "ownership": {
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "5",
+          "class": "Elementalist",
+          "cost": "10 × T",
+          "damage_bonus": "15",
+          "description": "<p>You weave electricity into a wave of crackling bolts. Each target hit by this spell suffers<strong>【HR + 15】bolt </strong>damage.</p>\n<p><strong>Opportunity</strong>: Each target hit by this spell suffers <strong>dazed</strong>.</p>",
+          "duration": "Instantaneous",
+          "name": "Chain Lightning Drone (Fulgur)",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "INS",
+          "target": "Up to 3 creature",
+          "type_damage": "Bolt"
+        },
+        "template": "FZmpKcQRP7hZQqbV",
+        "templateSystemUniqueVersion": 1700837225,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "CSyblhc04TUpuSA1",
+      "_stats": {
+        "compendiumSource": "Item.C1FR55h1SsY8GEpF",
+        "coreVersion": "12.343",
+        "createdTime": 1702144891794,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.C1FR55h1SsY8GEpF"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "hIrlKsiyq3vuA7ZM",
+      "img": "icons/magic/fire/projectile-fireball-sparks-orange.webp",
+      "name": "Flamethrower Drone Overdrive",
+      "ownership": {
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "5",
+          "class": "Elementalist",
+          "cost": "10 × T +20",
+          "damage_bonus": "25",
+          "description": "<p>You unleash a searing barrage against your foes, conjuring flames out of thin air. Each target hit by this spell suffers <strong>【HR + 15】fire</strong> damage.</p>\n<p><strong>Opportunity</strong>: Each target hit by this spell suffers <strong>shaken</strong>.</p>",
+          "duration": "Instantaneous",
+          "name": "Flamethrower Drone Overdrive",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "INS",
+          "target": "Up to 3 creature",
+          "type_damage": "Fire"
+        },
+        "template": "FZmpKcQRP7hZQqbV",
+        "templateSystemUniqueVersion": 1700837225,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "eh25XDKJ4PSn0bhG",
+      "_stats": {
+        "compendiumSource": "Item.C1FR55h1SsY8GEpF",
+        "coreVersion": "12.343",
+        "createdTime": 1702144891794,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.C1FR55h1SsY8GEpF"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "hIrlKsiyq3vuA7ZM",
+      "img": "icons/magic/water/projectile-ice-chunks-salvo.webp",
+      "name": "Snowstorm Drone Overdrive",
+      "ownership": {
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "5",
+          "class": "Elementalist",
+          "cost": "10 × T +20",
+          "damage_bonus": "25",
+          "description": "<p>You coat your foes under a thick layer of frost. Each target hit by this spell suffers <strong>【HR + 15】ice</strong> damage.</p>\n<p><strong>Opportunity</strong>: Each target hit by this spell suffers <strong>slow</strong>.</p>",
+          "duration": "Instantaneous",
+          "name": "Snowstorm Drone Overdrive",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "INS",
+          "target": "Up to 3 creature",
+          "type_damage": "Ice"
+        },
+        "template": "FZmpKcQRP7hZQqbV",
+        "templateSystemUniqueVersion": 1700837225,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "GpRTyS2GsEsiDyxQ",
+      "_stats": {
+        "compendiumSource": "Item.C1FR55h1SsY8GEpF",
+        "coreVersion": "12.343",
+        "createdTime": 1702144891794,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.C1FR55h1SsY8GEpF"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "hIrlKsiyq3vuA7ZM",
+      "img": "icons/magic/fire/projectile-fireball-sparks-orange.webp",
+      "name": "Flamethrower Drone(Ignis)",
+      "ownership": {
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "5",
+          "class": "Elementalist",
+          "cost": "10 × T",
+          "damage_bonus": "15",
+          "description": "<p>You unleash a searing barrage against your foes, conjuring flames out of thin air. Each target hit by this spell suffers <strong>【HR + 15】fire</strong> damage.</p>\n<p><strong>Opportunity</strong>: Each target hit by this spell suffers <strong>shaken</strong>.</p>",
+          "duration": "Instantaneous",
+          "name": "Flamethrower Drone(Ignis)",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "INS",
+          "target": "Up to 3 creature",
+          "type_damage": "Fire"
+        },
+        "template": "FZmpKcQRP7hZQqbV",
+        "templateSystemUniqueVersion": 1700837225,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "IebJacJM02V2Kr1j",
+      "_stats": {
+        "compendiumSource": "Item.C1FR55h1SsY8GEpF",
+        "coreVersion": "12.343",
+        "createdTime": 1702144891794,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.C1FR55h1SsY8GEpF"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "hIrlKsiyq3vuA7ZM",
+      "img": "icons/magic/air/air-wave-gust-blue.webp",
+      "name": "Tailwind Drone(Ventus)",
+      "ownership": {
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "5",
+          "class": "Elementalist",
+          "cost": "10 × T",
+          "damage_bonus": "15",
+          "description": "<p>You summon the power of winds against your enemy. Each target hit by this spell suffers <strong>【HR + 15】air</strong> damage.</p>\n<p><strong>Opportunity</strong>: Each <strong>flying </strong>target hit by this spell is forced to land immediately.</p>",
+          "duration": "Instantaneous",
+          "name": "Tailwind Drone(Ventus)",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "INS",
+          "target": "Up to 3 creature",
+          "type_damage": "Air"
+        },
+        "template": "FZmpKcQRP7hZQqbV",
+        "templateSystemUniqueVersion": 1700837225,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "IvUosefpfSBy2EK5",
+      "_stats": {
+        "compendiumSource": "Item.1aeasNGWSCTtjxMt",
+        "coreVersion": "12.343",
+        "createdTime": 1674802897033,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.1aeasNGWSCTtjxMt"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "HwP13CJoWTpllhwM",
+      "img": "https://assets.forge-vtt.com/5fb02919b573a96aaf33938c/wrf3f3e.JPG",
+      "name": "Void Drone Overdrive",
+      "ownership": {
+        "JvF9tXvr7aaiS06m": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "default": 3
+      },
+      "sort": 100000,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "5",
+          "class": "Entropist",
+          "cost": "10 x T +20",
+          "damage_bonus": "25",
+          "description": "<p>A storm of dark energy turns matter into ash. Each target hit by this spell suffers<br>【HR + 15】 dark damage.<br>Opportunity: Each target hit by this spell suffers weak.</p>",
+          "duration": "Instantaneous",
+          "name": "Void Drone Overdrive",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "INS",
+          "target": "One creature",
+          "type_damage": "dark"
+        },
+        "template": "FZmpKcQRP7hZQqbV",
+        "templateSystemUniqueVersion": 1700837225,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "jbyB3pbrbkB8ceHO",
+      "_stats": {
+        "compendiumSource": "Item.C1FR55h1SsY8GEpF",
+        "coreVersion": "12.343",
+        "createdTime": 1702144891794,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.C1FR55h1SsY8GEpF"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "hIrlKsiyq3vuA7ZM",
+      "img": "icons/magic/air/air-wave-gust-blue.webp",
+      "name": "Tailwind Drone Overdrive",
+      "ownership": {
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "5",
+          "class": "Elementalist",
+          "cost": "10 × T +20",
+          "damage_bonus": "25",
+          "description": "<p>You summon the power of winds against your enemy. Each target hit by this spell suffers <strong>【HR + 15】air</strong> damage.</p>\n<p><strong>Opportunity</strong>: Each <strong>flying </strong>target hit by this spell is forced to land immediately.</p>",
+          "duration": "Instantaneous",
+          "name": "Tailwind Drone Overdrive",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "INS",
+          "target": "Up to 3 creature",
+          "type_damage": "Air"
+        },
+        "template": "FZmpKcQRP7hZQqbV",
+        "templateSystemUniqueVersion": 1700837225,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "rI7ZvKwCSXqpOEIH",
+      "_stats": {
+        "compendiumSource": "Item.IqxqwBqS9KHO8e3j",
+        "coreVersion": "12.343",
+        "createdTime": 1674804440986,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.IqxqwBqS9KHO8e3j"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "ffyJMvbd23HTZhEU",
+      "img": "icons/magic/unholy/strike-body-explode-disintegrate.webp",
+      "name": "Disintegration Drone(Anomaly)",
+      "ownership": {
+        "JvF9tXvr7aaiS06m": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "default": 3
+      },
+      "sort": 200000,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Entropist",
+          "cost": "20",
+          "damage_bonus": "0",
+          "description": "<p>You alter the very nature of your target. Until this spell ends, if the target would suffer<br>damage of a type they Absorb or are Immune to, they are instead treated as if they<br>were Vulnerable to that damage type. Once that happens, this spell ends.</p>",
+          "duration": "scene",
+          "name": "Disintegration Drone(Anomaly)",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "INS",
+          "target": "One creature",
+          "type_damage": ""
+        },
+        "template": "FZmpKcQRP7hZQqbV",
+        "templateSystemUniqueVersion": 1700837225,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "RPrE0I6uLN8iLlNH",
+      "_stats": {
+        "compendiumSource": "Item.C1FR55h1SsY8GEpF",
+        "coreVersion": "12.343",
+        "createdTime": 1702144891794,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.C1FR55h1SsY8GEpF"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "hIrlKsiyq3vuA7ZM",
+      "img": "icons/magic/earth/projectiles-fire-stone-salvo.webp",
+      "name": "Terraforming Earthquake Drone Overdrive",
+      "ownership": {
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "5",
+          "class": "Elementalist",
+          "cost": "10 × T + 20",
+          "damage_bonus": "25",
+          "description": "<p><span class=\"fontstyle0\">Spires of jagged rock erupt from the ground beneath your foes, closing around them.</span></p>\n<p><span class=\"fontstyle0\">Each target hit by this spell suffers</span><strong><span class=\"fontstyle2\">【</span><span class=\"fontstyle3\">HR + 15</span><span class=\"fontstyle2\">】 </span><span class=\"fontstyle3\">earth </span></strong><span class=\"fontstyle0\"><strong>damage</strong>. This spell cannot target creatures who are flying, floating, falling, or otherwise in mid-air.</span></p>\n<p><span class=\"fontstyle3\"><strong>Opportunity</strong>: </span><span class=\"fontstyle0\">Each target hit by this spell performs one fewer action on their next turn (to a minimum of 0 actions).</span></p>",
+          "duration": "Instantaneous",
+          "name": "Terraforming Earthquake Drone Overdrive",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "INS",
+          "target": "Up to 3 creature",
+          "type_damage": "Earth"
+        },
+        "template": "FZmpKcQRP7hZQqbV",
+        "templateSystemUniqueVersion": 1700837225,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "u8WsyMe0R5GXwCt2",
+      "_stats": {
+        "compendiumSource": "Item.C1FR55h1SsY8GEpF",
+        "coreVersion": "12.343",
+        "createdTime": 1702144891794,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.C1FR55h1SsY8GEpF"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "hIrlKsiyq3vuA7ZM",
+      "img": "icons/magic/lightning/bolt-strike-blue.webp",
+      "name": "Chain Lightning Drone Overdrive",
+      "ownership": {
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "5",
+          "class": "Elementalist",
+          "cost": "10 × T +20",
+          "damage_bonus": "25",
+          "description": "<p>You weave electricity into a wave of crackling bolts. Each target hit by this spell suffers<strong>【HR + 15】bolt </strong>damage.</p>\n<p><strong>Opportunity</strong>: Each target hit by this spell suffers <strong>dazed</strong>.</p>",
+          "duration": "Instantaneous",
+          "name": "Chain Lightning Drone Overdrive",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "INS",
+          "target": "Up to 3 creature",
+          "type_damage": "Bolt"
+        },
+        "template": "FZmpKcQRP7hZQqbV",
+        "templateSystemUniqueVersion": 1700837225,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "XuOZpgnjFquuDkkL",
+      "_stats": {
+        "compendiumSource": "Item.C1FR55h1SsY8GEpF",
+        "coreVersion": "12.343",
+        "createdTime": 1702144891794,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.C1FR55h1SsY8GEpF"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "hIrlKsiyq3vuA7ZM",
+      "img": "icons/magic/earth/barrier-stone-explosion-spiked.webp",
+      "name": "Terraforming Earthquake Drone(Terra)",
+      "ownership": {
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "5",
+          "class": "Elementalist",
+          "cost": "10 × T",
+          "damage_bonus": "15",
+          "description": "<p><span class=\"fontstyle0\">Spires of jagged rock erupt from the ground beneath your foes, closing around them.<br></span></p>\n<p><span class=\"fontstyle0\">Each target hit by this spell suffers</span><span class=\"fontstyle2\">【</span><span class=\"fontstyle3\">HR + 15</span><span class=\"fontstyle2\">】 </span><span class=\"fontstyle3\">earth </span><span class=\"fontstyle0\">damage. This spell cannot target creatures who are flying, floating, falling, or otherwise in mid-air.</span></p>\n<p><span class=\"fontstyle0\"><br></span><span class=\"fontstyle3\">Opportunity: </span><span class=\"fontstyle0\">Each target hit by this spell performs one fewer action on their next turn (to a minimum of 0 actions).</span> </p>",
+          "duration": "Instantaneous",
+          "name": "Terraforming Earthquake Drone(Terra)",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "INS",
+          "target": "Up to 3 creature",
+          "type_damage": "Earth"
+        },
+        "template": "FZmpKcQRP7hZQqbV",
+        "templateSystemUniqueVersion": 1700837225,
+        "unique": false
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Juno",
+  "ownership": {
+    "6DmgigM5jq76r0Gd": 3,
+    "Am7qxPOavfKeDGPd": 3,
+    "JvF9tXvr7aaiS06m": 3,
+    "MwTL6zXFCEpVBTpI": 3,
+    "default": 0,
+    "yL2PQxh3R9ddt0te": 3
+  },
+  "prototypeToken": {
+    "actorLink": true,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": 1,
+    "flags": {
+      "Border-Control": {
+        "borderCustomBaseOpacity": 0.5,
+        "borderCustomColorExt": "#000000",
+        "borderCustomColorInt": "#000000",
+        "borderCustomFrameOpacity": 0.5,
+        "noBorder": false
+      },
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#09d32f",
+            "mincolor": "#ff0000",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 50,
+            "ownerVisibility": -1,
+            "position": "bottom-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#1d51c7",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          }
+        }
+      },
+      "token-variants": {
+        "disableHUDButton": false,
+        "randomImgDefault": ""
+      },
+      "token-z": {
+        "zIndex": 0
+      }
+    },
+    "height": 2,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Juno",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "height",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Character%20Portrait/test%205.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 0,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "activeEffects": {},
+    "data": {
+      "props": {
+        "fp": 7
+      }
+    },
+    "props": {
+      "accessory2_name": "",
+      "accessory_name": "",
+      "arcanism": false,
+      "armor_details": "",
+      "armor_mod": "1",
+      "armor_name": "Experimental Force Field Drone",
+      "attack_accuracy_mod_all": "0",
+      "attack_accuracy_mod_melee": "0",
+      "attack_accuracy_mod_range": "0",
+      "attack_accuracy_mod_spell": "0",
+      "backpack": "",
+      "backstory": "",
+      "bond_1": "Fjord",
+      "bond_2": "Freyr",
+      "bond_3": "Zelianna",
+      "bond_4": "Fortune",
+      "bond_5": "",
+      "bond_6": "",
+      "chanter_volume_mp_header": "MP",
+      "chanter_volume_mp_high": 30,
+      "chanter_volume_mp_low": 10,
+      "chanter_volume_mp_medium": 20,
+      "chanter_volume_target_high": "Every enemy who can hear you.",
+      "chanter_volume_target_low": "Yourself <b>or</b> another creature you can see who can hear you.",
+      "chanter_volume_target_medium": "Every ally who can hear you.",
+      "char_identity": "Empire Researcher",
+      "check_roller": "Roll!",
+      "chimerism": false,
+      "class_list": {
+        "0": {
+          "$deleted": false,
+          "benefit": "mp",
+          "class_name": "Elementalist",
+          "level": "10"
+        },
+        "1": {
+          "$deleted": false,
+          "benefit": "mp",
+          "class_name": "Loremaster",
+          "level": "5"
+        },
+        "2": {
+          "$deleted": false,
+          "benefit": "mp",
+          "class_name": "Entropist",
+          "level": "2"
+        }
+      },
+      "clock_brainwave": "0",
+      "clock_trade": "0",
+      "cooking_roller": "🔪Cook!",
+      "current_hp": "1",
+      "current_ip": "6",
+      "current_mp": "48",
+      "damage_receiving_mod_air": "0",
+      "damage_receiving_mod_all": "0",
+      "damage_receiving_mod_bolt": "0",
+      "damage_receiving_mod_dark": "0",
+      "damage_receiving_mod_earth": "0",
+      "damage_receiving_mod_fire": "0",
+      "damage_receiving_mod_ice": "0",
+      "damage_receiving_mod_light": "0",
+      "damage_receiving_mod_melee": "0",
+      "damage_receiving_mod_physical": "0",
+      "damage_receiving_mod_poison": "0",
+      "damage_receiving_mod_range": "0",
+      "dex_base": "6",
+      "dex_current": 6,
+      "draw_card": "Draw",
+      "draw_card_copy1": "Use",
+      "elementalism": true,
+      "emotion_1_1": "1",
+      "emotion_1_2": "",
+      "emotion_1_3": "",
+      "emotion_2_1": "1",
+      "emotion_2_2": "",
+      "emotion_2_3": "",
+      "emotion_3_1": "2",
+      "emotion_3_2": "",
+      "emotion_3_3": "",
+      "emotion_4_1": "",
+      "emotion_4_2": "2",
+      "emotion_4_3": "",
+      "emotion_5_1": "",
+      "emotion_5_2": "",
+      "emotion_5_3": "",
+      "emotion_6_1": "",
+      "emotion_6_2": "",
+      "emotion_6_3": "",
+      "entropism": false,
+      "experience": "11",
+      "experience_ui": "0",
+      "fp": "19",
+      "id": "ed5SXJdyj3NlY31u",
+      "img": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Juno/junoporSmilefix.png",
+      "init_penalty": "-2",
+      "ins_base": "12",
+      "ins_current": 12,
+      "inventory_label": "💼 Inventory",
+      "inventory_list": {
+        "0": {
+          "$deleted": false,
+          "item_description": "<p>You have Resistance to 【<strong>Poison】</strong>&nbsp;damage.</p>",
+          "item_name": "Emerald Pendant",
+          "item_owned": "",
+          "item_roll": ""
+        }
+      },
+      "isAwake": false,
+      "isClarity": false,
+      "isDazed": false,
+      "isEnergized": false,
+      "isEnraged": false,
+      "isFocus": false,
+      "isPoisoned": false,
+      "isShaken": false,
+      "isSlow": false,
+      "isStrong": false,
+      "isSwift": false,
+      "isWeak": false,
+      "is_martialarmor": false,
+      "key_list": {},
+      "level": "20",
+      "magic_defense_mod": "2",
+      "main_attrib_1": "INS",
+      "main_attrib_2": "INS",
+      "main_details": "<p>Custom weapon (arcane, two handed, DEX+INS &gt; INS+INS, Defense boost customization)</p>",
+      "main_hand": "Drone",
+      "main_hand_attack": "",
+      "max_hp": 50,
+      "max_ip": 6,
+      "max_mp": 85,
+      "memories_list": {},
+      "memory": "Memories",
+      "mig_base": "6",
+      "mig_current": 6,
+      "name": "Juno",
+      "normal_spell_list": {
+        "0": {
+          "$deleted": false,
+          "class": "Elementalist",
+          "cost": "40",
+          "description": "<p>You channel the fury of the planet into a powerful wave of fire and magma.</p>\n<p>&nbsp;</p>\n<p>Choose one option:</p>\n<p>- One creature you can see suffers 55 fire damage</p>\n<p>- You choose any number of creatures you can see, and each of them suffers 35 fire damage.</p>\n<p>These amounts increase by 5 if you are level 20 or higher, or by 10 if you are level 40 or higher.</p>\n<p>Damage dealt by this spell ignores Resistances and Immunities.</p>",
+          "duration": "Instantenous",
+          "roll": "",
+          "spell_name": "Experimental Ultimatum Drone Overdrive(Volcano)",
+          "target": "Special"
+        },
+        "1": {
+          "$deleted": false,
+          "class": "Elementalist",
+          "cost": "60",
+          "description": "<p>You channel the fury of the planet into a powerful wave of fire and magma.</p>\n<p>&nbsp;</p>\n<p>Choose one option:</p>\n<p>- One creature you can see suffers 55+10 fire damage</p>\n<p>- You choose any number of creatures you can see, and each of them suffers 35+10 fire damage.</p>\n<p>These amounts increase by 5 if you are level 20 or higher, or by 10 if you are level 40 or higher.</p>\n<p>Damage dealt by this spell ignores Resistances and Immunities.</p>",
+          "duration": "Instantenous",
+          "roll": "",
+          "spell_name": "Experimental Ultimatum Drone Overdrive MKII(Volcano+Cataclysm)",
+          "target": "Special"
+        }
+      },
+      "notes_text": "",
+      "off_attrib_1": "SHI",
+      "off_attrib_2": "SHI",
+      "off_base_mod_1": "0",
+      "off_base_mod_2": "0",
+      "off_hand": "Shield Drone",
+      "off_hand_attack": "",
+      "off_mod_1": 0,
+      "off_mod_2": 0,
+      "offensive_spell_list": {
+        "0vMkQFO6emyGj2Lr": {
+          "class": "Elementalist",
+          "cost": "10 × T",
+          "duration": "Instantaneous",
+          "id": "0vMkQFO6emyGj2Lr",
+          "name": "Snowstorm Drone(Glacies)",
+          "roll": "",
+          "target": "Up to 3 creature",
+          "uuid": "Actor.ed5SXJdyj3NlY31u.Item.0vMkQFO6emyGj2Lr"
+        },
+        "C4C75KaeCSBX4LtC": {
+          "class": "Elementalist",
+          "cost": "10 × T",
+          "duration": "Instantaneous",
+          "id": "C4C75KaeCSBX4LtC",
+          "name": "Chain Lightning Drone (Fulgur)",
+          "roll": "",
+          "target": "Up to 3 creature",
+          "uuid": "Actor.ed5SXJdyj3NlY31u.Item.C4C75KaeCSBX4LtC"
+        },
+        "CSyblhc04TUpuSA1": {
+          "class": "Elementalist",
+          "cost": "10 × T +20",
+          "duration": "Instantaneous",
+          "id": "CSyblhc04TUpuSA1",
+          "name": "Flamethrower Drone Overdrive",
+          "roll": "",
+          "target": "Up to 3 creature",
+          "uuid": "Actor.ed5SXJdyj3NlY31u.Item.CSyblhc04TUpuSA1"
+        },
+        "GpRTyS2GsEsiDyxQ": {
+          "class": "Elementalist",
+          "cost": "10 × T",
+          "duration": "Instantaneous",
+          "id": "GpRTyS2GsEsiDyxQ",
+          "name": "Flamethrower Drone(Ignis)",
+          "roll": "",
+          "target": "Up to 3 creature",
+          "uuid": "Actor.ed5SXJdyj3NlY31u.Item.GpRTyS2GsEsiDyxQ"
+        },
+        "IebJacJM02V2Kr1j": {
+          "class": "Elementalist",
+          "cost": "10 × T",
+          "duration": "Instantaneous",
+          "id": "IebJacJM02V2Kr1j",
+          "name": "Tailwind Drone(Ventus)",
+          "roll": "",
+          "target": "Up to 3 creature",
+          "uuid": "Actor.ed5SXJdyj3NlY31u.Item.IebJacJM02V2Kr1j"
+        },
+        "IvUosefpfSBy2EK5": {
+          "class": "Entropist",
+          "cost": "10 x T +20",
+          "duration": "Instantaneous",
+          "id": "IvUosefpfSBy2EK5",
+          "name": "Void Drone Overdrive",
+          "roll": "",
+          "target": "One creature",
+          "uuid": "Actor.ed5SXJdyj3NlY31u.Item.IvUosefpfSBy2EK5"
+        },
+        "RPrE0I6uLN8iLlNH": {
+          "class": "Elementalist",
+          "cost": "10 × T + 20",
+          "duration": "Instantaneous",
+          "id": "RPrE0I6uLN8iLlNH",
+          "name": "Terraforming Earthquake Drone Overdrive",
+          "roll": "",
+          "target": "Up to 3 creature",
+          "uuid": "Actor.ed5SXJdyj3NlY31u.Item.RPrE0I6uLN8iLlNH"
+        },
+        "XuOZpgnjFquuDkkL": {
+          "class": "Elementalist",
+          "cost": "10 × T",
+          "duration": "Instantaneous",
+          "id": "XuOZpgnjFquuDkkL",
+          "name": "Terraforming Earthquake Drone(Terra)",
+          "roll": "",
+          "target": "Up to 3 creature",
+          "uuid": "Actor.ed5SXJdyj3NlY31u.Item.XuOZpgnjFquuDkkL"
+        },
+        "as566WXKdB968KBk": {
+          "class": "Entropist",
+          "cost": "10 x T",
+          "duration": "Instantaneous",
+          "id": "as566WXKdB968KBk",
+          "name": "Void Drone(Umbra)",
+          "roll": "",
+          "target": "Up to 3 creature",
+          "uuid": "Actor.ed5SXJdyj3NlY31u.Item.as566WXKdB968KBk"
+        },
+        "eh25XDKJ4PSn0bhG": {
+          "class": "Elementalist",
+          "cost": "10 × T +20",
+          "duration": "Instantaneous",
+          "id": "eh25XDKJ4PSn0bhG",
+          "name": "Snowstorm Drone Overdrive",
+          "roll": "",
+          "target": "Up to 3 creature",
+          "uuid": "Actor.ed5SXJdyj3NlY31u.Item.eh25XDKJ4PSn0bhG"
+        },
+        "jbyB3pbrbkB8ceHO": {
+          "class": "Elementalist",
+          "cost": "10 × T +20",
+          "duration": "Instantaneous",
+          "id": "jbyB3pbrbkB8ceHO",
+          "name": "Tailwind Drone Overdrive",
+          "roll": "",
+          "target": "Up to 3 creature",
+          "uuid": "Actor.ed5SXJdyj3NlY31u.Item.jbyB3pbrbkB8ceHO"
+        },
+        "rI7ZvKwCSXqpOEIH": {
+          "class": "Entropist",
+          "cost": 20,
+          "duration": "scene",
+          "id": "rI7ZvKwCSXqpOEIH",
+          "name": "Disintegration Drone(Anomaly)",
+          "roll": "",
+          "target": "One creature",
+          "uuid": "Actor.ed5SXJdyj3NlY31u.Item.rI7ZvKwCSXqpOEIH"
+        },
+        "u8WsyMe0R5GXwCt2": {
+          "class": "Elementalist",
+          "cost": "10 × T +20",
+          "duration": "Instantaneous",
+          "id": "u8WsyMe0R5GXwCt2",
+          "name": "Chain Lightning Drone Overdrive",
+          "roll": "",
+          "target": "Up to 3 creature",
+          "uuid": "Actor.ed5SXJdyj3NlY31u.Item.u8WsyMe0R5GXwCt2"
+        }
+      },
+      "origin": "Waraicia Empire",
+      "passive_list": {
+        "0": {
+          "$deleted": false,
+          "passive_description": "<p>Once before the next rest, after your group makes a travel roll, you may reroll the die<br>and keep the new result</p>",
+          "passive_name": "Cartography",
+          "passive_roll": "",
+          "passive_source": "camp activity"
+        },
+        "1": {
+          "$deleted": false,
+          "passive_description": "<p>Once before the next rest, you may perform an additional action on your turn during<br>a conflict scene. This action must be used to perform the Equipment, Hinder, or<br>Inventory action.</p>",
+          "passive_name": "Sleep Soundly",
+          "passive_roll": "",
+          "passive_source": "camp activity"
+        },
+        "2": {
+          "$deleted": false,
+          "passive_description": "<p>You possess one or more pieces of equipment that boast unique properties. Are those<br>items something passed down in your family, or a gift from someone you hold dear?<br>What strange or dangerous rumors surround these items? Who would do anything in<br>their power to take them from you?<br>You obtain a single rare item worth 1200 zenit or less, or two rare items worth up to<br>800 zenit each. You may choose these items from the available lists or design them<br>together with the rest of your group.<br>Once per session (approximately four hours of play), the Game Master may give you 1<br>Fabula Point in order to have sudden complications arise due to the unique nature of<br>the item(s) you carry (such as rival duelists or strange monsters drawn by its magic).<br>Items acquired through this Quirk cannot be destroyed, damaged, lost or stolen<br>without your permission as a Player.</p>",
+          "passive_name": "Hierloom - Experimental Force Field Drone",
+          "passive_roll": "",
+          "passive_source": "quirk"
+        }
+      },
+      "place_card_vanguard": "Place",
+      "populate_deck": "Populate",
+      "pronouns": "",
+      "reaction_list": {},
+      "relationship_1": "1",
+      "relationship_2": "1",
+      "relationship_3": "1",
+      "relationship_4": "",
+      "relationship_5": "",
+      "relationship_6": "",
+      "reset_cards": "Resets",
+      "resolve_set": "Resolve",
+      "resource_value_1": "0",
+      "resource_value_2": "0",
+      "resource_value_3": "0",
+      "reveal_cards": "Reveal",
+      "ritualism": false,
+      "rolled_atr1": "INS",
+      "rolled_atr2": "INS",
+      "shield_type": "",
+      "shield_value": "0",
+      "shuffle_deck": "Shuffle",
+      "skill_accuracy": "0",
+      "skill_attack_damage": "0",
+      "skill_hp": "0",
+      "skill_ip": "0",
+      "skill_list": {
+        "0": {
+          "$deleted": false,
+          "class": "Elementalist",
+          "description": "",
+          "level": "5",
+          "roll": "",
+          "skill_name": "Elemental Magic"
+        },
+        "1": {
+          "$deleted": false,
+          "class": "Elementalist",
+          "description": "",
+          "level": "2",
+          "roll": "",
+          "skill_name": "Magical Artillery"
+        },
+        "2": {
+          "$deleted": false,
+          "class": "Elementalist",
+          "description": "",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Ritual Elementalism"
+        },
+        "3": {
+          "$deleted": false,
+          "class": "Elementalist",
+          "description": "",
+          "level": "2",
+          "roll": "",
+          "skill_name": "Cataclysm"
+        },
+        "4": {
+          "$deleted": false,
+          "class": "Loremaster",
+          "description": "<p>When you roll a 13 or higher on a Check performed to investigate a creature, item or<br>location &mdash; this includes using the Study action during a conflict &mdash; you may ask the<br>Game Master up to 【SL】 questions concerning the subject of your investigation. You<br>may ask these questions immediately or save them for later; whenever you ask one of<br>these questions, the Game Master will answer truthfully and you will describe your<br>character's deductive process.<br>This Skill may only be used once on the same creature, item or location</p>",
+          "level": "3",
+          "roll": "",
+          "skill_name": "Flash of Insight"
+        },
+        "5": {
+          "$deleted": false,
+          "class": "Loremaster",
+          "description": "<p>When you perform an Accuracy Check, you may replace one of the Attribute dice with<br>Insight (such as 【INS + INS】 for a pistol or 【INS + MIG】 for a waraxe).</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Knowledge is Power"
+        },
+        "6": {
+          "$deleted": false,
+          "class": "Loremaster",
+          "description": "<p>You may perfectly recall the details of any scene you have visited within the past week.<br>You can \"go back in time\" within your mind in order to examine and investigate such<br>scenes again &mdash; your Flash of Insight Skill will apply to these memories as well</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Trained Memory"
+        },
+        "7": {
+          "$deleted": false,
+          "class": "Entropist",
+          "description": "<p>Each time you acquire this Skill, learn one Entropist spell (see next two pages).<br>Offensive (r) Entropist spells use 【INS + WLP】 for the Magic Check.</p>",
+          "level": "2",
+          "roll": "",
+          "skill_name": "ENTROPIC MAGIC"
+        }
+      },
+      "skill_mp": "0",
+      "spiritism": false,
+      "theme": "Curiosity",
+      "uuid": "Actor.ed5SXJdyj3NlY31u",
+      "weapon1_base_damage": "0",
+      "weapon1_base_mod": "0",
+      "weapon1_damage": 0,
+      "weapon1_damagetype": "Physical",
+      "weapon1_mod": 0,
+      "weapon2_damagetype": "-",
+      "wlp_base": "10",
+      "wlp_current": 10,
+      "your_class_name": "",
+      "zenit": "1100",
+      "zero_effect_description": "<p>You immediately perform the Spell action for free, casting a spell of your choice<br>among those you know; the spell’s total Mind Point cost is treated as being 0 (this<br>includes any cost increases due to Skills and effects).</p>\n<p>The spell deals 10 extra damage<br>and, if it is an offensive (r) spell, you gain a +5 bonus to the Magic Check.</p>",
+      "zero_effect_label": "💬 Zero Effect",
+      "zero_label": "💥 Zero Power : ",
+      "zero_power_name": "Zero Magic - Ultracharged Experimental Drone",
+      "zero_power_value": "0",
+      "zero_trigger_description": "<p>Synergy</p>\n<p><br>This trigger activates when you deal damage to one or more creatures, filling 1<br>section for each creature that was Vulnerable to the type of damage dealt.</p>",
+      "zero_trigger_label": "⚔️ Zero Trigger"
+    },
+    "statusEffects": {
+      "1QPHKNWo17z0bBmX": [],
+      "1cksCQj3urJwddfg": [],
+      "1qTdxSVu2XLu0lUx": [],
+      "3YZNX2X5rHYtL4L5": [],
+      "4g2B0rdJ3SiUQvUv": [],
+      "5FFBDg2y54bpqgat": [],
+      "5jkr80zqdzaR003d": [],
+      "6YW8glLMYbwj6ZhC": [],
+      "7FLtIUvENcYDAJKC": [],
+      "7VDl6ac5Rzr2Rpya": [],
+      "8LN8tDQjON508Rqm": [],
+      "ACD2C8JLWUeIx89o": [],
+      "CVxHWmDb0gQsob1q": [],
+      "CfLPg6RDybSQhTSR": [],
+      "DCaKnV9kNn3EpqtY": [],
+      "DHsoSawNEZAxsnQ9": [],
+      "EVjmTFRDsuzR823Z": [],
+      "GJ0cbbj60lr4zaHm": [],
+      "MsbUHrgK7AhSeEJm": [],
+      "N4WfMf1nuOdUEXVS": [],
+      "N4rGBYQsH7PyMAWr": [],
+      "NogCaPvL5Y52Hjnq": [],
+      "OFk8VUuwDhWFoPxI": [],
+      "QOfrFCU2C6mx50gK": [],
+      "Qz8IC4v3wJ6UoM77": [],
+      "Rc8AvdmlHAK7pPea": [],
+      "StnYeDADYo2xX99O": [],
+      "T1kJfiKBZm1dnnBy": [],
+      "VxdXsFJ7YVEzAp3x": [],
+      "YhO7nUdawyeQKMWD": [],
+      "ZK0aTX8IH1NqwmTw": [],
+      "bspDC7hFRTYuwdhf": [],
+      "cDgbFRi9TA68TvYr": [],
+      "clE8TJ0G1gMwF735": [],
+      "fYkA57rVfoytHRjo": [],
+      "g7JIey1pEuRHyAOH": [],
+      "gX1fA3onNG7wsyap": [],
+      "hhqoSNhWfVD4KR7g": [],
+      "jKvrVpxLgX0KhB23": [],
+      "m2iUJjsEfJkpmOBw": [],
+      "qMZsEEuzAdrHb2fk": [],
+      "qePlOECBTS0Dftgc": [],
+      "t2C3LKukW6LPUImk": [],
+      "t5jyddIZDvbyuVsD": [],
+      "v22vl6cnP94wVBPu": [],
+      "v2vFlETIgMnff5o8": [],
+      "vLM7q3rdXVCgHYD4": [],
+      "vUYA9jgY9pdafj4i": [],
+      "wA1E8GxiXmzz80XQ": [],
+      "xuwAn7u126GfFweU": []
+    },
+    "template": "Dx16KeWcJzikM7dh",
+    "templateSystemUniqueVersion": 276398442
+  },
+  "type": "character"
+}

@@ -1,0 +1,650 @@
+{
+  "_id": "PgNX7yW5nxq2emWX",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1704911302491,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.5.0"
+    },
+    "fabula-ultima-companion": {
+      "idleAnimation": {
+        "bounce": false,
+        "float": true
+      }
+    }
+  },
+  "folder": "Nd8LnosrPid1eX1r",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Mana%20Eater.png",
+  "items": [
+    {
+      "_id": "4IrUKGEoVA4r7gls",
+      "_stats": {
+        "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
+        "coreVersion": "12.343",
+        "createdTime": 1769576784595,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/CombatRangerSkill7.png",
+      "name": "Flee",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "",
+          "defense_target_type": "def",
+          "description": "<p>Flee the scene, have 50% chance of success.</p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Flee",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Any",
+          "skill_target": "Self",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "UKzHkmIJcjXZ4GFR"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "A16EULxPG2dENY71",
+      "_stats": {
+        "compendiumSource": "Item.aGZAOUdRyopqoDyc",
+        "coreVersion": "12.343",
+        "createdTime": 1769576787781,
+        "duplicateSource": "Item.iFdNNGp4OVZVMEcB",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/15_RDM/dualcast.png",
+      "name": "Mana Residue",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "",
+          "defense_target_type": "def",
+          "description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Trigger</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>When the Mana Gorger is reduce to 0 HP</p></li></ul><p>If the Mana Gorger has<strong> Eaten</strong>, Restore 100% MP to the character who reduce it to 0 HP.</p>",
+          "duration": "-",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Mana Residue",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "aGZAOUdRyopqoDyc"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "VhNtcDifD3ptNgOE",
+      "_stats": {
+        "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
+        "coreVersion": "12.343",
+        "createdTime": 1769576782831,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215350.578.png",
+      "name": "Consume Mana",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "",
+          "defense_target_type": "def",
+          "description": "<p>Reduce the target HP by 50%. Then gain the <strong>Eaten</strong> buff.</p><p>&nbsp;</p><p>This skill is not usable if the Mana Gorger has <strong>Eaten</strong>.</p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Consume Mana",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "UKzHkmIJcjXZ4GFR"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "wJJ3Jqpeol4tUqQQ",
+      "_stats": {
+        "compendiumSource": "Item.kMbhsJ2cDIFndrKy",
+        "coreVersion": "12.343",
+        "createdTime": 1751715971916,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion4.png",
+      "name": "Mega-Elixir",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 2
+      },
+      "sort": 412500,
+      "system": {
+        "container": null,
+        "props": {
+          "consumable_cost": "100",
+          "consumable_description": "<ul><li><p>Target creature recovers <strong>100</strong> MP.</p></li></ul>",
+          "consumable_ip": "",
+          "name": "Mega-Elixir"
+        },
+        "template": "xdZPhVF8AnmwQEPM",
+        "templateSystemUniqueVersion": 3725551061,
+        "unique": false,
+        "uniqueId": "kMbhsJ2cDIFndrKy"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Mana Gorger",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 50,
+    "disposition": -1,
+    "flags": {
+      "Border-Control": {
+        "borderCustomBaseOpacity": 0.5,
+        "borderCustomColorExt": "#000000",
+        "borderCustomColorInt": "#000000",
+        "borderCustomFrameOpacity": 0.5,
+        "noBorder": false
+      },
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "max": null,
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "max": null,
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          }
+        }
+      },
+      "hex-size-support": {
+        "alternateOrientation": false,
+        "hideBorder": true,
+        "hideFill": false,
+        "pivotx": null,
+        "pivoty": null
+      },
+      "token-variants": {
+        "disableHUDButton": false,
+        "randomImgDefault": ""
+      },
+      "token-z": {
+        "zIndex": 0
+      },
+      "wall-height": {
+        "tokenHeight": 0
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Mana Gorger",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 0,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Mana%20Eater.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 1000000,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "activeEffects": {},
+    "props": {
+      "activation": "1",
+      "affinity_1": "NA",
+      "affinity_2": "NA",
+      "affinity_3": "NA",
+      "affinity_4": "NA",
+      "affinity_5": "NA",
+      "affinity_6": "NA",
+      "affinity_7": "NA",
+      "affinity_8": "VU",
+      "affinity_9": "NA",
+      "animation_table": {},
+      "arcane_ef": "100",
+      "attribute": "DARK",
+      "battle_facing_direction": "left",
+      "bow_ef": "100",
+      "brawling_ef": "100",
+      "condition_anomaly": "NA",
+      "condition_bane": "NA",
+      "condition_berserk": "NA",
+      "condition_bleed": "NA",
+      "condition_blind": "NA",
+      "condition_burn": "NA",
+      "condition_charm": "NA",
+      "condition_confused": "NA",
+      "condition_curse": "NA",
+      "condition_dazed": "NA",
+      "condition_delayed": "NA",
+      "condition_despair": "NA",
+      "condition_disarmed": "NA",
+      "condition_doom": "NA",
+      "condition_enraged": "NA",
+      "condition_envenomed": "NA",
+      "condition_fatigue": "NA",
+      "condition_frightened": "NA",
+      "condition_grappled": "NA",
+      "condition_hypothermia": "NA",
+      "condition_isolate": "NA",
+      "condition_obscure": "NA",
+      "condition_oil": "NA",
+      "condition_panic": "NA",
+      "condition_paralyzed": "NA",
+      "condition_petrify": "NA",
+      "condition_poisoned": "NA",
+      "condition_shaken": "NA",
+      "condition_silence": "NA",
+      "condition_slow": "NA",
+      "condition_stagger": "NA",
+      "condition_suppress": "NA",
+      "condition_turbulence": "NA",
+      "condition_weak": "NA",
+      "condition_wet": "NA",
+      "condition_wither": "NA",
+      "condition_zombie": "NA",
+      "current_hp": "30",
+      "current_ip": "0",
+      "current_mp": "500",
+      "cut_in_critical": "",
+      "cut_in_fumble": "",
+      "cut_in_zero_power": "",
+      "dagger_ef": "100",
+      "def_mod": "+2",
+      "default_facing_direction": "right",
+      "dex_base": "6",
+      "event_timeline_table": {},
+      "firearm_ef": "100",
+      "flail_ef": "100",
+      "gorger": true,
+      "heavy_ef": "100",
+      "icon_offset_x": "",
+      "icon_offset_y": "",
+      "icon_scale": "",
+      "init": "10",
+      "ins_base": "8",
+      "isAlmighty": false,
+      "isAwake": false,
+      "isBoss": false,
+      "isClarity": false,
+      "isCustomEvent": false,
+      "isDazed": false,
+      "isEnergized": false,
+      "isEnlighten": false,
+      "isEnraged": false,
+      "isFocus": false,
+      "isMasterful": false,
+      "isPoisoned": false,
+      "isShaken": false,
+      "isShop": false,
+      "isSlow": false,
+      "isStrong": false,
+      "isSummon": false,
+      "isSwift": false,
+      "isUnyielding": false,
+      "isVillain": false,
+      "isWeak": false,
+      "level": "15",
+      "max_hp": "30",
+      "max_ip": "0",
+      "max_mp": "500",
+      "max_zero": "0",
+      "mdef_mod": "+5",
+      "mig_base": "6",
+      "mimic": false,
+      "name": "Mana Gorger",
+      "npc_rank": "soldier",
+      "rare": false,
+      "resource_maxValue_1": "0",
+      "resource_maxValue_2": "0",
+      "resource_maxValue_3": "0",
+      "resource_value_1": "0",
+      "resource_value_2": "0",
+      "resource_value_3": "0",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "shield_type": "PHYSICAL",
+      "shield_value": "0",
+      "showMacro": false,
+      "skill_active_list": {
+        "4IrUKGEoVA4r7gls": {
+          "active_cost": "-",
+          "active_description": "<p>Flee the scene, have 50% chance of success.</p>",
+          "active_duration": "Instantaneous",
+          "active_target": "Self",
+          "id": "${item.id}",
+          "name": "Flee",
+          "roll": "",
+          "uuid": "Actor.PgNX7yW5nxq2emWX.Item.4IrUKGEoVA4r7gls"
+        },
+        "VhNtcDifD3ptNgOE": {
+          "active_cost": "-",
+          "active_description": "<p>Reduce the target HP by 50%. Then gain the <strong>Eaten</strong> buff.</p><p>&nbsp;</p><p>This skill is not usable if the Mana Gorger has <strong>Eaten</strong>.</p>",
+          "active_duration": "Instantaneous",
+          "active_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Consume Mana",
+          "roll": "",
+          "uuid": "Actor.PgNX7yW5nxq2emWX.Item.VhNtcDifD3ptNgOE"
+        }
+      },
+      "skill_passive_list": {
+        "A16EULxPG2dENY71": {
+          "id": "${item.id}",
+          "name": "Mana Residue",
+          "passive_description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Trigger</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>When the Mana Gorger is reduce to 0 HP</p></li></ul><p>If the Mana Gorger has<strong> Eaten</strong>, Restore 100% MP to the character who reduce it to 0 HP.</p>",
+          "roll": "",
+          "uuid": "Actor.PgNX7yW5nxq2emWX.Item.A16EULxPG2dENY71"
+        }
+      },
+      "spear_ef": "100",
+      "species": "ELEMENTAL",
+      "sprite_battle": "",
+      "sprite_standard": "",
+      "stealable_loot": {
+        "wJJ3Jqpeol4tUqQQ": {
+          "id": "${item.id}",
+          "loot_description": "",
+          "name": "Mega-Elixir",
+          "roll": "",
+          "uuid": "Actor.PgNX7yW5nxq2emWX.Item.wJJ3Jqpeol4tUqQQ"
+        }
+      },
+      "study_text": "<p>An Dark-Type gorger, it absorb magical energy, and unleash it upon death.</p>",
+      "subtype_list": "GORGER",
+      "sword_ef": "100",
+      "tactic_notes": "",
+      "thrown_ef": "100",
+      "traits": "Gorger, Elemental Creature, Dark-Align",
+      "ultima_point": "0",
+      "unique": false,
+      "wlp_base": "8",
+      "zenit_reward_max": "10",
+      "zenit_reward_min": "5",
+      "zero_power_value": "0"
+    },
+    "statusEffects": {},
+    "template": "yegF6R8aaymhrvCg",
+    "templateSystemUniqueVersion": 3867751361
+  },
+  "type": "character"
+}

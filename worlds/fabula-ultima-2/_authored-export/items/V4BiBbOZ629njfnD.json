@@ -1,0 +1,45 @@
+{
+  "_id": "V4BiBbOZ629njfnD",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1716905822979,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    }
+  },
+  "folder": "8mJfXdKYmmONftVP",
+  "img": "icons/equipment/finger/ring-cabochon-thin-copper-red.webp",
+  "name": "Flame Ring",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3
+  },
+  "sort": 225000,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "",
+      "cost": "500",
+      "damage_bonus": "0",
+      "description": "<p>When your attack hits, you can choose to change your damage type to fire.</p>",
+      "duration": "",
+      "name": "Flame Ring",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "target": "",
+      "type_damage": ""
+    },
+    "template": "FZmpKcQRP7hZQqbV",
+    "templateSystemUniqueVersion": 1700837225,
+    "unique": false,
+    "uniqueId": "V4BiBbOZ629njfnD"
+  },
+  "type": "equippableItem"
+}

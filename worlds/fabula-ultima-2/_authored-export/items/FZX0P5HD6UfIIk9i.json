@@ -1,0 +1,106 @@
+{
+  "_id": "FZX0P5HD6UfIIk9i",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780631508682,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "R7r4YaPVG9VGe9lS",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/09_NIN/fleet_of_foot.png",
+  "name": "High Speed",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "class": "Rogue",
+      "cost": "10 MP",
+      "damage_bonus": "0",
+      "description": "<p>At the start of a conflict, you may spend 10 Mind Points. If you do, <strong>choose one option</strong> and apply it before the start of the first round:</p><ul><li><p>Perform a <strong>free attack</strong> with a weapon you have equipped</p></li><li><p>Perform a <strong>【🚫Hinder】</strong> or <strong>【❗️Objective】</strong> action. You also gain a bonus equal to <strong>【SL】</strong> to all Checks you perform as part of the chosen option.</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "auto_confirm_when_obvious": true,
+          "candidate_source": "self",
+          "category": "",
+          "count": 1,
+          "effect_kind": "targeting",
+          "effect_label": "hs_self",
+          "iteration_mode": "together",
+          "mode": "exact",
+          "skip_when_passive": true
+        },
+        "1": {
+          "consume_amount": "10",
+          "consume_resource": "mp",
+          "effect_kind": "consume_resource",
+          "effect_label": "hs_mp_cost",
+          "on_empty": "abort",
+          "target_ref": "hs_self"
+        },
+        "2": {
+          "allowed_types": "Attack,Hinder",
+          "check_bonus_formula": "SL",
+          "damage_bonus_formula": "",
+          "effect_kind": "open_action_menu",
+          "effect_label": "hs_free_action",
+          "free_mode": true
+        },
+        "3": {
+          "chain_steps": "hs_mp_cost, hs_free_action",
+          "effect_kind": "chain",
+          "effect_label": "hs_react"
+        }
+      },
+      "isCheck": false,
+      "isReaction": true,
+      "level": 1,
+      "max_level": 3,
+      "name": "High Speed",
+      "reaction_config_table": {
+        "0": {
+          "$deleted": true,
+          "reaction_effect_ref": "hs_react",
+          "reaction_passive_mode": "ask",
+          "reaction_source": "",
+          "reaction_trigger": "conflict_start"
+        },
+        "99": {
+          "$deleted": true,
+          "condition_formula": "CUR_MP >= 10",
+          "reaction_effect_ref": "hs_react",
+          "reaction_passive_mode": "ask",
+          "reaction_source": "",
+          "reaction_trigger": "conflict_start"
+        },
+        "100": {
+          "$deleted": false,
+          "reaction_effect_ref": "hs_react",
+          "reaction_passive_mode": "ask",
+          "reaction_source": "",
+          "reaction_trigger": "conflict_start"
+        }
+      },
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_range": "Any",
+      "skill_target": "-",
+      "skill_type": "Passive",
+      "type_damage": ""
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": true,
+    "uniqueId": "FZX0P5HD6UfIIk9i"
+  },
+  "type": "equippableItem"
+}

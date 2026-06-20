@@ -1,0 +1,58 @@
+{
+  "_id": "JhMVPxtGjw93WzS3",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1758248219815,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "AfNKgbXlrakE1AI2",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Granblue%20Fantasy/50px-Ability_Croquis_d%27Ete.png",
+  "name": "Taking Measurement",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Tailor",
+      "cost": "20 MP",
+      "damage_bonus": "0",
+      "description": "<p>By using the <strong>【🥋 Equipment】</strong> action and spending 20 Mind Points, you can designate an ally you can see as your <strong>Model</strong> until they surrender, leave the scene, the current scene ends, or you designate another ally as the <strong>Model</strong>. The last enemy that dealt damage to you or your <strong>Model</strong> takes <strong>【SL + Your Bond Strength towards the other】</strong> extra damage from you and your Model’s Attacks and Spells.</p>",
+      "duration": "Scene",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "4",
+      "name": "Taking Measurement",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_information": "<table style=\"width:100%; text-align:center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Extra Damage from SL component</strong></p></td><td><p><strong>Total Extra Damage</strong></p></td></tr><tr><td><p>1</p></td><td><p>+1</p></td><td><p>【SL + Your Bond Strength towards the other】</p></td></tr><tr><td><p>2</p></td><td><p>+2</p></td><td><p>【SL + Your Bond Strength towards the other】</p></td></tr><tr><td><p>3</p></td><td><p>+3</p></td><td><p>【SL + Your Bond Strength towards the other】</p></td></tr><tr><td><p>4</p></td><td><p>+4</p></td><td><p>【SL + Your Bond Strength towards the other】</p></td></tr></tbody></table>",
+      "skill_range": "Range",
+      "skill_target": "One Ally",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "JhMVPxtGjw93WzS3"
+  },
+  "type": "equippableItem"
+}

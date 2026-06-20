@@ -1,0 +1,747 @@
+{
+  "_id": "nsr4lKXZPoUWAdvj",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1701775475864,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.5.0"
+    },
+    "theatre": {
+      "baseinsert": "",
+      "disabledefault": false,
+      "emotes": {
+        "angry": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/suzume/suzume_expangry.png"
+        },
+        "annoyed": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/suzume/suzume_expfrown.png"
+        },
+        "awe-struck": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/suzume/suzume_expflustered.png"
+        },
+        "blushing": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/suzume/suzume_expsideeye.png"
+        },
+        "carefree": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/suzume/suzume_expsmile.png"
+        },
+        "confused": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/suzume/suzume_expsideeye.png"
+        },
+        "cry": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/suzume/suzume_expsad.png"
+        },
+        "dissatisfied": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/suzume/suzume_expfrown.png"
+        },
+        "dizzy": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/suzume/suzume_expflustered.png"
+        },
+        "frown": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/suzume/suzume_expfrown.png"
+        },
+        "frustrated": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/suzume/suzume_expfrown.png"
+        },
+        "grin": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/suzume/suzume_expsmile.png"
+        },
+        "happy": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/suzume/suzume_expsmile.png"
+        },
+        "happytears": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/suzume/suzume_expsmile.png"
+        },
+        "hearts": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/suzume/suzume_expsmile.png"
+        },
+        "idea": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/suzume/suzume_expfrown.png"
+        },
+        "innocent": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/suzume/suzume_expsmile.png"
+        },
+        "kiss": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/suzume/suzume_expsmile.png"
+        },
+        "laughing": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/suzume/suzume_expsmile.png"
+        },
+        "laughingsquint": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/suzume/suzume_expsmile.png"
+        },
+        "meh": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/suzume/suzume_expnormalfix.png"
+        },
+        "mischevious": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/suzume/suzume_expsmile.png"
+        },
+        "panic": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/suzume/suzume_expflustered.png"
+        },
+        "playful": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/suzume/suzume_expsmile.png"
+        },
+        "rofl": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/suzume/suzume_expsmile.png"
+        },
+        "sad": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/suzume/suzume_expsad.png"
+        },
+        "scared": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/suzume/suzume_expflustered.png"
+        },
+        "serious": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/suzume/suzume_expfrown.png"
+        },
+        "sleeping": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/suzume/suzume_expclosedeye.png"
+        },
+        "smile": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/suzume/suzume_expsmile.png"
+        },
+        "smug": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/suzume/suzume_expsmile.png"
+        },
+        "speechless": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/suzume/suzume_expflustered.png"
+        },
+        "surprised": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/suzume/suzume_expflustered.png"
+        },
+        "thinking": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/suzume/suzume_expfrown.png"
+        },
+        "tongue": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/suzume/suzume_expsmile.png"
+        },
+        "wink": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/suzume/suzume_expsmile.png"
+        },
+        "worried": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/suzume/suzume_expsideeye.png"
+        }
+      },
+      "name": "",
+      "optalign": "top",
+      "settings": {
+        "emote": "grin",
+        "textcolor": null,
+        "textflyin": null,
+        "textfont": null,
+        "textsize": null,
+        "textstanding": null
+      }
+    }
+  },
+  "folder": "KWnuOptf4pQKCX5g",
+  "img": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/suzume/suzume_expnormalfix.png",
+  "items": [
+    {
+      "_id": "u0ro2ZN7ToX1S6cK",
+      "_stats": {
+        "compendiumSource": "Item.b9Xv1EnFJFiD0bS9",
+        "coreVersion": "12.343",
+        "createdTime": 1702234874024,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.b9Xv1EnFJFiD0bS9"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "7NbxPryD0Bd70KPW",
+      "img": "icons/weapons/guns/gun-pistol-flintlock.webp",
+      "name": "Pistol",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "container": null,
+        "props": {
+          "category": "Firearm",
+          "check": "Check",
+          "check_bonus": "0",
+          "cost": "250",
+          "damage_bonus": "8",
+          "description": "<p>No Quality.</p>",
+          "hand_slots": "One-handed",
+          "martial": true,
+          "name": "Pistol",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "INS",
+          "type_damage": "Physical",
+          "weapon_range": "Ranged"
+        },
+        "template": "gIRU9XGqYeMBwBN9",
+        "templateSystemUniqueVersion": 2814471460,
+        "unique": false
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Suzume",
+  "ownership": {
+    "6DmgigM5jq76r0Gd": 3,
+    "MwTL6zXFCEpVBTpI": 3,
+    "default": 0
+  },
+  "prototypeToken": {
+    "actorLink": true,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": 1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 30,
+            "ownerVisibility": 30,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 30,
+            "ownerVisibility": 30,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          }
+        }
+      },
+      "hex-size-support": {
+        "alternateOrientation": false,
+        "hideBorder": false,
+        "pivotx": null,
+        "pivoty": null
+      },
+      "token-variants": {
+        "disableHUDButton": false,
+        "randomImgDefault": ""
+      },
+      "token-z": {
+        "zIndex": 0
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Suzume",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/suzume/suzume_expnormalfix.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 0,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "activeEffects": {},
+    "props": {
+      "arcanism": false,
+      "armor_mod": "2",
+      "armor_name": "Combat Tunic",
+      "attack_accuracy_mod_all": "0",
+      "attack_accuracy_mod_melee": "0",
+      "attack_accuracy_mod_range": "0",
+      "attack_accuracy_mod_spell": "0",
+      "backpack": "",
+      "bond_1": "Yatagarasu Organization",
+      "bond_2": "Sophie",
+      "bond_3": "Nemu",
+      "bond_4": "",
+      "bond_5": "",
+      "bond_6": "",
+      "chanter_volume_mp_header": "MP",
+      "chanter_volume_mp_high": 30,
+      "chanter_volume_mp_low": 10,
+      "chanter_volume_mp_medium": 20,
+      "chanter_volume_target_high": "Every enemy who can hear you.",
+      "chanter_volume_target_low": "Yourself <b>or</b> another creature you can see who can hear you.",
+      "chanter_volume_target_medium": "Every ally who can hear you.",
+      "char_identity": "Yata-garasu Secret Agent",
+      "check_roller": "Roll!",
+      "chimerism": false,
+      "class_list": {
+        "0": {
+          "$deleted": false,
+          "benefit": "mp",
+          "class_name": "Dancer",
+          "level": "5"
+        },
+        "1": {
+          "$deleted": false,
+          "benefit": "hp",
+          "class_name": "Sharpshooter",
+          "level": "2"
+        },
+        "2": {
+          "$deleted": false,
+          "benefit": "ip",
+          "class_name": "Rogue",
+          "level": "6"
+        }
+      },
+      "clock_brainwave": "0",
+      "clock_trade": "0",
+      "cooking_roller": "🔪Cook!",
+      "current_hp": "48",
+      "current_ip": "8",
+      "current_mp": "48",
+      "damage_receiving_mod_air": "0",
+      "damage_receiving_mod_all": "0",
+      "damage_receiving_mod_bolt": "0",
+      "damage_receiving_mod_dark": "0",
+      "damage_receiving_mod_earth": "0",
+      "damage_receiving_mod_fire": "0",
+      "damage_receiving_mod_ice": "0",
+      "damage_receiving_mod_light": "0",
+      "damage_receiving_mod_melee": "0",
+      "damage_receiving_mod_physical": "0",
+      "damage_receiving_mod_poison": "0",
+      "damage_receiving_mod_range": "0",
+      "dex_base": "10",
+      "dex_current": "10",
+      "draw_card": "Draw",
+      "draw_card_copy1": "Use",
+      "elementalism": false,
+      "emotion_1_1": "1",
+      "emotion_1_2": "2",
+      "emotion_1_3": "1",
+      "emotion_2_1": "2",
+      "emotion_2_2": "2",
+      "emotion_2_3": "",
+      "emotion_3_1": "1",
+      "emotion_3_2": "",
+      "emotion_3_3": "",
+      "emotion_4_1": "",
+      "emotion_4_2": "",
+      "emotion_4_3": "",
+      "emotion_5_1": "",
+      "emotion_5_2": "",
+      "emotion_5_3": "",
+      "emotion_6_1": "",
+      "emotion_6_2": "",
+      "emotion_6_3": "",
+      "entropism": false,
+      "experience": "0",
+      "experience_ui": "0",
+      "fp": "2",
+      "init_penalty": "0",
+      "ins_base": "10",
+      "ins_current": "10",
+      "inventory_label": "💼 Inventory",
+      "inventory_list": {
+        "0": {
+          "$deleted": true,
+          "item_amount": "",
+          "item_description": "",
+          "item_name": "",
+          "item_roll": ""
+        }
+      },
+      "isDazed": false,
+      "isEnraged": false,
+      "isPoisoned": false,
+      "isShaken": false,
+      "isSlow": false,
+      "isWeak": false,
+      "is_martialarmor": false,
+      "level": "13",
+      "magic_defense_mod": "1",
+      "main_attrib_1": "DEX",
+      "main_attrib_2": "INS",
+      "main_hand": "Pistol",
+      "main_hand_attack": "",
+      "max_hp": 48,
+      "max_ip": "ERROR",
+      "max_mp": 48,
+      "memory": "Memories",
+      "mig_base": "6",
+      "mig_current": "6",
+      "name": "Suzume",
+      "normal_spell_list": {
+        "0": {
+          "$deleted": false,
+          "class": "Dancer",
+          "cost": "10(5)",
+          "description": "<p>Choose another creature that is able to see you. If that creature is already dazed, they<br>immediately suffer slow</p>",
+          "duration": "Instantaneous",
+          "roll": "",
+          "spell_name": "Kraken Dance (Dazed > Slow)",
+          "target": ""
+        },
+        "1": {
+          "$deleted": false,
+          "class": "Dancer",
+          "cost": "10(5)",
+          "description": "<p>Choose another creature that is able to see you. If that creature is already slow, they immediately suffer shaken.</p>",
+          "duration": "Instantaneous",
+          "roll": "",
+          "spell_name": "Banshee Dance (Slow > Shaken)",
+          "target": ""
+        },
+        "2": {
+          "$deleted": false,
+          "class": "Dancer",
+          "cost": "10(5)",
+          "description": "<p>Choose another creature that is able to see you. If that creature is already shaken, they immediately suffer weak.</p>",
+          "duration": "Instantaneous",
+          "roll": "",
+          "spell_name": "Nightmare Dance (Shaken > Weak)",
+          "target": ""
+        },
+        "3": {
+          "$deleted": false,
+          "class": "Dancer",
+          "cost": "10(5)",
+          "description": "<p>Choose another creature that is able to see you. If that creature is already weak, they immediately suffer dazed</p>",
+          "duration": "Instantaneous",
+          "roll": "",
+          "spell_name": "Satyr Dance (Weak > Dazed)",
+          "target": ""
+        },
+        "4": {
+          "$deleted": false,
+          "class": "Dancer",
+          "cost": "10(5)",
+          "description": "<p>Choose one ally you can see who has yet to take a turn during this round.</p>\n<p>&nbsp;</p>\n<p>That ally maytake their turn immediately after yours during this round.</p>",
+          "duration": "Instantaneous",
+          "roll": "",
+          "spell_name": "Ouroboros Dance",
+          "target": "1 Ally"
+        },
+        "5": {
+          "$deleted": false,
+          "class": "Rogue",
+          "cost": "0",
+          "description": "<p>When you hit a creature with an attack, if the attack only targeted that creature and<br>they are suffering from one or more status effects, you may have it deal extra damage<br>equal to 【4 + the number of status effects on the creature】】. This extra damage is&nbsp;<br>doubled if the attack's High Roll was not equal to 0</p>",
+          "duration": "",
+          "roll": "",
+          "spell_name": "Cheap Shot",
+          "target": ""
+        }
+      },
+      "notes_text": "<p>Quirk : Fettered Heart (2)</p>\n<p>&nbsp;</p>\n<p>You may acquire this Quirk only if your character&rsquo;s Theme is Doubt, and your Theme<br>cannot be changed in any way as long as you have this Quirk.</p>\n<p>When you acquire this Quirk, create a Bond towards the Non-Player Character or<br>institution that shaped your life up to now.</p>\n<p>&nbsp;</p>\n<p>This Bond begins with three emotions of<br>your choice, and cannot be lost or erased in any way as long as you have this Quirk<br>(you can still reassign its emotions during Resting scenes). Additionally, create three<br>commandments that are crucial to that NPC or institution: each commandment must<br>be something you must always do or something you must never do.<br><br>COMMANDMENT :<br>1. Never reveal your true self</p>\n<p>2. Never doubt the order of Yatagarasu</p>\n<p>3. Always composed in stressful situation</p>\n<p>&nbsp;</p>\n<p>The first time you break a commandment during each scene, you immediately suffer<br>the shaken and weak status effects and lose half your current Hit Points and Mind<br>Points (rounded down), but also gain 2 Fabula Points.</p>\n<p>&nbsp;</p>\n<p>After breaking your commandments 6 times, ignore any further violation unless it<br>happens in the presence of a Villain who follows or embodies your commandments.</p>\n<p>&nbsp;</p>\n<p>Upon your 7th violation, you lose this Quirk and change your Theme to one of the<br>following: Belonging, Guilt, Justice or Vengeance. Then, you immediately gain a<br>Heroic Skill among those available for your Classes (you may even choose a Heroic<br>Skill whose requirements you do not satisfy, unless they include a Skill you don&rsquo;t<br>have). Finally, you recover all HP and MP and recover from all status effects. From<br>now on, the strength of your Bonds is always treated as being 1 point higher (for<br>instance, a Bond with three emotions will have a strength of 4).</p>",
+      "off_attrib_1": "SHI",
+      "off_attrib_2": "SHI",
+      "off_base_mod_1": "0",
+      "off_base_mod_2": "0",
+      "off_hand": "",
+      "off_hand_attack": "",
+      "off_mod_1": 0,
+      "off_mod_2": 0,
+      "origin": "",
+      "passive_list": {
+        "0": {
+          "$deleted": false,
+          "passive_description": "<p>Once before the next rest, when you perform an attack, you may grant that attack&nbsp;<br>multi (2) or increase its multi property by one point.&nbsp;</p>",
+          "passive_name": " Martial Practice",
+          "passive_roll": "",
+          "passive_source": "camp activity"
+        },
+        "1": {
+          "$deleted": false,
+          "passive_description": "<p>&nbsp;Choose one option: you repair a damaged item owned by the group; or you create&nbsp;<br>a single basic weapon, armor, or shield of your choice (pages 130-133 of the Core&nbsp;<br>Rulebook); or you destroy a single piece of equipment owned by the group and obtain&nbsp;<br>a material whose value is equal to the cost of the destroyed item.</p>",
+          "passive_name": " Camp Forge",
+          "passive_roll": "",
+          "passive_source": "camp activity"
+        }
+      },
+      "place_card_vanguard": "Place",
+      "populate_deck": "Populate",
+      "pronouns": "",
+      "relationship_1": "Never betray the code",
+      "relationship_2": "I cannot be swayed...",
+      "relationship_3": "We are the same.",
+      "relationship_4": "",
+      "relationship_5": "",
+      "relationship_6": "",
+      "reset_cards": "Resets",
+      "resolve_set": "Resolve",
+      "resource_value_1": "0",
+      "resource_value_2": "0",
+      "resource_value_3": "0",
+      "reveal_cards": "Reveal",
+      "ritualism": false,
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "INS",
+      "shield_value": "0",
+      "shuffle_deck": "Shuffle",
+      "skill_accuracy": "0",
+      "skill_attack_damage": "0",
+      "skill_hp": "0",
+      "skill_list": {
+        "0": {
+          "$deleted": false,
+          "class": "Dancer",
+          "description": "",
+          "level": "5",
+          "roll": "",
+          "skill_name": "Dance"
+        },
+        "1": {
+          "$deleted": false,
+          "class": "Sharpshooter",
+          "description": "<p>When you hit one or more targets with a ranged attack that would deal damage, you may have the attack deal no damage.</p>\n<p>&nbsp;</p>\n<p>If you do, choose one option: inflict <strong>shaken</strong> on each target hit by the attack; or inflict slow on each target hit by the attack; or each target hit by the attack loses 【SL &times; 10】 Mind Points. Describe your maneuver!</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Warning Shot"
+        },
+        "2": {
+          "$deleted": true,
+          "class": "Sharpshooter",
+          "description": "",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Ranged Weapon Mastery"
+        },
+        "3": {
+          "$deleted": false,
+          "class": "Rogue",
+          "description": "",
+          "level": "4",
+          "roll": "",
+          "skill_name": "Cheap Shot"
+        },
+        "4": {
+          "$deleted": false,
+          "class": "Rogue",
+          "description": "<p>You may use an action and spend 1 Fabula Point to vanish from the current scene,reappearing whenever you want during a different scene in which another Player Character is present.</p>\n<p>&nbsp;</p>\n<p>Describe how you escaped and miraculously got here!</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "See You Later"
+        },
+        "5": {
+          "$deleted": false,
+          "class": "Sharpshooter",
+          "description": "<p>When you perform a ranged attack, you may spend 10 Mind Points to choose one<br>option: the attack gains multi (2); or you increase the attack's multi property by one,<br>up to a maximum of multi (3)</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Barrage"
+        },
+        "6": {
+          "$deleted": false,
+          "class": "Rogue",
+          "description": "<p>At the start of a conflict, you may spend 10 Mind Points. If you do, choose one option<br>and apply it before the start of the first round: <strong>perform a free attack with a weapon you </strong><strong>have equipped</strong>; or <strong>perform a Hinder or Objective action</strong>.</p>\n<p>&nbsp;</p>\n<p>You also gain a bonus equal to 【SL】 to all Checks you perform as part of the chosen option.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "High Speed"
+        }
+      },
+      "skill_mp": "0",
+      "spiritism": false,
+      "theme": "Doubt",
+      "weapon1_base_damage": "0",
+      "weapon1_base_mod": "0",
+      "weapon1_damage": 0,
+      "weapon1_damagetype": "Physical",
+      "weapon1_mod": 0,
+      "weapon2_damagetype": "-",
+      "weapon_list": {
+        "u0ro2ZN7ToX1S6cK": {
+          "id": "u0ro2ZN7ToX1S6cK",
+          "name": "Pistol",
+          "roll": "",
+          "type": "Firearm",
+          "uuid": "Actor.nsr4lKXZPoUWAdvj.Item.u0ro2ZN7ToX1S6cK",
+          "weapon_description": "<p><p>No Quality.</p></p>",
+          "weapon_hand": "One-handed",
+          "weapon_martial": true,
+          "weapon_range": "Ranged"
+        }
+      },
+      "wlp_base": "6",
+      "wlp_current": "6",
+      "your_class_name": "",
+      "zenit": "0",
+      "zero_effect_label": "💬 Zero Effect",
+      "zero_label": "💥 Zero Power : ",
+      "zero_power_name": "",
+      "zero_power_value": "0",
+      "zero_trigger_label": "⚔️ Zero Trigger"
+    },
+    "statusEffects": {
+      "1QPHKNWo17z0bBmX": [],
+      "1cksCQj3urJwddfg": [],
+      "1qTdxSVu2XLu0lUx": [],
+      "3YZNX2X5rHYtL4L5": [],
+      "4g2B0rdJ3SiUQvUv": [],
+      "5FFBDg2y54bpqgat": [],
+      "5jkr80zqdzaR003d": [],
+      "6YW8glLMYbwj6ZhC": [],
+      "7FLtIUvENcYDAJKC": [],
+      "7VDl6ac5Rzr2Rpya": [],
+      "8LN8tDQjON508Rqm": [],
+      "ACD2C8JLWUeIx89o": [],
+      "CVxHWmDb0gQsob1q": [],
+      "CfLPg6RDybSQhTSR": [],
+      "DCaKnV9kNn3EpqtY": [],
+      "DHsoSawNEZAxsnQ9": [],
+      "EVjmTFRDsuzR823Z": [],
+      "GJ0cbbj60lr4zaHm": [],
+      "MsbUHrgK7AhSeEJm": [],
+      "N4WfMf1nuOdUEXVS": [],
+      "N4rGBYQsH7PyMAWr": [],
+      "NogCaPvL5Y52Hjnq": [],
+      "OFk8VUuwDhWFoPxI": [],
+      "QOfrFCU2C6mx50gK": [],
+      "Qz8IC4v3wJ6UoM77": [],
+      "Rc8AvdmlHAK7pPea": [],
+      "StnYeDADYo2xX99O": [],
+      "T1kJfiKBZm1dnnBy": [],
+      "VxdXsFJ7YVEzAp3x": [],
+      "YhO7nUdawyeQKMWD": [],
+      "ZK0aTX8IH1NqwmTw": [],
+      "bspDC7hFRTYuwdhf": [],
+      "cDgbFRi9TA68TvYr": [],
+      "clE8TJ0G1gMwF735": [],
+      "fYkA57rVfoytHRjo": [],
+      "g7JIey1pEuRHyAOH": [],
+      "gX1fA3onNG7wsyap": [],
+      "hhqoSNhWfVD4KR7g": [],
+      "jKvrVpxLgX0KhB23": [],
+      "m2iUJjsEfJkpmOBw": [],
+      "qMZsEEuzAdrHb2fk": [],
+      "qePlOECBTS0Dftgc": [],
+      "t2C3LKukW6LPUImk": [],
+      "t5jyddIZDvbyuVsD": [],
+      "v22vl6cnP94wVBPu": [],
+      "v2vFlETIgMnff5o8": [],
+      "vLM7q3rdXVCgHYD4": [],
+      "vUYA9jgY9pdafj4i": [],
+      "wA1E8GxiXmzz80XQ": [],
+      "xuwAn7u126GfFweU": []
+    },
+    "template": "Dx16KeWcJzikM7dh",
+    "templateSystemUniqueVersion": 276398442
+  },
+  "type": "character"
+}

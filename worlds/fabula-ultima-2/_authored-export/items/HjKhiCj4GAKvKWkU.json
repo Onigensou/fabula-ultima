@@ -1,0 +1,213 @@
+{
+  "_id": "HjKhiCj4GAKvKWkU",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780631497172,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "72dlEqaKqgjwhjeI",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_1",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"RS\")"
+        },
+        {
+          "key": "affinity_2",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"RS\")"
+        },
+        {
+          "key": "affinity_3",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"RS\")"
+        },
+        {
+          "key": "affinity_4",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"RS\")"
+        },
+        {
+          "key": "affinity_5",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"RS\")"
+        },
+        {
+          "key": "affinity_6",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"RS\")"
+        },
+        {
+          "key": "affinity_7",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"RS\")"
+        },
+        {
+          "key": "affinity_8",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"RS\")"
+        },
+        {
+          "key": "affinity_9",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"RS\")"
+        }
+      ],
+      "description": "<p><em>Bodyguard:</em> Resistance to all damage.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 1,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "edGZtrKzVKwlLQ7s",
+          "originalParentId": "NRLGryqXl41qBpt6",
+          "originalUuid": "Item.NRLGryqXl41qBpt6.ActiveEffect.edGZtrKzVKwlLQ7s"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "crossScene": false,
+          "directorPermanent": false
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/chivalry.png",
+      "name": "Bodyguard",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-bodyguard"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "48mIiEzH4lkVf0Xf",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/chivalry.png",
+  "name": "Bodyguard",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "check_bonus": "0",
+      "class": "Guardian",
+      "cost": "",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>If you perform the <strong>【Guard】</strong> action and choose to provide cover to another creature, that creature gains Resistance to all damage types until the start of your next turn.</p>",
+      "duration": "-",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_template_ref": "Bodyguard",
+          "effect_kind": "apply_ae",
+          "effect_label": "bodyguard_apply",
+          "menu_description": "",
+          "menu_label": "",
+          "target_ref": "action_targets"
+        }
+      },
+      "heroic_requirement": "",
+      "ignore_hr": false,
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": true,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Bodyguard",
+      "on_activate_effect_ref": "",
+      "optional_params": {},
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "DID_COVER_ALLY == 1",
+          "reaction_action_intent": "",
+          "reaction_action_target": "",
+          "reaction_damage_amount": "",
+          "reaction_damage_source": "",
+          "reaction_damage_type": "",
+          "reaction_debuff_count_min": "",
+          "reaction_debuff_count_target": "",
+          "reaction_effect_ref": "bodyguard_apply",
+          "reaction_ownership": "",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "",
+          "reaction_source": "self",
+          "reaction_subject_kind": "",
+          "reaction_trigger": "creature_guards",
+          "requires_skill": ""
+        }
+      },
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "Melee",
+      "skill_target": "-",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "HjKhiCj4GAKvKWkU"
+  },
+  "type": "equippableItem"
+}

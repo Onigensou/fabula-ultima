@@ -1,0 +1,19 @@
+{
+  "_id": "bJIpj8FlMc27TgOh",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": null,
+    "duplicateSource": null,
+    "systemId": null,
+    "systemVersion": null
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "E7SscnV8Uakvcc1F",
+  "name": "Fishing",
+  "sort": 0,
+  "sorting": "a",
+  "type": "RollTable"
+}

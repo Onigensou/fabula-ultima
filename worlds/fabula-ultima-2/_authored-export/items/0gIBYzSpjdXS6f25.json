@@ -1,0 +1,565 @@
+{
+  "_id": "0gIBYzSpjdXS6f25",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1750944131049,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "effects": [
+    {
+      "_id": "0esiEY529YI30Gj4",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1771175707940,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "bonus_defense",
+          "mode": 2,
+          "priority": 2,
+          "value": "${isEquipped ? (item_def_bonus * 1) : 0}$"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "83eTxDPjJ8Hh9IfC",
+          "originalParentId": "0gIBYzSpjdXS6f25",
+          "originalUuid": "Item.0gIBYzSpjdXS6f25.ActiveEffect.83eTxDPjJ8Hh9IfC"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-def-up",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUp.webp",
+      "name": "DEF UP",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    },
+    {
+      "_id": "4ldx00srGNv5AJBr",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.331",
+        "createdTime": 1753461666645,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.6.4"
+      },
+      "changes": [],
+      "description": "<p>This creature has less than 50% HP</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "4ldx00srGNv5AJBr",
+          "originalParentId": "0gIBYzSpjdXS6f25",
+          "originalUuid": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-crisis",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": false
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/08_DRG/blood_for_blood.png",
+      "name": "Crisis",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "5jkr80zqdzaR003d"
+      ],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    },
+    {
+      "_id": "83eTxDPjJ8Hh9IfC",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1758311182980,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.6.4"
+      },
+      "changes": [
+        {
+          "key": "bonus_defense",
+          "mode": 2,
+          "priority": 2,
+          "value": "${isEquipped ? (isMartial ? 0 : item_def_bonus) : 0}$"
+        },
+        {
+          "key": "base_defense",
+          "mode": 4,
+          "priority": 1,
+          "value": "${isEquipped ? (isMartial ? item_baseDef : 0) : 0}$"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "83eTxDPjJ8Hh9IfC",
+          "originalParentId": "0gIBYzSpjdXS6f25",
+          "originalUuid": "Item.0gIBYzSpjdXS6f25.ActiveEffect.83eTxDPjJ8Hh9IfC"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-armor-def",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUp.webp",
+      "name": "Armor DEF",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    },
+    {
+      "_id": "A2WsJtG7Zhb28NPP",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1771175617274,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "bonus_magic_defense",
+          "mode": 2,
+          "priority": 2,
+          "value": "${isEquipped ? (item_mdef_bonus * 1) : 0}$"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "83eTxDPjJ8Hh9IfC",
+          "originalParentId": "0gIBYzSpjdXS6f25",
+          "originalUuid": "Item.0gIBYzSpjdXS6f25.ActiveEffect.83eTxDPjJ8Hh9IfC"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-mdef-up",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUpStack.webp",
+      "name": "MDEF UP",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    },
+    {
+      "_id": "fwMSXmuO6cGw942o",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.331",
+        "createdTime": 1758527635677,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.6.4"
+      },
+      "changes": [
+        {
+          "key": "extra_damage_mod_all",
+          "mode": 2,
+          "priority": 1,
+          "value": "${isEquipped ? (isMartial ? 0 : ) : 0}$"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "83eTxDPjJ8Hh9IfC",
+          "originalParentId": "0gIBYzSpjdXS6f25",
+          "originalUuid": "Item.0gIBYzSpjdXS6f25.ActiveEffect.83eTxDPjJ8Hh9IfC"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-atk-up",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_AttackUp.webp",
+      "name": "ATK Up",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    },
+    {
+      "_id": "j04gdUl9r0w1e1bB",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1781989177656,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><em>Ninja Log:</em> already substituted this conflict.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 999,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "j04gdUl9r0w1e1bB",
+          "originalParentId": "0gIBYzSpjdXS6f25",
+          "originalUuid": "Item.0gIBYzSpjdXS6f25.ActiveEffect.j04gdUl9r0w1e1bB"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-ninja-log-spent",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/svg/aura.svg",
+      "name": "Ninja Log Spent",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "SvOwqHe30Mdtp7lR",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1770747127441,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "damage_receiving_mod_melee",
+          "mode": 2,
+          "priority": 2,
+          "value": "${isEquipped ? 2 : 0}$"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "SvOwqHe30Mdtp7lR",
+          "originalParentId": "0gIBYzSpjdXS6f25",
+          "originalUuid": "Item.0gIBYzSpjdXS6f25.ActiveEffect.SvOwqHe30Mdtp7lR"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-melee-damage-reduction",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUp.webp",
+      "name": "Melee Damage Reduction",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "yCaUaa7pZSt0k1a6",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1759143459955,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.6.4"
+      },
+      "changes": [
+        {
+          "key": "bonus_magic_defense",
+          "mode": 2,
+          "priority": 2,
+          "value": "${isEquipped ? (isMartial ? 0 : item_mdef_bonus) : 0}$"
+        },
+        {
+          "key": "base_magic_defense",
+          "mode": 4,
+          "priority": 1,
+          "value": "${isEquipped ? (isMartial ? item_baseMdef : 0) : 0}$"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "83eTxDPjJ8Hh9IfC",
+          "originalParentId": "0gIBYzSpjdXS6f25",
+          "originalUuid": "Item.0gIBYzSpjdXS6f25.ActiveEffect.83eTxDPjJ8Hh9IfC"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-armor-mdef",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUpStack.webp",
+      "name": "Armor MDEF",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    },
+    "dfreds-convenient-effects": {
+      "folderColor": "",
+      "isBackup": false,
+      "isConvenient": true,
+      "isViewable": true
+    }
+  },
+  "folder": null,
+  "img": "icons/svg/item-bag.svg",
+  "name": "Active Effects",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 100000,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {},
+    "statusEffects": {},
+    "uniqueId": "0gIBYzSpjdXS6f25"
+  },
+  "type": "activeEffectContainer"
+}

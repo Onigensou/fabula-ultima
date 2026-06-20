@@ -1,0 +1,111 @@
+{
+  "_id": "rIxMsRTAdn8ZQVYH",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1741425111786,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "rIxMsRTAdn8ZQVYH",
+        "itemName": "The Cross",
+        "pickedOldProps": {
+          "cost": "3000",
+          "martial": true
+        },
+        "ts": 1769647436554
+      }
+    }
+  },
+  "folder": "j8Al1ueoAvP4x5QV",
+  "img": "icons/weapons/polearms/spear-hooked-blue.webp",
+  "name": "The Cross",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "aquatic_ef": "100",
+      "automaton_ef": "100",
+      "avian_ef": "100",
+      "beast_ef": "100",
+      "category": "Spear",
+      "celestial_ef": "100",
+      "check": "Check",
+      "check_bonus": "1",
+      "construct_ef": "100",
+      "damage_bonus": "16",
+      "demiHuman_ef": "100",
+      "demon_ef": "100",
+      "description": "<p>You may use an action to perform <strong>Holy Crucifixion</strong>: performs a <strong>free attack&nbsp;</strong>on a single creature. If this attack hit, the creature is&nbsp;<strong>Crucified</strong> and gains&nbsp;<strong>Vulnerability&nbsp;</strong>to&nbsp;<strong>Light&nbsp;</strong>damage until the end of scene.</p>\n<ul>\n<li>While a creature is <strong>Crucified</strong>, the Cross <strong>CANNOT</strong> be equiped.</li>\n<li>Once the <strong>Crucified</strong> creature is dead, <strong>the Cross</strong> is returned to its owner inventory.</li>\n<li><strong>Crucified CANNOT&nbsp;</strong>be dispel, and can only be removed by its owner.</li>\n</ul>",
+      "dragon_ef": "100",
+      "elemental_ef": "100",
+      "enforcer_ef": "100",
+      "fey_ef": "100",
+      "flavor_text": "<p><em>With the man on The Cross, the history changed completely.</em></p>",
+      "flora_ef": "100",
+      "fungus_ef": "100",
+      "golem_ef": "100",
+      "gorger_ef": "100",
+      "hand_slots": "Two-handed",
+      "human_ef": "100",
+      "humanoid_ef": "100",
+      "id": "rIxMsRTAdn8ZQVYH",
+      "img": "icons/weapons/polearms/spear-hooked-blue.webp",
+      "insect_ef": "100",
+      "ip_cost": "",
+      "isEquipped": false,
+      "isKey": false,
+      "isMartial": true,
+      "isModule": false,
+      "isRelatedItem": false,
+      "isSet": false,
+      "isUnique": false,
+      "item_baseDef": "0",
+      "item_baseMdef": "0",
+      "item_cost": "3000",
+      "item_def_bonus": "0",
+      "item_mdef_bonus": "0",
+      "item_quantity": "1",
+      "item_rarity": "Rare",
+      "item_type": "weapon",
+      "mimic_ef": "100",
+      "monster_ef": "100",
+      "name": "The Cross",
+      "optional_params": {},
+      "plant_ef": "100",
+      "refine_count": "0",
+      "refine_level": "0",
+      "reptilian_ef": "100",
+      "rolled_atr1": "MIG",
+      "rolled_atr2": "DEX",
+      "set_name": "",
+      "skill_target": "One Enemy",
+      "soldier_ef": "100",
+      "spirit_ef": "100",
+      "type_damage": "Light",
+      "undead_ef": "100",
+      "uuid": "Item.rIxMsRTAdn8ZQVYH",
+      "vehicle_ef": "100",
+      "weapon_range": "Melee"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "rIxMsRTAdn8ZQVYH"
+  },
+  "type": "equippableItem"
+}

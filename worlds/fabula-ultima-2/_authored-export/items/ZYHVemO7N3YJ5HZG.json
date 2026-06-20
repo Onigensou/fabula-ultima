@@ -1,0 +1,52 @@
+{
+  "_id": "ZYHVemO7N3YJ5HZG",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1751459075856,
+    "duplicateSource": "Item.y61V2VLRAwlVDgcM",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "recipe",
+        "fromTemplate": "VJCHYWOx1mPsMSip",
+        "itemId": "ZYHVemO7N3YJ5HZG",
+        "itemName": "Blue Bovine",
+        "pickedOldProps": {
+          "recipe_description": "<ul><li><p><em>Gain <strong>Strong (</strong>Increase your <strong>【MIG】</strong> die by 1 stage </em>(to a maximum for D12))<em> for the rest of the scene.</em></p></li></ul>",
+          "recipe_ip": "2",
+          "recipe_label": ""
+        },
+        "ts": 1769647435332
+      }
+    }
+  },
+  "folder": "MOf4y5KdI6ZvNBHg",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
+  "name": "Blue Bovine",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 100000,
+  "system": {
+    "container": null,
+    "props": {
+      "description": "<ul><li><p><em>Gain <strong>Strong (</strong>Increase your <strong>【MIG】</strong> die by 1 stage </em>(to a maximum for D12))<em> for the rest of the scene.</em></p></li></ul>",
+      "ip_cost": "2",
+      "item_type": "recipe",
+      "name": "Blue Bovine"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "ZYHVemO7N3YJ5HZG"
+  },
+  "type": "equippableItem"
+}

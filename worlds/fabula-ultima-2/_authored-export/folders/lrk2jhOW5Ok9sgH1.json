@@ -1,0 +1,19 @@
+{
+  "_id": "lrk2jhOW5Ok9sgH1",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1753921317194,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": "#59909b",
+  "description": "",
+  "flags": {},
+  "folder": "PaPzgCs9Rd0kzMSB",
+  "name": "Custom Classes",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Actor"
+}

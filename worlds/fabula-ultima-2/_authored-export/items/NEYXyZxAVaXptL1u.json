@@ -1,0 +1,117 @@
+{
+  "_id": "NEYXyZxAVaXptL1u",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1754086324642,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "xkEM8CL6GkAo3aVx",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.331",
+        "createdTime": 1754086434878,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.6.4"
+      },
+      "changes": [
+        {
+          "key": "extra_damage_mod_all",
+          "mode": 2,
+          "priority": 1,
+          "value": "${level}$"
+        }
+      ],
+      "description": "<p>When you deal damage during your turn, if you performed the <strong>Guard</strong> action during your previous turn and chose to <strong>cover</strong> an ally, you deal <strong>【SL】</strong> extra damage.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "xkEM8CL6GkAo3aVx",
+          "originalParentId": "NEYXyZxAVaXptL1u",
+          "originalUuid": "Item.NEYXyZxAVaXptL1u.ActiveEffect.xkEM8CL6GkAo3aVx"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/skills/melee/blade-tip-chipped-blood-red.webp",
+      "name": "Retaliation",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "Class Skill",
+          "Passive"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "r8ESgYQR9Oc0iK7D",
+  "img": "icons/skills/melee/blade-tip-chipped-blood-red.webp",
+  "name": "Retaliation",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3
+  },
+  "sort": 100000,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Guardian",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>When you deal damage during your turn, if you performed the <strong>Guard</strong> action during your previous turn and chose to <strong>cover</strong> an ally, you deal <strong>【SL】</strong> extra damage.</p>",
+      "duration": "",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "level": "1",
+      "max_level": "5",
+      "name": "Retaliation",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "NEYXyZxAVaXptL1u"
+  },
+  "type": "equippableItem"
+}

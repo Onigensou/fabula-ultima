@@ -1,0 +1,19 @@
+{
+  "_id": "HEOkiQVr6cpvbXxl",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780593545201,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "ikOHfTW8DPtgKukH",
+  "name": "Heroic Skill",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

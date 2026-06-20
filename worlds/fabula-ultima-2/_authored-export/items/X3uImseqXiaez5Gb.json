@@ -1,0 +1,85 @@
+{
+  "_id": "X3uImseqXiaez5Gb",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1732257066655,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "X3uImseqXiaez5Gb",
+        "itemName": "Barbed Knife",
+        "pickedOldProps": {
+          "cost": "1650",
+          "martial": false
+        },
+        "ts": 1769647042017
+      }
+    }
+  },
+  "folder": "uiQQtrd8zEyqhHsr",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Knife.gif",
+  "name": "Barbed Knife",
+  "ownership": {
+    "2vy7wrEUqBy0kzsU": 3,
+    "6DmgigM5jq76r0Gd": 3,
+    "7hKw8KGsimboeDif": 3,
+    "9sFgrDy4MvAgoCmQ": 3,
+    "Am7qxPOavfKeDGPd": 3,
+    "JQGNzKpDPHJmcUIW": 3,
+    "JvF9tXvr7aaiS06m": 3,
+    "KD5d0efqHETPpIux": 3,
+    "LT3Z8EnRdMVk5ncQ": 3,
+    "MwTL6zXFCEpVBTpI": 3,
+    "NozW36XIGEGx7oVH": 3,
+    "NpGkA7uxaarkPiwS": 3,
+    "ULBTZPjtza939Mvy": 3,
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3,
+    "eGu3tuw7HwJd2bpx": 3,
+    "iLeUVmwqnze8ulOI": 3,
+    "mE5aEkDlrQJIYyhG": 3,
+    "nSGZ1sz1rdKao0kz": 3,
+    "nXC7OD7u5Zw5UDDU": 3,
+    "t41knaXNbgCEygM5": 3,
+    "tz9BP9MKfNGf2P3n": 3,
+    "wNzPmItLYCKE1I8t": 3,
+    "yL2PQxh3R9ddt0te": 3,
+    "yUfwoVmEPVdFG3AY": 3
+  },
+  "sort": 500000,
+  "system": {
+    "container": null,
+    "props": {
+      "category": "Dagger",
+      "check_bonus": "1",
+      "damage_bonus": "4",
+      "description": "<ul><li><p>Each target hit by this weapon suffers <strong>@UUID[JournalEntry.ImFKpNNGjstom7Q9]{Shaken},&nbsp;</strong>if they are already shaken, they suffers <strong>@UUID[JournalEntry.TOF8epes1eGHwx5J]{Frightened}&nbsp;</strong>instead.</p></li></ul>",
+      "hand_slots": "One-handed",
+      "isMartial": false,
+      "item_cost": "1650",
+      "item_type": "weapon",
+      "name": "Barbed Knife",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "INS",
+      "set_name": "",
+      "skill_target": "One Enemy",
+      "type_damage": "Dark",
+      "weapon_range": "Melee"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "X3uImseqXiaez5Gb"
+  },
+  "type": "equippableItem"
+}

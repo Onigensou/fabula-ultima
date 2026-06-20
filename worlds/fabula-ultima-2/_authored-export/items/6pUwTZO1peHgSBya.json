@@ -1,0 +1,146 @@
+{
+  "_id": "6pUwTZO1peHgSBya",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1752528691562,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "6pUwTZO1peHgSBya",
+        "itemName": "Lunar Bow",
+        "pickedOldProps": {
+          "cost": "2300",
+          "martial": true
+        },
+        "ts": 1769647435925
+      }
+    }
+  },
+  "folder": "gkxeb18rMnUvyuqk",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/Genshin/Elegy_for_the_End.png",
+  "name": "Lunar Bow",
+  "ownership": {
+    "2vy7wrEUqBy0kzsU": 3,
+    "6DmgigM5jq76r0Gd": 3,
+    "7hKw8KGsimboeDif": 3,
+    "9sFgrDy4MvAgoCmQ": 3,
+    "Am7qxPOavfKeDGPd": 3,
+    "JQGNzKpDPHJmcUIW": 3,
+    "JvF9tXvr7aaiS06m": 3,
+    "KD5d0efqHETPpIux": 3,
+    "LT3Z8EnRdMVk5ncQ": 3,
+    "MwTL6zXFCEpVBTpI": 3,
+    "NozW36XIGEGx7oVH": 3,
+    "NpGkA7uxaarkPiwS": 3,
+    "ULBTZPjtza939Mvy": 3,
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3,
+    "eGu3tuw7HwJd2bpx": 3,
+    "iLeUVmwqnze8ulOI": 3,
+    "mE5aEkDlrQJIYyhG": 3,
+    "nSGZ1sz1rdKao0kz": 3,
+    "nXC7OD7u5Zw5UDDU": 3,
+    "t41knaXNbgCEygM5": 3,
+    "tz9BP9MKfNGf2P3n": 3,
+    "wNzPmItLYCKE1I8t": 3,
+    "yL2PQxh3R9ddt0te": 3,
+    "yUfwoVmEPVdFG3AY": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "aquatic_ef": "100",
+      "automaton_ef": "100",
+      "avian_ef": "100",
+      "beast_ef": "100",
+      "category": "Bow",
+      "celestial_ef": "100",
+      "check_bonus": "1",
+      "construct_ef": "100",
+      "damage_bonus": "6",
+      "demiHuman_ef": "100",
+      "demon_ef": "100",
+      "description": "<ul><li><p>Attack with this weapon ignores <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Hidden</span></strong></a></span></span></p></li><li><p>You may cast the spell <strong>【</strong>⚡<strong>Starfall】</strong></p></li></ul>",
+      "dragon_ef": "100",
+      "elemental_ef": "100",
+      "enforcer_ef": "100",
+      "fey_ef": "100",
+      "flavor_text": "<p><em>This bow once belonged to the moon goddess of the Elven tribes. It is believed to channel the moon's power, ensuring every arrow finds its mark.</em></p>",
+      "flora_ef": "100",
+      "fungus_ef": "100",
+      "golem_ef": "100",
+      "gorger_ef": "100",
+      "hand_slots": "Two-handed",
+      "human_ef": "100",
+      "humanoid_ef": "100",
+      "insect_ef": "100",
+      "ip_cost": "",
+      "isEquipped": false,
+      "isKey": false,
+      "isMartial": true,
+      "isModule": false,
+      "isRelatedItem": true,
+      "isSet": false,
+      "isUnique": false,
+      "item_baseDef": "0",
+      "item_baseMdef": "0",
+      "item_cost": "2300",
+      "item_def_bonus": "0",
+      "item_mdef_bonus": "0",
+      "item_quantity": "1",
+      "item_rarity": "Rare",
+      "item_skill_active": {
+        "Zcz1y0z4DrAHfx76": {
+          "id": "${item.id}",
+          "name": "Starfall",
+          "skill_cost": "30 MP",
+          "skill_description": "<ul><li><p><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.1TyH5hsRlBx4xYDs\" data-id=\"1TyH5hsRlBx4xYDs\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Roulette</span></strong></a></span>&nbsp;Enemy</p></li></ul><p>Summon multiple comet to fall on the target, Deals <strong>【HR+15】</strong><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(163, 139, 80) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(202, 189, 154) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span>damage, Repeat this 3 times</p>",
+          "skill_maxLevel": 1,
+          "uuid": ""
+        }
+      },
+      "item_type": "weapon",
+      "mimic_ef": "100",
+      "monster_ef": "100",
+      "name": "Lunar Bow",
+      "optional_params": {},
+      "plant_ef": "100",
+      "related_item_list": {
+        "Zcz1y0z4DrAHfx76": {
+          "id": "${item.id}",
+          "name": "Starfall",
+          "related_item_description": "<ul><li><p><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.1TyH5hsRlBx4xYDs\" data-id=\"1TyH5hsRlBx4xYDs\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Roulette</span></strong></a></span>&nbsp;Enemy</p></li></ul><p>Summon multiple comet to fall on the target, Deals <strong>【HR+15】</strong><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(163, 139, 80) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(202, 189, 154) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span>damage, Repeat this 3 times</p>",
+          "uuid": ""
+        }
+      },
+      "reptilian_ef": "100",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "INS",
+      "set_name": "",
+      "skill_target": "One Enemy",
+      "soldier_ef": "100",
+      "spirit_ef": "100",
+      "type_damage": "Light",
+      "undead_ef": "100",
+      "vehicle_ef": "100",
+      "weapon_range": "Ranged"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "6pUwTZO1peHgSBya"
+  },
+  "type": "equippableItem"
+}

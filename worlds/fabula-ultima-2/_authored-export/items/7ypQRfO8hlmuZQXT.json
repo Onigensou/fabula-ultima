@@ -1,0 +1,94 @@
+{
+  "_id": "7ypQRfO8hlmuZQXT",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780935712568,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "4nfTLrlahxy3xTs8",
+  "img": "icons/skills/ranged/arrow-strike-glowing-teal.webp",
+  "name": "Crossfire",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "active_effect_config_table": {},
+      "check_bonus": "0",
+      "class": "Sharpshooter",
+      "cost": "Special",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>After a creature you can see performs a <strong>ranged attack</strong>, you may spend an amount of <strong>Mind Points</strong> equal to the total Result of their Accuracy Check in order to have the attack <strong>fail automatically</strong> against all targets.</p><p>You can only use this Skill if you have a ranged weapon equipped, and it has no effect if the Accuracy Check was a critical success.</p>",
+      "duration": "-",
+      "effect_table": {
+        "0": {
+          "chain_steps": "crossfire_block,crossfire_cost",
+          "effect_kind": "chain",
+          "effect_label": "crossfire_do"
+        },
+        "1": {
+          "accuracy_amount": "0",
+          "accuracy_operation": "set",
+          "effect_kind": "adjust_accuracy",
+          "effect_label": "crossfire_block",
+          "menu_description": "Spend MP equal to the attacker's Accuracy Result to make the attack fail against all targets.",
+          "menu_label": "Crossfire"
+        },
+        "2": {
+          "consume_amount": "ATTACK_CHECK_RESULT",
+          "consume_resource": "mp",
+          "effect_kind": "consume_resource",
+          "effect_label": "crossfire_cost",
+          "on_empty": "abort",
+          "target_ref": "self"
+        }
+      },
+      "ignore_hr": false,
+      "img": "icons/skills/ranged/arrow-strike-glowing-teal.webp",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": true,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Crossfire",
+      "on_activate_effect_ref": "",
+      "post_damage_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "ATTACK_IS_RANGED == 1 && HAS_RANGED_WEAPON && ATTACK_IS_CRIT == 0 && CUR_MP >= ATTACK_CHECK_RESULT",
+          "reaction_action_intent": "harmful",
+          "reaction_action_kind": "Attack",
+          "reaction_effect_ref": "crossfire_do",
+          "reaction_passive_mode": "ask",
+          "reaction_source": "all",
+          "reaction_trigger": "creature_targeted_by_action"
+        }
+      },
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_range": "",
+      "skill_target": "-",
+      "skill_type": "Passive",
+      "type_damage": ""
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "7ypQRfO8hlmuZQXT"
+  },
+  "type": "equippableItem"
+}

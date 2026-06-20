@@ -1,0 +1,62 @@
+{
+  "_id": "l4UCgMvrMT3emrYT",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1747469265021,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.4.2"
+    }
+  },
+  "folder": "yM3fFwZeUWnk2S35",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/02_WAR/inner_beast.png",
+  "name": "Enrage",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 100000,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "check_bonus": "0",
+      "class": "Spiritist",
+      "cost": "10",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>You cause a creature to lose any semblance of temper and act brazenly. The target suffers enraged and cannot perform the<strong>【🛡️Guard】</strong> or <strong>【📕Spell】</strong> actions during their next turn.</p>",
+      "duration": "Instantaneous",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": true,
+      "isHeroic": false,
+      "isOffensiveSpell": true,
+      "isReaction": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Enrage",
+      "optional_params": {},
+      "rolled_atr1": "INS",
+      "rolled_atr2": "WLP",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "Range",
+      "skill_target": "One Creature",
+      "skill_type": "Spell",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "l4UCgMvrMT3emrYT"
+  },
+  "type": "equippableItem"
+}

@@ -1,0 +1,1711 @@
+{
+  "_id": "Ax1nVCBhZOG0ZzHx",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1774096565811,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "Nd8LnosrPid1eX1r",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/BanditBerserker_Standard.png",
+  "items": [
+    {
+      "_id": "0NVkrEGWW0CInjLY",
+      "_stats": {
+        "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
+        "coreVersion": "12.343",
+        "createdTime": 1774116240859,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
+      "name": "Grappled",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "3",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "15",
+          "defense_target_type": "def",
+          "description": "<p>On <strong>hit, </strong>the target rolls a <strong>DL 12 【MIG】+【MIG】check, </strong>on a failure, inflicts <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Grappled</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span>to the target</p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Grappled",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "MIG",
+          "rolled_atr2": "MIG",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Melee",
+          "skill_target": "One Creature",
+          "skill_type": "Attack",
+          "type_damage": "Physical",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "yWlkWZC2vLf4J5Pv"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "4tw3W8tJnLStGRdm",
+      "_stats": {
+        "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
+        "coreVersion": "12.343",
+        "createdTime": 1774115609239,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
+      "name": "Heavy Axe",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "3",
+          "class": "NPC",
+          "cost": "-",
+          "custom_logic_resolution": "<p>const TAG = \"[CL-RES][ON-HIT-WEAK-IF-FRESH-TURN]\";</p><p>const p = __PAYLOAD ?? {};</p><p>const args = globalThis.__ARGS ?? p.__confirmArgs ?? {};</p><p>const WEAK_AE_UUID = \"Item.XVOWOq9oUmEECGrU.ActiveEffect.62gUkhQExwD9DvaI\";</p><p>p.meta = p.meta || {};</p><p>const targetUuids =</p><p>  Array.isArray(p?.originalTargetUUIDs) &amp;&amp; p.originalTargetUUIDs.length</p><p>    ? [...p.originalTargetUUIDs]</p><p>    : Array.isArray(p?.meta?.originalTargetUUIDs) &amp;&amp; p.meta.originalTargetUUIDs.length</p><p>      ? [...p.meta.originalTargetUUIDs]</p><p>      : Array.isArray(p?.targets) &amp;&amp; p.targets.length</p><p>        ? [...p.targets]</p><p>        : Array.isArray(globalThis.__TARGETS) &amp;&amp; globalThis.__TARGETS.length</p><p>          ? [...globalThis.__TARGETS]</p><p>          : [];</p><p>if (!targetUuids.length) {</p><p>  console.log(TAG, \"No targets found. Skipping.\");</p><p>  return;</p><p>}</p><p>const combat = game.combat ?? null;</p><p>if (!combat) {</p><p>  console.log(TAG, \"No active combat. Skipping.\");</p><p>  return;</p><p>}</p><p>const accTotal = Number(p?.accuracy?.total ?? args?.accuracyTotal ?? NaN);</p><p>const hasAccuracy =</p><p>  (typeof args?.hasAccuracy === \"boolean\")</p><p>    ? args.hasAccuracy</p><p>    : !!p?.accuracy;</p><p>const autoHit = !!(</p><p>  args?.autoHit ||</p><p>  p?.advPayload?.autoHit ||</p><p>  p?.accuracy?.isCrit</p><p>);</p><p>const getDef = (targetUuid, targetActor) =&gt; {</p><p>  const row = p?.meta?.defenseSnapshot?.perTarget?.find?.(r =&gt; r?.uuid === targetUuid) ?? null;</p><p>  return Number(</p><p>    row?.def ??</p><p>    row?.defense ??</p><p>    row?.physicalDefense ??</p><p>    targetActor?.system?.props?.defense ??</p><p>    0</p><p>  ) || 0;</p><p>};</p><p>const isHit = (targetUuid, targetActor) =&gt; {</p><p>  const def = getDef(targetUuid, targetActor);</p><p>  if (!hasAccuracy) return true;</p><p>  if (autoHit) return true;</p><p>  if (!Number.isFinite(accTotal)) return false;</p><p>  return accTotal &gt;= def;</p><p>};</p><p>const getTokenId = (doc) =&gt;</p><p>  doc?.token?.id ??</p><p>  doc?.id ??</p><p>  doc?.document?.id ??</p><p>  null;</p><p>const getSceneId = (doc) =&gt;</p><p>  doc?.parent?.id ??</p><p>  doc?.document?.parent?.id ??</p><p>  null;</p><p>const getCombatantForDoc = (docLike, actorLike) =&gt; {</p><p>  const ref = docLike?.document ?? docLike;</p><p>  const tokenId = getTokenId(ref);</p><p>  const sceneId = getSceneId(ref);</p><p>  const actorId = actorLike?.id ?? ref?.actor?.id ?? ref?.id ?? null;</p><p>  let c = combat.combatants.find(cmb =&gt; {</p><p>    const cSceneId = cmb.sceneId ?? cmb.parent?.scene?.id ?? cmb.scene?.id ?? null;</p><p>    const cTokenId = cmb.tokenId ?? cmb.token?.id ?? null;</p><p>    return tokenId &amp;&amp; cTokenId === tokenId &amp;&amp; (!sceneId || !cSceneId || cSceneId === sceneId);</p><p>  });</p><p>  if (c) return c;</p><p>  c = combat.combatants.find(cmb =&gt; (cmb.actor?.id ?? null) === actorId);</p><p>  if (c) return c;</p><p>  return null;</p><p>};</p><p>const hasNotTakenTurnYet = (combatant) =&gt; {</p><p>  if (!combatant) return false;</p><p>  const currentActs = Number(</p><p>    combatant.getFlag?.(\"lancer-initiative\", \"activations.value\") ??</p><p>    combatant.flags?.[\"lancer-initiative\"]?.activations?.value ??</p><p>    NaN</p><p>  );</p><p>  const maxActs = Number(</p><p>    combatant.getFlag?.(\"lancer-initiative\", \"activations.max\") ??</p><p>    combatant.flags?.[\"lancer-initiative\"]?.activations?.max ??</p><p>    NaN</p><p>  );</p><p>  if (Number.isFinite(currentActs) &amp;&amp; Number.isFinite(maxActs)) {</p><p>    return maxActs &gt; 0 &amp;&amp; currentActs === maxActs;</p><p>  }</p><p>  if (Number.isFinite(currentActs)) {</p><p>    return currentActs &gt; 0;</p><p>  }</p><p>  return false;</p><p>};</p><p>const weakSource = await fromUuid(WEAK_AE_UUID);</p><p>if (!weakSource) {</p><p>  console.warn(TAG, \"Could not resolve Weak AE source UUID.\", WEAK_AE_UUID);</p><p>  return;</p><p>}</p><p>const weakData = weakSource.toObject();</p><p>delete weakData._id;</p><p>// Good defaults when cloning from a source effect</p><p>weakData.origin = WEAK_AE_UUID;</p><p>weakData.transfer = false;</p><p>const applied = [];</p><p>const checked = [];</p><p>for (const tuuid of targetUuids) {</p><p>  const td = await fromUuid(tuuid);</p><p>  const targetDoc = td?.document ?? td;</p><p>  const targetActor = td?.actor ?? td;</p><p>  if (!targetActor) {</p><p>    checked.push({ targetUuid: tuuid, skipped: \"missing-target-actor\" });</p><p>    continue;</p><p>  }</p><p>  const targetCombatant = getCombatantForDoc(targetDoc, targetActor);</p><p>  const def = getDef(tuuid, targetActor);</p><p>  const hit = isHit(tuuid, targetActor);</p><p>  const freshTurn = hasNotTakenTurnYet(targetCombatant);</p><p>  checked.push({</p><p>    target: targetActor?.name ?? tuuid,</p><p>    hit,</p><p>    accTotal,</p><p>    def,</p><p>    freshTurn,</p><p>    combatantId: targetCombatant?.id ?? null</p><p>  });</p><p>  if (!hit) continue;</p><p>  if (!freshTurn) continue;</p><p>  const existing = targetActor.effects?.find(e =&gt;</p><p>    e?.origin === WEAK_AE_UUID ||</p><p>    (weakData?.name &amp;&amp; e?.name === weakData.name)</p><p>  );</p><p>  if (existing) {</p><p>    await existing.delete().catch(() =&gt; {});</p><p>  }</p><p>  const [created] = await targetActor.createEmbeddedDocuments(\"ActiveEffect\", [weakData]);</p><p>  applied.push({</p><p>    target: targetActor?.name ?? tuuid,</p><p>    effectId: created?.id ?? null</p><p>  });</p><p>}</p><p>p.meta.onHitWeakFreshTurn = {</p><p>  applied,</p><p>  checked,</p><p>  accuracyTotal: accTotal,</p><p>  hasAccuracy,</p><p>  autoHit</p><p>};</p><p>console.log(TAG, \"DONE\", {</p><p>  accuracyTotal: accTotal,</p><p>  hasAccuracy,</p><p>  autoHit,</p><p>  applied,</p><p>  checked</p><p>});</p>",
+          "damage_bonus": "30",
+          "defense_target_type": "def",
+          "description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.7PQDwyX0RPf0djPL\" data-id=\"7PQDwyX0RPf0djPL\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Backstab</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>Inflicts <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a></span>&nbsp;to the target</p></li></ul>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Heavy Axe",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "MIG",
+          "rolled_atr2": "MIG",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Melee",
+          "skill_target": "One Creature",
+          "skill_type": "Attack",
+          "type_damage": "Physical",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "yWlkWZC2vLf4J5Pv"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "60pJFzNrMVg4EmEn",
+      "_stats": {
+        "compendiumSource": "Item.iFdNNGp4OVZVMEcB",
+        "coreVersion": "12.343",
+        "createdTime": 1774116371913,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
+      "name": "Strong Arm",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "",
+          "defense_target_type": "def",
+          "description": "<p>Increase the <strong>Escape</strong> <strong>DL </strong>of <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Grappled</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span>effects cause by the <strong>Bandit Berserker</strong> to 12</p>",
+          "duration": "-",
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Strong Arm",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "iFdNNGp4OVZVMEcB"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "hHEi7hpYEM4GkG1C",
+      "_stats": {
+        "compendiumSource": "Item.22zoFt3zhXjelhsX",
+        "coreVersion": "12.343",
+        "createdTime": 1775140167111,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Mega-Ether_from_Final_Fantasy_XIV_icon.webp",
+      "name": "Love Potion",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 3300000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li>Inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.x6ByoJnflDAuVn9r\" data-id=\"x6ByoJnflDAuVn9r\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Charm</span></strong></a></span></span> on the target&nbsp;<strong>Humanoid</strong> which last until the end of this round. Have no effect on Champion-Rank creature</li><li>When use outside of <strong>conflict, </strong>the effect last until the end of the <strong>scene </strong>instead</li></ul>",
+          "dragon_ef": "100",
+          "effect_table": {
+            "0": {
+              "ae_template_ref": "Charmed",
+              "effect_kind": "apply_ae",
+              "effect_label": "lovepotion_charm",
+              "target_ref": "action_targets"
+            }
+          },
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flavor_text": "<p><em>A magical potion that raise the target hidden's desire</em></p>",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "3",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "150",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Uncommon",
+          "item_type": "consumable",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Love Potion",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "22zoFt3zhXjelhsX"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "kIAOYBqOP53leYEw",
+      "_stats": {
+        "compendiumSource": "Item.5F5MJOjDM4zVk1cw",
+        "coreVersion": "12.343",
+        "createdTime": 1774718315712,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "weapon",
+            "fromTemplate": "gIRU9XGqYeMBwBN9",
+            "itemId": "5F5MJOjDM4zVk1cw",
+            "itemName": "Soul of Pillage",
+            "pickedOldProps": {
+              "cost": "2550",
+              "martial": true
+            },
+            "ts": 1769647436495
+          }
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/axe.png",
+      "name": "Soul of Pillage",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 1700000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Heavy",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "18",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>Each target hit by this weapon suffers <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\" data-id=\"XkuOy0BFvKJTewGS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Enraged</span></strong></a></span></p></li><li>When you reduce a target to <strong>0</strong> <strong>HP</strong> with this weapon, gain <strong>2</strong> <strong>IP</strong></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "Two-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": true,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "2550",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Rare",
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Soul of Pillage",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "MIG",
+          "rolled_atr2": "MIG",
+          "set_name": "",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Dark",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "5F5MJOjDM4zVk1cw"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "kPZ41xkZ8CRZJhwx",
+      "_stats": {
+        "compendiumSource": "Item.SUYqRKHBGXUhiOL1",
+        "coreVersion": "12.343",
+        "createdTime": 1775137141725,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "icons/svg/item-bag.svg",
+      "name": "(Empty)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<pre><code>Use this item as placeholder for failing to steals any item from the target</code></pre>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "0",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Common",
+          "item_type": "material",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "(Empty)",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "<Set Name>",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "SUYqRKHBGXUhiOL1"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "Lq6TWBAadoRGUwHo",
+      "_stats": {
+        "compendiumSource": "Item.aGZAOUdRyopqoDyc",
+        "coreVersion": "12.343",
+        "createdTime": 1774115771115,
+        "duplicateSource": "Item.iFdNNGp4OVZVMEcB",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213702.523.png",
+      "name": "Berserk",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "",
+          "defense_target_type": "def",
+          "description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Trigger</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>When this creature enter <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></p></li></ul><p>Inflicts <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.aPF9gzkqnUkcQmIC\" data-id=\"aPF9gzkqnUkcQmIC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Berserk</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span>to self</p>",
+          "duration": "-",
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Berserk",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "aGZAOUdRyopqoDyc"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "npy8QJ41kOE6FYkp",
+      "_stats": {
+        "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
+        "coreVersion": "12.343",
+        "createdTime": 1774399761644,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215350.578.png",
+      "name": "Great Cleave",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "<p>(async () =&gt; {</p><p>const TAG = \"[ONI][Anim][GreatCleave-Slide-MultiTrail-Return]\";</p><p>const payload = globalThis.__PAYLOAD ?? {};</p><p>const DEBUG = true;</p><p>const HIT_VFX_SRC = \"modules/JB2A_DnD5e/Library/Generic/Weapon_Attacks/Melee/Group01/TrailAttack01_01_04_Regular_OrangeRed_800x600.webm\";</p><p>const HIT_SFX_SRC = \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Damage4.ogg\";</p><p>const SOUND_VOLUME = 0.55;</p><p>// \"Slides forward slightly\"</p><p>const SLIDE_DISTANCE = 90;</p><p>const MOVE_OUT_MS = 240;</p><p>const HOLD_MS = 900;</p><p>const MOVE_BACK_MS = 240;</p><p>// Pseudo VFX sizing / safety timing</p><p>const VFX_FALLBACK_MS = 850;</p><p>const VFX_WIDTH_MULT = 4.2;</p><p>const VFX_HEIGHT_MULT = 3.65;</p><p>function dbg(...args) {</p><p>if (!DEBUG) return;</p><p>console.log(TAG, ...args);</p><p>}</p><p>function warn(...args) {</p><p>console.warn(TAG, ...args);</p><p>}</p><p>function err(...args) {</p><p>console.error(TAG, ...args);</p><p>}</p><p>globalThis.ONI = globalThis.ONI ?? {};</p><p>if (!ONI.emit) {</p><p>ONI.emit = (eventName, eventPayload = {}, options = {}) =&gt; {</p><p>const { local = true, world = false } = options;</p><p>if (local) Hooks.callAll(eventName, eventPayload);</p><p>if (world) game.socket.emit(\"world\", { action: eventName, payload: eventPayload });</p><p>};</p><p>}</p><p>async function toTokenPlaceable(ref) {</p><p>if (!ref) return null;</p><p>if (typeof ref === \"string\") {</p><p>const byId = canvas.tokens?.get(ref);</p><p>if (byId) return byId;</p><p>try {</p><p>const doc = await fromUuid(ref);</p><p>if (!doc) return null;</p><p>return doc.object ?? doc.token?.object ?? doc ?? null;</p><p>} catch (e) {</p><p>warn(\"toTokenPlaceable failed fromUuid:\", ref, e);</p><p>return null;</p><p>}</p><p>}</p><p>return ref.object ?? ref.token?.object ?? ref ?? null;</p><p>}</p><p>function uniq(arr) {</p><p>return [...new Set(arr.filter(Boolean))];</p><p>}</p><p>function summarizeToken(tok) {</p><p>if (!tok) return null;</p><p>return {</p><p>id: tok.id ?? null,</p><p>name: tok.name ?? tok.document?.name ?? null,</p><p>uuid: tok.document?.uuid ?? null,</p><p>disposition: tok.document?.disposition ?? tok.actor?.document?.disposition ?? null,</p><p>center: tok.center ? { x: tok.center.x, y: tok.center.y } : null</p><p>};</p><p>}</p><p>function getDisposition(token) {</p><p>const d = token?.document?.disposition ?? token?.actor?.document?.disposition;</p><p>return d === -1 ? -1 : 1;</p><p>}</p><p>async function resolveSourceToken() {</p><p>const candidates = [</p><p>payload.casterTokenUuid,</p><p>payload.sourceTokenUuid,</p><p>payload.performerTokenUuid,</p><p>payload.tokenUuid,</p><p>payload.sourceTokenId,</p><p>payload.casterTokenId,</p><p>globalThis._token?.document?.uuid,</p><p>globalThis.token?.document?.uuid</p><p>];</p><p>dbg(\"resolveSourceToken candidates:\", candidates);</p><p>for (const c of candidates) {</p><p>const tok = await toTokenPlaceable(c);</p><p>if (tok) return tok;</p><p>}</p><p>return canvas.tokens?.controlled?.[0] ?? null;</p><p>}</p><p>async function resolveTargetTokens() {</p><p>const raw = uniq([</p><p>...(Array.isArray(payload.targetTokenUuids) ? payload.targetTokenUuids : []),</p><p>...(Array.isArray(payload.targetUUIDs) ? payload.targetUUIDs : []),</p><p>...(Array.isArray(payload.originalTargetUUIDs) ? payload.originalTargetUUIDs : []),</p><p>...(Array.isArray(payload.targets) ? payload.targets : []),</p><p>...(Array.from(game.user?.targets ?? []).map(t =&gt; t?.document?.uuid))</p><p>]);</p><p>dbg(\"resolveTargetTokens raw refs:\", raw);</p><p>const out = [];</p><p>for (const r of raw) {</p><p>const tok = await toTokenPlaceable(r);</p><p>if (tok) out.push(tok);</p><p>}</p><p>return out;</p><p>}</p><p>let resolvedSourceToken = null;</p><p>let resolvedTargets = [];</p><p>try {</p><p>if (!game.modules.get(\"sequencer\")?.active) {</p><p>ui.notifications.error(\"Sequencer module is not active.\");</p><p>return;</p><p>}</p><p>if (!game.ONI?.pseudo?.play) {</p><p>ui.notifications.error(\"ONI Pseudo Animation API is not available.\");</p><p>return;</p><p>}</p><p>const sourceToken = await resolveSourceToken();</p><p>const targets = await resolveTargetTokens();</p><p>resolvedSourceToken = sourceToken;</p><p>resolvedTargets = targets;</p><p>dbg(\"Resolved source token:\", summarizeToken(sourceToken));</p><p>dbg(\"Resolved targets:\", targets.map(summarizeToken));</p><p>dbg(\"Payload snapshot:\", payload);</p><p>if (!sourceToken) {</p><p>ui.notifications.warn(\"No caster token found.\");</p><p>return;</p><p>}</p><p>if (!targets.length) {</p><p>ui.notifications.warn(\"No target token found.\");</p><p>return;</p><p>}</p><p>ONI.emit(\"oni:animationStart\", {</p><p>type: \"oni.greatCleaveSlideMultiTrailReturn\",</p><p>sourceTokenId: sourceToken.id,</p><p>targetTokenIds: targets.map(t =&gt; t.id),</p><p>sceneId: canvas.scene?.id ?? null,</p><p>timestamp: Date.now()</p><p>}, { local: true, world: false });</p><p>// User requested:</p><p>// if disposition === -1 -&gt; slide right</p><p>// otherwise -&gt; slide left</p><p>const disp = getDisposition(sourceToken);</p><p>const slideDx = disp === -1 ? +SLIDE_DISTANCE : -SLIDE_DISTANCE;</p><p>const scriptSource = `</p><p>const { casterToken, targetTokens, params } = ctx;</p><p>if (!casterToken) throw new Error(\"Need casterToken\");</p><p>function easeInOutCubic(t) {</p><p>return t &lt; 0.5</p><p>? 4 * t * t * t</p><p>: 1 - Math.pow(-2 * t + 2, 3) / 2;</p><p>}</p><p>function animateXY(obj, from, to, durMs) {</p><p>return new Promise(resolve =&gt; {</p><p>const start = performance.now();</p><p>const ticker = canvas.app.ticker;</p><p>const update = () =&gt; {</p><p>const raw = (performance.now() - start) / durMs;</p><p>const t = Math.min(Math.max(raw, 0), 1);</p><p>const e = easeInOutCubic(t);</p><p>obj.x = from.x + (to.x - from.x) * e;</p><p>obj.y = from.y + (to.y - from.y) * e;</p><p>if (t &gt;= 1) {</p><p>ticker.remove(update);</p><p>resolve();</p><p>}</p><p>};</p><p>ticker.add(update);</p><p>});</p><p>}</p><p>function getNativeFlipX(token) {</p><p>const docScaleX = token?.document?.texture?.scaleX;</p><p>if (typeof docScaleX === \"number\" &amp;&amp; docScaleX &lt; 0) return true;</p><p>const mirrorX = token?.document?.texture?.mirrorX;</p><p>if (typeof mirrorX === \"boolean\") return mirrorX;</p><p>const meshScaleX = token?.mesh?.scale?.x;</p><p>if (typeof meshScaleX === \"number\" &amp;&amp; meshScaleX &lt; 0) return true;</p><p>const iconScaleX = token?.icon?.scale?.x;</p><p>if (typeof iconScaleX === \"number\" &amp;&amp; iconScaleX &lt; 0) return true;</p><p>return false;</p><p>}</p><p>function setSpriteFlipX(sprite, flipped) {</p><p>const sx = Math.abs(sprite.scale.x || 1);</p><p>sprite.scale.x = flipped ? -sx : sx;</p><p>}</p><p>async function createClone(token) {</p><p>const baseObj = token.mesh ?? token.icon;</p><p>const texture = baseObj?.texture ?? await loadTexture(token.document.texture.src);</p><p>const sprite = new PIXI.Sprite(texture);</p><p>sprite.anchor.set(0.5);</p><p>sprite.x = token.center.x;</p><p>sprite.y = token.center.y;</p><p>if (baseObj) {</p><p>sprite.width = Math.abs(baseObj.width);</p><p>sprite.height = Math.abs(baseObj.height);</p><p>sprite.alpha = baseObj.worldAlpha ?? 1;</p><p>sprite.rotation = baseObj.rotation ?? 0;</p><p>}</p><p>sprite.zIndex = Number(params.zIndex ?? 5000);</p><p>canvas.stage.sortableChildren = true;</p><p>canvas.stage.addChild(sprite);</p><p>canvas.stage.sortChildren();</p><p>setSpriteFlipX(sprite, getNativeFlipX(token));</p><p>return sprite;</p><p>}</p><p>const activeFx = new Set();</p><p>function cleanupDisplayObject(obj) {</p><p>if (!obj) return;</p><p>try {</p><p>const source = obj?.texture?.baseTexture?.resource?.source;</p><p>if (source &amp;&amp; typeof source.pause === \"function\") source.pause();</p><p>} catch (_) {}</p><p>try {</p><p>if (obj.parent) obj.parent.removeChild(obj);</p><p>} catch (_) {}</p><p>try {</p><p>obj.destroy();</p><p>} catch (_) {}</p><p>}</p><p>async function playVfxOnTarget(targetToken, src, params) {</p><p>if (!targetToken || !src) return;</p><p>let sprite = null;</p><p>try {</p><p>const texture = await loadTexture(src);</p><p>sprite = new PIXI.Sprite(texture);</p><p>activeFx.add(sprite);</p><p>sprite.anchor.set(0.5);</p><p>const center = targetToken.center ?? { x: 0, y: 0 };</p><p>const maxDim = Math.max(targetToken.w ?? 100, targetToken.h ?? 100);</p><p>sprite.x = center.x;</p><p>sprite.y = center.y;</p><p>sprite.width = maxDim * Number(params.vfxWidthMult ?? 2.2);</p><p>sprite.height = maxDim * Number(params.vfxHeightMult ?? 1.65);</p><p>sprite.alpha = Number(params.vfxAlpha ?? 1);</p><p>sprite.rotation = 0;</p><p>sprite.zIndex = Number(params.vfxZIndex ?? 5001);</p><p>canvas.stage.sortableChildren = true;</p><p>canvas.stage.addChild(sprite);</p><p>canvas.stage.sortChildren();</p><p>const media = texture?.baseTexture?.resource?.source;</p><p>if (media) {</p><p>try {</p><p>media.muted = true;</p><p>media.loop = false;</p><p>media.currentTime = 0;</p><p>} catch (_) {}</p><p>if (typeof media.play === \"function\") {</p><p>const p = media.play();</p><p>if (p?.catch) p.catch(() =&gt; {});</p><p>}</p><p>}</p><p>const durationMs =</p><p>Number.isFinite(media?.duration) &amp;&amp; media.duration &gt; 0</p><p>? Math.ceil(media.duration * 1000) + 50</p><p>: Number(params.vfxFallbackMs ?? 850);</p><p>await wait(durationMs);</p><p>} catch (e) {</p><p>console.error(\"[ONI][Anim][GreatCleave-Slide-MultiTrail-Return][PseudoVFX] Failed:\", e);</p><p>} finally {</p><p>activeFx.delete(sprite);</p><p>cleanupDisplayObject(sprite);</p><p>}</p><p>}</p><p>const baseMesh = casterToken.mesh ?? casterToken.icon;</p><p>const originalTokenVisible = casterToken.visible;</p><p>const originalMeshVisible = baseMesh?.visible ?? true;</p><p>const originalFlipX = getNativeFlipX(casterToken);</p><p>let sprite = null;</p><p>try {</p><p>sprite = await createClone(casterToken);</p><p>if (baseMesh) baseMesh.visible = false;</p><p>casterToken.visible = false;</p><p>const home = { x: casterToken.center.x, y: casterToken.center.y };</p><p>const forward = {</p><p>x: home.x + Number(params.slideDx ?? 0),</p><p>y: home.y</p><p>};</p><p>// Keep original horizontal flip from token settings</p><p>setSpriteFlipX(sprite, originalFlipX);</p><p>// Slide forward slightly</p><p>await animateXY(</p><p>sprite,</p><p>home,</p><p>forward,</p><p>Number(params.moveOutMs ?? 240)</p><p>);</p><p>// Play VFX on all targets at the hit moment</p><p>const fxPromises = (Array.isArray(targetTokens) ? targetTokens : [])</p><p>.filter(Boolean)</p><p>.map(t =&gt; playVfxOnTarget(t, params.vfxSrc, params));</p><p>// Hold long enough for the VFX window</p><p>await Promise.allSettled([</p><p>Promise.allSettled(fxPromises),</p><p>wait(Number(params.holdMs ?? 0))</p><p>]);</p><p>// Slide back to original position</p><p>await animateXY(</p><p>sprite,</p><p>forward,</p><p>home,</p><p>Number(params.moveBackMs ?? 240)</p><p>);</p><p>} finally {</p><p>for (const fx of Array.from(activeFx)) {</p><p>cleanupDisplayObject(fx);</p><p>}</p><p>activeFx.clear();</p><p>cleanupDisplayObject(sprite);</p><p>if (baseMesh) baseMesh.visible = originalMeshVisible;</p><p>casterToken.visible = originalTokenVisible;</p><p>}</p><p>`;</p><p>dbg(\"Starting pseudo slide / VFX session.\");</p><p>game.ONI.pseudo.play({</p><p>scriptId: \"oni.greatCleave.slideForwardMultiTrailReturn\",</p><p>scriptSource,</p><p>casterTokenUuid: sourceToken.document.uuid,</p><p>targetTokenUuids: targets.map(t =&gt; t.document.uuid),</p><p>params: {</p><p>slideDx,</p><p>moveOutMs: MOVE_OUT_MS,</p><p>holdMs: HOLD_MS,</p><p>moveBackMs: MOVE_BACK_MS,</p><p>zIndex: 5000,</p><p>vfxSrc: HIT_VFX_SRC,</p><p>vfxFallbackMs: VFX_FALLBACK_MS,</p><p>vfxWidthMult: VFX_WIDTH_MULT,</p><p>vfxHeightMult: VFX_HEIGHT_MULT,</p><p>vfxAlpha: 1,</p><p>vfxZIndex: 5001</p><p>},</p><p>meta: {</p><p>source: \"Great Cleave\",</p><p>vfxSrc: HIT_VFX_SRC,</p><p>sfxSrc: HIT_SFX_SRC</p><p>}</p><p>});</p><p>// Sequencer handles SFX only.</p><p>dbg(\"Starting Sequencer SFX.\");</p><p>new Sequence()</p><p>.wait(MOVE_OUT_MS)</p><p>.sound()</p><p>.file(HIT_SFX_SRC)</p><p>.volume(SOUND_VOLUME)</p><p>.play();</p><p>// Wait for the full cinematic window before ending.</p><p>const totalWaitMs =</p><p>MOVE_OUT_MS +</p><p>Math.max(HOLD_MS, VFX_FALLBACK_MS) +</p><p>MOVE_BACK_MS +</p><p>100;</p><p>await wait(totalWaitMs);</p><p>dbg(\"Animation wait window finished.\", { totalWaitMs });</p><p>} catch (e) {</p><p>err(\"Animation crashed:\", e);</p><p>} finally {</p><p>try {</p><p>ONI.emit(\"oni:animationEnd\", {</p><p>type: \"oni.greatCleaveSlideMultiTrailReturn\",</p><p>sourceTokenId: resolvedSourceToken?.id ?? null,</p><p>targetTokenIds: resolvedTargets.map(t =&gt; t.id),</p><p>sceneId: canvas.scene?.id ?? null,</p><p>timestamp: Date.now()</p><p>}, { local: true, world: false });</p><p>dbg(\"Emitted oni:animationEnd.\", {</p><p>sourceTokenId: resolvedSourceToken?.id ?? null,</p><p>targetTokenIds: resolvedTargets.map(t =&gt; t.id)</p><p>});</p><p>} catch (e) {</p><p>err(\"Failed to emit animationEnd:\", e);</p><p>}</p><p>}</p><p>})();</p>",
+          "check_bonus": "5",
+          "class": "NPC",
+          "cost": "2 IP",
+          "damage_bonus": "30",
+          "defense_target_type": "def",
+          "description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Multi</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;3</span></strong></span></span></p></li></ul><p>Deal heavy <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(68, 68, 68) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a></span>&nbsp;damage to multiple targets</p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Great Cleave",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "MIG",
+          "rolled_atr2": "MIG",
+          "skill_animation_default": "",
+          "skill_animation_mode": "custom",
+          "skill_information": "",
+          "skill_range": "Melee",
+          "skill_target": "Up to three creature",
+          "skill_type": "Active",
+          "type_damage": "Physical",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "UKzHkmIJcjXZ4GFR"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "PyJdrN4gpj5sCN0o",
+      "_stats": {
+        "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
+        "coreVersion": "12.343",
+        "createdTime": 1774399999620,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215350.578.png",
+      "name": "Mug",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "<p>(async () =&gt; {</p><p>const TAG = \"[ONI][Anim][RunFront-SFX-Return]\";</p><p>const payload = globalThis.__PAYLOAD ?? {};</p><p>const DEBUG = true;</p><p>const SOUND_SRC = \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Damage3.ogg\";</p><p>const IMPACT_VFX_SRC = \"modules/JB2A_DnD5e/Library/Generic/Weapon_Attacks/Melee/Group02/TrailAttack02_01_04_Regular_OrangeRed_800x600.webm\";</p><p>const SOUND_VOLUME = 0.5;</p><p>const MOVE_OUT_MS = 320;</p><p>const HOLD_MS = 1500; // wait after impact before running back</p><p>const MOVE_BACK_MS = 320;</p><p>const APPROACH_GAP = 70;</p><p>function dbg(...args) {</p><p>if (!DEBUG) return;</p><p>console.log(TAG, ...args);</p><p>}</p><p>function warn(...args) {</p><p>console.warn(TAG, ...args);</p><p>}</p><p>function err(...args) {</p><p>console.error(TAG, ...args);</p><p>}</p><p>globalThis.ONI = globalThis.ONI ?? {};</p><p>if (!ONI.emit) {</p><p>ONI.emit = (eventName, eventPayload = {}, options = {}) =&gt; {</p><p>const { local = true, world = false } = options;</p><p>if (local) Hooks.callAll(eventName, eventPayload);</p><p>if (world) game.socket.emit(\"world\", { action: eventName, payload: eventPayload });</p><p>};</p><p>}</p><p>async function toTokenPlaceable(ref) {</p><p>if (!ref) return null;</p><p>if (typeof ref === \"string\") {</p><p>const byId = canvas.tokens?.get(ref);</p><p>if (byId) return byId;</p><p>try {</p><p>const doc = await fromUuid(ref);</p><p>if (!doc) return null;</p><p>return doc.object ?? doc.token?.object ?? doc;</p><p>} catch (e) {</p><p>warn(\"toTokenPlaceable failed fromUuid:\", ref, e);</p><p>return null;</p><p>}</p><p>}</p><p>return ref.object ?? ref.token?.object ?? ref ?? null;</p><p>}</p><p>function uniq(arr) {</p><p>return [...new Set(arr.filter(Boolean))];</p><p>}</p><p>function summarizeToken(tok) {</p><p>if (!tok) return null;</p><p>return {</p><p>id: tok.id ?? null,</p><p>name: tok.name ?? tok.document?.name ?? null,</p><p>uuid: tok.document?.uuid ?? null,</p><p>center: tok.center ? { x: tok.center.x, y: tok.center.y } : null,</p><p>x: tok.x ?? null,</p><p>y: tok.y ?? null</p><p>};</p><p>}</p><p>async function resolveSourceToken() {</p><p>const candidates = [</p><p>payload.casterTokenUuid,</p><p>payload.sourceTokenUuid,</p><p>payload.performerTokenUuid,</p><p>payload.tokenUuid,</p><p>payload.sourceTokenId,</p><p>payload.casterTokenId,</p><p>globalThis._token?.document?.uuid,</p><p>globalThis.token?.document?.uuid</p><p>];</p><p>dbg(\"resolveSourceToken candidates:\", candidates);</p><p>for (const c of candidates) {</p><p>const tok = await toTokenPlaceable(c);</p><p>if (tok) return tok;</p><p>}</p><p>return canvas.tokens?.controlled?.[0] ?? null;</p><p>}</p><p>async function resolveTargetTokens() {</p><p>const raw = uniq([</p><p>...(Array.isArray(payload.targetTokenUuids) ? payload.targetTokenUuids : []),</p><p>...(Array.isArray(payload.targetUUIDs) ? payload.targetUUIDs : []),</p><p>...(Array.isArray(payload.originalTargetUUIDs) ? payload.originalTargetUUIDs : []),</p><p>...(Array.isArray(payload.targets) ? payload.targets : []),</p><p>...(Array.from(game.user?.targets ?? []).map(t =&gt; t?.document?.uuid))</p><p>]);</p><p>dbg(\"resolveTargetTokens raw refs:\", raw);</p><p>const out = [];</p><p>for (const r of raw) {</p><p>const tok = await toTokenPlaceable(r);</p><p>if (tok) out.push(tok);</p><p>}</p><p>return out;</p><p>}</p><p>let resolvedSourceToken = null;</p><p>let resolvedTargets = [];</p><p>try {</p><p>if (!game.modules.get(\"sequencer\")?.active) {</p><p>ui.notifications.error(\"Sequencer module is not active.\");</p><p>return;</p><p>}</p><p>const sourceToken = await resolveSourceToken();</p><p>const targets = await resolveTargetTokens();</p><p>const firstTarget = targets[0] ?? null;</p><p>resolvedSourceToken = sourceToken;</p><p>resolvedTargets = targets;</p><p>dbg(\"Resolved source token:\", summarizeToken(sourceToken));</p><p>dbg(\"Resolved targets:\", targets.map(summarizeToken));</p><p>dbg(\"Payload snapshot:\", payload);</p><p>if (!sourceToken) {</p><p>ui.notifications.warn(\"No caster token found.\");</p><p>return;</p><p>}</p><p>if (!firstTarget) {</p><p>ui.notifications.warn(\"No target token found.\");</p><p>return;</p><p>}</p><p>ONI.emit(\"oni:animationStart\", {</p><p>type: \"oni.runFrontSfxReturn\",</p><p>sourceTokenId: sourceToken.id,</p><p>targetTokenIds: targets.map(t =&gt; t.id),</p><p>sceneId: canvas.scene?.id ?? null,</p><p>timestamp: Date.now()</p><p>}, { local: true, world: false });</p><p>const scriptSource = `</p><p>const { casterToken, targetTokens, params } = ctx;</p><p>if (!casterToken) throw new Error(\"Need casterToken\");</p><p>function easeInOutCubic(t) {</p><p>return t &lt; 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;</p><p>}</p><p>function animateXY(obj, from, to, durMs) {</p><p>return new Promise(resolve =&gt; {</p><p>const start = performance.now();</p><p>const ticker = canvas.app.ticker;</p><p>const update = () =&gt; {</p><p>const raw = (performance.now() - start) / durMs;</p><p>const t = Math.min(Math.max(raw, 0), 1);</p><p>const e = easeInOutCubic(t);</p><p>obj.x = from.x + (to.x - from.x) * e;</p><p>obj.y = from.y + (to.y - from.y) * e;</p><p>if (t &gt;= 1) {</p><p>ticker.remove(update);</p><p>resolve();</p><p>}</p><p>};</p><p>ticker.add(update);</p><p>});</p><p>}</p><p>function getNativeFlipX(token) {</p><p>const values = [</p><p>token?.document?.texture?.scaleX,</p><p>token?.mesh?.scale?.x,</p><p>token?.icon?.scale?.x</p><p>].filter(v =&gt; typeof v === \"number\");</p><p>if (values.some(v =&gt; v &lt; 0)) return true;</p><p>const mirrorX = token?.document?.texture?.mirrorX;</p><p>if (typeof mirrorX === \"boolean\") return mirrorX;</p><p>return false;</p><p>}</p><p>function setSpriteFlipX(sprite, flipped) {</p><p>const sx = Math.abs(sprite.scale.x || 1);</p><p>sprite.scale.x = flipped ? -sx : sx;</p><p>}</p><p>async function createClone(token) {</p><p>const baseObj = token.mesh ?? token.icon;</p><p>const texture = baseObj?.texture ?? await loadTexture(token.document.texture.src);</p><p>const sprite = new PIXI.Sprite(texture);</p><p>sprite.anchor.set(0.5);</p><p>const home = { x: token.center.x, y: token.center.y };</p><p>sprite.x = home.x;</p><p>sprite.y = home.y;</p><p>if (baseObj) {</p><p>sprite.width = Math.abs(baseObj.width);</p><p>sprite.height = Math.abs(baseObj.height);</p><p>sprite.alpha = baseObj.worldAlpha ?? 1;</p><p>sprite.rotation = baseObj.rotation ?? 0;</p><p>}</p><p>sprite.zIndex = Number(params.zIndex ?? 5000);</p><p>canvas.stage.sortableChildren = true;</p><p>canvas.stage.addChild(sprite);</p><p>canvas.stage.sortChildren();</p><p>setSpriteFlipX(sprite, getNativeFlipX(token));</p><p>return sprite;</p><p>}</p><p>const activeFx = new Set();</p><p>async function playImpactVfx(targetToken, src) {</p><p>if (!targetToken || !src) return;</p><p>let sprite = null;</p><p>let cleaned = false;</p><p>const cleanup = () =&gt; {</p><p>if (cleaned) return;</p><p>cleaned = true;</p><p>try {</p><p>const source = sprite?.texture?.baseTexture?.resource?.source;</p><p>if (source &amp;&amp; typeof source.pause === \"function\") source.pause();</p><p>} catch (_) {}</p><p>try {</p><p>if (sprite?.parent) sprite.parent.removeChild(sprite);</p><p>} catch (_) {}</p><p>try {</p><p>sprite?.destroy();</p><p>} catch (_) {}</p><p>activeFx.delete(sprite);</p><p>};</p><p>try {</p><p>const texture = await loadTexture(src);</p><p>sprite = new PIXI.Sprite(texture);</p><p>activeFx.add(sprite);</p><p>sprite.anchor.set(0.5);</p><p>const center = targetToken.center ?? { x: 0, y: 0 };</p><p>const maxDim = Math.max(targetToken.w ?? 100, targetToken.h ?? 100);</p><p>const width = Number(params.impactVfxWidth ?? (maxDim * 2.4));</p><p>const height = Number(params.impactVfxHeight ?? (width * 0.75));</p><p>sprite.x = center.x;</p><p>sprite.y = center.y;</p><p>sprite.width = width;</p><p>sprite.height = height;</p><p>sprite.alpha = Number(params.impactVfxAlpha ?? 1);</p><p>sprite.rotation = 0;</p><p>sprite.zIndex = Number(params.impactVfxZIndex ?? ((params.zIndex ?? 5000) + 1));</p><p>canvas.stage.sortableChildren = true;</p><p>canvas.stage.addChild(sprite);</p><p>canvas.stage.sortChildren();</p><p>const media = texture?.baseTexture?.resource?.source;</p><p>if (media) {</p><p>try {</p><p>media.muted = true;</p><p>media.loop = false;</p><p>media.currentTime = 0;</p><p>} catch (_) {}</p><p>if (typeof media.play === \"function\") {</p><p>const playPromise = media.play();</p><p>if (playPromise?.catch) playPromise.catch(() =&gt; {});</p><p>}</p><p>if (\"onended\" in media) {</p><p>media.onended = () =&gt; cleanup();</p><p>}</p><p>}</p><p>const durationMs =</p><p>Number.isFinite(media?.duration) &amp;&amp; media.duration &gt; 0</p><p>? Math.ceil(media.duration * 1000) + 50</p><p>: Number(params.impactVfxFallbackMs ?? 900);</p><p>await wait(durationMs);</p><p>cleanup();</p><p>} catch (e) {</p><p>console.error(\"[ONI][Anim][RunFront-SFX-Return][PseudoVFX] Failed to play impact VFX:\", e);</p><p>cleanup();</p><p>}</p><p>}</p><p>const baseMesh = casterToken.mesh ?? casterToken.icon;</p><p>const originalTokenVisible = casterToken.visible;</p><p>const originalMeshVisible = baseMesh?.visible ?? true;</p><p>const originalFlipX = getNativeFlipX(casterToken);</p><p>const home = { x: casterToken.center.x, y: casterToken.center.y };</p><p>const target = targetTokens?.[0] ?? null;</p><p>let sprite;</p><p>try {</p><p>sprite = await createClone(casterToken);</p><p>if (baseMesh) baseMesh.visible = false;</p><p>casterToken.visible = false;</p><p>let front = {</p><p>x: home.x + Number(params.fallbackDx ?? -120),</p><p>y: home.y</p><p>};</p><p>if (target) {</p><p>const targetCenter = target.center ?? { x: home.x, y: home.y };</p><p>const approachDir = home.x &gt;= targetCenter.x ? 1 : -1;</p><p>const gap = Number(</p><p>params.approachGap ??</p><p>Math.max(casterToken.w ?? 100, target.w ?? 100) * 0.6</p><p>);</p><p>front = {</p><p>x: targetCenter.x + (approachDir * gap),</p><p>y: targetCenter.y</p><p>};</p><p>}</p><p>// Run in</p><p>setSpriteFlipX(sprite, originalFlipX);</p><p>await animateXY(</p><p>sprite,</p><p>home,</p><p>front,</p><p>Number(params.moveOutMs ?? 320)</p><p>);</p><p>// Play target impact VFX right when the caster reaches the target.</p><p>if (target &amp;&amp; params.impactVfxSrc) {</p><p>playImpactVfx(target, params.impactVfxSrc);</p><p>}</p><p>// Hold while the impact window plays</p><p>if (Number(params.holdMs ?? 0) &gt; 0) {</p><p>await wait(Number(params.holdMs ?? 0));</p><p>}</p><p>// Flip for the run back</p><p>setSpriteFlipX(sprite, !originalFlipX);</p><p>await animateXY(</p><p>sprite,</p><p>front,</p><p>home,</p><p>Number(params.moveBackMs ?? params.moveOutMs ?? 320)</p><p>);</p><p>} finally {</p><p>for (const fx of Array.from(activeFx)) {</p><p>try {</p><p>const source = fx?.texture?.baseTexture?.resource?.source;</p><p>if (source &amp;&amp; typeof source.pause === \"function\") source.pause();</p><p>} catch (_) {}</p><p>try {</p><p>if (fx?.parent) fx.parent.removeChild(fx);</p><p>} catch (_) {}</p><p>try {</p><p>fx?.destroy();</p><p>} catch (_) {}</p><p>}</p><p>activeFx.clear();</p><p>if (sprite) {</p><p>canvas.stage.removeChild(sprite);</p><p>sprite.destroy();</p><p>}</p><p>if (baseMesh) baseMesh.visible = originalMeshVisible;</p><p>casterToken.visible = originalTokenVisible;</p><p>}</p><p>`;</p><p>dbg(\"Starting pseudo movement session.\");</p><p>game.ONI.pseudo.play({</p><p>scriptId: \"oni.runFrontSfxReturn.flipAware\",</p><p>scriptSource,</p><p>casterTokenUuid: sourceToken.document.uuid,</p><p>targetTokenUuids: [firstTarget.document.uuid],</p><p>params: {</p><p>moveOutMs: MOVE_OUT_MS,</p><p>holdMs: HOLD_MS,</p><p>moveBackMs: MOVE_BACK_MS,</p><p>approachGap: APPROACH_GAP,</p><p>fallbackDx: sourceToken.center.x &gt;= firstTarget.center.x ? -120 : 120,</p><p>zIndex: 5000,</p><p>impactVfxSrc: IMPACT_VFX_SRC,</p><p>impactVfxFallbackMs: 900,</p><p>impactVfxWidth: Math.max(firstTarget.w ?? 100, firstTarget.h ?? 100) * 2.4,</p><p>impactVfxHeight: Math.max(firstTarget.w ?? 100, firstTarget.h ?? 100) * 1.8,</p><p>impactVfxAlpha: 1,</p><p>impactVfxZIndex: 5001</p><p>},</p><p>meta: {</p><p>source: \"RunFrontSfxReturn\",</p><p>soundSrc: SOUND_SRC,</p><p>impactVfxSrc: IMPACT_VFX_SRC</p><p>}</p><p>});</p><p>// Sequencer handles SFX only.</p><p>dbg(\"Starting Sequencer SFX.\");</p><p>const sfxSeq = new Sequence();</p><p>sfxSeq</p><p>.wait(MOVE_OUT_MS)</p><p>.sound()</p><p>.file(SOUND_SRC)</p><p>.volume(SOUND_VOLUME);</p><p>sfxSeq.play();</p><p>// Wait for the whole cinematic window before ending.</p><p>await wait(MOVE_OUT_MS + HOLD_MS + MOVE_BACK_MS + 80);</p><p>dbg(\"Animation wait window finished.\");</p><p>} catch (e) {</p><p>err(\"Animation crashed:\", e);</p><p>} finally {</p><p>try {</p><p>ONI.emit(\"oni:animationEnd\", {</p><p>type: \"oni.runFrontSfxReturn\",</p><p>sourceTokenId: resolvedSourceToken?.id ?? null,</p><p>targetTokenIds: resolvedTargets.map(t =&gt; t.id),</p><p>sceneId: canvas.scene?.id ?? null,</p><p>timestamp: Date.now()</p><p>}, { local: true, world: false });</p><p>dbg(\"Emitted oni:animationEnd.\", {</p><p>sourceTokenId: resolvedSourceToken?.id ?? null,</p><p>targetTokenIds: resolvedTargets.map(t =&gt; t.id)</p><p>});</p><p>} catch (e) {</p><p>err(\"Failed to emit animationEnd:\", e);</p><p>}</p><p>}</p><p>})();</p>",
+          "check_bonus": "5",
+          "class": "NPC",
+          "cost": "10 MP",
+          "custom_logic_action": "",
+          "custom_logic_resolution": "<p>const TAG = \"[CL-RES][IP-DRAIN-2]\";</p><p>const p = __PAYLOAD;</p><p>const args = globalThis.__ARGS ?? p?.__confirmArgs ?? {};</p><p>if (!p) {</p><p>console.warn(TAG, \"Missing __PAYLOAD.\");</p><p>return;</p><p>}</p><p>const userActor = await context.helpers.getAttackerActor();</p><p>if (!userActor) {</p><p>console.warn(TAG, \"Missing user actor.\");</p><p>return;</p><p>}</p><p>const targetUuids = Array.isArray(p.targets) ? p.targets : [];</p><p>if (!targetUuids.length) {</p><p>console.warn(TAG, \"No targets found.\");</p><p>return;</p><p>}</p><p>const accTotal = Number(p?.accuracy?.total ?? args?.accuracyTotal ?? NaN);</p><p>const hasAccuracy =</p><p>(typeof args?.hasAccuracy === \"boolean\") ? args.hasAccuracy : !!p?.accuracy;</p><p>const autoHit = !!(args?.autoHit || p?.advPayload?.autoHit || p?.accuracy?.isCrit);</p><p>const escapeHTML = foundry?.utils?.escapeHTML ?? ((v) =&gt; String(v ?? \"\"));</p><p>const getDef = (targetUuid, targetActor) =&gt; {</p><p>const row = p?.meta?.defenseSnapshot?.perTarget?.find(r =&gt; r?.uuid === targetUuid);</p><p>return Number(row?.defense ?? targetActor?.system?.props?.defense ?? 0) || 0;</p><p>};</p><p>const isHit = (targetUuid, targetActor) =&gt; {</p><p>const targetDef = getDef(targetUuid, targetActor);</p><p>if (!hasAccuracy) return true;</p><p>if (autoHit) return true;</p><p>if (!Number.isFinite(accTotal)) return false;</p><p>return accTotal &gt;= targetDef;</p><p>};</p><p>const getUserTokenName = () =&gt; {</p><p>if (typeof _token !== \"undefined\" &amp;&amp; _token?.name) return _token.name;</p><p>return userActor?.name ?? \"User\";</p><p>};</p><p>const getTargetDisplayName = (targetDoc, targetActor) =&gt; {</p><p>return targetDoc?.name ?? targetActor?.name ?? \"Target\";</p><p>};</p><p>async function postStealFeedbackHtml(innerHtml) {</p><p>const FLAG_SCOPE = \"fabula-ultima-companion\";</p><p>const FLAG_KEY = \"oniHideChatHeader\";</p><p>let hookId = null;</p><p>hookId = Hooks.on(\"renderChatMessage\", (message, html) =&gt; {</p><p>if (!message?.getFlag?.(FLAG_SCOPE, FLAG_KEY)) return;</p><p>html.find(\".message-header\").remove();</p><p>html.find(\".message-sender\").remove();</p><p>html.find(\".message-metadata\").remove();</p><p>html.find(\".message-avatar\").remove();</p><p>html.find(\".chat-portrait-container\").remove();</p><p>html.find(\".chat-portrait-message-portrait\").remove();</p><p>html.find(\".chat-portrait-image\").remove();</p><p>html.find(\"img.chat-portrait\").remove();</p><p>Hooks.off(\"renderChatMessage\", hookId);</p><p>});</p><p>await ChatMessage.create({</p><p>user: game.user.id,</p><p>type: CONST.CHAT_MESSAGE_TYPES.OTHER,</p><p>speaker: { alias: \"\" },</p><p>content: `</p><p></p><div class=\"oni-ip-steal-feedback\" style=\"padding:4px 2px;\"><p></p><p>${innerHtml}</p><p></p></div><p></p><p>`,</p><p>flags: {</p><p>[FLAG_SCOPE]: {</p><p>[FLAG_KEY]: true</p><p>}</p><p>}</p><p>});</p><p>}</p><p>for (const targetUuid of targetUuids) {</p><p>const targetDoc = await fromUuid(targetUuid);</p><p>const targetActor = targetDoc?.actor ?? targetDoc;</p><p>if (!targetActor) continue;</p><p>const userTokenName = getUserTokenName();</p><p>const targetName = getTargetDisplayName(targetDoc, targetActor);</p><p>const targetDef = getDef(targetUuid, targetActor);</p><p>const hit = isHit(targetUuid, targetActor);</p><p>console.log(TAG, \"HIT CHECK\", {</p><p>user: userActor?.name,</p><p>userTokenName,</p><p>target: targetActor?.name,</p><p>targetName,</p><p>accTotal,</p><p>hasAccuracy,</p><p>autoHit,</p><p>targetDef,</p><p>hit</p><p>});</p><p>if (!hit) {</p><p>await postStealFeedbackHtml(`Fail to steal anything.`);</p><p>continue;</p><p>}</p><p>const targetIpBefore = Math.max(</p><p>0,</p><p>parseInt(targetActor?.system?.props?.current_ip ?? \"0\", 10) || 0</p><p>);</p><p>const userIpBefore = Math.max(</p><p>0,</p><p>parseInt(userActor?.system?.props?.current_ip ?? \"0\", 10) || 0</p><p>);</p><p>const userMaxIp = Math.max(</p><p>0,</p><p>parseInt(userActor?.system?.props?.max_ip ?? \"0\", 10) || 0</p><p>);</p><p>const requestedSteal = 2;</p><p>// The steal amount depends only on the target's current IP.</p><p>// Even if the user is already at max IP, the target still loses IP.</p><p>const actualSteal = Math.min(requestedSteal, targetIpBefore);</p><p>if (actualSteal &lt;= 0) {</p><p>console.log(TAG, \"No IP stolen\", {</p><p>user: userActor?.name,</p><p>userTokenName,</p><p>target: targetActor?.name,</p><p>targetName,</p><p>requestedSteal,</p><p>targetIpBefore,</p><p>userIpBefore,</p><p>userMaxIp</p><p>});</p><p>await postStealFeedbackHtml(`Fail to steal anything.`);</p><p>continue;</p><p>}</p><p>const targetIpAfter = Math.max(0, targetIpBefore - actualSteal);</p><p>// User gain is clamped by max IP, but does not affect the steal amount.</p><p>const actualGain = Math.min(actualSteal, Math.max(0, userMaxIp - userIpBefore));</p><p>const userIpAfter = Math.min(userMaxIp, userIpBefore + actualGain);</p><p>await targetActor.update({</p><p>\"system.props.current_ip\": String(targetIpAfter)</p><p>});</p><p>await userActor.update({</p><p>\"system.props.current_ip\": String(userIpAfter)</p><p>});</p><p>console.log(TAG, \"IP TRANSFER APPLIED\", {</p><p>user: userActor?.name,</p><p>userTokenName,</p><p>target: targetActor?.name,</p><p>targetName,</p><p>requestedSteal,</p><p>actualSteal,</p><p>actualGain,</p><p>targetIpBefore,</p><p>targetIpAfter,</p><p>userIpBefore,</p><p>userIpAfter,</p><p>userMaxIp</p><p>});</p><p>await postStealFeedbackHtml(</p><p>`<strong>${escapeHTML(userTokenName)}</strong> steals <strong>${escapeHTML(actualSteal)} IP</strong> from <strong>${escapeHTML(targetName)}</strong>!`</p><p>);</p><p>}</p>",
+          "damage_bonus": "20",
+          "defense_target_type": "def",
+          "description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KjziTkOpdzd99KZa\" data-id=\"KjziTkOpdzd99KZa\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Thievery</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;2</span></strong></span></span></p></li></ul><p>Deal light <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(68, 68, 68) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a></span></span>&nbsp;damage to the target, if this attack <strong>hit</strong>, the target loses <strong>2 IP</strong></p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Mug",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "MIG",
+          "rolled_atr2": "DEX",
+          "skill_animation_default": "",
+          "skill_animation_mode": "custom",
+          "skill_information": "",
+          "skill_range": "Melee",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "Physical",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "UKzHkmIJcjXZ4GFR"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "tbXLOBGNqOPGJ9rT",
+      "_stats": {
+        "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
+        "coreVersion": "12.343",
+        "createdTime": 1774115384667,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "9yFl7Fv0z7AiJRgS",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1774116122183,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p>Reduce <strong>Attack </strong>damage</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 3,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "core": {
+              "overlay": false
+            },
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "isPredefined": true,
+              "originalId": "n0OxEa26nnGFsoRO",
+              "originalParentId": "XVOWOq9oUmEECGrU",
+              "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.n0OxEa26nnGFsoRO"
+            },
+            "dfreds-convenient-effects": {
+              "ceEffectId": "ce-bane",
+              "isBackup": false,
+              "isConvenient": true,
+              "isDynamic": false,
+              "isTemporary": false,
+              "isViewable": true
+            },
+            "statuscounter": {
+              "config": {
+                "durationType": 1,
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/basic_instinct.png",
+          "name": "Bane",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "gX1fA3onNG7wsyap"
+          ],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "EujKrOYEbTxWIVM6",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1774116142141,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "mig_current",
+              "mode": 2,
+              "priority": 1,
+              "value": "2"
+            }
+          ],
+          "description": "<p>Increse <strong>【MIG】</strong>die by one stage</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "core": {
+              "overlay": false
+            },
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "isPredefined": true,
+              "originalId": "3nsIFfF2H0A9HxON",
+              "originalParentId": "0rfKFWTyPt7TfUvl",
+              "originalUuid": "Item.0rfKFWTyPt7TfUvl.ActiveEffect.3nsIFfF2H0A9HxON"
+            },
+            "dfreds-convenient-effects": {
+              "ceEffectId": "strong",
+              "isBackup": false,
+              "isConvenient": true,
+              "isDynamic": false,
+              "isTemporary": false,
+              "isViewable": true
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/AttackUp.png",
+          "name": "Strong",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215350.578.png",
+      "name": "Steal Strength",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {
+            "0": {
+              "$deleted": false,
+              "active_effect_application": "add",
+              "active_effect_apply_mode": "percentage",
+              "active_effect_dice_1": "",
+              "active_effect_dice_2": "",
+              "active_effect_dl": "0",
+              "active_effect_id": "9yFl7Fv0z7AiJRgS",
+              "active_effect_percent": "100",
+              "active_effect_target": "enemy",
+              "active_effect_trigger": "on_hit"
+            },
+            "1": {
+              "$deleted": false,
+              "active_effect_application": "add",
+              "active_effect_apply_mode": "percentage",
+              "active_effect_dice_1": "",
+              "active_effect_dice_2": "",
+              "active_effect_dl": "0",
+              "active_effect_id": "EujKrOYEbTxWIVM6",
+              "active_effect_percent": "100",
+              "active_effect_target": "self",
+              "active_effect_trigger": "on_hit"
+            }
+          },
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "5",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "",
+          "defense_target_type": "def",
+          "description": "<p>On <strong>hit, </strong>inflicts <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.SNK1IJTKfxjAy2NS\" data-id=\"SNK1IJTKfxjAy2NS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bane</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span>to the target, then, this creature gain <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Gg1ot3L3XPuiGkym\" data-id=\"Gg1ot3L3XPuiGkym\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Strong</span></strong></a></span></p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Steal Strength",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "MIG",
+          "rolled_atr2": "MIG",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Melee",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "UKzHkmIJcjXZ4GFR"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "XHjT96e7TZGZRkTF",
+      "_stats": {
+        "compendiumSource": "Item.XnhMQfWfxKi7wukc",
+        "coreVersion": "12.343",
+        "createdTime": 1775136111990,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Headgear/5361.gif",
+      "name": "Red Panty",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 100000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<p>A big-sized worned undergarment of someone, its bright red color makes it stands out in dark places</p>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flavor_text": "<p><em>You don't want to know where this panty have been….</em></p>",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "300",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Uncommon",
+          "item_type": "material",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Red Panty",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "<Set Name>",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "XnhMQfWfxKi7wukc"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Bandit Berserker",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 50,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          }
+        }
+      },
+      "hex-size-support": {
+        "hideBorder": true,
+        "hideFill": true
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Bandit Berserker",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1.89,
+      "scaleY": 1.89,
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/BanditBerserker_Standard.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 2503125,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {
+      "action_pattern_table": {
+        "0": {
+          "$deleted": false,
+          "action_pattern_condition": "always",
+          "action_pattern_name": "Heavy Axe",
+          "action_pattern_priority": "5",
+          "action_pattern_string": "",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "100"
+        },
+        "1": {
+          "$deleted": false,
+          "action_pattern_condition": "always",
+          "action_pattern_name": "Grappled",
+          "action_pattern_priority": "3",
+          "action_pattern_string": "",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "100"
+        },
+        "2": {
+          "$deleted": false,
+          "action_pattern_condition": "always",
+          "action_pattern_name": "Steal Strength",
+          "action_pattern_priority": "4",
+          "action_pattern_string": "",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "100"
+        },
+        "3": {
+          "$deleted": false,
+          "action_pattern_condition": "ip",
+          "action_pattern_name": "Great Cleave",
+          "action_pattern_priority": "9",
+          "action_pattern_string": "",
+          "action_pattern_value_1": "33",
+          "action_pattern_value_2": "100"
+        },
+        "4": {
+          "$deleted": false,
+          "action_pattern_condition": "always",
+          "action_pattern_name": "Mug",
+          "action_pattern_priority": "5",
+          "action_pattern_string": "",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "100"
+        }
+      },
+      "activation": "1",
+      "affinity_1": "RS",
+      "affinity_2": "NA",
+      "affinity_3": "NA",
+      "affinity_4": "NA",
+      "affinity_5": "VU",
+      "affinity_6": "NA",
+      "affinity_7": "NA",
+      "affinity_8": "NA",
+      "affinity_9": "RS",
+      "animation_table": {},
+      "arcane_ef": "100",
+      "attack_accuracy_mod_all": 0,
+      "attack_accuracy_mod_magic": 0,
+      "attack_accuracy_mod_melee": 0,
+      "attack_accuracy_mod_ranged": 0,
+      "attack_list": {
+        "0NVkrEGWW0CInjLY": {
+          "active_target": "One Creature",
+          "attack_description": "<p>On <strong>hit, </strong>the target rolls a <strong>DL 12 【MIG】+【MIG】check, </strong>on a failure, inflicts <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Grappled</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span>to the target</p>",
+          "attribute_die1": "MIG",
+          "attribute_die2": "MIG",
+          "id": "${item.id}",
+          "name": "Grappled",
+          "roll": "",
+          "uuid": "Actor.Ax1nVCBhZOG0ZzHx.Item.0NVkrEGWW0CInjLY"
+        },
+        "4tw3W8tJnLStGRdm": {
+          "active_target": "One Creature",
+          "attack_description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.7PQDwyX0RPf0djPL\" data-id=\"7PQDwyX0RPf0djPL\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Backstab</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>Inflicts <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a></span>&nbsp;to the target</p></li></ul>",
+          "attribute_die1": "MIG",
+          "attribute_die2": "MIG",
+          "id": "${item.id}",
+          "name": "Heavy Axe",
+          "roll": "",
+          "uuid": "Actor.Ax1nVCBhZOG0ZzHx.Item.4tw3W8tJnLStGRdm"
+        }
+      },
+      "attribute": "",
+      "battle_facing_direction": "right",
+      "bonus_hp": 0,
+      "bonus_mp": 0,
+      "bow_ef": "75",
+      "brawling_ef": "75",
+      "condition_anomaly": "NA",
+      "condition_bane": "NA",
+      "condition_berserk": "NA",
+      "condition_bleed": "NA",
+      "condition_blind": "NA",
+      "condition_burn": "NA",
+      "condition_charm": "NA",
+      "condition_confused": "NA",
+      "condition_curse": "NA",
+      "condition_dazed": "NA",
+      "condition_delayed": "NA",
+      "condition_despair": "NA",
+      "condition_disarmed": "NA",
+      "condition_doom": "NA",
+      "condition_enraged": "NA",
+      "condition_envenomed": "NA",
+      "condition_fatigue": "NA",
+      "condition_frightened": "NA",
+      "condition_grappled": "IM",
+      "condition_hypothermia": "NA",
+      "condition_isolate": "NA",
+      "condition_obscure": "NA",
+      "condition_oil": "NA",
+      "condition_panic": "NA",
+      "condition_paralyzed": "NA",
+      "condition_petrify": "NA",
+      "condition_poisoned": "NA",
+      "condition_shaken": "NA",
+      "condition_silence": "NA",
+      "condition_slow": "NA",
+      "condition_stagger": "NA",
+      "condition_suppress": "NA",
+      "condition_turbulence": "NA",
+      "condition_weak": "IM",
+      "condition_wet": "NA",
+      "condition_wither": "NA",
+      "condition_zombie": "NA",
+      "critical_damage_bonus": 0,
+      "critical_damage_multiplier": 1,
+      "critical_dice_range": 0,
+      "current_hp": "143",
+      "current_ip": "0",
+      "current_mp": "10",
+      "cut_in_critical": "",
+      "cut_in_fumble": "",
+      "cut_in_offset_y": "",
+      "cut_in_zero_power": "",
+      "dagger_ef": "75",
+      "damage_receiving_mod_air": 0,
+      "damage_receiving_mod_all": 0,
+      "damage_receiving_mod_bolt": 0,
+      "damage_receiving_mod_dark": 0,
+      "damage_receiving_mod_earth": 0,
+      "damage_receiving_mod_fire": 0,
+      "damage_receiving_mod_ice": 0,
+      "damage_receiving_mod_light": 0,
+      "damage_receiving_mod_melee": 0,
+      "damage_receiving_mod_physical": 0,
+      "damage_receiving_mod_poison": 0,
+      "damage_receiving_mod_range": 0,
+      "def_mod": "+0",
+      "default_facing_direction": "left",
+      "defense": 8,
+      "dex_base": "8",
+      "dex_current": 8,
+      "enmity": 100,
+      "event_timeline_table": {},
+      "extra_damage_mod_air": 0,
+      "extra_damage_mod_all": 0,
+      "extra_damage_mod_arcane": 0,
+      "extra_damage_mod_bolt": 0,
+      "extra_damage_mod_bow": 0,
+      "extra_damage_mod_brawling": 0,
+      "extra_damage_mod_dagger": 0,
+      "extra_damage_mod_dark": 0,
+      "extra_damage_mod_earth": 0,
+      "extra_damage_mod_fire": 0,
+      "extra_damage_mod_firearm": 0,
+      "extra_damage_mod_flail": 0,
+      "extra_damage_mod_heavy": 0,
+      "extra_damage_mod_ice": 0,
+      "extra_damage_mod_light": 0,
+      "extra_damage_mod_melee": 0,
+      "extra_damage_mod_physical": 0,
+      "extra_damage_mod_poison": 0,
+      "extra_damage_mod_ranged": 0,
+      "extra_damage_mod_spear": 0,
+      "extra_damage_mod_spell": 0,
+      "extra_damage_mod_sword": 0,
+      "extra_damage_mod_thrown": 0,
+      "firearm_ef": "75",
+      "flail_ef": "125",
+      "gorger": false,
+      "heavy_ef": "125",
+      "icon_offset_x": "",
+      "icon_offset_y": "",
+      "icon_scale": "",
+      "id": "Ax1nVCBhZOG0ZzHx",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/BanditBerserker_Standard.png",
+      "init": "6",
+      "ins_base": "6",
+      "ins_current": 6,
+      "isAlmighty": false,
+      "isAwake": false,
+      "isBlacksmith": false,
+      "isBoss": false,
+      "isClarity": false,
+      "isCustomEvent": false,
+      "isDazed": false,
+      "isEnergized": false,
+      "isEnlighten": false,
+      "isEnraged": false,
+      "isFocus": false,
+      "isMasterful": false,
+      "isPhantasm": false,
+      "isPoisoned": false,
+      "isShaken": false,
+      "isShop": false,
+      "isSlow": false,
+      "isStolen": false,
+      "isStrong": false,
+      "isSummon": false,
+      "isSwift": false,
+      "isUnyielding": false,
+      "isVillain": false,
+      "isWeak": false,
+      "level": "30",
+      "lifesteal_percentage": 0,
+      "lifesteal_value": 0,
+      "magic_defense": 6,
+      "manadrain_percentage": 0,
+      "manadrain_value": 0,
+      "max_hp": "143",
+      "max_ip": "6",
+      "max_mp": "10",
+      "max_zero": "6",
+      "mdef_mod": "+0",
+      "mig_base": "12",
+      "mig_current": 12,
+      "mimic": false,
+      "minimum_critical_dice": 6,
+      "name": "Bandit Berserker",
+      "npc_rank": "elite",
+      "override_damage_type": "None",
+      "rare": false,
+      "resource_maxValue_1": "0",
+      "resource_maxValue_2": "0",
+      "resource_maxValue_3": "0",
+      "resource_value_1": "0",
+      "resource_value_2": "0",
+      "resource_value_3": "0",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "shield_type": "PHYSICAL",
+      "shield_value": "0",
+      "shop_armor_list": {
+        "kaUgpWmsIN22qeJ8": {
+          "armor_bonusdef": 0,
+          "armor_bonusmdef": 0,
+          "armor_buy": "",
+          "armor_cost": 2500,
+          "armor_def": 0,
+          "armor_description": "<ul><li><p>Increase you <strong>MIG die </strong>by one stage</p></li><li><p>This armor <strong>Base DEF </strong>is equal to Your <strong>【 MIG 】</strong>die size</p></li></ul>",
+          "armor_martial": "",
+          "armor_mdef": 0,
+          "armor_quantity": 1,
+          "id": "${item.id}",
+          "name": "Red Panty",
+          "set_name": "<Set Name>",
+          "uuid": "Actor.Ax1nVCBhZOG0ZzHx.Item.kaUgpWmsIN22qeJ8"
+        }
+      },
+      "shop_consumable_list": {
+        "hHEi7hpYEM4GkG1C": {
+          "consumable_buy": "",
+          "consumable_cost": 150,
+          "consumable_descriptions": "<ul><li>Inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.x6ByoJnflDAuVn9r\" data-id=\"x6ByoJnflDAuVn9r\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Charm</span></strong></a></span></span> on the target&nbsp;<strong>Humanoid</strong> which last until the end of this round. Have no effect on Champion-Rank creature</li><li>When use outside of <strong>conflict, </strong>the effect last until the end of the <strong>scene </strong>instead</li></ul>",
+          "consumable_quantity": 1,
+          "id": "${item.id}",
+          "name": "Love Potion",
+          "uuid": "Actor.Ax1nVCBhZOG0ZzHx.Item.hHEi7hpYEM4GkG1C"
+        }
+      },
+      "shop_weapon_list": {
+        "kIAOYBqOP53leYEw": {
+          "id": "${item.id}",
+          "name": "Soul of Pillage",
+          "uuid": "Actor.Ax1nVCBhZOG0ZzHx.Item.kIAOYBqOP53leYEw",
+          "weapon_buy": "",
+          "weapon_category": "Heavy",
+          "weapon_cost": 2550,
+          "weapon_hand": "Two-handed",
+          "weapon_martial": "♦️",
+          "weapon_quality": "<p><ul><li><p>Each target hit by this weapon suffers <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\" data-id=\"XkuOy0BFvKJTewGS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Enraged</span></strong></a></span></p></li><li>When you reduce a target to <strong>0</strong> <strong>HP</strong> with this weapon, gain <strong>2</strong> <strong>IP</strong></li></ul></p>",
+          "weapon_quantity": 1,
+          "weapon_range": "Melee",
+          "weapon_set": ""
+        }
+      },
+      "showMacro": false,
+      "skill_active_list": {
+        "FyKn0mBVh8OQRB4m": {
+          "active_cost": "10 MP",
+          "active_description": "<p>Inflicts <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.c4sYPClmvld4TEK8\" data-id=\"c4sYPClmvld4TEK8\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Provoked</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span>to the target</p>",
+          "active_duration": "Instantaneous",
+          "active_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Taunt",
+          "roll": "",
+          "uuid": "Actor.Ax1nVCBhZOG0ZzHx.Item.FyKn0mBVh8OQRB4m"
+        },
+        "PyJdrN4gpj5sCN0o": {
+          "active_cost": "10 MP",
+          "active_description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KjziTkOpdzd99KZa\" data-id=\"KjziTkOpdzd99KZa\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Thievery</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;2</span></strong></span></span></p></li></ul><p>Deal light <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(68, 68, 68) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a></span></span>&nbsp;damage to the target, if this attack <strong>hit</strong>, the target loses <strong>2 IP</strong></p>",
+          "active_duration": "Instantaneous",
+          "active_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Mug",
+          "roll": "",
+          "uuid": "Actor.Ax1nVCBhZOG0ZzHx.Item.PyJdrN4gpj5sCN0o"
+        },
+        "npy8QJ41kOE6FYkp": {
+          "active_cost": "2 IP",
+          "active_description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Multi</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;3</span></strong></span></span></p></li></ul><p>Deal heavy <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(68, 68, 68) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a></span>&nbsp;damage to multiple targets</p>",
+          "active_duration": "Instantaneous",
+          "active_target": "Up to three creature",
+          "id": "${item.id}",
+          "name": "Great Cleave",
+          "roll": "",
+          "uuid": "Actor.Ax1nVCBhZOG0ZzHx.Item.npy8QJ41kOE6FYkp"
+        },
+        "tbXLOBGNqOPGJ9rT": {
+          "active_cost": "-",
+          "active_description": "<p>On <strong>hit, </strong>inflicts <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.SNK1IJTKfxjAy2NS\" data-id=\"SNK1IJTKfxjAy2NS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bane</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span>to the target, then, this creature gain <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Gg1ot3L3XPuiGkym\" data-id=\"Gg1ot3L3XPuiGkym\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Strong</span></strong></a></span></p>",
+          "active_duration": "Instantaneous",
+          "active_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Steal Strength",
+          "roll": "",
+          "uuid": "Actor.Ax1nVCBhZOG0ZzHx.Item.tbXLOBGNqOPGJ9rT"
+        }
+      },
+      "skill_passive_list": {
+        "60pJFzNrMVg4EmEn": {
+          "id": "${item.id}",
+          "name": "Strong Arm",
+          "passive_description": "<p>Increase the <strong>Escape</strong> <strong>DL </strong>of <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Grappled</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span>effects cause by the <strong>Bandit Berserker</strong> to 12</p>",
+          "roll": "",
+          "uuid": "Actor.Ax1nVCBhZOG0ZzHx.Item.60pJFzNrMVg4EmEn"
+        },
+        "Lq6TWBAadoRGUwHo": {
+          "id": "${item.id}",
+          "name": "Berserk",
+          "passive_description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Trigger</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>When this creature enter <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></p></li></ul><p>Inflicts <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.aPF9gzkqnUkcQmIC\" data-id=\"aPF9gzkqnUkcQmIC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Berserk</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span>to self</p>",
+          "roll": "",
+          "uuid": "Actor.Ax1nVCBhZOG0ZzHx.Item.Lq6TWBAadoRGUwHo"
+        },
+        "gow4I5r5kTmya7t6": {
+          "id": "${item.id}",
+          "name": "Generic NPC Passive",
+          "passive_description": "",
+          "roll": "",
+          "uuid": "Actor.Ax1nVCBhZOG0ZzHx.Item.gow4I5r5kTmya7t6"
+        }
+      },
+      "spear_ef": "100",
+      "species": "HUMANOID",
+      "sprite_battle": "",
+      "sprite_standard": "",
+      "steal_percentage_table": {
+        "0": {
+          "$deleted": false,
+          "loot_id": "Soul of Pillage",
+          "loot_percentage": "10"
+        },
+        "1": {
+          "$deleted": false,
+          "loot_id": "Red Panty",
+          "loot_percentage": "35"
+        },
+        "2": {
+          "$deleted": false,
+          "loot_id": "(Empty)",
+          "loot_percentage": "40"
+        },
+        "3": {
+          "$deleted": false,
+          "loot_id": "Love Potion",
+          "loot_percentage": "15"
+        }
+      },
+      "stealable_loot": {
+        "XHjT96e7TZGZRkTF": {
+          "id": "${item.id}",
+          "loot_description": "<p>A big-sized worned undergarment of someone, its bright red color makes it stands out in dark places</p>",
+          "name": "Red Panty",
+          "roll": "",
+          "uuid": "Actor.Ax1nVCBhZOG0ZzHx.Item.XHjT96e7TZGZRkTF"
+        },
+        "hHEi7hpYEM4GkG1C": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li>Inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.x6ByoJnflDAuVn9r\" data-id=\"x6ByoJnflDAuVn9r\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Charm</span></strong></a></span></span> on the target&nbsp;<strong>Humanoid</strong> which last until the end of this round. Have no effect on Champion-Rank creature</li><li>When use outside of <strong>conflict, </strong>the effect last until the end of the <strong>scene </strong>instead</li></ul>",
+          "name": "Love Potion",
+          "roll": "",
+          "uuid": "Actor.Ax1nVCBhZOG0ZzHx.Item.hHEi7hpYEM4GkG1C"
+        },
+        "kIAOYBqOP53leYEw": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><p>Each target hit by this weapon suffers <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\" data-id=\"XkuOy0BFvKJTewGS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Enraged</span></strong></a></span></p></li><li>When you reduce a target to <strong>0</strong> <strong>HP</strong> with this weapon, gain <strong>2</strong> <strong>IP</strong></li></ul>",
+          "name": "Soul of Pillage",
+          "roll": "",
+          "uuid": "Actor.Ax1nVCBhZOG0ZzHx.Item.kIAOYBqOP53leYEw"
+        },
+        "kPZ41xkZ8CRZJhwx": {
+          "id": "${item.id}",
+          "loot_description": "<pre><code>Use this item as placeholder for failing to steals any item from the target</code></pre>",
+          "name": "(Empty)",
+          "roll": "",
+          "uuid": "Actor.Ax1nVCBhZOG0ZzHx.Item.kPZ41xkZ8CRZJhwx"
+        },
+        "kaUgpWmsIN22qeJ8": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><p>Increase you <strong>MIG die </strong>by one stage</p></li><li><p>This armor <strong>Base DEF </strong>is equal to Your <strong>【 MIG 】</strong>die size</p></li></ul>",
+          "name": "Red Panty",
+          "roll": "",
+          "uuid": "Actor.Ax1nVCBhZOG0ZzHx.Item.kaUgpWmsIN22qeJ8"
+        }
+      },
+      "study_text": "<p>Lowlife thug who has gotten very swole, has one braincell and believes that muscle can solve every problem in life, gets really <strong>angry </strong>in <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a><strong><span style=\"text-decoration: underline;\"> </span></strong></span>so its better not to let them stays there for too long</p>",
+      "subtype": "Sub-Type",
+      "subtype_list": "HUMAN",
+      "sword_ef": "100",
+      "tactic_notes": "",
+      "thrown_ef": "100",
+      "token_option_persist": false,
+      "traits": "Thieving Brute, Musclehead",
+      "ultima_point": "0",
+      "unique": false,
+      "uuid": "Actor.Ax1nVCBhZOG0ZzHx",
+      "wlp_base": "6",
+      "wlp_current": 6,
+      "zenit_reward_max": "150",
+      "zenit_reward_min": "80",
+      "zero_power_value": ""
+    },
+    "statusEffects": {},
+    "template": "yegF6R8aaymhrvCg",
+    "templateSystemUniqueVersion": 3867751361
+  },
+  "type": "character"
+}

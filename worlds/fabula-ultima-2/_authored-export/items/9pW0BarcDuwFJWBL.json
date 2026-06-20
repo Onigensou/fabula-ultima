@@ -1,0 +1,45 @@
+{
+  "_id": "9pW0BarcDuwFJWBL",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1675114325011,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    }
+  },
+  "folder": "Bg5DI4ep2SjF1yVR",
+  "img": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/base64data/Item/adcc64957618a6ac527390ebacda566f.jpeg",
+  "name": "Ring of Strong b",
+  "ownership": {
+    "default": 0,
+    "yL2PQxh3R9ddt0te": 3
+  },
+  "sort": 300000,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>The user is immune to weak status effect.</p>",
+      "duration": "",
+      "name": "Ring of Strong b",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "target": "",
+      "type_damage": ""
+    },
+    "template": "FZmpKcQRP7hZQqbV",
+    "templateSystemUniqueVersion": 1700837225,
+    "unique": false,
+    "uniqueId": "9pW0BarcDuwFJWBL"
+  },
+  "type": "equippableItem"
+}

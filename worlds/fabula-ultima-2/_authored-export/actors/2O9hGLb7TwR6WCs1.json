@@ -1,0 +1,281 @@
+{
+  "_id": "2O9hGLb7TwR6WCs1",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1759546451566,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "jYbZuqwzbSuIOWl1",
+  "img": "https://i.namu.wiki/i/UCKCGbIdkDy3xpdho-G-xkUrKr51kfFzXJTM7j76Sqt4CyVJqbbkudqLFr7-5LQCn5nhQWjpLblgAfRMk9eacQ.webp",
+  "name": "Alchemist",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar4": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "DEF",
+            "max": 13,
+            "maxcolor": "#f26d40",
+            "mincolor": "#f26d40",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 13
+          },
+          "bar5": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar5",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MDEF",
+            "max": 10,
+            "maxcolor": "#26d6ed",
+            "mincolor": "#26d6ed",
+            "opacity": null,
+            "order": 4,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 10
+          }
+        }
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Potioneer",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://i.namu.wiki/i/UCKCGbIdkDy3xpdho-G-xkUrKr51kfFzXJTM7j76Sqt4CyVJqbbkudqLFr7-5LQCn5nhQWjpLblgAfRMk9eacQ.webp",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 0,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {
+      "also_text": "Potioneer, Apothecary, Reagent Master",
+      "benefit_dropdown": "",
+      "classMechanic_text": "<h1 style=\"font-family: Signika, sans-serif; letter-spacing:.5px; color:#186b56; text-align:center; border-bottom:3px solid #d1a545; padding-bottom:.25rem; margin:.25rem 0 .5rem;\"><span style=\"font-family: Signika, sans-serif\">ALCHEMIST MECHANIC — </span><span style=\"color:#1fbf8f;\"><span style=\"font-family: Signika, sans-serif\">MIX & MIXTURES</span></span></h1><p style=\"font-style: italic; color: #125745; margin: .25rem 0 1rem; text-align: center\"><em>“Choose your reagents, break the seal, count to five—transmute the fight.”</em></p><div style=\"display:grid; gap:.75rem; grid-template-columns:1fr;\"><section style=\"border:1px solid #d1a545; background:#f7fff9; padding:.75rem; border-radius:.6rem;\"><h2 style=\"margin:.25rem 0; color:#186b56;\">What Is Mix?</h2><p style=\"margin: .25rem 0\">The <strong>Alchemist</strong> doesn’t cast spells—they <strong>combine consumables</strong> into <strong>Mixtures</strong> using the <em>Mix</em> skill. Each Mixture lists a <strong>recipe</strong> of item <em>categories</em>. When you perform <strong>Inventory</strong> and spend those items, you trigger the Mixture’s effect.</p><ul style=\"margin:.25rem 0 0 1rem;\"><li><strong>Action:</strong> Mixing is performed via the <em>Inventory</em> action (unless a Mixture says otherwise).</li><li><strong>Cost:</strong> You must spend the exact categories shown in the recipe. The items are <em>consumed</em>.</li><li><strong>Scaling:</strong> Your <em>SL</em> (Mix’s skill level) and/or item rarity may modify numbers if the Mixture says so.</li></ul></section><section style=\"border:1px solid #d1a545; background:#ffffff; padding:.75rem; border-radius:.6rem;\"><h2 style=\"margin:.25rem 0; color:#186b56;\">Consumable Categories</h2><div class=\"tableWrapper\" style=\"margin:.25rem 0;\"><table style=\"width:100%; border-collapse:collapse;\"><thead><tr style=\"background:#efe3c6; color:#125745;\"><th style=\"text-align:left; padding:.4rem .5rem;\">Symbol</th><th style=\"text-align:left; padding:.4rem .5rem;\">Category</th><th style=\"text-align:left; padding:.4rem .5rem;\">What counts</th></tr></thead><tbody><tr style=\"background:#ffffff;\"><td style=\"padding:.35rem .5rem;\"><strong>[I]</strong></td><td style=\"padding:.35rem .5rem;\"><strong>Inhibitor</strong></td><td style=\"padding:.35rem .5rem;\">Items that restore <strong>HP</strong>.</td></tr><tr style=\"background:#fdfbf6;\"><td style=\"padding:.35rem .5rem;\"><strong>[E]</strong></td><td style=\"padding:.35rem .5rem;\"><strong>Essence</strong></td><td style=\"padding:.35rem .5rem;\">Items that restore <strong>MP</strong>.</td></tr><tr style=\"background:#ffffff;\"><td style=\"padding:.35rem .5rem;\"><strong>[C]</strong></td><td style=\"padding:.35rem .5rem;\"><strong>Catalyst</strong></td><td style=\"padding:.35rem .5rem;\">Items that <strong>deal damage</strong>.</td></tr><tr style=\"background:#fdfbf6;\"><td style=\"padding:.35rem .5rem;\"><strong>[R]</strong></td><td style=\"padding:.35rem .5rem;\"><strong>Reagent</strong></td><td style=\"padding:.35rem .5rem;\">Items that create a <strong>Shield</strong>/temporary HP.</td></tr><tr style=\"background:#ffffff;\"><td style=\"padding:.35rem .5rem;\"><strong>[A]</strong></td><td style=\"padding:.35rem .5rem;\"><strong>Azoth</strong></td><td style=\"padding:.35rem .5rem;\">An item that contains <strong>at least three</strong> of the properties above (any mix of HP/MP/Damage/Shield).</td></tr></tbody></table></div><p style=\"margin: .25rem 0 0 0; color: #125745\"><em>On your item sheet, tag consumables with their category so you can see at a glance what fits a recipe.</em></p></section><section style=\"border:1px solid #d1a545; background:#f7fff9; padding:.75rem; border-radius:.6rem;\"><h2 style=\"margin:.25rem 0; color:#186b56;\">Mixing — Step by Step</h2><ol style=\"margin:.25rem 0 .5rem 1.25rem;\"><li><strong>Pick a Mixture</strong> you know. Each time you learn <em>Mix</em>, choose one new Mixture (Facet: “Mixture”).</li><li><strong>Check the recipe</strong> (e.g., <strong>[I]+[C]</strong> or <strong>[R]+[E]+[C]</strong>).</li><li><strong>Perform Inventory</strong> → select and spend consumables matching each category. Different items are fine; the <em>categories</em> must match.</li><li><strong>Resolve effects</strong> as written. If the Mixture has choices (element, target, split, etc.), make them now.</li><li><strong>Record</strong> what you used; all spent consumables are destroyed unless a feature says otherwise.</li></ol><div style=\"border-left:4px solid #d1a545; background:#fff6e2; padding:.55rem; border-radius:.25rem;\"><p style=\"margin: .25rem 0\"><strong>Short on one category?</strong> Swap in <strong>[A] Azoth</strong> to count as <em>any one</em> missing category (table option; confirm with your GM). Many groups treat Azoth as a “wild” component.</p></div></section><section style=\"border:1px solid #d1a545; background:#ffffff; padding:.75rem; border-radius:.6rem;\"><h2 style=\"margin:.25rem 0; color:#186b56;\">Your Loadout & Recipe Notation</h2><ul style=\"margin:.25rem 0 .5rem 1rem;\"><li><strong>Notation:</strong> We write recipes using symbols. Example: <strong>“Panacea” = [I]+[E]</strong>; <strong>“Blast Tonic” = [C]+[C]</strong>; <strong>“Ward Draught” = [R]+[I]</strong>.</li><li><strong>Prep like a deck:</strong> Carry multiples of your most-used categories. A balanced kit is usually <strong>2×[I], 2×[E], 2×[C], 1×[R], 1×[A]</strong> per scene at low levels.</li><li><strong>Rarity knobs:</strong> If your table tracks stronger consumables, let the <em>highest rarity spent</em> set the Mixture’s tier.</li></ul></section><section style=\"border:1px solid #d1a545; background:#f7fff9; padding:.75rem; border-radius:.6rem;\"><h2 style=\"margin:.25rem 0; color:#186b56;\">Example Mixtures (plug & play)</h2><div class=\"tableWrapper\" style=\"margin:.25rem 0;\"><table style=\"width:100%; border-collapse:collapse;\"><thead><tr style=\"background:#e6f7ef; color:#125745;\"><th style=\"text-align:left; padding:.4rem .5rem;\">Mixture</th><th style=\"text-align:left; padding:.4rem .5rem;\">Recipe</th><th style=\"text-align:left; padding:.4rem .5rem;\">Effect (summary)</th></tr></thead><tbody><tr style=\"background:#ffffff;\"><td style=\"padding:.35rem .5rem;\"><strong>Panacea Draught</strong></td><td style=\"padding:.35rem .5rem;\"><strong>[I] + [E]</strong></td><td style=\"padding:.35rem .5rem;\">Restore moderate <strong>HP</strong> and <strong>MP</strong> to one creature; optionally cleanse one minor ailment (table option).</td></tr><tr style=\"background:#fbfffd;\"><td style=\"padding:.35rem .5rem;\"><strong>Voltaic Flask</strong></td><td style=\"padding:.35rem .5rem;\"><strong>[C] + [C]</strong></td><td style=\"padding:.35rem .5rem;\">Deal <strong>elemental damage</strong> to one target; choose the element based on the Catalysts used (Air / Fire / Ice / Poison, etc.).</td></tr><tr style=\"background:#ffffff;\"><td style=\"padding:.35rem .5rem;\"><strong>Ward Tonic</strong></td><td style=\"padding:.35rem .5rem;\"><strong>[R] + [I]</strong></td><td style=\"padding:.35rem .5rem;\">Grant a <strong>Shield</strong> and small <strong>HP</strong> restore; if Shield survives a round, convert leftovers to HP.</td></tr><tr style=\"background:#fbfffd;\"><td style=\"padding:.35rem .5rem;\"><strong>Ether Bloom</strong></td><td style=\"padding:.35rem .5rem;\"><strong>[E] + [E]</strong></td><td style=\"padding:.35rem .5rem;\">Restore <strong>MP</strong> to two different allies, or a larger amount to one (split as you mix).</td></tr><tr style=\"background:#ffffff;\"><td style=\"padding:.35rem .5rem;\"><strong>Shockguard Serum</strong></td><td style=\"padding:.35rem .5rem;\"><strong>[R] + [C]</strong></td><td style=\"padding:.35rem .5rem;\">Give a <strong>Shield</strong>; the first time it’s struck, it bursts to deal splash damage to the attacker.</td></tr><tr style=\"background:#fbfffd;\"><td style=\"padding:.35rem .5rem;\"><strong>Azoth Transfusion</strong></td><td style=\"padding:.35rem .5rem;\"><strong>[A]</strong></td><td style=\"padding:.35rem .5rem;\">Choose two: small <strong>HP</strong> restore, small <strong>MP</strong> restore, small <strong>damage</strong>, small <strong>Shield</strong>. (Azoth is versatile but rare.)</td></tr></tbody></table></div><p style=\"margin: .25rem 0 0 0; color: #125745\"><em>These are ready-to-use examples if you want a baseline. Swap numbers to your table’s balance, or replace with your official Mixtures list.</em></p></section><section style=\"border:1px solid #d1a545; background:#ffffff; padding:.75rem; border-radius:.6rem;\"><h2 style=\"margin:.25rem 0; color:#186b56;\">Turn Flow — Step by Step</h2><ol style=\"margin:.25rem 0 .5rem 1.25rem;\"><li><strong>Scout the field:</strong> Who needs HP/MP? Which element the enemy fears?</li><li><strong>Choose a Mixture</strong> that answers the moment.</li><li><strong>Perform Inventory</strong> → spend the categories required.</li><li><strong>Resolve</strong> and reposition. You’re mobile support—stay safe and prep the next recipe.</li></ol><div style=\"border-left:4px solid #1fbf8f; background:#eafff7; padding:.55rem; border-radius:.25rem;\"><p style=\"margin: .25rem 0\"><strong>Prep Tip:</strong> Keep a <em>bandolier list</em> in your notes: “2×[I], 2×[E], 2×[C], 1×[R], 1×[A]”. Cross off as you spend to avoid mid-combat rummaging.</p></div></section><section style=\"border:1px solid #d1a545; background:#f7fff9; padding:.75rem; border-radius:.6rem;\"><h2 style=\"margin:.25rem 0; color:#186b56;\">Build & Play Tips</h2><ul style=\"margin:.25rem 0 .5rem 1rem;\"><li><strong>Inventory Points matter:</strong> You spend consumables often. Budget IP and keep cheap recipe fillers for common plays.</li><li><strong>Know your categories:</strong> Label items in your compendium with [I]/[E]/[C]/[R]/[A] so you can filter quickly.</li><li><strong>Element coverage:</strong> Carry at least two different <strong>[C]</strong> types to pierce Resistances.</li><li><strong>Azoth is clutch:</strong> Save <strong>[A]</strong> to fix awkward hands (off-category replacements) or to power a “do-everything” emergency button.</li><li><strong>Party synergy:</strong> Pair with classes that multiply recovery, boost Shields, or set up elemental Vulnerabilities.</li></ul></section><section style=\"border:2px dashed #d1a545; background:linear-gradient(180deg,#f3fff9,#ffffff); padding:.75rem; border-radius:.8rem;\"><h2 style=\"margin:.25rem 0; color:#186b56;\">Pocket Card (Hand to Players)</h2><ol style=\"margin:.25rem 0 .5rem 1.25rem;\"><li><strong>Mix uses Inventory.</strong> Spend items by <em>category</em>, not name.</li><li><strong>Categories:</strong> <strong>[I]</strong>=HP, <strong>[E]</strong>=MP, <strong>[C]</strong>=Damage, <strong>[R]</strong>=Shield, <strong>[A]</strong>=any three-property item.</li><li><strong>Recipe → Resolve.</strong> Choose Mixture, pay the categories, apply effects.</li><li><strong>Loadout:</strong> Bring 2×[I], 2×[E], 2×[C], 1×[R], 1×[A] (adjust for your Mixtures).</li><li><strong>When stuck:</strong> Spend <strong>[A]</strong> as a flexible component (with GM ok) or use <em>Panacea / Ward / Voltaic</em> basics.</li></ol></section></div>",
+      "class_lore": "",
+      "flavor_text": "",
+      "martialArmor_equippable": false,
+      "martialMelee_equippable": false,
+      "martialRanged_equippable": false,
+      "martialShield_equippable": false,
+      "name": "Alchemist",
+      "project_performable": false,
+      "ritual_performable": false
+    },
+    "statusEffects": {},
+    "template": "hoxC3HFCtMYGScIo",
+    "templateSystemUniqueVersion": 504201233
+  },
+  "type": "character"
+}

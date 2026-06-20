@@ -1,0 +1,150 @@
+{
+  "_id": "r0yZpLPAK9VXhM2p",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1703177653553,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "templateHistory": [
+        [
+          {
+            "kind": "E",
+            "lhs": "<p><h2>🔮${!ref('name')}$</h2></p>\n<p>${!ref('description')}$</p>",
+            "path": [
+              "body",
+              "contents",
+              4,
+              "rollMessage"
+            ],
+            "rhs": "<p><h2>🔮${!ref('name')}$</h2></p>\n<p>Cost: ${!ref('cost')}$</p>\n<p>${!ref('description')}$</p>"
+          }
+        ],
+        [
+          {
+            "kind": "E",
+            "lhs": "<p><h2>🔮${!ref('name')}$</h2></p>\n<p>Cost: ${!ref('cost')}$</p>\n<p>${!ref('description')}$</p>",
+            "path": [
+              "body",
+              "contents",
+              4,
+              "rollMessage"
+            ],
+            "rhs": "<div><h2>🔮${!ref('name')}$</h2></div>\n<div>Cost: ${!ref('cost')}$</div>\n<div>${!ref('description')}$</div>"
+          }
+        ],
+        [
+          {
+            "kind": "E",
+            "lhs": "<div><h2>🔮${!ref('name')}$</h2></div>\n<div>Cost: ${!ref('cost')}$</div>\n<div>${!ref('description')}$</div>",
+            "path": [
+              "body",
+              "contents",
+              4,
+              "rollMessage"
+            ],
+            "rhs": "<h2>🔮${!ref('name')}$</h2>\n<table>\n<tr>\n<td>Cost:</td>\n<td>${!ref('cost')}$</td>\n</tr>\n<tr>\n<td colspan=\"2\">${!ref('description')}$</td>\n</tr>\n</table>"
+          }
+        ],
+        [
+          {
+            "kind": "E",
+            "lhs": "<h2>🔮${!ref('name')}$</h2>\n<table>\n<tr>\n<td>Cost:</td>\n<td>${!ref('cost')}$</td>\n</tr>\n<tr>\n<td colspan=\"2\">${!ref('description')}$</td>\n</tr>\n</table>",
+            "path": [
+              "body",
+              "contents",
+              4,
+              "rollMessage"
+            ],
+            "rhs": "<h2>🔮${!ref('name')}$</h2>\n<table>\n<tr>\n<td>Cost:</td>\n<td>${!ref('cost')}$</td>\n</tr>\n<tr>\n<td>Bonus Defense</td>\n<td></td>\n</tr>\n<tr>\n<td colspan=\"2\">${!ref('description')}$</td>\n</tr>\n</table>"
+          }
+        ],
+        [
+          {
+            "kind": "E",
+            "lhs": "<h2>🔮${!ref('name')}$</h2>\n<table>\n<tr>\n<td>Cost:</td>\n<td>${!ref('cost')}$</td>\n</tr>\n<tr>\n<td>Bonus Defense</td>\n<td></td>\n</tr>\n<tr>\n<td colspan=\"2\">${!ref('description')}$</td>\n</tr>\n</table>",
+            "path": [
+              "body",
+              "contents",
+              4,
+              "rollMessage"
+            ],
+            "rhs": "<h2>🔮${!ref('name')}$</h2>\n<table>\n<tr>\n<td>Cost:</td>\n<td>${!ref('cost')}$</td>\n</tr>\n<tr>\n<td>Bonus Defense</td>\n<td>${ref('defense')}$</td>\n</tr>\n<tr>\n<td>Bonus M.Defense</td>\n<td>${ref('magic_defense')}$</td>\n</tr>\n<tr>\n<td colspan=\"2\">${!ref('description')}$</td>\n</tr>\n</table>"
+          }
+        ],
+        null,
+        [
+          {
+            "kind": "E",
+            "lhs": "<h2>🔮${!ref('name')}$</h2>\n<table>\n<tr>\n<td>Cost:</td>\n<td>${!ref('cost')}$</td>\n</tr>\n<tr>\n<td>Bonus Defense</td>\n<td>${ref('defense')}$</td>\n</tr>\n<tr>\n<td>Bonus M.Defense</td>\n<td>${ref('magic_defense')}$</td>\n</tr>\n<tr>\n<td colspan=\"2\">${!ref('description')}$</td>\n</tr>\n</table>",
+            "path": [
+              "body",
+              "contents",
+              4,
+              "rollMessage"
+            ],
+            "rhs": "<h2>🔮${!ref('name')}$</h2>\n<table>\n<tr>\n<td>Cost:</td>\n<td>${!ref('cost')}$</td>\n</tr>\n<tr>\n<td>Bonus Defense</td>\n<td>${!ref('defense')}$</td>\n</tr>\n<tr>\n<td>Bonus M.Defense</td>\n<td>${!ref('magic_defense')}$</td>\n</tr>\n<tr>\n<td colspan=\"2\">${!ref('description')}$</td>\n</tr>\n</table>"
+          }
+        ],
+        [
+          {
+            "kind": "E",
+            "lhs": "<h2>🔮${!ref('name')}$</h2>\n<table>\n<tr>\n<td>Cost:</td>\n<td>${!ref('cost')}$</td>\n</tr>\n<tr>\n<td>Bonus Defense</td>\n<td>${!ref('defense')}$</td>\n</tr>\n<tr>\n<td>Bonus M.Defense</td>\n<td>${!ref('magic_defense')}$</td>\n</tr>\n<tr>\n<td colspan=\"2\">${!ref('description')}$</td>\n</tr>\n</table>",
+            "path": [
+              "body",
+              "contents",
+              4,
+              "rollMessage"
+            ],
+            "rhs": "<h2>🔮${!ref('name')}$</h2>\n<table>\n<tr>\n<td>Cost:</td>\n<td>${!ref('cost')}$</td>\n</tr>\n<tr>\n<td>Bonus Defense</td>\n<td>${!ref('def_bonus')}$</td>\n</tr>\n<tr>\n<td>Bonus M.Defense</td>\n<td>${!ref('mdef_bonus')}$</td>\n</tr>\n<tr>\n<td colspan=\"2\">${!ref('description')}$</td>\n</tr>\n</table>"
+          }
+        ],
+        [
+          {
+            "kind": "E",
+            "lhs": "<h2>🔮${!ref('name')}$</h2>\n<table>\n<tr>\n<td>Cost:</td>\n<td>${!ref('cost')}$</td>\n</tr>\n<tr>\n<td>Bonus Defense</td>\n<td>${!ref('def_bonus')}$</td>\n</tr>\n<tr>\n<td>Bonus M.Defense</td>\n<td>${!ref('mdef_bonus')}$</td>\n</tr>\n<tr>\n<td colspan=\"2\">${!ref('description')}$</td>\n</tr>\n</table>",
+            "path": [
+              "body",
+              "contents",
+              4,
+              "rollMessage"
+            ],
+            "rhs": "<h2>🔮${!ref('name')}$</h2>\n<table>\n<tr>\n<td>Cost:</td>\n<td>${!ref('cost')}$</td>\n</tr>\n<tr>\n<td>Bonus Defense</td>\n<td>${!ref('def_bonus')}$</td>\n</tr>\n<tr>\n<td>Bonus M.Defense</td>\n<td>${!ref('mdef_bonus')}$</td>\n</tr>\n<tr>\n<td>Set:</td>\n<td><td>${!equalText(string(ref('set_name')), '0') ? string('-') : ref('set_name')}$</td></td>\n</tr>\n<tr>\n<td colspan=\"2\">${!ref('description')}$</td>\n</tr>\n</table>"
+          }
+        ],
+        [
+          {
+            "kind": "E",
+            "lhs": "<h2>🔮${!ref('name')}$</h2>\n<table>\n<tr>\n<td>Cost:</td>\n<td>${!ref('cost')}$</td>\n</tr>\n<tr>\n<td>Bonus Defense</td>\n<td>${!ref('def_bonus')}$</td>\n</tr>\n<tr>\n<td>Bonus M.Defense</td>\n<td>${!ref('mdef_bonus')}$</td>\n</tr>\n<tr>\n<td>Set:</td>\n<td><td>${!equalText(string(ref('set_name')), '0') ? string('-') : ref('set_name')}$</td></td>\n</tr>\n<tr>\n<td colspan=\"2\">${!ref('description')}$</td>\n</tr>\n</table>",
+            "path": [
+              "body",
+              "contents",
+              4,
+              "rollMessage"
+            ],
+            "rhs": "<h2>🔮${!ref('name')}$</h2>\n<table>\n<tr>\n<td>Cost:</td>\n<td>${!ref('cost')}$</td>\n</tr>\n<tr>\n<td>Bonus Defense</td>\n<td>${!ref('def_bonus')}$</td>\n</tr>\n<tr>\n<td>Bonus M.Defense</td>\n<td>${!ref('mdef_bonus')}$</td>\n</tr>\n<tr>\n<td>Set:</td>\n<td>${!equalText(string(ref('set_name')), '0') ? string('-') : ref('set_name')}$</td></td>\n</tr>\n<tr>\n<td colspan=\"2\">${!ref('description')}$</td>\n</tr>\n</table>"
+          }
+        ]
+      ],
+      "templateHistoryRedo": [],
+      "version": "3.2.4"
+    }
+  },
+  "folder": "i7fbFD8Djifdw08W",
+  "img": "icons/svg/item-bag.svg",
+  "name": "_Accessory Equipment",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 200000,
+  "system": {
+    "templateSystemUniqueVersion": 1853581118
+  },
+  "type": "_equippableItemTemplate"
+}

@@ -1,0 +1,55 @@
+{
+  "_id": "Y7hpXWC7iZUqfYmU",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1755302959019,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "E2rHUSe9roqJD1FD",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rose/Bloodia3.png",
+  "name": "Six Shooter",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Revolver",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>You may use an action to perform <strong>Reload: </strong>Performs an 【<strong>Inventory</strong>】 action and spend <strong>6 Inventory Points </strong>to gains <strong>6 Revolver Bullets</strong> with <strong>different type of your choosing</strong>, ordered from first to last.</p><p>When you perform <strong>Reload </strong>while already having <strong>Revolver Bullets</strong>, all previous bullets are <strong>discarded</strong>.</p><p>Each time you perform an 【<strong>Attack</strong>】, you may spend the <strong>first bullet</strong> in the bullet order to apply <strong>Bullet Effect </strong>to the attack.</p><p>When you first acquire this skill, you may select <strong>6 types of Revolver Bullets </strong>from Facets list<strong>. </strong>Whenever you acquire this skill again, you may select <strong>one more type of bullets</strong>.</p><p></p>",
+      "duration": "",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "level": "1",
+      "max_level": "10",
+      "name": "Six Shooter",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "Y7hpXWC7iZUqfYmU"
+  },
+  "type": "equippableItem"
+}

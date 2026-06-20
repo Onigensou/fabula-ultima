@@ -1,0 +1,67 @@
+{
+  "_id": "u2tHLEanQ7gWP4BS",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1756856773463,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "2OplVa9fwLYbzD8b",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Chung/SI_RemodelRifle.png",
+  "name": "Upgrade",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 1700000,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "check_bonus": "0",
+      "class": "Tinkerer",
+      "cost": "",
+      "damage_bonus": "",
+      "defense_target_type": "def",
+      "description": "<p>Once per <strong>rest</strong>, you may choose one option: add a <strong>Quality</strong> to a single weapon, armor, or shield that doesn't have one; <strong>or</strong> replace the current <strong>Quality</strong> of a single weapon, armor, or shield with a different <strong>Quality</strong>.</p>\n<p>When you use this Skill, you must select a Quality from the default list for that item type as long as the cost modifier associated with that ability is <strong>+1000 zenit or lower.</strong> Then, you must spend an amount of zenit equal to twice the cost modifier of the chosen ability. The modified item will be ready at the end of the rest; you may only modify <strong>one item per rest.</strong></p>\n<details class=\"potion-foldout\">\n  <summary>Quality List (Defensive • Offensive • Enhancement)</summary>\n  <table class=\"book-table\">\n    <caption>QUALITIES</caption>\n    <thead>\n      <tr>\n        <th style=\"width:190px;\">QUALITY</th>\n        <th style=\"width:100px;\">COST</th>\n        <th>EFFECT</th>\n      </tr>\n    </thead>\n    <tbody>\n      <!-- Defensive -->\n      <tr class=\"section-row\"><th colspan=\"3\">Defensive Qualities</th></tr>\n      <tr>\n        <th scope=\"row\">Antistatus</th>\n        <td>+500 z</td>\n        <td>You are immune to a single status effect.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Resistance</th>\n        <td>+700 z</td>\n        <td>You have Resistance to a single damage type (not <strong>physical</strong> damage).</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Amulet</th>\n        <td>+800 z</td>\n        <td>You gain a +1 bonus to Magic Defense.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Bulwark</th>\n        <td>+800 z</td>\n        <td>You gain a +1 bonus to Defense.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Dual Resistance</th>\n        <td>+1000 z</td>\n        <td>You have Resistance to two damage types (not <strong>physical</strong> damage).</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Swordbreaker</th>\n        <td>+1000 z</td>\n        <td>You have Resistance to <strong>physical</strong> damage.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Immunity</th>\n        <td>+1500 z</td>\n        <td>You have Immunity to a single damage type (not <strong>physical</strong> damage).</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Omnishield</th>\n        <td>+2000 z</td>\n        <td>You gain a +1 bonus to Defense and Magic Defense.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Perfect Health</th>\n        <td>+2000 z</td>\n        <td>You are immune to all status effects.</td>\n      </tr>\n\n      <!-- Offensive -->\n      <tr class=\"section-row\"><th colspan=\"3\">Offensive Qualities</th></tr>\n      <tr>\n        <th scope=\"row\">Magical</th>\n        <td>+100 z</td>\n        <td>The weapon targets <strong>Magic Defense</strong> instead of <strong>Defense</strong>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Hunter</th>\n        <td>+300 z</td>\n        <td>The weapon deals 5 extra damage to creatures of a particular <strong>Species</strong>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Piercing</th>\n        <td>+400 z</td>\n        <td>Damage dealt by the weapon ignores <strong>Resistances</strong>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Dual Hunter</th>\n        <td>+500 z</td>\n        <td>The weapon deals 5 extra damage to creatures belonging to one of two particular <strong>Species</strong>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Multi</th>\n        <td>+1000 z</td>\n        <td>Attacks with the weapon have <strong>multi (2)</strong>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Status</th>\n        <td>+1500 z</td>\n        <td>Each target hit by the weapon suffers (choose one): <strong>dazed, shaken, slow, weak</strong>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Status Plus</th>\n        <td>+2000 z</td>\n        <td>Each target hit by the weapon suffers (choose one): <strong>enraged, poisoned</strong>.</td>\n      </tr>\n\n      <!-- Enhancement -->\n      <tr class=\"section-row\"><th colspan=\"3\">Enhancement Qualities</th></tr>\n      <tr>\n        <th scope=\"row\">Initiative Up</th>\n        <td>+500 z</td>\n        <td>You gain a +4 bonus to your Initiative modifier.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Accuracy Up</th>\n        <td>+1000 z</td>\n        <td>You gain a +1 bonus to your Accuracy Checks.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Magic Up</th>\n        <td>+1000 z</td>\n        <td>You gain a +1 bonus to your Magic Checks.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Vitality Up</th>\n        <td>+1000 z</td>\n        <td>When you recover HP, you recover 5 extra HP.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Healing Up</th>\n        <td>+1500 z</td>\n        <td>Spells you cast whose effects restore Hit Points restore 5 extra Hit Points.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Spell Up</th>\n        <td>+2000 z</td>\n        <td>Spells you cast deal 5 extra damage.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Weapon Up</th>\n        <td>+2000 z</td>\n        <td>Your attacks with (choose one: <strong>melee</strong>, <strong>ranged</strong>) weapons deal 5 extra damage.</td>\n      </tr>\n    </tbody>\n  </table>\n</details>\n",
+      "duration": "",
+      "heroic_requirement": "You must have mastered the Tinkerer Class.",
+      "ignore_hr": false,
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Upgrade",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "u2tHLEanQ7gWP4BS"
+  },
+  "type": "equippableItem"
+}

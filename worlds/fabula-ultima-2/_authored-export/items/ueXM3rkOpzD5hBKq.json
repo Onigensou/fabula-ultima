@@ -1,0 +1,56 @@
+{
+  "_id": "ueXM3rkOpzD5hBKq",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1754965668080,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "AYqJLwzAu9WvlJ5C",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/RPR/tempered_soul.png",
+  "name": "Tempered Soul",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Reaper",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>Each time you acquire this Skill, <strong>Choose</strong> one of the following effects:</p><ul><li><p>Your 【⚔️<strong>Attack】 </strong>with <strong>Arcane </strong>and <strong>Heavy </strong>weapons deals <strong>【Your Collected Soul】 </strong>bonus damage.</p></li><li><p>Your 【⚡️<strong>Offensive Spells】</strong> deals <strong>【Your Collected Soul】 </strong>bonus damage.</p></li><li><p>Your 【💥<strong>Skills】 </strong>deals <strong>【Your Collected Soul】 </strong>bonus damage.</p></li></ul><p>You gain the <strong>chosen </strong>effects. <em>(You may not choose the same option twice)</em></p>",
+      "duration": "",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "level": "1",
+      "max_level": "3",
+      "name": "Tempered Soul",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "ueXM3rkOpzD5hBKq"
+  },
+  "type": "equippableItem"
+}

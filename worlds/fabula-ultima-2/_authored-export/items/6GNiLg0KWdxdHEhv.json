@@ -1,0 +1,87 @@
+{
+  "_id": "6GNiLg0KWdxdHEhv",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780644546630,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    }
+  },
+  "folder": "w7ey5G3zPC78EXos",
+  "img": "icons/magic/control/hypnosis-mesmerism-eye.webp",
+  "name": "Hallucination",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "active_effect_config_table": {},
+      "check_bonus": "0",
+      "class": "Spiritist",
+      "cost": "5 x T MP",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>You alter the senses of your enemies, causing them to experience bizarre or frightening hallucinations. <strong>Choose:</strong> Dazed or Shaken. Inflict the chosen status effect on each target hit by this spell <em>(INS+WLP vs MDEF)</em>.</p>",
+      "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "effect_kind": "open_action_menu",
+          "effect_label": "hallu_pick",
+          "menu_option_descriptions": "Penalises INS Opposed Checks (-2 to INS die size). | Penalises WLP Opposed Checks (-2 to WLP die size).",
+          "menu_option_labels": "Dazed | Shaken",
+          "menu_option_refs": "hallu_dazed, hallu_shaken",
+          "menu_subtitle": "Hit targets suffer the chosen status.",
+          "menu_title": "Hallucination: choose a status to inflict"
+        },
+        "1": {
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_template_ref": "Dazed",
+          "effect_kind": "apply_ae",
+          "effect_label": "hallu_dazed",
+          "target_ref": "hit_action_targets"
+        },
+        "2": {
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_template_ref": "Shaken",
+          "effect_kind": "apply_ae",
+          "effect_label": "hallu_shaken",
+          "target_ref": "hit_action_targets"
+        }
+      },
+      "heroic_requirement": "",
+      "isCheck": true,
+      "isFacet": true,
+      "isHeroic": false,
+      "isOffensiveSpell": true,
+      "isReaction": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Hallucination",
+      "on_activate_effect_ref": "hallu_pick",
+      "optional_params": {},
+      "rolled_atr1": "INS",
+      "rolled_atr2": "WLP",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "Range",
+      "skill_target": "Up to three creatures",
+      "skill_type": "Spell",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "6GNiLg0KWdxdHEhv"
+  },
+  "type": "equippableItem"
+}

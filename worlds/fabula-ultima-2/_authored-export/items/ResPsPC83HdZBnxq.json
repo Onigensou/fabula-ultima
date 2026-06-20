@@ -1,0 +1,57 @@
+{
+  "_id": "ResPsPC83HdZBnxq",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757285103499,
+    "duplicateSource": "Item.JlK4V1yKLDi6cAqh",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "OFXRN3P2p6Ce5ySM",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Flower/fb43c30e197b2ea83861aefbd4926566_4313677943224157869.webp",
+  "name": "Regal Protea",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Floralist",
+      "cost": "20 MP",
+      "damage_bonus": "0",
+      "description": "<p><em>A colorful and tenacious flower, favored by an ancient dynasty.</em></p> <table style=\"width:100%;\"> <tbody> <tr><td><strong>Growth</strong></td><td><strong>Effect</strong></td></tr> <tr> <td>0–1</td> <td>You are <strong>immune</strong> to <a class=\"content-link\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\"><strong><u>Shaken</u></strong></a> and <a class=\"content-link\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\"><strong><u>Weak</u></strong></a>. </td> </tr> <tr><td>2</td><td>You treat your <strong>Might</strong> and <strong>Willpower</strong> as being one die size higher (up to a maximum of <strong>d12</strong>).</td></tr> <tr><td>3</td><td>You and every ally you can see treat your <strong>Might</strong> and <strong>Willpower</strong> as being one die size higher (up to a maximum of <strong>d12</strong>).</td></tr> </tbody> </table>",
+      "duration": "Scene",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": true,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Regal Protea",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "Any",
+      "skill_target": "Special",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "ResPsPC83HdZBnxq"
+  },
+  "type": "equippableItem"
+}

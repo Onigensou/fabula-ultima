@@ -1,0 +1,19 @@
+{
+  "_id": "wekTc2cyzuBiU4Up",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1769848583252,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "Zsb2yoayhdKZd3IA",
+  "name": "Treasure",
+  "sort": 0,
+  "sorting": "a",
+  "type": "RollTable"
+}

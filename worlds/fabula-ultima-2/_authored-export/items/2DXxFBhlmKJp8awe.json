@@ -1,0 +1,58 @@
+{
+  "_id": "2DXxFBhlmKJp8awe",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1758205065054,
+    "duplicateSource": "Item.lCSU2g4YsA0m9fWO",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "yYTqxeiZBgJ0wAv0",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/meditation.png",
+  "name": "Resonant Clarity",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Monk",
+      "cost": "-",
+      "damage_bonus": "0",
+      "description": "<p>Your unwavering resolve and mental clarity radiate outward, reaching your companions. For each <strong>[SL]</strong>, you can share one of your active benefits from the <strong>Clarity</strong> Skill, up to three creatures.</p>\n",
+      "duration": "-",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "3",
+      "name": "Resonant Clarity",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_information": "<table style=\"width:100%; text-align:center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>Benefits You Can Share</strong></p></td><td><p><strong>Recipients</strong></p></td></tr><tr><td><p>1</p></td><td><p>1</p></td><td><p>Up to 3 creatures</p></td></tr><tr><td><p>2</p></td><td><p>2</p></td><td><p>Up to 3 creatures</p></td></tr><tr><td><p>3</p></td><td><p>3</p></td><td><p>Up to 3 creatures</p></td></tr></tbody></table>",
+      "skill_range": "",
+      "skill_target": "-",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "2DXxFBhlmKJp8awe"
+  },
+  "type": "equippableItem"
+}

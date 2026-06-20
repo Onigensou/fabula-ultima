@@ -1,0 +1,46 @@
+{
+  "_id": "3BKWrwYhsdaDG3eN",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1703943330027,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    }
+  },
+  "folder": "qpw46aFVTAeQSyTP",
+  "img": "icons/magic/unholy/beam-ringed-impact-purple.webp",
+  "name": "Umbra",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Entropist",
+      "cost": "10 x T",
+      "damage_bonus": "15",
+      "description": "<p>A storm of dark energy turns matter into ash. Each target hit by this spell suffers <strong>【HR + 15】 dark</strong> damage.<br><strong>Opportunity</strong>: Each target hit by this spell suffers <strong>weak</strong>.</p>",
+      "discipline": "",
+      "duration": "Instantaneous",
+      "name": "Umbra",
+      "rolled_atr1": "INS",
+      "rolled_atr2": "WLP",
+      "target": "Up to three creatures",
+      "type_damage": "Dark"
+    },
+    "template": "FZmpKcQRP7hZQqbV",
+    "templateSystemUniqueVersion": 1700837225,
+    "unique": false,
+    "uniqueId": "3BKWrwYhsdaDG3eN"
+  },
+  "type": "equippableItem"
+}

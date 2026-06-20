@@ -1,0 +1,19 @@
+{
+  "_id": "oVRjRmlshSvb68gK",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1765681906634,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "color": "#81a654",
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "The Legend of Dragonslayer",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Actor"
+}

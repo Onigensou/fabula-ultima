@@ -1,0 +1,72 @@
+{
+  "_id": "JjSTIYwTgVE0FgmU",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1781925341220,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "VylzttcwE2eLJNhT",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213530.914.png",
+  "name": "Zero Trigger: Shattered Phantasm",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "cost": "-",
+      "description": "<p>Every time one of your Phantasms is shattered, you gain <strong>1 Zero Power</strong>.</p>",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "effect_kind": "grant",
+          "effect_label": "zt_gain",
+          "grant_amount": "1",
+          "grant_resource": "zero_power",
+          "target_ref": "zt_self"
+        },
+        "1": {
+          "$deleted": false,
+          "auto_confirm_when_obvious": true,
+          "candidate_source": "self",
+          "category": "",
+          "count": 1,
+          "effect_kind": "targeting",
+          "effect_label": "zt_self",
+          "exclude_self": false,
+          "iteration_mode": "together",
+          "mode": "exact",
+          "skip_when_passive": true
+        }
+      },
+      "isCheck": false,
+      "reaction_config_table": {
+        "0": {
+          "$deleted": false,
+          "condition_formula": "SUBJECT_IS_MY_PHANTASM == 1",
+          "reaction_effect_ref": "zt_gain",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "all",
+          "reaction_trigger": "creature_defeated"
+        }
+      },
+      "skill_target": "-",
+      "skill_type": "Passive"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "JjSTIYwTgVE0FgmU"
+  },
+  "type": "equippableItem"
+}

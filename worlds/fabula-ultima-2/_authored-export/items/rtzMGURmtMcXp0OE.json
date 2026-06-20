@@ -1,0 +1,62 @@
+{
+  "_id": "rtzMGURmtMcXp0OE",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757295900694,
+    "duplicateSource": "Item.eHGyYCDreZJfZvkP",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "2OplVa9fwLYbzD8b",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/RoughChildSkill3.png",
+  "name": "Specialty of the House",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 3800000,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "check_bonus": "0",
+      "class": "Gourmet",
+      "cost": "",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>When you acquire this Heroic Skill, choose <strong>three different tastes</strong> among <em>bitter, salty, sour, sweet,</em> and <em>umami</em>. Then, <strong>choose three different effects among the following:</strong></p>\n\n<ul>\n  <li>You deal <strong>20</strong> \n    (<strong>choose one:</strong> \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#b666d2 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span> ,\n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#cabd9a 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></span>)\n    damage to each of this delicacy’s targets. <strong>Choose the type</strong> of this effect when you acquire this Heroic Skill.</li>\n</ul>\n<p><strong>Skill Enhancement Lv. 30 ―</strong> The damage increases to <strong>30</strong>.</p>\n\n<ul>\n  <li>During the next turn of each of this delicacy’s targets, <strong>all damage they deal becomes</strong> \n    (<strong>choose one:</strong> \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#b666d2 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span> ,\n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#cabd9a 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></span>) and its type <strong>cannot change</strong>. <strong>Choose the type</strong> of this effect when you acquire this Heroic Skill.</li>\n\n  <li>For each of this delicacy’s targets, if they are affected by one or more spells with a duration of <strong>“Scene”</strong>, instead they are <strong>no longer affected by any of those spells</strong>.</li>\n\n  <li>Choose yourself or an ally you can see. For each of this delicacy’s targets, the next time that target performs an <strong>【⚔️Attack】</strong> or casts an <strong>【⚡Offensive Spell】</strong> before the end of this scene, that attack or spell must include the chosen creature among its targets (if able).</li>\n\n  <li>Each of this delicacy’s targets suffers \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\" data-id=\"XkuOy0BFvKJTewGS\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Enraged</span></strong></a></span></span>.\n  </li>\n\n  <li>Each of this delicacy’s targets suffers \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.JltwIqzHbBKhkD45\" data-id=\"JltwIqzHbBKhkD45\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Poisoned</span></strong></a></span></span>.\n  </li>\n\n  <li>Each of this delicacy’s targets <strong>recovers 30 Hit Points and 30 Mind Points</strong>.</li>\n</ul>\n<p><strong>Skill Enhancement Lv. 30 ―</strong> The amounts increase to <strong>40 Hit Points</strong> and <strong>40 Mind Points</strong>.</p>\n\n<ul>\n  <li>Each of this delicacy’s targets <strong>recovers from a single status</strong> of their choice.</li>\n\n  <li>Each of this delicacy’s targets recovers from \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Dazed</span></strong></a></span></span>,\n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\" data-id=\"XkuOy0BFvKJTewGS\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Enraged</span></strong></a></span></span>, and\n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span></span>.\n  </li>\n\n  <li>Each of this delicacy’s targets recovers from \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.JltwIqzHbBKhkD45\" data-id=\"JltwIqzHbBKhkD45\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Poisoned</span></strong></a></span></span>,\n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span></span>, and\n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a></span></span>.\n  </li>\n</ul>\n\n<p>When you <strong>create a delicacy using exactly 3 ingredients</strong> during a conflict, if each ingredient matches a different taste among those chosen when you acquired this Heroic Skill, you may <strong>ignore all of that delicacy’s normal effects</strong>. If you do, you may instead apply <strong>one, two, or all</strong> of the effects you chose when you acquired this Heroic Skill.</p>\n",
+      "duration": "",
+      "heroic_requirement": "You must have mastered the Gourmet Class.",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Specialty of the House",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "rtzMGURmtMcXp0OE"
+  },
+  "type": "equippableItem"
+}

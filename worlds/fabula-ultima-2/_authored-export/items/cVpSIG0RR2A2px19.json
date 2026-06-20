@@ -1,0 +1,57 @@
+{
+  "_id": "cVpSIG0RR2A2px19",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757104618036,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "psfnGsn4Yf9vLVKe",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rose/FreySkill10.png",
+  "name": "Compression Tech",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Pilot",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>As long as there is no one aboard your <em>personal vehicle</em>, you may have it safely disappear from the game world at any time. What magic or technology allows it?</p><p>If your <em>personal vehicle</em> is not present in the game world and you are in a space big enough to contain it, you may perform the <strong>【⚗️Inventory】</strong> action and spend <strong>2 Inventory Points</strong> to have the vehicle appear near you, and enter it for free.</p>",
+      "duration": "",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Compression Tech",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "cVpSIG0RR2A2px19"
+  },
+  "type": "equippableItem"
+}

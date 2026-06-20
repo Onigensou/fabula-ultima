@@ -1,0 +1,148 @@
+{
+  "_id": "RxIy2d516YrLuzpS",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757329261319,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "BSXKunLcucjiSAck",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.331",
+        "createdTime": 1771063473664,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Reduce the effectiveness of <strong>Healing </strong>effects</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "core": {
+          "overlay": false
+        },
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "J15gUJ2TIXiSS52f",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.J15gUJ2TIXiSS52f"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-bleed",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "durationType": 1,
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/RPR/cross_reaping.png",
+      "name": "Bleed",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "QOfrFCU2C6mx50gK"
+      ],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "YA2JFqxM2mPd9JBp",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Swordsman/warri_Muleta.png",
+  "name": "Muleta",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {
+        "0": {
+          "$deleted": false,
+          "active_effect_application": "add",
+          "active_effect_apply_mode": "percentage",
+          "active_effect_dice_1": "",
+          "active_effect_dice_2": "",
+          "active_effect_dl": "0",
+          "active_effect_id": "BSXKunLcucjiSAck",
+          "active_effect_percent": "50",
+          "active_effect_target": "enemy",
+          "active_effect_trigger": "on_hit"
+        }
+      },
+      "animation_damage_timing_offset": "500",
+      "animation_damage_timing_options": "offset",
+      "animation_script": "<p>// ============================================================================</p><p>// Muleta - Sequencer (Pipeline Version + \"Run to Front\" + Return)</p><p>// UPDATE:</p><p>// - If CASTER disposition is NOT -1 (friendly), flip BOTH Piercing + Impact FX horizontally</p><p>//   (mirrorX = true). If caster is hostile (-1), no flip.</p><p>// ============================================================================</p><p>(async () => {</p><p>  const TAG = \"[Muleta]\";</p><p>  try {</p><p>    if (!game.modules.get(\"sequencer\")?.active) {</p><p>      ui.notifications.error(\"Sequencer module is not active.\");</p><p>      return;</p><p>    }</p><p>    // Minimal ONI.emit helper</p><p>    globalThis.ONI = globalThis.ONI ?? {};</p><p>    if (!ONI.emit) {</p><p>      ONI.emit = function (eventName, payload = {}, options = {}) {</p><p>        const { local = true, world = false } = options;</p><p>        if (local) Hooks.callAll(eventName, payload);</p><p>        if (world) game.socket.emit(\"world\", { action: eventName, payload });</p><p>      };</p><p>    }</p><p>    // --- Payload ---</p><p>    const payload = globalThis.__PAYLOAD ?? {};</p><p>    // --- Helpers ---</p><p>    const isUuid = (v) => typeof v === \"string\" && v.includes(\".\");</p><p>    async function resolveToken(ref) {</p><p>      if (!ref) return null;</p><p>      if (ref?.document && ref?.object) return ref;</p><p>      if (ref?.id && canvas.tokens?.get(ref.id)) return canvas.tokens.get(ref.id);</p><p>      if (isUuid(ref)) {</p><p>        const doc = await fromUuid(ref);</p><p>        if (!doc) return null;</p><p>        if (doc.object) return doc.object;</p><p>        if (doc.document?.object) return doc.document.object;</p><p>        return null;</p><p>      }</p><p>      if (typeof ref === \"string\") return canvas.tokens.get(ref) ?? null;</p><p>      return null;</p><p>    }</p><p>    function pickTargetsFromPayload(p) {</p><p>      if (Array.isArray(p.targetTokenIds) && p.targetTokenIds.length) return p.targetTokenIds;</p><p>      if (Array.isArray(p.targets) && p.targets.length) {</p><p>        const out = [];</p><p>        for (const t of p.targets) {</p><p>          if (typeof t === \"string\") out.push(t);</p><p>          else if (t?.tokenId) out.push(t.tokenId);</p><p>          else if (t?.tokenUuid) out.push(t.tokenUuid);</p><p>        }</p><p>        return out.filter(Boolean);</p><p>      }</p><p>      if (Array.isArray(p.rows)) {</p><p>        const out = [];</p><p>        for (const r of p.rows) {</p><p>          if (r?.targetTokenId) out.push(r.targetTokenId);</p><p>          if (r?.targetTokenUuid) out.push(r.targetTokenUuid);</p><p>        }</p><p>        if (out.length) return out;</p><p>      }</p><p>      return [];</p><p>    }</p><p>    // --- Resolve caster & target ---</p><p>    const sourceRef =</p><p>      payload.sourceTokenUuid ??</p><p>      payload.sourceTokenId ??</p><p>      payload.casterTokenUuid ??</p><p>      payload.casterTokenId ??</p><p>      payload.attackerTokenUuid ??</p><p>      payload.attackerTokenId ??</p><p>      null;</p><p>    const targetRefs = pickTargetsFromPayload(payload);</p><p>    // Fallbacks for testing</p><p>    const fallbackSource = canvas.tokens.controlled?.[0] ?? null;</p><p>    const fallbackTargets = Array.from(game.user.targets ?? []);</p><p>    const sourceToken = (await resolveToken(sourceRef)) ?? fallbackSource;</p><p>    const targets = [];</p><p>    for (const r of targetRefs) {</p><p>      const tok = await resolveToken(r);</p><p>      if (tok) targets.push(tok);</p><p>    }</p><p>    if (!targets.length && fallbackTargets.length) targets.push(...fallbackTargets);</p><p>    if (!sourceToken) {</p><p>      ui.notifications.warn(\"Muleta: No caster token (payload missing and nothing selected).\");</p><p>      return;</p><p>    }</p><p>    if (!targets.length) {</p><p>      ui.notifications.warn(\"Muleta: No targets (payload missing and nothing targeted).\");</p><p>      return;</p><p>    }</p><p>    const targetToken = targets[0];</p><p>    // --- Dispositions ---</p><p>    const casterDisposition =</p><p>      sourceToken?.actor?.document?.disposition ??</p><p>      sourceToken?.document?.disposition ??</p><p>      0;</p><p>    const targetDisposition =</p><p>      targetToken?.actor?.document?.disposition ??</p><p>      targetToken?.document?.disposition ??</p><p>      0;</p><p>    const casterHostile = casterDisposition === -1;</p><p>    const targetHostile = targetDisposition === -1;</p><p>    // Flip rule you requested:</p><p>    // If caster is NOT hostile (-1) => flip FX horizontally</p><p>    const mirrorX = !casterHostile;</p><p>    // --- Target disposition => decides where \"front\" is ---</p><p>    const frontIsRightOfTarget = targetHostile;</p><p>    // --- Movement (X + Y) ---</p><p>    const original = { x: sourceToken.document.x, y: sourceToken.document.y };</p><p>    const squares = 0.65;</p><p>    const offsetPx = canvas.grid.size * squares;</p><p>    const destFront = {</p><p>      x: targetToken.document.x + (frontIsRightOfTarget ? +offsetPx : -offsetPx),</p><p>      y: targetToken.document.y,</p><p>    };</p><p>    const destBack = { x: original.x, y: original.y };</p><p>    const runMs = 280;</p><p>    const walkBackMs = 480;</p><p>    // --- Broadcast start ---</p><p>    ONI.emit(</p><p>      \"oni:animationStart\",</p><p>      {</p><p>        type: \"skillMuleta\",</p><p>        sourceTokenId: sourceToken.id,</p><p>        targetTokenIds: [targetToken.id],</p><p>        sceneId: canvas.scene?.id ?? null,</p><p>        timestamp: Date.now(),</p><p>        meta: { casterDisposition, targetDisposition, mirrorX, frontIsRightOfTarget },</p><p>      },</p><p>      { local: true, world: false }</p><p>    );</p><p>    // --- Assets ---</p><p>    const FX_PIERCE =</p><p>      \"modules/JB2A_DnD5e/Library/Generic/Template/Line/Generic/Piercing_Generic01_01_Regular_Orange_1000x400.webm\";</p><p>    const FX_IMPACT =</p><p>      \"modules/JB2A_DnD5e/Library/Generic/Impact/Impact_09_Regular_Orange_400x400.webm\";</p><p>    const SFX_HIT = \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/HitSlashS.ogg\";</p><p>    // --- MAIN SEQUENCE ---</p><p>    const seq = new Sequence()</p><p>      // 0) Move to front</p><p>      .animation()</p><p>      .on(sourceToken)</p><p>      .moveTowards(destFront)</p><p>      .duration(runMs)</p><p>      .waitUntilFinished()</p><p>      // 1) SFX + FX (Pierce + Impact together), wait for the pierce FX to finish</p><p>      .sound()</p><p>      .file(SFX_HIT)</p><p>      .volume(0.95)</p><p>      // Impact (quick, layered)</p><p>      .effect()</p><p>      .file(FX_IMPACT)</p><p>      .atLocation(targetToken)</p><p>      .scaleToObject(1.35)</p><p>      .mirrorX(mirrorX)</p><p>      .opacity(1.0)</p><p>      // Pierce (main line)</p><p>      .effect()</p><p>      .file(FX_PIERCE)</p><p>      .atLocation(targetToken)</p><p>      .scaleToObject(3.5)</p><p>      .mirrorX(mirrorX)</p><p>      .opacity(1.0)</p><p>      .waitUntilFinished()</p><p>      // 2) Walk back</p><p>      .animation()</p><p>      .on(sourceToken)</p><p>      .moveTowards(destBack)</p><p>      .duration(walkBackMs)</p><p>      .waitUntilFinished();</p><p>    await seq.play();</p><p>    // Snap guarantee (back to exact original)</p><p>    if (sourceToken.document.x !== original.x || sourceToken.document.y !== original.y) {</p><p>      await sourceToken.document.update({ x: original.x, y: original.y });</p><p>    }</p><p>    // --- Broadcast end ---</p><p>    ONI.emit(</p><p>      \"oni:animationEnd\",</p><p>      {</p><p>        type: \"skillMuleta\",</p><p>        sourceTokenId: sourceToken.id,</p><p>        targetTokenIds: [targetToken.id],</p><p>        sceneId: canvas.scene?.id ?? null,</p><p>        timestamp: Date.now(),</p><p>      },</p><p>      { local: true, world: false }</p><p>    );</p><p>    console.log(TAG, \"END\");</p><p>  } catch (err) {</p><p>    console.error(`${TAG} Animation crashed:`, err);</p><p>    // Still emit animationEnd so pipeline won't hang</p><p>    try {</p><p>      globalThis.ONI?.emit?.(</p><p>        \"oni:animationEnd\",</p><p>        { type: \"skillMuleta\", error: true, timestamp: Date.now() },</p><p>        { local: true }</p><p>      );</p><p>    } catch (_) {}</p><p>  }</p><p>})();</p>",
+      "check_bonus": "1",
+      "class": "Matador",
+      "cost": "1 Adoration",
+      "damage_bonus": "10",
+      "defense_target_type": "def",
+      "description": "<p>Perform a fast jab with your weapon, Deal <strong>【HR + 10】</strong> <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>damage to the target. 50% chance to inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GePNxftPupElcCWp\" data-id=\"GePNxftPupElcCWp\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bleed</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>to the target</p><hr class=\"\" contenteditable=\"false\"><p><strong>Skill Enhancement Lv. 20 ― </strong>This skill base damage increase to <strong>15 </strong><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span></p><p><strong>Skill Enhancement Lv. 40 ― </strong>This skill base damage increase to <strong>20 </strong><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span></p>",
+      "duration": "Instantaneous",
+      "heroic_requirement": "",
+      "ignore_hr": false,
+      "isCheck": true,
+      "isFacet": true,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Muleta",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "WEAPON",
+      "rolled_atr2": "",
+      "skill_animation_default": "",
+      "skill_animation_mode": "custom",
+      "skill_information": "",
+      "skill_range": "Melee",
+      "skill_target": "One Creature",
+      "skill_type": "Active",
+      "type_damage": "Physical",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "RxIy2d516YrLuzpS"
+  },
+  "type": "equippableItem"
+}

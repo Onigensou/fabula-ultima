@@ -1,0 +1,73 @@
+{
+  "_id": "88RMlBlB3uXxvzOn",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757758820032,
+    "duplicateSource": "Item.Gixyg4DKrK3zSZt4",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "QSU5T1V4cEJ856gJ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Raven/RevenantPassive2.png",
+  "name": "Shadow Mask",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "check_bonus": "0",
+      "class": "Hexer",
+      "cost": "10 MP",
+      "damage_bonus": "",
+      "defense_target_type": "def",
+      "description": "<p>Light bends around your ally to keep them hidden from danger. Until this spell ends, the target cannot be selected as a target for an attack or offensive spell that has multiple targets.</p>\n<p><strong>Additionally,</strong> until this spell ends, the target gains a <strong>+2 bonus</strong> to Checks that involve remaining hidden or moving undetected.</p>\n",
+      "details_roller": "Show",
+      "duration": "Scene",
+      "effect_table": {},
+      "heroic_requirement": "",
+      "id": "88RMlBlB3uXxvzOn",
+      "ignore_hr": false,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Raven/RevenantPassive2.png",
+      "isCheck": false,
+      "isFacet": true,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Shadow Mask",
+      "on_activate_effect_ref": "",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "Range",
+      "skill_target": "One creature",
+      "skill_type": "Spell",
+      "type_damage": "",
+      "use_optional_params": false,
+      "uuid": "Item.88RMlBlB3uXxvzOn"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "88RMlBlB3uXxvzOn"
+  },
+  "type": "equippableItem"
+}

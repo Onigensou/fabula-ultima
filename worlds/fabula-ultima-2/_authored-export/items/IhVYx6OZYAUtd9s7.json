@@ -1,0 +1,57 @@
+{
+  "_id": "IhVYx6OZYAUtd9s7",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1756967259917,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "2OplVa9fwLYbzD8b",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/time_dilation.png",
+  "name": "Arcane Mark",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 4200000,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Symbolist",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>When you hit one or more creatures with an 【⚔️Attack】 using a weapon that belongs to the arcane Category, the attack deals 5 extra damage and you may choose one of those creatures. If the next 【⚡Offensive Spell】 you cast during this scene only targets the chosen creature, its <strong>Magic Check</strong> will trigger a <strong>critical success</strong> if both dice show the same number (and the Check is not a <strong>fumble</strong>).</p>\n",
+      "duration": "",
+      "heroic_requirement": "you must have mastered one or more Classes among Sharpshooter, Symbolist, and Weaponmaster",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Arcane Mark",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "IhVYx6OZYAUtd9s7"
+  },
+  "type": "equippableItem"
+}

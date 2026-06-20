@@ -1,0 +1,19 @@
+{
+  "_id": "Bh30MRdF5PnQZJu1",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1756953103860,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "VVjpCERIXMrOJna7",
+  "name": "Symbolist",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

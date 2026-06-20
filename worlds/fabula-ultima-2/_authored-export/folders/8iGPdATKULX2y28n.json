@@ -1,0 +1,19 @@
+{
+  "_id": "8iGPdATKULX2y28n",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1746733077578,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.4.2"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "7i0o1cnEBxFHsJBk",
+  "name": "Current Story",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Actor"
+}

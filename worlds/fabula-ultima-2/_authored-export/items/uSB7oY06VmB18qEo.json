@@ -1,0 +1,44 @@
+{
+  "_id": "uSB7oY06VmB18qEo",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1739158742369,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    }
+  },
+  "folder": "YORShE1NmdPqz17e",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/NPCs/Django.png",
+  "name": "Django",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "active_name": "Assassinate",
+      "dice": "Show",
+      "flavor_text": "<hr contenteditable=\"false\"><blockquote><p>&nbsp;A Weapon dealer, and a hitman operating from Smuggler Port. Known for his deadly precision, he can only be hired at the right price.</p></blockquote>",
+      "id": "uSB7oY06VmB18qEo",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/NPCs/Django.png",
+      "name": "Django",
+      "passive_name": "Hitman for Hire",
+      "support_active": "<p>Deal&nbsp;<strong>10 physical&nbsp;</strong>damage to target creature, if the passive ability&nbsp;<strong>Hitman for Hire&nbsp;</strong>has already trigger once this scene, Deal&nbsp;<strong>30</strong>&nbsp;<strong>physical&nbsp;</strong>damage instead, treat this as a range basic attack.</p>",
+      "support_passive": "<p>At&nbsp;<strong>Round 3 </strong>of the battle, deals&nbsp;<strong>60 Physical&nbsp;</strong>damage to target creature.</p><p></p>",
+      "uuid": "Item.uSB7oY06VmB18qEo"
+    },
+    "template": "lUpHsEfBDEY3BeNq",
+    "templateSystemUniqueVersion": 4245463866,
+    "unique": false,
+    "uniqueId": "uSB7oY06VmB18qEo"
+  },
+  "type": "equippableItem"
+}

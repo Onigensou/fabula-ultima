@@ -1,0 +1,19 @@
+{
+  "_id": "MOf4y5KdI6ZvNBHg",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1751459051861,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "3xHGNagIXPyzukcU",
+  "name": "Learnt Recipe",
+  "sort": 100000,
+  "sorting": "a",
+  "type": "Item"
+}

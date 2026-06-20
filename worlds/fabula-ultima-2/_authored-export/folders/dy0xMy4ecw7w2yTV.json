@@ -1,0 +1,19 @@
+{
+  "_id": "dy0xMy4ecw7w2yTV",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1752318391542,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "Developer Macro",
+  "sort": 2000000,
+  "sorting": "a",
+  "type": "Macro"
+}

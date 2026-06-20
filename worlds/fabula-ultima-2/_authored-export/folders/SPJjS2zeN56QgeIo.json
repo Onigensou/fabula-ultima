@@ -1,0 +1,19 @@
+{
+  "_id": "SPJjS2zeN56QgeIo",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": null,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "2.4.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "Boss Entrance",
+  "sort": 1100000,
+  "sorting": "a",
+  "type": "Macro"
+}

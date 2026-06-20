@@ -1,0 +1,19 @@
+{
+  "_id": "qEJi91NvHYwj7Y4D",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": null,
+    "duplicateSource": null,
+    "systemId": null,
+    "systemVersion": null
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "R9qxPTmZo1v6MBup",
+  "name": "Smuggler Port",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Actor"
+}

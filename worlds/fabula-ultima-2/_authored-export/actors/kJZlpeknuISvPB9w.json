@@ -1,0 +1,2051 @@
+{
+  "_id": "kJZlpeknuISvPB9w",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1758189513703,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "lrk2jhOW5Ok9sgH1",
+  "img": "https://svgdb.me/assets/leader/class_101_profile.png",
+  "items": [
+    {
+      "_id": "0DQ8EokazAJ1MMs7",
+      "_stats": {
+        "compendiumSource": "Item.7XD4qLPW9GL0WpmZ",
+        "coreVersion": "12.343",
+        "createdTime": 1758195746608,
+        "duplicateSource": "Item.BzDkcIkdTtXqn2ji",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Sapper/icon_arch_detonatetraps.png",
+      "name": "Snare Net Trap",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hunter",
+          "cost": "2 IP",
+          "damage_bonus": "0",
+          "description": "<p><strong>Requirement:</strong> Set Trap (SL 2+)</p><p>This trap, when triggered, swiftly ensnares the target. Affected creatures must spend an action escaping it. On top of that, if the creature is <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Flying</span></strong></a></span></span>, it falls to the ground for one round, suffering 【 HR + 10 】 <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a></span></span> damage.</p>",
+          "duration": "Special",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Snare Net Trap",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "7XD4qLPW9GL0WpmZ"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "0iYVH2BHWvPpSPky",
+      "_stats": {
+        "compendiumSource": "Item.MBbqLKpQZa3UiPtg",
+        "coreVersion": "12.343",
+        "createdTime": 1758195702990,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Sapper/icon_arch_arch7.png",
+      "name": "Master Trapper",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hunter",
+          "cost": "-",
+          "damage_bonus": "0",
+          "description": "<p>The IP requirements to set up <strong>SL 2</strong> or higher traps is reduced by 1. (<em>To a minimum of 1)</em></p><p>Additionally, you can prepare and store one trap during <strong>resting scenes</strong>, following the regular trap-making rules for IP and MP requirements.</p><p>Regardless of whether you set a trap at the beginning of the conflict or not, during any of your turns in conflict scenes you can spend an action to throw the trap at your targets; they must perform an Opposed <strong>[ DEX + INS ]</strong> Check against you.</p>",
+          "duration": "-",
+          "heroic_requirement": "You must have mastered the Hunter Class.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Master Trapper",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "MBbqLKpQZa3UiPtg"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "1d0tHk3oTJWapVlY",
+      "_stats": {
+        "compendiumSource": "Item.IM1H5QPyjjMBo8Cj",
+        "coreVersion": "12.343",
+        "createdTime": 1758195773457,
+        "duplicateSource": "Item.ERzcQeWTbaPdQrIY",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Sapper/icon_arch_detonatetraps.png",
+      "name": "Bear Trap",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hunter",
+          "cost": "4 IP",
+          "damage_bonus": "0",
+          "description": "<p><strong>Requirement:</strong> Set Trap (SL 4+)</p><p>You create a powerful spring-loaded bear trap with razor-sharp teeth, capable of snapping shut on the target's limb, maiming it. The design is very human. Affected targets suffer 【 HR + 20 】 <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a></span></span> damage and the <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span></span> status.</p>",
+          "duration": "Special",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Bear Trap",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "IM1H5QPyjjMBo8Cj"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "1ivNj4k4Jq8hXjSK",
+      "_stats": {
+        "compendiumSource": "Item.OPtZhz0kmGGSdaXV",
+        "coreVersion": "12.343",
+        "createdTime": 1758195704209,
+        "duplicateSource": "Item.9q3AhAOv7sHJ8sib",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/sonic_boom.png",
+      "name": "Predator’s Reflexes",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hunter",
+          "cost": "-",
+          "damage_bonus": "0",
+          "description": "<p>The <strong>【📜Wild Reflexes】</strong> Skill now gives you a bonus to your <strong>Defense</strong> equal to <strong>[SL] + 1</strong>.</p><p>Instead of treating your <strong>HR</strong> as <strong>0</strong> when calculating the damage dealt by its counterattack, use <strong>HR</strong> as normal.</p>",
+          "duration": "-",
+          "heroic_requirement": "You must have mastered the Hunter Class.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Predator’s Reflexes",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "OPtZhz0kmGGSdaXV"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "2MKyNvX2vrDbrA5l",
+      "_stats": {
+        "compendiumSource": "Item.HANfcVGjWEeGQ9JG",
+        "coreVersion": "12.343",
+        "createdTime": 1758195790457,
+        "duplicateSource": "Item.yBNz3QqysJizdv5k",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Sapper/icon_arch_detonatetraps.png",
+      "name": "Soul Mirror Trap",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hunter",
+          "cost": "5 IP",
+          "damage_bonus": "0",
+          "description": "<p><strong>Requirement:</strong> Set Trap (SL 5+)</p><p>You craft a reflective contraption laced with ritualistic runes that shimmers brightly when triggered. Affected creatures suffer a magical backlash as their next <strong>【⚡Offensive Spell】</strong> is redirected toward them.</p>",
+          "duration": "Special",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Soul Mirror Trap",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "HANfcVGjWEeGQ9JG"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "4LoJNh1E3gOFKdDr",
+      "_stats": {
+        "compendiumSource": "Item.gHEqgUQKQMDAJT5B",
+        "coreVersion": "12.343",
+        "createdTime": 1758195734063,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Sapper/icon_arch_detonatetraps.png",
+      "name": "Tripwire Trap",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hunter",
+          "cost": "1 IP",
+          "damage_bonus": "0",
+          "description": "<p><strong>Requirement:</strong> Set Trap (SL 1+)</p><p>You set up a simple wire attached to two points to detect movement and trip your target. In non-conflict scenes, this trap alerts allies of incoming enemies. In combat, the target suffers 【 HR + 10 】 <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a></span></span> damage. Describe your contraption and the sound it makes!</p>",
+          "duration": "Special",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Tripwire Trap",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "gHEqgUQKQMDAJT5B"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "5dckVM7nY0FOX0s9",
+      "_stats": {
+        "compendiumSource": "Item.b98EPXDiPplLAZDR",
+        "coreVersion": "12.343",
+        "createdTime": 1758201897080,
+        "duplicateSource": "Item.IIcTXr2RJQ1BdqQn",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/Callofruin.png",
+      "name": "Vital Strike",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hunter",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>After a successful Accuracy Check, If the creature would enter <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\"><strong><span style=\"text-decoration: underline;\">Crisis </span></strong></a><strong><span style=\"text-decoration: underline;\"> </span></strong></span></span>with your 【⚔️ Attack】. The targeted creature suffers extra damage of the same type as your attack equal to your <strong>Dexterity</strong> die size.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Vital Strike",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "One creatur",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "b98EPXDiPplLAZDR"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "6kgk19k3zPyCikmr",
+      "_stats": {
+        "compendiumSource": "Item.e6klBcOHJxZ82I6K",
+        "coreVersion": "12.343",
+        "createdTime": 1758195781465,
+        "duplicateSource": "Item.TnkMbLJTebjn9S0a",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Sapper/icon_arch_detonatetraps.png",
+      "name": "Fly Trap",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hunter",
+          "cost": "4 IP",
+          "damage_bonus": "0",
+          "description": "<p><strong>Requirement:</strong> Set Trap (SL 4+)</p><p>This trap releases a sticky substance that inhibits movement. Creatures caught in it lose one action to free themselves and suffer <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span></span>. On top of that, if the creature is <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Flying</span></strong></a></span></span>, it falls to the ground for two rounds, suffering 【 HR + 10 】 <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a></span></span> damage and the <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span></span> status.</p>",
+          "duration": "Special",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Fly Trap",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "e6klBcOHJxZ82I6K"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "8GtWfLuodrevhcSc",
+      "_stats": {
+        "compendiumSource": "Item.cYOZcQnY6kEt0yYp",
+        "coreVersion": "12.343",
+        "createdTime": 1758195705239,
+        "duplicateSource": "Item.3HjwalzP8A5208qr",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Raven/BladeMasterSkill8.png",
+      "name": "Relentless Pursuit",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hunter",
+          "cost": "-",
+          "damage_bonus": "0",
+          "description": "<p>Your Track Check bonus is now <strong>[SL] + 2</strong>.</p><p>If a conflict is initiated, choose one option:</p><ul><li>the target is immediately affected by the <strong>【💥Lock-On】</strong> Skill</li><li>the target immediately triggers a chosen trap, with no Opposed Check required (IP requirement remains as normal).</li></ul>",
+          "duration": "-",
+          "heroic_requirement": "You must have mastered the Hunter Class.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Relentless Pursuit",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "cYOZcQnY6kEt0yYp"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "9cVSOHmDL8wKZH3u",
+      "_stats": {
+        "compendiumSource": "Item.XZomcenPLhn7FpGI",
+        "coreVersion": "12.343",
+        "createdTime": 1758201893266,
+        "duplicateSource": "Item.4E3auFhcWT06tIn5",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Sapper/icon_arch_hide.png",
+      "name": "Set Trap",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hunter",
+          "cost": "-",
+          "damage_bonus": "0",
+          "description": "<p>You master the art of creating and deploying traps. Each time you acquire this Skill, you progressively learn to create better traps. You can only learn <strong>two traps</strong> from each corresponding Skill Level (SL) (see Facet).</p>",
+          "duration": "-",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "5",
+          "name": "Set Trap",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "XZomcenPLhn7FpGI"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "c7VIxNOsQhUREUHe",
+      "_stats": {
+        "compendiumSource": "Item.YWDErqkiLduFGt3z",
+        "coreVersion": "12.343",
+        "createdTime": 1758201899420,
+        "duplicateSource": "Item.b98EPXDiPplLAZDR",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/RenaSkill3.png",
+      "name": "Wild Reflexes",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hunter",
+          "cost": "-",
+          "damage_bonus": "0",
+          "description": "<p>When you perform the 【🛡️ Guard】 action, if you choose not to provide cover to another creature, your reflexes are wildly increased! Until the start of your next turn, you gain a bonus to your <strong>Defense</strong> equal to <strong>[SL]</strong>.</p><p>Additionally, if an enemy misses you with an 【⚔️ Attack】 during this time, you may perform a free 【⚔️ Attack】 against them. Treat your <strong>HR</strong> as <strong>0</strong> when calculating damage for this counterattack. Do not stack with other <strong>Counterattack </strong>effects.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "5",
+          "name": "Wild Reflexes",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>Defense Bonus</strong></p></td></tr><tr><td><p>1</p></td><td><p>+1</p></td></tr><tr><td><p>2</p></td><td><p>+2</p></td></tr><tr><td><p>3</p></td><td><p>+3</p></td></tr><tr><td><p>4</p></td><td><p>+4</p></td></tr><tr><td><p>5</p></td><td><p>+5</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "YWDErqkiLduFGt3z"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "CuOYNO2Vwd4nXter",
+      "_stats": {
+        "compendiumSource": "Item.IIcTXr2RJQ1BdqQn",
+        "coreVersion": "12.343",
+        "createdTime": 1758201904359,
+        "duplicateSource": "Item.XZomcenPLhn7FpGI",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215625.170.png",
+      "name": "Track",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hunter",
+          "cost": "10 MP",
+          "damage_bonus": "0",
+          "description": "<p>You may spend 10 MP to track prey that is not currently in the scene and whose leads can be followed through conventional, hunter-related means.</p>\n<p>The target must perform an Opposed <strong>WLP (Willpower) + INS (Insight)</strong> Check against you, and you gain a bonus equal to <strong>[SL]</strong> on this Check.</p>\n<p>If the tracking is successful, you arrive at the prey’s location. If a conflict begins, your first Accuracy Check gains a bonus of <strong>[SL]</strong> against the prey. If successful, it deals an additional <strong>[HR (High Roll) + 15]</strong> damage.</p>\n<p>This ability ends if you are reduced to 0 HP, 【⚔️ Attack】 the prey, choose to track another target, or by Game Master ruling.</p>\n",
+          "duration": "Special",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "5",
+          "name": "Track",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>Opposed Check Bonus</strong></p></td><td><p><strong>First Accuracy Check Bonus</strong></p></td></tr><tr><td><p>1</p></td><td><p>+1</p></td><td><p>+1</p></td></tr><tr><td><p>2</p></td><td><p>+2</p></td><td><p>+2</p></td></tr><tr><td><p>3</p></td><td><p>+3</p></td><td><p>+3</p></td></tr><tr><td><p>4</p></td><td><p>+4</p></td><td><p>+4</p></td></tr><tr><td><p>5</p></td><td><p>+5</p></td><td><p>+5</p></td></tr></tbody></table>",
+          "skill_range": "Range",
+          "skill_target": "One creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "IIcTXr2RJQ1BdqQn"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "DKPitMOY8IDbv9QZ",
+      "_stats": {
+        "compendiumSource": "Item.CgaVYR30by1N2kZ2",
+        "coreVersion": "12.343",
+        "createdTime": 1758195749625,
+        "duplicateSource": "Item.7XD4qLPW9GL0WpmZ",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Sapper/icon_arch_detonatetraps.png",
+      "name": "Blinding Powder Trap",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hunter",
+          "cost": "2 IP",
+          "damage_bonus": "0",
+          "description": "<p><strong>Requirement:</strong> Set Trap (SL 2+)</p><p>This trap creates a burst of powder that clouds the targets’ vision. Each affected creature suffers <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dazed</span></strong></a></span></span> and <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span></span>.</p>",
+          "duration": "Special",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Blinding Powder Trap",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "CgaVYR30by1N2kZ2"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "evZSRL7WQHMPB9Rt",
+      "_stats": {
+        "compendiumSource": "Item.yBNz3QqysJizdv5k",
+        "coreVersion": "12.343",
+        "createdTime": 1758195787863,
+        "duplicateSource": "Item.S9EChgOjoB8XNIgi",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Sapper/icon_arch_detonatetraps.png",
+      "name": "Venomous Cloud Trap",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hunter",
+          "cost": "5 IP",
+          "damage_bonus": "0",
+          "description": "<p><strong>Requirement:</strong> Set Trap (SL 5+)</p><p>When triggered, this trap releases a fine mist of corrosive venom that clings to the skin and burns into the flesh. The affected creatures suffer 【 HR + 20 】 <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span> damage and the <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.JltwIqzHbBKhkD45\" data-id=\"JltwIqzHbBKhkD45\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poisoned</span></strong></a></span></span> status.</p>",
+          "duration": "Special",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Venomous Cloud Trap",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "yBNz3QqysJizdv5k"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "FpupPMzKFXb6N8o4",
+      "_stats": {
+        "compendiumSource": "Item.ERzcQeWTbaPdQrIY",
+        "coreVersion": "12.343",
+        "createdTime": 1758195767858,
+        "duplicateSource": "Item.VNe150vXCRY73UZ0",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Sapper/icon_arch_detonatetraps.png",
+      "name": "Sting Thing Trap",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hunter",
+          "cost": "3 IP",
+          "damage_bonus": "0",
+          "description": "<p><strong>Requirement:</strong> Set Trap (SL 3+)</p><p>Hidden spikes burst upward when triggered, piercing the target. Choose one damage type: <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(215, 169, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a></span></span>, or <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span>. The affected target suffers 【 HR + 15 】 damage of the chosen type.</p>",
+          "duration": "Special",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Sting Thing Trap",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "ERzcQeWTbaPdQrIY"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "hbH8bTEk2uGCWk2a",
+      "_stats": {
+        "compendiumSource": "Item.9q3AhAOv7sHJ8sib",
+        "coreVersion": "12.343",
+        "createdTime": 1758195700683,
+        "duplicateSource": "Item.cYOZcQnY6kEt0yYp",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/11_BRD/empyreal_arrow.png",
+      "name": "Fatal Precision",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hunter",
+          "cost": "-",
+          "damage_bonus": "0",
+          "description": "<p>Your <strong>【💥Vital Strike】</strong> now ruthlessly bites. On hit, the target suffers additional damage equal to your <strong>Dexterity</strong> die size <strong>+5</strong>.</p><p>Additionally, when you 【⚔️ Attack】 a creature in <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0,0,0,0.1); background-image: none !important; padding: 0; border: none; border-radius: 2px; white-space: nowrap; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a><strong><span style=\"text-decoration: underline;\">,</span></strong></span></span> your attack gain <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.2hNU23YLpCcZCCmf\" data-id=\"2hNU23YLpCcZCCmf\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Pierce</span></strong></a></span></span></p>",
+          "duration": "-",
+          "heroic_requirement": "You must have mastered the Hunter Class.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Fatal Precision",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "9q3AhAOv7sHJ8sib"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "illHZv4MXcnCtig7",
+      "_stats": {
+        "compendiumSource": "Item.fT3T2irBXiSWPcvB",
+        "coreVersion": "12.343",
+        "createdTime": 1758195739712,
+        "duplicateSource": "Item.gHEqgUQKQMDAJT5B",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Sapper/icon_arch_detonatetraps.png",
+      "name": "Siren Trap",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hunter",
+          "cost": "1 IP",
+          "damage_bonus": "0",
+          "description": "<p><strong>Requirement:</strong> Set Trap (SL 1+)</p><p>Once triggered, this trap emits a loud noise designed to distract foes. In non-conflict scenes, you set a timer that expires at your discretion, and affected creatures must immediately move toward the source of the sound upon activation. In combat, there is no timer, and affected creatures suffer <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dazed</span></strong></a></span></span>.</p>",
+          "duration": "Special",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Siren Trap",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "fT3T2irBXiSWPcvB"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "KnKgcT4FYqHtr9qI",
+      "_stats": {
+        "compendiumSource": "Item.S9EChgOjoB8XNIgi",
+        "coreVersion": "12.343",
+        "createdTime": 1758195785329,
+        "duplicateSource": "Item.e6klBcOHJxZ82I6K",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Sapper/icon_arch_detonatetraps.png",
+      "name": "Explosive Trap",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hunter",
+          "cost": "5 IP",
+          "damage_bonus": "0",
+          "description": "<p><strong>Requirement:</strong> Set Trap (SL 5+)</p><p>When triggered, this trap releases a concussive explosion. Targets caught in the blast suffer 【 HR + 25 】 <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span> damage.</p>",
+          "duration": "Special",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Explosive Trap",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "S9EChgOjoB8XNIgi"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "nMsiSJtGmi7lSi9S",
+      "_stats": {
+        "compendiumSource": "Item.APFR3qk78y3FJeKa",
+        "coreVersion": "12.343",
+        "createdTime": 1758195761785,
+        "duplicateSource": "Item.K9IgGUwKG3SopPuQ",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Sapper/icon_arch_detonatetraps.png",
+      "name": "Poison Dart Trap",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hunter",
+          "cost": "3 IP",
+          "damage_bonus": "0",
+          "description": "<p><strong>Requirement:</strong> Set Trap (SL 3+)</p><p>You set up a hidden mechanism that, when activated, shoots a concealed dart at the target, coated with a potent toxin. The target suffers 【 HR + 10 】 <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span> damage and the <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.JltwIqzHbBKhkD45\" data-id=\"JltwIqzHbBKhkD45\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poisoned</span></strong></a></span></span> status.</p>",
+          "duration": "Special",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Poison Dart Trap",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "APFR3qk78y3FJeKa"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "o6K9UIA2XMcv0dyK",
+      "_stats": {
+        "compendiumSource": "Item.BzDkcIkdTtXqn2ji",
+        "coreVersion": "12.343",
+        "createdTime": 1758195742726,
+        "duplicateSource": "Item.fT3T2irBXiSWPcvB",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Sapper/icon_arch_detonatetraps.png",
+      "name": "Smoke bomb Trap",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hunter",
+          "cost": "1 IP",
+          "damage_bonus": "0",
+          "description": "<p><strong>Requirement:</strong> Set Trap (SL 1+)</p><p>You set up a canister or pouch filled with substances that release a thick, obscuring smoke designed to cloud visibility and confuse foes. The affected target suffers a -2 penalty to all its Accuracy Checks within a full round. If the target has already taken any turn during the round the trap was deployed, the effect begins at the start of the next round.</p>",
+          "duration": "Special",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Smoke bomb Trap",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "BzDkcIkdTtXqn2ji"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "PXJfI3F9hsf5nmtB",
+      "_stats": {
+        "compendiumSource": "Item.4E3auFhcWT06tIn5",
+        "coreVersion": "12.343",
+        "createdTime": 1758201890439,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20(33).png",
+      "name": "Lock-On",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hunter",
+          "cost": "10 MP",
+          "damage_bonus": "0",
+          "description": "<p>You may perform an action and spend 10 MP to lock onto a target. During the next turn, any action performed by an ally against this target gains a <strong>+2 bonus</strong> to associated Checks.</p>\n<p>If all performed Checks against the target during this time are successful, the target also suffers \n  <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\">\n    <a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\">\n      <strong><span style=\"text-decoration: underline;\">Weak</span></strong>\n    </a>\n  </span></span>.\n</p>\n<p>If the target is reduced to 0 Hit Points (HP) while under the effect of this Skill, you may immediately mark another target at no additional MP cost.</p>\n",
+          "duration": "2 Turns",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Lock-On",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Range",
+          "skill_target": "One creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "4E3auFhcWT06tIn5"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "SeQGR6qxHkGYOghC",
+      "_stats": {
+        "compendiumSource": "Item.3HjwalzP8A5208qr",
+        "coreVersion": "12.343",
+        "createdTime": 1758195706478,
+        "duplicateSource": "Item.MBbqLKpQZa3UiPtg",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/Vitalpointpiercing.png",
+      "name": "Unerring Focus",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hunter",
+          "cost": "-",
+          "damage_bonus": "0",
+          "description": "<p>When you use the <strong>【💥Lock-On】</strong> Skill, you may choose to spend <strong>20 MP</strong> instead of 10. If you do, the associated bonus increases to <strong>+4</strong></p>",
+          "duration": "-",
+          "heroic_requirement": "You must have mastered the Hunter Class.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Unerring Focus",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "3HjwalzP8A5208qr"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "trEa5jU05rSnzKXV",
+      "_stats": {
+        "compendiumSource": "Item.K9IgGUwKG3SopPuQ",
+        "coreVersion": "12.343",
+        "createdTime": 1758195754646,
+        "duplicateSource": "Item.CgaVYR30by1N2kZ2",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Sapper/icon_arch_detonatetraps.png",
+      "name": "Mocking Trap",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hunter",
+          "cost": "2 IP",
+          "damage_bonus": "0",
+          "description": "<p><strong>Requirement:</strong> Set Trap (SL 2+)</p><p>You set up a weird contraption that taunts your target. Affected creatures now suffer <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\" data-id=\"XkuOy0BFvKJTewGS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Enraged</span></strong></a></span></span>.</p>",
+          "duration": "Special",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Mocking Trap",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "K9IgGUwKG3SopPuQ"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "ZbGMnTtMvOFfOJJZ",
+      "_stats": {
+        "compendiumSource": "Item.VNe150vXCRY73UZ0",
+        "coreVersion": "12.343",
+        "createdTime": 1758195765100,
+        "duplicateSource": "Item.APFR3qk78y3FJeKa",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Sapper/icon_arch_detonatetraps.png",
+      "name": "Snap Out Trap",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hunter",
+          "cost": "3 IP",
+          "damage_bonus": "0",
+          "description": "<p><strong>Requirement:</strong> Set Trap (SL 3+)</p><p>This electrifying trap releases a sudden electrical discharge that jolts the targets upon activation. Shocked creatures suffer 【 HR + 10 】 <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(215, 169, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a></span></span> damage and a -2 penalty to all its Accuracy Checks within a full round. If the target has already taken any turn during the round the trap was deployed, the effect begins at the start of the next round.</p>",
+          "duration": "Special",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Snap Out Trap",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "VNe150vXCRY73UZ0"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "zftNLUO8b3tYKawY",
+      "_stats": {
+        "compendiumSource": "Item.TnkMbLJTebjn9S0a",
+        "coreVersion": "12.343",
+        "createdTime": 1758195778792,
+        "duplicateSource": "Item.IM1H5QPyjjMBo8Cj",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Sapper/icon_arch_detonatetraps.png",
+      "name": "Moth Trap",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hunter",
+          "cost": "4 IP",
+          "damage_bonus": "0",
+          "description": "<p><strong>Requirement:</strong> Set Trap (SL 4+)</p><p>This trap releases a searing flash of intense radiance upon activation. Affected creatures suffer 【 HR + 15 】 <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(202, 189, 154) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></span> damage and a penalty of 【 SL 】 to all its Accuracy Checks within a full round. If the target has already taken any turn during the round the trap was deployed, the effect begins at the start of the next round.</p>",
+          "duration": "Special",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Moth Trap",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "TnkMbLJTebjn9S0a"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Hunter",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar4": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "DEF",
+            "max": 13,
+            "maxcolor": "#f26d40",
+            "mincolor": "#f26d40",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 13
+          },
+          "bar5": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar5",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MDEF",
+            "max": 10,
+            "maxcolor": "#26d6ed",
+            "mincolor": "#26d6ed",
+            "opacity": null,
+            "order": 4,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 10
+          }
+        }
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Hunter",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://i.pinimg.com/736x/22/a9/7f/22a97fc7e609b816196db2129da2cfc7.jpg",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 200000,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {
+      "also_text": "Stalker, Tracker, Trapper",
+      "benefit_dropdown": "ip_benefit",
+      "classMechanic_text": "<h1 style=\"font-family: Signika, sans-serif; letter-spacing:.5px; color:#1f5133; text-align:center; border-bottom:3px solid #2e7d57; padding-bottom:.25rem; margin:.25rem 0 .5rem;\"><span style=\"font-family: Signika, sans-serif\">HUNTER TUTORIAL — </span><span style=\"color:#37c27f;\"><span style=\"font-family: Signika, sans-serif\">TRAPS</span></span></h1><p style=\"font-style: italic; color: #2a6b46; margin: .25rem 0 1rem; text-align: center\"><em>“Set the field. Force their move.”</em></p><div style=\"display:grid; gap:.75rem; grid-template-columns: 1fr;\"><section style=\"border:1px solid #2e7d57; background:#ecfff6; padding:.75rem; border-radius:.6rem;\"><h2 style=\"margin:.25rem 0; color:#1f5133;\">What Are Traps?</h2><p style=\"margin: .25rem 0\">Traps are prepped tools the <strong>Hunter</strong> unleashes to lock enemies in place, inflict statuses, and control the opening of a fight. You trade <span style=\"font-weight:700; color:#1f5133;\"><strong>IP</strong></span> and <span style=\"font-weight:700; color:#1f5133;\"><strong>MP</strong></span> for a burst of control that targets <em>multiple creatures at once</em>.</p><div style=\"border-left:6px solid #59a9ff; background:linear-gradient(90deg, rgba(89,169,255,.12), transparent); padding:.55rem .6rem; border-radius:.35rem; color:#124a83;\"><p><strong>Deploy Timing:</strong> By default, you place a trap <em>right before round 1</em>. If your table uses a <strong>Surprise Round</strong>, you may instead ambush outside of combat (see <em>Ambush Mode</em> below).</p></div></section><div style=\"display:grid; grid-template-columns: 1fr; gap:.5rem;\"><section style=\"border:1px solid #2e7d57; background:#f6fffb; padding:.75rem; border-radius:.6rem;\"><h2 style=\"margin:.25rem 0; color:#1f5133;\">Trap Sizes & Costs</h2><div class=\"tableWrapper\" style=\"margin:.25rem 0;\"><table style=\"width:100%; border-collapse:collapse;\"><thead><tr style=\"background:#d9f6e7; color:#0e3a27;\"><th style=\"text-align:left; padding:.4rem .5rem;\">Effect Size</th><th style=\"text-align:left; padding:.4rem .5rem;\">IP Cost</th><th style=\"text-align:left; padding:.4rem .5rem;\">MP Cost</th><th style=\"text-align:left; padding:.4rem .5rem;\">Targets</th></tr></thead><tbody><tr style=\"background:#ffffff;\"><td style=\"padding:.4rem .5rem;\"><strong>Minor</strong></td><td style=\"padding:.4rem .5rem;\">Trap <strong>[SL]</strong></td><td style=\"padding:.4rem .5rem;\">5</td><td style=\"padding:.4rem .5rem;\">One creature</td></tr><tr style=\"background:#fbfffd;\"><td style=\"padding:.4rem .5rem;\"><strong>Medium</strong></td><td style=\"padding:.4rem .5rem;\">Trap <strong>[SL]</strong></td><td style=\"padding:.4rem .5rem;\">10</td><td style=\"padding:.4rem .5rem;\">Two creatures</td></tr><tr style=\"background:#ffffff;\"><td style=\"padding:.4rem .5rem;\"><strong>Major</strong></td><td style=\"padding:.4rem .5rem;\">Trap <strong>[SL]</strong></td><td style=\"padding:.4rem .5rem;\">15</td><td style=\"padding:.4rem .5rem;\">Three creatures</td></tr></tbody></table></div><p style=\"margin: .25rem 0 0 0; color: #2a6b46\">Your current Trap <strong>[SL]</strong> (skill level) sets the <em>IP you must spend</em>. MP scales with size.</p></section><section style=\"border:1px solid #2e7d57; background:#ffffff; padding:.75rem; border-radius:.6rem;\"><h2 style=\"margin:.25rem 0; color:#1f5133;\">How Traps Resolve</h2><ol style=\"margin:.25rem 0 .5rem 1.25rem;\"><li><strong>Choose targets</strong> up to the size limit (1 / 2 / 3).</li><li>Each target makes an <strong>Opposed Check</strong>: <span style=\"display:inline-block; font-weight:700; padding:.05rem .4rem; border:1px solid #cfe7ca; border-radius:.4rem; background:#f6fffb; margin-left:.25rem;\"><strong>Target: DEX + INS</strong></span> <span style=\"margin:0 .35rem;\">vs</span> <span style=\"display:inline-block; font-weight:700; padding:.05rem .4rem; border:1px solid #cfe7ca; border-radius:.4rem; background:#ecfff6;\"><strong>Hunter: DEX + INS</strong></span> <span style=\"display:inline-block; font-weight:800; padding:.05rem .45rem; border:1px solid #ffecb3; border-radius:.4rem; background:#fff9db; color:#5c4400; margin-left:.25rem;\"><strong>+ [SL]</strong></span></li><li>On a <strong>success</strong>, a creature <em>escapes</em> your trap.</li><li>On a <strong>failure</strong>, apply the trap’s <em>effect</em> (e.g., damage, <em>poisoned</em>, movement lock, etc.).</li></ol><div style=\"border-left:6px solid #ff6b6b; background:linear-gradient(90deg, rgba(255,107,107,.1), transparent); padding:.55rem .6rem; border-radius:.35rem; color:#7a1f1f;\"><p><strong>Note:</strong> Unless a trap says otherwise, you can only deploy it at the <em>start</em> of a conflict scene.</p></div></section></div><section style=\"border:1px solid #2e7d57; background:#ffffff; padding:.75rem; border-radius:.6rem;\"><h2 style=\"margin:.25rem 0; color:#1f5133;\">Ambush Mode (Optional Rule)</h2><p style=\"margin: .25rem 0\">If your table uses the <strong>Surprise Round</strong> rule, you may place a trap to <em>ambush unaware enemies</em> before combat begins. If you do, you <strong>can’t</strong> also place a trap again at the normal “start of conflict” timing.</p><div style=\"border:1px dashed #7bc79e; background:linear-gradient(180deg,#ecfff6,#ffffff); border-radius:.6rem; padding:.55rem;\"><p style=\"margin: .25rem 0; color: #1f5133\"><strong>Design Tip:</strong> Ambush is best when you need an early <em>status</em> or to split a group before they cluster. Minor traps shine here—cheap, decisive, and safe.</p></div></section><div style=\"display:grid; grid-template-columns: 1fr 1fr; gap:.5rem;\"><section style=\"border:1px solid #2e7d57; background:#f6fffb; padding:.75rem; border-radius:.6rem;\"><h2 style=\"margin:.25rem 0; color:#1f5133;\">Quick Reference</h2><ul style=\"margin:.25rem 0 .5rem 1rem;\"><li>Pick an <strong>Effect Size</strong> (Minor / Medium / Major).</li><li>Spend <strong>IP = [SL]</strong> and the listed <strong>MP</strong>.</li><li>Select up to <strong>1 / 2 / 3</strong> targets in range.</li><li>Opposed Check: your <strong>DEX+INS+[SL]</strong> vs each target’s <strong>DEX+INS</strong>.</li><li>Apply effects to those who fail; others escape.</li></ul></section><section style=\"border:1px solid #2e7d57; background:#f6fffb; padding:.75rem; border-radius:.6rem;\"><h2 style=\"margin:.25rem 0; color:#1f5133;\">Hunter Tips</h2><ul style=\"margin:.25rem 0 .5rem 1rem;\"><li><strong>Open with Control:</strong> Use traps to lock key enemies while allies position.</li><li><strong>Size for Budget:</strong> Minor is efficient; Major swings boss adds.</li><li><strong>Synergize:</strong> Pair status traps with allies who exploit that status.</li><li><strong>Mind Your MP:</strong> Medium/Major eat resources—plan recovery.</li></ul></section></div><section style=\"border:1px solid #2e7d57; background:#ffffff; padding:.75rem; border-radius:.6rem;\"><h2 style=\"margin:.25rem 0; color:#1f5133;\">Worked Example</h2><div style=\"border:1px dashed #ffdf8a; background:linear-gradient(180deg,#fff7d6,#ffffff); border-radius:.6rem; padding:.6rem; margin-bottom:.6rem;\"><p style=\"margin: .25rem 0\"><strong>Example A — Medium Poison Dart Trap (SL 3):</strong> Before round 1, the Hunter spends <strong>3 IP</strong> (Trap <strong>[SL]=3</strong>) and <strong>10 MP</strong> to deploy a <strong>Medium Poison Dart Trap</strong> targeting <strong>two creatures</strong>.</p><p style=\"margin: .25rem 0\">Each target makes an Opposed Check: their <strong>DEX+INS</strong> vs the Hunter’s <strong>DEX+INS+3</strong> (the <em>+3</em> is from Trap <strong>[SL]=3</strong>).</p><p style=\"margin: .25rem 0\">One target <em>fails</em> and suffers <strong>[HR + 10]</strong> <em>poison</em> damage and the <strong>poisoned</strong> status, as per <em>Poison Dart</em> (SL 3). The other <em>succeeds</em> and escapes the trap with no effect.</p></div><div style=\"border:1px dashed #7bc79e; background:linear-gradient(180deg,#ecfff6,#ffffff); border-radius:.6rem; padding:.6rem;\"><p style=\"margin: .25rem 0\"><strong>Example B — Smoke Bomb (SL 1) with timing clause:</strong> At start of round, the Hunter spends <strong>1 IP</strong> (Trap <strong>[SL]=1</strong>) and <strong>5 MP</strong> to place a <strong>Minor Smoke Bomb</strong> covering two foes.</p><p style=\"margin: .25rem 0\">Each target rolls <strong>DEX+INS</strong> vs the Hunter’s <strong>DEX+INS+1</strong>. One target fails and is hit by the smoke: within a full round they suffer a <strong>-2 penalty</strong> to all <em>Accuracy Checks</em>. <em>However</em>, because that target had already taken a turn this round, the Smoke Bomb’s penalty <strong>begins at the start of the next round</strong> (per the trap’s timing rule).</p></div></section></div>",
+      "class_facet": {
+        "0DQ8EokazAJ1MMs7": {
+          "facet_cost": "2 IP",
+          "facet_description": "<p><strong>Requirement:</strong> Set Trap (SL 2+)</p><p>This trap, when triggered, swiftly ensnares the target. Affected creatures must spend an action escaping it. On top of that, if the creature is <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Flying</span></strong></a></span></span>, it falls to the ground for one round, suffering 【 HR + 10 】 <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a></span></span> damage.</p>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Snare Net Trap",
+          "uuid": "Actor.kJZlpeknuISvPB9w.Item.0DQ8EokazAJ1MMs7"
+        },
+        "0iYVH2BHWvPpSPky": {
+          "facet_cost": "-",
+          "facet_description": "<p>The IP requirements to set up <strong>SL 2</strong> or higher traps is reduced by 1. (<em>To a minimum of 1)</em></p><p>Additionally, you can prepare and store one trap during <strong>resting scenes</strong>, following the regular trap-making rules for IP and MP requirements.</p><p>Regardless of whether you set a trap at the beginning of the conflict or not, during any of your turns in conflict scenes you can spend an action to throw the trap at your targets; they must perform an Opposed <strong>[ DEX + INS ]</strong> Check against you.</p>",
+          "facet_offensive": "",
+          "facet_target": "-",
+          "id": "${item.id}",
+          "name": "Master Trapper",
+          "uuid": "Actor.kJZlpeknuISvPB9w.Item.0iYVH2BHWvPpSPky"
+        },
+        "1d0tHk3oTJWapVlY": {
+          "facet_cost": "4 IP",
+          "facet_description": "<p><strong>Requirement:</strong> Set Trap (SL 4+)</p><p>You create a powerful spring-loaded bear trap with razor-sharp teeth, capable of snapping shut on the target's limb, maiming it. The design is very human. Affected targets suffer 【 HR + 20 】 <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a></span></span> damage and the <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span></span> status.</p>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Bear Trap",
+          "uuid": "Actor.kJZlpeknuISvPB9w.Item.1d0tHk3oTJWapVlY"
+        },
+        "1ivNj4k4Jq8hXjSK": {
+          "facet_cost": "-",
+          "facet_description": "<p>The <strong>【📜Wild Reflexes】</strong> Skill now gives you a bonus to your <strong>Defense</strong> equal to <strong>[SL] + 1</strong>.</p><p>Instead of treating your <strong>HR</strong> as <strong>0</strong> when calculating the damage dealt by its counterattack, use <strong>HR</strong> as normal.</p>",
+          "facet_offensive": "",
+          "facet_target": "-",
+          "id": "${item.id}",
+          "name": "Predator’s Reflexes",
+          "uuid": "Actor.kJZlpeknuISvPB9w.Item.1ivNj4k4Jq8hXjSK"
+        },
+        "2MKyNvX2vrDbrA5l": {
+          "facet_cost": "5 IP",
+          "facet_description": "<p><strong>Requirement:</strong> Set Trap (SL 5+)</p><p>You craft a reflective contraption laced with ritualistic runes that shimmers brightly when triggered. Affected creatures suffer a magical backlash as their next <strong>【⚡Offensive Spell】</strong> is redirected toward them.</p>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Soul Mirror Trap",
+          "uuid": "Actor.kJZlpeknuISvPB9w.Item.2MKyNvX2vrDbrA5l"
+        },
+        "4LoJNh1E3gOFKdDr": {
+          "facet_cost": "1 IP",
+          "facet_description": "<p><strong>Requirement:</strong> Set Trap (SL 1+)</p><p>You set up a simple wire attached to two points to detect movement and trip your target. In non-conflict scenes, this trap alerts allies of incoming enemies. In combat, the target suffers 【 HR + 10 】 <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a></span></span> damage. Describe your contraption and the sound it makes!</p>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Tripwire Trap",
+          "uuid": "Actor.kJZlpeknuISvPB9w.Item.4LoJNh1E3gOFKdDr"
+        },
+        "5dckVM7nY0FOX0s9": {
+          "facet_cost": "",
+          "facet_description": "<p>After a successful Accuracy Check, If the creature would enter <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\"><strong><span style=\"text-decoration: underline;\">Crisis </span></strong></a><strong><span style=\"text-decoration: underline;\"> </span></strong></span></span>with your 【⚔️ Attack】. The targeted creature suffers extra damage of the same type as your attack equal to your <strong>Dexterity</strong> die size.</p>",
+          "facet_offensive": "",
+          "facet_target": "One creatur",
+          "id": "${item.id}",
+          "name": "Vital Strike",
+          "uuid": "Actor.kJZlpeknuISvPB9w.Item.5dckVM7nY0FOX0s9"
+        },
+        "6kgk19k3zPyCikmr": {
+          "facet_cost": "4 IP",
+          "facet_description": "<p><strong>Requirement:</strong> Set Trap (SL 4+)</p><p>This trap releases a sticky substance that inhibits movement. Creatures caught in it lose one action to free themselves and suffer <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span></span>. On top of that, if the creature is <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Flying</span></strong></a></span></span>, it falls to the ground for two rounds, suffering 【 HR + 10 】 <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a></span></span> damage and the <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span></span> status.</p>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Fly Trap",
+          "uuid": "Actor.kJZlpeknuISvPB9w.Item.6kgk19k3zPyCikmr"
+        },
+        "8GtWfLuodrevhcSc": {
+          "facet_cost": "-",
+          "facet_description": "<p>Your Track Check bonus is now <strong>[SL] + 2</strong>.</p><p>If a conflict is initiated, choose one option:</p><ul><li>the target is immediately affected by the <strong>【💥Lock-On】</strong> Skill</li><li>the target immediately triggers a chosen trap, with no Opposed Check required (IP requirement remains as normal).</li></ul>",
+          "facet_offensive": "",
+          "facet_target": "-",
+          "id": "${item.id}",
+          "name": "Relentless Pursuit",
+          "uuid": "Actor.kJZlpeknuISvPB9w.Item.8GtWfLuodrevhcSc"
+        },
+        "9cVSOHmDL8wKZH3u": {
+          "facet_cost": "-",
+          "facet_description": "<p>You master the art of creating and deploying traps. Each time you acquire this Skill, you progressively learn to create better traps. You can only learn <strong>two traps</strong> from each corresponding Skill Level (SL) (see Facet).</p>",
+          "facet_offensive": "",
+          "facet_target": "-",
+          "id": "${item.id}",
+          "name": "Set Trap",
+          "uuid": "Actor.kJZlpeknuISvPB9w.Item.9cVSOHmDL8wKZH3u"
+        },
+        "CuOYNO2Vwd4nXter": {
+          "facet_cost": "10 MP",
+          "facet_description": "<p>You may spend 10 MP to track prey that is not currently in the scene and whose leads can be followed through conventional, hunter-related means.</p>\n<p>The target must perform an Opposed <strong>WLP (Willpower) + INS (Insight)</strong> Check against you, and you gain a bonus equal to <strong>[SL]</strong> on this Check.</p>\n<p>If the tracking is successful, you arrive at the prey’s location. If a conflict begins, your first Accuracy Check gains a bonus of <strong>[SL]</strong> against the prey. If successful, it deals an additional <strong>[HR (High Roll) + 15]</strong> damage.</p>\n<p>This ability ends if you are reduced to 0 HP, 【⚔️ Attack】 the prey, choose to track another target, or by Game Master ruling.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "One creature",
+          "id": "${item.id}",
+          "name": "Track",
+          "uuid": "Actor.kJZlpeknuISvPB9w.Item.CuOYNO2Vwd4nXter"
+        },
+        "DKPitMOY8IDbv9QZ": {
+          "facet_cost": "2 IP",
+          "facet_description": "<p><strong>Requirement:</strong> Set Trap (SL 2+)</p><p>This trap creates a burst of powder that clouds the targets’ vision. Each affected creature suffers <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dazed</span></strong></a></span></span> and <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span></span>.</p>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Blinding Powder Trap",
+          "uuid": "Actor.kJZlpeknuISvPB9w.Item.DKPitMOY8IDbv9QZ"
+        },
+        "FpupPMzKFXb6N8o4": {
+          "facet_cost": "3 IP",
+          "facet_description": "<p><strong>Requirement:</strong> Set Trap (SL 3+)</p><p>Hidden spikes burst upward when triggered, piercing the target. Choose one damage type: <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(215, 169, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a></span></span>, or <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span>. The affected target suffers 【 HR + 15 】 damage of the chosen type.</p>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Sting Thing Trap",
+          "uuid": "Actor.kJZlpeknuISvPB9w.Item.FpupPMzKFXb6N8o4"
+        },
+        "KnKgcT4FYqHtr9qI": {
+          "facet_cost": "5 IP",
+          "facet_description": "<p><strong>Requirement:</strong> Set Trap (SL 5+)</p><p>When triggered, this trap releases a concussive explosion. Targets caught in the blast suffer 【 HR + 25 】 <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span> damage.</p>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Explosive Trap",
+          "uuid": "Actor.kJZlpeknuISvPB9w.Item.KnKgcT4FYqHtr9qI"
+        },
+        "PXJfI3F9hsf5nmtB": {
+          "facet_cost": "10 MP",
+          "facet_description": "<p>You may perform an action and spend 10 MP to lock onto a target. During the next turn, any action performed by an ally against this target gains a <strong>+2 bonus</strong> to associated Checks.</p>\n<p>If all performed Checks against the target during this time are successful, the target also suffers \n  <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\">\n    <a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\">\n      <strong><span style=\"text-decoration: underline;\">Weak</span></strong>\n    </a>\n  </span></span>.\n</p>\n<p>If the target is reduced to 0 Hit Points (HP) while under the effect of this Skill, you may immediately mark another target at no additional MP cost.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "One creature",
+          "id": "${item.id}",
+          "name": "Lock-On",
+          "uuid": "Actor.kJZlpeknuISvPB9w.Item.PXJfI3F9hsf5nmtB"
+        },
+        "SeQGR6qxHkGYOghC": {
+          "facet_cost": "-",
+          "facet_description": "<p>When you use the <strong>【💥Lock-On】</strong> Skill, you may choose to spend <strong>20 MP</strong> instead of 10. If you do, the associated bonus increases to <strong>+4</strong></p>",
+          "facet_offensive": "",
+          "facet_target": "-",
+          "id": "${item.id}",
+          "name": "Unerring Focus",
+          "uuid": "Actor.kJZlpeknuISvPB9w.Item.SeQGR6qxHkGYOghC"
+        },
+        "ZbGMnTtMvOFfOJJZ": {
+          "facet_cost": "3 IP",
+          "facet_description": "<p><strong>Requirement:</strong> Set Trap (SL 3+)</p><p>This electrifying trap releases a sudden electrical discharge that jolts the targets upon activation. Shocked creatures suffer 【 HR + 10 】 <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(215, 169, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a></span></span> damage and a -2 penalty to all its Accuracy Checks within a full round. If the target has already taken any turn during the round the trap was deployed, the effect begins at the start of the next round.</p>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Snap Out Trap",
+          "uuid": "Actor.kJZlpeknuISvPB9w.Item.ZbGMnTtMvOFfOJJZ"
+        },
+        "c7VIxNOsQhUREUHe": {
+          "facet_cost": "-",
+          "facet_description": "<p>When you perform the 【🛡️ Guard】 action, if you choose not to provide cover to another creature, your reflexes are wildly increased! Until the start of your next turn, you gain a bonus to your <strong>Defense</strong> equal to <strong>[SL]</strong>.</p><p>Additionally, if an enemy misses you with an 【⚔️ Attack】 during this time, you may perform a free 【⚔️ Attack】 against them. Treat your <strong>HR</strong> as <strong>0</strong> when calculating damage for this counterattack. Do not stack with other <strong>Counterattack </strong>effects.</p>",
+          "facet_offensive": "",
+          "facet_target": "-",
+          "id": "${item.id}",
+          "name": "Wild Reflexes",
+          "uuid": "Actor.kJZlpeknuISvPB9w.Item.c7VIxNOsQhUREUHe"
+        },
+        "evZSRL7WQHMPB9Rt": {
+          "facet_cost": "5 IP",
+          "facet_description": "<p><strong>Requirement:</strong> Set Trap (SL 5+)</p><p>When triggered, this trap releases a fine mist of corrosive venom that clings to the skin and burns into the flesh. The affected creatures suffer 【 HR + 20 】 <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span> damage and the <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.JltwIqzHbBKhkD45\" data-id=\"JltwIqzHbBKhkD45\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poisoned</span></strong></a></span></span> status.</p>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Venomous Cloud Trap",
+          "uuid": "Actor.kJZlpeknuISvPB9w.Item.evZSRL7WQHMPB9Rt"
+        },
+        "hbH8bTEk2uGCWk2a": {
+          "facet_cost": "-",
+          "facet_description": "<p>Your <strong>【💥Vital Strike】</strong> now ruthlessly bites. On hit, the target suffers additional damage equal to your <strong>Dexterity</strong> die size <strong>+5</strong>.</p><p>Additionally, when you 【⚔️ Attack】 a creature in <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0,0,0,0.1); background-image: none !important; padding: 0; border: none; border-radius: 2px; white-space: nowrap; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a><strong><span style=\"text-decoration: underline;\">,</span></strong></span></span> your attack gain <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.2hNU23YLpCcZCCmf\" data-id=\"2hNU23YLpCcZCCmf\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Pierce</span></strong></a></span></span></p>",
+          "facet_offensive": "",
+          "facet_target": "-",
+          "id": "${item.id}",
+          "name": "Fatal Precision",
+          "uuid": "Actor.kJZlpeknuISvPB9w.Item.hbH8bTEk2uGCWk2a"
+        },
+        "illHZv4MXcnCtig7": {
+          "facet_cost": "1 IP",
+          "facet_description": "<p><strong>Requirement:</strong> Set Trap (SL 1+)</p><p>Once triggered, this trap emits a loud noise designed to distract foes. In non-conflict scenes, you set a timer that expires at your discretion, and affected creatures must immediately move toward the source of the sound upon activation. In combat, there is no timer, and affected creatures suffer <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dazed</span></strong></a></span></span>.</p>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Siren Trap",
+          "uuid": "Actor.kJZlpeknuISvPB9w.Item.illHZv4MXcnCtig7"
+        },
+        "nMsiSJtGmi7lSi9S": {
+          "facet_cost": "3 IP",
+          "facet_description": "<p><strong>Requirement:</strong> Set Trap (SL 3+)</p><p>You set up a hidden mechanism that, when activated, shoots a concealed dart at the target, coated with a potent toxin. The target suffers 【 HR + 10 】 <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span> damage and the <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.JltwIqzHbBKhkD45\" data-id=\"JltwIqzHbBKhkD45\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poisoned</span></strong></a></span></span> status.</p>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Poison Dart Trap",
+          "uuid": "Actor.kJZlpeknuISvPB9w.Item.nMsiSJtGmi7lSi9S"
+        },
+        "o6K9UIA2XMcv0dyK": {
+          "facet_cost": "1 IP",
+          "facet_description": "<p><strong>Requirement:</strong> Set Trap (SL 1+)</p><p>You set up a canister or pouch filled with substances that release a thick, obscuring smoke designed to cloud visibility and confuse foes. The affected target suffers a -2 penalty to all its Accuracy Checks within a full round. If the target has already taken any turn during the round the trap was deployed, the effect begins at the start of the next round.</p>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Smoke bomb Trap",
+          "uuid": "Actor.kJZlpeknuISvPB9w.Item.o6K9UIA2XMcv0dyK"
+        },
+        "trEa5jU05rSnzKXV": {
+          "facet_cost": "2 IP",
+          "facet_description": "<p><strong>Requirement:</strong> Set Trap (SL 2+)</p><p>You set up a weird contraption that taunts your target. Affected creatures now suffer <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\" data-id=\"XkuOy0BFvKJTewGS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Enraged</span></strong></a></span></span>.</p>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Mocking Trap",
+          "uuid": "Actor.kJZlpeknuISvPB9w.Item.trEa5jU05rSnzKXV"
+        },
+        "zftNLUO8b3tYKawY": {
+          "facet_cost": "4 IP",
+          "facet_description": "<p><strong>Requirement:</strong> Set Trap (SL 4+)</p><p>This trap releases a searing flash of intense radiance upon activation. Affected creatures suffer 【 HR + 15 】 <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(202, 189, 154) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></span> damage and a penalty of 【 SL 】 to all its Accuracy Checks within a full round. If the target has already taken any turn during the round the trap was deployed, the effect begins at the start of the next round.</p>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Moth Trap",
+          "uuid": "Actor.kJZlpeknuISvPB9w.Item.zftNLUO8b3tYKawY"
+        }
+      },
+      "class_heroicSkill": {
+        "0iYVH2BHWvPpSPky": {
+          "id": "${item.id}",
+          "name": "Master Trapper",
+          "skill_cost": "-",
+          "skill_description": "<p>The IP requirements to set up <strong>SL 2</strong> or higher traps is reduced by 1. (<em>To a minimum of 1)</em></p><p>Additionally, you can prepare and store one trap during <strong>resting scenes</strong>, following the regular trap-making rules for IP and MP requirements.</p><p>Regardless of whether you set a trap at the beginning of the conflict or not, during any of your turns in conflict scenes you can spend an action to throw the trap at your targets; they must perform an Opposed <strong>[ DEX + INS ]</strong> Check against you.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.kJZlpeknuISvPB9w.Item.0iYVH2BHWvPpSPky"
+        },
+        "1ivNj4k4Jq8hXjSK": {
+          "id": "${item.id}",
+          "name": "Predator’s Reflexes",
+          "skill_cost": "-",
+          "skill_description": "<p>The <strong>【📜Wild Reflexes】</strong> Skill now gives you a bonus to your <strong>Defense</strong> equal to <strong>[SL] + 1</strong>.</p><p>Instead of treating your <strong>HR</strong> as <strong>0</strong> when calculating the damage dealt by its counterattack, use <strong>HR</strong> as normal.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.kJZlpeknuISvPB9w.Item.1ivNj4k4Jq8hXjSK"
+        },
+        "8GtWfLuodrevhcSc": {
+          "id": "${item.id}",
+          "name": "Relentless Pursuit",
+          "skill_cost": "-",
+          "skill_description": "<p>Your Track Check bonus is now <strong>[SL] + 2</strong>.</p><p>If a conflict is initiated, choose one option:</p><ul><li>the target is immediately affected by the <strong>【💥Lock-On】</strong> Skill</li><li>the target immediately triggers a chosen trap, with no Opposed Check required (IP requirement remains as normal).</li></ul>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.kJZlpeknuISvPB9w.Item.8GtWfLuodrevhcSc"
+        },
+        "SeQGR6qxHkGYOghC": {
+          "id": "${item.id}",
+          "name": "Unerring Focus",
+          "skill_cost": "-",
+          "skill_description": "<p>When you use the <strong>【💥Lock-On】</strong> Skill, you may choose to spend <strong>20 MP</strong> instead of 10. If you do, the associated bonus increases to <strong>+4</strong></p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.kJZlpeknuISvPB9w.Item.SeQGR6qxHkGYOghC"
+        },
+        "hbH8bTEk2uGCWk2a": {
+          "id": "${item.id}",
+          "name": "Fatal Precision",
+          "skill_cost": "-",
+          "skill_description": "<p>Your <strong>【💥Vital Strike】</strong> now ruthlessly bites. On hit, the target suffers additional damage equal to your <strong>Dexterity</strong> die size <strong>+5</strong>.</p><p>Additionally, when you 【⚔️ Attack】 a creature in <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0,0,0,0.1); background-image: none !important; padding: 0; border: none; border-radius: 2px; white-space: nowrap; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a><strong><span style=\"text-decoration: underline;\">,</span></strong></span></span> your attack gain <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.2hNU23YLpCcZCCmf\" data-id=\"2hNU23YLpCcZCCmf\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Pierce</span></strong></a></span></span></p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.kJZlpeknuISvPB9w.Item.hbH8bTEk2uGCWk2a"
+        }
+      },
+      "class_lore": "<blockquote><p><strong>Hunters</strong> are masters of the wild — expert trackers, survivalists, and trappers who possess a deep understanding, respect, and connection to nature or the environment in which they specialize in hunting. They revere the cycle of life and often form a symbiotic bond with the creatures they hunt, utilizing the abilities and instincts of their quarry to enhance their own. While some Hunters prefer a nomadic life, others take root and become one with their habitat, whether natural, urban or rural. Therefore, the Hunter's prowess extends beyond the natural world and can be adapted to any terrain, from populous cities to desolate landscapes.</p></blockquote>",
+      "class_skill": {
+        "5dckVM7nY0FOX0s9": {
+          "id": "${item.id}",
+          "name": "Vital Strike",
+          "skill_cost": "",
+          "skill_description": "<p>After a successful Accuracy Check, If the creature would enter <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\"><strong><span style=\"text-decoration: underline;\">Crisis </span></strong></a><strong><span style=\"text-decoration: underline;\"> </span></strong></span></span>with your 【⚔️ Attack】. The targeted creature suffers extra damage of the same type as your attack equal to your <strong>Dexterity</strong> die size.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.kJZlpeknuISvPB9w.Item.5dckVM7nY0FOX0s9"
+        },
+        "9cVSOHmDL8wKZH3u": {
+          "id": "${item.id}",
+          "name": "Set Trap",
+          "skill_cost": "-",
+          "skill_description": "<p>You master the art of creating and deploying traps. Each time you acquire this Skill, you progressively learn to create better traps. You can only learn <strong>two traps</strong> from each corresponding Skill Level (SL) (see Facet).</p>",
+          "skill_maxLevel": 5,
+          "skill_type": "Passive",
+          "uuid": "Actor.kJZlpeknuISvPB9w.Item.9cVSOHmDL8wKZH3u"
+        },
+        "CuOYNO2Vwd4nXter": {
+          "id": "${item.id}",
+          "name": "Track",
+          "skill_cost": "10 MP",
+          "skill_description": "<p>You may spend 10 MP to track prey that is not currently in the scene and whose leads can be followed through conventional, hunter-related means.</p>\n<p>The target must perform an Opposed <strong>WLP (Willpower) + INS (Insight)</strong> Check against you, and you gain a bonus equal to <strong>[SL]</strong> on this Check.</p>\n<p>If the tracking is successful, you arrive at the prey’s location. If a conflict begins, your first Accuracy Check gains a bonus of <strong>[SL]</strong> against the prey. If successful, it deals an additional <strong>[HR (High Roll) + 15]</strong> damage.</p>\n<p>This ability ends if you are reduced to 0 HP, 【⚔️ Attack】 the prey, choose to track another target, or by Game Master ruling.</p>\n",
+          "skill_maxLevel": 5,
+          "skill_type": "Active",
+          "uuid": "Actor.kJZlpeknuISvPB9w.Item.CuOYNO2Vwd4nXter"
+        },
+        "PXJfI3F9hsf5nmtB": {
+          "id": "${item.id}",
+          "name": "Lock-On",
+          "skill_cost": "10 MP",
+          "skill_description": "<p>You may perform an action and spend 10 MP to lock onto a target. During the next turn, any action performed by an ally against this target gains a <strong>+2 bonus</strong> to associated Checks.</p>\n<p>If all performed Checks against the target during this time are successful, the target also suffers \n  <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\">\n    <a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\">\n      <strong><span style=\"text-decoration: underline;\">Weak</span></strong>\n    </a>\n  </span></span>.\n</p>\n<p>If the target is reduced to 0 Hit Points (HP) while under the effect of this Skill, you may immediately mark another target at no additional MP cost.</p>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.kJZlpeknuISvPB9w.Item.PXJfI3F9hsf5nmtB"
+        },
+        "VLnram3kurMz7m0p": {
+          "id": "VLnram3kurMz7m0p",
+          "name": "Vital Strike",
+          "skill_cost": "",
+          "skill_description": "<p>After a successful Accuracy Check, you may spend 10 MP. The targeted creature suffers extra damage equal to your <strong>Dexterity</strong> die size. If the creature is already in \n  <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\">\n    <a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\">\n      <strong><span style=\"text-decoration: underline;\">Crisis</span></strong>\n    </a>\n  </span></span>, or would enter \n  <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\">\n    <a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\">\n      <strong><span style=\"text-decoration: underline;\">Crisis</span></strong>\n    </a>\n  </span></span> with your 【⚔️ Attack】, it also suffers <strong>5</strong> additional damage.</p>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.kJZlpeknuISvPB9w.Item.VLnram3kurMz7m0p"
+        },
+        "aY9D17Pb1wj7v2lr": {
+          "id": "aY9D17Pb1wj7v2lr",
+          "name": "Track",
+          "skill_cost": "10 MP",
+          "skill_description": "<p>You may spend 10 MP to track prey that is not currently in the scene and whose leads can be followed through conventional, hunter-related means.</p>\n<p>The target must perform an Opposed <strong>WLP (Willpower) + INS (Insight)</strong> Check against you, and you gain a bonus equal to <strong>[SL]</strong> on this Check.</p>\n<p>If the tracking is successful, you arrive at the prey’s location. If a conflict begins, your first Accuracy Check gains a bonus of <strong>[SL]</strong> against the prey. If successful, it deals an additional <strong>[HR (High Roll) + 15]</strong> damage.</p>\n<p>This ability ends if you are reduced to 0 HP, 【⚔️ Attack】 the prey, choose to track another target, or by Game Master ruling.</p>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.kJZlpeknuISvPB9w.Item.aY9D17Pb1wj7v2lr"
+        },
+        "c7VIxNOsQhUREUHe": {
+          "id": "${item.id}",
+          "name": "Wild Reflexes",
+          "skill_cost": "-",
+          "skill_description": "<p>When you perform the 【🛡️ Guard】 action, if you choose not to provide cover to another creature, your reflexes are wildly increased! Until the start of your next turn, you gain a bonus to your <strong>Defense</strong> equal to <strong>[SL]</strong>.</p><p>Additionally, if an enemy misses you with an 【⚔️ Attack】 during this time, you may perform a free 【⚔️ Attack】 against them. Treat your <strong>HR</strong> as <strong>0</strong> when calculating damage for this counterattack. Do not stack with other <strong>Counterattack </strong>effects.</p>",
+          "skill_maxLevel": 5,
+          "skill_type": "Passive",
+          "uuid": "Actor.kJZlpeknuISvPB9w.Item.c7VIxNOsQhUREUHe"
+        },
+        "dxgAKCfvQ4jFptS7": {
+          "id": "dxgAKCfvQ4jFptS7",
+          "name": "Set Trap",
+          "skill_cost": "-",
+          "skill_description": "<p>You master the art of creating and deploying traps. Each time you acquire this Skill, you progressively learn to create better traps. You can only learn <strong>two traps</strong> from each corresponding Skill Level (SL) (see Facet).</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.kJZlpeknuISvPB9w.Item.dxgAKCfvQ4jFptS7"
+        },
+        "nIhZJKVxj6FyfENG": {
+          "id": "nIhZJKVxj6FyfENG",
+          "name": "Wild Reflexes",
+          "skill_cost": "-",
+          "skill_description": "<p>When you perform the 【🛡️ Guard】 action, if you choose not to provide cover to another creature, your reflexes are wildly increased! Until the start of your next turn, you gain a bonus to your <strong>Defense</strong> equal to <strong>[SL]</strong>.</p><p>Additionally, if an enemy misses you with an 【⚔️ Attack】 during this time, you may perform a free 【⚔️ Attack】 against them. Treat your <strong>HR</strong> as <strong>0</strong> when calculating damage for this counterattack. Do not stack with other <strong>Counterattack </strong>effects.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.kJZlpeknuISvPB9w.Item.nIhZJKVxj6FyfENG"
+        },
+        "rG2eNfTfCDHJo4mt": {
+          "id": "rG2eNfTfCDHJo4mt",
+          "name": "Lock-On",
+          "skill_cost": "10 MP",
+          "skill_description": "<p>You may perform an action and spend 10 MP to lock onto a target. During the next turn, any action performed by an ally against this target gains a <strong>+2 bonus</strong> to associated Checks.</p>\n<p>If all performed Checks against the target during this time are successful, the target also suffers \n  <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\">\n    <a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\">\n      <strong><span style=\"text-decoration: underline;\">Weak</span></strong>\n    </a>\n  </span></span>.\n</p>\n<p>If the target is reduced to 0 Hit Points (HP) while under the effect of this Skill, you may immediately mark another target at no additional MP cost.</p>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.kJZlpeknuISvPB9w.Item.rG2eNfTfCDHJo4mt"
+        }
+      },
+      "flavor_text": "<p style=\"text-align: center\"><span style=\"font-family: Amiri\"><em>Silent steps</em></span></p><p style=\"text-align: center\"><span style=\"font-family: Amiri\"><em>bring the loudest victories.</em></span></p>",
+      "martialArmor_equippable": false,
+      "martialMelee_equippable": true,
+      "martialRanged_equippable": true,
+      "martialShield_equippable": false,
+      "name": "Hunter",
+      "project_performable": false,
+      "ritual_performable": false
+    },
+    "statusEffects": {},
+    "template": "hoxC3HFCtMYGScIo",
+    "templateSystemUniqueVersion": 504201233
+  },
+  "type": "character"
+}

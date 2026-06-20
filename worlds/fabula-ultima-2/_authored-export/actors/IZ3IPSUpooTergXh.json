@@ -1,0 +1,736 @@
+{
+  "_id": "IZ3IPSUpooTergXh",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1740156288840,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "Q5eucNl17iOxQ8xV",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.331",
+        "createdTime": 1769830001350,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>This creature has less than 50% HP</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "4ldx00srGNv5AJBr",
+          "originalParentId": "0gIBYzSpjdXS6f25",
+          "originalUuid": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-crisis",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": false
+        },
+        "fabula-ultima-companion": {
+          "autoCrisis": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/08_DRG/blood_for_blood.png",
+      "name": "Crisis",
+      "origin": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr",
+      "sort": 0,
+      "statuses": [
+        "5jkr80zqdzaR003d"
+      ],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.5.0"
+    },
+    "theatre": {
+      "baseinsert": "",
+      "disabledefault": false,
+      "emotes": {
+        "angry": {
+          "insert": ""
+        },
+        "annoyed": {
+          "insert": ""
+        },
+        "awe-struck": {
+          "insert": ""
+        },
+        "blushing": {
+          "insert": ""
+        },
+        "carefree": {
+          "insert": ""
+        },
+        "confused": {
+          "insert": ""
+        },
+        "cry": {
+          "insert": ""
+        },
+        "dissatisfied": {
+          "insert": ""
+        },
+        "dizzy": {
+          "insert": ""
+        },
+        "frown": {
+          "insert": ""
+        },
+        "frustrated": {
+          "insert": ""
+        },
+        "grin": {
+          "insert": ""
+        },
+        "happy": {
+          "insert": ""
+        },
+        "happytears": {
+          "insert": ""
+        },
+        "hearts": {
+          "insert": ""
+        },
+        "idea": {
+          "insert": ""
+        },
+        "innocent": {
+          "insert": ""
+        },
+        "kiss": {
+          "insert": ""
+        },
+        "laughing": {
+          "insert": ""
+        },
+        "laughingsquint": {
+          "insert": ""
+        },
+        "meh": {
+          "insert": ""
+        },
+        "mischevious": {
+          "insert": ""
+        },
+        "panic": {
+          "insert": ""
+        },
+        "playful": {
+          "insert": ""
+        },
+        "rofl": {
+          "insert": ""
+        },
+        "sad": {
+          "insert": ""
+        },
+        "scared": {
+          "insert": ""
+        },
+        "serious": {
+          "insert": ""
+        },
+        "sleeping": {
+          "insert": ""
+        },
+        "smile": {
+          "insert": ""
+        },
+        "smug": {
+          "insert": ""
+        },
+        "speechless": {
+          "insert": ""
+        },
+        "surprised": {
+          "insert": ""
+        },
+        "thinking": {
+          "insert": ""
+        },
+        "tongue": {
+          "insert": ""
+        },
+        "wink": {
+          "insert": ""
+        },
+        "worried": {
+          "insert": ""
+        }
+      },
+      "name": "Bold Enforcer",
+      "optalign": "top"
+    }
+  },
+  "folder": "kWJqZHPj06vaaOR3",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Enforcer%20Punisher.png",
+  "items": [
+    {
+      "_id": "osU5LIBscqFgP0NY",
+      "_stats": {
+        "compendiumSource": "Item.o6OrL1676fHvOffJ",
+        "coreVersion": "12.343",
+        "createdTime": 1741696111432,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.o6OrL1676fHvOffJ"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "5uQIy5BCy7UEVfcT",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Opera%20Phantom.gif",
+      "name": "Mistress Mask",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "acess": true,
+          "cost": "2000",
+          "def_bonus": "",
+          "defense": "0",
+          "defense_include_dex": false,
+          "description": "<ul>\n<li>When you&nbsp;<strong>hit&nbsp;</strong>an ally with an attack with a <strong>Flail </strong>weapon, you <strong>gain HP&nbsp;</strong>equal to the damage dealt</li>\n</ul>\n<hr>\n<ul>\n<li>\n<p><strong>【Set Bonus】</strong></p>\n<ul>\n<li>\n<p><strong>2 Piece</strong></p>\n<ul>\n<li>When you <strong>hit&nbsp;</strong>an ally with a&nbsp;<strong>Flail&nbsp;</strong>weapon, after the damage is dealt, you may <strong>heal&nbsp;</strong>the target by 200% of the damage.<br><hr></li>\n</ul>\n<p><strong>3 Piece</strong></p>\n<ul>\n<li>As an&nbsp;<strong>Skill Action,&nbsp;</strong>remove <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEFENSE%20DOUBLE%20DOWN.png\" width=\"21\" height=\"21\">@UUID[JournalEntry.XkuOy0BFvKJTewGS]{Enraged} from all ally, then for all <strong>Enraged&nbsp;</strong>removed this way, replace it with <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEFENSE%20DOUBLE%20UP.png\" alt=\"\" width=\"21\" height=\"21\"><strong>Clarity </strong>instead</li>\n</ul>\n</li>\n</ul>\n<p>&nbsp;</p>\n</li>\n</ul>",
+          "details_roller": "Show",
+          "initiative": "0",
+          "magic_defense": "0",
+          "magic_defense_include_ins": false,
+          "mdef_bonus": "",
+          "name": "Mistress Mask",
+          "set_name": "Midnight Mistress"
+        },
+        "template": "r0yZpLPAK9VXhM2p",
+        "templateSystemUniqueVersion": 1853581118,
+        "unique": false
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Enforcer Punisher",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "prototypeToken": {
+    "actorLink": true,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 50,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar4": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "DEF",
+            "max": 10,
+            "maxcolor": "#f26d40",
+            "mincolor": "#f26d40",
+            "opacity": null,
+            "order": 4,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 10
+          },
+          "bar5": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar5",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MDEF",
+            "max": 10,
+            "maxcolor": "#26d6ed",
+            "mincolor": "#26d6ed",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 10
+          }
+        }
+      },
+      "hex-size-support": {
+        "alternateOrientation": false,
+        "hideBorder": true,
+        "pivotx": null,
+        "pivoty": null
+      },
+      "token-variants": {
+        "disableHUDButton": false,
+        "randomImgDefault": ""
+      },
+      "token-z": {
+        "zIndex": 0
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Enforcer Punisher",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 2.1,
+      "scaleY": 2.1,
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Enforcer%20Punisher.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 5400000,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "activeEffects": {},
+    "props": {
+      "affinity_1": "NA",
+      "affinity_2": "NA",
+      "affinity_3": "RS",
+      "affinity_4": "NA",
+      "affinity_5": "VU",
+      "affinity_6": "NA",
+      "affinity_7": "NA",
+      "affinity_8": "NA",
+      "affinity_9": "VU",
+      "arcane_ef": "100",
+      "arcane_vu": "NA",
+      "attribute": "",
+      "basic_attacks": {
+        "0": {
+          "$deleted": false,
+          "ailments": "Enraged / Paralyzed",
+          "ailments_chance": "100",
+          "attrib_1": "DEX",
+          "attrib_2": "WLP",
+          "basic_name": "⚔️Electro Baton",
+          "check_bonus": "3",
+          "defense_type": "DEF",
+          "detail": "<p><img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/gouge.png\" width=\"21\" height=\"21\"><strong>@UUID[JournalEntry.noUOPxPoZq65yYxV]{Chain: 2}</strong></p>\n<p>On&nbsp;<strong>hit:</strong></p>\n<ul>\n<li><strong> </strong>If the target an ally, inflicts <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEFENSE%20DOUBLE%20DOWN.png\" width=\"21\" height=\"21\">@UUID[JournalEntry.XkuOy0BFvKJTewGS]{Enraged}</li>\n<li>if the target is an enemy, inflicts <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Paralyze.png\" width=\"21\" height=\"21\">@UUID[JournalEntry.GqqgHkKOs0hkghdG]{Paralyzed}</li>\n</ul>",
+          "dmg_bonus": "0",
+          "icon": "<i class=\"fa-solid fa-swords\"></i>",
+          "roll": "",
+          "type": "bolt"
+        }
+      },
+      "bow_ef": "100",
+      "bow_vu": "NA",
+      "brawling_ef": "75",
+      "brawling_vu": "VU",
+      "condition_1": "NA",
+      "condition_10": "NA",
+      "condition_11": "NA",
+      "condition_12": "NA",
+      "condition_13": "NA",
+      "condition_14": "NA",
+      "condition_15": "NA",
+      "condition_16": "NA",
+      "condition_17": "NA",
+      "condition_18": "NA",
+      "condition_19": "NA",
+      "condition_2": "NA",
+      "condition_20": "NA",
+      "condition_21": "NA",
+      "condition_22": "IM",
+      "condition_23": "IM",
+      "condition_24": "NA",
+      "condition_25": "NA",
+      "condition_26": "NA",
+      "condition_27": "NA",
+      "condition_28": "NA",
+      "condition_29": "NA",
+      "condition_3": "NA",
+      "condition_30": "NA",
+      "condition_31": "NA",
+      "condition_32": "NA",
+      "condition_33": "NA",
+      "condition_34": "NA",
+      "condition_35": "NA",
+      "condition_36": "NA",
+      "condition_4": "NA",
+      "condition_5": "NA",
+      "condition_6": "NA",
+      "condition_7": "NA",
+      "condition_8": "NA",
+      "condition_9": "NA",
+      "current_def": "<b><i class=\"fa-solid fa-shield\"></i> DEF: </b>\n8",
+      "current_hp": "0",
+      "current_ip": "0",
+      "current_mdef": "<b><i class=\"fa-solid fa-shield-halved\"></i> MDEF: </b>\n9",
+      "current_mp": "140",
+      "dagger_ef": "100",
+      "dagger_vu": "NA",
+      "def_mod": "+2",
+      "desc": "<p>Description</p>",
+      "dex_base": "8",
+      "dex_current": 6,
+      "firearm_ef": "100",
+      "firearm_vu": "NA",
+      "flail_ef": "75",
+      "flail_vu": "VU",
+      "fp": "3",
+      "heavy_ef": "100",
+      "heavy_vu": "NA",
+      "init": "6",
+      "ins_base": "10",
+      "ins_current": 6,
+      "isAlmighty": false,
+      "isAwake": false,
+      "isClarity": false,
+      "isDazed": true,
+      "isEnergized": false,
+      "isEnlighten": false,
+      "isEnraged": true,
+      "isFocus": false,
+      "isMasterful": false,
+      "isPoisoned": false,
+      "isShaken": false,
+      "isSlow": false,
+      "isStrong": false,
+      "isSwift": false,
+      "isUnyielding": false,
+      "isWeak": false,
+      "level": "35",
+      "max_hp": "25",
+      "max_ip": "0",
+      "max_mp": "150",
+      "max_zero": "0",
+      "mdef_mod": "+3",
+      "mig_base": "6",
+      "mig_current": 6,
+      "name": "Enforcer Punisher",
+      "other_list": {
+        "0": {
+          "$deleted": false,
+          "details": "<p><strong>【Cost: 10 MP】</strong></p>\n<p>This skill is only usable when an ally <strong>Enforcer&nbsp;</strong>perform a check</p>\n<p>Increase the Check by 1</p>\n<p>&nbsp;</p>\n<p>&nbsp;</p>",
+          "icon": "",
+          "other_name": "💥Disciplinary Order",
+          "roll": ""
+        },
+        "1": {
+          "$deleted": false,
+          "details": "<p><strong>【Cost: 30 MP】</strong></p>\n<p>Remove <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEFENSE%20DOUBLE%20DOWN.png\" width=\"21\" height=\"21\">@UUID[JournalEntry.XkuOy0BFvKJTewGS]{Enraged}<strong>&nbsp;</strong>from all ally <strong>Enforcer,</strong> if <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEFENSE%20DOUBLE%20DOWN.png\" width=\"21\" height=\"21\">@UUID[JournalEntry.XkuOy0BFvKJTewGS]{Enraged} was removed from an ally this way, that ally perform a&nbsp;<strong>Free Action</strong>.</p>",
+          "icon": "",
+          "other_name": "💥Obedience Enforcement",
+          "roll": ""
+        },
+        "2": {
+          "$deleted": false,
+          "details": "<p><strong>【Cost: 30 MP】</strong></p>\n<p>Remove <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEFENSE%20DOUBLE%20DOWN.png\" width=\"21\" height=\"21\">@UUID[JournalEntry.XkuOy0BFvKJTewGS]{Enraged}<strong>&nbsp;</strong>from all ally <strong>Enforcer,</strong> if <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEFENSE%20DOUBLE%20DOWN.png\" width=\"21\" height=\"21\">@UUID[JournalEntry.XkuOy0BFvKJTewGS]{Enraged} was removed from an ally this way, that ally gains <strong>Clarity</strong>.</p>",
+          "icon": "",
+          "other_name": "💥Ecstasy Enforcement",
+          "roll": ""
+        }
+      },
+      "resource_value_1": "0",
+      "resource_value_2": "0",
+      "resource_value_3": "0",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "shield_type": "PHYSICAL",
+      "shield_value": "0",
+      "spear_ef": "100",
+      "spear_vu": "NA",
+      "special_list": {
+        "0": {
+          "$deleted": false,
+          "details": "<p>Whenever this creature become the target of an&nbsp;<strong>action, </strong>if there's an ally Enforcer who isn't inflicted with <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEFENSE%20DOUBLE%20DOWN.png\" width=\"21\" height=\"21\">@UUID[JournalEntry.XkuOy0BFvKJTewGS]{Enraged}<strong>, </strong>redirect that action onto an that creature, then inflicts <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEFENSE%20DOUBLE%20DOWN.png\" width=\"21\" height=\"21\">@UUID[JournalEntry.XkuOy0BFvKJTewGS]{Enraged}<strong>&nbsp;</strong>to them.</p>",
+          "icon": "",
+          "roll": "",
+          "special_name": "📜Commanding Presence"
+        }
+      },
+      "species": "HUMANOID",
+      "spell_list": {
+        "0": {
+          "$deleted": false,
+          "ailments": "",
+          "ailments_chance": "0",
+          "attrib_1": "NO",
+          "attrib_2": "NO",
+          "check_bonus": "0",
+          "cost": "30 MP",
+          "defense_type": "MDEF",
+          "details": "<p>Remove <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEFENSE%20DOUBLE%20DOWN.png\" width=\"21\" height=\"21\">@UUID[JournalEntry.XkuOy0BFvKJTewGS]{Enraged}<strong>&nbsp;</strong>from all ally <strong>Enforcer,</strong> for each <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEFENSE%20DOUBLE%20DOWN.png\" width=\"21\" height=\"21\">@UUID[JournalEntry.XkuOy0BFvKJTewGS]{Enraged} removed this way, replace it with <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/02_WAR/infuriate.png\" width=\"21\" height=\"21\">@UUID[JournalEntry.aPF9gzkqnUkcQmIC]{Berserk} instead.</p>",
+          "dmg_bonus": "0",
+          "has_damage": "NO",
+          "icon": "<i class=\"fa-solid fa-star\"></i>",
+          "macro_name": "",
+          "roll": "",
+          "spell_name": "⚡️Madness Enforcement",
+          "type": "bolt"
+        },
+        "1": {
+          "$deleted": false,
+          "ailments": "",
+          "ailments_chance": "0",
+          "attrib_1": "WLP",
+          "attrib_2": "INS",
+          "check_bonus": "99",
+          "cost": "30 MP",
+          "defense_type": "MDEF",
+          "details": "<p>Remove <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEFENSE%20DOUBLE%20DOWN.png\" width=\"21\" height=\"21\">@UUID[JournalEntry.XkuOy0BFvKJTewGS]{Enraged}<strong>&nbsp;</strong>from all ally <strong>Enforcer,</strong> if <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEFENSE%20DOUBLE%20DOWN.png\" width=\"21\" height=\"21\">@UUID[JournalEntry.XkuOy0BFvKJTewGS]{Enraged} was removed from an ally this way, Heals that ally.</p>",
+          "dmg_bonus": "20",
+          "has_damage": "YES",
+          "icon": "<i class=\"fa-solid fa-star\"></i>",
+          "macro_name": "",
+          "roll": "",
+          "spell_name": "⚡️Pleasure Enforcement",
+          "type": "heal"
+        }
+      },
+      "stealable_equipment": {
+        "osU5LIBscqFgP0NY": {
+          "id": "osU5LIBscqFgP0NY",
+          "loot_description": "<p><ul>\n<li>When you&nbsp;<strong>hit&nbsp;</strong>an ally with an attack with a <strong>Flail </strong>weapon, you <strong>gain HP&nbsp;</strong>equal to the damage dealt</li>\n</ul>\n<hr>\n<ul>\n<li>\n<p><strong>【Set Bonus】</strong></p>\n<ul>\n<li>\n<p><strong>2 Piece</strong></p>\n<ul>\n<li>When you <strong>hit&nbsp;</strong>an ally with a&nbsp;<strong>Flail&nbsp;</strong>weapon, after the damage is dealt, you may <strong>heal&nbsp;</strong>the target by 200% of the damage.<br><hr></li>\n</ul>\n<p><strong>3 Piece</strong></p>\n<ul>\n<li>As an&nbsp;<strong>Skill Action,&nbsp;</strong>remove <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEFENSE%20DOUBLE%20DOWN.png\" width=\"21\" height=\"21\">@UUID[JournalEntry.XkuOy0BFvKJTewGS]{Enraged} from all ally, then for all <strong>Enraged&nbsp;</strong>removed this way, replace it with <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEFENSE%20DOUBLE%20UP.png\" alt=\"\" width=\"21\" height=\"21\"><strong>Clarity </strong>instead</li>\n</ul>\n</li>\n</ul>\n<p>&nbsp;</p>\n</li>\n</ul></p>\nERROR",
+          "name": "Mistress Mask",
+          "roll": "",
+          "uuid": "Actor.IZ3IPSUpooTergXh.Item.osU5LIBscqFgP0NY"
+        }
+      },
+      "stolen_check": false,
+      "study_text": "<p>An elite enforcer who delights in inflicting pain on both allies and enemies alike. While physically frail, her sadistic methods bolster her allies and weaken her foes. Take her down quickly before she disrupts the battlefield</p>",
+      "subtype": "Sub-Type",
+      "subtype_list": "ENFORCER",
+      "sword_ef": "100",
+      "sword_vu": "NA",
+      "thrown_ef": "100",
+      "thrown_vu": "NA",
+      "traits": "BDSM , Pain and Pleasure",
+      "unique": true,
+      "wlp_base": "12",
+      "wlp_current": 12,
+      "zero_power_value": "0"
+    },
+    "statusEffects": {},
+    "template": "yibwK7D0bMmrmXhL",
+    "templateSystemUniqueVersion": 3152673362
+  },
+  "type": "character"
+}

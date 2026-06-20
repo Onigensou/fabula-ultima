@@ -1,0 +1,83 @@
+{
+  "_id": "ilPepoZYIkxZEKuR",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1741660892750,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "accessory",
+        "fromTemplate": "r0yZpLPAK9VXhM2p",
+        "itemId": "ilPepoZYIkxZEKuR",
+        "itemName": "Survivor’s Crest",
+        "pickedOldProps": {
+          "cost": "2000",
+          "def_bonus": "",
+          "defense": "0",
+          "defense_include_dex": false,
+          "initiative": "0",
+          "magic_defense": "0",
+          "magic_defense_include_ins": false,
+          "mdef_bonus": ""
+        },
+        "ts": 1769647436532
+      }
+    }
+  },
+  "folder": "5uQIy5BCy7UEVfcT",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/devui.png",
+  "name": "Survivor’s Crest",
+  "ownership": {
+    "2vy7wrEUqBy0kzsU": 3,
+    "6DmgigM5jq76r0Gd": 3,
+    "7hKw8KGsimboeDif": 3,
+    "9sFgrDy4MvAgoCmQ": 3,
+    "Am7qxPOavfKeDGPd": 3,
+    "JQGNzKpDPHJmcUIW": 3,
+    "JvF9tXvr7aaiS06m": 3,
+    "KD5d0efqHETPpIux": 3,
+    "LT3Z8EnRdMVk5ncQ": 3,
+    "MwTL6zXFCEpVBTpI": 3,
+    "NozW36XIGEGx7oVH": 3,
+    "NpGkA7uxaarkPiwS": 3,
+    "ULBTZPjtza939Mvy": 3,
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3,
+    "eGu3tuw7HwJd2bpx": 3,
+    "iLeUVmwqnze8ulOI": 3,
+    "mE5aEkDlrQJIYyhG": 3,
+    "nSGZ1sz1rdKao0kz": 3,
+    "nXC7OD7u5Zw5UDDU": 3,
+    "t41knaXNbgCEygM5": 3,
+    "tz9BP9MKfNGf2P3n": 3,
+    "wNzPmItLYCKE1I8t": 3,
+    "yL2PQxh3R9ddt0te": 3,
+    "yUfwoVmEPVdFG3AY": 3
+  },
+  "sort": 11100000,
+  "system": {
+    "container": null,
+    "props": {
+      "description": "<ul>\n<li>Once per scene, When you are reduced to <strong>0 HP,&nbsp;</strong>you may hold on at <strong>1</strong> HP instead.</li>\n</ul>",
+      "item_baseDef": "0",
+      "item_baseMdef": "0",
+      "item_cost": "2000",
+      "item_type": "accessory",
+      "name": "Survivor’s Crest",
+      "set_name": ""
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "ilPepoZYIkxZEKuR"
+  },
+  "type": "equippableItem"
+}

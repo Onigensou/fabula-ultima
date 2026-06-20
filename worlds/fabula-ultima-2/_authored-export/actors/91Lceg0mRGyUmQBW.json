@@ -1,0 +1,1763 @@
+{
+  "_id": "91Lceg0mRGyUmQBW",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1769519286344,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.4"
+    },
+    "exportSource": {
+      "coreVersion": "12.331",
+      "system": "custom-system-builder",
+      "systemVersion": "4.8.4",
+      "world": "legend-dragonslayer"
+    },
+    "theatre": {
+      "settings": {
+        "emote": null,
+        "textcolor": null,
+        "textflyin": null,
+        "textfont": null,
+        "textsize": null,
+        "textstanding": null
+      }
+    }
+  },
+  "folder": "jHENqHCcO3M5rMWg",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Moses/Moses_Standard.png",
+  "items": [
+    {
+      "_id": "3qDB6KtCoDXuBS6Z",
+      "_stats": {
+        "compendiumSource": "Item.IEFFYKz9pycXYl7G",
+        "coreVersion": "12.343",
+        "createdTime": 1780815034318,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Els/LordKnightSkill6.png",
+      "name": "Counterattack",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "Weaponmaster",
+          "cost": "",
+          "damage_bonus": "",
+          "defense_target_type": "def",
+          "description": "<p>After an enemy hits or misses you with a <strong>melee attack</strong>, if the Result of their Accuracy Check was an <strong>even number</strong>, you may perform a free attack against that enemy (after their attack has been fully resolved). This attack must be a <strong>melee attack</strong> and must have <strong>that enemy as its only target</strong>; treat your <strong>High Roll (HR)</strong> as 0 when calculating damage dealt by this attack</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "level": "1",
+          "max_level": "1",
+          "name": "Counterattack",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "reaction_damage_amount": "",
+              "reaction_damage_type": "",
+              "reaction_passive_mode": "ask",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_hit_by_action"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "IEFFYKz9pycXYl7G"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "amOyaLMlrBMnom24",
+      "_stats": {
+        "compendiumSource": "Item.97wep1as6JfhC3M3",
+        "coreVersion": "12.343",
+        "createdTime": 1780815034318,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/EMTrans1.png",
+      "name": "Elemental Weapon",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "URseozer8hOlKr4Y": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Elementalist",
+          "cost": "10 MP",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>You imbue a weapon with elemental energy. Choose a damage type: <strong>air, bolt, earth, fire, or ice.</strong> Until this spell ends, all damage dealt by the weapon becomes of the chosen damage type. If you have that weapon equipped while you cast this spell, you may perform a <strong>free attack</strong> with it as part of the same action.</p><p> This spell can only be cast on a weapon equipped by a willing creature</p>",
+          "duration": "Scene",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Elemental Weapon",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "One Weapon",
+          "skill_type": "Spell",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "97wep1as6JfhC3M3"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "gBOzgXK58WjRsCsL",
+      "_stats": {
+        "compendiumSource": "Item.P2ZlEmmK2DUhao0y",
+        "coreVersion": "12.343",
+        "createdTime": 1780815034318,
+        "duplicateSource": "Item.cneU6dfTzI13k0U2",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213818.767.png",
+      "name": "Mega-Remedy",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "container": "ogg4AJzdeK4JlpkQ",
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "",
+          "cost": "-",
+          "damage_bonus": "100",
+          "defense_target_type": "def",
+          "description": "<ul><li><p>Target creature <strong>recovers 100 HP</strong></p></li></ul>",
+          "details_roller": "Show",
+          "duration": "Instnataneous",
+          "heroic_requirement": "",
+          "id": "0gi0e6XOfjVr2S0d",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213818.767.png",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Mega-Remedy",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Any",
+          "skill_target": "One Creature",
+          "skill_type": "Item",
+          "type_damage": "Heal",
+          "use_optional_params": false,
+          "uuid": "Item.0gi0e6XOfjVr2S0d"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "0gi0e6XOfjVr2S0d"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "IQtwWS5tH2gLTd7E",
+      "_stats": {
+        "compendiumSource": "Item.0DvCABhRapTc4nFR",
+        "coreVersion": "12.343",
+        "createdTime": 1780815034318,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "icons/weapons/swords/greatsword-guard-gold-worn.webp",
+      "name": "Greatsword",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 200000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Sword",
+          "celestial_ef": "100",
+          "check_bonus": "1",
+          "construct_ef": "100",
+          "damage_bonus": "10",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>No Quality.</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "Two-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": true,
+          "isKey": false,
+          "isMartial": true,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "200",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "0",
+          "item_rarity": "Common",
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Greatsword",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "MIG",
+          "set_description": "<p><strong>【Set Bonus】</strong></p>",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "0DvCABhRapTc4nFR"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "NrQwNfM2u19Mn1T5",
+      "_stats": {
+        "compendiumSource": "Item.i7XP3i8a8GM70yCF",
+        "coreVersion": "12.343",
+        "createdTime": 1780815034318,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/enhanced_sharpcast_II.png",
+      "name": "Elemental Magic",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "URseozer8hOlKr4Y": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Elementalist",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>Each time you acquire this Skill, learn one Elementalist spell <em>(see Facet)</em>. </p><p><strong>【⚡Offensive Elementalist spells】</strong> use <strong>【INS + WLP】</strong> for the Magic Check.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "2",
+          "max_level": "10",
+          "name": "Elemental Magic",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Other",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "i7XP3i8a8GM70yCF"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "ogg4AJzdeK4JlpkQ",
+      "_stats": {
+        "compendiumSource": "Item.9vM7Xu5q3cj7EFQt",
+        "coreVersion": "12.343",
+        "createdTime": 1780815034318,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion3.png",
+      "name": "Mega-Remedy",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 3100000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>Target creature recovers <strong>100</strong> HP.</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "6",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "100",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Uncommon",
+          "item_skill_active": {
+            "0gi0e6XOfjVr2S0d": {
+              "id": "${item.id}",
+              "name": "Mega-Remedy",
+              "skill_cost": "-",
+              "skill_description": "<ul><li><p>Target creature <strong>recovers 100 HP</strong></p></li></ul>",
+              "skill_maxLevel": 1,
+              "uuid": "Item.0gi0e6XOfjVr2S0d"
+            },
+            "gBOzgXK58WjRsCsL": {
+              "id": "${item.id}",
+              "name": "Mega-Remedy",
+              "skill_cost": "-",
+              "skill_description": "<ul><li><p>Target creature <strong>recovers 100 HP</strong></p></li></ul>",
+              "skill_maxLevel": 1,
+              "uuid": "Item.0gi0e6XOfjVr2S0d"
+            }
+          },
+          "item_type": "consumable",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Mega-Remedy",
+          "optional_params": {},
+          "plant_ef": "100",
+          "related_item_list": {
+            "gBOzgXK58WjRsCsL": {
+              "id": "${item.id}",
+              "name": "Mega-Remedy",
+              "related_item_description": "<ul><li><p>Target creature <strong>recovers 100 HP</strong></p></li></ul>",
+              "uuid": "Item.0gi0e6XOfjVr2S0d"
+            }
+          },
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "9vM7Xu5q3cj7EFQt"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "p89KIM9hRmDvfbDb",
+      "_stats": {
+        "compendiumSource": "Item.UIdRwayw4g7chfU0",
+        "coreVersion": "12.343",
+        "createdTime": 1780815034318,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/scathe.png",
+      "name": "Spellblade",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "URseozer8hOlKr4Y": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Elementalist",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>When you cast an【⚡Offensive Spell】 targeting <strong>a single creature</strong>, if the spell has a <strong>total Mind Point cost of 【SL × 20】 or lower</strong> and you have <strong>non-arcane</strong> weapons equipped, you may choose one of those weapons. If you do, your Magic Check for the spell will use the chosen weapon's Accuracy Check formula; ; if that formula includes <strong>Dexterity</strong>, the Magic Check also gains a bonus equal to <strong>【SL】</strong>.</p><p> For instance, casting an Elementalist spell through a bronze sword when you have Skill Level 2 in Spellblade will cause the Magic Check to be 【DEX + MIG】+3 instead of 【INS + WLP】</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "3",
+          "name": "Spellblade",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "UIdRwayw4g7chfU0"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "pfiw7xQUbYLZ1ECN",
+      "_stats": {
+        "compendiumSource": "Item.VWe1aZLTjGQanHrQ",
+        "coreVersion": "12.343",
+        "createdTime": 1780815034318,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "t7zqjF8WFh19XCK7",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "attack_accuracy_mod_melee",
+              "mode": 2,
+              "priority": 1,
+              "value": "${level}$"
+            }
+          ],
+          "description": "<p>You gain a bonus equal to <strong>【SL】</strong> to all Accuracy Checks with <strong>melee</strong> weapons.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": 298800,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "t7zqjF8WFh19XCK7",
+              "originalParentId": "VWe1aZLTjGQanHrQ",
+              "originalUuid": "Item.VWe1aZLTjGQanHrQ.ActiveEffect.t7zqjF8WFh19XCK7"
+            },
+            "statuscounter": {
+              "config": {
+                "durationType": 0,
+                "modifyDuration": false,
+                "multiplyEffect": false,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/skills/melee/maneuver-sword-katana-yellow.webp",
+          "name": "Melee Weapon Mastery",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "Class Skill",
+              "Passive",
+              "Weaponmaster"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "icons/skills/melee/maneuver-sword-katana-yellow.webp",
+      "name": "Melee Weapon Mastery",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "URseozer8hOlKr4Y": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "Weaponmaster",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>You gain a bonus equal to <strong>【SL】</strong> to all Accuracy Checks with <strong>melee</strong> weapons.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "2",
+          "max_level": "4",
+          "name": "Melee Weapon Mastery",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": true,
+        "uniqueId": "VWe1aZLTjGQanHrQ"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "rEkRIHtzdaTudDGV",
+      "_stats": {
+        "compendiumSource": "Item.oqxQr6FFruIu4tOr",
+        "coreVersion": "12.343",
+        "createdTime": 1780815034318,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "XIV4dj7FBwLSom9T",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "extra_damage_mod_all",
+              "mode": 2,
+              "priority": 1,
+              "value": "${level * 2}$"
+            }
+          ],
+          "description": "<p>As long as you are in <strong>Crisis</strong>, you deal <strong>【SL × 2】</strong> extra damage (be it with attacks, spells, Arcana, items or any other method).</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": 298800,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "XIV4dj7FBwLSom9T",
+              "originalParentId": "oqxQr6FFruIu4tOr",
+              "originalUuid": "Item.oqxQr6FFruIu4tOr.ActiveEffect.XIV4dj7FBwLSom9T"
+            },
+            "statuscounter": {
+              "config": {
+                "durationType": 0,
+                "modifyDuration": false,
+                "multiplyEffect": false,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/life/heart-shadow-red.webp",
+          "name": "Adrenaline",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "Fury",
+              "Class Skill",
+              "Passive"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "icons/magic/life/heart-shadow-red.webp",
+      "name": "Adrenaline",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "URseozer8hOlKr4Y": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "Fury",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>As long as you are in <strong>Crisis</strong>, you deal <strong>【SL × 2】</strong> extra damage (be it with attacks, spells, Arcana, items or any other method).</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "3",
+          "max_level": "5",
+          "name": "Adrenaline",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "oqxQr6FFruIu4tOr"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "RkUaLeV0MCZytmUh",
+      "_stats": {
+        "compendiumSource": "Item.1RZQnLLb3DnPxMOi",
+        "coreVersion": "12.343",
+        "createdTime": 1780815034318,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/CLOSERS/Harpy/Interlude_Squall.webp",
+      "name": "Soaring Strike",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "URseozer8hOlKr4Y": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Elementalist",
+          "cost": "10 MP",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>The wind carries your strikes across the battlefield. You may immediately perform a <strong>free attack</strong> with a <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.10LjF01NAYNKpRvn\" data-id=\"10LjF01NAYNKpRvn\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Melee</span></strong></a></span> <strong>weapon</strong> you have equipped. This attack may target creatures that can only be targeted by <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Fcq1HgCEh3jxxELa\" data-id=\"Fcq1HgCEh3jxxELa\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Range</span></strong></a></span> attacks.</p><p>If you used a weapon belonging to the <strong>brawling</strong> or <strong>spear</strong> Category for this attack, it deals 5 extra damage.</p><p>If you hit a <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Flying</span></strong></a></span> target with this attack, you may force them to land immediately.</p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Soaring Strike",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Any",
+          "skill_target": "Self",
+          "skill_type": "Spell",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "1RZQnLLb3DnPxMOi"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "uFIHGe65aXg3HXKC",
+      "_stats": {
+        "compendiumSource": "Item.8u1xJ1G1CrJNf6Cp",
+        "coreVersion": "12.343",
+        "createdTime": 1780815034318,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Els/SwordKnightSkill5.png",
+      "name": "Breach",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "URseozer8hOlKr4Y": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Weaponmaster",
+          "cost": "5 MP",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>You may use an action and spend <strong>5 Mind Points</strong> to perform a <strong>free attack</strong> with a melee weapon you have equipped. This attack must target a <strong>single creature</strong>. If the attack is successful, it deals no damage and you choose one option:</p><ul><li><p>You destroy one <strong>shield</strong> equipped by the target</p></li><li><p>You destroy the target's equipped <strong>armor</strong></p></li><li><p>Whenever the target suffers damage from a source before the start of your next turn, that source deals <strong>【SL × 2】</strong> extra damage to them.</p></li></ul>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "3",
+          "name": "Breach",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "8u1xJ1G1CrJNf6Cp"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "xowhWEuCJgMRwySX",
+      "_stats": {
+        "compendiumSource": "Item.3UUTDCtjHySKGVvD",
+        "coreVersion": "12.343",
+        "createdTime": 1780815034318,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/armor.png",
+      "name": "Bronze Plate",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": true,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "200",
+          "item_def_bonus": "11",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Common",
+          "item_type": "armor",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Bronze Plate",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_description": "<p><strong>【Set Bonus】</strong></p>",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "3UUTDCtjHySKGVvD"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Moses",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "KD5d0efqHETPpIux": 3,
+    "NozW36XIGEGx7oVH": 2,
+    "ULBTZPjtza939Mvy": 2,
+    "default": 0,
+    "tz9BP9MKfNGf2P3n": 2
+  },
+  "prototypeToken": {
+    "actorLink": true,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": 1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 30,
+            "ownerVisibility": 30,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 30,
+            "ownerVisibility": 30,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          }
+        }
+      },
+      "hex-size-support": {
+        "hideBorder": true,
+        "hideFill": true
+      },
+      "token-variants": {
+        "disableHUDButton": false,
+        "randomImgDefault": ""
+      },
+      "token-z": {
+        "zIndex": 0
+      },
+      "wall-height": {
+        "tokenHeight": 0
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Moses",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 0,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1.76,
+      "scaleY": 1.76,
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Moses/Moses_Standard.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 100000,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {
+      "accessory2_name": "",
+      "accessory_name": "",
+      "animation_table": {},
+      "arcane_ef": "100",
+      "arcanism": false,
+      "armor_details": "",
+      "armor_mod": "11",
+      "armor_name": "Bronze Plate",
+      "backstory": "",
+      "battle_facing_direction": "left",
+      "bond_1": "",
+      "bond_2": "",
+      "bond_3": "",
+      "bond_4": "",
+      "bond_5": "",
+      "bond_6": "",
+      "bow_ef": "100",
+      "brawling_ef": "100",
+      "camp_activity_name_1": "",
+      "camp_activity_name_2": "",
+      "char_identity": "Knight from a stateless land",
+      "chimerism": false,
+      "class_list": {
+        "0": {
+          "$deleted": false,
+          "benefit": "hp",
+          "class_name": "Elementalist",
+          "level": "3"
+        },
+        "1": {
+          "$deleted": false,
+          "benefit": "mp",
+          "class_name": "Weaponmaster",
+          "level": "4"
+        },
+        "2": {
+          "$deleted": false,
+          "benefit": "hp",
+          "class_name": "Fury",
+          "level": "3"
+        }
+      },
+      "clock_brainwave": "0",
+      "clock_trade": "0",
+      "condition_anomaly": "NA",
+      "condition_bane": "NA",
+      "condition_berserk": "NA",
+      "condition_bleed": "NA",
+      "condition_blind": "NA",
+      "condition_burn": "NA",
+      "condition_charm": "NA",
+      "condition_confused": "NA",
+      "condition_curse": "NA",
+      "condition_dazed": "NA",
+      "condition_delayed": "NA",
+      "condition_despair": "NA",
+      "condition_disarmed": "NA",
+      "condition_doom": "NA",
+      "condition_enraged": "NA",
+      "condition_envenomed": "NA",
+      "condition_fatigue": "NA",
+      "condition_frightened": "NA",
+      "condition_grappled": "NA",
+      "condition_hypothermia": "NA",
+      "condition_isolate": "NA",
+      "condition_obscure": "NA",
+      "condition_oil": "NA",
+      "condition_panic": "NA",
+      "condition_paralyzed": "NA",
+      "condition_petrify": "NA",
+      "condition_poisoned": "NA",
+      "condition_shaken": "NA",
+      "condition_silence": "NA",
+      "condition_slow": "NA",
+      "condition_stagger": "NA",
+      "condition_suppress": "NA",
+      "condition_turbulence": "NA",
+      "condition_weak": "NA",
+      "condition_wet": "NA",
+      "condition_wither": "NA",
+      "condition_zombie": "NA",
+      "consumable_list": {
+        "ogg4AJzdeK4JlpkQ": {
+          "consume_description": "<ul><li><p>Target creature recovers <strong>100</strong> HP.</p></li></ul>",
+          "id": "${item.id}",
+          "name": "Mega-Remedy",
+          "quantity": 1,
+          "roll": "",
+          "uuid": "Actor.91Lceg0mRGyUmQBW.Item.ogg4AJzdeK4JlpkQ"
+        }
+      },
+      "current_hp": "70",
+      "current_ip": "6",
+      "current_mp": "55",
+      "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Moses/Moses_Standard.png",
+      "cut_in_fumble": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Moses/Moses_Standard.png",
+      "cut_in_zero_power": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Moses/Moses_Standard.png",
+      "dagger_ef": "100",
+      "default_facing_direction": "left",
+      "dex_base": "6",
+      "elementalism": false,
+      "emotion_1_1": "",
+      "emotion_1_2": "",
+      "emotion_1_3": "",
+      "emotion_2_1": "",
+      "emotion_2_2": "",
+      "emotion_2_3": "",
+      "emotion_3_1": "",
+      "emotion_3_2": "",
+      "emotion_3_3": "",
+      "emotion_4_1": "",
+      "emotion_4_2": "",
+      "emotion_4_3": "",
+      "emotion_5_1": "",
+      "emotion_5_2": "",
+      "emotion_5_3": "",
+      "emotion_6_1": "",
+      "emotion_6_2": "",
+      "emotion_6_3": "",
+      "entropism": false,
+      "experience": "3.77",
+      "experience_ui": "0",
+      "fabula_point": "1",
+      "firearm_ef": "100",
+      "flail_ef": "100",
+      "heavy_ef": "100",
+      "icon_offset_x": "",
+      "icon_offset_y": "",
+      "icon_scale": "",
+      "illusionism": false,
+      "init_penalty": "0",
+      "ins_base": "8",
+      "inventory_list": {},
+      "isAwake": false,
+      "isClarity": false,
+      "isDazed": false,
+      "isEnergized": false,
+      "isEnraged": false,
+      "isFocus": false,
+      "isGuest": false,
+      "isPoisoned": false,
+      "isShaken": false,
+      "isSlow": false,
+      "isStrong": false,
+      "isSwift": false,
+      "isWeak": false,
+      "is_martialarmor": false,
+      "itemContainer2": {
+        "xowhWEuCJgMRwySX": {
+          "armor_description": "<p></p>",
+          "armor_martial": "",
+          "id": "${item.id}",
+          "name": "Bronze Plate",
+          "roll": "",
+          "uuid": "Actor.91Lceg0mRGyUmQBW.Item.xowhWEuCJgMRwySX"
+        }
+      },
+      "key_list": {},
+      "level": "10",
+      "magic_defense_mod": "0",
+      "main_attrib_1": "DEX",
+      "main_attrib_2": "MIG",
+      "main_details": "<ul><li><p>No Quality.</p></li></ul>",
+      "main_hand": "Greatsword",
+      "memories_list": {},
+      "mig_base": "10",
+      "name": "Moses",
+      "normal_spell_list": {
+        "RkUaLeV0MCZytmUh": {
+          "class": "Elementalist",
+          "cost": "10 MP",
+          "duration": "Instantaneous",
+          "id": "${item.id}",
+          "name": "Soaring Strike",
+          "roll": "",
+          "spell_description": "<p>The wind carries your strikes across the battlefield. You may immediately perform a <strong>free attack</strong> with a <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.10LjF01NAYNKpRvn\" data-id=\"10LjF01NAYNKpRvn\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Melee</span></strong></a></span> <strong>weapon</strong> you have equipped. This attack may target creatures that can only be targeted by <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Fcq1HgCEh3jxxELa\" data-id=\"Fcq1HgCEh3jxxELa\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Range</span></strong></a></span> attacks.</p><p>If you used a weapon belonging to the <strong>brawling</strong> or <strong>spear</strong> Category for this attack, it deals 5 extra damage.</p><p>If you hit a <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Flying</span></strong></a></span> target with this attack, you may force them to land immediately.</p>",
+          "spell_target": "Self",
+          "uuid": "Actor.91Lceg0mRGyUmQBW.Item.RkUaLeV0MCZytmUh"
+        },
+        "amOyaLMlrBMnom24": {
+          "class": "Elementalist",
+          "cost": "10 MP",
+          "duration": "Scene",
+          "id": "${item.id}",
+          "name": "Elemental Weapon",
+          "roll": "",
+          "spell_description": "<p>You imbue a weapon with elemental energy. Choose a damage type: <strong>air, bolt, earth, fire, or ice.</strong> Until this spell ends, all damage dealt by the weapon becomes of the chosen damage type. If you have that weapon equipped while you cast this spell, you may perform a <strong>free attack</strong> with it as part of the same action.</p><p> This spell can only be cast on a weapon equipped by a willing creature</p>",
+          "spell_target": "One Weapon",
+          "uuid": "Actor.91Lceg0mRGyUmQBW.Item.amOyaLMlrBMnom24"
+        },
+        "pfiw7xQUbYLZ1ECN": {
+          "class": "Weaponmaster",
+          "cost": "",
+          "duration": "",
+          "id": "${item.id}",
+          "name": "Melee Weapon Mastery",
+          "roll": "",
+          "spell_description": "<p>You gain a bonus equal to <strong>【SL】</strong> to all Accuracy Checks with <strong>melee</strong> weapons.</p>",
+          "spell_target": "",
+          "uuid": "Actor.YUI98ARQceEPnSfX.Item.pfiw7xQUbYLZ1ECN"
+        },
+        "rEkRIHtzdaTudDGV": {
+          "class": "Fury",
+          "cost": "",
+          "duration": "",
+          "id": "${item.id}",
+          "name": "Adrenaline",
+          "roll": "",
+          "spell_description": "<p>As long as you are in <strong>Crisis</strong>, you deal <strong>【SL × 2】</strong> extra damage (be it with attacks, spells, Arcana, items or any other method).</p>",
+          "spell_target": "",
+          "uuid": "Actor.YUI98ARQceEPnSfX.Item.rEkRIHtzdaTudDGV"
+        },
+        "rne6jAHUndC5JzCL": {
+          "class": "Weaponmaster",
+          "cost": "",
+          "duration": "",
+          "id": "${item.id}",
+          "name": "Counterattack",
+          "roll": "",
+          "spell_description": "<p>After an enemy hits or misses you with a <strong>melee attack</strong>, if the Result of their Accuracy Check was an <strong>even number</strong>, you may perform a free attack against that enemy (after their attack has been fully resolved). This attack must be a <strong>melee attack</strong> and must have <strong>that enemy as its only target</strong>; treat your <strong>High Roll (HR)</strong> as 0 when calculating damage dealt by this attack</p>",
+          "spell_target": "",
+          "uuid": "Actor.YUI98ARQceEPnSfX.Item.rne6jAHUndC5JzCL"
+        },
+        "yTZFOABk8twwY5qC": {
+          "class": "Weaponmaster",
+          "cost": "",
+          "duration": "",
+          "id": "${item.id}",
+          "name": "Counterattack",
+          "roll": "",
+          "spell_description": "<p>After an enemy hits or misses you with a <strong>melee attack</strong>, if the Result of their Accuracy Check was an <strong>even number</strong>, you may perform a free attack against that enemy (after their attack has been fully resolved). This attack must be a <strong>melee attack</strong> and must have <strong>that enemy as its only target</strong>; treat your <strong>High Roll (HR)</strong> as 0 when calculating damage dealt by this attack</p>",
+          "spell_target": "",
+          "uuid": "Actor.YUI98ARQceEPnSfX.Item.yTZFOABk8twwY5qC"
+        }
+      },
+      "notes_text": "",
+      "off_attrib_1": "SHI",
+      "off_attrib_2": "SHI",
+      "off_base_mod_1": "0",
+      "off_base_mod_2": "0",
+      "off_hand": "",
+      "offensive_spell_list": {
+        "pfiw7xQUbYLZ1ECN": {
+          "class": "Weaponmaster",
+          "cost": "",
+          "duration": "",
+          "id": "${item.id}",
+          "name": "Melee Weapon Mastery",
+          "offensiveSpell_description": "<p>You gain a bonus equal to <strong>【SL】</strong> to all Accuracy Checks with <strong>melee</strong> weapons.</p>",
+          "offensiveSpell_target": "",
+          "roll": "",
+          "uuid": "Actor.YUI98ARQceEPnSfX.Item.pfiw7xQUbYLZ1ECN"
+        },
+        "rEkRIHtzdaTudDGV": {
+          "class": "Fury",
+          "cost": "",
+          "duration": "",
+          "id": "${item.id}",
+          "name": "Adrenaline",
+          "offensiveSpell_description": "<p>As long as you are in <strong>Crisis</strong>, you deal <strong>【SL × 2】</strong> extra damage (be it with attacks, spells, Arcana, items or any other method).</p>",
+          "offensiveSpell_target": "",
+          "roll": "",
+          "uuid": "Actor.YUI98ARQceEPnSfX.Item.rEkRIHtzdaTudDGV"
+        },
+        "rne6jAHUndC5JzCL": {
+          "class": "Weaponmaster",
+          "cost": "",
+          "duration": "",
+          "id": "${item.id}",
+          "name": "Counterattack",
+          "offensiveSpell_description": "<p>After an enemy hits or misses you with a <strong>melee attack</strong>, if the Result of their Accuracy Check was an <strong>even number</strong>, you may perform a free attack against that enemy (after their attack has been fully resolved). This attack must be a <strong>melee attack</strong> and must have <strong>that enemy as its only target</strong>; treat your <strong>High Roll (HR)</strong> as 0 when calculating damage dealt by this attack</p>",
+          "offensiveSpell_target": "",
+          "roll": "",
+          "uuid": "Actor.YUI98ARQceEPnSfX.Item.rne6jAHUndC5JzCL"
+        },
+        "yTZFOABk8twwY5qC": {
+          "class": "Weaponmaster",
+          "cost": "",
+          "duration": "",
+          "id": "${item.id}",
+          "name": "Counterattack",
+          "offensiveSpell_description": "<p>After an enemy hits or misses you with a <strong>melee attack</strong>, if the Result of their Accuracy Check was an <strong>even number</strong>, you may perform a free attack against that enemy (after their attack has been fully resolved). This attack must be a <strong>melee attack</strong> and must have <strong>that enemy as its only target</strong>; treat your <strong>High Roll (HR)</strong> as 0 when calculating damage dealt by this attack</p>",
+          "offensiveSpell_target": "",
+          "roll": "",
+          "uuid": "Actor.YUI98ARQceEPnSfX.Item.yTZFOABk8twwY5qC"
+        }
+      },
+      "origin": "The Promised Land",
+      "quirk_description": "<p><Insert your quirk effect></p>",
+      "quirk_name": "",
+      "relationship_1": "",
+      "relationship_2": "",
+      "relationship_3": "",
+      "relationship_4": "",
+      "relationship_5": "",
+      "relationship_6": "",
+      "resource_value_1": "0",
+      "resource_value_2": "0",
+      "resource_value_3": "0",
+      "ritualism": false,
+      "rolled_atr1": "MIG",
+      "rolled_atr2": "WLP",
+      "shield_type": "",
+      "shield_value": "0",
+      "skill_accuracy": "0",
+      "skill_active_list": {
+        "3qDB6KtCoDXuBS6Z": {
+          "active_class": "Weaponmaster",
+          "active_cost": "",
+          "active_description": "<p>After an enemy hits or misses you with a <strong>melee attack</strong>, if the Result of their Accuracy Check was an <strong>even number</strong>, you may perform a free attack against that enemy (after their attack has been fully resolved). This attack must be a <strong>melee attack</strong> and must have <strong>that enemy as its only target</strong>; treat your <strong>High Roll (HR)</strong> as 0 when calculating damage dealt by this attack</p>",
+          "active_duration": "",
+          "active_level": 1,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Counterattack",
+          "roll": "",
+          "uuid": "Actor.91Lceg0mRGyUmQBW.Item.3qDB6KtCoDXuBS6Z"
+        },
+        "NrQwNfM2u19Mn1T5": {
+          "active_class": "Elementalist",
+          "active_cost": "",
+          "active_description": "<p>Each time you acquire this Skill, learn one Elementalist spell <em>(see Facet)</em>. </p><p><strong>【⚡Offensive Elementalist spells】</strong> use <strong>【INS + WLP】</strong> for the Magic Check.</p>",
+          "active_duration": "",
+          "active_level": 2,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Elemental Magic",
+          "roll": "",
+          "uuid": "Actor.91Lceg0mRGyUmQBW.Item.NrQwNfM2u19Mn1T5"
+        },
+        "p89KIM9hRmDvfbDb": {
+          "active_class": "Elementalist",
+          "active_cost": "",
+          "active_description": "<p>When you cast an【⚡Offensive Spell】 targeting <strong>a single creature</strong>, if the spell has a <strong>total Mind Point cost of 【SL × 20】 or lower</strong> and you have <strong>non-arcane</strong> weapons equipped, you may choose one of those weapons. If you do, your Magic Check for the spell will use the chosen weapon's Accuracy Check formula; ; if that formula includes <strong>Dexterity</strong>, the Magic Check also gains a bonus equal to <strong>【SL】</strong>.</p><p> For instance, casting an Elementalist spell through a bronze sword when you have Skill Level 2 in Spellblade will cause the Magic Check to be 【DEX + MIG】+3 instead of 【INS + WLP】</p>",
+          "active_duration": "",
+          "active_level": 1,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Spellblade",
+          "roll": "",
+          "uuid": "Actor.91Lceg0mRGyUmQBW.Item.p89KIM9hRmDvfbDb"
+        },
+        "pfiw7xQUbYLZ1ECN": {
+          "active_class": "Weaponmaster",
+          "active_cost": "",
+          "active_description": "<p>You gain a bonus equal to <strong>【SL】</strong> to all Accuracy Checks with <strong>melee</strong> weapons.</p>",
+          "active_duration": "",
+          "active_level": 2,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Melee Weapon Mastery",
+          "roll": "",
+          "uuid": "Actor.91Lceg0mRGyUmQBW.Item.pfiw7xQUbYLZ1ECN"
+        },
+        "rEkRIHtzdaTudDGV": {
+          "active_class": "Fury",
+          "active_cost": "",
+          "active_description": "<p>As long as you are in <strong>Crisis</strong>, you deal <strong>【SL × 2】</strong> extra damage (be it with attacks, spells, Arcana, items or any other method).</p>",
+          "active_duration": "",
+          "active_level": 3,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Adrenaline",
+          "roll": "",
+          "uuid": "Actor.91Lceg0mRGyUmQBW.Item.rEkRIHtzdaTudDGV"
+        },
+        "rne6jAHUndC5JzCL": {
+          "active_class": "Weaponmaster",
+          "active_cost": "",
+          "active_description": "<p>After an enemy hits or misses you with a <strong>melee attack</strong>, if the Result of their Accuracy Check was an <strong>even number</strong>, you may perform a free attack against that enemy (after their attack has been fully resolved). This attack must be a <strong>melee attack</strong> and must have <strong>that enemy as its only target</strong>; treat your <strong>High Roll (HR)</strong> as 0 when calculating damage dealt by this attack</p>",
+          "active_duration": "",
+          "active_level": 1,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Counterattack",
+          "roll": "",
+          "uuid": "Actor.YUI98ARQceEPnSfX.Item.rne6jAHUndC5JzCL"
+        },
+        "uFIHGe65aXg3HXKC": {
+          "active_class": "Weaponmaster",
+          "active_cost": "5 MP",
+          "active_description": "<p>You may use an action and spend <strong>5 Mind Points</strong> to perform a <strong>free attack</strong> with a melee weapon you have equipped. This attack must target a <strong>single creature</strong>. If the attack is successful, it deals no damage and you choose one option:</p><ul><li><p>You destroy one <strong>shield</strong> equipped by the target</p></li><li><p>You destroy the target's equipped <strong>armor</strong></p></li><li><p>Whenever the target suffers damage from a source before the start of your next turn, that source deals <strong>【SL × 2】</strong> extra damage to them.</p></li></ul>",
+          "active_duration": "Instantaneous",
+          "active_level": 1,
+          "active_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Breach",
+          "roll": "",
+          "uuid": "Actor.91Lceg0mRGyUmQBW.Item.uFIHGe65aXg3HXKC"
+        },
+        "yTZFOABk8twwY5qC": {
+          "active_class": "Weaponmaster",
+          "active_cost": "",
+          "active_description": "<p>After an enemy hits or misses you with a <strong>melee attack</strong>, if the Result of their Accuracy Check was an <strong>even number</strong>, you may perform a free attack against that enemy (after their attack has been fully resolved). This attack must be a <strong>melee attack</strong> and must have <strong>that enemy as its only target</strong>; treat your <strong>High Roll (HR)</strong> as 0 when calculating damage dealt by this attack</p>",
+          "active_duration": "",
+          "active_level": 1,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Counterattack",
+          "roll": "",
+          "uuid": "Actor.91Lceg0mRGyUmQBW.Item.yTZFOABk8twwY5qC"
+        }
+      },
+      "skill_attack_damage": "0",
+      "skill_class_filter": "",
+      "skill_hideEffect": false,
+      "skill_hp": "0",
+      "skill_ip": "",
+      "skill_mp": "0",
+      "skill_type_filter": "All",
+      "spear_ef": "100",
+      "spell_class_filter": "",
+      "spell_hideEffect": false,
+      "spiritism": false,
+      "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Moses/Moses_Standard.png",
+      "sprite_standard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Moses/Moses_Standard.png",
+      "sword_ef": "100",
+      "theme": "Curiosity",
+      "thrown_ef": "100",
+      "weapon1_base_damage": "10",
+      "weapon1_base_mod": "1",
+      "weapon1_damagetype": "Physical",
+      "weapon2_damagetype": "-",
+      "weapon_list": {
+        "FLNMTUL3feYRfpqf": {
+          "id": "${item.id}",
+          "name": "Greatsword",
+          "quantity": "",
+          "roll": "",
+          "type": "Sword",
+          "uuid": "Actor.91Lceg0mRGyUmQBW.Item.FLNMTUL3feYRfpqf",
+          "weapon_description": "<p><ul><li><p>No Quality.</p></li></ul></p>",
+          "weapon_hand": "Two-handed",
+          "weapon_martial": "♦️",
+          "weapon_range": "Melee"
+        },
+        "IQtwWS5tH2gLTd7E": {
+          "id": "${item.id}",
+          "name": "Greatsword",
+          "quantity": "",
+          "roll": "",
+          "type": "Sword",
+          "uuid": "Actor.91Lceg0mRGyUmQBW.Item.IQtwWS5tH2gLTd7E",
+          "weapon_description": "<p><ul><li><p>No Quality.</p></li></ul></p>",
+          "weapon_hand": "Two-handed",
+          "weapon_martial": "♦️",
+          "weapon_range": "Melee"
+        }
+      },
+      "wlp_base": "8",
+      "your_class_name": "Hebrew knight",
+      "zenit": 109,
+      "zero_power_description": "<p><insert your Zero Power here></p>",
+      "zero_power_macro": "",
+      "zero_power_name": "<Zero Power Name>",
+      "zero_power_showMacro": false,
+      "zero_power_value": "0"
+    },
+    "statusEffects": {
+      "1QPHKNWo17z0bBmX": [],
+      "1cksCQj3urJwddfg": [],
+      "1qTdxSVu2XLu0lUx": [],
+      "3YZNX2X5rHYtL4L5": [],
+      "4g2B0rdJ3SiUQvUv": [],
+      "5FFBDg2y54bpqgat": [],
+      "5jkr80zqdzaR003d": [],
+      "6YW8glLMYbwj6ZhC": [],
+      "7FLtIUvENcYDAJKC": [],
+      "7VDl6ac5Rzr2Rpya": [],
+      "8LN8tDQjON508Rqm": [],
+      "ACD2C8JLWUeIx89o": [],
+      "CVxHWmDb0gQsob1q": [],
+      "CfLPg6RDybSQhTSR": [],
+      "DCaKnV9kNn3EpqtY": [],
+      "DHsoSawNEZAxsnQ9": [],
+      "EVjmTFRDsuzR823Z": [],
+      "GJ0cbbj60lr4zaHm": [],
+      "MsbUHrgK7AhSeEJm": [],
+      "N4WfMf1nuOdUEXVS": [],
+      "N4rGBYQsH7PyMAWr": [],
+      "NogCaPvL5Y52Hjnq": [],
+      "OFk8VUuwDhWFoPxI": [],
+      "QOfrFCU2C6mx50gK": [],
+      "Qz8IC4v3wJ6UoM77": [],
+      "Rc8AvdmlHAK7pPea": [],
+      "StnYeDADYo2xX99O": [],
+      "T1kJfiKBZm1dnnBy": [],
+      "VxdXsFJ7YVEzAp3x": [],
+      "YhO7nUdawyeQKMWD": [],
+      "ZK0aTX8IH1NqwmTw": [],
+      "bspDC7hFRTYuwdhf": [],
+      "cDgbFRi9TA68TvYr": [],
+      "clE8TJ0G1gMwF735": [],
+      "fYkA57rVfoytHRjo": [],
+      "g7JIey1pEuRHyAOH": [],
+      "gX1fA3onNG7wsyap": [],
+      "hhqoSNhWfVD4KR7g": [],
+      "jKvrVpxLgX0KhB23": [],
+      "m2iUJjsEfJkpmOBw": [],
+      "qMZsEEuzAdrHb2fk": [],
+      "qePlOECBTS0Dftgc": [],
+      "t2C3LKukW6LPUImk": [],
+      "t5jyddIZDvbyuVsD": [],
+      "v22vl6cnP94wVBPu": [],
+      "v2vFlETIgMnff5o8": [],
+      "vLM7q3rdXVCgHYD4": [],
+      "vUYA9jgY9pdafj4i": [],
+      "wA1E8GxiXmzz80XQ": [],
+      "xuwAn7u126GfFweU": []
+    },
+    "template": "OmwL5UqoVwjshkJo",
+    "templateSystemUniqueVersion": 2652892837
+  },
+  "type": "character"
+}

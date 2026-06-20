@@ -1,0 +1,1577 @@
+{
+  "_id": "o1jFZwDZxSAFSSWA",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1767839181626,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.4"
+    },
+    "theatre": {
+      "settings": {
+        "emote": null,
+        "textcolor": null,
+        "textflyin": "typewriter",
+        "textfont": null,
+        "textsize": null,
+        "textstanding": "none"
+      }
+    }
+  },
+  "folder": "Nd8LnosrPid1eX1r",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Bandit_Standard.png",
+  "items": [
+    {
+      "_id": "2OOIXOLXnRUGq9n0",
+      "_stats": {
+        "compendiumSource": "Item.3jT3wIWyzV7sgAb6",
+        "coreVersion": "12.343",
+        "createdTime": 1775139756400,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Headgear/5180.gif",
+      "name": "Red Bandana",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 600000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p><strong>【Dodge】SL+1</strong></p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flavor_text": "<p><em>A red headwear popular among bandit groups</em></p>",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": true,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "500",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Uncommon",
+          "item_skill_passive": {
+            "xxFZQLbXvNOci5az": {
+              "id": "${item.id}",
+              "name": "Dodge",
+              "skill_cost": "",
+              "skill_description": "<p>As long as you have no <strong>shields</strong> and no <strong>martial armor</strong> equipped, your Defense score is increased by <strong>【SL】.</strong></p>",
+              "skill_maxLevel": 3,
+              "uuid": ""
+            },
+            "yHZ9soDXTvalWPGx": {
+              "id": "${item.id}",
+              "name": "Dodge",
+              "skill_cost": "",
+              "skill_description": "<p>As long as you have no <strong>shields</strong> and no <strong>martial armor</strong> equipped, your Defense score is increased by <strong>【SL】.</strong></p>",
+              "skill_maxLevel": 3,
+              "uuid": "Item.yHZ9soDXTvalWPGx"
+            }
+          },
+          "item_type": "accessory",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Red Bandana",
+          "optional_params": {},
+          "plant_ef": "100",
+          "related_item_list": {
+            "xxFZQLbXvNOci5az": {
+              "id": "${item.id}",
+              "name": "Dodge",
+              "related_item_description": "<p>As long as you have no <strong>shields</strong> and no <strong>martial armor</strong> equipped, your Defense score is increased by <strong>【SL】.</strong></p>",
+              "uuid": ""
+            },
+            "yHZ9soDXTvalWPGx": {
+              "id": "${item.id}",
+              "name": "Dodge",
+              "related_item_description": "<p>As long as you have no <strong>shields</strong> and no <strong>martial armor</strong> equipped, your Defense score is increased by <strong>【SL】.</strong></p>",
+              "uuid": "Item.yHZ9soDXTvalWPGx"
+            }
+          },
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "<Set Name>",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "3jT3wIWyzV7sgAb6"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "dBYW2f2PIvfdXcSp",
+      "_stats": {
+        "compendiumSource": "Item.DKJu9Qo5yyiWAAHK",
+        "coreVersion": "12.343",
+        "createdTime": 1775140018362,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/674.gif",
+      "name": "Bandit Coin",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<p>An old coin use as some currency in the underworld</p>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "150",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Common",
+          "item_type": "material",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Bandit Coin",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "<Set Name>",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "DKJu9Qo5yyiWAAHK"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "dJCH4kdDn3BQlhMS",
+      "_stats": {
+        "compendiumSource": "Item.Ki373XheqcmzPYfM",
+        "coreVersion": "12.343",
+        "createdTime": 1775139762905,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "armor",
+            "fromTemplate": "5Z0gKtN5R51ebJOa",
+            "itemId": "Ki373XheqcmzPYfM",
+            "itemName": "Bandit Jacket",
+            "pickedOldProps": {
+              "cost": "900",
+              "def_bonus": "+1",
+              "defense": "0",
+              "defense_include_dex": true,
+              "initiative": "1",
+              "magic_defense": "0",
+              "magic_defense_include_ins": true,
+              "martial": false,
+              "mdef_bonus": "+1",
+              "shield": false
+            },
+            "ts": 1769647435229
+          }
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/verst.png",
+      "name": "Bandit Jacket",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 3100000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul>\n<li>You gain a +1 bonus to Accuracy Checks with <strong>daggers.</strong></li>\n</ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "900",
+          "item_def_bonus": "+1",
+          "item_mdef_bonus": "+1",
+          "item_quantity": "1",
+          "item_rarity": "Uncommon",
+          "item_type": "armor",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Bandit Jacket",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "Ki373XheqcmzPYfM"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "fFfKJYJhhsLTUF6c",
+      "_stats": {
+        "compendiumSource": "Item.SUYqRKHBGXUhiOL1",
+        "coreVersion": "12.343",
+        "createdTime": 1775139801184,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "icons/svg/item-bag.svg",
+      "name": "(Empty)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<pre><code>Use this item as placeholder for failing to steals any item from the target</code></pre>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "0",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Common",
+          "item_type": "material",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "(Empty)",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "<Set Name>",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "SUYqRKHBGXUhiOL1"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "Ose5AQKL4nTQpIG7",
+      "_stats": {
+        "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
+        "coreVersion": "12.343",
+        "createdTime": 1767839498752,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Swordsman/icon_warri_thrust.png",
+      "name": "Dagger",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "3",
+          "defense_target_type": "def",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Dagger",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "MIG",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Melee",
+          "skill_target": "One Creature",
+          "skill_type": "Attack",
+          "type_damage": "Physical",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "yWlkWZC2vLf4J5Pv"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "QzpMOHzIwpvsnYxy",
+      "_stats": {
+        "compendiumSource": "Item.hyeTHYWrH4Vfey3j",
+        "coreVersion": "12.343",
+        "createdTime": 1767845434908,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/09_NIN/mug.png",
+      "name": "Steal Item",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "<p>(async () =&gt; {</p><p>const TAG = \"[ONI][Anim][RunFront-SFX-Return]\";</p><p>const payload = globalThis.__PAYLOAD ?? {};</p><p>const DEBUG = true;</p><p>const SOUND_SRC = \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/SE_manto.wav\";</p><p>const SOUND_VOLUME = 0.5;</p><p>const MOVE_OUT_MS = 320;</p><p>const HOLD_MS = 1500; // wait after SFX before running back</p><p>const MOVE_BACK_MS = 320;</p><p>const APPROACH_GAP = 70;</p><p>function dbg(...args) {</p><p>if (!DEBUG) return;</p><p>console.log(TAG, ...args);</p><p>}</p><p>function warn(...args) {</p><p>console.warn(TAG, ...args);</p><p>}</p><p>function err(...args) {</p><p>console.error(TAG, ...args);</p><p>}</p><p>globalThis.ONI = globalThis.ONI ?? {};</p><p>if (!ONI.emit) {</p><p>ONI.emit = (eventName, eventPayload = {}, options = {}) =&gt; {</p><p>const { local = true, world = false } = options;</p><p>if (local) Hooks.callAll(eventName, eventPayload);</p><p>if (world) game.socket.emit(\"world\", { action: eventName, payload: eventPayload });</p><p>};</p><p>}</p><p>async function toTokenPlaceable(ref) {</p><p>if (!ref) return null;</p><p>if (typeof ref === \"string\") {</p><p>const byId = canvas.tokens?.get(ref);</p><p>if (byId) return byId;</p><p>try {</p><p>const doc = await fromUuid(ref);</p><p>if (!doc) return null;</p><p>return doc.object ?? doc.token?.object ?? doc;</p><p>} catch (e) {</p><p>warn(\"toTokenPlaceable failed fromUuid:\", ref, e);</p><p>return null;</p><p>}</p><p>}</p><p>return ref.object ?? ref.token?.object ?? ref ?? null;</p><p>}</p><p>function uniq(arr) {</p><p>return [...new Set(arr.filter(Boolean))];</p><p>}</p><p>function summarizeToken(tok) {</p><p>if (!tok) return null;</p><p>return {</p><p>id: tok.id ?? null,</p><p>name: tok.name ?? tok.document?.name ?? null,</p><p>uuid: tok.document?.uuid ?? null,</p><p>center: tok.center ? { x: tok.center.x, y: tok.center.y } : null,</p><p>x: tok.x ?? null,</p><p>y: tok.y ?? null</p><p>};</p><p>}</p><p>async function resolveSourceToken() {</p><p>const candidates = [</p><p>payload.casterTokenUuid,</p><p>payload.sourceTokenUuid,</p><p>payload.performerTokenUuid,</p><p>payload.tokenUuid,</p><p>payload.sourceTokenId,</p><p>payload.casterTokenId,</p><p>globalThis._token?.document?.uuid,</p><p>globalThis.token?.document?.uuid</p><p>];</p><p>dbg(\"resolveSourceToken candidates:\", candidates);</p><p>for (const c of candidates) {</p><p>const tok = await toTokenPlaceable(c);</p><p>if (tok) return tok;</p><p>}</p><p>return canvas.tokens?.controlled?.[0] ?? null;</p><p>}</p><p>async function resolveTargetTokens() {</p><p>const raw = uniq([</p><p>...(Array.isArray(payload.targetTokenUuids) ? payload.targetTokenUuids : []),</p><p>...(Array.isArray(payload.targetUUIDs) ? payload.targetUUIDs : []),</p><p>...(Array.isArray(payload.originalTargetUUIDs) ? payload.originalTargetUUIDs : []),</p><p>...(Array.isArray(payload.targets) ? payload.targets : []),</p><p>...(Array.from(game.user?.targets ?? []).map(t =&gt; t?.document?.uuid))</p><p>]);</p><p>dbg(\"resolveTargetTokens raw refs:\", raw);</p><p>const out = [];</p><p>for (const r of raw) {</p><p>const tok = await toTokenPlaceable(r);</p><p>if (tok) out.push(tok);</p><p>}</p><p>return out;</p><p>}</p><p>let resolvedSourceToken = null;</p><p>let resolvedTargets = [];</p><p>try {</p><p>if (!game.modules.get(\"sequencer\")?.active) {</p><p>ui.notifications.error(\"Sequencer module is not active.\");</p><p>return;</p><p>}</p><p>const sourceToken = await resolveSourceToken();</p><p>const targets = await resolveTargetTokens();</p><p>const firstTarget = targets[0] ?? null;</p><p>resolvedSourceToken = sourceToken;</p><p>resolvedTargets = targets;</p><p>dbg(\"Resolved source token:\", summarizeToken(sourceToken));</p><p>dbg(\"Resolved targets:\", targets.map(summarizeToken));</p><p>dbg(\"Payload snapshot:\", payload);</p><p>if (!sourceToken) {</p><p>ui.notifications.warn(\"No caster token found.\");</p><p>return;</p><p>}</p><p>if (!firstTarget) {</p><p>ui.notifications.warn(\"No target token found.\");</p><p>return;</p><p>}</p><p>ONI.emit(\"oni:animationStart\", {</p><p>type: \"oni.runFrontSfxReturn\",</p><p>sourceTokenId: sourceToken.id,</p><p>targetTokenIds: targets.map(t =&gt; t.id),</p><p>sceneId: canvas.scene?.id ?? null,</p><p>timestamp: Date.now()</p><p>}, { local: true, world: false });</p><p>const scriptSource = `</p><p>const { casterToken, targetTokens, params } = ctx;</p><p>if (!casterToken) throw new Error(\"Need casterToken\");</p><p>function easeInOutCubic(t) {</p><p>return t &lt; 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;</p><p>}</p><p>function animateXY(obj, from, to, durMs) {</p><p>return new Promise(resolve =&gt; {</p><p>const start = performance.now();</p><p>const ticker = canvas.app.ticker;</p><p>const update = () =&gt; {</p><p>const raw = (performance.now() - start) / durMs;</p><p>const t = Math.min(Math.max(raw, 0), 1);</p><p>const e = easeInOutCubic(t);</p><p>obj.x = from.x + (to.x - from.x) * e;</p><p>obj.y = from.y + (to.y - from.y) * e;</p><p>if (t &gt;= 1) {</p><p>ticker.remove(update);</p><p>resolve();</p><p>}</p><p>};</p><p>ticker.add(update);</p><p>});</p><p>}</p><p>function getNativeFlipX(token) {</p><p>const values = [</p><p>token?.document?.texture?.scaleX,</p><p>token?.mesh?.scale?.x,</p><p>token?.icon?.scale?.x</p><p>].filter(v =&gt; typeof v === \"number\");</p><p>if (values.some(v =&gt; v &lt; 0)) return true;</p><p>const mirrorX = token?.document?.texture?.mirrorX;</p><p>if (typeof mirrorX === \"boolean\") return mirrorX;</p><p>return false;</p><p>}</p><p>function setSpriteFlipX(sprite, flipped) {</p><p>const sx = Math.abs(sprite.scale.x || 1);</p><p>sprite.scale.x = flipped ? -sx : sx;</p><p>}</p><p>async function createClone(token) {</p><p>const baseObj = token.mesh ?? token.icon;</p><p>const texture = baseObj?.texture ?? await loadTexture(token.document.texture.src);</p><p>const sprite = new PIXI.Sprite(texture);</p><p>sprite.anchor.set(0.5);</p><p>const home = { x: token.center.x, y: token.center.y };</p><p>sprite.x = home.x;</p><p>sprite.y = home.y;</p><p>if (baseObj) {</p><p>sprite.width = Math.abs(baseObj.width);</p><p>sprite.height = Math.abs(baseObj.height);</p><p>sprite.alpha = baseObj.worldAlpha ?? 1;</p><p>sprite.rotation = baseObj.rotation ?? 0;</p><p>}</p><p>sprite.zIndex = Number(params.zIndex ?? 5000);</p><p>canvas.stage.sortableChildren = true;</p><p>canvas.stage.addChild(sprite);</p><p>canvas.stage.sortChildren();</p><p>setSpriteFlipX(sprite, getNativeFlipX(token));</p><p>return sprite;</p><p>}</p><p>const baseMesh = casterToken.mesh ?? casterToken.icon;</p><p>const originalTokenVisible = casterToken.visible;</p><p>const originalMeshVisible = baseMesh?.visible ?? true;</p><p>const originalFlipX = getNativeFlipX(casterToken);</p><p>const home = { x: casterToken.center.x, y: casterToken.center.y };</p><p>const target = targetTokens?.[0] ?? null;</p><p>let sprite;</p><p>try {</p><p>sprite = await createClone(casterToken);</p><p>if (baseMesh) baseMesh.visible = false;</p><p>casterToken.visible = false;</p><p>let front = {</p><p>x: home.x + Number(params.fallbackDx ?? -120),</p><p>y: home.y</p><p>};</p><p>if (target) {</p><p>const targetCenter = target.center ?? { x: home.x, y: home.y };</p><p>const approachDir = home.x &gt;= targetCenter.x ? 1 : -1;</p><p>const gap = Number(</p><p>params.approachGap ??</p><p>Math.max(casterToken.w ?? 100, target.w ?? 100) * 0.6</p><p>);</p><p>front = {</p><p>x: targetCenter.x + (approachDir * gap),</p><p>y: targetCenter.y</p><p>};</p><p>}</p><p>// Run in</p><p>setSpriteFlipX(sprite, originalFlipX);</p><p>await animateXY(</p><p>sprite,</p><p>home,</p><p>front,</p><p>Number(params.moveOutMs ?? 320)</p><p>);</p><p>// Hold while the external SFX window plays</p><p>if (Number(params.holdMs ?? 0) &gt; 0) {</p><p>await wait(Number(params.holdMs ?? 0));</p><p>}</p><p>// Flip for the run back</p><p>setSpriteFlipX(sprite, !originalFlipX);</p><p>await animateXY(</p><p>sprite,</p><p>front,</p><p>home,</p><p>Number(params.moveBackMs ?? params.moveOutMs ?? 320)</p><p>);</p><p>} finally {</p><p>if (sprite) {</p><p>canvas.stage.removeChild(sprite);</p><p>sprite.destroy();</p><p>}</p><p>if (baseMesh) baseMesh.visible = originalMeshVisible;</p><p>casterToken.visible = originalTokenVisible;</p><p>}</p><p>`;</p><p>dbg(\"Starting pseudo movement session.\");</p><p>game.ONI.pseudo.play({</p><p>scriptId: \"oni.runFrontSfxReturn.flipAware\",</p><p>scriptSource,</p><p>casterTokenUuid: sourceToken.document.uuid,</p><p>targetTokenUuids: [firstTarget.document.uuid],</p><p>params: {</p><p>moveOutMs: MOVE_OUT_MS,</p><p>holdMs: HOLD_MS,</p><p>moveBackMs: MOVE_BACK_MS,</p><p>approachGap: APPROACH_GAP,</p><p>fallbackDx: sourceToken.center.x &gt;= firstTarget.center.x ? -120 : 120,</p><p>zIndex: 5000</p><p>},</p><p>meta: {</p><p>source: \"RunFrontSfxReturn\",</p><p>soundSrc: SOUND_SRC</p><p>}</p><p>});</p><p>// Sequencer handles SFX only.</p><p>dbg(\"Starting Sequencer SFX.\");</p><p>const sfxSeq = new Sequence();</p><p>sfxSeq</p><p>.wait(MOVE_OUT_MS)</p><p>.sound()</p><p>.file(SOUND_SRC)</p><p>.volume(SOUND_VOLUME);</p><p>sfxSeq.play();</p><p>// Wait for the whole cinematic window before ending.</p><p>await wait(MOVE_OUT_MS + HOLD_MS + MOVE_BACK_MS + 80);</p><p>dbg(\"Animation wait window finished.\");</p><p>} catch (e) {</p><p>err(\"Animation crashed:\", e);</p><p>} finally {</p><p>try {</p><p>ONI.emit(\"oni:animationEnd\", {</p><p>type: \"oni.runFrontSfxReturn\",</p><p>sourceTokenId: resolvedSourceToken?.id ?? null,</p><p>targetTokenIds: resolvedTargets.map(t =&gt; t.id),</p><p>sceneId: canvas.scene?.id ?? null,</p><p>timestamp: Date.now()</p><p>}, { local: true, world: false });</p><p>dbg(\"Emitted oni:animationEnd.\", {</p><p>sourceTokenId: resolvedSourceToken?.id ?? null,</p><p>targetTokenIds: resolvedTargets.map(t =&gt; t.id)</p><p>});</p><p>} catch (e) {</p><p>err(\"Failed to emit animationEnd:\", e);</p><p>}</p><p>}</p><p>})();</p>",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "custom_logic_action": "<p>const TAG = \"[CL-ACTION][AUTOHIT_IF_TARGET_SLOW]\";</p><p>const p = __PAYLOAD;</p><p>if (!p) {</p><p>console.warn(TAG, \"Missing __PAYLOAD.\");</p><p>return;</p><p>}</p><p>const targetUuids = Array.isArray(p.targets) ? p.targets : [];</p><p>const firstTargetUuid = targetUuids[0] ?? null;</p><p>if (!firstTargetUuid) {</p><p>console.warn(TAG, \"No target UUID found in __PAYLOAD.targets.\");</p><p>return;</p><p>}</p><p>const targetDoc = await fromUuid(firstTargetUuid);</p><p>const targetActor = targetDoc?.actor ?? targetDoc;</p><p>if (!targetActor) {</p><p>console.warn(TAG, \"Could not resolve target actor.\", { firstTargetUuid });</p><p>return;</p><p>}</p><p>const EXACT_ACTOR_EFFECT_UUID = \"Actor.uJFaNQCSvwwsr2AW.ActiveEffect.I3fIlZpKot7yK6mS\";</p><p>const SOURCE_EFFECT_UUID = \"Item.XVOWOq9oUmEECGrU.ActiveEffect.h3M2iAUzB26A4zNo\";</p><p>const SLOW_NAME = \"slow\";</p><p>const effects = targetActor.effects?.contents ?? [];</p><p>const hasSlow = effects.some((effect) =&gt; {</p><p>const effectUuid = String(effect?.uuid ?? \"\").trim();</p><p>const origin = String(effect?.origin ?? \"\").trim();</p><p>const sourceId = String(effect?.flags?.core?.sourceId ?? \"\").trim();</p><p>const name = String(effect?.name ?? effect?.label ?? \"\").trim().toLowerCase();</p><p>return (</p><p>effectUuid === EXACT_ACTOR_EFFECT_UUID ||</p><p>effectUuid === SOURCE_EFFECT_UUID ||</p><p>origin === SOURCE_EFFECT_UUID ||</p><p>sourceId === SOURCE_EFFECT_UUID ||</p><p>name === SLOW_NAME</p><p>);</p><p>});</p><p>if (!hasSlow) {</p><p>console.log(TAG, \"Target is not inflicted with Slow. No auto-hit applied.\", {</p><p>target: targetActor.name,</p><p>checkedEffects: effects.map(e =&gt; ({</p><p>name: e?.name ?? e?.label ?? \"\",</p><p>uuid: e?.uuid ?? \"\",</p><p>origin: e?.origin ?? \"\",</p><p>sourceId: e?.flags?.core?.sourceId ?? \"\"</p><p>}))</p><p>});</p><p>return;</p><p>}</p><p>p.advPayload = p.advPayload || {};</p><p>p.accuracy = p.accuracy || {};</p><p>p.meta = p.meta || {};</p><p>const beforeCheckBonus = Number(p.accuracy.checkBonus ?? 0) || 0;</p><p>const beforeTotal = Number(p.accuracy.total ?? 0);</p><p>// Per your request: grant +99 accuracy bonus</p><p>p.accuracy.checkBonus = beforeCheckBonus + 99;</p><p>// Also raise the already-computed total, since Action custom logic runs</p><p>// after ActionDataComputation in your pipeline.</p><p>if (Number.isFinite(beforeTotal)) {</p><p>p.accuracy.total = beforeTotal + 99;</p><p>}</p><p>// Safety flags for later hit logic</p><p>p.advPayload.autoHit = true;</p><p>p.meta.autoHitBySlow = true;</p><p>console.log(TAG, \"APPLIED\", {</p><p>target: targetActor.name,</p><p>matchedBy: effects.map(e =&gt; ({</p><p>name: e?.name ?? e?.label ?? \"\",</p><p>uuid: e?.uuid ?? \"\",</p><p>origin: e?.origin ?? \"\",</p><p>sourceId: e?.flags?.core?.sourceId ?? \"\"</p><p>})),</p><p>checkBonusBefore: beforeCheckBonus,</p><p>checkBonusAfter: p.accuracy.checkBonus,</p><p>totalBefore: beforeTotal,</p><p>totalAfter: p.accuracy.total,</p><p>autoHit: p.advPayload.autoHit</p><p>});</p>",
+          "custom_logic_resolution": "<p>const TAG = \"[CL-RES][IP-DRAIN-2]\";</p><p>const p = __PAYLOAD;</p><p>const args = globalThis.__ARGS ?? p?.__confirmArgs ?? {};</p><p>if (!p) {</p><p>console.warn(TAG, \"Missing __PAYLOAD.\");</p><p>return;</p><p>}</p><p>const userActor = await context.helpers.getAttackerActor();</p><p>if (!userActor) {</p><p>console.warn(TAG, \"Missing user actor.\");</p><p>return;</p><p>}</p><p>const targetUuids = Array.isArray(p.targets) ? p.targets : [];</p><p>if (!targetUuids.length) {</p><p>console.warn(TAG, \"No targets found.\");</p><p>return;</p><p>}</p><p>const accTotal = Number(p?.accuracy?.total ?? args?.accuracyTotal ?? NaN);</p><p>const hasAccuracy =</p><p>(typeof args?.hasAccuracy === \"boolean\") ? args.hasAccuracy : !!p?.accuracy;</p><p>const autoHit = !!(args?.autoHit || p?.advPayload?.autoHit || p?.accuracy?.isCrit);</p><p>const escapeHTML = foundry?.utils?.escapeHTML ?? ((v) =&gt; String(v ?? \"\"));</p><p>const getDef = (targetUuid, targetActor) =&gt; {</p><p>const row = p?.meta?.defenseSnapshot?.perTarget?.find(r =&gt; r?.uuid === targetUuid);</p><p>return Number(row?.defense ?? targetActor?.system?.props?.defense ?? 0) || 0;</p><p>};</p><p>const isHit = (targetUuid, targetActor) =&gt; {</p><p>const targetDef = getDef(targetUuid, targetActor);</p><p>if (!hasAccuracy) return true;</p><p>if (autoHit) return true;</p><p>if (!Number.isFinite(accTotal)) return false;</p><p>return accTotal &gt;= targetDef;</p><p>};</p><p>const getUserTokenName = () =&gt; {</p><p>if (typeof _token !== \"undefined\" &amp;&amp; _token?.name) return _token.name;</p><p>return userActor?.name ?? \"User\";</p><p>};</p><p>const getTargetDisplayName = (targetDoc, targetActor) =&gt; {</p><p>return targetDoc?.name ?? targetActor?.name ?? \"Target\";</p><p>};</p><p>async function postStealFeedbackHtml(innerHtml) {</p><p>const FLAG_SCOPE = \"fabula-ultima-companion\";</p><p>const FLAG_KEY = \"oniHideChatHeader\";</p><p>let hookId = null;</p><p>hookId = Hooks.on(\"renderChatMessage\", (message, html) =&gt; {</p><p>if (!message?.getFlag?.(FLAG_SCOPE, FLAG_KEY)) return;</p><p>html.find(\".message-header\").remove();</p><p>html.find(\".message-sender\").remove();</p><p>html.find(\".message-metadata\").remove();</p><p>html.find(\".message-avatar\").remove();</p><p>html.find(\".chat-portrait-container\").remove();</p><p>html.find(\".chat-portrait-message-portrait\").remove();</p><p>html.find(\".chat-portrait-image\").remove();</p><p>html.find(\"img.chat-portrait\").remove();</p><p>Hooks.off(\"renderChatMessage\", hookId);</p><p>});</p><p>await ChatMessage.create({</p><p>user: game.user.id,</p><p>type: CONST.CHAT_MESSAGE_TYPES.OTHER,</p><p>speaker: { alias: \"\" },</p><p>content: `</p><p></p><div class=\"oni-ip-steal-feedback\" style=\"padding:4px 2px;\"><p></p><p>${innerHtml}</p><p></p></div><p></p><p>`,</p><p>flags: {</p><p>[FLAG_SCOPE]: {</p><p>[FLAG_KEY]: true</p><p>}</p><p>}</p><p>});</p><p>}</p><p>for (const targetUuid of targetUuids) {</p><p>const targetDoc = await fromUuid(targetUuid);</p><p>const targetActor = targetDoc?.actor ?? targetDoc;</p><p>if (!targetActor) continue;</p><p>const userTokenName = getUserTokenName();</p><p>const targetName = getTargetDisplayName(targetDoc, targetActor);</p><p>const targetDef = getDef(targetUuid, targetActor);</p><p>const hit = isHit(targetUuid, targetActor);</p><p>console.log(TAG, \"HIT CHECK\", {</p><p>user: userActor?.name,</p><p>userTokenName,</p><p>target: targetActor?.name,</p><p>targetName,</p><p>accTotal,</p><p>hasAccuracy,</p><p>autoHit,</p><p>targetDef,</p><p>hit</p><p>});</p><p>if (!hit) {</p><p>await postStealFeedbackHtml(`Fail to steal anything.`);</p><p>continue;</p><p>}</p><p>const targetIpBefore = Math.max(</p><p>0,</p><p>parseInt(targetActor?.system?.props?.current_ip ?? \"0\", 10) || 0</p><p>);</p><p>const userIpBefore = Math.max(</p><p>0,</p><p>parseInt(userActor?.system?.props?.current_ip ?? \"0\", 10) || 0</p><p>);</p><p>const userMaxIp = Math.max(</p><p>0,</p><p>parseInt(userActor?.system?.props?.max_ip ?? \"0\", 10) || 0</p><p>);</p><p>const requestedSteal = 2;</p><p>// The steal amount depends only on the target's current IP.</p><p>// Even if the user is already at max IP, the target still loses IP.</p><p>const actualSteal = Math.min(requestedSteal, targetIpBefore);</p><p>if (actualSteal &lt;= 0) {</p><p>console.log(TAG, \"No IP stolen\", {</p><p>user: userActor?.name,</p><p>userTokenName,</p><p>target: targetActor?.name,</p><p>targetName,</p><p>requestedSteal,</p><p>targetIpBefore,</p><p>userIpBefore,</p><p>userMaxIp</p><p>});</p><p>await postStealFeedbackHtml(`Fail to steal anything.`);</p><p>continue;</p><p>}</p><p>const targetIpAfter = Math.max(0, targetIpBefore - actualSteal);</p><p>// User gain is clamped by max IP, but does not affect the steal amount.</p><p>const actualGain = Math.min(actualSteal, Math.max(0, userMaxIp - userIpBefore));</p><p>const userIpAfter = Math.min(userMaxIp, userIpBefore + actualGain);</p><p>await targetActor.update({</p><p>\"system.props.current_ip\": String(targetIpAfter)</p><p>});</p><p>await userActor.update({</p><p>\"system.props.current_ip\": String(userIpAfter)</p><p>});</p><p>console.log(TAG, \"IP TRANSFER APPLIED\", {</p><p>user: userActor?.name,</p><p>userTokenName,</p><p>target: targetActor?.name,</p><p>targetName,</p><p>requestedSteal,</p><p>actualSteal,</p><p>actualGain,</p><p>targetIpBefore,</p><p>targetIpAfter,</p><p>userIpBefore,</p><p>userIpAfter,</p><p>userMaxIp</p><p>});</p><p>await postStealFeedbackHtml(</p><p>`<strong>${escapeHTML(userTokenName)}</strong> steals <strong>${escapeHTML(actualSteal)} IP</strong> from <strong>${escapeHTML(targetName)}</strong>!`</p><p>);</p><p>}</p>",
+          "damage_bonus": "",
+          "defense_target_type": "def",
+          "description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KjziTkOpdzd99KZa\" data-id=\"KjziTkOpdzd99KZa\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Thievery</span></strong></a></span></span>&nbsp;2</p></li></ul><p>If the target is inflicted with <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span>this skill hits automatically.</p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Steal Item",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "INS",
+          "skill_animation_default": "",
+          "skill_animation_mode": "custom",
+          "skill_information": "",
+          "skill_range": "Melee",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "hyeTHYWrH4Vfey3j"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "TqPnCHodRs3U9hNA",
+      "_stats": {
+        "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
+        "coreVersion": "12.343",
+        "createdTime": 1767845602905,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "E97n76146OBcbAPs",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1767845645716,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p>Decrease 【<strong>DEX】 </strong>by one stage</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 3,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "core": {
+              "overlay": false
+            },
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "isPredefined": true,
+              "originalId": "h3M2iAUzB26A4zNo",
+              "originalParentId": "XVOWOq9oUmEECGrU",
+              "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.h3M2iAUzB26A4zNo"
+            },
+            "dfreds-convenient-effects": {
+              "ceEffectId": "ce-slow",
+              "isBackup": false,
+              "isConvenient": true,
+              "isDynamic": false,
+              "isTemporary": false,
+              "isViewable": true
+            },
+            "effectmacro": {
+              "onCreate": {
+                "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isSlow\n// Works best when run by the Effect Macro module (uses the effect owner `actor`).\n// Falls back to the first selected token's actor only if no effect context is present.\n\n(async () => {\n  const PATH = \"system.props.isSlow\";\n\n  // Prefer the effect owner `actor` (provided by Effect Macro when the macro fires).\n  // Fallback to selected token's actor if you ever run this by hand.\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) {\n    ui.notifications?.warn(\"[isSlow Toggle] No actor context (need effect owner or a selected token).\");\n    return;\n  }\n\n  // Read current value (default to false when missing), then toggle.\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  const next = !current;\n\n  await effectActor.update({ [PATH]: next });\n})();\n"
+              },
+              "onDelete": {
+                "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isSlow\n// Works best when run by the Effect Macro module (uses the effect owner `actor`).\n// Falls back to the first selected token's actor only if no effect context is present.\n\n(async () => {\n  const PATH = \"system.props.isSlow\";\n\n  // Prefer the effect owner `actor` (provided by Effect Macro when the macro fires).\n  // Fallback to selected token's actor if you ever run this by hand.\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) {\n    ui.notifications?.warn(\"[isSlow Toggle] No actor context (need effect owner or a selected token).\");\n    return;\n  }\n\n  // Read current value (default to false when missing), then toggle.\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  const next = !current;\n\n  await effectActor.update({ [PATH]: next });\n})();\n"
+              },
+              "onDisable": {
+                "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isSlow\n// Works best when run by the Effect Macro module (uses the effect owner `actor`).\n// Falls back to the first selected token's actor only if no effect context is present.\n\n(async () => {\n  const PATH = \"system.props.isSlow\";\n\n  // Prefer the effect owner `actor` (provided by Effect Macro when the macro fires).\n  // Fallback to selected token's actor if you ever run this by hand.\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) {\n    ui.notifications?.warn(\"[isSlow Toggle] No actor context (need effect owner or a selected token).\");\n    return;\n  }\n\n  // Read current value (default to false when missing), then toggle.\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  const next = !current;\n\n  await effectActor.update({ [PATH]: next });\n})();\n"
+              },
+              "onEnable": {
+                "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isSlow\n// Works best when run by the Effect Macro module (uses the effect owner `actor`).\n// Falls back to the first selected token's actor only if no effect context is present.\n\n(async () => {\n  const PATH = \"system.props.isSlow\";\n\n  // Prefer the effect owner `actor` (provided by Effect Macro when the macro fires).\n  // Fallback to selected token's actor if you ever run this by hand.\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) {\n    ui.notifications?.warn(\"[isSlow Toggle] No actor context (need effect owner or a selected token).\");\n    return;\n  }\n\n  // Read current value (default to false when missing), then toggle.\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  const next = !current;\n\n  await effectActor.update({ [PATH]: next });\n})();\n"
+              },
+              "onToggle": {
+                "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isSlow\n// Works best when run by the Effect Macro module (uses the effect owner `actor`).\n// Falls back to the first selected token's actor only if no effect context is present.\n\n(async () => {\n  const PATH = \"system.props.isSlow\";\n\n  // Prefer the effect owner `actor` (provided by Effect Macro when the macro fires).\n  // Fallback to selected token's actor if you ever run this by hand.\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) {\n    ui.notifications?.warn(\"[isSlow Toggle] No actor context (need effect owner or a selected token).\");\n    return;\n  }\n\n  // Read current value (default to false when missing), then toggle.\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  const next = !current;\n\n  await effectActor.update({ [PATH]: next });\n})();\n"
+              }
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEF%20DOWN.png",
+          "name": "Slow",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "hhqoSNhWfVD4KR7g"
+          ],
+          "system": {
+            "tags": [
+              "debuff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/cactguard.png",
+      "name": "Hinder",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {
+            "0": {
+              "$deleted": false,
+              "active_effect_application": "add",
+              "active_effect_apply_mode": "opposed_check",
+              "active_effect_dice_1": "dex",
+              "active_effect_dice_2": "ins",
+              "active_effect_dl": "10",
+              "active_effect_id": "E97n76146OBcbAPs",
+              "active_effect_percent": "0",
+              "active_effect_target": "enemy",
+              "active_effect_trigger": "on_attack"
+            }
+          },
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>Roll an <strong>【DEX】+【INS】Opposed Check </strong>against the target, on a success, Inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span></span></p>",
+          "duration": "instantaneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Hinder",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Melee",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "UKzHkmIJcjXZ4GFR"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "ukJHC5GkdpCQzdml",
+      "_stats": {
+        "compendiumSource": "Item.iFdNNGp4OVZVMEcB",
+        "coreVersion": "12.343",
+        "createdTime": 1767846337705,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "3wXm6Il0hzVEeAzn",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.331",
+            "createdTime": 1767846555941,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.4"
+          },
+          "changes": [
+            {
+              "key": "attack_accuracy_mod_all",
+              "mode": 2,
+              "priority": 10,
+              "value": "2"
+            }
+          ],
+          "description": "<p>+2 Accuracy</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": 1
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "3wXm6Il0hzVEeAzn",
+              "originalParentId": "ukJHC5GkdpCQzdml",
+              "originalUuid": "Actor.o1jFZwDZxSAFSSWA.Item.ukJHC5GkdpCQzdml.ActiveEffect.3wXm6Il0hzVEeAzn"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/09_NIN/trick_attack.png",
+          "name": "Fast Hand",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
+      "name": "Fast Hand",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {
+            "0": {
+              "$deleted": false,
+              "active_effect_application": "add",
+              "active_effect_apply_mode": "percentage",
+              "active_effect_dice_1": "",
+              "active_effect_dice_2": "",
+              "active_effect_dl": "0",
+              "active_effect_id": "3wXm6Il0hzVEeAzn",
+              "active_effect_percent": "100",
+              "active_effect_target": "self",
+              "active_effect_trigger": "before_attack"
+            }
+          },
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>When this creature attacks a target who hasn't taken a turn yet this round, gain <strong>+2 Accuracy</strong></p>",
+          "duration": "-",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "level": "1",
+          "max_level": "1",
+          "name": "Fast Hand",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "reaction_damage_amount": "",
+              "reaction_damage_type": "",
+              "reaction_passive_mode": "ask",
+              "reaction_source": "enemy",
+              "reaction_trigger": "creature_targeted_by_action"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "iFdNNGp4OVZVMEcB"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "xxFZQLbXvNOci5az",
+      "_stats": {
+        "compendiumSource": "Item.P4dQ5Ms73YVs9gPv",
+        "coreVersion": "12.343",
+        "createdTime": 1775139756400,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/WindSneakerPassive3.png",
+      "name": "Dodge",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": "2OOIXOLXnRUGq9n0",
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Rogue",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>As long as you have no <strong>shields</strong> and no <strong>martial armor</strong> equipped, your Defense score is increased by <strong>【SL】.</strong></p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "3",
+          "name": "Dodge",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_mode": "default",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p><strong>Level</strong></p></td><td data-colwidth=\"148\"><p><strong>Bonus Defense</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p>+1</p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p>+2</p></td></tr><tr><td data-colwidth=\"79\"><p>3</p></td><td data-colwidth=\"148\"><p>+3</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "yHZ9soDXTvalWPGx"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Bandit",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 50,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          }
+        }
+      },
+      "hex-size-support": {
+        "hideBorder": true,
+        "hideFill": true
+      },
+      "token-variants": {
+        "disableHUDButton": false,
+        "randomImgDefault": ""
+      },
+      "token-z": {
+        "zIndex": 0
+      },
+      "wall-height": {
+        "tokenHeight": 0
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Bandit",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 0,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1.34,
+      "scaleY": 1.34,
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Bandit_Standard.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 2500782,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {
+      "action_pattern_table": {
+        "0": {
+          "$deleted": false,
+          "action_pattern_condition": "always",
+          "action_pattern_name": "Dagger",
+          "action_pattern_priority": "6",
+          "action_pattern_string": "",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "100"
+        },
+        "1": {
+          "$deleted": false,
+          "action_pattern_condition": "always",
+          "action_pattern_name": "Hinder",
+          "action_pattern_priority": "5",
+          "action_pattern_string": "",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "100"
+        },
+        "2": {
+          "$deleted": false,
+          "action_pattern_condition": "always",
+          "action_pattern_name": "Steal Item",
+          "action_pattern_priority": "5",
+          "action_pattern_string": "",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "100"
+        }
+      },
+      "activation": "1",
+      "affinity_1": "NA",
+      "affinity_2": "NA",
+      "affinity_3": "NA",
+      "affinity_4": "NA",
+      "affinity_5": "NA",
+      "affinity_6": "NA",
+      "affinity_7": "NA",
+      "affinity_8": "NA",
+      "affinity_9": "VU",
+      "animation_table": {},
+      "arcane_ef": "100",
+      "attack_accuracy_mod_all": 0,
+      "attack_accuracy_mod_magic": 0,
+      "attack_accuracy_mod_melee": 0,
+      "attack_accuracy_mod_ranged": 0,
+      "attack_list": {
+        "Ose5AQKL4nTQpIG7": {
+          "active_target": "One Creature",
+          "attack_description": "",
+          "attribute_die1": "DEX",
+          "attribute_die2": "MIG",
+          "id": "${item.id}",
+          "name": "Dagger",
+          "roll": "",
+          "uuid": "Actor.o1jFZwDZxSAFSSWA.Item.Ose5AQKL4nTQpIG7"
+        }
+      },
+      "attribute": "",
+      "battle_facing_direction": "right",
+      "bonus_hp": 0,
+      "bonus_mp": 0,
+      "bow_ef": "100",
+      "brawling_ef": "100",
+      "condition_anomaly": "NA",
+      "condition_bane": "NA",
+      "condition_berserk": "NA",
+      "condition_bleed": "NA",
+      "condition_blind": "NA",
+      "condition_burn": "NA",
+      "condition_charm": "NA",
+      "condition_confused": "NA",
+      "condition_curse": "NA",
+      "condition_dazed": "NA",
+      "condition_delayed": "NA",
+      "condition_despair": "NA",
+      "condition_disarmed": "NA",
+      "condition_doom": "NA",
+      "condition_enraged": "NA",
+      "condition_envenomed": "NA",
+      "condition_fatigue": "NA",
+      "condition_frightened": "NA",
+      "condition_grappled": "NA",
+      "condition_hypothermia": "NA",
+      "condition_isolate": "NA",
+      "condition_obscure": "NA",
+      "condition_oil": "NA",
+      "condition_panic": "NA",
+      "condition_paralyzed": "NA",
+      "condition_petrify": "NA",
+      "condition_poisoned": "NA",
+      "condition_shaken": "NA",
+      "condition_silence": "NA",
+      "condition_slow": "NA",
+      "condition_stagger": "NA",
+      "condition_suppress": "NA",
+      "condition_turbulence": "NA",
+      "condition_weak": "NA",
+      "condition_wet": "NA",
+      "condition_wither": "NA",
+      "condition_zombie": "NA",
+      "critical_damage_bonus": 0,
+      "critical_damage_multiplier": 1,
+      "critical_dice_range": 0,
+      "current_hp": "45",
+      "current_ip": "0",
+      "current_mp": "20",
+      "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Bandit_Standard.png",
+      "cut_in_fumble": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Bandit_Standard.png",
+      "cut_in_offset_y": "",
+      "cut_in_zero_power": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Bandit_Standard.png",
+      "dagger_ef": "100",
+      "damage_receiving_mod_air": 0,
+      "damage_receiving_mod_all": 0,
+      "damage_receiving_mod_bolt": 0,
+      "damage_receiving_mod_dark": 0,
+      "damage_receiving_mod_earth": 0,
+      "damage_receiving_mod_fire": 0,
+      "damage_receiving_mod_ice": 0,
+      "damage_receiving_mod_light": 0,
+      "damage_receiving_mod_melee": 0,
+      "damage_receiving_mod_physical": 0,
+      "damage_receiving_mod_poison": 0,
+      "damage_receiving_mod_range": 0,
+      "def_mod": "+0",
+      "default_facing_direction": "left",
+      "defense": 8,
+      "dex_base": "8",
+      "dex_current": 8,
+      "enmity": 100,
+      "event_timeline_table": {},
+      "extra_damage_mod_air": 0,
+      "extra_damage_mod_all": 0,
+      "extra_damage_mod_arcane": 0,
+      "extra_damage_mod_bolt": 0,
+      "extra_damage_mod_bow": 0,
+      "extra_damage_mod_brawling": 0,
+      "extra_damage_mod_dagger": 0,
+      "extra_damage_mod_dark": 0,
+      "extra_damage_mod_earth": 0,
+      "extra_damage_mod_fire": 0,
+      "extra_damage_mod_firearm": 0,
+      "extra_damage_mod_flail": 0,
+      "extra_damage_mod_heavy": 0,
+      "extra_damage_mod_ice": 0,
+      "extra_damage_mod_light": 0,
+      "extra_damage_mod_melee": 0,
+      "extra_damage_mod_physical": 0,
+      "extra_damage_mod_poison": 0,
+      "extra_damage_mod_ranged": 0,
+      "extra_damage_mod_spear": 0,
+      "extra_damage_mod_spell": 0,
+      "extra_damage_mod_sword": 0,
+      "extra_damage_mod_thrown": 0,
+      "firearm_ef": "100",
+      "flail_ef": "100",
+      "gorger": false,
+      "heavy_ef": "100",
+      "icon_offset_x": "-8",
+      "icon_offset_y": "30",
+      "icon_scale": "1.1",
+      "id": "o1jFZwDZxSAFSSWA",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Bandit_Standard.png",
+      "init": "6",
+      "ins_base": "6",
+      "ins_current": 6,
+      "isAlmighty": false,
+      "isAwake": false,
+      "isBlacksmith": false,
+      "isBoss": false,
+      "isClarity": false,
+      "isCustomEvent": false,
+      "isDazed": false,
+      "isEnergized": false,
+      "isEnlighten": false,
+      "isEnraged": false,
+      "isFocus": false,
+      "isMasterful": false,
+      "isPhantasm": false,
+      "isPoisoned": false,
+      "isShaken": false,
+      "isShop": false,
+      "isSlow": false,
+      "isStolen": false,
+      "isStrong": false,
+      "isSummon": false,
+      "isSwift": false,
+      "isUnyielding": false,
+      "isVillain": false,
+      "isWeak": false,
+      "level": "13",
+      "lifesteal_percentage": 0,
+      "lifesteal_value": 0,
+      "magic_defense": 6,
+      "manadrain_percentage": 0,
+      "manadrain_value": 0,
+      "max_hp": "45",
+      "max_ip": "6",
+      "max_mp": "20",
+      "max_zero": "0",
+      "mdef_mod": "+0",
+      "mig_base": "8",
+      "mig_current": 8,
+      "mimic": false,
+      "minimum_critical_dice": 6,
+      "name": "Bandit",
+      "npc_rank": "soldier",
+      "override_damage_type": "None",
+      "rare": false,
+      "resource_maxValue_1": "0",
+      "resource_maxValue_2": "0",
+      "resource_maxValue_3": "0",
+      "resource_value_1": "0",
+      "resource_value_2": "0",
+      "resource_value_3": "0",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "shield_type": "PHYSICAL",
+      "shield_value": "0",
+      "shop_accessory_list": {
+        "2OOIXOLXnRUGq9n0": {
+          "accessory_bonusdef": 0,
+          "accessory_bonusmdef": 0,
+          "accessory_buy": "",
+          "accessory_cost": 500,
+          "accessory_description": "<ul><li><p><strong>【Dodge】SL+1</strong></p></li></ul>",
+          "accessory_quantity": 1,
+          "accessory_set": false,
+          "id": "${item.id}",
+          "name": "Red Bandana",
+          "uuid": "Actor.o1jFZwDZxSAFSSWA.Item.2OOIXOLXnRUGq9n0"
+        }
+      },
+      "shop_armor_list": {
+        "dJCH4kdDn3BQlhMS": {
+          "armor_bonusdef": 1,
+          "armor_bonusmdef": 1,
+          "armor_buy": "",
+          "armor_cost": 900,
+          "armor_def": 0,
+          "armor_description": "<ul>\n<li>You gain a +1 bonus to Accuracy Checks with <strong>daggers.</strong></li>\n</ul>",
+          "armor_martial": "",
+          "armor_mdef": 0,
+          "armor_quantity": 1,
+          "id": "${item.id}",
+          "name": "Bandit Jacket",
+          "set_name": "",
+          "uuid": "Actor.o1jFZwDZxSAFSSWA.Item.dJCH4kdDn3BQlhMS"
+        }
+      },
+      "shop_consumable_list": {
+        "jwhQSreu7HRM65mR": {
+          "consumable_buy": "",
+          "consumable_cost": 30,
+          "consumable_descriptions": "<ul><li>Reduce the next damage instance on target creature by <strong>15</strong></li></ul>",
+          "consumable_quantity": 1,
+          "id": "${item.id}",
+          "name": "Adrenaline Potion",
+          "uuid": "Actor.o1jFZwDZxSAFSSWA.Item.jwhQSreu7HRM65mR"
+        }
+      },
+      "showMacro": false,
+      "skill_active_list": {
+        "QzpMOHzIwpvsnYxy": {
+          "active_cost": "-",
+          "active_description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KjziTkOpdzd99KZa\" data-id=\"KjziTkOpdzd99KZa\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Thievery</span></strong></a></span></span>&nbsp;2</p></li></ul><p>If the target is inflicted with <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span>this skill hits automatically.</p>",
+          "active_duration": "Instantaneous",
+          "active_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Steal Item",
+          "roll": "",
+          "uuid": "Actor.o1jFZwDZxSAFSSWA.Item.QzpMOHzIwpvsnYxy"
+        },
+        "TqPnCHodRs3U9hNA": {
+          "active_cost": "-",
+          "active_description": "<p>Roll an <strong>【DEX】+【INS】Opposed Check </strong>against the target, on a success, Inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span></span></p>",
+          "active_duration": "instantaneous",
+          "active_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Hinder",
+          "roll": "",
+          "uuid": "Actor.o1jFZwDZxSAFSSWA.Item.TqPnCHodRs3U9hNA"
+        },
+        "ukJHC5GkdpCQzdml": {
+          "active_cost": "-",
+          "active_description": "<p>When this creature attacks a target who hasn't taken a turn yet this round, gain <strong>+2 Accuracy</strong></p>",
+          "active_duration": "-",
+          "active_target": "-",
+          "id": "${item.id}",
+          "name": "Fast Hand",
+          "roll": "",
+          "uuid": "Actor.o1jFZwDZxSAFSSWA.Item.ukJHC5GkdpCQzdml"
+        }
+      },
+      "skill_passive_list": {
+        "ukJHC5GkdpCQzdml": {
+          "id": "${item.id}",
+          "name": "Fast Hand",
+          "passive_description": "<p>When this creature attacks a target who hasn't taken a turn yet this round, gain <strong>+2 Accuracy</strong></p>",
+          "roll": "",
+          "uuid": "Actor.o1jFZwDZxSAFSSWA.Item.ukJHC5GkdpCQzdml"
+        }
+      },
+      "spear_ef": "100",
+      "species": "HUMANOID",
+      "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Bandit_Standard.png",
+      "sprite_standard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Bandit_Standard.png",
+      "steal_percentage_table": {
+        "0": {
+          "$deleted": false,
+          "loot_id": "Red Bandana",
+          "loot_percentage": "5"
+        },
+        "1": {
+          "$deleted": false,
+          "loot_id": "Bandit Jacket",
+          "loot_percentage": "5"
+        },
+        "2": {
+          "$deleted": false,
+          "loot_id": "(Empty)",
+          "loot_percentage": "50"
+        },
+        "3": {
+          "$deleted": false,
+          "loot_id": "Bandit Coin",
+          "loot_percentage": "40"
+        }
+      },
+      "stealable_loot": {
+        "2OOIXOLXnRUGq9n0": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><p><strong>【Dodge】SL+1</strong></p></li></ul>",
+          "name": "Red Bandana",
+          "roll": "",
+          "uuid": "Actor.o1jFZwDZxSAFSSWA.Item.2OOIXOLXnRUGq9n0"
+        },
+        "dBYW2f2PIvfdXcSp": {
+          "id": "${item.id}",
+          "loot_description": "<p>An old coin use as some currency in the underworld</p>",
+          "name": "Bandit Coin",
+          "roll": "",
+          "uuid": "Actor.o1jFZwDZxSAFSSWA.Item.dBYW2f2PIvfdXcSp"
+        },
+        "dJCH4kdDn3BQlhMS": {
+          "id": "${item.id}",
+          "loot_description": "<ul>\n<li>You gain a +1 bonus to Accuracy Checks with <strong>daggers.</strong></li>\n</ul>",
+          "name": "Bandit Jacket",
+          "roll": "",
+          "uuid": "Actor.o1jFZwDZxSAFSSWA.Item.dJCH4kdDn3BQlhMS"
+        },
+        "fFfKJYJhhsLTUF6c": {
+          "id": "${item.id}",
+          "loot_description": "<pre><code>Use this item as placeholder for failing to steals any item from the target</code></pre>",
+          "name": "(Empty)",
+          "roll": "",
+          "uuid": "Actor.o1jFZwDZxSAFSSWA.Item.fFfKJYJhhsLTUF6c"
+        },
+        "jwhQSreu7HRM65mR": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li>Reduce the next damage instance on target creature by <strong>15</strong></li></ul>",
+          "name": "Adrenaline Potion",
+          "roll": "",
+          "uuid": "Actor.o1jFZwDZxSAFSSWA.Item.jwhQSreu7HRM65mR"
+        }
+      },
+      "study_text": "<p>Lowlife thugs who have nothing else to do in life, they're not <strong>formerly trained </strong>so they are <strong>very weak, </strong>despite this, they can still <strong>steal </strong>your items.</p>",
+      "subtype": "Sub-Type",
+      "subtype_list": "HUMAN",
+      "sword_ef": "100",
+      "tactic_notes": "",
+      "thrown_ef": "100",
+      "token_option_persist": false,
+      "traits": "Thief, Lowlife, Criminal",
+      "ultima_point": "0",
+      "unique": false,
+      "uuid": "Actor.o1jFZwDZxSAFSSWA",
+      "wlp_base": "6",
+      "wlp_current": 6,
+      "zenit_reward_max": "45",
+      "zenit_reward_min": "20",
+      "zero_power_value": "0"
+    },
+    "statusEffects": {},
+    "template": "yegF6R8aaymhrvCg",
+    "templateSystemUniqueVersion": 3867751361
+  },
+  "type": "character"
+}

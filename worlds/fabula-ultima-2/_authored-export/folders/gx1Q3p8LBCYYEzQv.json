@@ -1,0 +1,19 @@
+{
+  "_id": "gx1Q3p8LBCYYEzQv",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1756474645024,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "5fNY7tdWgnptcTJL",
+  "name": "Elementalist Spell",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

@@ -1,0 +1,19 @@
+{
+  "_id": "g71iW4dQCbZlery7",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": null,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "2.4.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "MeHDukSM0bajBTX4",
+  "name": "Thrown",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

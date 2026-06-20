@@ -1,0 +1,98 @@
+{
+  "_id": "rt8wdtjLP35tEiXo",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1781893432499,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "TSl2V4HExxryia2i",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1781893433225,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "bonus_defense",
+          "mode": 2,
+          "priority": 20,
+          "value": "aeWhen(\"Crisis\", \"${level}$\")"
+        }
+      ],
+      "description": "<p><em>Grace Under Pressure:</em> +SL Defense while in Crisis.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "TSl2V4HExxryia2i",
+          "originalParentId": "rt8wdtjLP35tEiXo",
+          "originalUuid": "Item.rt8wdtjLP35tEiXo.ActiveEffect.TSl2V4HExxryia2i"
+        },
+        "fabula-ultima-companion": {
+          "crossScene": false,
+          "directorPermanent": false
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/CLOSERS/J/J1-5.webp",
+      "name": "Grace Under Pressure",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "7XPRzEprVTXCugxm",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/CLOSERS/J/J1-5.webp",
+  "name": "Grace Under Pressure",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "description": "<p>While you are in <strong>Crisis</strong>, you gain a bonus equal to your <strong>【SL】</strong> to your <strong>Defense</strong>.</p>",
+      "level": 1,
+      "max_level": "2",
+      "skill_type": "Passive"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": true,
+    "uniqueId": "rt8wdtjLP35tEiXo"
+  },
+  "type": "equippableItem"
+}

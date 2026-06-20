@@ -1,0 +1,58 @@
+{
+  "_id": "j2zsAZo4RuolWM6b",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1756941524122,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "V1GQFKpiCOrYGH1x",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/black_knight%27s_tour.png",
+  "name": "King's Castle",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Commander",
+      "cost": "10 MP",
+      "damage_bonus": "0",
+      "description": "<p>During a conflict, you may use an action and spend 10 Mind Points to <strong>choose one option:</strong></p><ul><li>No creature can recover Hit Points or Mind Points</li><li>All effects that restore Mind Points restore <strong>【SL × 5】</strong> additional Mind Points</li></ul><p>The chosen effect lasts until the start of your next turn.</p>",
+      "duration": "Until the start of your next turn",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "4",
+      "name": "King's Castle",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Extra MP Restored</strong></p></td></tr><tr><td><p>1</p></td><td><p>+5</p></td></tr><tr><td><p>2</p></td><td><p>+10</p></td></tr><tr><td><p>3</p></td><td><p>+15</p></td></tr><tr><td><p>4</p></td><td><p>+20</p></td></tr><tr><td><p>5</p></td><td><p>+25</p></td></tr></tbody></table>",
+      "skill_range": "Any",
+      "skill_target": "All creature",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "j2zsAZo4RuolWM6b"
+  },
+  "type": "equippableItem"
+}

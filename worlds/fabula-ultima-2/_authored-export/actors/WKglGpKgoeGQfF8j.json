@@ -1,0 +1,872 @@
+{
+  "_id": "WKglGpKgoeGQfF8j",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1755252875166,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "tmNVy5jIbM9rzx80",
+  "img": "https://tiermaker.com/images/media/template_images/2024/16720717/fabula-ultima-classes-16720717/loremaster.png",
+  "items": [
+    {
+      "_id": "5hz9igkVmCGZInPM",
+      "_stats": {
+        "compendiumSource": "Item.wTVhkpDfiM0BKfe2",
+        "coreVersion": "12.343",
+        "createdTime": 1755255416749,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/SGE/panhaima.png",
+      "name": "Mathemagic",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Loremaster",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you cast a spell with a <strong>target</strong> of \"One creature\", you may <strong>double the spell's total MP cost</strong>. If you do, choose an Attribute <strong>(Dexterity, Insight, Might, or Willpower</strong>) and a die size (<strong>d6, d8, d10 or d12</strong>). The spell now targets <strong>all</strong> creatures present on the scene whose current Attribute die size matches your choice, regardless of whether they are friends or foes (you might even end up targeting yourself). The effects of the spell are fully applied to every target.</p><p> If the spell is an <strong>【⚡️ offensive spell】</strong>, it follows the normal rules: you perform a single Magic Check and confront it with the Magic Defense of each target to determine who is hit by the spell.</p>",
+          "duration": "",
+          "heroic_requirement": "You must have mastered the Loremaster Class.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "level": "1",
+          "max_level": "1",
+          "name": "Mathemagic",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "wTVhkpDfiM0BKfe2"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "GE2JH51LAImUNKg7",
+      "_stats": {
+        "compendiumSource": "Item.8teyVsUtTl8EHP17",
+        "coreVersion": "12.343",
+        "createdTime": 1755255408674,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/SGE/krasis.png",
+      "name": "Focused",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Loremaster",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>Permanently increase your maximum Mind Points by <strong>【SL × 3】.</strong></p><p>When you perform an Open Check using <strong>【INS + INS】</strong>, you gain a bonus equal to <strong>【SL】</strong> on that Check <em>(this <strong>only</strong> applies to Open Checks).</em></p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "5",
+          "name": "Focused",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p><strong>Level</strong></p></td><td data-colwidth=\"148\"><p><strong>MP Increased</strong></p></td><td><p><strong>Bonus to Open Checks</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p>3</p></td><td><p>+1</p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p>6</p></td><td><p>+2</p></td></tr><tr><td data-colwidth=\"79\"><p>3</p></td><td data-colwidth=\"148\"><p>9</p></td><td><p>+3</p></td></tr><tr><td data-colwidth=\"79\"><p>4</p></td><td data-colwidth=\"148\"><p>12</p></td><td><p>+4</p></td></tr><tr><td data-colwidth=\"79\"><p>5</p></td><td data-colwidth=\"148\"><p>15</p></td><td><p>+5</p></td></tr></tbody></table>",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "8teyVsUtTl8EHP17"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "i5A4E0XExqQlHYpO",
+      "_stats": {
+        "compendiumSource": "Item.Z4djQp9w1FwkxTIS",
+        "coreVersion": "12.343",
+        "createdTime": 1755255407604,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/SGE/pepsis.png",
+      "name": "Flash of Insight",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Loremaster",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you roll a <strong>13 or higher</strong> on a Check performed to investigate a creature, item or location — this includes using the <strong>Study</strong> action during a conflict — you may ask the Game Master up to <strong>【SL】</strong> questions concerning the subject of your investigation. You may ask these questions immediately or save them for later; whenever you ask one of these questions, the Game Master will answer truthfully and you will describe your character's deductive process. </p><p>This Skill may only be used once on the same creature, item or location</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "3",
+          "name": "Flash of Insight",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p>Level</p></td><td data-colwidth=\"148\"><p>Questions that can be asked</p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p><strong>1</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p><strong>2</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>3</p></td><td data-colwidth=\"148\"><p><strong>3</strong></p></td></tr></tbody></table>",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "Z4djQp9w1FwkxTIS"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "j0eYOpYKFfNTahho",
+      "_stats": {
+        "compendiumSource": "Item.3Q6GFk0yUX3QJi0l",
+        "coreVersion": "12.343",
+        "createdTime": 1755255414565,
+        "duplicateSource": "Item.wTVhkpDfiM0BKfe2",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/MysticAlchemistTSkill1.png",
+      "name": "Predictable!",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Loremaster",
+          "cost": "20 MP",
+          "damage_bonus": "0",
+          "description": "<p>During a conflict, you may use an action and spend 20 Mind Points to anticipate the upcoming moves of a creature you can see, as long as you know <strong>two or more</strong> of that creature's <strong>Traits</strong>. If you do so, <strong>choose one</strong> type of action among the following: </p><ul><li><p><strong>Attack</strong></p></li><li><p><strong>Guard</strong></p></li><li><p><strong>Objective</strong></p></li><li><p><strong>Spell</strong></p></li><li><p><strong>Skill</strong></p></li></ul><p>Until the start of your next turn, the creature must spend 20 Mind Points whenever they wish to perform that action. If they can't, they must perform a different action.</p>",
+          "duration": "Until the start of your next turn",
+          "heroic_requirement": "You must have mastered the Loremaster Class.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "level": "1",
+          "max_level": "1",
+          "name": "Predictable!",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "3Q6GFk0yUX3QJi0l"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "s9Ua3hPMAegBd1qg",
+      "_stats": {
+        "compendiumSource": "Item.GT1JF2Q4w7W6vQ4P",
+        "coreVersion": "12.343",
+        "createdTime": 1755255410719,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/05_SCH/lustrate.png",
+      "name": "Quick Assessment",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Loremaster",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>At the start of a conflict, you may spend up to <strong>【SL × 5】</strong> Mind Points. For every 5 Mind Points you spend this way, <strong>Choose:</strong></p><ul><li><p> Choose a creature you can see and the GM reveals one of their <strong>Traits</strong></p></li><li><p>Name a damage type and choose a creature you can see, and the GM reveals that creature's <strong>Affinity</strong> towards that damage type.</p></li></ul>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "6",
+          "name": "Quick Assessment",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p><strong>Level</strong></p></td><td data-colwidth=\"148\"><p><strong>Spendable MP</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p>5 MP</p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p>10 MP</p></td></tr><tr><td data-colwidth=\"79\"><p>3</p></td><td data-colwidth=\"148\"><p>15 MP</p></td></tr><tr><td data-colwidth=\"79\"><p>4</p></td><td data-colwidth=\"148\"><p>20 MP</p></td></tr><tr><td data-colwidth=\"79\"><p>5</p></td><td data-colwidth=\"148\"><p>25 MP</p></td></tr><tr><td data-colwidth=\"79\"><p>6</p></td><td data-colwidth=\"148\"><p>30 MP</p></td></tr></tbody></table>",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "GT1JF2Q4w7W6vQ4P"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "vPYnbmwEKmstRFN7",
+      "_stats": {
+        "compendiumSource": "Item.K36wz3QkVDODDnfv",
+        "coreVersion": "12.343",
+        "createdTime": 1757996953841,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/GrandArcherPassive3.png",
+      "name": "Harvester",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Slayer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you make an Accuracy Check and roll a <strong>critical success</strong>, you or another creature of your choice regains 1 Inventory Point.</p>\n",
+          "duration": "",
+          "heroic_requirement": "You must have mastered one or more Classes among the following: Loremaster, Slayer, or Wayfarer",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Harvester",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "K36wz3QkVDODDnfv"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "vZYqlSDlwQPhc0H5",
+      "_stats": {
+        "compendiumSource": "Item.JDTtyWNY8nNSyNwe",
+        "coreVersion": "12.343",
+        "createdTime": 1755255411810,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/AishaS5.png",
+      "name": "Trained Memory",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Loremaster",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>You may perfectly recall the details of any scene you have visited within the past week. You can \"go back in time\" within your mind in order to examine and investigate such scenes again — your 【📜 <strong>Flash of Insight】</strong> Skill will apply to these memories as well.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Trained Memory",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "JDTtyWNY8nNSyNwe"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "WX8Zc0VDRaZ518Bx",
+      "_stats": {
+        "compendiumSource": "Item.NLArOofU9xeK7ur9",
+        "coreVersion": "12.343",
+        "createdTime": 1755255409841,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/05_SCH/excogitation.png",
+      "name": "Knowledge is Power",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Loremaster",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you perform an Accuracy Check, you may replace <strong>one</strong> of the Attribute dice with <strong>Insight</strong> (such as <strong>【INS + INS】</strong> for a pistol or <strong>【INS + MIG】</strong> for a waraxe).</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Knowledge is Power",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "NLArOofU9xeK7ur9"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Loremaster",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar4": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "DEF",
+            "max": 13,
+            "maxcolor": "#f26d40",
+            "mincolor": "#f26d40",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 13
+          },
+          "bar5": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar5",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MDEF",
+            "max": 10,
+            "maxcolor": "#26d6ed",
+            "mincolor": "#26d6ed",
+            "opacity": null,
+            "order": 4,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 10
+          }
+        }
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Loremaster",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://tiermaker.com/images/media/template_images/2024/16720717/fabula-ultima-classes-16720717/loremaster.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 0,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {
+      "also_text": "Archivist, Sage, Scholar",
+      "benefit_dropdown": "mp_benefit",
+      "classMechanic_text": "",
+      "class_facet": {
+        "5hz9igkVmCGZInPM": {
+          "facet_cost": "",
+          "facet_description": "<p>When you cast a spell with a <strong>target</strong> of \"One creature\", you may <strong>double the spell's total MP cost</strong>. If you do, choose an Attribute <strong>(Dexterity, Insight, Might, or Willpower</strong>) and a die size (<strong>d6, d8, d10 or d12</strong>). The spell now targets <strong>all</strong> creatures present on the scene whose current Attribute die size matches your choice, regardless of whether they are friends or foes (you might even end up targeting yourself). The effects of the spell are fully applied to every target.</p><p> If the spell is an <strong>【⚡️ offensive spell】</strong>, it follows the normal rules: you perform a single Magic Check and confront it with the Magic Defense of each target to determine who is hit by the spell.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Mathemagic",
+          "uuid": "Actor.WKglGpKgoeGQfF8j.Item.5hz9igkVmCGZInPM"
+        },
+        "GE2JH51LAImUNKg7": {
+          "facet_cost": "",
+          "facet_description": "<p>Permanently increase your maximum Mind Points by <strong>【SL × 3】.</strong></p><p>When you perform an Open Check using <strong>【INS + INS】</strong>, you gain a bonus equal to <strong>【SL】</strong> on that Check <em>(this <strong>only</strong> applies to Open Checks).</em></p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Focused",
+          "uuid": "Actor.WKglGpKgoeGQfF8j.Item.GE2JH51LAImUNKg7"
+        },
+        "WX8Zc0VDRaZ518Bx": {
+          "facet_cost": "",
+          "facet_description": "<p>When you perform an Accuracy Check, you may replace <strong>one</strong> of the Attribute dice with <strong>Insight</strong> (such as <strong>【INS + INS】</strong> for a pistol or <strong>【INS + MIG】</strong> for a waraxe).</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Knowledge is Power",
+          "uuid": "Actor.WKglGpKgoeGQfF8j.Item.WX8Zc0VDRaZ518Bx"
+        },
+        "i5A4E0XExqQlHYpO": {
+          "facet_cost": "",
+          "facet_description": "<p>When you roll a <strong>13 or higher</strong> on a Check performed to investigate a creature, item or location — this includes using the <strong>Study</strong> action during a conflict — you may ask the Game Master up to <strong>【SL】</strong> questions concerning the subject of your investigation. You may ask these questions immediately or save them for later; whenever you ask one of these questions, the Game Master will answer truthfully and you will describe your character's deductive process. </p><p>This Skill may only be used once on the same creature, item or location</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Flash of Insight",
+          "uuid": "Actor.WKglGpKgoeGQfF8j.Item.i5A4E0XExqQlHYpO"
+        },
+        "j0eYOpYKFfNTahho": {
+          "facet_cost": "20 MP",
+          "facet_description": "<p>During a conflict, you may use an action and spend 20 Mind Points to anticipate the upcoming moves of a creature you can see, as long as you know <strong>two or more</strong> of that creature's <strong>Traits</strong>. If you do so, <strong>choose one</strong> type of action among the following: </p><ul><li><p><strong>Attack</strong></p></li><li><p><strong>Guard</strong></p></li><li><p><strong>Objective</strong></p></li><li><p><strong>Spell</strong></p></li><li><p><strong>Skill</strong></p></li></ul><p>Until the start of your next turn, the creature must spend 20 Mind Points whenever they wish to perform that action. If they can't, they must perform a different action.</p>",
+          "facet_offensive": "",
+          "facet_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Predictable!",
+          "uuid": "Actor.WKglGpKgoeGQfF8j.Item.j0eYOpYKFfNTahho"
+        },
+        "s9Ua3hPMAegBd1qg": {
+          "facet_cost": "",
+          "facet_description": "<p>At the start of a conflict, you may spend up to <strong>【SL × 5】</strong> Mind Points. For every 5 Mind Points you spend this way, <strong>Choose:</strong></p><ul><li><p> Choose a creature you can see and the GM reveals one of their <strong>Traits</strong></p></li><li><p>Name a damage type and choose a creature you can see, and the GM reveals that creature's <strong>Affinity</strong> towards that damage type.</p></li></ul>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Quick Assessment",
+          "uuid": "Actor.WKglGpKgoeGQfF8j.Item.s9Ua3hPMAegBd1qg"
+        },
+        "vPYnbmwEKmstRFN7": {
+          "facet_cost": "",
+          "facet_description": "<p>When you make an Accuracy Check and roll a <strong>critical success</strong>, you or another creature of your choice regains 1 Inventory Point.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Harvester",
+          "uuid": "Actor.WKglGpKgoeGQfF8j.Item.vPYnbmwEKmstRFN7"
+        },
+        "vZYqlSDlwQPhc0H5": {
+          "facet_cost": "",
+          "facet_description": "<p>You may perfectly recall the details of any scene you have visited within the past week. You can \"go back in time\" within your mind in order to examine and investigate such scenes again — your 【📜 <strong>Flash of Insight】</strong> Skill will apply to these memories as well.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Trained Memory",
+          "uuid": "Actor.WKglGpKgoeGQfF8j.Item.vZYqlSDlwQPhc0H5"
+        }
+      },
+      "class_heroicSkill": {
+        "5hz9igkVmCGZInPM": {
+          "id": "${item.id}",
+          "name": "Mathemagic",
+          "skill_cost": "",
+          "skill_description": "<p>When you cast a spell with a <strong>target</strong> of \"One creature\", you may <strong>double the spell's total MP cost</strong>. If you do, choose an Attribute <strong>(Dexterity, Insight, Might, or Willpower</strong>) and a die size (<strong>d6, d8, d10 or d12</strong>). The spell now targets <strong>all</strong> creatures present on the scene whose current Attribute die size matches your choice, regardless of whether they are friends or foes (you might even end up targeting yourself). The effects of the spell are fully applied to every target.</p><p> If the spell is an <strong>【⚡️ offensive spell】</strong>, it follows the normal rules: you perform a single Magic Check and confront it with the Magic Defense of each target to determine who is hit by the spell.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.WKglGpKgoeGQfF8j.Item.5hz9igkVmCGZInPM"
+        },
+        "j0eYOpYKFfNTahho": {
+          "id": "${item.id}",
+          "name": "Predictable!",
+          "skill_cost": "20 MP",
+          "skill_description": "<p>During a conflict, you may use an action and spend 20 Mind Points to anticipate the upcoming moves of a creature you can see, as long as you know <strong>two or more</strong> of that creature's <strong>Traits</strong>. If you do so, <strong>choose one</strong> type of action among the following: </p><ul><li><p><strong>Attack</strong></p></li><li><p><strong>Guard</strong></p></li><li><p><strong>Objective</strong></p></li><li><p><strong>Spell</strong></p></li><li><p><strong>Skill</strong></p></li></ul><p>Until the start of your next turn, the creature must spend 20 Mind Points whenever they wish to perform that action. If they can't, they must perform a different action.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.WKglGpKgoeGQfF8j.Item.j0eYOpYKFfNTahho"
+        },
+        "vPYnbmwEKmstRFN7": {
+          "id": "${item.id}",
+          "name": "Harvester",
+          "skill_cost": "",
+          "skill_description": "<p>When you make an Accuracy Check and roll a <strong>critical success</strong>, you or another creature of your choice regains 1 Inventory Point.</p>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.WKglGpKgoeGQfF8j.Item.vPYnbmwEKmstRFN7"
+        }
+      },
+      "class_lore": "<blockquote><p><strong>Loremasters</strong> are known for their insatiable curiosity and appetite for discovery. They firmly believe that knowledge equates to power, and would often trade all gold in the world for a chance at solving a good mystery.</p><p> Unfortunately, a majority of Loremasters tend to be aloof and easily distracted, rarely concerning themselves with “pragmatic” matters... to the point of sometimes failing to realize the darker implications of their discoveries.</p></blockquote>",
+      "class_skill": {
+        "GE2JH51LAImUNKg7": {
+          "id": "${item.id}",
+          "name": "Focused",
+          "skill_cost": "",
+          "skill_description": "<p>Permanently increase your maximum Mind Points by <strong>【SL × 3】.</strong></p><p>When you perform an Open Check using <strong>【INS + INS】</strong>, you gain a bonus equal to <strong>【SL】</strong> on that Check <em>(this <strong>only</strong> applies to Open Checks).</em></p>",
+          "skill_maxLevel": 5,
+          "skill_type": "Passive",
+          "uuid": "Actor.WKglGpKgoeGQfF8j.Item.GE2JH51LAImUNKg7"
+        },
+        "WX8Zc0VDRaZ518Bx": {
+          "id": "${item.id}",
+          "name": "Knowledge is Power",
+          "skill_cost": "",
+          "skill_description": "<p>When you perform an Accuracy Check, you may replace <strong>one</strong> of the Attribute dice with <strong>Insight</strong> (such as <strong>【INS + INS】</strong> for a pistol or <strong>【INS + MIG】</strong> for a waraxe).</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.WKglGpKgoeGQfF8j.Item.WX8Zc0VDRaZ518Bx"
+        },
+        "i5A4E0XExqQlHYpO": {
+          "id": "${item.id}",
+          "name": "Flash of Insight",
+          "skill_cost": "",
+          "skill_description": "<p>When you roll a <strong>13 or higher</strong> on a Check performed to investigate a creature, item or location — this includes using the <strong>Study</strong> action during a conflict — you may ask the Game Master up to <strong>【SL】</strong> questions concerning the subject of your investigation. You may ask these questions immediately or save them for later; whenever you ask one of these questions, the Game Master will answer truthfully and you will describe your character's deductive process. </p><p>This Skill may only be used once on the same creature, item or location</p>",
+          "skill_maxLevel": 3,
+          "skill_type": "Passive",
+          "uuid": "Actor.WKglGpKgoeGQfF8j.Item.i5A4E0XExqQlHYpO"
+        },
+        "s9Ua3hPMAegBd1qg": {
+          "id": "${item.id}",
+          "name": "Quick Assessment",
+          "skill_cost": "",
+          "skill_description": "<p>At the start of a conflict, you may spend up to <strong>【SL × 5】</strong> Mind Points. For every 5 Mind Points you spend this way, <strong>Choose:</strong></p><ul><li><p> Choose a creature you can see and the GM reveals one of their <strong>Traits</strong></p></li><li><p>Name a damage type and choose a creature you can see, and the GM reveals that creature's <strong>Affinity</strong> towards that damage type.</p></li></ul>",
+          "skill_maxLevel": 6,
+          "skill_type": "Passive",
+          "uuid": "Actor.WKglGpKgoeGQfF8j.Item.s9Ua3hPMAegBd1qg"
+        },
+        "vZYqlSDlwQPhc0H5": {
+          "id": "${item.id}",
+          "name": "Trained Memory",
+          "skill_cost": "",
+          "skill_description": "<p>You may perfectly recall the details of any scene you have visited within the past week. You can \"go back in time\" within your mind in order to examine and investigate such scenes again — your 【📜 <strong>Flash of Insight】</strong> Skill will apply to these memories as well.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.WKglGpKgoeGQfF8j.Item.vZYqlSDlwQPhc0H5"
+        }
+      },
+      "flavor_text": "<p style=\"text-align: center\"><span style=\"font-family: Amiri\"><em>Ah, I knew this</em></span></p><p style=\"text-align: center\"><span style=\"font-family: Amiri\"><em>was going to happen</em></span></p>",
+      "martialArmor_equippable": false,
+      "martialMelee_equippable": false,
+      "martialRanged_equippable": false,
+      "martialShield_equippable": false,
+      "name": "Loremaster",
+      "project_performable": false,
+      "ritual_performable": false
+    },
+    "statusEffects": {},
+    "template": "hoxC3HFCtMYGScIo",
+    "templateSystemUniqueVersion": 504201233
+  },
+  "type": "character"
+}

@@ -1,0 +1,57 @@
+{
+  "_id": "ILpuVF9brHO6V42s",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1756954872230,
+    "duplicateSource": "Item.535F8PhK2Wqtfh4u",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "5UrrA7j0xrzcXLZu",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Els/ElSkill4i.png",
+  "name": "Symbol of Despair",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Symbolist",
+      "cost": "2 IP",
+      "damage_bonus": "0",
+      "description": "<p>When the creature bearing this symbol recovers <strong>Hit Points</strong> and/or <strong>Mind Points</strong> during conflicts, instead they only recover half the normal amount of <strong>Hit Points</strong> and/or <strong>Mind Points</strong>, respectively.</p>\n",
+      "duration": "Special",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": true,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Symbol of Despair",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "Range",
+      "skill_target": "One creature",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "ILpuVF9brHO6V42s"
+  },
+  "type": "equippableItem"
+}

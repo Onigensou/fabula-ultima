@@ -1,0 +1,139 @@
+{
+  "_id": "EdMq4dzkPO81SR5v",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780667901958,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "56EQijg5UJjrcMcp",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "defense",
+          "mode": 4,
+          "priority": 20,
+          "value": "12"
+        }
+      ],
+      "description": "<p><strong>Defense floored at 12</strong> — if the target's DEF would be lower, it's treated as 12 instead. Normal DEF still applies if higher.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "FmiYlrdNJQMvfBJn",
+          "originalParentId": "6FgU7QfIlkTHZRYi",
+          "originalUuid": "Item.6FgU7QfIlkTHZRYi.ActiveEffect.FmiYlrdNJQMvfBJn"
+        },
+        "fabula-ultima-companion": {
+          "barrierFloor": 12,
+          "category": "buff"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/SGE/taurochole.png",
+      "name": "Barrier",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-barrier"
+      ],
+      "system": {
+        "tags": [
+          "buff",
+          "dispellable"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "w7ey5G3zPC78EXos",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/SGE/taurochole.png",
+  "name": "Barrier",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "active_effect_config_table": {},
+      "check_bonus": "0",
+      "class": "Spiritist",
+      "cost": "5 x T MP",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>You project your soul outside your body and weave it into a barrier to protect the targets from attacks. Until this spell ends, each target may treat their <strong>Defense as 12</strong> against effects that target them <em>(they keep their normal DEF if higher).</em></p>",
+      "duration": "Scene",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_template_ref": "Barrier",
+          "effect_kind": "apply_ae",
+          "effect_label": "barrier_apply",
+          "target_ref": "action_targets"
+        }
+      },
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": true,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Barrier",
+      "on_activate_effect_ref": "barrier_apply",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "Range",
+      "skill_target": "Up to three creatures",
+      "skill_type": "Spell",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "EdMq4dzkPO81SR5v"
+  },
+  "type": "equippableItem"
+}

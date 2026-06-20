@@ -1,0 +1,45 @@
+{
+  "_id": "WZ0LtCp3xwiAAa3x",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780631515246,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "GrXCu6oUXmMBW9yS",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/enhanced_healing_magic.png",
+  "name": "Spiritual Magic",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "class": "Spiritist",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "Each time you acquire this Skill, learn one Spiritist spell (see Facet). Offensive Spiritist Spells use <strong>INS + WLP</strong> for the Magic Check.",
+      "isCheck": false,
+      "name": "Spiritual Magic",
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_range": "-",
+      "skill_target": "-",
+      "skill_type": "Other",
+      "type_damage": ""
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": true,
+    "uniqueId": "WZ0LtCp3xwiAAa3x"
+  },
+  "type": "equippableItem"
+}

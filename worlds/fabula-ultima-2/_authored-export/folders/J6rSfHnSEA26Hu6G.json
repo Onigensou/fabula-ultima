@@ -1,0 +1,19 @@
+{
+  "_id": "J6rSfHnSEA26Hu6G",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1747630619557,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.4.2"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "Gdh443T6yYvJfvnq",
+  "name": "Sol",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Actor"
+}

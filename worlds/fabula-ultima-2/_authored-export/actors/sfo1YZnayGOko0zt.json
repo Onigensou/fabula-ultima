@@ -1,0 +1,389 @@
+{
+  "_id": "sfo1YZnayGOko0zt",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1678626684489,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "m0V1zfX57yI8aYa1",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.331",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": null,
+        "systemVersion": null
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 0,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "core": {
+          "statusId": "dead"
+        },
+        "statuscounter": {
+          "counter": {
+            "actorId": "sfo1YZnayGOko0zt",
+            "path": "icons/svg/skull.svg",
+            "tokenId": "vGRwu3e5jtun6q6E",
+            "type": "statuscounter.simple",
+            "value": 2,
+            "visible": true
+          },
+          "visible": false
+        }
+      },
+      "img": "icons/svg/skull.svg",
+      "name": "Dead",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.5.0"
+    }
+  },
+  "folder": "R3cmMe9TnP4mmqWJ",
+  "img": "https://i.imgur.com/jqFQcSG.jpg",
+  "name": "Elly",
+  "ownership": {
+    "6DmgigM5jq76r0Gd": 3,
+    "default": 0,
+    "wNzPmItLYCKE1I8t": 3
+  },
+  "prototypeToken": {
+    "actorLink": true,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 30,
+    "displayName": 30,
+    "disposition": -1,
+    "flags": {},
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Elly",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://i.imgur.com/oeJNQK7.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 100000,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "activeEffects": {},
+    "props": {
+      "accesory_name": "",
+      "arcanism": false,
+      "armor_mod": "1",
+      "armor_name": "Combat Tunic",
+      "bond_1": "",
+      "bond_2": "",
+      "bond_3": "",
+      "bond_4": "",
+      "bond_5": "",
+      "bond_6": "",
+      "char_identity": "Divide Connecter, Challenge fate, Bullied by fate, Despised, Test subject",
+      "check_roller": "Roll!",
+      "chimerism": false,
+      "class_list": {
+        "0": {
+          "$deleted": false,
+          "benefit": "mp",
+          "class_name": "LOREMASTER",
+          "level": "1"
+        },
+        "1": {
+          "$deleted": false,
+          "benefit": "hp",
+          "class_name": "SHARPSHOOTER",
+          "level": "5"
+        },
+        "2": {
+          "$deleted": false,
+          "benefit": "hp",
+          "class_name": "NECROMANCER",
+          "level": "2"
+        }
+      },
+      "crisis_hp": "ERROR",
+      "current_hp": "48",
+      "current_ip": "3",
+      "current_mp": "42",
+      "dex_base": "8",
+      "dex_current": 8,
+      "elementalism": false,
+      "emotion_1_1": "",
+      "emotion_1_2": "",
+      "emotion_1_3": "",
+      "emotion_2_1": "",
+      "emotion_2_2": "",
+      "emotion_2_3": "",
+      "emotion_3_1": "",
+      "emotion_3_2": "",
+      "emotion_3_3": "",
+      "emotion_4_1": "",
+      "emotion_4_2": "",
+      "emotion_4_3": "",
+      "emotion_5_1": "",
+      "emotion_5_2": "",
+      "emotion_5_3": "",
+      "emotion_6_1": "",
+      "emotion_6_2": "",
+      "emotion_6_3": "",
+      "entropism": false,
+      "experience": "0",
+      "fp": "3",
+      "init_penalty": "0",
+      "ins_base": "10",
+      "ins_current": 10,
+      "inventory_label": "💼 Inventory",
+      "inventory_list": {},
+      "isAwake": false,
+      "isClarity": false,
+      "isDazed": false,
+      "isEnergized": false,
+      "isEnraged": false,
+      "isFocus": false,
+      "isPoisoned": false,
+      "isShaken": false,
+      "isSlow": false,
+      "isStrong": false,
+      "isSwift": false,
+      "isWeak": false,
+      "is_martialarmor": false,
+      "key_list": {},
+      "level": "8",
+      "magic_defense_mod": "1",
+      "main_attrib_1": "INS",
+      "main_attrib_2": "INS",
+      "main_hand": "Fractured Blast(Pistol)",
+      "main_hand_attack": "",
+      "max_hp": "ERROR",
+      "max_ip": "ERROR",
+      "max_mp": "ERROR",
+      "memories_list": {},
+      "mig_base": "6",
+      "mig_current": 6,
+      "name": "Elly",
+      "normal_spell_list": {
+        "0": {
+          "$deleted": false,
+          "class": "SHARPSHOOTER",
+          "cost": "0",
+          "description": "<p>After a creature you can see performs a ranged attack, you may spend an amount of&nbsp;<br>Mind Points equal to the total Result of their Accuracy Check in order to have the attack&nbsp;<br>fail automatically against all targets. You can only use this Skill if you have a ranged<br>weapon equipped, and it has no effect if the Accuracy Check was a critical success.</p>",
+          "duration": "",
+          "roll": "",
+          "spell_name": "CROSSFIRE",
+          "target": ""
+        },
+        "1": {
+          "$deleted": false,
+          "class": "SHARPSHOOTER",
+          "cost": "10",
+          "description": "<p>When you perform a ranged attack, you may spend 10 Mind Points to choose one&nbsp;<br>option: the attack gains multi (2); or you increase the attack's multi property by one,&nbsp;<br>up to a maximum of multi (3).</p>",
+          "duration": "",
+          "roll": "",
+          "spell_name": "BARRAGE",
+          "target": ""
+        }
+      },
+      "off_attrib_1": "SHI",
+      "off_attrib_2": "SHI",
+      "off_hand": "Bronze Shield",
+      "off_hand_attack": "",
+      "off_mod_1": "2",
+      "off_mod_2": "0",
+      "origin": "",
+      "passive_list": {},
+      "pronouns": "",
+      "re_experience": "",
+      "reaction_list": {},
+      "relationship_1": "",
+      "relationship_2": "",
+      "relationship_3": "",
+      "relationship_4": "",
+      "relationship_5": "",
+      "relationship_6": "",
+      "resource_value_1": "0",
+      "resource_value_2": "0",
+      "resource_value_3": "0",
+      "ritualism": false,
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "INS",
+      "shield_type": "PHYSICAL",
+      "shield_value": "0",
+      "skill_hp": "0",
+      "skill_ip": "",
+      "skill_list": {
+        "0": {
+          "$deleted": false,
+          "class": "LOREMASTER",
+          "description": "<p>When you perform an Accuracy Check, you may replace one of the Attribute dice with&nbsp;<br>Insight (such as 【INS + INS】 for a pistol or 【INS + MIG】 for a waraxe).</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "KNOWLEDGE IS POWER"
+        },
+        "1": {
+          "$deleted": true,
+          "class": "SHARPSHOOTER",
+          "description": "<p>When you perform a ranged attack, you may spend 10 Mind Points to choose one&nbsp;<br>option: the attack gains multi (2); or you increase the attack's multi property by one,&nbsp;<br>up to a maximum of multi (3).</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "BARRAGE"
+        },
+        "2": {
+          "$deleted": false,
+          "class": "NECROMANCER",
+          "description": "<p>When another creature you can see loses Hit Points while in Crisis, if they are not&nbsp;<br>undead, you gain 1 Grave Point. You may never have more than 【SL + 1】 Grave Points.<br>When you are reduced to 0 Hit Points, you lose all Grave Points; then, if you lost at&nbsp;<br>least 1 Grave Point this way and this is the first time you are reduced to 0 HP during&nbsp;<br>this scene, you do not Surrender nor Sacrifice yourself: instead, you recover an amount&nbsp;<br>of HP equal to 【SL, multiplied by the amount of Grave Points you lost this way】.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "BEYOND THE REALMS OF DEATH"
+        },
+        "3": {
+          "$deleted": false,
+          "class": "NECROMANCER",
+          "description": "<p>After you cause one or more enemies to lose Hit Points, if you have acquired the&nbsp;<br>Beyond the Realms of Death Skill and at least one of them is suffering from shaken<br>and/or weak, you gain 1 Grave Point and recover 【SL &times; 2】 Hit Points and Mind Points.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "FEAR IS THE KEY"
+        },
+        "4": {
+          "$deleted": false,
+          "class": "SHARPSHOOTER",
+          "description": "<p>When you hit one or more targets with a ranged attack that would deal damage, you&nbsp;<br>may have the attack deal no damage. If you do, choose one option: inflict shaken on&nbsp;<br>each target hit by the attack; or inflict slow on each target hit by the attack; or each&nbsp;<br>target hit by the attack loses 【SL &times; 10】 Mind Points. Describe your maneuver!</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "WARNING SHOT"
+        },
+        "5": {
+          "$deleted": false,
+          "class": "SHARPSHOOTER",
+          "description": "<p>You gain a bonus equal to 【SL】 to all Accuracy Checks with ranged weapons.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "RANGED WEAPON MASTERY"
+        },
+        "6": {
+          "$deleted": false,
+          "class": "SHARPSHOOTER",
+          "description": "<p>When you perform the Guard action, if you choose not to provide cover to another&nbsp;<br>creature, you may choose one option: the next ranged attack you perform before the&nbsp;<br>end of the current scene will deal 【SL &times; 2】 extra damage; or you may immediately&nbsp;<br>perform a free attack with a bow or firearm you have equipped, treating your High Roll&nbsp;<br>(HR) as 0 when calculating damage dealt by this attack.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "HAWKEYE"
+        }
+      },
+      "skill_mp": "0",
+      "spiritism": false,
+      "theme": "Fate-Defying",
+      "weapon1_damage": "8",
+      "weapon1_damagetype": "physical",
+      "weapon1_mod": "1",
+      "weapon2_damagetype": "-",
+      "wlp_base": "8",
+      "wlp_current": 8,
+      "your_class_name": "",
+      "zenit": "240",
+      "zero_effect_label": "💬 Zero Effect",
+      "zero_label": "💥 Zero Power : ",
+      "zero_power_name": "",
+      "zero_power_value": "0",
+      "zero_trigger_label": "⚔️ Zero Trigger"
+    },
+    "statusEffects": {},
+    "template": "gN4AtNuVF4Tc5LxK",
+    "templateSystemUniqueVersion": 93170772
+  },
+  "type": "character"
+}

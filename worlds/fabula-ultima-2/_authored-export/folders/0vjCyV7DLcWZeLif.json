@@ -1,0 +1,19 @@
+{
+  "_id": "0vjCyV7DLcWZeLif",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": null,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "2.1.0"
+  },
+  "color": "#2a9ecf",
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "The Winterlands Witch Trial",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Scene"
+}

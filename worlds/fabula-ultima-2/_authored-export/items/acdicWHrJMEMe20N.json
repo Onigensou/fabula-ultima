@@ -1,0 +1,63 @@
+{
+  "_id": "acdicWHrJMEMe20N",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1732265316740,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "acdicWHrJMEMe20N",
+        "itemName": "Gunsword",
+        "pickedOldProps": {
+          "cost": "1000",
+          "martial": true
+        },
+        "ts": 1769647435693
+      }
+    }
+  },
+  "folder": "xMVY94FXuACmcFkd",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/sword.png",
+  "name": "Gunsword",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "category": "Sword",
+      "check_bonus": "1",
+      "damage_bonus": "10",
+      "description": "<ul><li><p>This weapon can target <strong>@UUID[JournalEntry.q6keqwDWUsEgSWDw]{Flying}</strong> creatures</p></li><li>If you roll a critical success on an Accuracy Check with this weapon, you may spend that <strong>opportunity</strong> deal 10 bonus damage, if you do, your damage becomes <strong>Fire.</strong></li></ul>",
+      "flavor_text": "<hr>\n<blockquote>\n<p>...Not to be confused with a Gunblade</p>\n</blockquote>",
+      "hand_slots": "Two-handed",
+      "isMartial": true,
+      "item_cost": "1000",
+      "item_type": "weapon",
+      "name": "Gunsword",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "MIG",
+      "set_name": "",
+      "skill_target": "One Enemy",
+      "type_damage": "Physical",
+      "weapon_range": "Melee"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "acdicWHrJMEMe20N"
+  },
+  "type": "equippableItem"
+}

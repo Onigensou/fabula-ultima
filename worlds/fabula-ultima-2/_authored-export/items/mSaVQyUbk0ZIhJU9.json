@@ -1,0 +1,58 @@
+{
+  "_id": "mSaVQyUbk0ZIhJU9",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1758248244694,
+    "duplicateSource": "Item.1LZ7C9rKlzYOxc47",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "AfNKgbXlrakE1AI2",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/RumblePumnPassive3.png",
+  "name": "Shared Attribution",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Tailor",
+      "cost": "-",
+      "damage_bonus": "0",
+      "description": "<p>When you or your <strong>Model</strong> are threatened by an enemy’s damaging <strong>【⚔️ Attack】</strong>, <strong>【📕 Spell】</strong>, or <strong>other effect</strong>, either of you may spend 1 Inventory Point to sew a <strong>Life Thread</strong>. If you do, reduce any incoming damage by an amount equal to <strong>【SL】</strong> (before applying Affinities), then split the damage evenly. Damage taken in this way counts towards abilities that rely on a damage trigger.</p>",
+      "duration": "-",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "5",
+      "name": "Shared Attribution",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_information": "<table style=\"width:100%; text-align:center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Damage Reduced (before Affinities)</strong></p></td></tr><tr><td><p>1</p></td><td><p>1</p></td></tr><tr><td><p>2</p></td><td><p>2</p></td></tr><tr><td><p>3</p></td><td><p>3</p></td></tr><tr><td><p>4</p></td><td><p>4</p></td></tr><tr><td><p>5</p></td><td><p>5</p></td></tr></tbody></table>",
+      "skill_range": "",
+      "skill_target": "-",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "mSaVQyUbk0ZIhJU9"
+  },
+  "type": "equippableItem"
+}

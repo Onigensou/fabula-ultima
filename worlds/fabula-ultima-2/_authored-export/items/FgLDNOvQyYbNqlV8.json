@@ -1,0 +1,51 @@
+{
+  "_id": "FgLDNOvQyYbNqlV8",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1781934525599,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/531.gif",
+  "name": "Apple Juice",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "BuOjiNzcT4CY6iue",
+    "props": {
+      "cost": "-",
+      "description": "<p><em>Apple Juice:</em> target ally recovers 30 HP.</p>",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "effect_kind": "grant",
+          "effect_label": "applejuice_heal",
+          "grant_amount": "30",
+          "grant_resource": "hp",
+          "target_ref": "action_targets"
+        }
+      },
+      "isCheck": false,
+      "on_activate_effect_ref": "applejuice_heal",
+      "skill_target": "One Ally",
+      "skill_type": "Item",
+      "type_damage": ""
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "FgLDNOvQyYbNqlV8"
+  },
+  "type": "equippableItem"
+}

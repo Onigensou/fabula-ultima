@@ -1,0 +1,19 @@
+{
+  "_id": "nSD15o8uVy5b1mvp",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1759547667528,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "sWfX0st2X6sPXPd0",
+  "name": "Alchemist Mixture",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

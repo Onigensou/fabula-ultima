@@ -1,0 +1,51 @@
+{
+  "_id": "gdbhmvftaslt93qS",
+  "_stats": {
+    "compendiumSource": "Item.C1FR55h1SsY8GEpF",
+    "coreVersion": "12.343",
+    "createdTime": 1702144891794,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "core": {
+      "sourceId": "Item.C1FR55h1SsY8GEpF"
+    },
+    "custom-system-builder": {
+      "version": "3.2.4"
+    }
+  },
+  "folder": "uxn1YZCbNnCqXnGo",
+  "img": "icons/magic/unholy/silhouette-evil-horned-giant.webp",
+  "name": "Create Phantasm: Strike",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3,
+    "nXC7OD7u5Zw5UDDU": 3
+  },
+  "sort": 100000,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Illusionist",
+      "cost": "10",
+      "custom_logic_action": "<p>// [Create Phantasm: Strike] - Custom Logic (Action)</p><p>// Spawns the phantasm token on the casters scene and stamps summonedBy via</p><p>// FUCompanion.api.phantasm.markSummon, so Phantasmal Echo (and other</p><p>// summon-ownership reactions) can fire when this phantasm is defeated.</p><p>//</p><p>// Placement: picks the first empty tile in the 8 squares around the caster.</p><p>// Falls back to caster.x + grid if all 8 are occupied. Falls back to scene</p><p>// center if no caster token is on the current scene.</p><p>//</p><p>// Debug: set `globalThis.ONI_CREATE_PHANTASM_TRACE = true` in console to</p><p>// echo step traces as GM whispers (console.log always runs).</p><p></p><p>const TAG = \"[CL-ACTION][CreatePhantasm:Strike]\";</p><p>const PHANTASM_ACTOR_UUID = \"Actor.VLaGqwrMzpmq0whe\"; // Fox fire</p><p>const TRACE_CHAT = globalThis.ONI_CREATE_PHANTASM_TRACE === true;</p><p></p><p>const trace = (msg, extra) =&gt; {</p><p>  try { console.log(TAG, msg, extra ?? null); } catch (_e) {}</p><p>  if (!TRACE_CHAT) return;</p><p>  try { ChatMessage.create({ whisper: ChatMessage.getWhisperRecipients(\"GM\"), content: `&lt;b&gt;${TAG}&lt;/b&gt; ${msg}` + (extra ? `&lt;pre&gt;${JSON.stringify(extra, null, 2).slice(0, 600)}&lt;/pre&gt;` : \"\") }); } catch (_e) {}</p><p>};</p><p></p><p>try {</p><p>  const p = globalThis.__PAYLOAD;</p><p>  if (!p) { trace(\"abort: missing __PAYLOAD\"); return; }</p><p></p><p>  const inputUuid = p?.meta?.attackerUuid ?? p?.attackerActorUuid ?? p?.attackerUuid ?? null;</p><p>  const inputDoc = inputUuid ? await fromUuid(inputUuid) : null;</p><p>  let casterTokenDoc = inputDoc?.documentName === \"Token\" ? inputDoc : null;</p><p>  let casterActor = inputDoc?.actor ?? (inputDoc?.documentName === \"Actor\" ? inputDoc : null);</p><p>  if (!casterActor &amp;&amp; p?.attackerActorUuid) { casterActor = await fromUuid(p.attackerActorUuid); }</p><p>  trace(\"start\", { inputUuid, casterActorUuid: casterActor?.uuid ?? null, casterTokenUuid: casterTokenDoc?.uuid ?? null });</p><p></p><p>  if (!casterActor) { trace(\"abort: caster actor not resolved\", { inputUuid }); return; }</p><p>  const scene = canvas?.scene;</p><p>  if (!scene) { trace(\"abort: no active scene\"); return; }</p><p>  const phantasmActor = await fromUuid(PHANTASM_ACTOR_UUID);</p><p>  if (!phantasmActor) { trace(\"abort: phantasm template missing\"); return; }</p><p></p><p>  if (!casterTokenDoc) casterTokenDoc = scene.tokens.contents.find(t =&gt; t.actor?.uuid === casterActor.uuid) ?? null;</p><p>  if (!casterTokenDoc) {</p><p>    const tk = casterActor.getActiveTokens?.(true, true)?.[0] ?? casterActor.getActiveTokens?.()?.[0] ?? null;</p><p>    casterTokenDoc = tk?.document ?? tk ?? null;</p><p>  }</p><p></p><p>  const grid = scene.grid?.size ?? 50;</p><p>  let x, y;</p><p>  if (casterTokenDoc) {</p><p>    const cx = casterTokenDoc.x;</p><p>    const cy = casterTokenDoc.y;</p><p>    // 8 surrounding tiles, cardinals first then diagonals</p><p>    const ring = [</p><p>      [cx + grid, cy], [cx - grid, cy], [cx, cy + grid], [cx, cy - grid],</p><p>      [cx + grid, cy + grid], [cx + grid, cy - grid], [cx - grid, cy + grid], [cx - grid, cy - grid]</p><p>    ];</p><p>    const isOccupied = (tx, ty) =&gt; scene.tokens.contents.some(t =&gt; t.x === tx &amp;&amp; t.y === ty);</p><p>    const found = ring.find(([tx, ty]) =&gt; !isOccupied(tx, ty));</p><p>    if (found) { [x, y] = found; }</p><p>    else { x = cx + grid; y = cy; trace(\"warn: all 8 surrounding tiles occupied, stacking on default\"); }</p><p>  } else {</p><p>    const w = scene.dimensions?.sceneWidth ?? 1000;</p><p>    const h = scene.dimensions?.sceneHeight ?? 1000;</p><p>    x = Math.floor((w / 2) / grid) * grid;</p><p>    y = Math.floor((h / 2) / grid) * grid;</p><p>  }</p><p>  trace(\"spawning\", { x, y, casterTokenUuid: casterTokenDoc?.uuid ?? null });</p><p></p><p>  const proto = await phantasmActor.getTokenDocument({ x, y });</p><p>  const created = await scene.createEmbeddedDocuments(\"Token\", [proto.toObject()]);</p><p>  const tokenDoc = created?.[0];</p><p>  if (!tokenDoc) { trace(\"abort: token creation returned nothing\"); return; }</p><p>  const markFn = globalThis.FUCompanion?.api?.phantasm?.markSummon;</p><p>  if (typeof markFn !== \"function\") { trace(\"warn: markSummon unavailable\"); return; }</p><p>  const markResult = await markFn(tokenDoc, casterActor.uuid);</p><p>  trace(markResult?.ok ? \"done\" : \"warn: markSummon not-ok\", { tokenUuid: tokenDoc.uuid, markedAs: casterActor.uuid, markResult });</p><p>} catch (e) {</p><p>  try { console.error(TAG, \"threw\", e); } catch (_e) {}</p><p>  try { ChatMessage.create({ whisper: ChatMessage.getWhisperRecipients(\"GM\"), content: `&lt;b&gt;${TAG}&lt;/b&gt; THREW &lt;pre&gt;${String(e?.message ?? e).slice(0, 400)}&lt;/pre&gt;` }); } catch (_e) {}</p><p>}</p>",
+      "damage_bonus": "12",
+      "description": "<p><span class=\"fontstyle0\">You may spend one action to create a Phantasm and command it to attack<br>a creature. </span></p>\n<p><span class=\"fontstyle0\">The target hit by the Phantasm suffers </span><span class=\"fontstyle2\">【</span><span class=\"fontstyle3\">HR + 12</span><span class=\"fontstyle2\">】 </span><span class=\"fontstyle0\">damage. &nbsp;The </span><span class=\"fontstyle3\">range </span><span class=\"fontstyle0\">of the attack is determined by your current weapon. </span></p>\n<p>&nbsp;</p>\n<p><span class=\"fontstyle0\">On any subsequent turn, you can perform an action and another<br>Magic Check to command the Phantasm to attack again, with no MP<br>requirements. Damage dealt by this spell ignores Resistances</span></p>\n<p>&nbsp;</p>\n<p><span class=\"fontstyle0\">This damage increases to 16 if you are level 20 or higher, or to 18 if you are<br>level 40 or higher.</span></p>",
+      "discipline": "",
+      "duration": "Scene",
+      "name": "Create Phantasm: Strike",
+      "rolled_atr1": "INS",
+      "rolled_atr2": "WLP",
+      "target": "1 creature",
+      "type_damage": "Physical"
+    },
+    "template": "FZmpKcQRP7hZQqbV",
+    "templateSystemUniqueVersion": 1700837225,
+    "unique": false,
+    "uniqueId": "gdbhmvftaslt93qS"
+  },
+  "type": "equippableItem"
+}

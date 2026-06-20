@@ -1,0 +1,19 @@
+{
+  "_id": "TJcEBsc1P3i3w31w",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": null,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "2.4.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "Skill Keyword",
+  "sort": 1300000,
+  "sorting": "a",
+  "type": "JournalEntry"
+}

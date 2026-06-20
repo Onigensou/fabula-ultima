@@ -1,0 +1,1471 @@
+{
+  "_id": "9ubDCyNifyglcDUX",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1761166779921,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "L1Ph6w0Yfp6iXf9K",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.331",
+        "createdTime": 1769830001365,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>This creature has less than 50% HP</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "4ldx00srGNv5AJBr",
+          "originalParentId": "0gIBYzSpjdXS6f25",
+          "originalUuid": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-crisis",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": false
+        },
+        "fabula-ultima-companion": {
+          "autoCrisis": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/08_DRG/blood_for_blood.png",
+      "name": "Crisis",
+      "origin": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr",
+      "sort": 0,
+      "statuses": [
+        "5jkr80zqdzaR003d"
+      ],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "RF8bfIGeejCIwMhM",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.331",
+        "createdTime": 1761166903232,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.4"
+      },
+      "changes": [
+        {
+          "key": "macro.tokenMagic",
+          "mode": 0,
+          "priority": null,
+          "value": "Bleed"
+        }
+      ],
+      "description": "<p>This creature has less than 50% HP</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "combat-utility-belt": {
+          "conditionId": "5jkr80zqdzaR003d"
+        },
+        "condition-lab-triggler": {
+          "conditionId": "5jkr80zqdzaR003d"
+        },
+        "core": {
+          "overlay": false
+        },
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "RF8bfIGeejCIwMhM",
+          "originalParentId": "9ubDCyNifyglcDUX",
+          "originalUuid": "Actor.9ubDCyNifyglcDUX.ActiveEffect.RF8bfIGeejCIwMhM"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/08_DRG/blood_for_blood.png",
+      "name": "Crisis",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "5jkr80zqdzaR003d"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.4"
+    }
+  },
+  "folder": "i6egGaJbyenxOAFD",
+  "img": "icons/svg/mystery-man.svg",
+  "items": [
+    {
+      "_id": "1O5wLraC90TDt7cL",
+      "_stats": {
+        "compendiumSource": "Item.qTPwunpyLYSM958Z",
+        "coreVersion": "12.343",
+        "createdTime": 1761171953918,
+        "duplicateSource": "Item.soSETT1ahFCMf5Aa",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/crimson_cyclone.png",
+      "name": "Quick Summoning",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Arcanist Variant",
+          "cost": "-",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>When you summon an Arcanum on your turn during a conflict, choose up to two options:</p>\n<ul>\n  <li>reduce its MP cost by <strong>[SL × 5]</strong>;</li>\n  <li>after you summon the Arcanum, if you are merged with it, immediately perform its <em>pulse</em>.</li>\n</ul>\n<p>If you choose at least one option, you cannot willingly dismiss that Arcanum until the start of your next turn; if you choose both options, that Arcanum’s dismiss effect will not be available for this summoning.</p>\n",
+          "duration": "-",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "3",
+          "max_level": "6",
+          "name": "Quick Summoning",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "<p></p><table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>MP Cost Reduction</strong></p></td></tr><tr><td><p>1</p></td><td><p>5 MP</p></td></tr><tr><td><p>2</p></td><td><p>10 MP</p></td></tr></tbody></table><p></p><p></p>",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "qTPwunpyLYSM958Z"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "35fINWpugG54JYBE",
+      "_stats": {
+        "compendiumSource": "Item.43HnRNN8cWeAgSmr",
+        "coreVersion": "12.343",
+        "createdTime": 1761172226905,
+        "duplicateSource": "Item.tE8pb6Spf4UoFo55",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/blackblood.png",
+      "name": "For Whom the Bell Tolls",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "check_bonus": "0",
+          "class": "Necromancer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you deal damage to a creature with a 【📕Spell】, if that spell only deals damage to that creature, you may spend <strong>1 Grave Point</strong>. If you do, <strong>Choose one option:</strong></p>\n<ul>\n  <li>If that creature is suffering from one or more status effects, the spell deals extra damage equal to <strong>[(SL × 2) + the number of status effects on that creature]</strong>;</li>\n  <li>or, if that creature is suffering from no status effects, they suffer \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span></span>.\n  </li>\n</ul>\n",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "3",
+          "name": "For Whom the Bell Tolls",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_mode": "default",
+          "skill_information": "<table style=\"width:100%; text-align:center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Base Extra Damage</strong></p></td><td><p><strong>Total Extra Damage</strong></p></td></tr><tr><td><p>1</p></td><td><p>2</p></td><td><p>2 + number of statuses on target</p></td></tr><tr><td><p>2</p></td><td><p>4</p></td><td><p>4 + number of statuses on target</p></td></tr><tr><td><p>3</p></td><td><p>6</p></td><td><p>6 + number of statuses on target</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "43HnRNN8cWeAgSmr"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "eU2uH3EmRb1pugng",
+      "_stats": {
+        "compendiumSource": "Item.pVs2sPd5o0XMbdah",
+        "coreVersion": "12.343",
+        "createdTime": 1761172549646,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/ElPass8.png",
+      "name": "Absorb MP",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Entropist",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>After you suffer damage, you may immediately recover <strong>【SL × 2】</strong> Mind Points.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "3",
+          "max_level": "5",
+          "name": "Absorb MP",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_mode": "default",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p>Level</p></td><td data-colwidth=\"148\"><p>MP Gain</p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p><strong>2 MP</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p><strong>4 MP</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>3</p></td><td data-colwidth=\"148\"><p><strong>6 MP</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>4</p></td><td data-colwidth=\"148\"><p><strong>8 MP</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>5</p></td><td data-colwidth=\"148\"><p><strong>10 MP</strong></p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "pVs2sPd5o0XMbdah"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "fODE10J2f6cXvP8t",
+      "_stats": {
+        "compendiumSource": "Item.soSETT1ahFCMf5Aa",
+        "coreVersion": "12.343",
+        "createdTime": 1761171878252,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/aetherflow.png",
+      "name": "Phantom Strength",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Arcanist Variant",
+          "cost": "-",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>When you perform a <em><strong>pulse</strong></em>, before resolving its effects, you may choose to have all damage you deal ignore Affinities until the end of this turn. If you do, the next time you deal damage before the end of this turn, you deal <strong>[SL + 4]</strong> extra damage.</p>",
+          "duration": "-",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "6",
+          "max_level": "6",
+          "name": "Phantom Strength",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>Extra Damage (next time this turn)</strong></p></td></tr><tr><td><p>1</p></td><td><p>5</p></td></tr><tr><td><p>2</p></td><td><p>6</p></td></tr><tr><td><p>3</p></td><td><p>7</p></td></tr><tr><td><p>4</p></td><td><p>8</p></td></tr><tr><td><p>5</p></td><td><p>9</p></td></tr><tr><td><p>6</p></td><td><p>10</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "soSETT1ahFCMf5Aa"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "O21DtG0HL1iu988q",
+      "_stats": {
+        "compendiumSource": "Item.fIMx7fleEq7LKXNE",
+        "coreVersion": "12.343",
+        "createdTime": 1761173204502,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "icons/magic/death/hand-undead-skeleton-fire-pink.webp",
+      "name": "Drain Spirit",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Entropist",
+          "cost": "5 MP",
+          "damage_bonus": "15",
+          "defense_target_type": "def",
+          "description": "<p>You consume a creature's psyche. The target loses <strong>【HR + 15】</strong> Mind Points. Then, you recover an amount of Mind Points equal to half the Mind Points loss they suffered (if the loss was reduced to 0 in some way, you recover none).</p>",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "effect_kind": "grant",
+              "effect_label": "drain_recover",
+              "grant_amount": "MP_DEALT / 2",
+              "grant_resource": "mp",
+              "target_ref": "ds_self"
+            },
+            "1": {
+              "$deleted": false,
+              "auto_confirm_when_obvious": true,
+              "candidate_source": "self",
+              "category": "",
+              "count": 1,
+              "effect_kind": "targeting",
+              "effect_label": "ds_self",
+              "iteration_mode": "together",
+              "mode": "exact",
+              "skip_when_passive": true
+            }
+          },
+          "heroic_requirement": "",
+          "isCheck": true,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": true,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Drain Spirit",
+          "optional_params": {},
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "One creature",
+          "skill_type": "Spell",
+          "type_damage": "Dark",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "fIMx7fleEq7LKXNE"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "p2NOgr29mUfOYGUh",
+      "_stats": {
+        "compendiumSource": "Item.7p7Yi9mS78uksj7V",
+        "coreVersion": "12.343",
+        "createdTime": 1761173199952,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "icons/magic/death/hand-undead-skeleton-fire-green.webp",
+      "name": "Drain Vigor",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Entropist",
+          "cost": "10 MP",
+          "damage_bonus": "15",
+          "defense_target_type": "def",
+          "description": "<p>You steal another creature's life force. The target suffers <strong>【HR + 15】</strong><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span> damage. Then, you recover an amount of Hit Points equal to half the Hit Points loss they suffered (if the loss was reduced to 0 in some way, you recover none)</p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": true,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": true,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Drain Vigor",
+          "optional_params": {},
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "One creature",
+          "skill_type": "Spell",
+          "type_damage": "Dark",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "7p7Yi9mS78uksj7V"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "P6qG2GW9Iue9iLJG",
+      "_stats": {
+        "compendiumSource": "Item.WVC5pXW6w1WHVJSm",
+        "coreVersion": "12.343",
+        "createdTime": 1761171849061,
+        "duplicateSource": "Item.PPbGO3BZOBtULyxy",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/akh_morn.png",
+      "name": "Bind and Summon (variant)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "default": 3
+      },
+      "sort": 200000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Arcanist Variant",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>You may bind Arcana to your soul and summon them later. The Game Master will tell you the details of each binding process when you first encounter the Arcanum in question.</p><p> You may use an action and spend <strong>40 Mind Points</strong> to summon an Arcanum you have bound: the details of this process are explained on the next page. If you take this Skill at character creation, you begin play with one Arcanum of your choice already bound to you, chosen from the list on the next pages. Other than that, you may only obtain new Arcana through exploration and story progression</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Bind and Summon (variant)",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Other",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "WVC5pXW6w1WHVJSm"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "PGXOJbr05YgptTdw",
+      "_stats": {
+        "compendiumSource": "Item.IzAH4YAoK4vPt9MP",
+        "coreVersion": "12.343",
+        "createdTime": 1761172553305,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/blackblood.png",
+      "name": "Entropic Magic",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Entropist",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>Each time you acquire this Skill, learn one <strong>Entropist</strong> spell (see Facet).</p><p><strong>【⚡Offensive Entropist Spell】</strong> use <strong>【INS + WLP】</strong> for the Magic Check.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "2",
+          "max_level": "10",
+          "name": "Entropic Magic",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Other",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "IzAH4YAoK4vPt9MP"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "RRhT8RGXbB5dZAJ7",
+      "_stats": {
+        "compendiumSource": "Item.tE8pb6Spf4UoFo55",
+        "coreVersion": "12.343",
+        "createdTime": 1761172196580,
+        "duplicateSource": "Item.G6zwbm2sfECSKpDM",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/delirium.png",
+      "name": "Fear Is the Key",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Necromancer",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>After you cause one or more enemies to lose Hit Points, if you have acquired the <strong>Beyond the Realms of Death</strong> Skill and at least one of them is suffering from \n<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span></span>\n and/or \n<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a></span></span>, you gain <strong>1 Grave Point</strong> and recover <strong>[SL × 2]</strong> Hit Points and Mind Points.</p>\n",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "3",
+          "max_level": "3",
+          "name": "Fear Is the Key",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_mode": "default",
+          "skill_information": "<table style=\"width:100%; text-align:center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>HP & MP Recovered</strong></p></td></tr><tr><td><p>1</p></td><td><p>2</p></td></tr><tr><td><p>2</p></td><td><p>4</p></td></tr><tr><td><p>3</p></td><td><p>6</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "tE8pb6Spf4UoFo55"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "TLrbuG13WxjgSGxf",
+      "_stats": {
+        "compendiumSource": "Item.14ni8QTjG5uq5whY",
+        "coreVersion": "12.343",
+        "createdTime": 1761172095879,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/Shadowed_Vigil.png",
+      "name": "Beyond the Realms of Death",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "check_bonus": "0",
+          "class": "Necromancer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When another creature you can see loses Hit Points while in \n<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span>, if they are not <strong>undead</strong>, you gain <strong>1 Grave Point</strong>. You may never have more than <strong>[SL + 1]</strong> <strong>Grave Points</strong>.</p>\n\n<p>When you are reduced to <strong>0 Hit Points</strong>, you <strong>lose all Grave Points</strong>; then, if you lost at least <strong>1 Grave Point</strong> this way and this is the first time you are reduced to <strong>0 HP</strong> during this scene, you do not <strong>Surrender</strong> nor <strong>Sacrifice</strong> yourself; instead, you recover an amount of <strong>HP</strong> equal to <strong>[SL, multiplied by the amount of Grave Points you lost this way]</strong>.</p>\n",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "5",
+          "name": "Beyond the Realms of Death",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_mode": "default",
+          "skill_information": "<table style=\"width:100%; text-align:center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Max Grave Points</strong></p></td><td><p><strong>Max Heal on first time you hit 0 HP in a scene</strong></p></td></tr><tr><td><p>1</p></td><td><p>2</p></td><td><p>2</p></td></tr><tr><td><p>2</p></td><td><p>3</p></td><td><p>6</p></td></tr><tr><td><p>3</p></td><td><p>4</p></td><td><p>12</p></td></tr><tr><td><p>4</p></td><td><p>5</p></td><td><p>20</p></td></tr><tr><td><p>5</p></td><td><p>6</p></td><td><p>30</p></td></tr></tbody></table><p style=\"font-size: 12px; margin-top: 4px; text-align: center\">(Heal = <em>SL × Grave Points lost</em>; values above assume you lost all Grave Points.)</p>",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "14ni8QTjG5uq5whY"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Farian Pasta",
+  "ownership": {
+    "NpGkA7uxaarkPiwS": 3,
+    "default": 0
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar4": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "DEF",
+            "max": 13,
+            "maxcolor": "#f26d40",
+            "mincolor": "#f26d40",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 13
+          },
+          "bar5": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar5",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MDEF",
+            "max": 10,
+            "maxcolor": "#26d6ed",
+            "mincolor": "#26d6ed",
+            "opacity": null,
+            "order": 4,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 10
+          }
+        }
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "pastafarian",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "icons/svg/mystery-man.svg",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 0,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {
+      "accessory2_name": "",
+      "accessory_name": "",
+      "animation_table": {},
+      "arcanism": false,
+      "armor_mod": "0",
+      "armor_name": "",
+      "backstory": "",
+      "bond_1": "",
+      "bond_2": "",
+      "bond_3": "",
+      "bond_4": "",
+      "bond_5": "",
+      "bond_6": "",
+      "char_identity": "",
+      "chimerism": false,
+      "class_list": {
+        "0": {
+          "$deleted": false,
+          "benefit": "mp",
+          "class_name": "Arcanist",
+          "level": "10"
+        },
+        "1": {
+          "$deleted": false,
+          "benefit": "mp",
+          "class_name": "Necromancer",
+          "level": "5"
+        },
+        "2": {
+          "$deleted": false,
+          "benefit": "mp",
+          "class_name": "Entropist",
+          "level": "5"
+        }
+      },
+      "clock_brainwave": "0",
+      "clock_trade": "0",
+      "current_hp": "0",
+      "current_ip": "6",
+      "current_mp": "0",
+      "dex_base": "8",
+      "elementalism": false,
+      "emotion_1_1": "",
+      "emotion_1_2": "",
+      "emotion_1_3": "",
+      "emotion_2_1": "",
+      "emotion_2_2": "",
+      "emotion_2_3": "",
+      "emotion_3_1": "",
+      "emotion_3_2": "",
+      "emotion_3_3": "",
+      "emotion_4_1": "",
+      "emotion_4_2": "",
+      "emotion_4_3": "",
+      "emotion_5_1": "",
+      "emotion_5_2": "",
+      "emotion_5_3": "",
+      "emotion_6_1": "",
+      "emotion_6_2": "",
+      "emotion_6_3": "",
+      "entropism": false,
+      "experience": "0",
+      "experience_ui": "0",
+      "init_penalty": "0",
+      "ins_base": "8",
+      "inventory_list": {},
+      "isAwake": false,
+      "isClarity": false,
+      "isDazed": false,
+      "isEnergized": false,
+      "isEnraged": false,
+      "isFocus": false,
+      "isGuest": false,
+      "isPoisoned": false,
+      "isShaken": false,
+      "isSlow": false,
+      "isStrong": false,
+      "isSwift": false,
+      "isWeak": false,
+      "is_martialarmor": false,
+      "key_list": {},
+      "level": "5",
+      "magic_defense_mod": "0",
+      "main_attrib_1": "DEX",
+      "main_attrib_2": "MIG",
+      "main_hand": "",
+      "memories_list": {},
+      "mig_base": "8",
+      "name": "Farian Pasta",
+      "normal_spell_list": {
+        "Ck7U6Mre8V3DNwBO": {
+          "class": "Arcanist",
+          "cost": "",
+          "duration": "",
+          "id": "${item.id}",
+          "name": "Ritual Arcanism",
+          "roll": "",
+          "spell_description": "<p>You may perform Rituals of the <strong>Arcanism</strong> discipline, as long as their effects fall within the domains of one or more Arcana you have bound.</p><p>Arcanism Rituals use <strong>【WLP + WLP】</strong> for the Magic Check.</p>",
+          "spell_target": "",
+          "uuid": "Actor.9ubDCyNifyglcDUX.Item.Ck7U6Mre8V3DNwBO"
+        },
+        "NDZmWuDkhcEEqIFR": {
+          "class": "Arcanist",
+          "cost": "",
+          "duration": "",
+          "id": "${item.id}",
+          "name": "Arcane Regeneration",
+          "roll": "",
+          "spell_description": "<p>When you summon an <strong>Arcanum</strong>, you immediately recover <strong>【SL × 5】</strong> Hit Points.</p>",
+          "spell_target": "",
+          "uuid": "Actor.9ubDCyNifyglcDUX.Item.NDZmWuDkhcEEqIFR"
+        },
+        "jk5qJfFzCd4PGKs1": {
+          "class": "Arcanist",
+          "cost": "",
+          "duration": "",
+          "id": "${item.id}",
+          "name": "Bind and Summon",
+          "roll": "",
+          "spell_description": "<p>You may bind Arcana to your soul and summon them later. The Game Master will tell you the details of each binding process when you first encounter the Arcanum in question.</p><p> You may use an action and spend <strong>40 Mind Points</strong> to summon an Arcanum you have bound: the details of this process are explained on the next page. If you take this Skill at character creation, you begin play with one Arcanum of your choice already bound to you, chosen from the list on the next pages. Other than that, you may only obtain new Arcana through exploration and story progression</p>",
+          "spell_target": "",
+          "uuid": "Actor.9ubDCyNifyglcDUX.Item.jk5qJfFzCd4PGKs1"
+        }
+      },
+      "notes_text": "",
+      "off_attrib_1": "SHI",
+      "off_attrib_2": "SHI",
+      "off_base_mod_1": "0",
+      "off_base_mod_2": "0",
+      "off_hand": "",
+      "offensive_spell_list": {
+        "Ck7U6Mre8V3DNwBO": {
+          "class": "Arcanist",
+          "cost": "",
+          "duration": "",
+          "id": "${item.id}",
+          "name": "Ritual Arcanism",
+          "offensiveSpell_description": "<p>You may perform Rituals of the <strong>Arcanism</strong> discipline, as long as their effects fall within the domains of one or more Arcana you have bound.</p><p>Arcanism Rituals use <strong>【WLP + WLP】</strong> for the Magic Check.</p>",
+          "offensiveSpell_target": "",
+          "roll": "",
+          "uuid": "Actor.9ubDCyNifyglcDUX.Item.Ck7U6Mre8V3DNwBO"
+        },
+        "NDZmWuDkhcEEqIFR": {
+          "class": "Arcanist",
+          "cost": "",
+          "duration": "",
+          "id": "${item.id}",
+          "name": "Arcane Regeneration",
+          "offensiveSpell_description": "<p>When you summon an <strong>Arcanum</strong>, you immediately recover <strong>【SL × 5】</strong> Hit Points.</p>",
+          "offensiveSpell_target": "",
+          "roll": "",
+          "uuid": "Actor.9ubDCyNifyglcDUX.Item.NDZmWuDkhcEEqIFR"
+        },
+        "O21DtG0HL1iu988q": {
+          "class": "Entropist",
+          "cost": "5 MP",
+          "duration": "Instantaneous",
+          "id": "${item.id}",
+          "name": "Drain Spirit",
+          "offensiveSpell_description": "<p>You consume a creature's psyche. The target loses <strong>【HR + 15】</strong> Mind Points. Then, you recover an amount of Mind Points equal to half the Mind Points loss they suffered (if the loss was reduced to 0 in some way, you recover none).</p>",
+          "offensiveSpell_target": "One creature",
+          "roll": "",
+          "uuid": "Actor.9ubDCyNifyglcDUX.Item.O21DtG0HL1iu988q"
+        },
+        "jk5qJfFzCd4PGKs1": {
+          "class": "Arcanist",
+          "cost": "",
+          "duration": "",
+          "id": "${item.id}",
+          "name": "Bind and Summon",
+          "offensiveSpell_description": "<p>You may bind Arcana to your soul and summon them later. The Game Master will tell you the details of each binding process when you first encounter the Arcanum in question.</p><p> You may use an action and spend <strong>40 Mind Points</strong> to summon an Arcanum you have bound: the details of this process are explained on the next page. If you take this Skill at character creation, you begin play with one Arcanum of your choice already bound to you, chosen from the list on the next pages. Other than that, you may only obtain new Arcana through exploration and story progression</p>",
+          "offensiveSpell_target": "",
+          "roll": "",
+          "uuid": "Actor.9ubDCyNifyglcDUX.Item.jk5qJfFzCd4PGKs1"
+        },
+        "p2NOgr29mUfOYGUh": {
+          "class": "Entropist",
+          "cost": "10 MP",
+          "duration": "Instantaneous",
+          "id": "${item.id}",
+          "name": "Drain Vigor",
+          "offensiveSpell_description": "<p>You steal another creature's life force. The target suffers <strong>【HR + 15】</strong><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span> damage. Then, you recover an amount of Hit Points equal to half the Hit Points loss they suffered (if the loss was reduced to 0 in some way, you recover none)</p>",
+          "offensiveSpell_target": "One creature",
+          "roll": "",
+          "uuid": "Actor.9ubDCyNifyglcDUX.Item.p2NOgr29mUfOYGUh"
+        }
+      },
+      "origin": "",
+      "quirk_description": "<p><Insert your quirk effect></p>",
+      "quirk_name": "",
+      "relationship_1": "",
+      "relationship_2": "",
+      "relationship_3": "",
+      "relationship_4": "",
+      "relationship_5": "",
+      "relationship_6": "",
+      "resource_value_1": "0",
+      "resource_value_2": "0",
+      "resource_value_3": "0",
+      "ritualism": false,
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "shield_type": "",
+      "shield_value": "0",
+      "skill_accuracy": "0",
+      "skill_active_list": {
+        "1O5wLraC90TDt7cL": {
+          "active_class": "Arcanist Variant",
+          "active_cost": "-",
+          "active_description": "<p>When you summon an Arcanum on your turn during a conflict, choose up to two options:</p>\n<ul>\n  <li>reduce its MP cost by <strong>[SL × 5]</strong>;</li>\n  <li>after you summon the Arcanum, if you are merged with it, immediately perform its <em>pulse</em>.</li>\n</ul>\n<p>If you choose at least one option, you cannot willingly dismiss that Arcanum until the start of your next turn; if you choose both options, that Arcanum’s dismiss effect will not be available for this summoning.</p>\n",
+          "active_duration": "-",
+          "active_level": 3,
+          "active_target": "-",
+          "id": "${item.id}",
+          "name": "Quick Summoning",
+          "roll": "",
+          "uuid": "Actor.9ubDCyNifyglcDUX.Item.1O5wLraC90TDt7cL"
+        },
+        "35fINWpugG54JYBE": {
+          "active_class": "Necromancer",
+          "active_cost": "",
+          "active_description": "<p>When you deal damage to a creature with a 【📕Spell】, if that spell only deals damage to that creature, you may spend <strong>1 Grave Point</strong>. If you do, <strong>Choose one option:</strong></p>\n<ul>\n  <li>If that creature is suffering from one or more status effects, the spell deals extra damage equal to <strong>[(SL × 2) + the number of status effects on that creature]</strong>;</li>\n  <li>or, if that creature is suffering from no status effects, they suffer \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span></span>.\n  </li>\n</ul>\n",
+          "active_duration": "",
+          "active_level": 1,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "For Whom the Bell Tolls",
+          "roll": "",
+          "uuid": "Actor.9ubDCyNifyglcDUX.Item.35fINWpugG54JYBE"
+        },
+        "Ck7U6Mre8V3DNwBO": {
+          "active_class": "Arcanist",
+          "active_cost": "",
+          "active_description": "<p>You may perform Rituals of the <strong>Arcanism</strong> discipline, as long as their effects fall within the domains of one or more Arcana you have bound.</p><p>Arcanism Rituals use <strong>【WLP + WLP】</strong> for the Magic Check.</p>",
+          "active_duration": "",
+          "active_level": 0,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Ritual Arcanism",
+          "roll": "",
+          "uuid": "Actor.9ubDCyNifyglcDUX.Item.Ck7U6Mre8V3DNwBO"
+        },
+        "NDZmWuDkhcEEqIFR": {
+          "active_class": "Arcanist",
+          "active_cost": "",
+          "active_description": "<p>When you summon an <strong>Arcanum</strong>, you immediately recover <strong>【SL × 5】</strong> Hit Points.</p>",
+          "active_duration": "",
+          "active_level": 0,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Arcane Regeneration",
+          "roll": "",
+          "uuid": "Actor.9ubDCyNifyglcDUX.Item.NDZmWuDkhcEEqIFR"
+        },
+        "P6qG2GW9Iue9iLJG": {
+          "active_class": "Arcanist Variant",
+          "active_cost": "",
+          "active_description": "<p>You may bind Arcana to your soul and summon them later. The Game Master will tell you the details of each binding process when you first encounter the Arcanum in question.</p><p> You may use an action and spend <strong>40 Mind Points</strong> to summon an Arcanum you have bound: the details of this process are explained on the next page. If you take this Skill at character creation, you begin play with one Arcanum of your choice already bound to you, chosen from the list on the next pages. Other than that, you may only obtain new Arcana through exploration and story progression</p>",
+          "active_duration": "",
+          "active_level": 1,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Bind and Summon (variant)",
+          "roll": "",
+          "uuid": "Actor.9ubDCyNifyglcDUX.Item.P6qG2GW9Iue9iLJG"
+        },
+        "PGXOJbr05YgptTdw": {
+          "active_class": "Entropist",
+          "active_cost": "",
+          "active_description": "<p>Each time you acquire this Skill, learn one <strong>Entropist</strong> spell (see Facet).</p><p><strong>【⚡Offensive Entropist Spell】</strong> use <strong>【INS + WLP】</strong> for the Magic Check.</p>",
+          "active_duration": "",
+          "active_level": 2,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Entropic Magic",
+          "roll": "",
+          "uuid": "Actor.9ubDCyNifyglcDUX.Item.PGXOJbr05YgptTdw"
+        },
+        "PWHreRtLB8PRp3vK": {
+          "active_class": "Arcanist",
+          "active_cost": "",
+          "active_description": "<p>As long as you are in <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span>, the cost for summoning your Arcana is reduced by <strong>【SL × 5】</strong> Mind Points.</p>",
+          "active_duration": "",
+          "active_level": 0,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Emergency Arcanum",
+          "roll": "",
+          "uuid": "Actor.9ubDCyNifyglcDUX.Item.PWHreRtLB8PRp3vK"
+        },
+        "R0ZhTKdyVEURNbne": {
+          "active_class": "Arcanist",
+          "active_cost": "",
+          "active_description": "<p>After you willingly dismiss an Arcanum on your turn during a <strong>conflict</strong>, if that Arcanum had not been summoned during this same turn and you have an arcane weapon equipped, you may immediately perform the Spell action for free. The spell you cast this way must have a total Mind Point cost of <strong>【SL × 5】</strong>or lower <em>(you must still pay the spell's MP cost).</em></p>",
+          "active_duration": "",
+          "active_level": 1,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Arcane Circle",
+          "roll": "",
+          "uuid": "Actor.9ubDCyNifyglcDUX.Item.R0ZhTKdyVEURNbne"
+        },
+        "RRhT8RGXbB5dZAJ7": {
+          "active_class": "Necromancer",
+          "active_cost": "",
+          "active_description": "<p>After you cause one or more enemies to lose Hit Points, if you have acquired the <strong>Beyond the Realms of Death</strong> Skill and at least one of them is suffering from \n<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span></span>\n and/or \n<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a></span></span>, you gain <strong>1 Grave Point</strong> and recover <strong>[SL × 2]</strong> Hit Points and Mind Points.</p>\n",
+          "active_duration": "",
+          "active_level": 3,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Fear Is the Key",
+          "roll": "",
+          "uuid": "Actor.9ubDCyNifyglcDUX.Item.RRhT8RGXbB5dZAJ7"
+        },
+        "TLrbuG13WxjgSGxf": {
+          "active_class": "Necromancer",
+          "active_cost": "",
+          "active_description": "<p>When another creature you can see loses Hit Points while in \n<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span>, if they are not <strong>undead</strong>, you gain <strong>1 Grave Point</strong>. You may never have more than <strong>[SL + 1]</strong> <strong>Grave Points</strong>.</p>\n\n<p>When you are reduced to <strong>0 Hit Points</strong>, you <strong>lose all Grave Points</strong>; then, if you lost at least <strong>1 Grave Point</strong> this way and this is the first time you are reduced to <strong>0 HP</strong> during this scene, you do not <strong>Surrender</strong> nor <strong>Sacrifice</strong> yourself; instead, you recover an amount of <strong>HP</strong> equal to <strong>[SL, multiplied by the amount of Grave Points you lost this way]</strong>.</p>\n",
+          "active_duration": "",
+          "active_level": 1,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Beyond the Realms of Death",
+          "roll": "",
+          "uuid": "Actor.9ubDCyNifyglcDUX.Item.TLrbuG13WxjgSGxf"
+        },
+        "eU2uH3EmRb1pugng": {
+          "active_class": "Entropist",
+          "active_cost": "",
+          "active_description": "<p>After you suffer damage, you may immediately recover <strong>【SL × 2】</strong> Mind Points.</p>",
+          "active_duration": "",
+          "active_level": 3,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Absorb MP",
+          "roll": "",
+          "uuid": "Actor.9ubDCyNifyglcDUX.Item.eU2uH3EmRb1pugng"
+        },
+        "fODE10J2f6cXvP8t": {
+          "active_class": "Arcanist Variant",
+          "active_cost": "-",
+          "active_description": "<p>When you perform a <em><strong>pulse</strong></em>, before resolving its effects, you may choose to have all damage you deal ignore Affinities until the end of this turn. If you do, the next time you deal damage before the end of this turn, you deal <strong>[SL + 4]</strong> extra damage.</p>",
+          "active_duration": "-",
+          "active_level": 6,
+          "active_target": "-",
+          "id": "${item.id}",
+          "name": "Phantom Strength",
+          "roll": "",
+          "uuid": "Actor.9ubDCyNifyglcDUX.Item.fODE10J2f6cXvP8t"
+        },
+        "jk5qJfFzCd4PGKs1": {
+          "active_class": "Arcanist",
+          "active_cost": "",
+          "active_description": "<p>You may bind Arcana to your soul and summon them later. The Game Master will tell you the details of each binding process when you first encounter the Arcanum in question.</p><p> You may use an action and spend <strong>40 Mind Points</strong> to summon an Arcanum you have bound: the details of this process are explained on the next page. If you take this Skill at character creation, you begin play with one Arcanum of your choice already bound to you, chosen from the list on the next pages. Other than that, you may only obtain new Arcana through exploration and story progression</p>",
+          "active_duration": "",
+          "active_level": 0,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Bind and Summon",
+          "roll": "",
+          "uuid": "Actor.9ubDCyNifyglcDUX.Item.jk5qJfFzCd4PGKs1"
+        }
+      },
+      "skill_attack_damage": "0",
+      "skill_class_filter": "",
+      "skill_hideEffect": false,
+      "skill_hp": "0",
+      "skill_ip": "",
+      "skill_mp": "0",
+      "skill_type_filter": "All",
+      "spell_class_filter": "",
+      "spell_hideEffect": false,
+      "spiritism": false,
+      "theme": "",
+      "weapon1_base_damage": "0",
+      "weapon1_base_mod": "0",
+      "weapon1_damagetype": "",
+      "weapon2_damagetype": "-",
+      "wlp_base": "8",
+      "your_class_name": "",
+      "zenit": "500",
+      "zero_power_description": "<p><insert your Zero Power here></p>",
+      "zero_power_macro": "",
+      "zero_power_name": "<Zero Power Name>",
+      "zero_power_showMacro": false,
+      "zero_power_value": "0"
+    },
+    "statusEffects": {
+      "1QPHKNWo17z0bBmX": [],
+      "1cksCQj3urJwddfg": [],
+      "1qTdxSVu2XLu0lUx": [],
+      "3YZNX2X5rHYtL4L5": [],
+      "4g2B0rdJ3SiUQvUv": [],
+      "5FFBDg2y54bpqgat": [],
+      "5jkr80zqdzaR003d": [],
+      "6YW8glLMYbwj6ZhC": [],
+      "7FLtIUvENcYDAJKC": [],
+      "7VDl6ac5Rzr2Rpya": [],
+      "8LN8tDQjON508Rqm": [],
+      "ACD2C8JLWUeIx89o": [],
+      "CVxHWmDb0gQsob1q": [],
+      "CfLPg6RDybSQhTSR": [],
+      "DCaKnV9kNn3EpqtY": [],
+      "DHsoSawNEZAxsnQ9": [],
+      "EVjmTFRDsuzR823Z": [],
+      "GJ0cbbj60lr4zaHm": [],
+      "MsbUHrgK7AhSeEJm": [],
+      "N4WfMf1nuOdUEXVS": [],
+      "N4rGBYQsH7PyMAWr": [],
+      "NogCaPvL5Y52Hjnq": [],
+      "OFk8VUuwDhWFoPxI": [],
+      "QOfrFCU2C6mx50gK": [],
+      "Qz8IC4v3wJ6UoM77": [],
+      "Rc8AvdmlHAK7pPea": [],
+      "StnYeDADYo2xX99O": [],
+      "T1kJfiKBZm1dnnBy": [],
+      "VxdXsFJ7YVEzAp3x": [],
+      "YhO7nUdawyeQKMWD": [],
+      "ZK0aTX8IH1NqwmTw": [],
+      "bspDC7hFRTYuwdhf": [],
+      "cDgbFRi9TA68TvYr": [],
+      "clE8TJ0G1gMwF735": [],
+      "fYkA57rVfoytHRjo": [],
+      "g7JIey1pEuRHyAOH": [],
+      "gX1fA3onNG7wsyap": [],
+      "hhqoSNhWfVD4KR7g": [],
+      "jKvrVpxLgX0KhB23": [],
+      "m2iUJjsEfJkpmOBw": [],
+      "qMZsEEuzAdrHb2fk": [],
+      "qePlOECBTS0Dftgc": [],
+      "t2C3LKukW6LPUImk": [],
+      "t5jyddIZDvbyuVsD": [],
+      "v22vl6cnP94wVBPu": [],
+      "v2vFlETIgMnff5o8": [],
+      "vLM7q3rdXVCgHYD4": [],
+      "vUYA9jgY9pdafj4i": [],
+      "wA1E8GxiXmzz80XQ": [],
+      "xuwAn7u126GfFweU": []
+    },
+    "template": "OmwL5UqoVwjshkJo",
+    "templateSystemUniqueVersion": 2652892837
+  },
+  "type": "character"
+}

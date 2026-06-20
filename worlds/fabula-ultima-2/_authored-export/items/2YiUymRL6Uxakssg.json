@@ -1,0 +1,57 @@
+{
+  "_id": "2YiUymRL6Uxakssg",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757285098242,
+    "duplicateSource": "Item.I44gazsj0lrkq9ab",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "OFXRN3P2p6Ce5ySM",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Flower/52302681910dbee567238dec24ecf3a7_6183452992702886377.webp",
+  "name": "Ocean Lotus",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Floralist",
+      "cost": "20 MP",
+      "damage_bonus": "0",
+      "description": "<p><em>A graceful symbol of serenity and wisdom.</em></p> <table style=\"width:100%;\"> <tbody> <tr><td><strong>Growth</strong></td><td><strong>Effect</strong></td></tr> <tr> <td>0–1</td> <td>You are <strong>immune</strong> to <a class=\"content-link\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\"><strong><u>Dazed</u></strong></a> and <a class=\"content-link\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\"><strong><u>Slow</u></strong></a>. </td> </tr> <tr> <td>2</td> <td>You treat your <strong>Dexterity</strong> and <strong>Insight</strong> as being one die size higher (up to a maximum of <strong>d12</strong>).</td> </tr> <tr> <td>3</td> <td>You and every ally you can see treat your <strong>Dexterity</strong> and <strong>Insight</strong> as being one die size higher (up to a maximum of <strong>d12</strong>).</td> </tr> </tbody> </table>",
+      "duration": "Scene",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": true,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Ocean Lotus",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "Any",
+      "skill_target": "Special",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "2YiUymRL6Uxakssg"
+  },
+  "type": "equippableItem"
+}

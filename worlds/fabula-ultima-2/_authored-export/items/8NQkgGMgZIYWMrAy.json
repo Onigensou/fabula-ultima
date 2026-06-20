@@ -1,0 +1,145 @@
+{
+  "_id": "8NQkgGMgZIYWMrAy",
+  "_stats": {
+    "compendiumSource": "Item.P2ZlEmmK2DUhao0y",
+    "coreVersion": "12.343",
+    "createdTime": 1769593753577,
+    "duplicateSource": "Item.P2ZlEmmK2DUhao0y",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "aFiIcqKibonTzvkb",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.331",
+        "createdTime": 1769593793532,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Allows only <strong>Single-target </strong>actions</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "core": {
+          "overlay": false
+        },
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "2DYDlLqoyg0JXQza",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.2DYDlLqoyg0JXQza"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-fatigue",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/feculent_flood.png",
+      "name": "Fatigue",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "N4rGBYQsH7PyMAWr"
+      ],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.4"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/HealerRollAction/esuna.png",
+  "name": "Ration",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 100000,
+  "system": {
+    "container": "blT62xRLqnnnIdHA",
+    "props": {
+      "active_effect_config_table": {
+        "0": {
+          "$deleted": false,
+          "active_effect_application": "remove",
+          "active_effect_apply_mode": "percentage",
+          "active_effect_dice_1": "",
+          "active_effect_dice_2": "",
+          "active_effect_dl": "0",
+          "active_effect_id": "aFiIcqKibonTzvkb",
+          "active_effect_percent": "100",
+          "active_effect_target": "any",
+          "active_effect_trigger": "on_attack"
+        }
+      },
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_script": "",
+      "check_bonus": "0",
+      "class": "",
+      "cost": "-",
+      "damage_bonus": "",
+      "defense_target_type": "def",
+      "description": "<ul><li><p>Cure <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.J4fv0XKFy678UIn8\" data-id=\"J4fv0XKFy678UIn8\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fatigue</span></strong></a></span><strong> </strong>from target creature</p></li></ul>",
+      "duration": "Instantaneous",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Ration",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "Any",
+      "skill_target": "One creature",
+      "skill_type": "Item",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "8NQkgGMgZIYWMrAy"
+  },
+  "type": "equippableItem"
+}

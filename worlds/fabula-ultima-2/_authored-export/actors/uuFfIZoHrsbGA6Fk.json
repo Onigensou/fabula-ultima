@@ -1,0 +1,127 @@
+{
+  "_id": "uuFfIZoHrsbGA6Fk",
+  "_stats": {
+    "compendiumSource": "Actor.FXW7ORVtzbRGFoSD",
+    "coreVersion": "12.343",
+    "createdTime": 1674794308380,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "core": {
+      "sourceId": "Actor.FXW7ORVtzbRGFoSD"
+    },
+    "custom-system-builder": {
+      "version": "4.5.0"
+    },
+    "exportSource": {
+      "coreVersion": "10.288",
+      "system": "custom-system-builder",
+      "systemVersion": "2.1.0",
+      "world": "fabula-ultima"
+    }
+  },
+  "folder": "Qpc6ITpm60JVdwXF",
+  "img": "icons/svg/mystery-man.svg",
+  "name": "_FabU Char Template v2.fire (Alt-Tab))",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": null
+    },
+    "bar2": {
+      "attribute": null
+    },
+    "detectionModes": [],
+    "displayBars": 0,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {},
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "_FabU Char Template v2.fire (Alt-Tab))",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "icons/svg/mystery-man.svg",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 200000,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "statusEffects": {},
+    "templateSystemUniqueVersion": 1004424948
+  },
+  "type": "_template"
+}

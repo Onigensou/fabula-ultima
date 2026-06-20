@@ -1,0 +1,394 @@
+{
+  "_id": "XtjV8iC0C9IWCRFT",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757333710146,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "BOZlyyvhkhHBAsln",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1775334454418,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "base_defense",
+          "mode": 4,
+          "priority": 1,
+          "value": "${isEquipped ? (isMartial ? (item_baseDef * 1) : 0) : 0}$"
+        },
+        {
+          "key": "bonus_defense",
+          "mode": 2,
+          "priority": 2,
+          "value": "${isEquipped ? (isMartial ? 0 : (item_def_bonus * 1)) : 0}$"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "core": {
+          "overlay": false
+        },
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "BOZlyyvhkhHBAsln",
+          "originalParentId": "XtjV8iC0C9IWCRFT",
+          "originalUuid": "Item.XtjV8iC0C9IWCRFT.ActiveEffect.BOZlyyvhkhHBAsln"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-def-up",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUp.webp",
+      "name": "Armor DEF",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    },
+    {
+      "_id": "UbEAnZYKkiwkqAGM",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1775334454452,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "base_magic_defense",
+          "mode": 4,
+          "priority": 1,
+          "value": "${isEquipped ? (isMartial ? (item_baseMdef * 1) : 0) : 0}$"
+        },
+        {
+          "key": "bonus_magic_defense",
+          "mode": 2,
+          "priority": 2,
+          "value": "${isEquipped ? (isMartial ? 0 : (item_mdef_bonus * 1)) : 0}$"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "core": {
+          "overlay": false
+        },
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "UbEAnZYKkiwkqAGM",
+          "originalParentId": "XtjV8iC0C9IWCRFT",
+          "originalUuid": "Item.XtjV8iC0C9IWCRFT.ActiveEffect.UbEAnZYKkiwkqAGM"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-mdef-up",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUpStack.webp",
+      "name": "Armor MDEF",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    },
+    {
+      "_id": "YUliGz9ICI2IZe93",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.331",
+        "createdTime": 1760747460002,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.4"
+      },
+      "changes": [
+        {
+          "key": "attack_accuracy_mod_melee",
+          "mode": 2,
+          "priority": 1,
+          "value": "99"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "YUliGz9ICI2IZe93",
+          "originalParentId": "XtjV8iC0C9IWCRFT",
+          "originalUuid": "Item.XtjV8iC0C9IWCRFT.ActiveEffect.YUliGz9ICI2IZe93"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/svg/aura.svg",
+      "name": "Test Accuracy+",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    },
+    "fabula-ultima-companion": {
+      "armorDefMdefAeMassPatchBackup_v1": {
+        "createdAt": 1777705756592,
+        "effects": [
+          {
+            "changes": [
+              {
+                "key": "defense",
+                "mode": 2,
+                "priority": 1,
+                "value": "${isEquipped ? (isMartial ? 0 : item_def_bonus) : 0}$"
+              },
+              {
+                "key": "defense",
+                "mode": 4,
+                "priority": 2,
+                "value": "${isEquipped ? (isMartial ? item_baseDef : 0) : 0}$"
+              }
+            ],
+            "id": "BOZlyyvhkhHBAsln",
+            "name": "Armor DEF"
+          },
+          {
+            "changes": [
+              {
+                "key": "magic_defense",
+                "mode": 2,
+                "priority": 1,
+                "value": "${isEquipped ? (isMartial ? 0 : item_mdef_bonus) : 0}$"
+              },
+              {
+                "key": "magic_defense",
+                "mode": 4,
+                "priority": 2,
+                "value": "${isEquipped ? (isMartial ? item_baseMdef : 0) : 0}$"
+              }
+            ],
+            "id": "UbEAnZYKkiwkqAGM",
+            "name": "Armor MDEF"
+          }
+        ],
+        "itemName": "Sample Item",
+        "itemUuid": "Item.XtjV8iC0C9IWCRFT",
+        "parentName": "",
+        "parentType": "World"
+      },
+      "defMdefHelperKeyPatchBackup_v1": {
+        "createdAt": 1777708466536,
+        "effects": [
+          {
+            "changes": [
+              {
+                "key": "defense",
+                "mode": 2,
+                "priority": 1,
+                "value": "${isEquipped ? (isMartial ? 0 : item_def_bonus) : 0}$"
+              },
+              {
+                "key": "defense",
+                "mode": 4,
+                "priority": 2,
+                "value": "${isEquipped ? (isMartial ? item_baseDef : 0) : 0}$"
+              }
+            ],
+            "id": "BOZlyyvhkhHBAsln",
+            "name": "Armor DEF"
+          },
+          {
+            "changes": [
+              {
+                "key": "magic_defense",
+                "mode": 2,
+                "priority": 1,
+                "value": "${isEquipped ? (isMartial ? 0 : item_mdef_bonus) : 0}$"
+              },
+              {
+                "key": "magic_defense",
+                "mode": 4,
+                "priority": 2,
+                "value": "${isEquipped ? (isMartial ? item_baseMdef : 0) : 0}$"
+              }
+            ],
+            "id": "UbEAnZYKkiwkqAGM",
+            "name": "Armor MDEF"
+          }
+        ],
+        "itemId": "XtjV8iC0C9IWCRFT",
+        "itemName": "Sample Item",
+        "itemType": "armor",
+        "itemUuid": "Item.XtjV8iC0C9IWCRFT",
+        "owner": {
+          "actor": "",
+          "actorUuid": "",
+          "source": "World Item"
+        }
+      }
+    }
+  },
+  "folder": "anhNjengynV9A7lU",
+  "img": "icons/svg/item-bag.svg",
+  "name": "Sample Item",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 1000000,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "aquatic_ef": "100",
+      "automaton_ef": "100",
+      "avian_ef": "100",
+      "beast_ef": "100",
+      "category": "Arcane",
+      "celestial_ef": "100",
+      "check_bonus": "0",
+      "construct_ef": "100",
+      "damage_bonus": "0",
+      "demiHuman_ef": "100",
+      "demon_ef": "100",
+      "description": "<p><em>&lt;Item's Description &amp; Effects&gt;</em></p>",
+      "dragon_ef": "100",
+      "elemental_ef": "100",
+      "enforcer_ef": "100",
+      "fey_ef": "100",
+      "flavor_text": "<p><em>&lt;Flavor Text&gt;</em></p>",
+      "flora_ef": "100",
+      "fungus_ef": "100",
+      "golem_ef": "100",
+      "gorger_ef": "100",
+      "hand_slots": "One-handed",
+      "human_ef": "100",
+      "humanoid_ef": "100",
+      "insect_ef": "100",
+      "isEquipped": false,
+      "isKey": false,
+      "isMartial": false,
+      "isModule": false,
+      "isSet": false,
+      "isUnique": false,
+      "item_baseDef": "0",
+      "item_baseMdef": "0",
+      "item_cost": "0",
+      "item_def_bonus": "2",
+      "item_mdef_bonus": "0",
+      "item_quantity": "0",
+      "item_rarity": "Common",
+      "item_type": "armor",
+      "mimic_ef": "100",
+      "monster_ef": "100",
+      "name": "Sample Item",
+      "optional_params": {},
+      "plant_ef": "100",
+      "reptilian_ef": "100",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "set_description": "<p><em><Set Bonus></em></p>",
+      "set_name": "",
+      "soldier_ef": "100",
+      "spirit_ef": "100",
+      "type_damage": "Physical",
+      "undead_ef": "100",
+      "vehicle_ef": "100",
+      "weapon_range": "Melee"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "XtjV8iC0C9IWCRFT"
+  },
+  "type": "equippableItem"
+}

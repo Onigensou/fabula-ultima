@@ -1,0 +1,40 @@
+{
+  "_id": "1ruFh69np3Bf6oVn",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1753316382717,
+    "duplicateSource": "Item.Gg1ot3L3XPuiGkym",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "anhNjengynV9A7lU",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/MAGICDEFENSE%20UP.png",
+  "name": "Awake",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 100000,
+  "system": {
+    "container": null,
+    "props": {
+      "description": "<p style=\"\">Increase this creature <strong>【INS】</strong>die by one stage.</p>",
+      "detail_roller": "Show",
+      "id": "1ruFh69np3Bf6oVn",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/MAGICDEFENSE%20UP.png",
+      "name": "Awake",
+      "uuid": "Item.1ruFh69np3Bf6oVn"
+    },
+    "template": "nS5URyF3aoxhvPsZ",
+    "templateSystemUniqueVersion": 4221238629,
+    "unique": false,
+    "uniqueId": "1ruFh69np3Bf6oVn"
+  },
+  "type": "equippableItem"
+}

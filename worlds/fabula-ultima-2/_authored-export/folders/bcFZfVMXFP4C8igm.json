@@ -1,0 +1,19 @@
+{
+  "_id": "bcFZfVMXFP4C8igm",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780593546042,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "341jxGTHbioINnUl",
+  "name": "Loremaster",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

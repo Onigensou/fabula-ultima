@@ -1,0 +1,62 @@
+{
+  "_id": "QJw9MuxrOXtRVOxx",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1758202840740,
+    "duplicateSource": "Item.k7gaSnhF7IynAnfG",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "dhfFJlHW6EIUd4UD",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/ShiningRomanticaHyper.png",
+  "name": "Essence Sacrifice",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "check_bonus": "0",
+      "class": "Illusionist",
+      "cost": "10 MP",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>You command your Phantasms to replenish your allies’ MP. Each Phantasm runs towards a companion and shatters itself in a spray of mana. Each target recovers <strong>20 MP</strong>. A single ally cannot be replenished by more than one Phantasm per action.</p>\n",
+      "duration": "Instantaneous",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": true,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Essence Sacrifice",
+      "optional_params": {},
+      "rolled_atr1": "INS",
+      "rolled_atr2": "WLP",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "Range",
+      "skill_target": "Up to three allies",
+      "skill_type": "Spell",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "QJw9MuxrOXtRVOxx"
+  },
+  "type": "equippableItem"
+}

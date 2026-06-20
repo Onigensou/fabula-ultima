@@ -1,0 +1,45 @@
+{
+  "_id": "iveFuZCCHJeKRb3B",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1716859121106,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    }
+  },
+  "folder": "OA6n4poPyZy021SH",
+  "img": "https://i.imgur.com/I07BzVT.jpg",
+  "name": "Essencia Demonica b",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>Resist Debuff on self 50%</p>\n<p>&nbsp;</p>\n<p>Reduce Max MP 20</p>",
+      "duration": "",
+      "name": "Essencia Demonica b",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "target": "",
+      "type_damage": ""
+    },
+    "template": "FZmpKcQRP7hZQqbV",
+    "templateSystemUniqueVersion": 1700837225,
+    "unique": false,
+    "uniqueId": "iveFuZCCHJeKRb3B"
+  },
+  "type": "equippableItem"
+}

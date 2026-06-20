@@ -1,0 +1,19 @@
+{
+  "_id": "UPWMcB1gcqTPGRVk",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1762605598141,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "ao7MvDYKSVhEwWj3",
+  "name": "Create and Deleting image on Combat Hook",
+  "sort": 500000,
+  "sorting": "a",
+  "type": "Macro"
+}

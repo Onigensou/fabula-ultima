@@ -1,0 +1,40 @@
+{
+  "_id": "s3nsO9JLyxAorium",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1753316386617,
+    "duplicateSource": "Item.vuYJUldWW07uFudt",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "anhNjengynV9A7lU",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEFENSE%20UP.png",
+  "name": "Clarity",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 300000,
+  "system": {
+    "container": null,
+    "props": {
+      "description": "<p>Increase this creature <strong>【DEX】 </strong>and<strong> 【INS】</strong>die by one stage.</p>",
+      "detail_roller": "Show",
+      "id": "s3nsO9JLyxAorium",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEFENSE%20UP.png",
+      "name": "Clarity",
+      "uuid": "Item.s3nsO9JLyxAorium"
+    },
+    "template": "nS5URyF3aoxhvPsZ",
+    "templateSystemUniqueVersion": 4221238629,
+    "unique": false,
+    "uniqueId": "s3nsO9JLyxAorium"
+  },
+  "type": "equippableItem"
+}

@@ -1,0 +1,426 @@
+{
+  "_id": "eovuAdwJdbtn8rOr",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1706435184863,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "n9EcyQUphaJHabv0",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1778361484925,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>This creature has less than 50% HP</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": 2,
+        "startTime": 298800,
+        "startTurn": 3,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "4ldx00srGNv5AJBr",
+          "originalParentId": "0gIBYzSpjdXS6f25",
+          "originalUuid": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-crisis",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": false
+        },
+        "fabula-ultima-companion": {
+          "autoCrisis": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/08_DRG/blood_for_blood.png",
+      "name": "Crisis",
+      "origin": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr",
+      "sort": 0,
+      "statuses": [
+        "5jkr80zqdzaR003d"
+      ],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.5.0"
+    },
+    "theatre": {
+      "baseinsert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Character%20Portrait/Zawisza_Portrait.png",
+      "disabledefault": false,
+      "emotes": {
+        "angry": {
+          "insert": ""
+        },
+        "annoyed": {
+          "insert": ""
+        },
+        "awe-struck": {
+          "insert": ""
+        },
+        "blushing": {
+          "insert": ""
+        },
+        "carefree": {
+          "insert": ""
+        },
+        "confused": {
+          "insert": ""
+        },
+        "cry": {
+          "insert": ""
+        },
+        "dissatisfied": {
+          "insert": ""
+        },
+        "dizzy": {
+          "insert": ""
+        },
+        "frown": {
+          "insert": ""
+        },
+        "frustrated": {
+          "insert": ""
+        },
+        "grin": {
+          "insert": ""
+        },
+        "happy": {
+          "insert": ""
+        },
+        "happytears": {
+          "insert": ""
+        },
+        "hearts": {
+          "insert": ""
+        },
+        "idea": {
+          "insert": ""
+        },
+        "innocent": {
+          "insert": ""
+        },
+        "kiss": {
+          "insert": ""
+        },
+        "laughing": {
+          "insert": ""
+        },
+        "laughingsquint": {
+          "insert": ""
+        },
+        "meh": {
+          "insert": ""
+        },
+        "mischevious": {
+          "insert": ""
+        },
+        "panic": {
+          "insert": ""
+        },
+        "playful": {
+          "insert": ""
+        },
+        "rofl": {
+          "insert": ""
+        },
+        "sad": {
+          "insert": ""
+        },
+        "scared": {
+          "insert": ""
+        },
+        "serious": {
+          "insert": ""
+        },
+        "sleeping": {
+          "insert": ""
+        },
+        "smile": {
+          "insert": ""
+        },
+        "smug": {
+          "insert": ""
+        },
+        "speechless": {
+          "insert": ""
+        },
+        "surprised": {
+          "insert": ""
+        },
+        "thinking": {
+          "insert": ""
+        },
+        "tongue": {
+          "insert": ""
+        },
+        "wink": {
+          "insert": ""
+        },
+        "worried": {
+          "insert": ""
+        }
+      },
+      "name": "",
+      "optalign": "top",
+      "settings": {
+        "emote": null,
+        "textcolor": null,
+        "textflyin": null,
+        "textfont": null,
+        "textsize": null,
+        "textstanding": null
+      }
+    }
+  },
+  "folder": "R48MubDtgNPZLb5r",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Character%20Portrait/Zawisza_Portrait.png",
+  "name": "Zawisza",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": null
+    },
+    "bar2": {
+      "attribute": null
+    },
+    "detectionModes": [],
+    "displayBars": 0,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {},
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Zawisza",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Character%20Portrait/Zawisza_Portrait.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 0,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "activeEffects": {},
+    "props": {
+      "accesory_name": "",
+      "arcanism": false,
+      "armor_mod": "0",
+      "armor_name": "",
+      "bond_1": "",
+      "bond_2": "",
+      "bond_3": "",
+      "bond_4": "",
+      "bond_5": "",
+      "bond_6": "",
+      "char_identity": "",
+      "check_roller": "Roll!",
+      "chimerism": false,
+      "crisis_hp": "ERROR",
+      "current_hp": "0",
+      "current_ip": "6",
+      "current_mp": "0",
+      "dex_base": "8",
+      "dex_current": 8,
+      "elementalism": false,
+      "emotion_1_1": "",
+      "emotion_1_2": "",
+      "emotion_1_3": "",
+      "emotion_2_1": "",
+      "emotion_2_2": "",
+      "emotion_2_3": "",
+      "emotion_3_1": "",
+      "emotion_3_2": "",
+      "emotion_3_3": "",
+      "emotion_4_1": "",
+      "emotion_4_2": "",
+      "emotion_4_3": "",
+      "emotion_5_1": "",
+      "emotion_5_2": "",
+      "emotion_5_3": "",
+      "emotion_6_1": "",
+      "emotion_6_2": "",
+      "emotion_6_3": "",
+      "entropism": false,
+      "experience": "0",
+      "fp": "3",
+      "init_penalty": "0",
+      "ins_base": "8",
+      "ins_current": 8,
+      "inventory_label": "💼 Inventory",
+      "isAwake": false,
+      "isClarity": false,
+      "isDazed": false,
+      "isEnergized": false,
+      "isEnraged": false,
+      "isFocus": false,
+      "isPoisoned": false,
+      "isShaken": false,
+      "isSlow": false,
+      "isStrong": false,
+      "isSwift": false,
+      "isWeak": false,
+      "is_martialarmor": false,
+      "level": "5",
+      "magic_defense_mod": "0",
+      "main_attrib_1": "DEX",
+      "main_attrib_2": "MIG",
+      "main_hand": "",
+      "main_hand_attack": "",
+      "max_hp": "ERROR",
+      "max_ip": "ERROR",
+      "max_mp": "ERROR",
+      "mig_base": "8",
+      "mig_current": 8,
+      "name": "Zawisza",
+      "off_attrib_1": "SHI",
+      "off_attrib_2": "SHI",
+      "off_hand": "",
+      "off_hand_attack": "",
+      "off_mod_1": "0",
+      "off_mod_2": "0",
+      "origin": "",
+      "pronouns": "",
+      "re_experience": "0",
+      "relationship_1": "",
+      "relationship_2": "",
+      "relationship_3": "",
+      "relationship_4": "",
+      "relationship_5": "",
+      "relationship_6": "",
+      "resource_value_1": "0",
+      "resource_value_2": "0",
+      "resource_value_3": "0",
+      "ritualism": false,
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "shield_type": "PHYSICAL",
+      "shield_value": "0",
+      "skill_hp": "0",
+      "skill_ip": "0",
+      "skill_mp": "0",
+      "spiritism": false,
+      "theme": "",
+      "weapon1_damage": "0",
+      "weapon1_damagetype": "",
+      "weapon1_mod": "0",
+      "weapon2_damagetype": "-",
+      "wlp_base": "8",
+      "wlp_current": 8,
+      "your_class_name": "",
+      "zenit": "500",
+      "zero_effect_label": "💬 Zero Effect",
+      "zero_label": "💥 Zero Power : ",
+      "zero_power_name": "",
+      "zero_power_value": "",
+      "zero_trigger_label": "⚔️ Zero Trigger"
+    },
+    "statusEffects": {},
+    "template": "gN4AtNuVF4Tc5LxK",
+    "templateSystemUniqueVersion": 93170772
+  },
+  "type": "character"
+}

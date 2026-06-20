@@ -1,0 +1,63 @@
+{
+  "_id": "YwYOjebS8L7KXtG5",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1753941959849,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "PouMEIXPkERtjRTH",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/12_MCH/spread_shot.png",
+  "name": "Sniper Focus",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "check_bonus": "0",
+      "class": "Sniper",
+      "cost": "",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p data-start=\"117\" data-end=\"220\">When you level up this skill, you gain a <strong data-start=\"158\" data-end=\"173\">Focus Clock</strong> with segments equal to your 【<strong>SL】</strong>in this skill.</p><ul data-start=\"222\" data-end=\"408\"><li data-start=\"222\" data-end=\"319\"><p data-start=\"224\" data-end=\"319\">At the end of your turn, if you <strong data-start=\"256\" data-end=\"292\">didn’t perform a damaging action</strong>, increase your Focus by 1.</p></li><li data-start=\"320\" data-end=\"408\"><p data-start=\"322\" data-end=\"408\">If you are <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Hidden</span></strong></a></span></span>, you still gain Focus even if you did perform a damaging action.</p></li></ul><p data-start=\"410\" data-end=\"531\">When you <strong data-start=\"419\" data-end=\"451\">attack </strong>with a<strong data-start=\"419\" data-end=\"451\"> ranged firearm</strong>, you can <strong data-start=\"461\" data-end=\"485\">spend all your Focus</strong> to deal <strong data-start=\"494\" data-end=\"530\">10 bonus damage per Focus spent</strong>.</p>",
+      "duration": "",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "level": "1",
+      "max_level": "3",
+      "name": "Sniper Focus",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "YwYOjebS8L7KXtG5"
+  },
+  "type": "equippableItem"
+}

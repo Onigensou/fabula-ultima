@@ -1,0 +1,57 @@
+{
+  "_id": "bzi79ApAA922A5DD",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757460164071,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "2OplVa9fwLYbzD8b",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lithia/CynicalSneerSkill4.png",
+  "name": "Forbidden Monarch",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 8100000,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Ace of Cards",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>As long as there are <strong>one or more cards</strong> in your <strong>discard pile</strong>, you have <strong>Resistance</strong> to the damage type matching the <strong>suit</strong> of the card on top of your discard pile (if that card is a <strong>joker</strong>, you have <strong>Resistance</strong> to all four damage types: <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(168, 255, 187) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(210, 180, 140) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span>, and <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(166, 227, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span></span>).</p><p>You also add the following <strong>effect</strong> to your list of <strong>sets</strong>:</p><details open=\"\" style=\"border:2px solid #b3002d; border-radius:10px; overflow:hidden; margin-top:10px;\"><summary style=\"cursor:pointer; background:#b3002d; color:#fff; padding:8px 12px; font-weight:700; font-family:Signika, sans-serif; letter-spacing:.3px;\"><span style=\"font-family: Signika, sans-serif\"><strong>♠ ♥ ♦ ♣ Additional Set Effect (click to hide)</strong></span></summary><div class=\"tableWrapper\" style=\"background:#fff;\"><div class=\"tableWrapper\"><table style=\"min-width: 75px;\"><colgroup><col contenteditable=\"false\"><col contenteditable=\"false\"><col contenteditable=\"false\"></colgroup><tbody><tr style=\"background:#b3002d; color:#fff;\"><td style=\"padding:6px; border-right:1px solid #a00027;\"><p><strong>Effect</strong></p></td><td style=\"padding:6px; border-right:1px solid #a00027;\"><p><strong>Set Requirements</strong></p></td><td style=\"padding:6px;\"><p><strong>Resolve</strong></p></td></tr><tr><td style=\"padding:8px; border-bottom:1px solid #e9d6da;\"><p><strong>Forbidden Monarch</strong></p></td><td style=\"padding:8px; border-bottom:1px solid #e9d6da;\"><p>4 cards of the same value, none of which is a <strong>joker</strong> + 1 <strong>joker</strong></p></td><td style=\"padding:8px; border-bottom:1px solid #e9d6da;\"><p>You deal <strong>777</strong> damage to each enemy present on the scene; the type of this damage is <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(202, 189, 154) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></span> if 【<strong>the common value of the 4 cards】</strong> is <strong>even</strong>, or <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span> if that total is <strong>odd</strong>.</p><p>If there is a <strong>joker</strong> in your <strong>discard pile</strong>, the damage dealt by this effect <strong>ignores Immunities and Resistances</strong>.</p></td></tr></tbody></table></div></div></details>",
+      "duration": "",
+      "heroic_requirement": "you must have mastered one or more Classes among Ace of Cards and Arcanist, and you must have acquired 3 Skill Levels in the Magic Cards Skill.",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Forbidden Monarch",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "bzi79ApAA922A5DD"
+  },
+  "type": "equippableItem"
+}

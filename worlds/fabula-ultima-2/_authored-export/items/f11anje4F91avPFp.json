@@ -1,0 +1,55 @@
+{
+  "_id": "f11anje4F91avPFp",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1754165697358,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "uuBCmFnWytMuWiTe",
+  "img": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/dragupload/fabula%20class/pirate/Illustration6.jpg",
+  "name": "Boarding Action Tactic",
+  "ownership": {
+    "default": 3,
+    "nXC7OD7u5Zw5UDDU": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Pirate",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>When you learned the skill, you gain a <strong>Piracy Clock, </strong>this clock contains <strong>【SL】</strong>section.</p><p>When you perform <strong>Two-weapon fighting, </strong>filled 1 section of your <strong>Piracy Clock </strong>equal to your number of successful <strong>hit</strong> against a target</p><p>At the end of your turn, you can spend sections of your your <strong>Piracy Clock</strong> and immediately perform an <strong>【Inventory】</strong> action for <strong>free</strong>. This action must cost no more Inventory point than the amount of <strong>section</strong> spent <em>(before reduce by any skill or equipment).</em></p>",
+      "duration": "",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "level": "1",
+      "max_level": "2",
+      "name": "Boarding Action Tactic",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "f11anje4F91avPFp"
+  },
+  "type": "equippableItem"
+}

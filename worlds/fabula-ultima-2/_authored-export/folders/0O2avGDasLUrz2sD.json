@@ -1,0 +1,19 @@
+{
+  "_id": "0O2avGDasLUrz2sD",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1754404945528,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": "#7d668a",
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "Elemental Type",
+  "sort": 300000,
+  "sorting": "a",
+  "type": "Item"
+}

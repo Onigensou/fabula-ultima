@@ -1,0 +1,35 @@
+{
+  "_id": "0sFCVCoM6FRrQP2f",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1754404969699,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "0O2avGDasLUrz2sD",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Burn.png",
+  "name": "Fire",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 2
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "name": "Fire"
+    },
+    "template": "nS5URyF3aoxhvPsZ",
+    "templateSystemUniqueVersion": 4221238629,
+    "unique": false,
+    "uniqueId": "0sFCVCoM6FRrQP2f"
+  },
+  "type": "equippableItem"
+}

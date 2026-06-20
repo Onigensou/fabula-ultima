@@ -1,0 +1,19 @@
+{
+  "_id": "auU4PqllbQysIseg",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": null,
+    "duplicateSource": null,
+    "systemId": null,
+    "systemVersion": null
+  },
+  "color": "#212121",
+  "description": "",
+  "flags": {},
+  "folder": "Ez9xgSX6RMOw2a8b",
+  "name": "Weapon Module",
+  "sort": 200000,
+  "sorting": "a",
+  "type": "Item"
+}

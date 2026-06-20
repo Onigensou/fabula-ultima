@@ -1,0 +1,45 @@
+{
+  "_id": "ckkEwxSXMPK6JyQr",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1703943656140,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    }
+  },
+  "folder": "qpw46aFVTAeQSyTP",
+  "img": "icons/magic/unholy/orb-beam-pink.webp",
+  "name": "Omega",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Entropist",
+      "cost": "20",
+      "damage_bonus": "0",
+      "description": "<p>You invoke doom on your foe, turning strength into frailty. The target loses an amount<br>of Hit Points equal to <strong>【20 + half the target's level】</strong>.</p>",
+      "duration": "Instantaneous",
+      "name": "Omega",
+      "rolled_atr1": "INS",
+      "rolled_atr2": "WLP",
+      "target": "One creature",
+      "type_damage": ""
+    },
+    "template": "FZmpKcQRP7hZQqbV",
+    "templateSystemUniqueVersion": 1700837225,
+    "unique": false,
+    "uniqueId": "ckkEwxSXMPK6JyQr"
+  },
+  "type": "equippableItem"
+}

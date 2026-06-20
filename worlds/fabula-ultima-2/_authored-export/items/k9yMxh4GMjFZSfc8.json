@@ -1,0 +1,62 @@
+{
+  "_id": "k9yMxh4GMjFZSfc8",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1743301918486,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "k9yMxh4GMjFZSfc8",
+        "itemName": "Caelestis Oculus",
+        "pickedOldProps": {
+          "cost": "0",
+          "martial": false
+        },
+        "ts": 1769647435375
+      }
+    }
+  },
+  "folder": "1y9u2EmZuTTt3cpv",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/lightspeed.png",
+  "name": "Caelestis Oculus",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 100000,
+  "system": {
+    "container": null,
+    "props": {
+      "category": "Arcane",
+      "check_bonus": "0",
+      "damage_bonus": "5",
+      "description": "<ul>\n<li>Gain <strong data-start=\"103\" data-end=\"126\">+2 Defense</strong>, and you are treated as having a <strong data-start=\"160\" data-end=\"170\">shield</strong> equipped for the sake of your <strong data-start=\"201\" data-end=\"211\">Skills</strong></li>\n<li>Gain <strong>+2 Magic Defense</strong></li>\n<li>Transform into <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/spread.png\" width=\"21\"><strong>@UUID[Item.RPytqHnOdkfUu35u]{Major Fortuna}</strong></li>\n</ul>",
+      "hand_slots": "Two-handed",
+      "isMartial": false,
+      "item_cost": "0",
+      "item_type": "weapon",
+      "name": "Caelestis Oculus",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "MIG",
+      "set_name": "",
+      "skill_target": "One Enemy",
+      "type_damage": "Physical",
+      "weapon_range": "Ranged"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "k9yMxh4GMjFZSfc8"
+  },
+  "type": "equippableItem"
+}

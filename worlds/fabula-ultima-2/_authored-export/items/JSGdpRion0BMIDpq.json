@@ -1,0 +1,39 @@
+{
+  "_id": "JSGdpRion0BMIDpq",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1716395893068,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    }
+  },
+  "folder": "8mJfXdKYmmONftVP",
+  "img": "https://media.discordapp.net/attachments/1069683982897270824/1242879154425299064/d2.png?ex=6677a6a9&is=66765529&hm=175a360eeb12998a32ca1912af15deef838f51258f6777a41c3841dfc5de8d3c&=&format=webp&quality=lossless",
+  "name": "Dream Flower",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3
+  },
+  "sort": 300000,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "damage_bonus": "0",
+      "name": "Dream Flower",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX"
+    },
+    "template": "FZmpKcQRP7hZQqbV",
+    "templateSystemUniqueVersion": 1700837225,
+    "unique": false,
+    "uniqueId": "JSGdpRion0BMIDpq"
+  },
+  "type": "equippableItem"
+}

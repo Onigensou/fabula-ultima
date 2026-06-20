@@ -1,0 +1,49 @@
+{
+  "_id": "3a1LLwzYB4uMfHaU",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1757123823755,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "ffyJMvbd23HTZhEU",
+  "img": "icons/svg/item-bag.svg",
+  "name": "Test new Item template",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 150000,
+  "system": {
+    "container": null,
+    "props": {
+      "category": "Arcane",
+      "check": "Check",
+      "check_bonus": "0",
+      "damage_bonus": "0",
+      "hand_slots": "One-handed",
+      "isModule": false,
+      "item_type": "",
+      "martial": false,
+      "name": "Test new Item template",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "set_name": "",
+      "type_damage": "Physical",
+      "weapon_cost": "0",
+      "weapon_range": "Melee"
+    },
+    "template": "dw5NX8b2ZWlrnHDS",
+    "templateSystemUniqueVersion": 3468491699,
+    "unique": false,
+    "uniqueId": "3a1LLwzYB4uMfHaU"
+  },
+  "type": "equippableItem"
+}

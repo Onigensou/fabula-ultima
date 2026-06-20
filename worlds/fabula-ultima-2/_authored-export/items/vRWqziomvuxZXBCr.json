@@ -1,0 +1,57 @@
+{
+  "_id": "vRWqziomvuxZXBCr",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757432855489,
+    "duplicateSource": "Item.TSCAUfjpOlNl6WwV",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "2OplVa9fwLYbzD8b",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/CLOSERS/Harpy/Draw.webp",
+  "name": "Card Vanguard",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 2900000,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Ace of Cards",
+      "cost": "-",
+      "damage_bonus": "0",
+      "description": "<p>During a conflict, if you have <strong>two or fewer</strong> <em>vanguard cards</em> in play, you may <strong>use an action</strong> to choose <strong>1</strong> card from your <strong>hand</strong> and place it face down as a <em>vanguard card</em>; if you do, <strong>draw 1</strong> card from your <strong>deck</strong>.</p>\n<p>When you suffer damage, if you have <strong>one or more</strong> <em>vanguard cards</em> in play, you may reveal one of them and place it on top of your <strong>discard pile</strong>: if you do and that card is a <strong>joker</strong> or its suit matches the type of the damage you suffered, you instead suffer <strong>no damage</strong> and regain an equal amount of <strong>Mind Points</strong>.</p>\n<p>At the end of each conflict, if you have <strong>one or more</strong> <em>vanguard cards</em> in play, shuffle them back into your <strong>deck</strong>.</p>\n",
+      "duration": "Scene",
+      "heroic_requirement": "you must have mastered the Ace of Cards Class, and must have acquired the Magic Cards Skill.",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Card Vanguard",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "Any",
+      "skill_target": "Special",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "vRWqziomvuxZXBCr"
+  },
+  "type": "equippableItem"
+}

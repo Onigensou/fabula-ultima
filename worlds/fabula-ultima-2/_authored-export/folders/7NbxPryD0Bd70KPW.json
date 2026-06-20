@@ -1,0 +1,19 @@
+{
+  "_id": "7NbxPryD0Bd70KPW",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": null,
+    "duplicateSource": null,
+    "systemId": null,
+    "systemVersion": null
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "G7vThH1ZJvGIhiFp",
+  "name": "Firearm",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

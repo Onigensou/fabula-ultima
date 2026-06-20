@@ -1,0 +1,62 @@
+{
+  "_id": "DY5RBlybpPqfV4dw",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1747481714658,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.4.2"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "DY5RBlybpPqfV4dw",
+        "itemName": "Curse Mallet",
+        "pickedOldProps": {
+          "cost": "2500",
+          "martial": false
+        },
+        "ts": 1769647435454
+      }
+    }
+  },
+  "folder": "1y9u2EmZuTTt3cpv",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1535.gif",
+  "name": "Curse Mallet",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 600000,
+  "system": {
+    "container": null,
+    "props": {
+      "category": "Arcane",
+      "check_bonus": "0",
+      "damage_bonus": "13",
+      "description": "<ul>\n    <li>\n        <p>When you <strong>hit </strong>a creature with this weapon, inflicts a random <strong>debuff </strong>on the target.</p>\n    </li>\n    <li>\n        <p>You may cast the spell 【<strong>✨ Hex </strong>】</p>\n    </li>\n</ul>\n<hr>\n<details>\n    <summary><strong>✨ Hex</strong></summary>\n    <p><strong>Cost:</strong> 10 MP</p>\n    <p><strong>Target:</strong> One Creature</p>\n    <p><strong>Duration:</strong> Instantaneous</p>\n    <p>Deal dark damage to target creature equal to <strong>【5 x the amount of Status Effects on the target】</strong>if this is the seventh round or more, this effect deal 300% damage instead.</p>\n    <p></p>\n</details>",
+      "hand_slots": "Two-handed",
+      "isMartial": false,
+      "item_cost": "2500",
+      "item_type": "weapon",
+      "name": "Curse Mallet",
+      "rolled_atr1": "WLP",
+      "rolled_atr2": "WLP",
+      "set_name": "",
+      "skill_target": "One Enemy",
+      "type_damage": "Dark",
+      "weapon_range": "Melee"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "DY5RBlybpPqfV4dw"
+  },
+  "type": "equippableItem"
+}

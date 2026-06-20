@@ -1,0 +1,222 @@
+{
+  "_id": "MZXmnywINICmx7Ua",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780631500988,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "tAzcnvHeqs6WWFlj",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><em>Protect:</em> Once per turn. Take an ally's incoming attack or status instead.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "fabula-ultima-companion": {
+          "chargeKey": "protect",
+          "charges": 1,
+          "chargesMax": 1
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/cover.png",
+      "name": "Protect",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-protect-ready"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "48mIiEzH4lkVf0Xf",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/cover.png",
+  "name": "Protect",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "check_bonus": "0",
+      "class": "Guardian",
+      "cost": "",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>When another creature is threatened by an <strong>attack, spell</strong> or <strong>other danger</strong>, you may take their place (any Checks that are part of the danger will be performed against you; you may declare the use of this Skill before or after the Checks have been made). If the danger already affected you, it affects you twice (resolve both instances separately); you also cannot protect multiple creatures from the same danger. If you use this Skill during a conflict, you cannot use it again until the start of your next turn.</p>",
+      "duration": "-",
+      "effect_table": {
+        "0": {
+          "charge_key": "protect",
+          "count": "1",
+          "effect_kind": "consume_charge",
+          "effect_label": "protect_gate",
+          "menu_description": "",
+          "menu_label": "",
+          "on_empty": "abort",
+          "target_ref": "protect_self"
+        },
+        "1": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Protect",
+          "count": "1",
+          "effect_kind": "apply_ae",
+          "effect_label": "protect_refill",
+          "menu_description": "",
+          "menu_label": "",
+          "on_empty": "abort",
+          "target_ref": "protect_self"
+        },
+        "2": {
+          "ae_duplicate_mode": "replace",
+          "count": "1",
+          "destination_ref": "protect_self",
+          "effect_kind": "redirect_target",
+          "effect_label": "protect_redirect",
+          "menu_description": "",
+          "menu_label": "",
+          "on_empty": "abort",
+          "rebuild_card": true,
+          "target_ref": "protect_incoming"
+        },
+        "3": {
+          "chain_steps": "protect_redirect, protect_gate",
+          "effect_kind": "chain",
+          "effect_label": "protect_react",
+          "menu_description": "",
+          "menu_label": ""
+        },
+        "4": {
+          "auto_confirm_when_obvious": true,
+          "candidate_source": "self",
+          "category": "",
+          "count": "1",
+          "effect_kind": "targeting",
+          "effect_label": "protect_self",
+          "exclude_self": false,
+          "iteration_mode": "together",
+          "menu_description": "",
+          "menu_label": "",
+          "mode": "exact",
+          "skip_when_passive": true,
+          "target_prompt": ""
+        },
+        "5": {
+          "auto_confirm_when_obvious": true,
+          "candidate_source": "action_targets",
+          "category": "",
+          "count": "1",
+          "effect_kind": "targeting",
+          "effect_label": "protect_incoming",
+          "exclude_self": true,
+          "iteration_mode": "together",
+          "menu_description": "",
+          "menu_label": "",
+          "mode": "exact",
+          "skip_when_passive": true,
+          "target_prompt": ""
+        }
+      },
+      "heroic_requirement": "",
+      "ignore_hr": false,
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": true,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Protect",
+      "on_activate_effect_ref": "",
+      "optional_params": {},
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "",
+          "reaction_action_intent": "harmful",
+          "reaction_action_target": "",
+          "reaction_damage_source": "",
+          "reaction_damage_type": "",
+          "reaction_effect_ref": "protect_react",
+          "reaction_ownership": "",
+          "reaction_passive_mode": "ask",
+          "reaction_source": "ally",
+          "reaction_subject_kind": "",
+          "reaction_trigger": "creature_targeted_by_action",
+          "requires_skill": ""
+        },
+        "1": {
+          "condition_formula": "",
+          "reaction_action_intent": "",
+          "reaction_action_target": "",
+          "reaction_damage_source": "",
+          "reaction_debuff_count_min": "",
+          "reaction_debuff_count_target": "",
+          "reaction_effect_ref": "protect_refill",
+          "reaction_ownership": "",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "self",
+          "reaction_subject_kind": "",
+          "reaction_trigger": "turn_start",
+          "requires_skill": ""
+        },
+        "2": {
+          "condition_formula": "",
+          "reaction_effect_ref": "protect_refill",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "",
+          "reaction_source": "",
+          "reaction_trigger": "conflict_start",
+          "requires_skill": ""
+        }
+      },
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "",
+      "skill_target": "-",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "MZXmnywINICmx7Ua"
+  },
+  "type": "equippableItem"
+}

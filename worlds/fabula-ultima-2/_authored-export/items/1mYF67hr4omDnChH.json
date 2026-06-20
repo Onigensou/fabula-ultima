@@ -1,0 +1,63 @@
+{
+  "_id": "1mYF67hr4omDnChH",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757289485092,
+    "duplicateSource": "Item.NphrjKFklmNrvHhA",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "0Rc7ZvYFTru6ax0u",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/summon_titan_II.png",
+  "name": "Invoke: Growth",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Invoker",
+      "cost": "5 MP",
+      "damage_bonus": "0",
+      "description": "<p>The target recovers 30 Hit Points. <em>Only usable if an Earth wellspring is present on the scene.</em></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>Recovery becomes <strong>40</strong>.</p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>Recovery becomes <strong>50</strong>.</p>\n",
+      "duration": "Instantanious",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": true,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Invoke: Growth",
+      "optional_params": {
+        "0": {
+          "$deleted": false,
+          "key": "wellspring_type",
+          "value": "earth"
+        }
+      },
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "Range",
+      "skill_target": "One Creature",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": true
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "1mYF67hr4omDnChH"
+  },
+  "type": "equippableItem"
+}

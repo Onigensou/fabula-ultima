@@ -1,0 +1,100 @@
+{
+  "_id": "3JvR2gG0NcT0IwhD",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1781889623559,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "UcGBewcyVRmxYuhC",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/peculiar_light.png",
+  "name": "Consume",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_script": "",
+      "check_bonus": "0",
+      "class": "Chimerist",
+      "cost": "-",
+      "damage_bonus": "",
+      "defense_target_type": "def",
+      "description": "<p>After you deal damage to one or more creatures with a spell, if you have an arcane, dagger or flail weapon equipped, you recover <strong>【SL × 2】</strong> Mind Points.</p>",
+      "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "candidate_source": "self",
+          "count": "1",
+          "effect_kind": "targeting",
+          "effect_label": "cs_self",
+          "exclude_self": false,
+          "mode": "exact",
+          "skip_when_passive": true
+        },
+        "1": {
+          "$deleted": false,
+          "effect_kind": "grant",
+          "effect_label": "cs_do",
+          "grant_amount": "SL * 2",
+          "grant_resource": "mp",
+          "target_ref": "cs_self"
+        }
+      },
+      "heroic_requirement": "",
+      "ignore_hr": false,
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": true,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "5",
+      "name": "Consume",
+      "optional_params": {},
+      "reaction_config_table": {
+        "0": {
+          "$deleted": false,
+          "condition_formula": "ACTION_IS_SPELL == 1 && (HAS_ARCANE_WEAPON == 1 || HAS_WEAPON_CATEGORY_DAGGER == 1 || HAS_WEAPON_CATEGORY_FLAIL == 1)",
+          "reaction_damage_amount": "",
+          "reaction_damage_type": "",
+          "reaction_effect_ref": "cs_do",
+          "reaction_passive_mode": "on",
+          "reaction_passive_target": "self",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_completes_action"
+        }
+      },
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "Any",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "3JvR2gG0NcT0IwhD"
+  },
+  "type": "equippableItem"
+}

@@ -1,0 +1,67 @@
+{
+  "_id": "uSfpUFshad2WnIiR",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1754249069903,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "2OplVa9fwLYbzD8b",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/GrandArcherSkill8.png",
+  "name": "Perfect Aim",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 6700000,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "check_bonus": "0",
+      "class": "Sharpshooter",
+      "cost": "",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>When you hit one or more creatures with a <strong>ranged</strong> attack and choose to deal no damage in order to gain the benefits of the 【<strong>Warning Shot】</strong> Skill, you may choose <strong>two</strong> options instead of <strong>one</strong> <em>(for instance, you could inflict both shaken and slow on each creature, or inflict a status effect on each creature while also lowering their Mind Points).</em></p>",
+      "duration": "",
+      "heroic_requirement": "You must have mastered the Sharpshooter Class, and must have acquired the Warning Shot Skill.",
+      "ignore_hr": false,
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": true,
+      "isReaction": false,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Perfect Aim",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "uSfpUFshad2WnIiR"
+  },
+  "type": "equippableItem"
+}

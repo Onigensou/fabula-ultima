@@ -1,0 +1,62 @@
+{
+  "_id": "jYKFnEb09ArDvBjb",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1756967607836,
+    "duplicateSource": "Item.2bE1L41MlCogVPB0",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "2OplVa9fwLYbzD8b",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/revelation.png",
+  "name": "Grand Summoning",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 5300000,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "check_bonus": "0",
+      "class": "Arcanist",
+      "cost": "",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>When you summon an <strong>Arcanum</strong>, you may decide to spend 1 <strong>Fabula Point</strong> and spend half of your current <strong>Hit Points</strong> (rounded down) to shape your lifeforce into a full manifestation of their power. If you do, the Arcanum manifests as a <strong>soldier-rank</strong> creature of the <strong>demon</strong> Species under your control (they count as an ally and have their own independent turn during conflicts—if you use this Skill during a conflict scene, the Arcanum joins the scene at the end of the current round). You also do not gain any of the <strong>merge benefits</strong> you would normally enjoy when summoning that Arcanum. The summoned creature has the following profile:</p>\n<ul>\n  <li><strong>Level</strong> is equal to your level (thus gaining the bonuses to Checks and damage listed under steps 8 on page 303 of the Core Rulebook).</li>\n  <li>A <strong>d10</strong> in one <strong>Attribute</strong> of your choice, and a <strong>d8</strong> in all other Attributes.</li>\n  <li><strong>Maximum Hit Points</strong> equal to <strong>[twice the creature’s base Might die size, plus half of your maximum Hit Points]</strong>. The creature has no <strong>Mind Points</strong>.</li>\n  <li><strong>Resistance</strong> to two damage types of your choice.</li>\n  <li>The creature receives all the <strong>merge benefits</strong> the Arcanum would normally grant you when summoned (damage Affinities, immunity to status effects, increased Attribute sizes, etc.). If a merge benefit would cause the Arcanum to be dismissed, this will cause the summoned creature to vanish unless you spend <strong>20 Mind Points</strong>.</li>\n  <li>A <strong>melee basic attack</strong> whose Accuracy Check relies on two different Attributes of your choice and deals <strong>[HR + 8]</strong> physical damage. Choose two different options: that the attack is a <strong>ranged</strong> attack; or it deals 4 extra damage; or it deals damage of a type other than physical; or the Accuracy Check relies on a single Attribute.</li>\n  <li>The creature may perform the 【💥Skill】 action to produce one of the <strong>dismiss</strong> effects normally granted by that Arcanum, but doing so will cause the summoned creature to vanish unless you spend <strong>20 Mind Points</strong>.</li>\n</ul>\n<p><strong>The following rules apply</strong> when you <strong>Grand Summon</strong> an Arcanum:</p>\n<ul>\n  <li>The creature is always summoned at full <strong>Hit Points</strong>, with no status effects.</li>\n  <li>The creature vanishes if it reaches 0 <strong>Hit Points</strong>; if you die, lose consciousness or become unconscious; or if you <strong>summon</strong> or <strong>Grand Summon</strong> an Arcanum again.</li>\n  <li>The creature leaves when a scene ends, or if you simply command them to do so (without triggering the corresponding Arcanum’s dismiss effects).</li>\n  <li>You make all choices made for Attributes and basic attack during the first time you <strong>Summon</strong> a given Arcanum: these choices will remain unchanged whenever you <strong>Grand Summon</strong> that same Arcanum again in the future.</li>\n</ul>\n",
+      "duration": "",
+      "heroic_requirement": "you must have mastered the Arcanist Class, and your character must be level 30 or higher.",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Grand Summoning",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "jYKFnEb09ArDvBjb"
+  },
+  "type": "equippableItem"
+}

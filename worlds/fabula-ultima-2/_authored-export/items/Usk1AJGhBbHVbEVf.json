@@ -1,0 +1,58 @@
+{
+  "_id": "Usk1AJGhBbHVbEVf",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757050185110,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "aPsLStGRkzZxIr57",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Raven/RageHeartsPassive1.png",
+  "name": "Akromorphosis",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Mutant",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>Your unarmed strikes deal <strong>【6 + (SL × 2)】</strong> extra damage, and you gain a bonus equal to <strong>【SL】</strong> to your <strong>Accuracy Checks</strong> with them.</p><p>At the start of your turn during a conflict, you may choose a weapon Category other than brawling. If you do, your unarmed strikes now belong to the chosen Category. These changes last until the start of your next turn.</p><p><em>(If you choose <strong>bow</strong>, <strong>firearm</strong> or <strong>thrown</strong>, they become <strong>ranged</strong> weapons instead of <strong>melee</strong>. If you choose <strong>dagger</strong> or <strong>sword</strong>, they cannot be used with 【💥<strong>Triple Slash】</strong>.</em> )</p>",
+      "duration": "",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "3",
+      "name": "Akromorphosis",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Extra Damage (Unarmed)</strong></p></td><td><p><strong>Accuracy Bonus (with Unarmed)</strong></p></td></tr><tr><td><p>1</p></td><td><p>8</p></td><td><p>+1</p></td></tr><tr><td><p>2</p></td><td><p>10</p></td><td><p>+2</p></td></tr><tr><td><p>3</p></td><td><p>12</p></td><td><p>+3</p></td></tr></tbody></table>",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "Usk1AJGhBbHVbEVf"
+  },
+  "type": "equippableItem"
+}

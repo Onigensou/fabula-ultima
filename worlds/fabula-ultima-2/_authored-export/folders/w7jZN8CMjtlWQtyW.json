@@ -1,0 +1,19 @@
+{
+  "_id": "w7jZN8CMjtlWQtyW",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1753458622938,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": "#e17e2d",
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "💥 Skill",
+  "sort": 500000,
+  "sorting": "a",
+  "type": "Item"
+}

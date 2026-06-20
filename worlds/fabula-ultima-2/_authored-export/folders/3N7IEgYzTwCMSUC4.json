@@ -1,0 +1,19 @@
+{
+  "_id": "3N7IEgYzTwCMSUC4",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1773847179560,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "yvRW0RqT5kwSxKFl",
+  "name": "Bandits Hideout",
+  "sort": 400000,
+  "sorting": "a",
+  "type": "Scene"
+}

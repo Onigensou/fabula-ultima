@@ -1,0 +1,19 @@
+{
+  "_id": "i6egGaJbyenxOAFD",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": null,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "2.4.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "eZWKkXNgeaFs6HSS",
+  "name": "Fluffy's pc",
+  "sort": 500000,
+  "sorting": "a",
+  "type": "Actor"
+}

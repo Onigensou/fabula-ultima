@@ -1,0 +1,19 @@
+{
+  "_id": "ckIWjCUR7gftTfnv",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1755257514930,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": "#3f8230",
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "Fabula Ultima Assets",
+  "sort": 200000,
+  "sorting": "m",
+  "type": "Compendium"
+}

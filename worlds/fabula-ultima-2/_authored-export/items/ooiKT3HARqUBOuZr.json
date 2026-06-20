@@ -1,0 +1,57 @@
+{
+  "_id": "ooiKT3HARqUBOuZr",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757285109205,
+    "duplicateSource": "Item.m4akX4dvBn3NElng",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "OFXRN3P2p6Ce5ySM",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Flower/26dcdc380318ebf2062295f9100d852e_932041768001254811.webp",
+  "name": "Silver Strelitzia",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Floralist",
+      "cost": "20 MP",
+      "damage_bonus": "0",
+      "description": "<p><em>Its silvery blossoms are easily mistaken for jewels.</em></p> <table style=\"width:100%;\"> <tbody> <tr><td><strong>Growth</strong></td><td><strong>Effect</strong></td></tr> <tr> <td>0–1</td> <td>You are <strong>Resistant</strong> to <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\"><strong><u>Bolt</u></strong></a> and <a class=\"content-link\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\"><strong><u>Light</u></strong></a> damage. </td> </tr> <tr> <td>2–3</td> <td>You and your allies present on the scene are <strong>Resistant</strong> to <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\"><strong><u>Bolt</u></strong></a> and <a class=\"content-link\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\"><strong><u>Light</u></strong></a> damage. </td> </tr> </tbody> </table>",
+      "duration": "Scene",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": true,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Silver Strelitzia",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "Any",
+      "skill_target": "Special",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "ooiKT3HARqUBOuZr"
+  },
+  "type": "equippableItem"
+}

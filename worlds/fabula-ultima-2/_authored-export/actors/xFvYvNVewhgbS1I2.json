@@ -1,0 +1,884 @@
+{
+  "_id": "xFvYvNVewhgbS1I2",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1758247642908,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "lrk2jhOW5Ok9sgH1",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/misc%20image/Npc_zoom_3040465000_01.png",
+  "items": [
+    {
+      "_id": "ckRk8P2Uc8YBL1wG",
+      "_stats": {
+        "compendiumSource": "Item.b7Zdg1T8tiqr5VNC",
+        "coreVersion": "12.343",
+        "createdTime": 1758250258591,
+        "duplicateSource": "Item.r7u96QmWlArfpaR4",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Granblue%20Fantasy/50px-Ability_Ligne_d%27Ete.png",
+      "name": "Tailor-Made",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Tailor",
+          "cost": "-",
+          "damage_bonus": "0",
+          "description": "<p>During a <strong>rest</strong> scene, you may destroy an item with a quality to add that quality to an item of the same type that doesn’t have a quality. <strong>Rare Items</strong> created this way are worth <strong>【80 × Your Tailor Level at the time of Creation】</strong> extra zenit.</p>",
+          "duration": "-",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Tailor-Made",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "b7Zdg1T8tiqr5VNC"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "dtCsXxWbcnb4g9cR",
+      "_stats": {
+        "compendiumSource": "Item.r7u96QmWlArfpaR4",
+        "coreVersion": "12.343",
+        "createdTime": 1758250254678,
+        "duplicateSource": "Item.mSaVQyUbk0ZIhJU9",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Granblue%20Fantasy/50px-Ability_m_2043_3.png",
+      "name": "Looking Fabulous!",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Tailor",
+          "cost": "-",
+          "damage_bonus": "0",
+          "description": "<p>You and your <strong>Model</strong> gain a bonus equal to <strong>【Number of Equipped Rare Items】</strong> in <strong>【❗ Objective】</strong> actions and Opposed Checks related to your demeanor, appearance, or equipment.</p>",
+          "duration": "-",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Looking Fabulous!",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "r7u96QmWlArfpaR4"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "je4ZIUGT0KAm7nMO",
+      "_stats": {
+        "compendiumSource": "Item.mSaVQyUbk0ZIhJU9",
+        "coreVersion": "12.343",
+        "createdTime": 1758250257155,
+        "duplicateSource": "Item.1LZ7C9rKlzYOxc47",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/RumblePumnPassive3.png",
+      "name": "Shared Attribution",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Tailor",
+          "cost": "-",
+          "damage_bonus": "0",
+          "description": "<p>When you or your <strong>Model</strong> are threatened by an enemy’s damaging <strong>【⚔️ Attack】</strong>, <strong>【📕 Spell】</strong>, or <strong>other effect</strong>, either of you may spend 1 Inventory Point to sew a <strong>Life Thread</strong>. If you do, reduce any incoming damage by an amount equal to <strong>【SL】</strong> (before applying Affinities), then split the damage evenly. Damage taken in this way counts towards abilities that rely on a damage trigger.</p>",
+          "duration": "-",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "5",
+          "name": "Shared Attribution",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width:100%; text-align:center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Damage Reduced (before Affinities)</strong></p></td></tr><tr><td><p>1</p></td><td><p>1</p></td></tr><tr><td><p>2</p></td><td><p>2</p></td></tr><tr><td><p>3</p></td><td><p>3</p></td></tr><tr><td><p>4</p></td><td><p>4</p></td></tr><tr><td><p>5</p></td><td><p>5</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "mSaVQyUbk0ZIhJU9"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "kOPeLfvgGgQimDI6",
+      "_stats": {
+        "compendiumSource": "Item.JhMVPxtGjw93WzS3",
+        "coreVersion": "12.343",
+        "createdTime": 1758250259855,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Granblue%20Fantasy/50px-Ability_Croquis_d%27Ete.png",
+      "name": "Taking Measurement",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Tailor",
+          "cost": "20 MP",
+          "damage_bonus": "0",
+          "description": "<p>By using the <strong>【🥋 Equipment】</strong> action and spending 20 Mind Points, you can designate an ally you can see as your <strong>Model</strong> until they surrender, leave the scene, the current scene ends, or you designate another ally as the <strong>Model</strong>. The last enemy that dealt damage to you or your <strong>Model</strong> takes <strong>【SL + Your Bond Strength towards the other】</strong> extra damage from you and your Model’s Attacks and Spells.</p>",
+          "duration": "Scene",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "4",
+          "name": "Taking Measurement",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width:100%; text-align:center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Extra Damage from SL component</strong></p></td><td><p><strong>Total Extra Damage</strong></p></td></tr><tr><td><p>1</p></td><td><p>+1</p></td><td><p>【SL + Your Bond Strength towards the other】</p></td></tr><tr><td><p>2</p></td><td><p>+2</p></td><td><p>【SL + Your Bond Strength towards the other】</p></td></tr><tr><td><p>3</p></td><td><p>+3</p></td><td><p>【SL + Your Bond Strength towards the other】</p></td></tr><tr><td><p>4</p></td><td><p>+4</p></td><td><p>【SL + Your Bond Strength towards the other】</p></td></tr></tbody></table>",
+          "skill_range": "Range",
+          "skill_target": "One Ally",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "JhMVPxtGjw93WzS3"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "LnuSUTFr6EkcYoLO",
+      "_stats": {
+        "compendiumSource": "Item.DP1wXzT66WXAe4sO",
+        "coreVersion": "12.343",
+        "createdTime": 1758250266182,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Wizard/icon_wizar_darktheurge.png",
+      "name": "Dance of the Marionette",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Tailor",
+          "cost": "X IP",
+          "damage_bonus": "0",
+          "description": "<p>Together with your Group, create your <strong>Marionette</strong>, a soldier-rank NPC of <strong>construct</strong> type, under your control. It counts as an ally and has its own turn during conflicts. If you surrender, fall unconscious, build a new Marionette, or your Marionette is reduced to 0 Hit Points, it is immediately <strong>destroyed</strong>. You may also willingly dismiss your Marionette before or after an action.</p>\n<p>You may perform the <strong>Inventory</strong> action and spend 2 to 6 Inventory Points to build your Marionette and make it join the current scene — if you use this Skill during a conflict, the Marionette joins the scene at the <strong>end</strong> of the current round. The Marionette has the following features:</p>\n<ul>\n  <li><strong>Level 10</strong> (gains the bonuses to Checks and Damage as per Step 8 of the Core Rulebook; it doesn’t gain EXP nor Level Up).</li>\n  <li><strong>Maximum Hit Points</strong> equal to 【(the Marionette’s base Might die size × Inventory Points spent to build the Marionette) + half your level】.</li>\n  <li><strong>No Mind Points</strong> — any MP cost incurred by the Marionette is taken from your MP.</li>\n  <li><strong>Mindless (Special Rule)</strong>: the Marionette is immune to the \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span></span> and confused status effects (doesn’t cost NPC Skill Points).</li>\n  <li><strong>Construct-type</strong> NPC bonuses: <strong>Resistance</strong> to \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span></span> damage; <strong>immunity</strong> to \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span> damage and the \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.JltwIqzHbBKhkD45\" data-id=\"JltwIqzHbBKhkD45\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\"><strong><span style=\"text-decoration: underline;\">Poisoned</span></strong></a></span></span> status; +2 Skill Points for customization.</li>\n  <li><strong>One vulnerability</strong> of your choice.</li>\n</ul>\n",
+          "duration": "Special",
+          "heroic_requirement": "You must have mastered the Tailor Class",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Dance of the Marionette",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Any",
+          "skill_target": "Self",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "DP1wXzT66WXAe4sO"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "mGUFww2B4SE7t26P",
+      "_stats": {
+        "compendiumSource": "Item.1LZ7C9rKlzYOxc47",
+        "coreVersion": "12.343",
+        "createdTime": 1758250255911,
+        "duplicateSource": "Item.JhMVPxtGjw93WzS3",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/RumblePumnPassive2.png",
+      "name": "Our Bond Is Unbreakable",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Tailor",
+          "cost": "-",
+          "damage_bonus": "0",
+          "description": "<p>Your <strong>bond strength</strong> towards your Model gains a bonus equal to 【SL】. When your Model performs the <strong>Inventory</strong> action and would spend Inventory Points, you may pay up to 【SL + 1】 Inventory Points in their stead.</p>\n",
+          "duration": "-",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "2",
+          "name": "Our Bond Is Unbreakable",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width:100%; text-align:center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Bond Strength Bonus</strong></p></td><td><p><strong>Max IP You Can Pay For Model</strong></p></td></tr><tr><td><p>1</p></td><td><p>+1</p></td><td><p>2</p></td></tr><tr><td><p>2</p></td><td><p>+2</p></td><td><p> 3</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "1LZ7C9rKlzYOxc47"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "nOaiQBVKKhnPPYnB",
+      "_stats": {
+        "compendiumSource": "Item.1E5VZDlvY8JY8eJ3",
+        "coreVersion": "12.343",
+        "createdTime": 1758250267682,
+        "duplicateSource": "Item.DP1wXzT66WXAe4sO",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Wizard/icon_wizar_thurisaz.png",
+      "name": "Down to Size",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Tailor",
+          "cost": "X MP",
+          "damage_bonus": "0",
+          "description": "<p>You may use an action and spend up to 40 Mind Points to choose one creature you can see. For every 20 Mind Points spent this way, choose one Attribute; the chosen Attribute’s die size is reduced by one, to a minimum of d6. This effect can stack with status effects and is independent. A Villain NPC may <strong>Recover</strong> to end this effect.</p>\n<ul>\n  <li>Dexterity</li>\n  <li>Insight</li>\n  <li>Might</li>\n  <li>Willpower</li>\n</ul>\n",
+          "duration": "Scene",
+          "heroic_requirement": "You must have mastered the Tailor Class",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Down to Size",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Range",
+          "skill_target": "X Creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "1E5VZDlvY8JY8eJ3"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "rlT5Yn1gp6eCaeC4",
+      "_stats": {
+        "compendiumSource": "Item.g7dtmVcWPY4gSm4M",
+        "coreVersion": "12.343",
+        "createdTime": 1758250270062,
+        "duplicateSource": "Item.1E5VZDlvY8JY8eJ3",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Granblue%20Fantasy/50px-Ability_m_2045_3.png",
+      "name": "Extra Spindle",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Tailor",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>Before or after performing an action during your turn, you may spend up to <strong>X Mind Points</strong>. For every <strong>10 Mind Points</strong> spent this way, you may have one <strong>Spell</strong> effect that is affecting you also affect your <strong>Model</strong> (the effects applied this way expire together with yours).</p>",
+          "duration": "",
+          "heroic_requirement": "You must have mastered the Tailor Class",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Extra Spindle",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "X Creatur",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "g7dtmVcWPY4gSm4M"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Tailor",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar4": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "DEF",
+            "max": 13,
+            "maxcolor": "#f26d40",
+            "mincolor": "#f26d40",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 13
+          },
+          "bar5": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar5",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MDEF",
+            "max": 10,
+            "maxcolor": "#26d6ed",
+            "mincolor": "#26d6ed",
+            "opacity": null,
+            "order": 4,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 10
+          }
+        }
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Tailor",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://gbf.wiki/images/thumb/0/0b/Npc_zoom_3040465000_01.png/480px-Npc_zoom_3040465000_01.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 800000,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {
+      "also_text": "",
+      "benefit_dropdown": "ip_benefit",
+      "classMechanic_text": "<h1 style=\"font-family: Signika, sans-serif; letter-spacing:.5px; color:#4e3f87; text-align:center; border-bottom:3px solid #8aa0d8; padding-bottom:.25rem; margin:.25rem 0 .5rem;\"><span style=\"font-family: Signika, sans-serif\">TAILOR — </span><span style=\"color:#7c89d9;\"><span style=\"font-family: Signika, sans-serif\">PLAY OVERVIEW & GUIDE</span></span></h1><p style=\"font-style: italic; color: #4e3f87; margin: .25rem 0 1rem; text-align: center\"><em>“Pin the seam, stitch the bond, fix the battlefield.”</em></p><div style=\"display:grid; gap:.75rem; grid-template-columns:1fr;\"><section style=\"border:1px solid #8aa0d8; background:#f7f8ff; padding:.75rem; border-radius:.6rem;\"><h2 style=\"margin:.25rem 0; color:#4e3f87;\">What the Tailor Is (and Isn’t)</h2><p style=\"margin: .25rem 0\">The <strong>Tailor</strong> is a <em>support–skirmisher</em> who anchors the party through a chosen <strong>Model</strong>—an ally you designate and then protect, buff, and retaliate through. You weave <strong>MP, Inventory Points, and Bonds</strong> into smart plays that reduce damage, punish attackers, and create powerful gear.</p><ul style=\"margin:.25rem 0 .25rem 1rem;\"><li><strong>Core loop:</strong> Pick a <em>Model</em> → mitigate damage with <em>Life Threads</em> → punish enemies who hurt you or your Model → spend Inventory for utility and gear upgrades.</li><li><strong>Your edge:</strong> You turn style (Rare Items, appearance) + teamwork (Bonds) into real numbers in checks and damage.</li></ul></section><section style=\"border:1px solid #8aa0d8; background:#ffffff; padding:.75rem; border-radius:.6rem;\"><h2 style=\"margin:.25rem 0; color:#4e3f87;\">The Model System — Your Anchor Ally</h2><div style=\"display:grid; grid-template-columns:1fr 1fr; gap:.5rem;\"><div style=\"border:1px dashed #c9d2f7; border-radius:.5rem; padding:.55rem; background:#fbfbff;\"><p style=\"margin: .25rem 0 0 0\"><strong>Taking Measurements! (SL +4)</strong></p><p style=\"margin: .25rem 0 0 0\">Use the <strong>Equipment</strong> action and spend <strong>20 MP</strong> to designate a visible ally as your <strong>Model</strong> (lasts until they surrender/leave the scene/end the scene/you pick a new Model). The last enemy that damaged you or your Model takes <strong>[SL + Your Bond Strength toward the other]</strong> extra damage from <em>your</em> and your <em>Model’s</em> Attacks/Spells.</p></div><div style=\"border:1px dashed #c9d2f7; border-radius:.5rem; padding:.55rem; background:#fbfbff;\"><p style=\"margin: .25rem 0 0 0\"><strong>Our Bond Is Unbreakable! (SL +2)</strong></p><p style=\"margin: .25rem 0 0 0\">Your <strong>bond strength</strong> toward your Model increases by <strong>+[SL]</strong>. When your Model uses <strong>Inventory</strong>, you may pay up to <strong>[SL+1]</strong> of the Inventory Points for them.</p></div></div></section><section style=\"border:1px solid #8aa0d8; background:#f7f8ff; padding:.75rem; border-radius:.6rem;\"><h2 style=\"margin:.25rem 0; color:#4e3f87;\">Damage Control — Keep the Outfit (Party) Together</h2><div style=\"display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:.5rem;\"><div style=\"border:1px dashed #c9d2f7; border-radius:.5rem; padding:.55rem; background:#ffffff;\"><p style=\"margin: .25rem 0\"><strong>Shared Attribution! (SL +5)</strong></p><p style=\"margin: .25rem 0\">When a damaging attack/spell/effect hits you or your Model, either of you may spend <strong>1 Inventory Point</strong> to sew a <em>Life Thread</em>: reduce the incoming damage by <strong>[SL]</strong> (before Affinities), then split the remaining damage evenly. This damage still counts for “on damage” triggers.</p></div><div style=\"border:1px dashed #c9d2f7; border-radius:.5rem; padding:.55rem; background:#ffffff;\"><p style=\"margin: .25rem 0\"><strong>Looking Fabulous!</strong></p><p style=\"margin: .25rem 0\">You and your Model gain a bonus equal to your <strong># of equipped Rare Items</strong> in Objective actions and Opposed Checks tied to <em>demeanor, appearance, or equipment</em>.</p></div><div style=\"border:1px dashed #c9d2f7; border-radius:.5rem; padding:.55rem; background:#ffffff;\"><p style=\"margin: .25rem 0\"><strong>Tailor-Made!</strong></p><p style=\"margin: .25rem 0\">During a <em>rest</em>, destroy an item with a <strong>quality</strong> to add that quality to a same-type item that lacks one. Rare items crafted this way sell for <strong>80 × your Tailor level</strong> extra zenit.</p></div></div></section><section style=\"border:1px solid #8aa0d8; background:#ffffff; padding:.75rem; border-radius:.6rem;\"><h2 style=\"margin:.25rem 0; color:#4e3f87;\">Heroic Skills — Couture for Boss Fights</h2><div style=\"display:grid; grid-template-columns:1fr 1fr; gap:.5rem;\"><div style=\"border:1px dashed #c9d2f7; border-radius:.5rem; padding:.55rem; background:#fbfbff;\"><p style=\"margin: .25rem 0 0 0\"><strong>Dance of the Marionette!</strong></p><p style=\"margin: .25rem 0 0 0\">Spend <strong>2–6 Inventory Points</strong> with the <em>Inventory</em> action to build a <strong>Marionette</strong> (soldier-rank construct ally; joins at the <em>end</em> of the round if made mid-conflict). Level 10 statline, HP = <em>(base Might die × IP spent) + half your level</em>. No MP (uses yours), mindless (immune to <em>shaken</em>/<em>confused</em>), construct bonuses, and one chosen vulnerability. If it hits 0 HP (or you surrender/leave), it’s destroyed. You can dismiss it anytime.</p></div><div style=\"border:1px dashed #c9d2f7; border-radius:.5rem; padding:.55rem; background:#fbfbff;\"><p style=\"margin: .25rem 0 0 0\"><strong>Down to Size!</strong></p><p style=\"margin: .25rem 0 0 0\">Action; spend up to <strong>40 MP</strong>. For every <strong>20 MP</strong> spent, reduce a visible creature’s chosen Attribute die (DEX/INS/MGT/WLP) by one step (min d6). Stacks with other status effects and ends when the target <em>Recovers</em> (Villains can take the action).</p></div><div style=\"grid-column:1 / -1; border:1px dashed #c9d2f7; border-radius:.5rem; padding:.55rem; background:#fbfbff;\"><p style=\"margin: .25rem 0 0 0\"><strong>Extra Spindle!</strong></p><p style=\"margin: .25rem 0 0 0\">Before/after performing an action, spend <strong>MP in 10-MP steps</strong>. For each <strong>10 MP</strong>, choose one of your <strong>current Spell effects</strong>—your <strong>Model</strong> also gains that effect. The copied effect lasts as long as yours. (GM sets any hard cap; many tables mirror 40 MP.)</p></div></div></section><section style=\"border:1px solid #8aa0d8; background:#f7f8ff; padding:.75rem; border-radius:.6rem;\"><h2 style=\"margin:.25rem 0; color:#4e3f87;\">How to Play the Tailor (Simple Gameplan)</h2><ol style=\"margin:.25rem 0 .5rem 1.25rem;\"><li><strong>Designate a Model early</strong> with <em>Taking Measurements!</em> If you expect spread damage, switch Models mid-scene as needed (costs 20 MP).</li><li><strong>Soften spikes</strong> with <em>Shared Attribution!</em> Pay 1 Inventory Point to Life Thread the big hits, shave off <strong>[SL]</strong>, then split the rest.</li><li><strong>Punish focus fire</strong>: after you/your Model are harmed, route counter-damage via the <em>Taking Measurements!</em> rider. Your bond bonus and SL push that number.</li><li><strong>Feed your Model</strong>: with <em>Our Bond Is Unbreakable!</em>, pay Inventory for them (potions, tools, projects) and stack your bond value.</li><li><strong>Leverage style</strong>: wear/craft Rare items to juice <em>Looking Fabulous!</em> checks (social pressure, feints, intimidation by drip).</li><li><strong>Between scenes</strong>, use <em>Tailor-Made!</em> to move qualities and monetize extras.</li><li><strong>Boss plan</strong>: pick one—<em>Down to Size!</em> to neuter a key Attribute, <em>Extra Spindle!</em> to copy clutch buffs to your Model, or <em>Marionette</em> to add an extra body/positioning tool.</li></ol></section><section style=\"border:1px solid #8aa0d8; background:#ffffff; padding:.75rem; border-radius:.6rem;\"><h2 style=\"margin:.25rem 0; color:#4e3f87;\">Attributes & Build Advice (Quick)</h2><ul style=\"margin:.25rem 0 .5rem 1rem;\"><li><strong>Willpower</strong> fuels your <strong>MP</strong> budget for Measuring/Spindle/Down-size plays.</li><li><strong>Insight / Dexterity</strong> help your accuracy/defense line for attacks and objective checks.</li><li><strong>Inventory Points</strong> matter: Shared Attribution (1 IP), Marionette (2–6 IP), and covering your Model’s Inventory costs.</li><li><strong>Gear plan</strong>: chase Rare qualities you can transplant; keep a “donor” piece handy for <em>Tailor-Made!</em></li></ul></section><section style=\"border:2px dashed #8aa0d8; background:linear-gradient(180deg,#f3f5ff,#ffffff); padding:.75rem; border-radius:.8rem;\"><h2 style=\"margin:.25rem 0; color:#4e3f87;\">Pocket Card (Hand to Players)</h2><ol style=\"margin:.25rem 0 .5rem 1.25rem;\"><li><strong>Pick Model (20 MP)</strong> — start the damage-rider engine.</li><li><strong>When hit</strong>: spend <strong>1 IP</strong> → <em>Life Thread</em> → reduce by <strong>[SL]</strong>, then split evenly.</li><li><strong>Cover your Model’s Inventory</strong> up to <strong>[SL+1]</strong> and enjoy a bigger bond.</li><li><strong>Style checks</strong> get bonus = <strong># of Rare items</strong> (you + Model).</li><li><strong>Rest</strong>: move qualities with <em>Tailor-Made!</em>; craft/sell.</li><li><strong>Heroic picks</strong> (choose per fight): add a <em>Marionette</em>, <em>Down to Size!</em> an Attribute, or <em>Extra Spindle!</em> to copy your buffs to your Model.</li></ol></section></div>",
+      "class_facet": {
+        "LnuSUTFr6EkcYoLO": {
+          "facet_cost": "X IP",
+          "facet_description": "<p>Together with your Group, create your <strong>Marionette</strong>, a soldier-rank NPC of <strong>construct</strong> type, under your control. It counts as an ally and has its own turn during conflicts. If you surrender, fall unconscious, build a new Marionette, or your Marionette is reduced to 0 Hit Points, it is immediately <strong>destroyed</strong>. You may also willingly dismiss your Marionette before or after an action.</p>\n<p>You may perform the <strong>Inventory</strong> action and spend 2 to 6 Inventory Points to build your Marionette and make it join the current scene — if you use this Skill during a conflict, the Marionette joins the scene at the <strong>end</strong> of the current round. The Marionette has the following features:</p>\n<ul>\n  <li><strong>Level 10</strong> (gains the bonuses to Checks and Damage as per Step 8 of the Core Rulebook; it doesn’t gain EXP nor Level Up).</li>\n  <li><strong>Maximum Hit Points</strong> equal to 【(the Marionette’s base Might die size × Inventory Points spent to build the Marionette) + half your level】.</li>\n  <li><strong>No Mind Points</strong> — any MP cost incurred by the Marionette is taken from your MP.</li>\n  <li><strong>Mindless (Special Rule)</strong>: the Marionette is immune to the \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span></span> and confused status effects (doesn’t cost NPC Skill Points).</li>\n  <li><strong>Construct-type</strong> NPC bonuses: <strong>Resistance</strong> to \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span></span> damage; <strong>immunity</strong> to \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span> damage and the \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.JltwIqzHbBKhkD45\" data-id=\"JltwIqzHbBKhkD45\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\"><strong><span style=\"text-decoration: underline;\">Poisoned</span></strong></a></span></span> status; +2 Skill Points for customization.</li>\n  <li><strong>One vulnerability</strong> of your choice.</li>\n</ul>\n",
+          "facet_offensive": "",
+          "facet_target": "Self",
+          "id": "${item.id}",
+          "name": "Dance of the Marionette",
+          "uuid": "Actor.xFvYvNVewhgbS1I2.Item.LnuSUTFr6EkcYoLO"
+        },
+        "ckRk8P2Uc8YBL1wG": {
+          "facet_cost": "-",
+          "facet_description": "<p>During a <strong>rest</strong> scene, you may destroy an item with a quality to add that quality to an item of the same type that doesn’t have a quality. <strong>Rare Items</strong> created this way are worth <strong>【80 × Your Tailor Level at the time of Creation】</strong> extra zenit.</p>",
+          "facet_offensive": "",
+          "facet_target": "-",
+          "id": "${item.id}",
+          "name": "Tailor-Made",
+          "uuid": "Actor.xFvYvNVewhgbS1I2.Item.ckRk8P2Uc8YBL1wG"
+        },
+        "dtCsXxWbcnb4g9cR": {
+          "facet_cost": "-",
+          "facet_description": "<p>You and your <strong>Model</strong> gain a bonus equal to <strong>【Number of Equipped Rare Items】</strong> in <strong>【❗ Objective】</strong> actions and Opposed Checks related to your demeanor, appearance, or equipment.</p>",
+          "facet_offensive": "",
+          "facet_target": "-",
+          "id": "${item.id}",
+          "name": "Looking Fabulous!",
+          "uuid": "Actor.xFvYvNVewhgbS1I2.Item.dtCsXxWbcnb4g9cR"
+        },
+        "je4ZIUGT0KAm7nMO": {
+          "facet_cost": "-",
+          "facet_description": "<p>When you or your <strong>Model</strong> are threatened by an enemy’s damaging <strong>【⚔️ Attack】</strong>, <strong>【📕 Spell】</strong>, or <strong>other effect</strong>, either of you may spend 1 Inventory Point to sew a <strong>Life Thread</strong>. If you do, reduce any incoming damage by an amount equal to <strong>【SL】</strong> (before applying Affinities), then split the damage evenly. Damage taken in this way counts towards abilities that rely on a damage trigger.</p>",
+          "facet_offensive": "",
+          "facet_target": "-",
+          "id": "${item.id}",
+          "name": "Shared Attribution",
+          "uuid": "Actor.xFvYvNVewhgbS1I2.Item.je4ZIUGT0KAm7nMO"
+        },
+        "kOPeLfvgGgQimDI6": {
+          "facet_cost": "20 MP",
+          "facet_description": "<p>By using the <strong>【🥋 Equipment】</strong> action and spending 20 Mind Points, you can designate an ally you can see as your <strong>Model</strong> until they surrender, leave the scene, the current scene ends, or you designate another ally as the <strong>Model</strong>. The last enemy that dealt damage to you or your <strong>Model</strong> takes <strong>【SL + Your Bond Strength towards the other】</strong> extra damage from you and your Model’s Attacks and Spells.</p>",
+          "facet_offensive": "",
+          "facet_target": "One Ally",
+          "id": "${item.id}",
+          "name": "Taking Measurement",
+          "uuid": "Actor.xFvYvNVewhgbS1I2.Item.kOPeLfvgGgQimDI6"
+        },
+        "mGUFww2B4SE7t26P": {
+          "facet_cost": "-",
+          "facet_description": "<p>Your <strong>bond strength</strong> towards your Model gains a bonus equal to 【SL】. When your Model performs the <strong>Inventory</strong> action and would spend Inventory Points, you may pay up to 【SL + 1】 Inventory Points in their stead.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "-",
+          "id": "${item.id}",
+          "name": "Our Bond Is Unbreakable",
+          "uuid": "Actor.xFvYvNVewhgbS1I2.Item.mGUFww2B4SE7t26P"
+        },
+        "nOaiQBVKKhnPPYnB": {
+          "facet_cost": "X MP",
+          "facet_description": "<p>You may use an action and spend up to 40 Mind Points to choose one creature you can see. For every 20 Mind Points spent this way, choose one Attribute; the chosen Attribute’s die size is reduced by one, to a minimum of d6. This effect can stack with status effects and is independent. A Villain NPC may <strong>Recover</strong> to end this effect.</p>\n<ul>\n  <li>Dexterity</li>\n  <li>Insight</li>\n  <li>Might</li>\n  <li>Willpower</li>\n</ul>\n",
+          "facet_offensive": "",
+          "facet_target": "X Creature",
+          "id": "${item.id}",
+          "name": "Down to Size",
+          "uuid": "Actor.xFvYvNVewhgbS1I2.Item.nOaiQBVKKhnPPYnB"
+        },
+        "rlT5Yn1gp6eCaeC4": {
+          "facet_cost": "",
+          "facet_description": "<p>Before or after performing an action during your turn, you may spend up to <strong>X Mind Points</strong>. For every <strong>10 Mind Points</strong> spent this way, you may have one <strong>Spell</strong> effect that is affecting you also affect your <strong>Model</strong> (the effects applied this way expire together with yours).</p>",
+          "facet_offensive": "",
+          "facet_target": "X Creatur",
+          "id": "${item.id}",
+          "name": "Extra Spindle",
+          "uuid": "Actor.xFvYvNVewhgbS1I2.Item.rlT5Yn1gp6eCaeC4"
+        }
+      },
+      "class_heroicSkill": {
+        "LnuSUTFr6EkcYoLO": {
+          "id": "${item.id}",
+          "name": "Dance of the Marionette",
+          "skill_cost": "X IP",
+          "skill_description": "<p>Together with your Group, create your <strong>Marionette</strong>, a soldier-rank NPC of <strong>construct</strong> type, under your control. It counts as an ally and has its own turn during conflicts. If you surrender, fall unconscious, build a new Marionette, or your Marionette is reduced to 0 Hit Points, it is immediately <strong>destroyed</strong>. You may also willingly dismiss your Marionette before or after an action.</p>\n<p>You may perform the <strong>Inventory</strong> action and spend 2 to 6 Inventory Points to build your Marionette and make it join the current scene — if you use this Skill during a conflict, the Marionette joins the scene at the <strong>end</strong> of the current round. The Marionette has the following features:</p>\n<ul>\n  <li><strong>Level 10</strong> (gains the bonuses to Checks and Damage as per Step 8 of the Core Rulebook; it doesn’t gain EXP nor Level Up).</li>\n  <li><strong>Maximum Hit Points</strong> equal to 【(the Marionette’s base Might die size × Inventory Points spent to build the Marionette) + half your level】.</li>\n  <li><strong>No Mind Points</strong> — any MP cost incurred by the Marionette is taken from your MP.</li>\n  <li><strong>Mindless (Special Rule)</strong>: the Marionette is immune to the \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span></span> and confused status effects (doesn’t cost NPC Skill Points).</li>\n  <li><strong>Construct-type</strong> NPC bonuses: <strong>Resistance</strong> to \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span></span> damage; <strong>immunity</strong> to \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span> damage and the \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.JltwIqzHbBKhkD45\" data-id=\"JltwIqzHbBKhkD45\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\"><strong><span style=\"text-decoration: underline;\">Poisoned</span></strong></a></span></span> status; +2 Skill Points for customization.</li>\n  <li><strong>One vulnerability</strong> of your choice.</li>\n</ul>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.xFvYvNVewhgbS1I2.Item.LnuSUTFr6EkcYoLO"
+        },
+        "nOaiQBVKKhnPPYnB": {
+          "id": "${item.id}",
+          "name": "Down to Size",
+          "skill_cost": "X MP",
+          "skill_description": "<p>You may use an action and spend up to 40 Mind Points to choose one creature you can see. For every 20 Mind Points spent this way, choose one Attribute; the chosen Attribute’s die size is reduced by one, to a minimum of d6. This effect can stack with status effects and is independent. A Villain NPC may <strong>Recover</strong> to end this effect.</p>\n<ul>\n  <li>Dexterity</li>\n  <li>Insight</li>\n  <li>Might</li>\n  <li>Willpower</li>\n</ul>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.xFvYvNVewhgbS1I2.Item.nOaiQBVKKhnPPYnB"
+        },
+        "rlT5Yn1gp6eCaeC4": {
+          "id": "${item.id}",
+          "name": "Extra Spindle",
+          "skill_cost": "",
+          "skill_description": "<p>Before or after performing an action during your turn, you may spend up to <strong>X Mind Points</strong>. For every <strong>10 Mind Points</strong> spent this way, you may have one <strong>Spell</strong> effect that is affecting you also affect your <strong>Model</strong> (the effects applied this way expire together with yours).</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.xFvYvNVewhgbS1I2.Item.rlT5Yn1gp6eCaeC4"
+        }
+      },
+      "class_lore": "<blockquote><p>Being a <strong>Tailor</strong> is more than practicing the art of sewing, mending outfits and armors alike! Tailors are master at intertwining their threads, both material and spiritual. The Bonds they forge are stronger than ever before!</p></blockquote>",
+      "class_skill": {
+        "ckRk8P2Uc8YBL1wG": {
+          "id": "${item.id}",
+          "name": "Tailor-Made",
+          "skill_cost": "-",
+          "skill_description": "<p>During a <strong>rest</strong> scene, you may destroy an item with a quality to add that quality to an item of the same type that doesn’t have a quality. <strong>Rare Items</strong> created this way are worth <strong>【80 × Your Tailor Level at the time of Creation】</strong> extra zenit.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.xFvYvNVewhgbS1I2.Item.ckRk8P2Uc8YBL1wG"
+        },
+        "dtCsXxWbcnb4g9cR": {
+          "id": "${item.id}",
+          "name": "Looking Fabulous!",
+          "skill_cost": "-",
+          "skill_description": "<p>You and your <strong>Model</strong> gain a bonus equal to <strong>【Number of Equipped Rare Items】</strong> in <strong>【❗ Objective】</strong> actions and Opposed Checks related to your demeanor, appearance, or equipment.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.xFvYvNVewhgbS1I2.Item.dtCsXxWbcnb4g9cR"
+        },
+        "je4ZIUGT0KAm7nMO": {
+          "id": "${item.id}",
+          "name": "Shared Attribution",
+          "skill_cost": "-",
+          "skill_description": "<p>When you or your <strong>Model</strong> are threatened by an enemy’s damaging <strong>【⚔️ Attack】</strong>, <strong>【📕 Spell】</strong>, or <strong>other effect</strong>, either of you may spend 1 Inventory Point to sew a <strong>Life Thread</strong>. If you do, reduce any incoming damage by an amount equal to <strong>【SL】</strong> (before applying Affinities), then split the damage evenly. Damage taken in this way counts towards abilities that rely on a damage trigger.</p>",
+          "skill_maxLevel": 5,
+          "skill_type": "Passive",
+          "uuid": "Actor.xFvYvNVewhgbS1I2.Item.je4ZIUGT0KAm7nMO"
+        },
+        "kOPeLfvgGgQimDI6": {
+          "id": "${item.id}",
+          "name": "Taking Measurement",
+          "skill_cost": "20 MP",
+          "skill_description": "<p>By using the <strong>【🥋 Equipment】</strong> action and spending 20 Mind Points, you can designate an ally you can see as your <strong>Model</strong> until they surrender, leave the scene, the current scene ends, or you designate another ally as the <strong>Model</strong>. The last enemy that dealt damage to you or your <strong>Model</strong> takes <strong>【SL + Your Bond Strength towards the other】</strong> extra damage from you and your Model’s Attacks and Spells.</p>",
+          "skill_maxLevel": 4,
+          "skill_type": "Active",
+          "uuid": "Actor.xFvYvNVewhgbS1I2.Item.kOPeLfvgGgQimDI6"
+        },
+        "mGUFww2B4SE7t26P": {
+          "id": "${item.id}",
+          "name": "Our Bond Is Unbreakable",
+          "skill_cost": "-",
+          "skill_description": "<p>Your <strong>bond strength</strong> towards your Model gains a bonus equal to 【SL】. When your Model performs the <strong>Inventory</strong> action and would spend Inventory Points, you may pay up to 【SL + 1】 Inventory Points in their stead.</p>\n",
+          "skill_maxLevel": 2,
+          "skill_type": "Passive",
+          "uuid": "Actor.xFvYvNVewhgbS1I2.Item.mGUFww2B4SE7t26P"
+        }
+      },
+      "flavor_text": "<p style=\"text-align: center;\"><span style=\"font-family: Amiri\"><em>Come with me! Let's</em></span></p><p style=\"text-align: center;\"><span style=\"font-family: Amiri\"><em>unravel the threads</em></span></p><p style=\"text-align: center;\"><span style=\"font-family: Amiri\"><em>of our destiny!</em></span></p>",
+      "martialArmor_equippable": false,
+      "martialMelee_equippable": false,
+      "martialRanged_equippable": false,
+      "martialShield_equippable": false,
+      "name": "Tailor",
+      "project_performable": true,
+      "ritual_performable": false
+    },
+    "statusEffects": {},
+    "template": "hoxC3HFCtMYGScIo",
+    "templateSystemUniqueVersion": 504201233
+  },
+  "type": "character"
+}

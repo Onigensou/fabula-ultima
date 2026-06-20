@@ -1,0 +1,62 @@
+{
+  "_id": "WYUnQzanvuduKdSy",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1758202844927,
+    "duplicateSource": "Item.8g79dzk64n7b0kIb",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "dhfFJlHW6EIUd4UD",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/ShiningRomanticaTSkill2.png",
+  "name": "Mirage Blitz",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "check_bonus": "0",
+      "class": "Illusionist",
+      "cost": "10 MP",
+      "damage_bonus": "10",
+      "defense_target_type": "def",
+      "description": "<p>You command all your active Phantasms to charge at a single enemy with incredible speed, shattering on impact. They all share a single Magic Check. If they hit, the target suffers <strong>[HR + 10]</strong> <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:rgb(153,153,153)0 0 4px;\"><strong><span style=\"text-decoration: underline;\">Physical </span></strong></a></span></span>damage <strong>per Phantasm</strong> and <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\"><strong><span style=\"text-decoration: underline;\">Dazed </span></strong></a></span></span>. Damage dealt by this spell <strong>ignores Resistances</strong>.</p><hr contenteditable=\"false\"><p><strong>Skill Enhancement Lv. 20</strong> ― Damage becomes <strong>15</strong> per Phantasm.</p><p><strong>Skill Enhancement Lv. 40</strong> ― Damage becomes <strong>20</strong> per Phantasm.</p>",
+      "duration": "Instantaneous",
+      "heroic_requirement": "",
+      "isCheck": true,
+      "isFacet": true,
+      "isHeroic": false,
+      "isOffensiveSpell": true,
+      "isReaction": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Mirage Blitz",
+      "optional_params": {},
+      "rolled_atr1": "INS",
+      "rolled_atr2": "WLP",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "Range",
+      "skill_target": "One Creature",
+      "skill_type": "Spell",
+      "type_damage": "Physical",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "WYUnQzanvuduKdSy"
+  },
+  "type": "equippableItem"
+}

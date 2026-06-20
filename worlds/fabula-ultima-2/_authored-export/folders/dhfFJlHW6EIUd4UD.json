@@ -1,0 +1,19 @@
+{
+  "_id": "dhfFJlHW6EIUd4UD",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1758202271708,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "rpPOSjJwHOJs3mb4",
+  "name": "Illusionist Spell",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

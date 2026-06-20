@@ -1,0 +1,359 @@
+{
+  "_id": "tB1aPVmJEHhFU0ok",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1747418536651,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "c9JwmtX8FfpdNPy3",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1775334455347,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "base_defense",
+          "mode": 4,
+          "priority": 1,
+          "value": "${isEquipped ? (isMartial ? (item_baseDef * 1) : 0) : 0}$"
+        },
+        {
+          "key": "bonus_defense",
+          "mode": 2,
+          "priority": 2,
+          "value": "${isEquipped ? (isMartial ? 0 : (item_def_bonus * 1)) : 0}$"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "core": {
+          "overlay": false
+        },
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "c9JwmtX8FfpdNPy3",
+          "originalParentId": "tB1aPVmJEHhFU0ok",
+          "originalUuid": "Item.tB1aPVmJEHhFU0ok.ActiveEffect.c9JwmtX8FfpdNPy3"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-def-up",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUp.webp",
+      "name": "Armor DEF",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    },
+    {
+      "_id": "dSdsoAkW19DIUrfW",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1775334455380,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "base_magic_defense",
+          "mode": 4,
+          "priority": 1,
+          "value": "${isEquipped ? (isMartial ? (item_baseMdef * 1) : 0) : 0}$"
+        },
+        {
+          "key": "bonus_magic_defense",
+          "mode": 2,
+          "priority": 2,
+          "value": "${isEquipped ? (isMartial ? 0 : (item_mdef_bonus * 1)) : 0}$"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "core": {
+          "overlay": false
+        },
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "dSdsoAkW19DIUrfW",
+          "originalParentId": "tB1aPVmJEHhFU0ok",
+          "originalUuid": "Item.tB1aPVmJEHhFU0ok.ActiveEffect.dSdsoAkW19DIUrfW"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-mdef-up",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUpStack.webp",
+      "name": "Armor MDEF",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.4.2"
+    },
+    "fabula-ultima-companion": {
+      "armorDefMdefAeMassPatchBackup_v1": {
+        "createdAt": 1777705755897,
+        "effects": [
+          {
+            "changes": [
+              {
+                "key": "defense",
+                "mode": 2,
+                "priority": 1,
+                "value": "${isEquipped ? (isMartial ? 0 : item_def_bonus) : 0}$"
+              },
+              {
+                "key": "defense",
+                "mode": 4,
+                "priority": 2,
+                "value": "${isEquipped ? (isMartial ? item_baseDef : 0) : 0}$"
+              }
+            ],
+            "id": "c9JwmtX8FfpdNPy3",
+            "name": "Armor DEF"
+          },
+          {
+            "changes": [
+              {
+                "key": "magic_defense",
+                "mode": 2,
+                "priority": 1,
+                "value": "${isEquipped ? (isMartial ? 0 : item_mdef_bonus) : 0}$"
+              },
+              {
+                "key": "magic_defense",
+                "mode": 4,
+                "priority": 2,
+                "value": "${isEquipped ? (isMartial ? item_baseMdef : 0) : 0}$"
+              }
+            ],
+            "id": "dSdsoAkW19DIUrfW",
+            "name": "Armor MDEF"
+          }
+        ],
+        "itemName": "Hope Battlesuit",
+        "itemUuid": "Item.tB1aPVmJEHhFU0ok",
+        "parentName": "",
+        "parentType": "World"
+      },
+      "defMdefHelperKeyPatchBackup_v1": {
+        "createdAt": 1777708465775,
+        "effects": [
+          {
+            "changes": [
+              {
+                "key": "defense",
+                "mode": 2,
+                "priority": 1,
+                "value": "${isEquipped ? (isMartial ? 0 : item_def_bonus) : 0}$"
+              },
+              {
+                "key": "defense",
+                "mode": 4,
+                "priority": 2,
+                "value": "${isEquipped ? (isMartial ? item_baseDef : 0) : 0}$"
+              }
+            ],
+            "id": "c9JwmtX8FfpdNPy3",
+            "name": "Armor DEF"
+          },
+          {
+            "changes": [
+              {
+                "key": "magic_defense",
+                "mode": 2,
+                "priority": 1,
+                "value": "${isEquipped ? (isMartial ? 0 : item_mdef_bonus) : 0}$"
+              },
+              {
+                "key": "magic_defense",
+                "mode": 4,
+                "priority": 2,
+                "value": "${isEquipped ? (isMartial ? item_baseMdef : 0) : 0}$"
+              }
+            ],
+            "id": "dSdsoAkW19DIUrfW",
+            "name": "Armor MDEF"
+          }
+        ],
+        "itemId": "tB1aPVmJEHhFU0ok",
+        "itemName": "Hope Battlesuit",
+        "itemType": "armor",
+        "itemUuid": "Item.tB1aPVmJEHhFU0ok",
+        "owner": {
+          "actor": "",
+          "actorUuid": "",
+          "source": "World Item"
+        }
+      }
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "armor",
+        "fromTemplate": "5Z0gKtN5R51ebJOa",
+        "itemId": "tB1aPVmJEHhFU0ok",
+        "itemName": "Hope Battlesuit",
+        "pickedOldProps": {
+          "cost": "2000",
+          "def_bonus": "",
+          "defense": "14",
+          "defense_include_dex": false,
+          "initiative": "0",
+          "magic_defense": "0",
+          "magic_defense_include_ins": true,
+          "martial": true,
+          "mdef_bonus": "1",
+          "shield": false
+        },
+        "ts": 1769647435740
+      }
+    }
+  },
+  "folder": "D1OgeGHLjJ9dSkxS",
+  "img": "https://img.altema.jp/valkyrieconnect/sobi/ico/2496.jpg",
+  "name": "Hope Battlesuit",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3
+  },
+  "sort": 1000000,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "aquatic_ef": "100",
+      "automaton_ef": "100",
+      "avian_ef": "100",
+      "beast_ef": "100",
+      "category": "Arcane",
+      "celestial_ef": "100",
+      "check_bonus": "0",
+      "construct_ef": "100",
+      "damage_bonus": "0",
+      "demiHuman_ef": "100",
+      "demon_ef": "100",
+      "description": "<p>If a <strong>villian</strong> is persent on the scene. The first time an you or an ally is reduce to 0 HP, You can choose to not surrender or sacrifice and Heal back to crisis score. This effect trigger once per conflict.</p>",
+      "dragon_ef": "100",
+      "elemental_ef": "100",
+      "enforcer_ef": "100",
+      "fey_ef": "100",
+      "flora_ef": "100",
+      "fungus_ef": "100",
+      "golem_ef": "100",
+      "gorger_ef": "100",
+      "hand_slots": "One-handed",
+      "human_ef": "100",
+      "humanoid_ef": "100",
+      "insect_ef": "100",
+      "ip_cost": "",
+      "isEquipped": false,
+      "isKey": false,
+      "isMartial": true,
+      "isModule": false,
+      "isRelatedItem": false,
+      "isSet": true,
+      "isUnique": false,
+      "item_baseDef": "14",
+      "item_baseMdef": "0",
+      "item_cost": "2000",
+      "item_def_bonus": "0",
+      "item_mdef_bonus": "1",
+      "item_quantity": "1",
+      "item_rarity": "Common",
+      "item_type": "armor",
+      "mimic_ef": "100",
+      "monster_ef": "100",
+      "name": "Hope Battlesuit",
+      "optional_params": {},
+      "plant_ef": "100",
+      "reptilian_ef": "100",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "set_description": "<p><strong>【Set Bonus】</strong></p><p><strong>2-Piece</strong></p><ul><li><p>While in <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span>, your attack ignore resist and immunity.</p></li><li><p><strong>【Adrenaline】SL+3</strong></p><hr></li></ul><p><strong>3-Piece</strong></p><ul><li><p>When you are the <strong>last </strong>person in the party, you gain <strong>All Basic Buff</strong></p></li><li><p><span class=\"fontstyle0\">When your allies <strong>surrender</strong>, you gain <strong>1 turn activation</strong> or <strong>2 turn activation</strong> if they <strong>sacrifice</strong>. This effect doesn't stack and only the highest one apply.</span></p></li></ul>",
+      "set_name": "Last Hope",
+      "soldier_ef": "100",
+      "spirit_ef": "100",
+      "type_damage": "Physical",
+      "undead_ef": "100",
+      "vehicle_ef": "100",
+      "weapon_range": "Melee"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "tB1aPVmJEHhFU0ok"
+  },
+  "type": "equippableItem"
+}

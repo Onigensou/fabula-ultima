@@ -1,0 +1,19 @@
+{
+  "_id": "CsoK6dCz8B4ZOdcY",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": null,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "2.4.4"
+  },
+  "color": "#f7733b",
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "Location",
+  "sort": 400000,
+  "sorting": "a",
+  "type": "JournalEntry"
+}

@@ -1,0 +1,1396 @@
+{
+  "_id": "IawEhYQkzLFhR83x",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1730829543470,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.5.0"
+    },
+    "theatre": {
+      "baseinsert": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Player%20Character/PC_Portrait/Halsten/Halsten_portrait_a.png",
+      "disabledefault": false,
+      "emotes": {
+        "angry": {
+          "insert": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Player%20Character/PC_Portrait/Halsten/Halsten_portrait_a.png"
+        },
+        "annoyed": {
+          "insert": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Player%20Character/PC_Portrait/Halsten/Halsten_portrait_a.png"
+        },
+        "awe-struck": {
+          "insert": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Player%20Character/PC_Portrait/Halsten/Halsten_portrait_a.png"
+        },
+        "blushing": {
+          "insert": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Player%20Character/PC_Portrait/Halsten/Halsten_portrait_a.png"
+        },
+        "carefree": {
+          "insert": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Player%20Character/PC_Portrait/Halsten/Halsten_portrait_a.png"
+        },
+        "confused": {
+          "insert": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Player%20Character/PC_Portrait/Halsten/Halsten_portrait_a.png"
+        },
+        "cry": {
+          "insert": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Player%20Character/PC_Portrait/Halsten/Halsten_cover_crop_s.png"
+        },
+        "custom1": {
+          "custom": true,
+          "image": "modules/theatre/app/graphics/emotes/explosion.png",
+          "insert": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Player%20Character/PC_Portrait/Halsten/Halsten_portrait_b.png",
+          "label": "Rune\n                                        \n                                    \n                                        \n                                    ",
+          "name": "custom1"
+        },
+        "custom2": {
+          "custom": true,
+          "image": "modules/theatre/app/graphics/emotes/shield.png",
+          "insert": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Player%20Character/PC_Portrait/Halsten/Halsten_cover_crop_s.png",
+          "label": "Cover\n                                        \n                                    ",
+          "name": "custom2"
+        },
+        "dissatisfied": {
+          "insert": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Player%20Character/PC_Portrait/Halsten/Halsten_portrait_a.png"
+        },
+        "dizzy": {
+          "insert": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Player%20Character/PC_Portrait/Halsten/Halsten_cover_crop_s.png"
+        },
+        "frown": {
+          "insert": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Player%20Character/PC_Portrait/Halsten/Halsten_portrait_a.png"
+        },
+        "frustrated": {
+          "insert": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Player%20Character/PC_Portrait/Halsten/Halsten_portrait_a.png"
+        },
+        "grin": {
+          "insert": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Player%20Character/PC_Portrait/Halsten/Halsten_portrait_a.png"
+        },
+        "happy": {
+          "insert": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Player%20Character/PC_Portrait/Halsten/Halsten_portrait_a.png"
+        },
+        "happytears": {
+          "insert": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Player%20Character/PC_Portrait/Halsten/Halsten_portrait_a.png"
+        },
+        "hearts": {
+          "insert": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Player%20Character/PC_Portrait/Halsten/Halsten_cover_crop_s.png"
+        },
+        "idea": {
+          "insert": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Player%20Character/PC_Portrait/Halsten/Halsten_portrait_a.png"
+        },
+        "innocent": {
+          "insert": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Player%20Character/PC_Portrait/Halsten/Halsten_cover_crop_s.png"
+        },
+        "kiss": {
+          "insert": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Player%20Character/PC_Portrait/Halsten/Halsten_cover_crop_s.png"
+        },
+        "laughing": {
+          "insert": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Player%20Character/PC_Portrait/Halsten/Halsten_portrait_a.png"
+        },
+        "laughingsquint": {
+          "insert": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Player%20Character/PC_Portrait/Halsten/Halsten_cover_crop_s.png"
+        },
+        "meh": {
+          "insert": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Player%20Character/PC_Portrait/Halsten/Halsten_portrait_a.png"
+        },
+        "mischevious": {
+          "insert": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Player%20Character/PC_Portrait/Halsten/Halsten_portrait_a.png"
+        },
+        "panic": {
+          "insert": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Player%20Character/PC_Portrait/Halsten/Halsten_cover_crop_s.png"
+        },
+        "playful": {
+          "insert": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Player%20Character/PC_Portrait/Halsten/Halsten_cover_crop_s.png"
+        },
+        "rofl": {
+          "insert": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Player%20Character/PC_Portrait/Halsten/Halsten_portrait_a.png"
+        },
+        "sad": {
+          "insert": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Player%20Character/PC_Portrait/Halsten/Halsten_cover_crop_s.png"
+        },
+        "scared": {
+          "insert": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Player%20Character/PC_Portrait/Halsten/Halsten_portrait_a.png"
+        },
+        "serious": {
+          "insert": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Player%20Character/PC_Portrait/Halsten/Halsten_portrait_b.png"
+        },
+        "sleeping": {
+          "insert": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Player%20Character/PC_Portrait/Halsten/Halsten_portrait_a.png"
+        },
+        "smile": {
+          "insert": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Player%20Character/PC_Portrait/Halsten/Halsten_portrait_a.png"
+        },
+        "smug": {
+          "insert": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Player%20Character/PC_Portrait/Halsten/Halsten_portrait_a.png"
+        },
+        "speechless": {
+          "insert": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Player%20Character/PC_Portrait/Halsten/Halsten_portrait_a.png"
+        },
+        "surprised": {
+          "insert": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Player%20Character/PC_Portrait/Halsten/Halsten_portrait_a.png"
+        },
+        "thinking": {
+          "insert": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Player%20Character/PC_Portrait/Halsten/Halsten_portrait_a.png"
+        },
+        "tongue": {
+          "insert": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Player%20Character/PC_Portrait/Halsten/Halsten_cover_crop_s.png"
+        },
+        "wink": {
+          "insert": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Player%20Character/PC_Portrait/Halsten/Halsten_portrait_a.png"
+        },
+        "worried": {
+          "insert": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Player%20Character/PC_Portrait/Halsten/Halsten_portrait_a.png"
+        }
+      },
+      "name": "",
+      "optalign": "top",
+      "settings": {
+        "emote": "smile",
+        "textcolor": null,
+        "textflyin": null,
+        "textfont": null,
+        "textsize": null,
+        "textstanding": null
+      }
+    }
+  },
+  "folder": "Cj3PsdCco0e7gpZF",
+  "img": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Player%20Character/PC_Portrait/Halsten/Halsten_portrait_a.png",
+  "items": [
+    {
+      "_id": "DWjzn82kqVGZhNrI",
+      "_stats": {
+        "compendiumSource": "Item.kn1Nz9oGWrncwu7z",
+        "coreVersion": "12.343",
+        "createdTime": 1732769397881,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.kn1Nz9oGWrncwu7z"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "YORShE1NmdPqz17e",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Mikhail/Mikhail_Standard.png",
+      "name": "Mikhail",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "active_name": "Forage",
+          "dice": "Show",
+          "flavor_text": "<blockquote>\n<p>A young boy from the village of Lesnimir, he&rsquo;s clumsy and lacks confidence, but he has a good heart and is always ready to help others.</p>\n</blockquote>",
+          "name": "Mikhail",
+          "passive_name": "Errand Boy",
+          "support_active": "<p>Gain <strong>1 IP.</strong></p>",
+          "support_passive": "<p>Whenever you perform the <strong>【Inventory】</strong>Action. Gain&nbsp;<strong>1 turn activation.</strong></p>\n<p>This ability triggers once per round.</p>"
+        },
+        "template": "lUpHsEfBDEY3BeNq",
+        "templateSystemUniqueVersion": 4245463866,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "klHIF4DKDGOC9pXD",
+      "_stats": {
+        "compendiumSource": "Item.dHS9b0tj8FnO0aOQ",
+        "coreVersion": "12.343",
+        "createdTime": 1730796525013,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.dHS9b0tj8FnO0aOQ"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "cSLVeZ3TavIe40F1",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cloak.png",
+      "name": "Traveler's Cloak",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 2
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "acess": false,
+          "cost": "900",
+          "def_bonus": "+2",
+          "defense": "0",
+          "defense_include_dex": true,
+          "description": "<ul>\n<li><strong>Hazards</strong> becomes 50% less effective on you.<hr></li>\n</ul>\n<p><strong>【Set Bonus】</strong></p>\n<p><strong>&nbsp; &nbsp; &nbsp; &nbsp;2 Piece</strong></p>\n<ul>\n<li style=\"list-style-type: none;\">\n<ul>\n<li>During <strong>Rest </strong>scene, you recover 50% of your maximum IP <em>(Even if you aren't in town)</em><br><hr></li>\n</ul>\n<p><strong>3 Piece</strong></p>\n<ul>\n<li>Once during your&nbsp; turn, You can perform the <strong>【item】</strong>action as a <strong>free action</strong>.<hr></li>\n</ul>\n</li>\n</ul>",
+          "initiative": "0",
+          "magic_defense": "0",
+          "magic_defense_include_ins": true,
+          "martial": false,
+          "mdef_bonus": "0",
+          "name": "Traveler's Cloak",
+          "set_name": "Eternal Traveler",
+          "shield": false
+        },
+        "template": "5Z0gKtN5R51ebJOa",
+        "templateSystemUniqueVersion": 2929120018,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "ow3Wc6ojhWRUEI1t",
+      "_stats": {
+        "compendiumSource": "Item.WNinVwRHGs85lOOj",
+        "coreVersion": "12.343",
+        "createdTime": 1732259922186,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.WNinVwRHGs85lOOj"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "SytaFVloXb4Fnryp",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Rope.gif",
+      "name": "Dusk Star",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "category": "Flail",
+          "check": "Check",
+          "check_bonus": "0",
+          "cost": "750",
+          "damage_bonus": "4",
+          "description": "<ul>\n<li>You are immune to <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/MAGIC%20ATTACK%20DOWN.png\" alt=\"\" width=\"21\" height=\"21\"><strong>@UUID[JournalEntry.ImFKpNNGjstom7Q9]{Shaken}</strong></li>\n</ul>",
+          "hand_slots": "One-handed",
+          "martial": false,
+          "name": "Dusk Star",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "type_damage": "Dark",
+          "weapon_range": "Melee"
+        },
+        "template": "gIRU9XGqYeMBwBN9",
+        "templateSystemUniqueVersion": 2814471460,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "P0s8TRVrauMQ2zwM",
+      "_stats": {
+        "compendiumSource": "Item.p5JpfwoS2auCgI4b",
+        "coreVersion": "12.343",
+        "createdTime": 1732257066655,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.p5JpfwoS2auCgI4b"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "uiQQtrd8zEyqhHsr",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Knife.gif",
+      "name": "Spell Sever",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 2
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "category": "Dagger",
+          "check": "Check",
+          "check_bonus": "1",
+          "cost": "850",
+          "damage_bonus": "4",
+          "description": "<ul>\n<li>When you hit a creature with this weapon, if the attack had a single target, you may choose a single spell with a <strong>duration</strong> of Scene affecting the target and end its effects on that creature.</li>\n</ul>",
+          "hand_slots": "One-handed",
+          "martial": false,
+          "name": "Spell Sever",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "INS",
+          "set_name": "",
+          "type_damage": "Dark",
+          "weapon_range": "Melee"
+        },
+        "template": "gIRU9XGqYeMBwBN9",
+        "templateSystemUniqueVersion": 2814471460,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "S9Fgw2eaez1XHacn",
+      "_stats": {
+        "compendiumSource": "Item.hPNGofTLZQVvhtbf",
+        "coreVersion": "12.343",
+        "createdTime": 1733600861611,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.hPNGofTLZQVvhtbf"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "5uQIy5BCy7UEVfcT",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/but.png",
+      "name": "Skull Orb",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "acess": true,
+          "cost": "950",
+          "def_bonus": "",
+          "defense": "0",
+          "defense_include_dex": false,
+          "description": "<ul>\n<li>When you apply or re-apply a <strong>Status Conditions</strong> to an enemy, it takes&nbsp;<strong>5&nbsp;</strong><strong>Dark&nbsp;</strong>damage.</li>\n</ul>",
+          "details_roller": "Show",
+          "initiative": "0",
+          "magic_defense": "0",
+          "magic_defense_include_ins": false,
+          "mdef_bonus": "",
+          "name": "Skull Orb",
+          "set_name": ""
+        },
+        "template": "r0yZpLPAK9VXhM2p",
+        "templateSystemUniqueVersion": 1853581118,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "Z7OCSnqJNUIakazT",
+      "_stats": {
+        "compendiumSource": "Item.0Q0LLVyzDqkW8zV6",
+        "coreVersion": "12.343",
+        "createdTime": 1732258685466,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.0Q0LLVyzDqkW8zV6"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "yqDpXcujLeO6M7Yt",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gun.png",
+      "name": "Spellshot",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "category": "Firearm",
+          "check": "Check",
+          "check_bonus": "1",
+          "cost": "400",
+          "damage_bonus": "8",
+          "description": "<ul>\n<li>Attacks with this weapon target <strong>Magic Defense.</strong></li>\n</ul>",
+          "hand_slots": "One-handed",
+          "martial": true,
+          "name": "Spellshot",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "INS",
+          "set_name": "",
+          "type_damage": "Physical",
+          "weapon_range": "Ranged"
+        },
+        "template": "gIRU9XGqYeMBwBN9",
+        "templateSystemUniqueVersion": 2814471460,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "ZF47ljmMZ431Y2Hv",
+      "_stats": {
+        "compendiumSource": "Item.0vF825X8e5EqfBx8",
+        "coreVersion": "12.343",
+        "createdTime": 1732271902747,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.0vF825X8e5EqfBx8"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "TKsKO5bSd6lWa3UE",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/expkod.png",
+      "name": "Hive Dart",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "category": "Thrown",
+          "check": "Check",
+          "check_bonus": "0",
+          "cost": "2300",
+          "damage_bonus": "4",
+          "description": "<ul>\n<li>Each target hit by this weapon suffers <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/ATK%20DOUBLE%20DOWN.png\" alt=\"\" width=\"21\" height=\"21\"><strong>@UUID[JournalEntry.JltwIqzHbBKhkD45]{Poisoned}</strong></li>\n</ul>",
+          "hand_slots": "One-handed",
+          "martial": false,
+          "name": "Hive Dart",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "type_damage": "Poison",
+          "weapon_range": "Ranged"
+        },
+        "template": "gIRU9XGqYeMBwBN9",
+        "templateSystemUniqueVersion": 2814471460,
+        "unique": false
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Halsten",
+  "ownership": {
+    "9sFgrDy4MvAgoCmQ": 3,
+    "default": 3
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 0,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          }
+        }
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Halsten",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Player%20Character/PC_Portrait/Halsten/Halsten_portrait_a.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 0,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "activeEffects": {},
+    "props": {
+      "accessory2_name": "",
+      "accessory_name": "",
+      "arcanism": false,
+      "armor_details": "<p>+3 Def from Dodge.</p>",
+      "armor_mod": "4",
+      "armor_name": "Combat Tunic",
+      "attack_accuracy_mod_all": "0",
+      "attack_accuracy_mod_melee": "0",
+      "attack_accuracy_mod_range": "0",
+      "attack_accuracy_mod_spell": "0",
+      "backstory": "<p>ฮาลสเตน ชายผู้ใช้พลังจากอักษรรูน ศาสตร์เวทย์มนตร์ที่ตกทอดมาจากชนชาติ แร็กนวาลดร์ ชนชาตินักรบแห่งแดนเหนือผู้บูชาเทพเจ้า ชนชาติที่ถูกจักรวรรดิวาราเคียแย่งชิงดินแดนไป</p>\n<p>.</p>\n<p>เขาเป็นสปายที่เข้ามาในเขตการปกครองของจักรวรรดิวาราเคีย เก็บข้อมูลสำคัญและส่งกลับไปยังพื้นที่ของแร็กนวาลดร์ที่อยู่ห่างออกไปในมหาสมุทรที่ล้อมรอบทวีป พวกของฮาลสเตนกระจายตัวกันอย่างหลวมๆ ในทุกเขตของจักรวรรดิ เขามีความสามารถในการปลอมตัวและแฝงเร้นเข้ากับผู้คนในจักรวรรดิ แต่ก็ใช่ว่าจะเคลื่อนไหวได้โดยง่าย การที่จักรวรรดิเคร่งครัดเรื่องการใช้เวทย์มนตร์ ทำให้ฮาลสเตนต้องปกปิดความสามารถนี้ และหากมีใครรู้ ก็ต้องปิดปากเสีย</p>\n<p>.</p>\n<p>อักษรรูนของเขานั้นถูกเขียนขึ้นโดยผงจากผลึกเวทย์มนตร์ที่เดิมทีมาจากแดนใต้ เป็นผลึกที่สกัดมาจากแร่ธาตุที่รวมพลังของอิกดราเซีย ผงเวทย์นี้จะสูญเสียพลังไปทุกครั้งที่เขาใช้เวทย์มนตร์ แต่ก็สามารถฟื้นพลังเวทย์ของมันได้โดยการถ่ายโอนพลังงานจากเทคโนโลยีของจักรวรรดิ เขาจะใช้พลังของอักษรรูนเมื่อสถานการณ์คับขันที่สุดเท่านั้น</p>\n<p>.</p>\n<p>ฮาลสเตนเป็นพวกหัวไว ฉลาดแกมโกงและไม่เลือกวิธีการ หลายครั้งที่เขาต้องสวมหน้ากากเป็นชาววาราเคีย ทำตัวให้เป็นที่เชื่อใจของผู้คนในพื้นที่ แต่เขาไม่ไว้ใจใครโดยเฉพาะคนที่เกี่ยวข้องกับจักรวรรดิ แม้แต่ชาวบ้านทั่วไป เพราะเขาเชื่อว่าด้วยการข่มขู่จากจักรวรรดิ ไม่ว่าคนที่ดีขนาดไหนก็ต้องจำยอมขายความลับให้จักรวรรดิอย่างแน่นอน</p>\n<p>.</p>\n<p>การเปิดเผยความลับคือการเปิดเผยจุดอ่อน และเขามาที่วาราเคียเพื่อหาจุดอ่อนของจักรวรรดิ ฮาลสเตนเชื่อว่า ไม่ว่าสิ่งหนึ่งจะแข็งแกร่งมั่นคงเพียงใด หากเล่นงานที่จุดอ่อนในเวลาที่เหมาะสม สิ่งนั้นก็จะสูญเสียสเถียรภาพและล่มสลายลง</p>\n<p>.</p>\n<p>ลึกๆแล้วฮาลสเตนหวังที่จะเชื่อใจผู้คนและใช้ชีวิตเยี่ยงเพื่อนร่วมโลก ทว่าโดยประสปการณ์และหน้าที่ ความรู้สึกนี้ก็เป็นเพียงความรู้สึกชั่วครู่ยามให้ผ่อนคลายไปพลางๆเท่านั้น</p>",
+      "bond_1": "Fjord",
+      "bond_2": "Reefresia",
+      "bond_3": "Mikail",
+      "bond_4": "Ragnvaldr",
+      "bond_5": "Cradle of Hope",
+      "bond_6": "Eir",
+      "chanter_volume_mp_header": "MP",
+      "chanter_volume_mp_high": 30,
+      "chanter_volume_mp_low": 10,
+      "chanter_volume_mp_medium": 20,
+      "chanter_volume_target_high": "Every enemy who can hear you.",
+      "chanter_volume_target_low": "Yourself <b>or</b> another creature you can see who can hear you.",
+      "chanter_volume_target_medium": "Every ally who can hear you.",
+      "char_identity": "Ragnvaldr Spy",
+      "check_roller": "Roll!",
+      "chimerism": false,
+      "class_list": {
+        "0": {
+          "$deleted": false,
+          "benefit": "ip",
+          "class_name": "Rogue",
+          "level": "10"
+        },
+        "1": {
+          "$deleted": false,
+          "benefit": "ip",
+          "class_name": "Symbolist",
+          "level": "6"
+        },
+        "2": {
+          "$deleted": false,
+          "benefit": "ip",
+          "class_name": "Wayfarer",
+          "level": "4"
+        },
+        "3": {
+          "$deleted": false,
+          "benefit": "ip",
+          "class_name": "Tinkerer",
+          "level": "5"
+        }
+      },
+      "clock_brainwave": "0",
+      "clock_trade": "0",
+      "cooking_roller": "🔪Cook!",
+      "current_hp": "65",
+      "current_ip": "1",
+      "current_mp": "65",
+      "damage_receiving_mod_air": "0",
+      "damage_receiving_mod_all": "0",
+      "damage_receiving_mod_bolt": "0",
+      "damage_receiving_mod_dark": "0",
+      "damage_receiving_mod_earth": "0",
+      "damage_receiving_mod_fire": "0",
+      "damage_receiving_mod_ice": "0",
+      "damage_receiving_mod_light": "0",
+      "damage_receiving_mod_melee": "0",
+      "damage_receiving_mod_physical": "0",
+      "damage_receiving_mod_poison": "0",
+      "damage_receiving_mod_range": "0",
+      "dex_base": "10",
+      "dex_current": 10,
+      "draw_card": "Draw",
+      "draw_card_copy1": "Use",
+      "elementalism": false,
+      "emotion_1_1": "1",
+      "emotion_1_2": "",
+      "emotion_1_3": "",
+      "emotion_2_1": "1",
+      "emotion_2_2": "1",
+      "emotion_2_3": "",
+      "emotion_3_1": "1",
+      "emotion_3_2": "",
+      "emotion_3_3": "",
+      "emotion_4_1": "",
+      "emotion_4_2": "1",
+      "emotion_4_3": "",
+      "emotion_5_1": "2",
+      "emotion_5_2": "",
+      "emotion_5_3": "2",
+      "emotion_6_1": "1",
+      "emotion_6_2": "1",
+      "emotion_6_3": "",
+      "entropism": false,
+      "experience": "10",
+      "experience_ui": "0",
+      "fp": "9",
+      "id": "IawEhYQkzLFhR83x",
+      "img": "https://assets.forge-vtt.com/5f846484909236cb82e01b38/Player%20Character/PC_Portrait/Halsten/Halsten_portrait_a.png",
+      "init_penalty": "0",
+      "ins_base": "8",
+      "ins_current": 8,
+      "inventory_label": "💼 Inventory",
+      "inventory_list": {},
+      "isAwake": false,
+      "isClarity": false,
+      "isDazed": false,
+      "isEnergized": false,
+      "isEnraged": false,
+      "isFocus": false,
+      "isPoisoned": false,
+      "isShaken": false,
+      "isSlow": false,
+      "isStrong": false,
+      "isSwift": false,
+      "isWeak": false,
+      "is_martialarmor": false,
+      "itemContainer1": {
+        "DWjzn82kqVGZhNrI": {
+          "active_description": "<p>Gain <strong>1 IP.</strong></p>",
+          "id": "DWjzn82kqVGZhNrI",
+          "name": "Mikhail",
+          "passive_description": "<p>Whenever you perform the <strong>【Inventory】</strong>Action. Gain&nbsp;<strong>1 turn activation.</strong></p>\n<p>This ability triggers once per round.</p>",
+          "uuid": "Actor.IawEhYQkzLFhR83x.Item.DWjzn82kqVGZhNrI"
+        }
+      },
+      "itemContainer2": {
+        "klHIF4DKDGOC9pXD": {
+          "armor_description": "<p><ul>\n<li><strong>Hazards</strong> becomes 50% less effective on you.<hr></li>\n</ul>\n<p><strong>【Set Bonus】</strong></p>\n<p><strong>&nbsp; &nbsp; &nbsp; &nbsp;2 Piece</strong></p>\n<ul>\n<li style=\"list-style-type: none;\">\n<ul>\n<li>During <strong>Rest </strong>scene, you recover 50% of your maximum IP <em>(Even if you aren't in town)</em><br><hr></li>\n</ul>\n<p><strong>3 Piece</strong></p>\n<ul>\n<li>Once during your&nbsp; turn, You can perform the <strong>【item】</strong>action as a <strong>free action</strong>.<hr></li>\n</ul>\n</li>\n</ul></p>",
+          "armor_martial": false,
+          "id": "klHIF4DKDGOC9pXD",
+          "name": "Traveler's Cloak",
+          "roll": "",
+          "uuid": "Actor.IawEhYQkzLFhR83x.Item.klHIF4DKDGOC9pXD"
+        }
+      },
+      "itemContainer4": {
+        "S9Fgw2eaez1XHacn": {
+          "acess_description": "<ul>\n<li>When you apply or re-apply a <strong>Status Conditions</strong> to an enemy, it takes&nbsp;<strong>5&nbsp;</strong><strong>Dark&nbsp;</strong>damage.</li>\n</ul>",
+          "id": "S9Fgw2eaez1XHacn",
+          "name": "Skull Orb",
+          "roll": "",
+          "uuid": "Actor.IawEhYQkzLFhR83x.Item.S9Fgw2eaez1XHacn"
+        }
+      },
+      "key_list": {},
+      "level": "25",
+      "magic_defense_mod": "1",
+      "main_attrib_1": "INS",
+      "main_attrib_2": "DEX",
+      "main_details": "<p>Serpent Fang ; Twin Dagger</p>",
+      "main_hand": "Spell Sever",
+      "main_hand_attack": "",
+      "max_hp": 65,
+      "max_ip": 14,
+      "max_mp": 65,
+      "memories_list": {
+        "0": {
+          "$deleted": false,
+          "emotion_x": "admiration",
+          "emotion_y": "Loyalty",
+          "emotion_z": "",
+          "memory_x": "Ulfar",
+          "relationship_x": ""
+        },
+        "1": {
+          "$deleted": false,
+          "emotion_x": "",
+          "emotion_y": "Loyalty",
+          "emotion_z": "",
+          "memory_x": "Odin",
+          "relationship_x": ""
+        },
+        "2": {
+          "$deleted": false,
+          "emotion_x": "",
+          "emotion_y": "",
+          "emotion_z": "",
+          "memory_x": "",
+          "relationship_x": ""
+        }
+      },
+      "memory": "Memories",
+      "mig_base": "8",
+      "mig_current": 8,
+      "name": "Halsten",
+      "normal_spell_list": {
+        "0": {
+          "$deleted": false,
+          "class": "Symbolist",
+          "cost": "",
+          "description": "<p>When you create this <strong>symbol</strong>, choose a damage type: <strong>air, bolt, dark, earth, fire, ice, light, </strong>or <strong>poison.</strong> When the creature bearing this <strong>symbol </strong>deals damage to one or more creatures, if you can see the creature bearing this<strong> symbol</strong>, you may spend an amount of Mind Points equal to <strong>one third of the total damage being inflicted to those creatures.</strong> (including any sources of extra damage). If you do, all damage dealt this way changes type to the type chosen when you created this <strong>symbol.</strong></p>",
+          "duration": "Unlimited durations until destroyed",
+          "roll": "",
+          "spell_name": "Symbol of Elements",
+          "target": "One Creature"
+        },
+        "1": {
+          "$deleted": false,
+          "class": "Symbolist",
+          "cost": "",
+          "description": "<p>When you create this <strong>symbol</strong>, choose a status effect: <strong>dazed, shaken, slow,</strong> or <strong>weak. </strong>Then, <strong>choose one option</strong>: the creature bearing this <strong>symbol</strong> gains immunity to the chosen status effect; <strong>or</strong> the creature bearing this <strong>symbol</strong> loses immunity to the chosen status effect and cannot gain it</p>",
+          "duration": "Unlimited durations until destroyed",
+          "roll": "",
+          "spell_name": "Symbol of Flux",
+          "target": "One Creature"
+        },
+        "2": {
+          "$deleted": false,
+          "class": "Symbolist",
+          "cost": "",
+          "description": "<p>When you create this <strong>symbol</strong>, choose a damage type: <strong>air, bolt, dark, earth, fire, ice, light,</strong> or<strong> poison</strong>. The creature bearing this <strong>symbol</strong> gains Resistance to the chosen damage type.</p>",
+          "duration": "Unlimited durations until destroyed",
+          "roll": "",
+          "spell_name": "Symbol of Protection",
+          "target": "One Creature"
+        },
+        "3": {
+          "$deleted": false,
+          "class": "Symbolist",
+          "cost": "",
+          "description": "<p>If the creature bearing this <strong>symbol</strong> is about to be reduced to 0 Hit Points, they may destroy this <strong>symbol</strong>: if they do, they are instead reduced to exactly 1 Hit Point.</p>",
+          "duration": "Unlimited durations until destroyed",
+          "roll": "",
+          "spell_name": "Symbol of Rebirth",
+          "target": "One Creature"
+        },
+        "4": {
+          "$deleted": false,
+          "class": "Tinkerer",
+          "cost": "5xT",
+          "description": "<p>&nbsp;You project your soul outside your body and direct it to surround the targets, shielding them from dangerous magic. Until this spell ends, each target may treat their <strong>Magic Defense</strong> as being <strong>equal to 12</strong> against any effects that target it (they are still free to use their normal Defense score if higher than 12).</p>\n<p>This score increases to 13 if you are level 20 or higher, or to 14 if you are level 40 or higher.</p>",
+          "duration": "Scene",
+          "roll": "",
+          "spell_name": "Aura",
+          "target": "Up to Three Creatures"
+        },
+        "5": {
+          "$deleted": false,
+          "class": "Tinkerer",
+          "cost": "5xT",
+          "description": "<p>&nbsp;You weave magical energy and protect the targets from the fury of the elements. Choose a damage type: <strong>air, bolt, earth, fire</strong> or<strong> ice. </strong>Until this spell ends, each target gains <strong>Resistance</strong> against the chosen damage type.</p>",
+          "duration": "Scene",
+          "roll": "",
+          "spell_name": "Elemental Shroud",
+          "target": "Up to Three Creatures"
+        },
+        "6": {
+          "$deleted": false,
+          "class": "Tinkerer",
+          "cost": "20",
+          "description": "<p>Choose any number of creatures you can see: each of them suffers <strong>Slow</strong>.</p>",
+          "duration": "Instantaneous",
+          "roll": "",
+          "spell_name": "Area Status",
+          "target": "Special"
+        },
+        "7": {
+          "$deleted": false,
+          "class": "Tinkerer",
+          "cost": "10",
+          "description": "<p>&nbsp;The target suffers <strong>Dazed</strong> and <strong>Weak</strong>.</p>",
+          "duration": "Instantaneous",
+          "roll": "",
+          "spell_name": "Curse XL",
+          "target": "One Creature"
+        },
+        "8": {
+          "$deleted": false,
+          "class": "Tinkerer",
+          "cost": "20",
+          "description": "<p>At the end of each of their turns, the target may choose one option: perform a <strong>free attack; or</strong> immediately perform the <strong>Spel</strong>l action for free, casting a spell with a <strong>total MP cost equal to or lower than 10 </strong>(paying its MP cost). Once the same creature has performed any two options this way, this spell ends.</p>",
+          "duration": "Scene",
+          "roll": "",
+          "spell_name": "Acceleration",
+          "target": "One Creature"
+        },
+        "9": {
+          "$deleted": false,
+          "class": "Tinkerer",
+          "cost": "20",
+          "description": "<p>You allow a creature to focus their vital energy into accomplishing what they previously could not. Choose one Attribute: <strong>Dexterity, Insight, Might, </strong>or <strong>Willpower</strong>. Until this spell ends, the target treats the chosen Attribute as if it were one die size higher (up to a maximum of <strong>d12</strong>)</p>",
+          "duration": "Scene",
+          "roll": "",
+          "spell_name": "Awaken",
+          "target": "One Creature"
+        },
+        "10": {
+          "$deleted": false,
+          "class": "Symbolist",
+          "cost": "",
+          "description": "<p>Checks performed to examine or locate the creature bearing this symbol, as well as Accuracy Checks and Magic Checks for attacks and offensive spells (rr) that include the creature bearing this <strong>symbol </strong>among their targets, gain a +2 bonus. If an attack or spell targets multiple creatures bearing this <strong>symbol</strong>, the effect will be <strong>cumulative.</strong></p>",
+          "duration": "Unlimited durations until destroyed",
+          "roll": "",
+          "spell_name": "Symbol of Truth",
+          "target": "One Creature"
+        },
+        "11": {
+          "$deleted": false,
+          "class": "Symbolist",
+          "cost": "",
+          "description": "<p>As long as the creature bearing this <strong>symbol</strong> is in <strong>Crisis</strong>, any of that creature&rsquo;s enemies who are able to see them must include them among the targets of their attacks and offensive spells, if possible.</p>",
+          "duration": "Unlimited durations until destroyed",
+          "roll": "",
+          "spell_name": "Symbol of Enmity",
+          "target": "One Creature"
+        }
+      },
+      "notes_text": "<ul>\n<li>พรรคพวกของฮาลสเตนถูกชายปริศนาที่ใช้พลังจากเครเดิลออฟโฮปฆ่าตาย ( ที่ผู้เล่นรู้คือ ยาริค เป็นคนฆ่า แต่ฮาลสเตนไม่เคยเห็นหน้ายาริค ถ้าเขาพบกับ'ชายที่ใช้พลังของเครเดิลออฟโฮป' เขาจะทำเป็นหวาดกลัวแต่ถ้าแน่ใจแล้วว่าใช่และมีโอกาสจะเชือดทิ้งซะ )</li>\n<li>ฮาลสเตนอาจมีพรรคพวกอยู่ที่เมืองของวีร่าด้วย และอาจรู้ข่าวลือเรื่องแม่มดและจากคนๆนั้น แต่เขาไม่ได้ข่าวมาพักใหญ่ๆแล้ว ตอนนี้เลยมีข้อสงสัยเกี่ยวกับเมืองนั้นมากเป็นพิเศษ</li>\n</ul>",
+      "off_attrib_1": "SHI",
+      "off_attrib_2": "SHI",
+      "off_base_mod_1": "0",
+      "off_base_mod_2": "0",
+      "off_hand": "",
+      "off_hand_attack": "",
+      "off_mod_1": 0,
+      "off_mod_2": 0,
+      "origin": "Ragnvaldr",
+      "passive_list": {
+        "0": {
+          "$deleted": false,
+          "passive_description": "<p><sub>Requirements: you must have acquired the<strong> Cheap Shot</strong> Skill (see Rogue).</sub></p>\n<p><sub>Choose a status effect among <strong>dazed, shaken, slow,</strong> and <strong>weak (or custom status effect).</strong></sub></p>\n<hr>\n<p>After one or more enemies you can see lose Hit Points due to damage dealt by one of your allies, if at least one of them is <strong>Vulnerable</strong> to the type of damage dealt by your ally, you may choose one of those enemies. If you do, that enemy loses an amount of&nbsp; Hit Points equal to<strong>【half your level + (twice your Skill Level in Cheap Shot) </strong>and also suffer the chosen status effect.</p>\n<hr>\n<p>&nbsp;Once you use this Skill during a conflict, you may not use it again until the beginning of your next turn.</p>\n<hr>\n<p><strong>[ Target lose 21 HP and suffer Blind ]</strong></p>",
+          "passive_name": "Hidden Weapon Style",
+          "passive_roll": "",
+          "passive_source": "heroic_skill"
+        },
+        "1": {
+          "$deleted": false,
+          "passive_description": "<p>If you are away from prying eyes, you may use the <strong>Skill</strong> action and spend 1 Fabula Point to disguise yourself as another creature of humanoid size and shape. If the creature is someone you had a chance to meet, observe or research, you may also adopt their voice and mannerisms.</p>\n<hr>\n<p>Your disguise will reliably fool any <strong>soldier</strong>-rank creature, but <strong>elite</strong>- and <strong>champion</strong> rank creatures might see through it due to a failed Check or <strong>opportunity</strong>. If a <strong>Villain</strong> is present on the scene with you, they may spend 1 Ultima Point to reveal your true identity through sheer coincidence or superior intuition.</p>",
+          "passive_name": "Hundred Faces",
+          "passive_roll": "",
+          "passive_source": "quirk"
+        },
+        "2": {
+          "$deleted": false,
+          "passive_description": "<p>&nbsp;Target : Yourself or one ally</p>\n<hr>\n<p>You spend your time looking for useful items; describe how, then roll <strong>1d6.</strong><br><strong>&nbsp;1. Ouch! </strong>You recover <strong>half</strong> the normal amount of HP and MP during this rest.<br>&nbsp;<strong>2. Not what I was looking for...</strong> The target regains <strong>2 Inventory Points.</strong><br><strong>&nbsp;3-5. Hoho, this can be useful!</strong> The target regains <strong>3 Inventory Points.</strong><br><strong>6. Jackpot! </strong>The target regains <strong>3 Inventory Points</strong>, and you also find an amount of zenit equal to <strong>【your character's level &times; 50】</strong></p>",
+          "passive_name": "Exploration",
+          "passive_roll": "",
+          "passive_source": "camp activity"
+        },
+        "3": {
+          "$deleted": false,
+          "passive_description": "<p>Target : Yourself</p>\n<hr>\n<p>Once before the next rest, you may perform an additional action on your turn during a conflict scene. This action <strong>must</strong> be used to perform the <strong>Equipment, Hinder,</strong> or <strong>Inventory</strong> action.</p>",
+          "passive_name": "Sleep Soundly",
+          "passive_roll": "",
+          "passive_source": "camp activity"
+        },
+        "4": {
+          "$deleted": true,
+          "passive_description": "",
+          "passive_name": "",
+          "passive_roll": "",
+          "passive_source": ""
+        },
+        "5": {
+          "$deleted": false,
+          "passive_description": "<p>Choose <strong>two different</strong> <strong>spells</strong> with a<strong> target</strong> of \"Up to three creatures\" from among those found in the <strong>Elementalist, Entropist,</strong> and <strong>Spiritist</strong> lists; these two spells may come&nbsp;<br>from the same list or from different lists.</p>\n<p>You develop a <strong>magisphere</strong> for each of these spells (this <strong>does not</strong> count as \"learning\" or \"knowing\" these spells).</p>\n<p>You may perform the <strong>Inventory</strong> action and spend 2 Inventory Points to immediately perform the <strong>Spell</strong> action for free, casting one of the spells you have developed a <strong>magisphere</strong> for. The spell follows the normal rules (including MP costs and Magic Checks), and the Magic Check for spells cast through <strong>magispheres</strong> is <strong>【INS + WLP】</strong></p>\n<hr>\n<p><strong>[ Aura , Elemental Shroud ]</strong></p>",
+          "passive_name": "Basic Magisphere",
+          "passive_roll": "",
+          "passive_source": ""
+        },
+        "6": {
+          "$deleted": false,
+          "passive_description": "<p>Choose <strong>two different spells</strong> from the list of <strong>NPC</strong> spells (see page <strong>310</strong>); you may not choose the <strong>Devastation</strong> spell. You develop a <strong>magisphere</strong> for each spell chosen this way (this <strong>does not</strong> count as \"learning\" or \"knowing\" these spells), and must customize the chosen spells as required.</p>\n<hr>\n<p><strong>[ Area Status , Cursed XL ]</strong></p>",
+          "passive_name": "Advanced Magisphere",
+          "passive_roll": "",
+          "passive_source": ""
+        },
+        "7": {
+          "$deleted": false,
+          "passive_description": "<p>Choose<strong> two different spells </strong>from among those found in the <strong>Elementalist, Entropist, </strong>and <strong>Spiritist</strong> lists, and/or the list of <strong>NPC spells</strong>; these two spells may come from the same list or from different lists. You may not choose the <strong>Devastatio</strong>n spell.</p>\n<p>You develop a <strong>magisphere</strong> for each spell chosen this way (this&nbsp;<br><strong>does not </strong>count as \"learning\" or \"knowing\" these spells), and must customize any <strong>NPC spells</strong> chosen this way as required.</p>\n<hr>\n<p><strong>[ Acceleration , Awaken ]</strong></p>",
+          "passive_name": "Superior Magisphere",
+          "passive_roll": "",
+          "passive_source": ""
+        },
+        "8": {
+          "$deleted": false,
+          "passive_description": "<p><strong>Trickster God's Whisper : 1 per trigger</strong></p>\n<hr>\n<p>Trigger when you or your allies inflict <strong>negative condition effect</strong> on enemy creature.&nbsp; ( 1 per each action )</p>",
+          "passive_name": "Trickster God's Whisper",
+          "passive_roll": "",
+          "passive_source": ""
+        }
+      },
+      "place_card_vanguard": "Place",
+      "populate_deck": "Populate",
+      "pronouns": "He / Him",
+      "reaction_list": {},
+      "relationship_1": "this guy just face whatever danger for their friend",
+      "relationship_2": "this girl just face everything  for her  faith",
+      "relationship_3": "",
+      "relationship_4": "",
+      "relationship_5": "",
+      "relationship_6": "",
+      "reset_cards": "Resets",
+      "resolve_set": "Resolve",
+      "resource_value_1": "0",
+      "resource_value_2": "0",
+      "resource_value_3": "0",
+      "reveal_cards": "Reveal",
+      "ritualism": false,
+      "rolled_atr1": "MIG",
+      "rolled_atr2": "WLP",
+      "shield_type": "",
+      "shield_value": "0",
+      "shuffle_deck": "Shuffle",
+      "skill_accuracy": "0",
+      "skill_attack_damage": "0",
+      "skill_hp": "0",
+      "skill_ip": "0",
+      "skill_list": {
+        "0": {
+          "$deleted": false,
+          "class": "Rogue",
+          "description": "<p>At the start of a conflict, you may spend 10 Mind Points. If you do, <strong>choose one option</strong> and apply it before the start of the first round: perform a <strong>free attack</strong> with a weapon you have equipped; <strong>or</strong> perform a <strong>Hinder</strong> or <strong>Objective</strong> action. You also gain a bonus equal to <strong>【SL】</strong> to all Checks you perform as part of the chosen option.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "High Speed"
+        },
+        "1": {
+          "$deleted": false,
+          "class": "Rogue",
+          "description": "<p>When you hit a creature with an attack, if the attack <strong>only</strong> targeted that creature and they are suffering from<strong> one or more status effects</strong>, you may have it deal extra damage equal to <strong>【SL(5) + (the number of status effects on that creature, multiplied by two if your attack's High Roll is not equal to 0)</strong></p>",
+          "level": "5",
+          "roll": "",
+          "skill_name": "Cheap Shot"
+        },
+        "2": {
+          "$deleted": false,
+          "class": "Rogue",
+          "description": "<p>You may use an action and spend 1 Fabula Point to vanish from the current scene, reappearing whenever you want during a <strong>different</strong> scene in which another Player Character is present. Describe how you escaped and miraculously got here!</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "See you later"
+        },
+        "3": {
+          "$deleted": false,
+          "class": "Symbolist",
+          "description": "<p>Each time you acquire this Skill, you learn <strong>two symbols</strong> (see next page).</p>\n<hr>\n<p>You may have up to <strong>【SL(3) + 1】 symbols active at the same time</strong>; if you create more while at your limit, you must first choose and destroy some of your previous<strong> symbols</strong>.</p>\n<hr>\n<p>You may perform the <strong>Inventory</strong> action and spend <strong>2 Inventory </strong>Points to create a <strong>symbol </strong>you have learned and choose one option: apply that <strong>symbol</strong> to yourself; or apply that <strong>symbol</strong> to an ally you can see; <strong>or</strong> perform a <strong>free attack</strong> with a weapon you have equipped. This attack deals no damage, but you apply a copy of the chosen<strong> symbol </strong>to each enemy hit by the attack (each copy counts as a separate <strong>symbol </strong>towards your limit or <strong>【SL(3)+ 1】</strong> active <strong>symbols</strong>).</p>",
+          "level": "3",
+          "roll": "",
+          "skill_name": "Symbolism"
+        },
+        "4": {
+          "$deleted": true,
+          "class": "",
+          "description": "<p>After an enemy <strong>hits or misses you with a melee attack,</strong> if the Result of their Accuracy Check was an <strong>even number</strong>, you may perform a <strong>free attack</strong> against that enemy (after their attack has been fully resolved). This attack must be a <strong>melee</strong> attack and must have that enemy as its <strong>only </strong>target; treat your <strong>High Roll (HR)</strong> as 0 when calculating damage dealt by this attack.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": ""
+        },
+        "5": {
+          "$deleted": true,
+          "class": "",
+          "description": "<p>When you hit one or more targets with a <strong>melee</strong> attack that would deal damage, you may have the attack deal no damage. If you do, <strong>choose one option</strong>: inflict <strong>dazed</strong> on each target hit by the attack;<strong> or</strong> inflict <strong>weak </strong>on each target hit by the attack; or each target hit by the attack loses 【SL &times; 10】 Mind Points. Describe your maneuver!</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": ""
+        },
+        "6": {
+          "$deleted": false,
+          "class": "Wayfarer",
+          "description": "<p>You recover <strong>【SL(3)】</strong> Inventory Points after each <strong>travel roll </strong>(see page 106).</p>",
+          "level": "3",
+          "roll": "",
+          "skill_name": "Resourceful"
+        },
+        "7": {
+          "$deleted": false,
+          "class": "Wayfarer",
+          "description": "<p>&nbsp;When you<strong> rest </strong>inside an inn or tavern, you may ask the Game Master up to <strong>【SL】</strong> questions about your surroundings and the people who live here; the Game Master will answer truthfully and you describe how you gathered the information.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Tavern Talk"
+        },
+        "8": {
+          "$deleted": false,
+          "class": "Wayfarer",
+          "description": "<p>You reduce the die rolled for your<strong> travel rolls</strong> by one size (to a minimum of <strong>d6</strong>).<br>&nbsp;If multiple characters have this Skill, the effects are <strong>not</strong> cumulative.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Well-Traveled"
+        },
+        "9": {
+          "$deleted": false,
+          "class": "Rogue",
+          "description": "<p>&nbsp;As long as you have no<strong> shields</strong> and no <strong>martial armor</strong> equipped, your Defense score is increased by <strong>【SL(3)】</strong></p>",
+          "level": "3",
+          "roll": "",
+          "skill_name": "Dodge"
+        },
+        "10": {
+          "$deleted": true,
+          "class": "",
+          "description": "<p>You gain a bonus equal to <strong>【SL】</strong> to all Accuracy Checks with <strong>melee</strong> weapons.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Melee Weapon Mastery"
+        },
+        "11": {
+          "$deleted": false,
+          "class": "Symbolist",
+          "description": "<p>You gain the ability to perform Rituals of the <strong>Ritualism</strong> discipline; <strong>additionally</strong>, you may use <strong>Ritualism</strong> to create <strong>sight-based illusions</strong>.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Mirage"
+        },
+        "12": {
+          "$deleted": true,
+          "class": "",
+          "description": "",
+          "level": "1",
+          "roll": "",
+          "skill_name": ""
+        },
+        "13": {
+          "$deleted": true,
+          "class": "",
+          "description": "",
+          "level": "1",
+          "roll": "",
+          "skill_name": ""
+        },
+        "14": {
+          "$deleted": false,
+          "class": "Symbolist",
+          "description": "<p>You always know the exact direction in which to find any creature bearing one of your <strong>symbols</strong>, as long as that creature is within <strong>2 travel days</strong> of your position.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Symbolic Connection"
+        },
+        "15": {
+          "$deleted": true,
+          "class": "",
+          "description": "",
+          "level": "1",
+          "roll": "",
+          "skill_name": ""
+        },
+        "16": {
+          "$deleted": true,
+          "class": "",
+          "description": "",
+          "level": "1",
+          "roll": "",
+          "skill_name": ""
+        },
+        "17": {
+          "$deleted": true,
+          "class": "",
+          "description": "",
+          "level": "1",
+          "roll": "",
+          "skill_name": ""
+        },
+        "18": {
+          "$deleted": false,
+          "class": "Tinkerer",
+          "description": "<p>Once per conflict scene, if you are in <strong>Crisis</strong>, you may perform an additional action on your turn. This action <strong>must</strong> be the <strong>Inventory</strong> action</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Emergency Item"
+        },
+        "19": {
+          "$deleted": false,
+          "class": "Tinkerer",
+          "description": "<p>When you first acquire this Skill, choose a gadget type: <strong>alchemy, infusions</strong> or <strong>magitech</strong> (see next four pages). You gain its basic benefits.</p>\n<p>Whenever you take this Skill again, choose one option: you gain the <strong>basic benefits</strong> of a new gadget type; <strong>or</strong> you gain the <strong>advanced benefits</strong> of a gadget type whose basic benefits you already obtained; <strong>or</strong> you gain the <strong>superior benefits</strong> of a gadget type whose <strong>advanced benefits</strong> you already obtained.</p>\n<hr>\n<p><strong>[ Basic + Advanced + Superioir Magisphere ]</strong></p>\n<p><strong>[&nbsp;</strong></p>",
+          "level": "3",
+          "roll": "",
+          "skill_name": "Gadget"
+        },
+        "20": {
+          "$deleted": true,
+          "class": "Tinkerer",
+          "description": "",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Basic Magisphere (Gadget)"
+        },
+        "21": {
+          "$deleted": true,
+          "class": "",
+          "description": "",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Advanced Magisphere"
+        },
+        "22": {
+          "$deleted": true,
+          "class": "",
+          "description": "",
+          "level": "1",
+          "roll": "",
+          "skill_name": ""
+        },
+        "23": {
+          "$deleted": true,
+          "class": "",
+          "description": "",
+          "level": "1",
+          "roll": "",
+          "skill_name": ""
+        },
+        "24": {
+          "$deleted": false,
+          "class": "Tinkerer",
+          "description": "<p>When you create a potion or magisphere whose effects restore HP and/or MP, each restored amount is increased by 【SL &times; 5】.<br>&nbsp;When you create an elemental shard, potion or magisphere that deals damage, that item deals 【SL】 extra damage.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Secret Formula"
+        }
+      },
+      "skill_mp": "0",
+      "spiritism": false,
+      "theme": "Vulnerability",
+      "uuid": "Actor.IawEhYQkzLFhR83x",
+      "weapon1_base_damage": "0",
+      "weapon1_base_mod": "0",
+      "weapon1_damage": 0,
+      "weapon1_damagetype": "Dagger",
+      "weapon1_mod": 0,
+      "weapon2_damagetype": "-",
+      "weapon_list": {
+        "P0s8TRVrauMQ2zwM": {
+          "id": "P0s8TRVrauMQ2zwM",
+          "name": "Spell Sever",
+          "roll": "",
+          "type": "Dagger",
+          "uuid": "Actor.IawEhYQkzLFhR83x.Item.P0s8TRVrauMQ2zwM",
+          "weapon_description": "<p><ul>\n<li>When you hit a creature with this weapon, if the attack had a single target, you may choose a single spell with a <strong>duration</strong> of Scene affecting the target and end its effects on that creature.</li>\n</ul></p>",
+          "weapon_hand": "One-handed",
+          "weapon_martial": false,
+          "weapon_range": "Melee"
+        },
+        "Z7OCSnqJNUIakazT": {
+          "id": "Z7OCSnqJNUIakazT",
+          "name": "Spellshot",
+          "roll": "",
+          "type": "Firearm",
+          "uuid": "Actor.IawEhYQkzLFhR83x.Item.Z7OCSnqJNUIakazT",
+          "weapon_description": "<p><ul>\n<li>Attacks with this weapon target <strong>Magic Defense.</strong></li>\n</ul></p>",
+          "weapon_hand": "One-handed",
+          "weapon_martial": true,
+          "weapon_range": "Ranged"
+        },
+        "ZF47ljmMZ431Y2Hv": {
+          "id": "ZF47ljmMZ431Y2Hv",
+          "name": "Hive Dart",
+          "roll": "",
+          "type": "Thrown",
+          "uuid": "Actor.IawEhYQkzLFhR83x.Item.ZF47ljmMZ431Y2Hv",
+          "weapon_description": "<p><ul>\n<li>Each target hit by this weapon suffers <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/ATK%20DOUBLE%20DOWN.png\" alt=\"\" width=\"21\" height=\"21\"><strong>@UUID[JournalEntry.JltwIqzHbBKhkD45]{Poisoned}</strong></li>\n</ul></p>",
+          "weapon_hand": "One-handed",
+          "weapon_martial": false,
+          "weapon_range": "Ranged"
+        },
+        "ow3Wc6ojhWRUEI1t": {
+          "id": "ow3Wc6ojhWRUEI1t",
+          "name": "Dusk Star",
+          "roll": "",
+          "type": "Flail",
+          "uuid": "Actor.IawEhYQkzLFhR83x.Item.ow3Wc6ojhWRUEI1t",
+          "weapon_description": "<p><ul>\n<li>You are immune to <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/MAGIC%20ATTACK%20DOWN.png\" alt=\"\" width=\"21\" height=\"21\"><strong>@UUID[JournalEntry.ImFKpNNGjstom7Q9]{Shaken}</strong></li>\n</ul></p>",
+          "weapon_hand": "One-handed",
+          "weapon_martial": false,
+          "weapon_range": "Melee"
+        }
+      },
+      "wlp_base": "8",
+      "wlp_current": 8,
+      "your_class_name": "Runic Stalker",
+      "zenit": "2647",
+      "zero_effect_description": "<p style=\"text-align: center;\"><strong><em>\" ᚴᛁᚿᚿᛁᚿᚴ ᚠᛆᚦᛁᛧ !!\"&nbsp; </em></strong></p>\n<p style=\"text-align: center;\"><strong><em>Trickster Father's Betrayal</em></strong></p>\n<p><em>Halsten conjure thick fog out of his prepared magical runes and vanishes, surrounding his foes with cursed rune of Trickster God, exposing all foe's lifeforce to any dangers, causing them to become Vulnerable to everything inflicted on them.&nbsp;</em></p>\n<hr>\n<p>Choose <strong>any number of Creatures</strong> on the scene as target of this effect, Until the end of this scene, if the target would suffer damage of <strong>any</strong> type, they are instead treated as if they&nbsp; were <strong>Vulnerable</strong> to that damage. Once that happens, this effect ends on that Creature.</p>",
+      "zero_effect_label": "💬 Zero Effect",
+      "zero_label": "💥 Zero Power : ",
+      "zero_power_name": "GINNINGFADIR",
+      "zero_power_value": "0",
+      "zero_trigger_description": "<p><strong>Trickster God's Whisper : 1 per trigger</strong></p>\n<hr>\n<p>Trigger when you or your allies inflict <strong>negative condition effect</strong> on enemy creature. &nbsp;( 1 per each action )</p>",
+      "zero_trigger_label": "⚔️ Zero Trigger"
+    },
+    "statusEffects": {
+      "1QPHKNWo17z0bBmX": [],
+      "1cksCQj3urJwddfg": [],
+      "1qTdxSVu2XLu0lUx": [],
+      "3YZNX2X5rHYtL4L5": [],
+      "4g2B0rdJ3SiUQvUv": [],
+      "5FFBDg2y54bpqgat": [],
+      "5jkr80zqdzaR003d": [],
+      "6YW8glLMYbwj6ZhC": [],
+      "7FLtIUvENcYDAJKC": [],
+      "7VDl6ac5Rzr2Rpya": [],
+      "8LN8tDQjON508Rqm": [],
+      "ACD2C8JLWUeIx89o": [],
+      "CVxHWmDb0gQsob1q": [],
+      "CfLPg6RDybSQhTSR": [],
+      "DCaKnV9kNn3EpqtY": [],
+      "DHsoSawNEZAxsnQ9": [],
+      "EVjmTFRDsuzR823Z": [],
+      "GJ0cbbj60lr4zaHm": [],
+      "MsbUHrgK7AhSeEJm": [],
+      "N4WfMf1nuOdUEXVS": [],
+      "N4rGBYQsH7PyMAWr": [],
+      "NogCaPvL5Y52Hjnq": [],
+      "OFk8VUuwDhWFoPxI": [],
+      "QOfrFCU2C6mx50gK": [],
+      "Qz8IC4v3wJ6UoM77": [],
+      "Rc8AvdmlHAK7pPea": [],
+      "StnYeDADYo2xX99O": [],
+      "T1kJfiKBZm1dnnBy": [],
+      "VxdXsFJ7YVEzAp3x": [],
+      "YhO7nUdawyeQKMWD": [],
+      "ZK0aTX8IH1NqwmTw": [],
+      "bspDC7hFRTYuwdhf": [],
+      "cDgbFRi9TA68TvYr": [],
+      "clE8TJ0G1gMwF735": [],
+      "fYkA57rVfoytHRjo": [],
+      "g7JIey1pEuRHyAOH": [],
+      "gX1fA3onNG7wsyap": [],
+      "hhqoSNhWfVD4KR7g": [],
+      "jKvrVpxLgX0KhB23": [],
+      "m2iUJjsEfJkpmOBw": [],
+      "qMZsEEuzAdrHb2fk": [],
+      "qePlOECBTS0Dftgc": [],
+      "t2C3LKukW6LPUImk": [],
+      "t5jyddIZDvbyuVsD": [],
+      "v22vl6cnP94wVBPu": [],
+      "v2vFlETIgMnff5o8": [],
+      "vLM7q3rdXVCgHYD4": [],
+      "vUYA9jgY9pdafj4i": [],
+      "wA1E8GxiXmzz80XQ": [],
+      "xuwAn7u126GfFweU": []
+    },
+    "template": "Dx16KeWcJzikM7dh",
+    "templateSystemUniqueVersion": 276398442
+  },
+  "type": "character"
+}

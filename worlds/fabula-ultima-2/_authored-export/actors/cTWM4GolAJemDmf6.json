@@ -1,0 +1,430 @@
+{
+  "_id": "cTWM4GolAJemDmf6",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1732767767636,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.5.0"
+    }
+  },
+  "folder": "aayEVqEJMsxmlUyd",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/NPCs/Reily.png",
+  "items": [
+    {
+      "_id": "axJzI6RBGYVeVKfW",
+      "_stats": {
+        "compendiumSource": "Item.jDsRKKpWmXs6aAJF",
+        "coreVersion": "12.343",
+        "createdTime": 1738097398476,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.jDsRKKpWmXs6aAJF"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "5uQIy5BCy7UEVfcT",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/scan.png",
+      "name": "Sniper Scope",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "acess": true,
+          "cost": "750",
+          "def_bonus": "",
+          "defense": "0",
+          "defense_include_dex": false,
+          "description": "<ul>\n<li>Gain +1 to <strong>Accuracy</strong> Check, if you are using a&nbsp;<strong>Firearm</strong> weapon, gain +2 instead</li>\n<li>You can target&nbsp;<strong>Hidden&nbsp;</strong>creature as though they are not hidden.</li>\n</ul>",
+          "details_roller": "Show",
+          "initiative": "0",
+          "magic_defense": "0",
+          "magic_defense_include_ins": false,
+          "mdef_bonus": "",
+          "name": "Sniper Scope",
+          "set_name": ""
+        },
+        "template": "r0yZpLPAK9VXhM2p",
+        "templateSystemUniqueVersion": 1853581118,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "GWx32hPh8DQPQwPJ",
+      "_stats": {
+        "compendiumSource": "Item.6KJ8orZCmaVj7nf2",
+        "coreVersion": "12.343",
+        "createdTime": 1738099616433,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.6KJ8orZCmaVj7nf2"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "5uQIy5BCy7UEVfcT",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/med.png",
+      "name": "Smart Stim",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "acess": true,
+          "cost": "900",
+          "def_bonus": "",
+          "defense": "0",
+          "defense_include_dex": false,
+          "description": "<ul>\n<li>Once per&nbsp;<strong>Conflict</strong>, when you enter <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/08_DRG/blood_for_blood.png\" width=\"21\" height=\"21\"><strong><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Crisis</a>,&nbsp;</strong>becomes&nbsp;<strong>Energized&nbsp;</strong>and&nbsp;<strong>Clarity</strong></li>\n</ul>",
+          "details_roller": "Show",
+          "flavor_text": "<blockquote>\n<p>\"A Device that auto injects drugs into your system when you are hurt, don't ask where the drugs is injected...\"</p>\n</blockquote>",
+          "initiative": "0",
+          "magic_defense": "0",
+          "magic_defense_include_ins": false,
+          "mdef_bonus": "",
+          "name": "Smart Stim",
+          "set_name": ""
+        },
+        "template": "r0yZpLPAK9VXhM2p",
+        "templateSystemUniqueVersion": 1853581118,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "sq77bOkDNocSimxl",
+      "_stats": {
+        "compendiumSource": "Item.yOJKXAQJq4R2mzCa",
+        "coreVersion": "12.343",
+        "createdTime": 1738100399946,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.yOJKXAQJq4R2mzCa"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "5uQIy5BCy7UEVfcT",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/boot.png",
+      "name": "Jumping Boots",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "acess": true,
+          "cost": "400",
+          "def_bonus": "",
+          "defense": "0",
+          "defense_include_dex": false,
+          "description": "<ul>\n<li>You may target <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/summon_garuda_II.png\" alt=\"\" width=\"21\" height=\"21\"><strong><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Flying</a>&nbsp;</strong>creatures as though they do not have <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/summon_garuda_II.png\" alt=\"\" width=\"21\" height=\"21\"><strong><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Flying</a></strong></li>\n</ul>",
+          "details_roller": "Show",
+          "initiative": "0",
+          "magic_defense": "0",
+          "magic_defense_include_ins": false,
+          "mdef_bonus": "",
+          "name": "Jumping Boots",
+          "set_name": ""
+        },
+        "template": "r0yZpLPAK9VXhM2p",
+        "templateSystemUniqueVersion": 1853581118,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "WlqpYhQU7RuXx2R2",
+      "_stats": {
+        "compendiumSource": "Item.mdeoJdBYRUook3Vm",
+        "coreVersion": "12.343",
+        "createdTime": 1730720804044,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.mdeoJdBYRUook3Vm"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "5uQIy5BCy7UEVfcT",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/glass.png",
+      "name": "Sunglasses",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 2
+      },
+      "sort": 1500000,
+      "system": {
+        "container": null,
+        "props": {
+          "acess": true,
+          "cost": "800",
+          "def_bonus": "",
+          "defense": "0",
+          "defense_include_dex": false,
+          "description": "<ul>\n<li>You are immune to <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Blind.png\" alt=\"\" width=\"21\" height=\"21\"><strong>@UUID[JournalEntry.rBnvYhLfmrVZDdoW]{Blind}</strong></li>\n</ul>",
+          "details_roller": "Show",
+          "initiative": "0",
+          "magic_defense": "0",
+          "magic_defense_include_ins": false,
+          "mdef_bonus": "",
+          "name": "Sunglasses",
+          "set_name": ""
+        },
+        "template": "r0yZpLPAK9VXhM2p",
+        "templateSystemUniqueVersion": 1853581118,
+        "unique": false
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Mystic Machina",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 0,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          }
+        }
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Mystic Machina",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/NPCs/Reily.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 150000,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "activeEffects": {},
+    "props": {
+      "itemContainer13": {
+        "GWx32hPh8DQPQwPJ": {
+          "acess_bonusdef": 0,
+          "acess_bonusmdef": 0,
+          "acess_cost": 900,
+          "acess_description": "<ul>\n<li>Once per&nbsp;<strong>Conflict</strong>, when you enter <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/08_DRG/blood_for_blood.png\" width=\"21\" height=\"21\"><strong><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Crisis</a>,&nbsp;</strong>becomes&nbsp;<strong>Energized&nbsp;</strong>and&nbsp;<strong>Clarity</strong></li>\n</ul>",
+          "acess_initiative": 0,
+          "acess_set": "",
+          "id": "GWx32hPh8DQPQwPJ",
+          "name": "Smart Stim",
+          "uuid": "Actor.cTWM4GolAJemDmf6.Item.GWx32hPh8DQPQwPJ"
+        },
+        "WlqpYhQU7RuXx2R2": {
+          "acess_bonusdef": 0,
+          "acess_bonusmdef": 0,
+          "acess_cost": 800,
+          "acess_description": "<ul>\n<li>You are immune to <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Blind.png\" alt=\"\" width=\"21\" height=\"21\"><strong>@UUID[JournalEntry.rBnvYhLfmrVZDdoW]{Blind}</strong></li>\n</ul>",
+          "acess_initiative": 0,
+          "acess_set": "",
+          "id": "WlqpYhQU7RuXx2R2",
+          "name": "Sunglasses",
+          "uuid": "Actor.cTWM4GolAJemDmf6.Item.WlqpYhQU7RuXx2R2"
+        },
+        "axJzI6RBGYVeVKfW": {
+          "acess_bonusdef": 0,
+          "acess_bonusmdef": 0,
+          "acess_cost": 750,
+          "acess_description": "<ul>\n<li>Gain +1 to <strong>Accuracy</strong> Check, if you are using a&nbsp;<strong>Firearm</strong> weapon, gain +2 instead</li>\n<li>You can target&nbsp;<strong>Hidden&nbsp;</strong>creature as though they are not hidden.</li>\n</ul>",
+          "acess_initiative": 0,
+          "acess_set": "",
+          "id": "axJzI6RBGYVeVKfW",
+          "name": "Sniper Scope",
+          "uuid": "Actor.cTWM4GolAJemDmf6.Item.axJzI6RBGYVeVKfW"
+        },
+        "sq77bOkDNocSimxl": {
+          "acess_bonusdef": 0,
+          "acess_bonusmdef": 0,
+          "acess_cost": 400,
+          "acess_description": "<ul>\n<li>You may target <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/summon_garuda_II.png\" alt=\"\" width=\"21\" height=\"21\"><strong><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Flying</a>&nbsp;</strong>creatures as though they do not have <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/summon_garuda_II.png\" alt=\"\" width=\"21\" height=\"21\"><strong><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Flying</a></strong></li>\n</ul>",
+          "acess_initiative": 0,
+          "acess_set": "",
+          "id": "sq77bOkDNocSimxl",
+          "name": "Jumping Boots",
+          "uuid": "Actor.cTWM4GolAJemDmf6.Item.sq77bOkDNocSimxl"
+        }
+      },
+      "name": "Mystic Machina",
+      "quote": "<blockquote>\n<p>\"Need something to make your day a little more interesting?&nbsp;Take your time, but don't make me wait too long, yeah?\"</p>\n</blockquote>",
+      "shop_type": "accessory",
+      "shopkeep_name": "Reily"
+    },
+    "statusEffects": {},
+    "template": "xPzJq2lz2XnEp75D",
+    "templateSystemUniqueVersion": 2444522487
+  },
+  "type": "character"
+}

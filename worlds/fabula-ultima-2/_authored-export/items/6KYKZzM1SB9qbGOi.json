@@ -1,0 +1,57 @@
+{
+  "_id": "6KYKZzM1SB9qbGOi",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1758079241392,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "VIOEoJCJMxZPFOxA",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lu/NBTrans5.png",
+  "name": "All-Out Attack",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Tamer",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>When you perform an attack, you may spend 10 Mind Points to choose one option:</p>\n<ul>\n  <li>you gain a bonus to your Accuracy Check equal to <strong>[the number of different attitudes among your recruited creatures]</strong>;</li>\n  <li>or the attack deals extra damage equal to <strong>[2 × the highest number of recruited creatures that have the same attitude]</strong>.</li>\n</ul>\n",
+      "duration": "",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "All-Out Attack",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "6KYKZzM1SB9qbGOi"
+  },
+  "type": "equippableItem"
+}

@@ -1,0 +1,474 @@
+{
+  "_id": "97wep1as6JfhC3M3",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1756474669054,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "6Pu6fYSXnR7ShTlR",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1781956903834,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "override_damage_type",
+          "mode": 5,
+          "priority": 20,
+          "value": "Air"
+        }
+      ],
+      "description": "<p><em>Elemental Weapon:</em> the weapon now deals Air damage.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "6Pu6fYSXnR7ShTlR",
+          "originalParentId": "97wep1as6JfhC3M3",
+          "originalUuid": "Item.97wep1as6JfhC3M3.ActiveEffect.6Pu6fYSXnR7ShTlR"
+        },
+        "fabula-ultima-companion": {
+          "lifetimeMode": "on_activation",
+          "tags": [
+            "buff"
+          ]
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/lightning/bolt-strike-blue.webp",
+      "name": "Elemental Weapon (Air)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-elemental-weapon-air"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "8LcDPAm9vsWDsdXk",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1781956903834,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "override_damage_type",
+          "mode": 5,
+          "priority": 20,
+          "value": "Bolt"
+        }
+      ],
+      "description": "<p><em>Elemental Weapon:</em> the weapon now deals Bolt damage.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "8LcDPAm9vsWDsdXk",
+          "originalParentId": "97wep1as6JfhC3M3",
+          "originalUuid": "Item.97wep1as6JfhC3M3.ActiveEffect.8LcDPAm9vsWDsdXk"
+        },
+        "fabula-ultima-companion": {
+          "lifetimeMode": "on_activation",
+          "tags": [
+            "buff"
+          ]
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/lightning/bolt-strike-blue.webp",
+      "name": "Elemental Weapon (Bolt)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-elemental-weapon-bolt"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "eDF97OfT5euj2PG4",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1781956903834,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "override_damage_type",
+          "mode": 5,
+          "priority": 20,
+          "value": "Earth"
+        }
+      ],
+      "description": "<p><em>Elemental Weapon:</em> the weapon now deals Earth damage.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "eDF97OfT5euj2PG4",
+          "originalParentId": "97wep1as6JfhC3M3",
+          "originalUuid": "Item.97wep1as6JfhC3M3.ActiveEffect.eDF97OfT5euj2PG4"
+        },
+        "fabula-ultima-companion": {
+          "lifetimeMode": "on_activation",
+          "tags": [
+            "buff"
+          ]
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/lightning/bolt-strike-blue.webp",
+      "name": "Elemental Weapon (Earth)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-elemental-weapon-earth"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "O5Wmz7EHOhw288ys",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1781956903834,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "override_damage_type",
+          "mode": 5,
+          "priority": 20,
+          "value": "Ice"
+        }
+      ],
+      "description": "<p><em>Elemental Weapon:</em> the weapon now deals Ice damage.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "O5Wmz7EHOhw288ys",
+          "originalParentId": "97wep1as6JfhC3M3",
+          "originalUuid": "Item.97wep1as6JfhC3M3.ActiveEffect.O5Wmz7EHOhw288ys"
+        },
+        "fabula-ultima-companion": {
+          "lifetimeMode": "on_activation",
+          "tags": [
+            "buff"
+          ]
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/lightning/bolt-strike-blue.webp",
+      "name": "Elemental Weapon (Ice)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-elemental-weapon-ice"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "WhwfTUFJQYudsGJm",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1781956903834,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "override_damage_type",
+          "mode": 5,
+          "priority": 20,
+          "value": "Fire"
+        }
+      ],
+      "description": "<p><em>Elemental Weapon:</em> the weapon now deals Fire damage.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "WhwfTUFJQYudsGJm",
+          "originalParentId": "97wep1as6JfhC3M3",
+          "originalUuid": "Item.97wep1as6JfhC3M3.ActiveEffect.WhwfTUFJQYudsGJm"
+        },
+        "fabula-ultima-companion": {
+          "lifetimeMode": "on_activation",
+          "tags": [
+            "buff"
+          ]
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/lightning/bolt-strike-blue.webp",
+      "name": "Elemental Weapon (Fire)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-elemental-weapon-fire"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "gx1Q3p8LBCYYEzQv",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/EMTrans1.png",
+  "name": "Elemental Weapon",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_script": "",
+      "check_bonus": "0",
+      "class": "Elementalist",
+      "cost": "10 MP",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>You imbue a weapon with elemental energy. Choose a damage type: <strong>air, bolt, earth, fire, or ice.</strong> Until this spell ends, all damage dealt by the weapon becomes of the chosen damage type. If you have that weapon equipped while you cast this spell, you may perform a <strong>free attack</strong> with it as part of the same action.</p><p> This spell can only be cast on a weapon equipped by a willing creature</p>",
+      "duration": "Scene",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "effect_kind": "open_action_menu",
+          "effect_label": "ew_menu",
+          "menu_option_labels": "Air|Bolt|Earth|Fire|Ice",
+          "menu_option_refs": "ew_air, ew_bolt, ew_earth, ew_fire, ew_ice",
+          "menu_subtitle": "Choose a damage type to imbue the weapon with.",
+          "menu_title": "Elemental Weapon"
+        },
+        "1": {
+          "$deleted": false,
+          "chain_steps": "ew_ae_air, ew_free",
+          "effect_kind": "chain",
+          "effect_label": "ew_air"
+        },
+        "2": {
+          "$deleted": false,
+          "chain_steps": "ew_ae_bolt, ew_free",
+          "effect_kind": "chain",
+          "effect_label": "ew_bolt"
+        },
+        "3": {
+          "$deleted": false,
+          "chain_steps": "ew_ae_earth, ew_free",
+          "effect_kind": "chain",
+          "effect_label": "ew_earth"
+        },
+        "4": {
+          "$deleted": false,
+          "chain_steps": "ew_ae_fire, ew_free",
+          "effect_kind": "chain",
+          "effect_label": "ew_fire"
+        },
+        "5": {
+          "$deleted": false,
+          "chain_steps": "ew_ae_ice, ew_free",
+          "effect_kind": "chain",
+          "effect_label": "ew_ice"
+        },
+        "6": {
+          "$deleted": false,
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Elemental Weapon (Air)",
+          "effect_kind": "apply_ae",
+          "effect_label": "ew_ae_air",
+          "target_ref": "action_targets"
+        },
+        "7": {
+          "$deleted": false,
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Elemental Weapon (Bolt)",
+          "effect_kind": "apply_ae",
+          "effect_label": "ew_ae_bolt",
+          "target_ref": "action_targets"
+        },
+        "8": {
+          "$deleted": false,
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Elemental Weapon (Earth)",
+          "effect_kind": "apply_ae",
+          "effect_label": "ew_ae_earth",
+          "target_ref": "action_targets"
+        },
+        "9": {
+          "$deleted": false,
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Elemental Weapon (Fire)",
+          "effect_kind": "apply_ae",
+          "effect_label": "ew_ae_fire",
+          "target_ref": "action_targets"
+        },
+        "10": {
+          "$deleted": false,
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Elemental Weapon (Ice)",
+          "effect_kind": "apply_ae",
+          "effect_label": "ew_ae_ice",
+          "target_ref": "action_targets"
+        },
+        "11": {
+          "$deleted": false,
+          "allowed_types": "Attack",
+          "condition_formula": "ACTION_TARGETS_SELF == 1",
+          "effect_kind": "open_action_menu",
+          "effect_label": "ew_free",
+          "free_mode": true
+        }
+      },
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": true,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Elemental Weapon",
+      "on_activate_effect_ref": "ew_menu",
+      "optional_params": {},
+      "pre_activate_effect_ref": "ew_menu",
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "Range",
+      "skill_target": "One Weapon",
+      "skill_type": "Spell",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "97wep1as6JfhC3M3"
+  },
+  "type": "equippableItem"
+}

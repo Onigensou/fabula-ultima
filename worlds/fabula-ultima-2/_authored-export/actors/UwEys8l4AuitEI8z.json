@@ -1,0 +1,1689 @@
+{
+  "_id": "UwEys8l4AuitEI8z",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1757756814552,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "lrk2jhOW5Ok9sgH1",
+  "img": "https://cdn.etrianodyssey.wiki/4/49/Portrait_eo2u_hexer_02.png",
+  "items": [
+    {
+      "_id": "DhnWQPbEhEbf32w0",
+      "_stats": {
+        "compendiumSource": "Item.wfvBxZq0qkwMMn1G",
+        "coreVersion": "12.343",
+        "createdTime": 1757760144490,
+        "duplicateSource": "Item.88RMlBlB3uXxvzOn",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/MagicalRangedRollAction/drain.png",
+      "name": "Symptom Shift",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hexer",
+          "cost": "10 MP",
+          "damage_bonus": "0",
+          "description": "<p>You draw sickness away from an ally and pass it onto your enemy. The target recovers from <strong>all status effects</strong>. Then choose one of the status effects the target recovered from and another creature you can see. The chosen creature suffers the chosen status effect.</p>\n",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Symptom Shift",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Range",
+          "skill_target": "One creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "wfvBxZq0qkwMMn1G"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "EpsMR8kxHTnGrhr4",
+      "_stats": {
+        "compendiumSource": "Item.DO5WAMWcUFtLTxfi",
+        "coreVersion": "12.343",
+        "createdTime": 1757760123057,
+        "duplicateSource": "Item.A7DaASySso4pdaar",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/VoidPrincessSkill3.png",
+      "name": "Encroaching Hex",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "check_bonus": "0",
+          "class": "Hexer",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>When you first take this <strong>Skill</strong>, you gain a <strong>Hex Clock</strong> with <strong>4 sections</strong>. The Clock starts each scene empty. When you perform an attack with an <strong>arcane weapon</strong> or cast an offensive (⚡) spell, you may spend <strong>10 Hit Points</strong> to fill one section of your Hex Clock.</p><p>At the start of your turn, you may spend up to <strong>[5 × the number of filled sections of your Hex Clock]</strong> Mind Points. For every <strong>5</strong> Mind Points spent this way, deal <strong>[SL × 2]</strong> <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span> or <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span> damage to a creature you can see. You may choose a different creature for each instance of damage.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "5",
+          "name": "Encroaching Hex",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>Damage per 5 MP</strong></p></td></tr><tr><td><p>1</p></td><td><p>2</p></td></tr><tr><td><p>2</p></td><td><p>4</p></td></tr><tr><td><p>3</p></td><td><p>6</p></td></tr><tr><td><p>4</p></td><td><p>8</p></td></tr><tr><td><p>5</p></td><td><p>10</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "DO5WAMWcUFtLTxfi"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "GFGrFZDZWQgOJRmO",
+      "_stats": {
+        "compendiumSource": "Item.sGrWBZ1E4yDlVgSy",
+        "coreVersion": "12.343",
+        "createdTime": 1757760135274,
+        "duplicateSource": "Item.6pjBWpijmao9yHng",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/bio_ii.png",
+      "name": "Plague",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hexer",
+          "cost": "15 MP",
+          "damage_bonus": "0",
+          "description": "<p>You cause the target’s condition to worsen into a debilitating infection. The target recovers from one of the following (choose one if it has both):</p><ul><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a></span></span></li><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span></span></li></ul><p>and it becomes <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.JltwIqzHbBKhkD45\" data-id=\"JltwIqzHbBKhkD45\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Poisoned</span></strong></a></span></span>.</p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": true,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": true,
+          "level": "1",
+          "max_level": "1",
+          "name": "Plague",
+          "optional_params": {},
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "skill_range": "Range",
+          "skill_target": "One weak or shaken creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "sGrWBZ1E4yDlVgSy"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "gvDNgf4cEh37TXdV",
+      "_stats": {
+        "compendiumSource": "Item.WiCs6a65AnrGEY8Q",
+        "coreVersion": "12.343",
+        "createdTime": 1757760145846,
+        "duplicateSource": "Item.wfvBxZq0qkwMMn1G",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/MagicalRangedRollAction/erase.png",
+      "name": "Transfer Life",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hexer",
+          "cost": "10 MP",
+          "damage_bonus": "0",
+          "description": "<p>You briefly connect the threads of life between two creatures, allowing one to transfer a portion of their vitality to the other. Either target may <strong>spend up to 50 Hit Points</strong>. The other creature recovers an equal amount of Hit Points.</p>\n<p><strong>Additionally,</strong> until this spell ends, the creature who recovered Hit Points this way gains a <strong>+2 bonus</strong> to Checks using <strong>MIG</strong> that aren’t Accuracy Checks or Magic Checks.</p>\n",
+          "duration": "Scene",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Transfer Life",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Range",
+          "skill_target": "Two willing creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "WiCs6a65AnrGEY8Q"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "gVulkgOEeIZ2ZEBR",
+      "_stats": {
+        "compendiumSource": "Item.wNayI5VpmV0Y3gyS",
+        "coreVersion": "12.343",
+        "createdTime": 1757760124968,
+        "duplicateSource": "Item.iQwhZxs3JmvrWwym",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/DWPassive1.png",
+      "name": "Where Evil Treads",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hexer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<!-- HEXER — Where Evil Treads -->\n<p>When your group journeys on the world map, you will make a <strong>discovery</strong> when the travel die rolls its <strong>maximum result</strong> (6 on a d6, on a d8, etc.). You still encounter a danger, as normal.</p>\n",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Where Evil Treads",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "wNayI5VpmV0Y3gyS"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "i2CvAwFZqDShqlSu",
+      "_stats": {
+        "compendiumSource": "Item.A7DaASySso4pdaar",
+        "coreVersion": "12.343",
+        "createdTime": 1757760121770,
+        "duplicateSource": "Item.XSy7MGgInDpsTwG5",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/WizMagicianSkill4.png",
+      "name": "Curse Ritualism",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hexer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>You may perform <strong>rituals</strong> whose effects fall within the <strong>Spiritism</strong> discipline. <strong>Spiritism</strong> rituals use <strong>[INS + WLP]</strong> for the Magic Check.</p><p>Additionally, you may use <strong>Spiritism</strong> to locate the sources of illnesses and curses.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Curse Ritualism",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "A7DaASySso4pdaar"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "jc2NIfZCr9CkpUCH",
+      "_stats": {
+        "compendiumSource": "Item.iQwhZxs3JmvrWwym",
+        "coreVersion": "12.343",
+        "createdTime": 1757760124015,
+        "duplicateSource": "Item.DO5WAMWcUFtLTxfi",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/VoidPrincessPassive5.png",
+      "name": "Fell Resonance",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "check_bonus": "0",
+          "class": "Hexer",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>When you take the <strong>Hinder</strong> action and succeed on your Check, the target and each other enemy that has at least one status effect in common with it takes <strong>[SL × 5]</strong> <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span> or <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span> damage (your choice).</p><p>You gain a bonus equal to <strong>[SL]</strong> on Checks made as part of the <strong>Hinder</strong> action.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "3",
+          "name": "Fell Resonance",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>Hinder Bonus</strong></p></td><td><p><strong>Damage</strong></p></td></tr><tr><td><p>1</p></td><td><p>+1</p></td><td><p>5</p></td></tr><tr><td><p>2</p></td><td><p>+2</p></td><td><p>10</p></td></tr><tr><td><p>3</p></td><td><p>+3</p></td><td><p>15</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "iQwhZxs3JmvrWwym"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "K48xrrkgcaiPyJ8X",
+      "_stats": {
+        "compendiumSource": "Item.ugffxiCSwymr95bP",
+        "coreVersion": "12.343",
+        "createdTime": 1757760132106,
+        "duplicateSource": "Item.ZWUn6A7lzpZaXLbB",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Raven/MutantReaperPassive1.png",
+      "name": "Blind",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hexer",
+          "cost": "20 MP",
+          "damage_bonus": "0",
+          "description": "<p>You cover the target’s eyes with pitch-black shadows, blocking their sight. Until the spell ends, the target suffers a <strong>−2 penalty to Accuracy Checks</strong>.</p>\n<p>This spell has no effect on creatures that do not rely on sight. An effect that can remove a status effect can end this effect instead.</p>\n",
+          "duration": "Scene",
+          "heroic_requirement": "",
+          "isCheck": true,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": true,
+          "level": "1",
+          "max_level": "1",
+          "name": "Blind",
+          "optional_params": {},
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "skill_range": "Range",
+          "skill_target": "One creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "ugffxiCSwymr95bP"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "lAMXGu4NZdZg8cz9",
+      "_stats": {
+        "compendiumSource": "Item.x75KjOuq1UE1KGFM",
+        "coreVersion": "12.343",
+        "createdTime": 1757761069450,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/CLOSERS/Aeri/Special_Move_Dancing_With_Devil.webp",
+      "name": "Contagion",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hexer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When an action you take causes one or more creatures to suffer a status effect, an additional creature of your choice suffers the same status effect.</p>",
+          "duration": "",
+          "heroic_requirement": "You must have mastered the Hexer Class.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Contagion",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "x75KjOuq1UE1KGFM"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "mimLjGFHa2fyz1RA",
+      "_stats": {
+        "compendiumSource": "Item.7rushbzFKnrjFFdZ",
+        "coreVersion": "12.343",
+        "createdTime": 1757760128357,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/bio.png",
+      "name": "Acid Splash",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hexer",
+          "cost": "15 MP",
+          "damage_bonus": "15",
+          "description": "<p>You hurl a globule of caustic muck that splatters on impact. A target hit by this spell takes <strong>[HR+15]</strong> <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span>.</p><p>Whether the spell <strong>hits or misses</strong>, up to two creatures other than the initial target each take <strong>5</strong> <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span> damage.</p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": true,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": true,
+          "level": "1",
+          "max_level": "1",
+          "name": "Acid Splash",
+          "optional_params": {},
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "skill_range": "Range",
+          "skill_target": "One creature",
+          "skill_type": "Active",
+          "type_damage": "Poison",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "7rushbzFKnrjFFdZ"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "n7UPLAmM7xUg84VO",
+      "_stats": {
+        "compendiumSource": "Item.gQNqXMnOYBQrQfoB",
+        "coreVersion": "12.343",
+        "createdTime": 1757760133203,
+        "duplicateSource": "Item.ugffxiCSwymr95bP",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/DarkMagicianSkill4.png",
+      "name": "Deteriorate",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hexer",
+          "cost": "10 MP",
+          "damage_bonus": "0",
+          "description": "<p>You place a mark on the target’s soul that weakens their ability to resist afflictions and ailments. The target suffers your choice of:</p>\n<ul>\n  <li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span></span></li>\n  <li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Dazed</span></strong></a></span></span></li>\n  <li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a></span></span></li>\n  <li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span></span></li>\n</ul>\n<p>Until this spell ends, if an effect would cause the target to recover from one or more status effects, you choose one of those status effects for the target to keep. Once that happens, this spell ends. If the target becomes immune to a status effect, they still recover as normal.</p>\n",
+          "duration": "Scene",
+          "heroic_requirement": "",
+          "isCheck": true,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": true,
+          "level": "1",
+          "max_level": "1",
+          "name": "Deteriorate",
+          "optional_params": {},
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "skill_range": "Range",
+          "skill_target": "One creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "gQNqXMnOYBQrQfoB"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "O7K34t7jD9T0aItM",
+      "_stats": {
+        "compendiumSource": "Item.XSy7MGgInDpsTwG5",
+        "coreVersion": "12.343",
+        "createdTime": 1757760119767,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/VoidPrincessPassive3.png",
+      "name": "Curse Magic",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "check_bonus": "0",
+          "class": "Hexer",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>Each time you acquire this <strong>Skill</strong>, learn one <strong>Hexer spell</strong> (see the Facet).</p><p><strong>Offensive (⚡) Hexer spells</strong> use <strong>[INS + WLP]</strong> for the Magic Check.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "10",
+          "name": "Curse Magic",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>Hexer Spells Known (total)</strong></p></td></tr><tr><td><p>1</p></td><td><p>1</p></td></tr><tr><td><p>2</p></td><td><p>2</p></td></tr><tr><td><p>3</p></td><td><p>3</p></td></tr><tr><td><p>4</p></td><td><p>4</p></td></tr><tr><td><p>5</p></td><td><p>5</p></td></tr><tr><td><p>6</p></td><td><p>6</p></td></tr><tr><td><p>7</p></td><td><p>7</p></td></tr><tr><td><p>8</p></td><td><p>8</p></td></tr><tr><td><p>9</p></td><td><p>9</p></td></tr><tr><td><p>10</p></td><td><p>10</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "XSy7MGgInDpsTwG5"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "QQWpIwzQXINAMYLi",
+      "_stats": {
+        "compendiumSource": "Item.Gixyg4DKrK3zSZt4",
+        "coreVersion": "12.343",
+        "createdTime": 1757760137552,
+        "duplicateSource": "Item.oLmE2d9UVATweFC0",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/salted_earth.png",
+      "name": "Seething Blight",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hexer",
+          "cost": "15 MP",
+          "damage_bonus": "0",
+          "description": "<p>You magnify the target’s distress into blinding rage. The target recovers from one of the following (choose one if it has both):</p><ul><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span></span></li><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Dazed</span></strong></a></span></span></li></ul><p>and it becomes <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\" data-id=\"XkuOy0BFvKJTewGS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Enraged</span></strong></a></span></span>.</p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": true,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": true,
+          "level": "1",
+          "max_level": "1",
+          "name": "Seething Blight",
+          "optional_params": {},
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "skill_range": "Range",
+          "skill_target": "One slow or dazed creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "Gixyg4DKrK3zSZt4"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "R3HZru9blcQR8Dom",
+      "_stats": {
+        "compendiumSource": "Item.6pjBWpijmao9yHng",
+        "coreVersion": "12.343",
+        "createdTime": 1757760134179,
+        "duplicateSource": "Item.gQNqXMnOYBQrQfoB",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/MagicalRangedRollAction/addle.png",
+      "name": "Muddle",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hexer",
+          "cost": "20 MP",
+          "damage_bonus": "0",
+          "description": "<p>You conjure troubling visions in the target’s mind, wearing down their focus. Until the spell ends, the target suffers a <strong>−2 penalty to Magic Checks</strong>.</p>\n<p>An effect that can remove a status effect can end this effect instead.</p>\n",
+          "duration": "Scene",
+          "heroic_requirement": "",
+          "isCheck": true,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": true,
+          "level": "1",
+          "max_level": "1",
+          "name": "Muddle",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Range",
+          "skill_target": "One creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "6pjBWpijmao9yHng"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "rMUwmkAhyM2Q8NIf",
+      "_stats": {
+        "compendiumSource": "Item.LLmPfmG5yRVzmD2x",
+        "coreVersion": "12.343",
+        "createdTime": 1757760971776,
+        "duplicateSource": "Item.VfYBK7KslLW3P41u",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/Encroaching_Well_Stage3.png",
+      "name": "Abyss",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 1900000,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hexer",
+          "cost": "50 MP",
+          "damage_bonus": "0",
+          "description": "<p>You open a rift filled with malice, dread, and disease, condemning those pulled into it to overwhelming darkness. <strong>Choose one option</strong>:</p><ul><li><p>One creature you can see suffers <strong>50</strong> <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span> damage and becomes poisoned</p></li><li><p>You choose any number of creatures you can see, and each of them suffers <strong>30</strong> <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span> damage and cannot choose any of the other chosen creatures as targets for effects this round.</p></li></ul><p>This spell ignores damage Resistances and Immunities, as well as condition immunities.</p><hr class=\"\" contenteditable=\"false\"><p><strong>Skill Enhancement Lv. 20</strong> ― This damage increase by <strong>5</strong></p><p><strong>Skill Enhancement Lv. 40</strong> ― This damage increase by <strong>10</strong></p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "You must have mastered the Hexer Class.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Abyss",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Range",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "LLmPfmG5yRVzmD2x"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "RMwJkRa0tBXyidxN",
+      "_stats": {
+        "compendiumSource": "Item.oLmE2d9UVATweFC0",
+        "coreVersion": "12.343",
+        "createdTime": 1757760136304,
+        "duplicateSource": "Item.sGrWBZ1E4yDlVgSy",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/backdraft.png",
+      "name": "Pressure",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hexer",
+          "cost": "5 x T MP",
+          "damage_bonus": "0",
+          "description": "<p>You conjure an oppressive atmosphere that amplifies strain on the target’s mind. The next time a target hit by this spell would spend Mind Points, that creature must spend an <strong>additional 10 Mind Points</strong> or lose their intended effect.</p>\n",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": true,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": true,
+          "level": "1",
+          "max_level": "1",
+          "name": "Pressure",
+          "optional_params": {},
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "skill_range": "Range",
+          "skill_target": "Up to three creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "oLmE2d9UVATweFC0"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "RO0wqOc8usgjfZaz",
+      "_stats": {
+        "compendiumSource": "Item.vnAEcFSRA2xUhF58",
+        "coreVersion": "12.343",
+        "createdTime": 1757760147106,
+        "duplicateSource": "Item.WiCs6a65AnrGEY8Q",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/10_VPR/Serpent%27s_Ire.png",
+      "name": "Venomous Weapon",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hexer",
+          "cost": "10 MP",
+          "damage_bonus": "0",
+          "description": "<p>You imbue a weapon with poisonous energy. Until this spell ends, all damage dealt by the weapon becomes of the <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span> type. If you have that weapon equipped while you cast this spell, you may perform a <strong>free attack</strong> with it as part of the same action.</p>\n<p>This spell can only be cast on a weapon equipped by a willing creature.</p>\n",
+          "duration": "Scene",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Venomous Weapon",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Range",
+          "skill_target": "One equipped weapon",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "vnAEcFSRA2xUhF58"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "ThqoPn31dMV417hZ",
+      "_stats": {
+        "compendiumSource": "Item.88RMlBlB3uXxvzOn",
+        "coreVersion": "12.343",
+        "createdTime": 1757760141204,
+        "duplicateSource": "Item.Gixyg4DKrK3zSZt4",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Raven/RevenantPassive2.png",
+      "name": "Shadow Mask",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hexer",
+          "cost": "10 MP",
+          "damage_bonus": "0",
+          "description": "<p>Light bends around your ally to keep them hidden from danger. Until this spell ends, the target cannot be selected as a target for an attack or offensive spell that has multiple targets.</p>\n<p><strong>Additionally,</strong> until this spell ends, the target gains a <strong>+2 bonus</strong> to Checks that involve remaining hidden or moving undetected.</p>\n",
+          "duration": "Scene",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Shadow Mask",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Range",
+          "skill_target": "One creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "88RMlBlB3uXxvzOn"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "Vj3ji4eeqJKkLD57",
+      "_stats": {
+        "compendiumSource": "Item.ZWUn6A7lzpZaXLbB",
+        "coreVersion": "12.343",
+        "createdTime": 1757760130270,
+        "duplicateSource": "Item.7rushbzFKnrjFFdZ",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/VoidPrincessPassive2.png",
+      "name": "Aura of Decay",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hexer",
+          "cost": "10 MP",
+          "damage_bonus": "0",
+          "description": "<p>You cloak the target in a veil of magic that is toxic to enemies. Until this spell ends, any creature that performs a melee attack against the target takes <strong>10</strong> <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span> damage. The attacker takes this damage <strong>even if the attack misses</strong>.</p><hr contenteditable=\"false\"><p><strong>Skill Enhancement Lv. 20</strong> ― This damage becomes <strong>15</strong> <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0,0,0,0.1); background-image: none !important; border: none !important;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span>.</p><p><strong>Skill Enhancement Lv. 40</strong> ― This damage becomes <strong>20</strong> <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0,0,0,0.1); background-image: none !important; border: none !important;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span>.</p>",
+          "duration": "Scene",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Aura of Decay",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Range",
+          "skill_target": "One creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "ZWUn6A7lzpZaXLbB"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "W4JISjt6ITq7HETP",
+      "_stats": {
+        "compendiumSource": "Item.kPMIUSuEpQ8Az5HK",
+        "coreVersion": "12.343",
+        "createdTime": 1757761072823,
+        "duplicateSource": "Item.x75KjOuq1UE1KGFM",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/CLOSERS/Aeri/Special_Skill_Poison_Recharging.webp",
+      "name": "Lethal Dosage",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hexer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you deal <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span> or <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span> damage and it reduces a creature to 0 Hit Points, each other enemy takes 10 <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span> damage, which can cause this Heroic Skill to trigger again.</p><hr contenteditable=\"false\"><p><strong>Skill Enhancement Lv. 20</strong> ― This damage becomes 15 <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span>.</p><p><strong>Skill Enhancement Lv. 40</strong> ― This damage becomes 20 <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span>.</p>",
+          "duration": "",
+          "heroic_requirement": "You must have mastered the Hexer Class.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Lethal Dosage",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "kPMIUSuEpQ8Az5HK"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Hexer",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar4": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "DEF",
+            "max": 13,
+            "maxcolor": "#f26d40",
+            "mincolor": "#f26d40",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 13
+          },
+          "bar5": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar5",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MDEF",
+            "max": 10,
+            "maxcolor": "#26d6ed",
+            "mincolor": "#26d6ed",
+            "opacity": null,
+            "order": 4,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 10
+          }
+        }
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Hexer",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://cdn.etrianodyssey.wiki/4/49/Portrait_eo2u_hexer_02.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 100000,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {
+      "also_text": "Poisoner, Saboteur, Desecrator",
+      "benefit_dropdown": "",
+      "classMechanic_text": "",
+      "class_facet": {
+        "DhnWQPbEhEbf32w0": {
+          "facet_cost": "10 MP",
+          "facet_description": "<p>You draw sickness away from an ally and pass it onto your enemy. The target recovers from <strong>all status effects</strong>. Then choose one of the status effects the target recovered from and another creature you can see. The chosen creature suffers the chosen status effect.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "One creature",
+          "id": "${item.id}",
+          "name": "Symptom Shift",
+          "uuid": "Actor.UwEys8l4AuitEI8z.Item.DhnWQPbEhEbf32w0"
+        },
+        "EpsMR8kxHTnGrhr4": {
+          "facet_cost": "",
+          "facet_description": "<p>When you first take this <strong>Skill</strong>, you gain a <strong>Hex Clock</strong> with <strong>4 sections</strong>. The Clock starts each scene empty. When you perform an attack with an <strong>arcane weapon</strong> or cast an offensive (⚡) spell, you may spend <strong>10 Hit Points</strong> to fill one section of your Hex Clock.</p><p>At the start of your turn, you may spend up to <strong>[5 × the number of filled sections of your Hex Clock]</strong> Mind Points. For every <strong>5</strong> Mind Points spent this way, deal <strong>[SL × 2]</strong> <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span> or <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span> damage to a creature you can see. You may choose a different creature for each instance of damage.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Encroaching Hex",
+          "uuid": "Actor.UwEys8l4AuitEI8z.Item.EpsMR8kxHTnGrhr4"
+        },
+        "GFGrFZDZWQgOJRmO": {
+          "facet_cost": "15 MP",
+          "facet_description": "<p>You cause the target’s condition to worsen into a debilitating infection. The target recovers from one of the following (choose one if it has both):</p><ul><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a></span></span></li><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span></span></li></ul><p>and it becomes <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.JltwIqzHbBKhkD45\" data-id=\"JltwIqzHbBKhkD45\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Poisoned</span></strong></a></span></span>.</p>",
+          "facet_offensive": "⚡",
+          "facet_target": "One weak or shaken creature",
+          "id": "${item.id}",
+          "name": "Plague",
+          "uuid": "Actor.UwEys8l4AuitEI8z.Item.GFGrFZDZWQgOJRmO"
+        },
+        "K48xrrkgcaiPyJ8X": {
+          "facet_cost": "20 MP",
+          "facet_description": "<p>You cover the target’s eyes with pitch-black shadows, blocking their sight. Until the spell ends, the target suffers a <strong>−2 penalty to Accuracy Checks</strong>.</p>\n<p>This spell has no effect on creatures that do not rely on sight. An effect that can remove a status effect can end this effect instead.</p>\n",
+          "facet_offensive": "⚡",
+          "facet_target": "One creature",
+          "id": "${item.id}",
+          "name": "Blind",
+          "uuid": "Actor.UwEys8l4AuitEI8z.Item.K48xrrkgcaiPyJ8X"
+        },
+        "O7K34t7jD9T0aItM": {
+          "facet_cost": "",
+          "facet_description": "<p>Each time you acquire this <strong>Skill</strong>, learn one <strong>Hexer spell</strong> (see the Facet).</p><p><strong>Offensive (⚡) Hexer spells</strong> use <strong>[INS + WLP]</strong> for the Magic Check.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Curse Magic",
+          "uuid": "Actor.UwEys8l4AuitEI8z.Item.O7K34t7jD9T0aItM"
+        },
+        "QQWpIwzQXINAMYLi": {
+          "facet_cost": "15 MP",
+          "facet_description": "<p>You magnify the target’s distress into blinding rage. The target recovers from one of the following (choose one if it has both):</p><ul><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span></span></li><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Dazed</span></strong></a></span></span></li></ul><p>and it becomes <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\" data-id=\"XkuOy0BFvKJTewGS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Enraged</span></strong></a></span></span>.</p>",
+          "facet_offensive": "⚡",
+          "facet_target": "One slow or dazed creature",
+          "id": "${item.id}",
+          "name": "Seething Blight",
+          "uuid": "Actor.UwEys8l4AuitEI8z.Item.QQWpIwzQXINAMYLi"
+        },
+        "R3HZru9blcQR8Dom": {
+          "facet_cost": "20 MP",
+          "facet_description": "<p>You conjure troubling visions in the target’s mind, wearing down their focus. Until the spell ends, the target suffers a <strong>−2 penalty to Magic Checks</strong>.</p>\n<p>An effect that can remove a status effect can end this effect instead.</p>\n",
+          "facet_offensive": "⚡",
+          "facet_target": "One creature",
+          "id": "${item.id}",
+          "name": "Muddle",
+          "uuid": "Actor.UwEys8l4AuitEI8z.Item.R3HZru9blcQR8Dom"
+        },
+        "RMwJkRa0tBXyidxN": {
+          "facet_cost": "5 x T MP",
+          "facet_description": "<p>You conjure an oppressive atmosphere that amplifies strain on the target’s mind. The next time a target hit by this spell would spend Mind Points, that creature must spend an <strong>additional 10 Mind Points</strong> or lose their intended effect.</p>\n",
+          "facet_offensive": "⚡",
+          "facet_target": "Up to three creature",
+          "id": "${item.id}",
+          "name": "Pressure",
+          "uuid": "Actor.UwEys8l4AuitEI8z.Item.RMwJkRa0tBXyidxN"
+        },
+        "RO0wqOc8usgjfZaz": {
+          "facet_cost": "10 MP",
+          "facet_description": "<p>You imbue a weapon with poisonous energy. Until this spell ends, all damage dealt by the weapon becomes of the <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span> type. If you have that weapon equipped while you cast this spell, you may perform a <strong>free attack</strong> with it as part of the same action.</p>\n<p>This spell can only be cast on a weapon equipped by a willing creature.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "One equipped weapon",
+          "id": "${item.id}",
+          "name": "Venomous Weapon",
+          "uuid": "Actor.UwEys8l4AuitEI8z.Item.RO0wqOc8usgjfZaz"
+        },
+        "ThqoPn31dMV417hZ": {
+          "facet_cost": "10 MP",
+          "facet_description": "<p>Light bends around your ally to keep them hidden from danger. Until this spell ends, the target cannot be selected as a target for an attack or offensive spell that has multiple targets.</p>\n<p><strong>Additionally,</strong> until this spell ends, the target gains a <strong>+2 bonus</strong> to Checks that involve remaining hidden or moving undetected.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "One creature",
+          "id": "${item.id}",
+          "name": "Shadow Mask",
+          "uuid": "Actor.UwEys8l4AuitEI8z.Item.ThqoPn31dMV417hZ"
+        },
+        "Vj3ji4eeqJKkLD57": {
+          "facet_cost": "10 MP",
+          "facet_description": "<p>You cloak the target in a veil of magic that is toxic to enemies. Until this spell ends, any creature that performs a melee attack against the target takes <strong>10</strong> <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span> damage. The attacker takes this damage <strong>even if the attack misses</strong>.</p><hr contenteditable=\"false\"><p><strong>Skill Enhancement Lv. 20</strong> ― This damage becomes <strong>15</strong> <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0,0,0,0.1); background-image: none !important; border: none !important;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span>.</p><p><strong>Skill Enhancement Lv. 40</strong> ― This damage becomes <strong>20</strong> <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0,0,0,0.1); background-image: none !important; border: none !important;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span>.</p>",
+          "facet_offensive": "",
+          "facet_target": "One creature",
+          "id": "${item.id}",
+          "name": "Aura of Decay",
+          "uuid": "Actor.UwEys8l4AuitEI8z.Item.Vj3ji4eeqJKkLD57"
+        },
+        "W4JISjt6ITq7HETP": {
+          "facet_cost": "",
+          "facet_description": "<p>When you deal <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span> or <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span> damage and it reduces a creature to 0 Hit Points, each other enemy takes 10 <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span> damage, which can cause this Heroic Skill to trigger again.</p><hr contenteditable=\"false\"><p><strong>Skill Enhancement Lv. 20</strong> ― This damage becomes 15 <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span>.</p><p><strong>Skill Enhancement Lv. 40</strong> ― This damage becomes 20 <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span>.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Lethal Dosage",
+          "uuid": "Actor.UwEys8l4AuitEI8z.Item.W4JISjt6ITq7HETP"
+        },
+        "gVulkgOEeIZ2ZEBR": {
+          "facet_cost": "",
+          "facet_description": "<!-- HEXER — Where Evil Treads -->\n<p>When your group journeys on the world map, you will make a <strong>discovery</strong> when the travel die rolls its <strong>maximum result</strong> (6 on a d6, on a d8, etc.). You still encounter a danger, as normal.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Where Evil Treads",
+          "uuid": "Actor.UwEys8l4AuitEI8z.Item.gVulkgOEeIZ2ZEBR"
+        },
+        "gvDNgf4cEh37TXdV": {
+          "facet_cost": "10 MP",
+          "facet_description": "<p>You briefly connect the threads of life between two creatures, allowing one to transfer a portion of their vitality to the other. Either target may <strong>spend up to 50 Hit Points</strong>. The other creature recovers an equal amount of Hit Points.</p>\n<p><strong>Additionally,</strong> until this spell ends, the creature who recovered Hit Points this way gains a <strong>+2 bonus</strong> to Checks using <strong>MIG</strong> that aren’t Accuracy Checks or Magic Checks.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "Two willing creature",
+          "id": "${item.id}",
+          "name": "Transfer Life",
+          "uuid": "Actor.UwEys8l4AuitEI8z.Item.gvDNgf4cEh37TXdV"
+        },
+        "i2CvAwFZqDShqlSu": {
+          "facet_cost": "",
+          "facet_description": "<p>You may perform <strong>rituals</strong> whose effects fall within the <strong>Spiritism</strong> discipline. <strong>Spiritism</strong> rituals use <strong>[INS + WLP]</strong> for the Magic Check.</p><p>Additionally, you may use <strong>Spiritism</strong> to locate the sources of illnesses and curses.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Curse Ritualism",
+          "uuid": "Actor.UwEys8l4AuitEI8z.Item.i2CvAwFZqDShqlSu"
+        },
+        "jc2NIfZCr9CkpUCH": {
+          "facet_cost": "",
+          "facet_description": "<p>When you take the <strong>Hinder</strong> action and succeed on your Check, the target and each other enemy that has at least one status effect in common with it takes <strong>[SL × 5]</strong> <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span> or <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span> damage (your choice).</p><p>You gain a bonus equal to <strong>[SL]</strong> on Checks made as part of the <strong>Hinder</strong> action.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Fell Resonance",
+          "uuid": "Actor.UwEys8l4AuitEI8z.Item.jc2NIfZCr9CkpUCH"
+        },
+        "lAMXGu4NZdZg8cz9": {
+          "facet_cost": "",
+          "facet_description": "<p>When an action you take causes one or more creatures to suffer a status effect, an additional creature of your choice suffers the same status effect.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Contagion",
+          "uuid": "Actor.UwEys8l4AuitEI8z.Item.lAMXGu4NZdZg8cz9"
+        },
+        "mimLjGFHa2fyz1RA": {
+          "facet_cost": "15 MP",
+          "facet_description": "<p>You hurl a globule of caustic muck that splatters on impact. A target hit by this spell takes <strong>[HR+15]</strong> <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span>.</p><p>Whether the spell <strong>hits or misses</strong>, up to two creatures other than the initial target each take <strong>5</strong> <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span> damage.</p>",
+          "facet_offensive": "⚡",
+          "facet_target": "One creature",
+          "id": "${item.id}",
+          "name": "Acid Splash",
+          "uuid": "Actor.UwEys8l4AuitEI8z.Item.mimLjGFHa2fyz1RA"
+        },
+        "n7UPLAmM7xUg84VO": {
+          "facet_cost": "10 MP",
+          "facet_description": "<p>You place a mark on the target’s soul that weakens their ability to resist afflictions and ailments. The target suffers your choice of:</p>\n<ul>\n  <li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span></span></li>\n  <li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Dazed</span></strong></a></span></span></li>\n  <li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a></span></span></li>\n  <li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span></span></li>\n</ul>\n<p>Until this spell ends, if an effect would cause the target to recover from one or more status effects, you choose one of those status effects for the target to keep. Once that happens, this spell ends. If the target becomes immune to a status effect, they still recover as normal.</p>\n",
+          "facet_offensive": "⚡",
+          "facet_target": "One creature",
+          "id": "${item.id}",
+          "name": "Deteriorate",
+          "uuid": "Actor.UwEys8l4AuitEI8z.Item.n7UPLAmM7xUg84VO"
+        },
+        "rMUwmkAhyM2Q8NIf": {
+          "facet_cost": "50 MP",
+          "facet_description": "<p>You open a rift filled with malice, dread, and disease, condemning those pulled into it to overwhelming darkness. <strong>Choose one option</strong>:</p><ul><li><p>One creature you can see suffers <strong>50</strong> <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span> damage and becomes poisoned</p></li><li><p>You choose any number of creatures you can see, and each of them suffers <strong>30</strong> <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span> damage and cannot choose any of the other chosen creatures as targets for effects this round.</p></li></ul><p>This spell ignores damage Resistances and Immunities, as well as condition immunities.</p><hr class=\"\" contenteditable=\"false\"><p><strong>Skill Enhancement Lv. 20</strong> ― This damage increase by <strong>5</strong></p><p><strong>Skill Enhancement Lv. 40</strong> ― This damage increase by <strong>10</strong></p>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Abyss",
+          "uuid": "Actor.UwEys8l4AuitEI8z.Item.rMUwmkAhyM2Q8NIf"
+        }
+      },
+      "class_heroicSkill": {
+        "W4JISjt6ITq7HETP": {
+          "id": "${item.id}",
+          "name": "Lethal Dosage",
+          "skill_cost": "",
+          "skill_description": "<p>When you deal <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span> or <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span> damage and it reduces a creature to 0 Hit Points, each other enemy takes 10 <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span> damage, which can cause this Heroic Skill to trigger again.</p><hr contenteditable=\"false\"><p><strong>Skill Enhancement Lv. 20</strong> ― This damage becomes 15 <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span>.</p><p><strong>Skill Enhancement Lv. 40</strong> ― This damage becomes 20 <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span>.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.UwEys8l4AuitEI8z.Item.W4JISjt6ITq7HETP"
+        },
+        "lAMXGu4NZdZg8cz9": {
+          "id": "${item.id}",
+          "name": "Contagion",
+          "skill_cost": "",
+          "skill_description": "<p>When an action you take causes one or more creatures to suffer a status effect, an additional creature of your choice suffers the same status effect.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.UwEys8l4AuitEI8z.Item.lAMXGu4NZdZg8cz9"
+        },
+        "rMUwmkAhyM2Q8NIf": {
+          "id": "${item.id}",
+          "name": "Abyss",
+          "skill_cost": "50 MP",
+          "skill_description": "<p>You open a rift filled with malice, dread, and disease, condemning those pulled into it to overwhelming darkness. <strong>Choose one option</strong>:</p><ul><li><p>One creature you can see suffers <strong>50</strong> <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span> damage and becomes poisoned</p></li><li><p>You choose any number of creatures you can see, and each of them suffers <strong>30</strong> <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span> damage and cannot choose any of the other chosen creatures as targets for effects this round.</p></li></ul><p>This spell ignores damage Resistances and Immunities, as well as condition immunities.</p><hr class=\"\" contenteditable=\"false\"><p><strong>Skill Enhancement Lv. 20</strong> ― This damage increase by <strong>5</strong></p><p><strong>Skill Enhancement Lv. 40</strong> ― This damage increase by <strong>10</strong></p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.UwEys8l4AuitEI8z.Item.rMUwmkAhyM2Q8NIf"
+        }
+      },
+      "class_lore": "<blockquote><p><strong>Hexers</strong> are powerful spellcasters who harness the darkest facets of magic. They specialize in curses and toxins, weaving spells that use biting poison, blinding shadows, and malevolent charms to wear their foes down and render them vulnerable.</p><p> Many of the Hexer’s most potent abilities take some setup to prepare, requiring time or assistance from allies to perform the necessary steps. Once the pieces are in place, though, a Hexer’s dark magic is truly fearsome.</p></blockquote>",
+      "class_skill": {
+        "EpsMR8kxHTnGrhr4": {
+          "id": "${item.id}",
+          "name": "Encroaching Hex",
+          "skill_cost": "",
+          "skill_description": "<p>When you first take this <strong>Skill</strong>, you gain a <strong>Hex Clock</strong> with <strong>4 sections</strong>. The Clock starts each scene empty. When you perform an attack with an <strong>arcane weapon</strong> or cast an offensive (⚡) spell, you may spend <strong>10 Hit Points</strong> to fill one section of your Hex Clock.</p><p>At the start of your turn, you may spend up to <strong>[5 × the number of filled sections of your Hex Clock]</strong> Mind Points. For every <strong>5</strong> Mind Points spent this way, deal <strong>[SL × 2]</strong> <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span> or <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span> damage to a creature you can see. You may choose a different creature for each instance of damage.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.UwEys8l4AuitEI8z.Item.EpsMR8kxHTnGrhr4"
+        },
+        "O7K34t7jD9T0aItM": {
+          "id": "${item.id}",
+          "name": "Curse Magic",
+          "skill_cost": "",
+          "skill_description": "<p>Each time you acquire this <strong>Skill</strong>, learn one <strong>Hexer spell</strong> (see the Facet).</p><p><strong>Offensive (⚡) Hexer spells</strong> use <strong>[INS + WLP]</strong> for the Magic Check.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.UwEys8l4AuitEI8z.Item.O7K34t7jD9T0aItM"
+        },
+        "gVulkgOEeIZ2ZEBR": {
+          "id": "${item.id}",
+          "name": "Where Evil Treads",
+          "skill_cost": "",
+          "skill_description": "<!-- HEXER — Where Evil Treads -->\n<p>When your group journeys on the world map, you will make a <strong>discovery</strong> when the travel die rolls its <strong>maximum result</strong> (6 on a d6, on a d8, etc.). You still encounter a danger, as normal.</p>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.UwEys8l4AuitEI8z.Item.gVulkgOEeIZ2ZEBR"
+        },
+        "i2CvAwFZqDShqlSu": {
+          "id": "${item.id}",
+          "name": "Curse Ritualism",
+          "skill_cost": "",
+          "skill_description": "<p>You may perform <strong>rituals</strong> whose effects fall within the <strong>Spiritism</strong> discipline. <strong>Spiritism</strong> rituals use <strong>[INS + WLP]</strong> for the Magic Check.</p><p>Additionally, you may use <strong>Spiritism</strong> to locate the sources of illnesses and curses.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.UwEys8l4AuitEI8z.Item.i2CvAwFZqDShqlSu"
+        },
+        "jc2NIfZCr9CkpUCH": {
+          "id": "${item.id}",
+          "name": "Fell Resonance",
+          "skill_cost": "",
+          "skill_description": "<p>When you take the <strong>Hinder</strong> action and succeed on your Check, the target and each other enemy that has at least one status effect in common with it takes <strong>[SL × 5]</strong> <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span> or <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span> damage (your choice).</p><p>You gain a bonus equal to <strong>[SL]</strong> on Checks made as part of the <strong>Hinder</strong> action.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.UwEys8l4AuitEI8z.Item.jc2NIfZCr9CkpUCH"
+        }
+      },
+      "flavor_text": "",
+      "martialArmor_equippable": false,
+      "martialMelee_equippable": false,
+      "martialRanged_equippable": false,
+      "martialShield_equippable": false,
+      "name": "Hexer",
+      "project_performable": false,
+      "ritual_performable": true
+    },
+    "statusEffects": {},
+    "template": "hoxC3HFCtMYGScIo",
+    "templateSystemUniqueVersion": 504201233
+  },
+  "type": "character"
+}

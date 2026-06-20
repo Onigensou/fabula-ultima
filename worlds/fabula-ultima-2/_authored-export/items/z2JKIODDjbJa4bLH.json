@@ -1,0 +1,66 @@
+{
+  "_id": "z2JKIODDjbJa4bLH",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1758205070797,
+    "duplicateSource": "Item.GOm88TYWSrnpYENb",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "yYTqxeiZBgJ0wAv0",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/Elixir_Burst.png",
+  "name": "Spiritual Fortress",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_script": "",
+      "check_bonus": "0",
+      "class": "Monk",
+      "cost": "2 MP per Bead",
+      "damage_bonus": "",
+      "defense_target_type": "def",
+      "description": "<p>As a reaction, release any number of <strong>Soul Beads</strong> to reduce incoming damage to you or up to three creatures by <strong>[SL × 2]</strong>, before applying any damage Affinities. Each Bead destroyed this way costs <strong>2 MP</strong>.</p>\n",
+      "duration": "Instantaneous",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "level": "1",
+      "max_level": "3",
+      "name": "Spiritual Fortress",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "<table style=\"width:100%; text-align:center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>Damage Reduced</strong></p></td></tr><tr><td><p>1</p></td><td><p>2</p></td></tr><tr><td><p>2</p></td><td><p>4</p></td></tr><tr><td><p>3</p></td><td><p>6</p></td></tr></tbody></table>",
+      "skill_range": "Range",
+      "skill_target": "Up to three creature",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "z2JKIODDjbJa4bLH"
+  },
+  "type": "equippableItem"
+}

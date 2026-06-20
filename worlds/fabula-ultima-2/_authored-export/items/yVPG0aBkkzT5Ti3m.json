@@ -1,0 +1,309 @@
+{
+  "_id": "yVPG0aBkkzT5Ti3m",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1719064345313,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "DSJ5Iu9ipz69Wsf3",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1775334460319,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "base_defense",
+          "mode": 4,
+          "priority": 1,
+          "value": "${isEquipped ? (isMartial ? (item_baseDef * 1) : 0) : 0}$"
+        },
+        {
+          "key": "bonus_defense",
+          "mode": 2,
+          "priority": 2,
+          "value": "${isEquipped ? (isMartial ? 0 : (item_def_bonus * 1)) : 0}$"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "core": {
+          "overlay": false
+        },
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "DSJ5Iu9ipz69Wsf3",
+          "originalParentId": "yVPG0aBkkzT5Ti3m",
+          "originalUuid": "Item.yVPG0aBkkzT5Ti3m.ActiveEffect.DSJ5Iu9ipz69Wsf3"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-def-up",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUp.webp",
+      "name": "Armor DEF",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    },
+    {
+      "_id": "hPpE6RVNqm8Wlagw",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1775334460357,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "base_magic_defense",
+          "mode": 4,
+          "priority": 1,
+          "value": "${isEquipped ? (isMartial ? (item_baseMdef * 1) : 0) : 0}$"
+        },
+        {
+          "key": "bonus_magic_defense",
+          "mode": 2,
+          "priority": 2,
+          "value": "${isEquipped ? (isMartial ? 0 : (item_mdef_bonus * 1)) : 0}$"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "core": {
+          "overlay": false
+        },
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "hPpE6RVNqm8Wlagw",
+          "originalParentId": "yVPG0aBkkzT5Ti3m",
+          "originalUuid": "Item.yVPG0aBkkzT5Ti3m.ActiveEffect.hPpE6RVNqm8Wlagw"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-mdef-up",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUpStack.webp",
+      "name": "Armor MDEF",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    },
+    "fabula-ultima-companion": {
+      "armorDefMdefAeMassPatchBackup_v1": {
+        "createdAt": 1777705756381,
+        "effects": [
+          {
+            "changes": [
+              {
+                "key": "defense",
+                "mode": 2,
+                "priority": 1,
+                "value": "${isEquipped ? (isMartial ? 0 : item_def_bonus) : 0}$"
+              },
+              {
+                "key": "defense",
+                "mode": 4,
+                "priority": 2,
+                "value": "${isEquipped ? (isMartial ? item_baseDef : 0) : 0}$"
+              }
+            ],
+            "id": "DSJ5Iu9ipz69Wsf3",
+            "name": "Armor DEF"
+          },
+          {
+            "changes": [
+              {
+                "key": "magic_defense",
+                "mode": 2,
+                "priority": 1,
+                "value": "${isEquipped ? (isMartial ? 0 : item_mdef_bonus) : 0}$"
+              },
+              {
+                "key": "magic_defense",
+                "mode": 4,
+                "priority": 2,
+                "value": "${isEquipped ? (isMartial ? item_baseMdef : 0) : 0}$"
+              }
+            ],
+            "id": "hPpE6RVNqm8Wlagw",
+            "name": "Armor MDEF"
+          }
+        ],
+        "itemName": "Orihacon",
+        "itemUuid": "Item.yVPG0aBkkzT5Ti3m",
+        "parentName": "",
+        "parentType": "World"
+      },
+      "defMdefHelperKeyPatchBackup_v1": {
+        "createdAt": 1777708466275,
+        "effects": [
+          {
+            "changes": [
+              {
+                "key": "defense",
+                "mode": 2,
+                "priority": 1,
+                "value": "${isEquipped ? (isMartial ? 0 : item_def_bonus) : 0}$"
+              },
+              {
+                "key": "defense",
+                "mode": 4,
+                "priority": 2,
+                "value": "${isEquipped ? (isMartial ? item_baseDef : 0) : 0}$"
+              }
+            ],
+            "id": "DSJ5Iu9ipz69Wsf3",
+            "name": "Armor DEF"
+          },
+          {
+            "changes": [
+              {
+                "key": "magic_defense",
+                "mode": 2,
+                "priority": 1,
+                "value": "${isEquipped ? (isMartial ? 0 : item_mdef_bonus) : 0}$"
+              },
+              {
+                "key": "magic_defense",
+                "mode": 4,
+                "priority": 2,
+                "value": "${isEquipped ? (isMartial ? item_baseMdef : 0) : 0}$"
+              }
+            ],
+            "id": "hPpE6RVNqm8Wlagw",
+            "name": "Armor MDEF"
+          }
+        ],
+        "itemId": "yVPG0aBkkzT5Ti3m",
+        "itemName": "Orihacon",
+        "itemType": "armor",
+        "itemUuid": "Item.yVPG0aBkkzT5Ti3m",
+        "owner": {
+          "actor": "",
+          "actorUuid": "",
+          "source": "World Item"
+        }
+      }
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "armor",
+        "fromTemplate": "5Z0gKtN5R51ebJOa",
+        "itemId": "yVPG0aBkkzT5Ti3m",
+        "itemName": "Orihacon",
+        "pickedOldProps": {
+          "cost": "0",
+          "def_bonus": "",
+          "defense": "0",
+          "defense_include_dex": false,
+          "initiative": "0",
+          "magic_defense": "0",
+          "magic_defense_include_ins": false,
+          "martial": false,
+          "mdef_bonus": "",
+          "shield": false
+        },
+        "ts": 1769647436148
+      }
+    }
+  },
+  "folder": "Bg5DI4ep2SjF1yVR",
+  "img": "icons/commodities/metal/ingot-stamped-spiral.webp",
+  "name": "Orihacon",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 500000,
+  "system": {
+    "container": null,
+    "props": {
+      "isMartial": false,
+      "item_baseDef": "0",
+      "item_baseMdef": "0",
+      "item_cost": "0",
+      "item_type": "armor",
+      "name": "Orihacon",
+      "set_name": ""
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "yVPG0aBkkzT5Ti3m"
+  },
+  "type": "equippableItem"
+}

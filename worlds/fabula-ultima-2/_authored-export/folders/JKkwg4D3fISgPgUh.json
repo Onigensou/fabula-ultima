@@ -1,0 +1,19 @@
+{
+  "_id": "JKkwg4D3fISgPgUh",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1747378461989,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.4.2"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "faDXweVXMG6e5TcA",
+  "name": "Discovery Drop",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

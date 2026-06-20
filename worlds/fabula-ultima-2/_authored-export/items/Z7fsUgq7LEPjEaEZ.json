@@ -1,0 +1,57 @@
+{
+  "_id": "Z7fsUgq7LEPjEaEZ",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757052194274,
+    "duplicateSource": "Item.5xYJTJrWkNXIInP2",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "CC77DCVjUHEUtN3o",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/storm.png",
+  "name": "Tachytheria",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Mutant",
+      "cost": "33% Current HP",
+      "damage_bonus": "0",
+      "description": "<p>You treat your <strong>Dexterity</strong> as if it were one die size higher (to a maximum of <strong>d12</strong>).</p>\n<p>When you succeed on a <strong>Check</strong> to advance or turn back a <strong>Clock</strong>, if that Check includes <strong>Dexterity</strong>, you may fill or erase <strong>1</strong> additional section of that Clock.</p>\n",
+      "duration": "Scene",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": true,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Tachytheria",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "Any",
+      "skill_target": "Self",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "Z7fsUgq7LEPjEaEZ"
+  },
+  "type": "equippableItem"
+}

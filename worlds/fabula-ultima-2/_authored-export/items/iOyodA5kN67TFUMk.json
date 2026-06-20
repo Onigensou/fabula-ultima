@@ -1,0 +1,111 @@
+{
+  "_id": "iOyodA5kN67TFUMk",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1781380663026,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "ii8MFeVoW9AZ8mhR",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1781380663680,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "extra_damage_mod_ranged",
+          "mode": 2,
+          "priority": 20,
+          "value": "propAtLeast(\"level\", 40, 10, 5)"
+        }
+      ],
+      "description": "<p><em>Powerful Shot:</em> ranged attacks deal +5 damage (10 at level 40+).</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "ii8MFeVoW9AZ8mhR",
+          "originalParentId": "iOyodA5kN67TFUMk",
+          "originalUuid": "Item.iOyodA5kN67TFUMk.ActiveEffect.ii8MFeVoW9AZ8mhR"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/skills/ranged/arrow-strike-glowing-blue.webp",
+      "name": "Powerful Shot",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "kmQEAefGfUhoR22y",
+  "img": "icons/skills/ranged/arrow-strike-glowing-blue.webp",
+  "name": "Powerful Shot",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "class": "Sharpshooter",
+      "cost": "",
+      "description": "<p>When you hit one or more creatures with a <strong>ranged attack</strong>, that attack deals <strong>5 extra damage</strong> to each creature.</p><p>The amount of extra damage increases to <strong>10</strong> if you are <strong>level 40</strong> or higher.</p>",
+      "heroic_requirement": "You must have learned all the Skills offered by the Sharpshooter Class.",
+      "isCheck": false,
+      "isHeroic": true,
+      "isReaction": false,
+      "level": 1,
+      "max_level": "1",
+      "name": "Powerful Shot",
+      "on_activate_effect_ref": "",
+      "skill_range": "-",
+      "skill_target": "-",
+      "skill_type": "Passive"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "iOyodA5kN67TFUMk"
+  },
+  "type": "equippableItem"
+}

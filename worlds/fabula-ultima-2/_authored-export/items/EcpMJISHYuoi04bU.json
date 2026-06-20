@@ -1,0 +1,44 @@
+{
+  "_id": "EcpMJISHYuoi04bU",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1751703860321,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "9536CjVHiIiPJrCI",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/NPCs/Kojiro.png",
+  "name": "Kojiro",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 2
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "active_name": "Pass-along \"Swallow Return\"",
+      "dice": "Show",
+      "flavor_text": "<hr>\n<blockquote>\n<p>&nbsp;</p>\n</blockquote>",
+      "id": "EcpMJISHYuoi04bU",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/NPCs/Kojiro.png",
+      "name": "Kojiro",
+      "passive_name": "\"Still Water Run Deep\"",
+      "support_active": "<p>Spends an <strong>Action</strong> to perform a 【<strong>Guard】</strong> . </p><p>On your <strong>next turn</strong>, if you haven't perform an 【<strong>Attack</strong>】 <strong>and </strong>an enemy has <strong>not</strong> reduce your Hit Points, you may spends <strong>20 Mind Points</strong> and perform a <strong>free attack</strong>. This attack must be a <strong>melee</strong> attack and will deals <strong>extra 20 damage</strong>.</p>",
+      "support_passive": "<p>While performing <strong>【Guard</strong>】, your <strong>DEX die</strong> becomes <strong>20</strong>.</p>",
+      "uuid": "Item.EcpMJISHYuoi04bU"
+    },
+    "template": "lUpHsEfBDEY3BeNq",
+    "templateSystemUniqueVersion": 4245463866,
+    "unique": false,
+    "uniqueId": "EcpMJISHYuoi04bU"
+  },
+  "type": "equippableItem"
+}

@@ -1,0 +1,311 @@
+{
+  "_id": "e4fETqmxyFgqnGDO",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1749338066895,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "l0Cd5f1WXXAiBO2g",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1775334455463,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "base_magic_defense",
+          "mode": 4,
+          "priority": 1,
+          "value": "${isEquipped ? (isMartial ? (item_baseMdef * 1) : 0) : 0}$"
+        },
+        {
+          "key": "bonus_magic_defense",
+          "mode": 2,
+          "priority": 2,
+          "value": "${isEquipped ? (isMartial ? 0 : (item_mdef_bonus * 1)) : 0}$"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "core": {
+          "overlay": false
+        },
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "l0Cd5f1WXXAiBO2g",
+          "originalParentId": "e4fETqmxyFgqnGDO",
+          "originalUuid": "Item.e4fETqmxyFgqnGDO.ActiveEffect.l0Cd5f1WXXAiBO2g"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-mdef-up",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUpStack.webp",
+      "name": "Armor MDEF",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    },
+    {
+      "_id": "o0p0SFC6xZn5GhqD",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1775334455424,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "base_defense",
+          "mode": 4,
+          "priority": 1,
+          "value": "${isEquipped ? (isMartial ? (item_baseDef * 1) : 0) : 0}$"
+        },
+        {
+          "key": "bonus_defense",
+          "mode": 2,
+          "priority": 2,
+          "value": "${isEquipped ? (isMartial ? 0 : (item_def_bonus * 1)) : 0}$"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "core": {
+          "overlay": false
+        },
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "o0p0SFC6xZn5GhqD",
+          "originalParentId": "e4fETqmxyFgqnGDO",
+          "originalUuid": "Item.e4fETqmxyFgqnGDO.ActiveEffect.o0p0SFC6xZn5GhqD"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-def-up",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUp.webp",
+      "name": "Armor DEF",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.4.2"
+    },
+    "fabula-ultima-companion": {
+      "armorDefMdefAeMassPatchBackup_v1": {
+        "createdAt": 1777705756009,
+        "effects": [
+          {
+            "changes": [
+              {
+                "key": "defense",
+                "mode": 2,
+                "priority": 1,
+                "value": "${isEquipped ? (isMartial ? 0 : item_def_bonus) : 0}$"
+              },
+              {
+                "key": "defense",
+                "mode": 4,
+                "priority": 2,
+                "value": "${isEquipped ? (isMartial ? item_baseDef : 0) : 0}$"
+              }
+            ],
+            "id": "o0p0SFC6xZn5GhqD",
+            "name": "Armor DEF"
+          },
+          {
+            "changes": [
+              {
+                "key": "magic_defense",
+                "mode": 2,
+                "priority": 1,
+                "value": "${isEquipped ? (isMartial ? 0 : item_mdef_bonus) : 0}$"
+              },
+              {
+                "key": "magic_defense",
+                "mode": 4,
+                "priority": 2,
+                "value": "${isEquipped ? (isMartial ? item_baseMdef : 0) : 0}$"
+              }
+            ],
+            "id": "l0Cd5f1WXXAiBO2g",
+            "name": "Armor MDEF"
+          }
+        ],
+        "itemName": "Luchador Pant",
+        "itemUuid": "Item.e4fETqmxyFgqnGDO",
+        "parentName": "",
+        "parentType": "World"
+      },
+      "defMdefHelperKeyPatchBackup_v1": {
+        "createdAt": 1777708465899,
+        "effects": [
+          {
+            "changes": [
+              {
+                "key": "defense",
+                "mode": 2,
+                "priority": 1,
+                "value": "${isEquipped ? (isMartial ? 0 : item_def_bonus) : 0}$"
+              },
+              {
+                "key": "defense",
+                "mode": 4,
+                "priority": 2,
+                "value": "${isEquipped ? (isMartial ? item_baseDef : 0) : 0}$"
+              }
+            ],
+            "id": "o0p0SFC6xZn5GhqD",
+            "name": "Armor DEF"
+          },
+          {
+            "changes": [
+              {
+                "key": "magic_defense",
+                "mode": 2,
+                "priority": 1,
+                "value": "${isEquipped ? (isMartial ? 0 : item_mdef_bonus) : 0}$"
+              },
+              {
+                "key": "magic_defense",
+                "mode": 4,
+                "priority": 2,
+                "value": "${isEquipped ? (isMartial ? item_baseMdef : 0) : 0}$"
+              }
+            ],
+            "id": "l0Cd5f1WXXAiBO2g",
+            "name": "Armor MDEF"
+          }
+        ],
+        "itemId": "e4fETqmxyFgqnGDO",
+        "itemName": "Luchador Pant",
+        "itemType": "armor",
+        "itemUuid": "Item.e4fETqmxyFgqnGDO",
+        "owner": {
+          "actor": "",
+          "actorUuid": "",
+          "source": "World Item"
+        }
+      }
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "armor",
+        "fromTemplate": "5Z0gKtN5R51ebJOa",
+        "itemId": "e4fETqmxyFgqnGDO",
+        "itemName": "Luchador Pant",
+        "pickedOldProps": {
+          "cost": "0",
+          "def_bonus": "2",
+          "defense": "0",
+          "defense_include_dex": true,
+          "initiative": "0",
+          "magic_defense": "0",
+          "magic_defense_include_ins": true,
+          "martial": false,
+          "mdef_bonus": "",
+          "shield": false
+        },
+        "ts": 1769647435911
+      }
+    }
+  },
+  "folder": "D1OgeGHLjJ9dSkxS",
+  "img": "https://i.etsystatic.com/15111921/r/il/931254/5957895207/il_fullxfull.5957895207_sz2o.jpg",
+  "name": "Luchador Pant",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3
+  },
+  "sort": 1600000,
+  "system": {
+    "container": null,
+    "props": {
+      "description": "<ul><li><p>Your  <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Grappled</span></strong></a></span></span> escape DL is <strong>13</strong>.</p></li><li><p>You can apply <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Grappled</span></strong></a></span></span> to any character that <strong>Grapple</strong> you.</p><hr contenteditable=\"false\"></li></ul><p><strong>【Set Bonus】</strong></p><p><strong>2-Piece</strong></p><ul><li><p>You can <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Grappled</span></strong></a></span></span> maximum 3 creature</p></li><li><p>You can't use <strong>【Objective】</strong> and <strong>【Equipment】</strong> action if you <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Grappled</span></strong></a></span></span> 2 or more creature.</p></li><li><p>You can't use <strong>【Inventory】</strong> and <strong>【Attack】</strong> action if you <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Grappled</span></strong></a></span></span> 3 creature</p><hr contenteditable=\"false\"></li></ul><p><strong>3-Piece</strong></p><ul><li><p>You may perform the skill 【💥<strong>Powerbomb</strong>】</p></li></ul><hr class=\"\" contenteditable=\"false\"><details><summary><strong>💥 Powerbomb</strong></summary><p><strong>Cost:</strong> -</p><p><strong>Target:</strong> Grappled Creatures</p><p><strong>Duration:</strong> Instantaneous</p><p>Remove @UUID[JournalEntry.FV8JefaHsehzgXR7]{Grappled} from all creature Grappled by you, then deal 50 physical damage to them</p><p></p></details>",
+      "isMartial": false,
+      "item_baseDef": "0",
+      "item_baseMdef": "0",
+      "item_cost": "0",
+      "item_def_bonus": "2",
+      "item_type": "armor",
+      "name": "Luchador Pant",
+      "set_name": "Luchador"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "e4fETqmxyFgqnGDO"
+  },
+  "type": "equippableItem"
+}

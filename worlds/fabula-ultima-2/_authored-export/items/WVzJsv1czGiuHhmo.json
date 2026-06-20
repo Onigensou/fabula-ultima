@@ -1,0 +1,62 @@
+{
+  "_id": "WVzJsv1czGiuHhmo",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1702238236991,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "WVzJsv1czGiuHhmo",
+        "itemName": "Freyr (Light)",
+        "pickedOldProps": {
+          "cost": "1200",
+          "martial": false
+        },
+        "ts": 1769647435607
+      }
+    }
+  },
+  "folder": "mQjggSVh5fVzzExw",
+  "img": "icons/weapons/swords/sword-gold-holy.webp",
+  "name": "Freyr (Light)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 100000,
+  "system": {
+    "container": null,
+    "props": {
+      "category": "Sword",
+      "check_bonus": "0",
+      "damage_bonus": "0",
+      "description": "",
+      "hand_slots": "Two-handed",
+      "isMartial": false,
+      "item_cost": "1200",
+      "item_type": "weapon",
+      "name": "Freyr (Light)",
+      "rolled_atr1": "WLP",
+      "rolled_atr2": "INS",
+      "set_name": "",
+      "skill_target": "One Enemy",
+      "type_damage": "Physical",
+      "weapon_range": "Ranged"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "WVzJsv1czGiuHhmo"
+  },
+  "type": "equippableItem"
+}

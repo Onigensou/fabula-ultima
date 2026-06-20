@@ -1,0 +1,51 @@
+{
+  "_id": "089x5tFpzoHi2O6z",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1781934527048,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/533.png",
+  "name": "Grape Juice",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "UPrdSUli5l4FksHL",
+    "props": {
+      "cost": "-",
+      "description": "<p><em>Grape Juice:</em> target ally recovers 20 MP.</p>",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "effect_kind": "grant",
+          "effect_label": "grapejuice_restore",
+          "grant_amount": "20",
+          "grant_resource": "mp",
+          "target_ref": "action_targets"
+        }
+      },
+      "isCheck": false,
+      "on_activate_effect_ref": "grapejuice_restore",
+      "skill_target": "One Ally",
+      "skill_type": "Item",
+      "type_damage": ""
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "089x5tFpzoHi2O6z"
+  },
+  "type": "equippableItem"
+}

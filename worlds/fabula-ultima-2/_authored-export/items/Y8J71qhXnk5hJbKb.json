@@ -1,0 +1,62 @@
+{
+  "_id": "Y8J71qhXnk5hJbKb",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1740806686347,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "Y8J71qhXnk5hJbKb",
+        "itemName": "Excalibur?",
+        "pickedOldProps": {
+          "cost": "900",
+          "martial": true
+        },
+        "ts": 1769647435567
+      }
+    }
+  },
+  "folder": "xMVY94FXuACmcFkd",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Valkyrie%20Connect/Gladius_icon.webp",
+  "name": "Excalibur?",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "category": "Sword",
+      "check_bonus": "1",
+      "damage_bonus": "10",
+      "description": "<p>When you are inflicted with <strong>status effect</strong>, you <strong>MUST</strong> choose an ally. That ally is inflicted with that status effect in your stead.</p><hr contenteditable=\"false\"><p><strong>【Set Bonus】</strong></p><p>???</p>",
+      "hand_slots": "Two-handed",
+      "isMartial": true,
+      "item_cost": "900",
+      "item_type": "weapon",
+      "name": "Excalibur?",
+      "rolled_atr1": "MIG",
+      "rolled_atr2": "WLP",
+      "set_name": "Talechaser",
+      "skill_target": "One Enemy",
+      "type_damage": "Physical",
+      "weapon_range": "Melee"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "Y8J71qhXnk5hJbKb"
+  },
+  "type": "equippableItem"
+}

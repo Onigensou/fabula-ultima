@@ -1,0 +1,58 @@
+{
+  "_id": "ToXarLKT0G2ggon1",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757430782814,
+    "duplicateSource": "Item.k6oFHmln1bPfvq90",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "jrKIkae1l6fNLgRS",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/spread.png",
+  "name": "Mulligan",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Ace of Cards",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>At the end of your turn during a conflict, you may discard up to <strong>[SL]</strong> cards from your <strong>hand</strong>. If you do, draw that many cards from your <strong>deck</strong>.</p>\n<div class=\"tableWrapper\"></div>",
+      "duration": "",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Mulligan",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_information": "<table style=\"width:100%; text-align:center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Discard/Draw Up To</strong></p></td></tr><tr><td><p>1</p></td><td><p>1</p></td></tr><tr><td><p>2</p></td><td><p>2</p></td></tr><tr><td><p>3</p></td><td><p>3</p></td></tr><tr><td><p>4</p></td><td><p>4</p></td></tr><tr><td><p>5</p></td><td><p>5</p></td></tr></tbody></table><p style=\"font-size: 12px; margin-top: 4px; text-align: center\">(Value equals <em>SL</em> cards.)</p>",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "ToXarLKT0G2ggon1"
+  },
+  "type": "equippableItem"
+}

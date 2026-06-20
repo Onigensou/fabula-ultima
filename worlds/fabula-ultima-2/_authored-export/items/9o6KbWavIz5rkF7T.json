@@ -1,0 +1,65 @@
+{
+  "_id": "9o6KbWavIz5rkF7T",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1761169331658,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.4"
+    }
+  },
+  "folder": "2OplVa9fwLYbzD8b",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/ruin_iv.png",
+  "name": "Revelation (Variant)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 2500000,
+  "system": {
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_script": "",
+      "check_bonus": "0",
+      "class": "Arcanist (Variant)",
+      "cost": "-",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>You make contact with a previously unknown Arcanum, which you design together with the rest of your group, and bind that Arcanum to your soul (feel free to make it a bit stronger than normal, since it was obtained through a Heroic Skill). For as long as you live, no one else in your world will be able to bind that Arcanum.</p><p>When you summon an Arcanum, if you are in <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\"><strong><span style=\"text-decoration: underline;\">Crisis </span></strong></a></span></span>and choose both options of the 【📜 <strong>Quick Summoning】</strong> Skill, you only suffer the first penalty <em>(the dismiss effect of the summoned Arcanum will be available for this summoning).</em></p>",
+      "duration": "-",
+      "heroic_requirement": "you must have mastered the Arcanist Class, and your character must be level 30 or higher.",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Revelation (Variant)",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "",
+      "skill_target": "-",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "9o6KbWavIz5rkF7T"
+  },
+  "type": "equippableItem"
+}

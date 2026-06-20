@@ -1,0 +1,110 @@
+{
+  "_id": "mODVDmjIfozcfERi",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1741694029947,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "mODVDmjIfozcfERi",
+        "itemName": "Imperial Gunblade",
+        "pickedOldProps": {
+          "cost": "2500",
+          "martial": false
+        },
+        "ts": 1769647435822
+      }
+    }
+  },
+  "folder": "xMVY94FXuACmcFkd",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/sword.png",
+  "name": "Imperial Gunblade",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "aquatic_ef": "100",
+      "automaton_ef": "100",
+      "avian_ef": "100",
+      "beast_ef": "100",
+      "category": "Sword",
+      "celestial_ef": "100",
+      "check": "Check",
+      "check_bonus": "0",
+      "construct_ef": "100",
+      "damage_bonus": "8",
+      "demiHuman_ef": "100",
+      "demon_ef": "100",
+      "description": "<p><strong>Blade Form</strong></p><p><strong>Sword </strong><em><strong>• Two-handed • Melee • Martial</strong></em></p><p><em><strong>Accuracy: 【DEX】+【MIG】•　Damage: 【HR + 8】Physical</strong></em></p><blockquote><ul><li><em>When you attack with this weapon, If the attack Accuracy check is an <strong>Odd</strong> number or you roll a <strong>Critical Success</strong>, deals <strong>10</strong> bonus damage and the damage is convert to&nbsp;<strong>Fire</strong></em></li></ul></blockquote><hr contenteditable=\"false\"><p><strong>Gun Form</strong></p><p><strong>Firearm </strong><em><strong>• Two-handed • Ranged • Martial</strong></em></p><p><em><strong>Accuracy: 【DEX】+【INS】+ 1 •　Damage: 【HR + 5】Physical</strong></em></p><blockquote><ul><li><span style=\"font-style: normal;\">You deal <strong>5</strong>&nbsp;<strong>bonus damage&nbsp;</strong>to creature with @UUID[JournalEntry.TOF8epes1eGHwx5J]{Frightened}</span></li></ul></blockquote><p>&nbsp;</p><hr contenteditable=\"false\"><ul><li><p><strong>【Set Bonus】</strong></p><p><strong>2 Piece</strong></p><ul><li><p>You deal <strong>10</strong> <strong>bonus damage&nbsp;</strong>to creature whose&nbsp;<strong>level&nbsp;</strong>is lower than you<br></p><hr contenteditable=\"false\"></li></ul><p><strong>3 Piece</strong></p><ul><li><p>Creature whose&nbsp;<strong>level </strong>is lower than you start the&nbsp;<strong>conflict&nbsp;</strong>with @UUID[JournalEntry.TOF8epes1eGHwx5J]{Frightened} which last for&nbsp;<strong>1</strong> Round</p></li></ul></li></ul>",
+      "dragon_ef": "100",
+      "elemental_ef": "100",
+      "enforcer_ef": "100",
+      "fey_ef": "100",
+      "flora_ef": "100",
+      "fungus_ef": "100",
+      "golem_ef": "100",
+      "gorger_ef": "100",
+      "hand_slots": "Two-handed",
+      "human_ef": "100",
+      "humanoid_ef": "100",
+      "id": "mODVDmjIfozcfERi",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/sword.png",
+      "insect_ef": "100",
+      "ip_cost": "",
+      "isEquipped": false,
+      "isKey": false,
+      "isMartial": false,
+      "isModule": false,
+      "isRelatedItem": false,
+      "isSet": false,
+      "isUnique": false,
+      "item_baseDef": "0",
+      "item_baseMdef": "0",
+      "item_cost": "2500",
+      "item_def_bonus": "0",
+      "item_mdef_bonus": "0",
+      "item_quantity": "1",
+      "item_rarity": "Common",
+      "item_type": "weapon",
+      "mimic_ef": "100",
+      "monster_ef": "100",
+      "name": "Imperial Gunblade",
+      "optional_params": {},
+      "plant_ef": "100",
+      "refine_count": "0",
+      "refine_level": "0",
+      "reptilian_ef": "100",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "MIG",
+      "set_name": "Arm of the Law",
+      "skill_target": "One Enemy",
+      "soldier_ef": "100",
+      "spirit_ef": "100",
+      "type_damage": "Physical",
+      "undead_ef": "100",
+      "uuid": "Item.mODVDmjIfozcfERi",
+      "vehicle_ef": "100",
+      "weapon_range": "Melee"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "mODVDmjIfozcfERi"
+  },
+  "type": "equippableItem"
+}

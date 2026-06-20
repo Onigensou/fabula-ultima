@@ -1,0 +1,19 @@
+{
+  "_id": "z7NLbCmTWrDRsqk6",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1753923562723,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "VVjpCERIXMrOJna7",
+  "name": "Arcanist",
+  "sort": 100000,
+  "sorting": "a",
+  "type": "Item"
+}

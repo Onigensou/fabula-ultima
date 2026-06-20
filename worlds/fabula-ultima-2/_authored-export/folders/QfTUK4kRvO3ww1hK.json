@@ -1,0 +1,19 @@
+{
+  "_id": "QfTUK4kRvO3ww1hK",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1757757046452,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "VVjpCERIXMrOJna7",
+  "name": "Hexer",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

@@ -1,0 +1,62 @@
+{
+  "_id": "JXTatbLpfQkBEZQT",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1747551556236,
+    "duplicateSource": "Item.bwqZvS4NXw7bCrmV",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "JXTatbLpfQkBEZQT",
+        "itemName": "IW-Unarmed Strike",
+        "pickedOldProps": {
+          "cost": "0",
+          "martial": false
+        },
+        "ts": 1769647435799
+      }
+    }
+  },
+  "folder": "wkrvldDZ113CaPX8",
+  "img": "icons/equipment/hand/gauntlet-simple-leather-brown-gold.webp",
+  "name": "IW-Unarmed Strike",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": -100000,
+  "system": {
+    "container": null,
+    "props": {
+      "category": "Brawling",
+      "check_bonus": "1",
+      "damage_bonus": "8",
+      "description": "<p>Automatically equipped in each empty hand slot.</p><hr contenteditable=\"false\"><p>[AKROMORPHOSIS]</p><p>At the start of your turn during a conflict, you may choose a weapon Category other than brawling. These changes last until the start of your next turn.</p><hr contenteditable=\"false\"><p>[Frenzy]</p><p>Your Accuracy Checks with <strong>brawling, dagger, flail and thrown</strong> weapons trigger a critical success if both dice show the same number (and the Check is not a fumble).</p>",
+      "hand_slots": "One-handed",
+      "isMartial": false,
+      "item_cost": "0",
+      "item_type": "weapon",
+      "name": "IW-Unarmed Strike",
+      "rolled_atr1": "WLP",
+      "rolled_atr2": "MIG",
+      "set_name": "",
+      "skill_target": "One Enemy",
+      "type_damage": "Physical",
+      "weapon_range": "Melee"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "JXTatbLpfQkBEZQT"
+  },
+  "type": "equippableItem"
+}

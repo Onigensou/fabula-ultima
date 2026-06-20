@@ -1,0 +1,92 @@
+{
+  "_id": "SGJ3JqT2GvFkGOob",
+  "_stats": {
+    "compendiumSource": "Item.EX918lq86ioPRb22",
+    "coreVersion": "12.343",
+    "createdTime": 1775130489074,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "category": "skill",
+        "detectedType": "spellcard_v1",
+        "fromTemplate": "XfUpjwaovj4v9AjI",
+        "itemId": "EX918lq86ioPRb22",
+        "itemName": "Raise Dead",
+        "pickedOldProps": {
+          "class": "Necromancer",
+          "cost": "30 MP",
+          "damage": "0",
+          "description": "<p>Choose a <strong>Humanoid, Beast, Plant</strong> creature who has been reduce to 0 HP in this scene, Summon that creature to the scene, it's species become <strong>Undead</strong> and is always inflicted by @UUID[JournalEntry.RZIAnKw95vY6yh2W]{Zombie}, then, it perform a <strong>Free Action</strong></p>\n    <p>The creature follows the <strong>companion</strong> rule and dies at the end of this scene</p>",
+          "discipline": "spiritism",
+          "duration": "Scene",
+          "id": "EX918lq86ioPRb22",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20(32).png",
+          "name": "Raise Dead",
+          "target": "One KO Creature",
+          "type_damage": "",
+          "uuid": "Item.EX918lq86ioPRb22"
+        },
+        "ts": 1770021428494
+      }
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20(32).png",
+  "name": "Raise Dead",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": "UjwPQbjFx3RuOM74",
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_script": "",
+      "check_bonus": "0",
+      "class": "Necromancer",
+      "cost": "30 MP",
+      "damage_bonus": "",
+      "defense_target_type": "def",
+      "description": "<p>Choose a <strong>Non-Champion</strong> <strong>Humanoid, Beast, Monster, Plant</strong> creature who has been reduce to 0 HP in this scene, Summon that creature to the scene, it's species become <strong>Undead</strong> and is always inflicted by <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.RZIAnKw95vY6yh2W\" data-id=\"RZIAnKw95vY6yh2W\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Zombie</span></strong></a></span></span>, then, it perform a <strong>Free Action</strong></p><p>The creature follows the <strong>companion</strong> rule and dies at the end of this scene. A creature can only be affected by this spell <strong>once.</strong></p>",
+      "duration": "Scene",
+      "heroic_requirement": "",
+      "ignore_hr": false,
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Raise Dead",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "",
+      "skill_target": "One KO Creature",
+      "skill_type": "Spell",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "SGJ3JqT2GvFkGOob"
+  },
+  "type": "equippableItem"
+}

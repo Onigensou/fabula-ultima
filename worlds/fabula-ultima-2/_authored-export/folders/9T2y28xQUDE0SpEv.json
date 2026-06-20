@@ -1,0 +1,19 @@
+{
+  "_id": "9T2y28xQUDE0SpEv",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1754165392338,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "uuBCmFnWytMuWiTe",
+  "name": "Pirate Gadget",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

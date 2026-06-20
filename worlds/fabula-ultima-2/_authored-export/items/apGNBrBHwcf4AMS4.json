@@ -1,0 +1,55 @@
+{
+  "_id": "apGNBrBHwcf4AMS4",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1754348510533,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "2OplVa9fwLYbzD8b",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/Comeuppance.png",
+  "name": "Heartbreaker",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 6300000,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Darkblade",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>When you hit a creature with an attack, if that attack <strong>only</strong> targeted that creature and you have a <strong>Bond</strong> towards them, you may choose to spend half of your current Hit Points, rounded down. If you do, the attack deals extra damage equal to <strong>【10 multiplied by the strength of your Bond towards the target】.</strong></p><p>You may use this Skill only on your turn during a conflict, and <strong>only once per turn</strong></p>",
+      "duration": "",
+      "heroic_requirement": "You must have mastered the Darkblade Class.",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "level": "1",
+      "max_level": "1",
+      "name": "Heartbreaker",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "apGNBrBHwcf4AMS4"
+  },
+  "type": "equippableItem"
+}

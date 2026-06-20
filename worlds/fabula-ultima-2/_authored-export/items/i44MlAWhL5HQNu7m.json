@@ -1,0 +1,58 @@
+{
+  "_id": "i44MlAWhL5HQNu7m",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1756854951351,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "SpOeLnDXVqot9DX9",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/12_MCH/gauss_round.png",
+  "name": "Magicannon",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Tinkerer",
+      "cost": "3 IP",
+      "damage_bonus": "0",
+      "description": "<p>You may perform the<strong>【⚗️Item】</strong> action and spend <strong>3 Inventory Points</strong> to create a firearm weapon known as a <strong>@UUID[Item.3nrod81ulEj4BbOB]{Magicannon}</strong> (see below). The magicannon will crumble to pieces as soon as you use create a new magicannon. When you create a magicannon, choose the type of damage it deals (<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"background-color:#666;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"background-color:#666;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"background-color:#666;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"background-color:#666;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"background-color:#666;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span></span>, or <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"background-color:#666;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a></span></span>).</p>\n<!-- MAGICANNON ITEM CARD -->\n<table class=\"item-table\">\n  <thead>\n    <tr>\n      <th>WEAPON</th>\n      <th>ACCURACY</th>\n      <th>DAMAGE</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr class=\"item-main\">\n      <td class=\"weapon-cell\">\n        <div class=\"weapon-head\">\n          <img class=\"weapon-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/13160.gif\" alt=\"Magicannon\">\n          <strong>Magicannon</strong>\n        </div>\n      </td>\n      <td class=\"centercell\"><strong>[DEX + INS] +1</strong></td>\n      <td class=\"centercell\"><strong>[HR + 10]</strong></td>\n    </tr>\n    <tr class=\"item-sub\">\n      <td colspan=\"3\">Two-handed ◆ Ranged ◆ No Quality.</td>\n    </tr>\n  </tbody>\n</table>\n\n<style>\n/* --- Magicannon book-style item card --- */\n.item-table{ width:100%; border-collapse:collapse; margin:.6rem 0 .2rem; font-family:var(--chat-font,\"Signika\",system-ui,sans-serif); }\n.item-table thead th{ background:#254a41; color:#fff; font-weight:800; text-transform:uppercase; letter-spacing:.04em; padding:.45rem .6rem; border-top:1px solid #254a41; }\n.item-table td{ border-bottom:1px solid #e1e6e2; padding:.45rem .6rem; background:#fff; }\n.item-table .item-main td{ border-bottom:1px solid #cfd6d1; }\n.item-table .item-sub td{ background:#f8faf8; padding:.5rem .8rem; }\n.weapon-head{ display:flex; align-items:center; gap:.5rem; }\n.weapon-icon{ width:28px; height:28px; object-fit:contain; border-radius:4px; box-shadow:0 0 0 1px rgba(0,0,0,.08) inset; image-rendering: pixelated; }\n.weapon-cell{ width:60%; }\n.centercell{ text-align:center; white-space:nowrap; }\n</style>\n",
+      "duration": "Instantaneous",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": true,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Magicannon",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p><strong>Level</strong></p></td><td data-colwidth=\"148\"><p><strong>Invention Get</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>Basic</p></td><td data-colwidth=\"148\"><p>Magictech Override</p></td></tr><tr><td data-colwidth=\"79\"><p>Advance</p></td><td data-colwidth=\"148\"><p>Magicannon</p></td></tr><tr><td data-colwidth=\"79\"><p>Superior</p></td><td data-colwidth=\"148\"><p>Magispheres</p></td></tr></tbody></table>",
+      "skill_range": "Any",
+      "skill_target": "Self",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "i44MlAWhL5HQNu7m"
+  },
+  "type": "equippableItem"
+}

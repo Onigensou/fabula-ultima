@@ -1,0 +1,19 @@
+{
+  "_id": "OFXRN3P2p6Ce5ySM",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1757283858485,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "Gbn6vXIF7FdH7EdG",
+  "name": "Magiseeds",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

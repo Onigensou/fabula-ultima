@@ -1,0 +1,53 @@
+{
+  "_id": "xcR5dYrIFysvIt5E",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1753954999190,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "Sypglcm85sjY8KNe",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/05_SCH/enhanced_deployment_tactics.png",
+  "name": "Battle Formation",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Tactician",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>Each time you take this <strong>Skill</strong>, you learn a <strong>Formation</strong> <em>(see Class Mechanic)</em></p><p>On your turn during a conflict scene, You may use an <strong>【Objective】</strong>action to <strong>deploy a Formation</strong>.</p><p>You may only have one Formation active at a time, Deploying a new Formation replace your current active one, a Formation grants passive benefits to all allies, but only if you have a specific party member in your party.</p>",
+      "duration": "",
+      "isCheck": false,
+      "isHeroic": false,
+      "level": "1",
+      "max_level": "10",
+      "name": "Battle Formation",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_target": "",
+      "skill_type": "Other",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "xcR5dYrIFysvIt5E"
+  },
+  "type": "equippableItem"
+}

@@ -1,0 +1,57 @@
+{
+  "_id": "1E5VZDlvY8JY8eJ3",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1758248857600,
+    "duplicateSource": "Item.DP1wXzT66WXAe4sO",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "2OplVa9fwLYbzD8b",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Wizard/icon_wizar_thurisaz.png",
+  "name": "Down to Size",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 2000000,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Tailor",
+      "cost": "X MP",
+      "damage_bonus": "0",
+      "description": "<p>You may use an action and spend up to 40 Mind Points to choose one creature you can see. For every 20 Mind Points spent this way, choose one Attribute; the chosen Attribute’s die size is reduced by one, to a minimum of d6. This effect can stack with status effects and is independent. A Villain NPC may <strong>Recover</strong> to end this effect.</p>\n<ul>\n  <li>Dexterity</li>\n  <li>Insight</li>\n  <li>Might</li>\n  <li>Willpower</li>\n</ul>\n",
+      "duration": "Scene",
+      "heroic_requirement": "You must have mastered the Tailor Class",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Down to Size",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "Range",
+      "skill_target": "X Creature",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "1E5VZDlvY8JY8eJ3"
+  },
+  "type": "equippableItem"
+}

@@ -1,0 +1,57 @@
+{
+  "_id": "DFPmC0P4Kz07z0kv",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1758079285685,
+    "duplicateSource": "Item.6KYKZzM1SB9qbGOi",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "VIOEoJCJMxZPFOxA",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lu/DemActive9.png",
+  "name": "Hybridization",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Tamer",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>When you rest, you can combine two of your recruited creatures into a single creature. The new creature has the attitude and damage Affinities of one of the original creatures and any combination of up to two basic attacks from the original creatures.</p>\n",
+      "duration": "",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Hybridization",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "DFPmC0P4Kz07z0kv"
+  },
+  "type": "equippableItem"
+}

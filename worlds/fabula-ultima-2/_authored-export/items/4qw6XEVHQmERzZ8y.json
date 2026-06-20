@@ -1,0 +1,55 @@
+{
+  "_id": "4qw6XEVHQmERzZ8y",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1753927622413,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "nNKbXiI5DqqWmDy0",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/15_RDM/fleche.png",
+  "name": "Spellblade Rhapsody",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Spell Fencer",
+      "cost": "2 Resonance",
+      "damage_bonus": "0",
+      "description": "<p>Spend <strong>2 Resonance, </strong>During this turn, you may perform both the <strong>【Attack】</strong>action and <strong>【Spell】</strong>action, the spell you cast this way must be an <strong>Offensive Spell </strong>and must have the mind point cost of equal to or less than <strong>【SL x 10】</strong></p>",
+      "duration": "Turn",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "level": "1",
+      "max_level": "3",
+      "name": "Spellblade Rhapsody",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_target": "self",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "4qw6XEVHQmERzZ8y"
+  },
+  "type": "equippableItem"
+}

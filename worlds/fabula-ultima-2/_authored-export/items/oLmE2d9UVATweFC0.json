@@ -1,0 +1,62 @@
+{
+  "_id": "oLmE2d9UVATweFC0",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757758816108,
+    "duplicateSource": "Item.sGrWBZ1E4yDlVgSy",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "QSU5T1V4cEJ856gJ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/backdraft.png",
+  "name": "Pressure",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "check_bonus": "0",
+      "class": "Hexer",
+      "cost": "5 x T MP",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>You conjure an oppressive atmosphere that amplifies strain on the target’s mind. The next time a target hit by this spell would spend Mind Points, that creature must spend an <strong>additional 10 Mind Points</strong> or lose their intended effect.</p>\n",
+      "duration": "Instantaneous",
+      "heroic_requirement": "",
+      "isCheck": true,
+      "isFacet": true,
+      "isHeroic": false,
+      "isOffensiveSpell": true,
+      "isReaction": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Pressure",
+      "optional_params": {},
+      "rolled_atr1": "INS",
+      "rolled_atr2": "WLP",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "Range",
+      "skill_target": "Up to three creature",
+      "skill_type": "Spell",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "oLmE2d9UVATweFC0"
+  },
+  "type": "equippableItem"
+}

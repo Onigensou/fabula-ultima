@@ -1,0 +1,1105 @@
+{
+  "_id": "3KulR3t3i0HpcCid",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1756941325835,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "tmNVy5jIbM9rzx80",
+  "img": "https://tiermaker.com/images/media/template_images/2024/16720717/fabula-ultima-classes-16720717/commander.png",
+  "items": [
+    {
+      "_id": "5XWStpcACwRFEhRI",
+      "_stats": {
+        "compendiumSource": "Item.dFWnup5lNBi9iwa3",
+        "coreVersion": "12.343",
+        "createdTime": 1756943839699,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/white_knight%27s_tour.png",
+      "name": "Tabula Rasa",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Commander",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>After you use <strong>【💥Bishop’s Edict】</strong> or <strong>【💥King's Castle</strong>】 Skills, if you are in <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span>, you may have every enemy creature present on the scene lose <strong>10 Hit Points.</strong></p><hr contenteditable=\"false\"><p><strong>Skill Enhancement Lv. 20 ― </strong>The amount of Hit Points lost increases to <strong>20</strong>.</p><p><strong>Skill Enhancement Lv. 40 ― </strong>The amount of Hit Points lost increases to <strong>30</strong>.</p>",
+          "duration": "",
+          "heroic_requirement": "you must have mastered the Commander Class.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Tabula Rasa",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "dFWnup5lNBi9iwa3"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "atv5MhidCVT4i6ux",
+      "_stats": {
+        "compendiumSource": "Item.cy0XWEqKnjvJ9B4c",
+        "coreVersion": "12.343",
+        "createdTime": 1756943811075,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lu/LuCielSkill11.png",
+      "name": "Bishop's Edict",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Commander",
+          "cost": "10 MP",
+          "damage_bonus": "0",
+          "description": "<p>During a conflict, you may use an action and spend 10 Mind Points to <strong>choose one option:</strong></p><ul><li>All MP costs are doubled</li><li>All sources of damage deal <strong>【SL × 3】</strong> extra damage</li></ul><p>The chosen effect lasts until the start of your next turn.</p>",
+          "duration": "Until the start of your next turn",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "5",
+          "name": "Bishop's Edict",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Extra Damage</strong></p></td></tr><tr><td><p>1</p></td><td><p>+3</p></td></tr><tr><td><p>2</p></td><td><p>+6</p></td></tr><tr><td><p>3</p></td><td><p>+9</p></td></tr><tr><td><p>4</p></td><td><p>+12</p></td></tr><tr><td><p>5</p></td><td><p>+15</p></td></tr></tbody></table>",
+          "skill_range": "Any",
+          "skill_target": "All creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "cy0XWEqKnjvJ9B4c"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "qhNwFCjSSMd0UpUw",
+      "_stats": {
+        "compendiumSource": "Item.ckL5UZGRslPt1cZa",
+        "coreVersion": "12.343",
+        "createdTime": 1756943812387,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213950.334.png",
+      "name": "Charging Cavalry",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Commander",
+          "cost": "10 MP",
+          "damage_bonus": "0",
+          "description": "<p>During a conflict, you may use an action and spend 10 MP to choose one ally that can hear you. That ally may immediately perform a <strong>free attack</strong> with a weapon they have equipped (or with a basic attack if they are an NPC). They gain a bonus equal to <strong>【SL + 3】</strong> to the Accuracy Check, but treat their High Roll (HR) as 0 when calculating damage.</p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "5",
+          "name": "Charging Cavalry",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Accuracy Bonus</strong></p></td></tr><tr><td><p>1</p></td><td><p>+4</p></td></tr><tr><td><p>2</p></td><td><p>+5</p></td></tr><tr><td><p>3</p></td><td><p>+6</p></td></tr><tr><td><p>4</p></td><td><p>+7</p></td></tr><tr><td><p>5</p></td><td><p>+8</p></td></tr></tbody></table>",
+          "skill_range": "Any",
+          "skill_target": "One ally",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "ckL5UZGRslPt1cZa"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "SK9Veg0YeAaUEdsy",
+      "_stats": {
+        "compendiumSource": "Item.g121BQspB6TKcCf9",
+        "coreVersion": "12.343",
+        "createdTime": 1756968808616,
+        "duplicateSource": "Item.VrcTeLvyBfnLtRZM",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/11_BRD/bite_mastery.png",
+      "name": "Double Arrow",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Sharpshooter",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you perform the 【⚔️Attack】 action with a <strong>ranged</strong> weapon that belongs to the <strong>bow</strong> Category, if you have no other weapon equipped, you may perform two separate attacks instead of one (against the same target or against different targets). If you do, both attacks follow the rules for <strong>two-weapon fighting</strong>: each attack loses the <strong>multi</strong> property and cannot gain it, and you treat the <strong>High Roll</strong> of each Accuracy Check as being equal to 0 when determining damage.</p>\n<p>Note that this Heroic Skill does not stack with a custom weapon’s <em>quick</em> customization (using Twin Arrows with a quick bow doesn’t allow more than two attacks, in short).</p>\n",
+          "duration": "",
+          "heroic_requirement": "you must have mastered one or more Classes among Commander and Sharpshooter.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Double Arrow",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "g121BQspB6TKcCf9"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "tPtT9d23WitBs5Qb",
+      "_stats": {
+        "compendiumSource": "Item.f7LAMimGFhqpUUWX",
+        "coreVersion": "12.343",
+        "createdTime": 1756944009567,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/oath_mastery.png",
+      "name": "Queen's Gambit",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Commander",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>During a conflict, you may use an action to perform a <strong>free attack</strong> with a weapon you have equipped, treating your High Roll (HR) as 0 when calculating damage. After the attack is resolved, <strong>choose one option:</strong></p><ul><li>One ally who is able to hear you recovers <strong>【5 + (SL × 5)】</strong> Hit Points</li><li>You may immediately use a Skill you acquired among <strong>【💥Bishop’s Edict】</strong>, <strong>【💥Charging Cavalry】</strong> or <strong>【💥King's Castle</strong>】 for free (spending the appropriate MP)</li></ul>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "6",
+          "name": "Queen's Gambit",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>HP Recovered</strong></p></td></tr><tr><td><p>1</p></td><td><p>10</p></td></tr><tr><td><p>2</p></td><td><p>15</p></td></tr><tr><td><p>3</p></td><td><p>20</p></td></tr><tr><td><p>4</p></td><td><p>25</p></td></tr><tr><td><p>5</p></td><td><p>30</p></td></tr><tr><td><p>6</p></td><td><p>35</p></td></tr></tbody></table>",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "f7LAMimGFhqpUUWX"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "UVCa93DfH5xnQ8GO",
+      "_stats": {
+        "compendiumSource": "Item.P3iAf8dGAQLg8tLS",
+        "coreVersion": "12.343",
+        "createdTime": 1756968969188,
+        "duplicateSource": "Item.jYKFnEb09ArDvBjb",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "lS0LxHPikWAToPrQ",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1780593573468,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "bonus_defense",
+              "mode": 2,
+              "priority": 20,
+              "value": "aeSlotEquippedWhen(\"main:weapon&off:shield\", \"1\")"
+            },
+            {
+              "key": "weapon1_damage",
+              "mode": 2,
+              "priority": 20,
+              "value": "aeSlotEquippedWhen(\"main:weapon&off:shield\", \"5\")"
+            }
+          ],
+          "description": "<p><em>Hoplite:</em> Wielding weapon + shield: +1 Defense, +5 main-hand damage.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "lS0LxHPikWAToPrQ",
+              "originalParentId": "UVCa93DfH5xnQ8GO",
+              "originalUuid": "Actor.3KulR3t3i0HpcCid.Item.UVCa93DfH5xnQ8GO.ActiveEffect.lS0LxHPikWAToPrQ"
+            },
+            "fabula-ultima-companion": {
+              "category": "buff"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/chivalry.png",
+          "name": "Hoplite",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "buff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/chivalry.png",
+      "name": "Hoplite",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Guardian",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>As long as you have a <strong>weapon</strong> equipped in your <strong>main hand</strong> slot and a <strong>shield</strong> equipped in your <strong>off-hand</strong> slot, your attacks with that weapon deal <strong>5 extra damage</strong> and you gain a <strong>+1 bonus to Defense</strong>.</p><p><em>This Skill cannot be combined with custom weapons with the defence boost customization, nor with the Dual Shieldbearer Skill.</em></p>",
+          "duration": "",
+          "heroic_requirement": "You must have mastered one or more Classes among Commander and Guardian.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Hoplite",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "-",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "P3iAf8dGAQLg8tLS"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "VHMVsqg7NWBneqyw",
+      "_stats": {
+        "compendiumSource": "Item.j2zsAZo4RuolWM6b",
+        "coreVersion": "12.343",
+        "createdTime": 1756943815043,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/black_knight%27s_tour.png",
+      "name": "King's Castle",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Commander",
+          "cost": "10 MP",
+          "damage_bonus": "0",
+          "description": "<p>During a conflict, you may use an action and spend 10 Mind Points to <strong>choose one option:</strong></p><ul><li>No creature can recover Hit Points or Mind Points</li><li>All effects that restore Mind Points restore <strong>【SL × 5】</strong> additional Mind Points</li></ul><p>The chosen effect lasts until the start of your next turn.</p>",
+          "duration": "Until the start of your next turn",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "4",
+          "name": "King's Castle",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Extra MP Restored</strong></p></td></tr><tr><td><p>1</p></td><td><p>+5</p></td></tr><tr><td><p>2</p></td><td><p>+10</p></td></tr><tr><td><p>3</p></td><td><p>+15</p></td></tr><tr><td><p>4</p></td><td><p>+20</p></td></tr><tr><td><p>5</p></td><td><p>+25</p></td></tr></tbody></table>",
+          "skill_range": "Any",
+          "skill_target": "All creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "j2zsAZo4RuolWM6b"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "WEKjC1GJ1HKwAMwP",
+      "_stats": {
+        "compendiumSource": "Item.XpSvvPKiAzoY4nqp",
+        "coreVersion": "12.343",
+        "createdTime": 1756968994148,
+        "duplicateSource": "Item.P3iAf8dGAQLg8tLS",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/Blade_of_Honor.png",
+      "name": "Iron Forest",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Commander",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>After you hit one or more creatures with a <strong>melee</strong> attack using a weapon that belongs to the <strong>spear</strong> Category, if you have no other weapon equipped, you may spend <strong>20 Mind Points</strong> and choose one of those creatures. If you do, the attack deals <strong>half</strong> the normal amount of damage to each of its targets, and you <strong>choose one type of action</strong> from the following:</p><ul><li><p>【⚔️Attack】</p></li><li><p>【🛡️Guard】</p></li><li><p>【❗️Objective】</p></li><li><p>【📕Spell】</p></li><li><p>【💥Skill】</p></li></ul><p>From now on, the chosen creature must spend <strong>10 Mind Points</strong> whenever they wish to perform that type of action. If they can’t, they must perform a different type of action. This effect lasts until the start of your next turn, or until you use this Skill again.</p>",
+          "duration": "",
+          "heroic_requirement": "you must have mastered one or more Classes among Commander and Weaponmaster.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Iron Forest",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "XpSvvPKiAzoY4nqp"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "YcbFUcPwWvXPR6IU",
+      "_stats": {
+        "compendiumSource": "Item.W8lnSR9AbSzraxF1",
+        "coreVersion": "12.343",
+        "createdTime": 1756943825086,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/02_WAR/orogeny.png",
+      "name": "Ceaseless Battlefield",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Commander",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>The MP costs for your <strong>【💥Bishop’s Edict】, 【💥Charging Cavalry】 </strong>and<strong>【💥King's Castle</strong>】 are halved</p>",
+          "duration": "",
+          "heroic_requirement": "you must have mastered the Commander Class.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Ceaseless Battlefield",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "W8lnSR9AbSzraxF1"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "zEJQ9v9J5EDqEsmS",
+      "_stats": {
+        "compendiumSource": "Item.7YFY3XwQ0HQSWvMr",
+        "coreVersion": "12.343",
+        "createdTime": 1756943813979,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/fire_tackle.png",
+      "name": "Crushing Chariot",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Commander",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>After you use <strong>【💥Bishop’s Edict】, 【💥Charging Cavalry】 </strong>or<strong>【💥King's Castle</strong>】, you may choose another Player Character that can hear you who has yet to take a turn during this round. That character may take their turn immediately after yours during this round.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Crushing Chariot",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "7YFY3XwQ0HQSWvMr"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Commander",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar4": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "DEF",
+            "max": 13,
+            "maxcolor": "#f26d40",
+            "mincolor": "#f26d40",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 13
+          },
+          "bar5": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar5",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MDEF",
+            "max": 10,
+            "maxcolor": "#26d6ed",
+            "mincolor": "#26d6ed",
+            "opacity": null,
+            "order": 4,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 10
+          }
+        }
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Commander",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://tiermaker.com/images/media/template_images/2024/16720717/fabula-ultima-classes-16720717/commander.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 0,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {
+      "also_text": "Prince, Queen, Shōgun",
+      "benefit_dropdown": "hp_benefit",
+      "classMechanic_text": "",
+      "class_facet": {
+        "5XWStpcACwRFEhRI": {
+          "facet_cost": "",
+          "facet_description": "<p>After you use <strong>【💥Bishop’s Edict】</strong> or <strong>【💥King's Castle</strong>】 Skills, if you are in <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span>, you may have every enemy creature present on the scene lose <strong>10 Hit Points.</strong></p><hr contenteditable=\"false\"><p><strong>Skill Enhancement Lv. 20 ― </strong>The amount of Hit Points lost increases to <strong>20</strong>.</p><p><strong>Skill Enhancement Lv. 40 ― </strong>The amount of Hit Points lost increases to <strong>30</strong>.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Tabula Rasa",
+          "uuid": "Actor.3KulR3t3i0HpcCid.Item.5XWStpcACwRFEhRI"
+        },
+        "SK9Veg0YeAaUEdsy": {
+          "facet_cost": "",
+          "facet_description": "<p>When you perform the 【⚔️Attack】 action with a <strong>ranged</strong> weapon that belongs to the <strong>bow</strong> Category, if you have no other weapon equipped, you may perform two separate attacks instead of one (against the same target or against different targets). If you do, both attacks follow the rules for <strong>two-weapon fighting</strong>: each attack loses the <strong>multi</strong> property and cannot gain it, and you treat the <strong>High Roll</strong> of each Accuracy Check as being equal to 0 when determining damage.</p>\n<p>Note that this Heroic Skill does not stack with a custom weapon’s <em>quick</em> customization (using Twin Arrows with a quick bow doesn’t allow more than two attacks, in short).</p>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Double Arrow",
+          "uuid": "Actor.3KulR3t3i0HpcCid.Item.SK9Veg0YeAaUEdsy"
+        },
+        "UVCa93DfH5xnQ8GO": {
+          "facet_cost": "",
+          "facet_description": "<p>As long as you have a weapon equipped in your <strong>main hand slot</strong> and a shield equipped in your <strong>off-hand slot</strong>, your attacks with that weapon deal 5 extra damage and you gain a +1 bonus to <strong>Defense</strong>.</p>\n<p>This Skill cannot be combined with custom weapons with the <em>defence boost</em> customization (page 107), nor with the <em>Dual Shieldbearer</em> Skill (page 197 of the Core Rulebook).</p>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Hoplite",
+          "uuid": "Actor.3KulR3t3i0HpcCid.Item.UVCa93DfH5xnQ8GO"
+        },
+        "VHMVsqg7NWBneqyw": {
+          "facet_cost": "10 MP",
+          "facet_description": "<p>During a conflict, you may use an action and spend 10 Mind Points to <strong>choose one option:</strong></p><ul><li>No creature can recover Hit Points or Mind Points</li><li>All effects that restore Mind Points restore <strong>【SL × 5】</strong> additional Mind Points</li></ul><p>The chosen effect lasts until the start of your next turn.</p>",
+          "facet_offensive": "",
+          "facet_target": "All creature",
+          "id": "${item.id}",
+          "name": "King's Castle",
+          "uuid": "Actor.3KulR3t3i0HpcCid.Item.VHMVsqg7NWBneqyw"
+        },
+        "WEKjC1GJ1HKwAMwP": {
+          "facet_cost": "",
+          "facet_description": "<p>After you hit one or more creatures with a <strong>melee</strong> attack using a weapon that belongs to the <strong>spear</strong> Category, if you have no other weapon equipped, you may spend <strong>20 Mind Points</strong> and choose one of those creatures. If you do, the attack deals <strong>half</strong> the normal amount of damage to each of its targets, and you <strong>choose one type of action</strong> from the following:</p><ul><li><p>【⚔️Attack】</p></li><li><p>【🛡️Guard】</p></li><li><p>【❗️Objective】</p></li><li><p>【📕Spell】</p></li><li><p>【💥Skill】</p></li></ul><p>From now on, the chosen creature must spend <strong>10 Mind Points</strong> whenever they wish to perform that type of action. If they can’t, they must perform a different type of action. This effect lasts until the start of your next turn, or until you use this Skill again.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Iron Forest",
+          "uuid": "Actor.3KulR3t3i0HpcCid.Item.WEKjC1GJ1HKwAMwP"
+        },
+        "YcbFUcPwWvXPR6IU": {
+          "facet_cost": "",
+          "facet_description": "<p>The MP costs for your <strong>【💥Bishop’s Edict】, 【💥Charging Cavalry】 </strong>and<strong>【💥King's Castle</strong>】 are halved</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Ceaseless Battlefield",
+          "uuid": "Actor.3KulR3t3i0HpcCid.Item.YcbFUcPwWvXPR6IU"
+        },
+        "atv5MhidCVT4i6ux": {
+          "facet_cost": "10 MP",
+          "facet_description": "<p>During a conflict, you may use an action and spend 10 Mind Points to <strong>choose one option:</strong></p><ul><li>All MP costs are doubled</li><li>All sources of damage deal <strong>【SL × 3】</strong> extra damage</li></ul><p>The chosen effect lasts until the start of your next turn.</p>",
+          "facet_offensive": "",
+          "facet_target": "All creature",
+          "id": "${item.id}",
+          "name": "Bishop's Edict",
+          "uuid": "Actor.3KulR3t3i0HpcCid.Item.atv5MhidCVT4i6ux"
+        },
+        "qhNwFCjSSMd0UpUw": {
+          "facet_cost": "10 MP",
+          "facet_description": "<p>During a conflict, you may use an action and spend 10 MP to choose one ally that can hear you. That ally may immediately perform a <strong>free attack</strong> with a weapon they have equipped (or with a basic attack if they are an NPC). They gain a bonus equal to <strong>【SL + 3】</strong> to the Accuracy Check, but treat their High Roll (HR) as 0 when calculating damage.</p>",
+          "facet_offensive": "",
+          "facet_target": "One ally",
+          "id": "${item.id}",
+          "name": "Charging Cavalry",
+          "uuid": "Actor.3KulR3t3i0HpcCid.Item.qhNwFCjSSMd0UpUw"
+        },
+        "tPtT9d23WitBs5Qb": {
+          "facet_cost": "",
+          "facet_description": "<p>During a conflict, you may use an action to perform a <strong>free attack</strong> with a weapon you have equipped, treating your High Roll (HR) as 0 when calculating damage. After the attack is resolved, <strong>choose one option:</strong></p><ul><li>One ally who is able to hear you recovers <strong>【5 + (SL × 5)】</strong> Hit Points</li><li>You may immediately use a Skill you acquired among <strong>【💥Bishop’s Edict】</strong>, <strong>【💥Charging Cavalry】</strong> or <strong>【💥King's Castle</strong>】 for free (spending the appropriate MP)</li></ul>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Queen's Gambit",
+          "uuid": "Actor.3KulR3t3i0HpcCid.Item.tPtT9d23WitBs5Qb"
+        },
+        "zEJQ9v9J5EDqEsmS": {
+          "facet_cost": "",
+          "facet_description": "<p>After you use <strong>【💥Bishop’s Edict】, 【💥Charging Cavalry】 </strong>or<strong>【💥King's Castle</strong>】, you may choose another Player Character that can hear you who has yet to take a turn during this round. That character may take their turn immediately after yours during this round.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Crushing Chariot",
+          "uuid": "Actor.3KulR3t3i0HpcCid.Item.zEJQ9v9J5EDqEsmS"
+        }
+      },
+      "class_heroicSkill": {
+        "5XWStpcACwRFEhRI": {
+          "id": "${item.id}",
+          "name": "Tabula Rasa",
+          "skill_cost": "",
+          "skill_description": "<p>After you use <strong>【💥Bishop’s Edict】</strong> or <strong>【💥King's Castle</strong>】 Skills, if you are in <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span>, you may have every enemy creature present on the scene lose <strong>10 Hit Points.</strong></p><hr contenteditable=\"false\"><p><strong>Skill Enhancement Lv. 20 ― </strong>The amount of Hit Points lost increases to <strong>20</strong>.</p><p><strong>Skill Enhancement Lv. 40 ― </strong>The amount of Hit Points lost increases to <strong>30</strong>.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.3KulR3t3i0HpcCid.Item.5XWStpcACwRFEhRI"
+        },
+        "SK9Veg0YeAaUEdsy": {
+          "id": "${item.id}",
+          "name": "Double Arrow",
+          "skill_cost": "",
+          "skill_description": "<p>When you perform the 【⚔️Attack】 action with a <strong>ranged</strong> weapon that belongs to the <strong>bow</strong> Category, if you have no other weapon equipped, you may perform two separate attacks instead of one (against the same target or against different targets). If you do, both attacks follow the rules for <strong>two-weapon fighting</strong>: each attack loses the <strong>multi</strong> property and cannot gain it, and you treat the <strong>High Roll</strong> of each Accuracy Check as being equal to 0 when determining damage.</p>\n<p>Note that this Heroic Skill does not stack with a custom weapon’s <em>quick</em> customization (using Twin Arrows with a quick bow doesn’t allow more than two attacks, in short).</p>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.3KulR3t3i0HpcCid.Item.SK9Veg0YeAaUEdsy"
+        },
+        "UVCa93DfH5xnQ8GO": {
+          "id": "${item.id}",
+          "name": "Hoplite",
+          "skill_cost": "",
+          "skill_description": "<p>As long as you have a weapon equipped in your <strong>main hand slot</strong> and a shield equipped in your <strong>off-hand slot</strong>, your attacks with that weapon deal 5 extra damage and you gain a +1 bonus to <strong>Defense</strong>.</p>\n<p>This Skill cannot be combined with custom weapons with the <em>defence boost</em> customization (page 107), nor with the <em>Dual Shieldbearer</em> Skill (page 197 of the Core Rulebook).</p>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.3KulR3t3i0HpcCid.Item.UVCa93DfH5xnQ8GO"
+        },
+        "WEKjC1GJ1HKwAMwP": {
+          "id": "${item.id}",
+          "name": "Iron Forest",
+          "skill_cost": "",
+          "skill_description": "<p>After you hit one or more creatures with a <strong>melee</strong> attack using a weapon that belongs to the <strong>spear</strong> Category, if you have no other weapon equipped, you may spend <strong>20 Mind Points</strong> and choose one of those creatures. If you do, the attack deals <strong>half</strong> the normal amount of damage to each of its targets, and you <strong>choose one type of action</strong> from the following:</p><ul><li><p>【⚔️Attack】</p></li><li><p>【🛡️Guard】</p></li><li><p>【❗️Objective】</p></li><li><p>【📕Spell】</p></li><li><p>【💥Skill】</p></li></ul><p>From now on, the chosen creature must spend <strong>10 Mind Points</strong> whenever they wish to perform that type of action. If they can’t, they must perform a different type of action. This effect lasts until the start of your next turn, or until you use this Skill again.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.3KulR3t3i0HpcCid.Item.WEKjC1GJ1HKwAMwP"
+        },
+        "YcbFUcPwWvXPR6IU": {
+          "id": "${item.id}",
+          "name": "Ceaseless Battlefield",
+          "skill_cost": "",
+          "skill_description": "<p>The MP costs for your <strong>【💥Bishop’s Edict】, 【💥Charging Cavalry】 </strong>and<strong>【💥King's Castle</strong>】 are halved</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.3KulR3t3i0HpcCid.Item.YcbFUcPwWvXPR6IU"
+        }
+      },
+      "class_lore": "",
+      "class_skill": {
+        "VHMVsqg7NWBneqyw": {
+          "id": "${item.id}",
+          "name": "King's Castle",
+          "skill_cost": "10 MP",
+          "skill_description": "<p>During a conflict, you may use an action and spend 10 Mind Points to <strong>choose one option:</strong></p><ul><li>No creature can recover Hit Points or Mind Points</li><li>All effects that restore Mind Points restore <strong>【SL × 5】</strong> additional Mind Points</li></ul><p>The chosen effect lasts until the start of your next turn.</p>",
+          "skill_maxLevel": 4,
+          "skill_type": "Active",
+          "uuid": "Actor.3KulR3t3i0HpcCid.Item.VHMVsqg7NWBneqyw"
+        },
+        "atv5MhidCVT4i6ux": {
+          "id": "${item.id}",
+          "name": "Bishop's Edict",
+          "skill_cost": "10 MP",
+          "skill_description": "<p>During a conflict, you may use an action and spend 10 Mind Points to <strong>choose one option:</strong></p><ul><li>All MP costs are doubled</li><li>All sources of damage deal <strong>【SL × 3】</strong> extra damage</li></ul><p>The chosen effect lasts until the start of your next turn.</p>",
+          "skill_maxLevel": 5,
+          "skill_type": "Active",
+          "uuid": "Actor.3KulR3t3i0HpcCid.Item.atv5MhidCVT4i6ux"
+        },
+        "qhNwFCjSSMd0UpUw": {
+          "id": "${item.id}",
+          "name": "Charging Cavalry",
+          "skill_cost": "10 MP",
+          "skill_description": "<p>During a conflict, you may use an action and spend 10 MP to choose one ally that can hear you. That ally may immediately perform a <strong>free attack</strong> with a weapon they have equipped (or with a basic attack if they are an NPC). They gain a bonus equal to <strong>【SL + 3】</strong> to the Accuracy Check, but treat their High Roll (HR) as 0 when calculating damage.</p>",
+          "skill_maxLevel": 5,
+          "skill_type": "Active",
+          "uuid": "Actor.3KulR3t3i0HpcCid.Item.qhNwFCjSSMd0UpUw"
+        },
+        "tPtT9d23WitBs5Qb": {
+          "id": "${item.id}",
+          "name": "Queen's Gambit",
+          "skill_cost": "",
+          "skill_description": "<p>During a conflict, you may use an action to perform a <strong>free attack</strong> with a weapon you have equipped, treating your High Roll (HR) as 0 when calculating damage. After the attack is resolved, <strong>choose one option:</strong></p><ul><li>One ally who is able to hear you recovers <strong>【5 + (SL × 5)】</strong> Hit Points</li><li>You may immediately use a Skill you acquired among <strong>【💥Bishop’s Edict】</strong>, <strong>【💥Charging Cavalry】</strong> or <strong>【💥King's Castle</strong>】 for free (spending the appropriate MP)</li></ul>",
+          "skill_maxLevel": 6,
+          "skill_type": "Active",
+          "uuid": "Actor.3KulR3t3i0HpcCid.Item.tPtT9d23WitBs5Qb"
+        },
+        "zEJQ9v9J5EDqEsmS": {
+          "id": "${item.id}",
+          "name": "Crushing Chariot",
+          "skill_cost": "",
+          "skill_description": "<p>After you use <strong>【💥Bishop’s Edict】, 【💥Charging Cavalry】 </strong>or<strong>【💥King's Castle</strong>】, you may choose another Player Character that can hear you who has yet to take a turn during this round. That character may take their turn immediately after yours during this round.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.3KulR3t3i0HpcCid.Item.zEJQ9v9J5EDqEsmS"
+        }
+      },
+      "flavor_text": "<p style=\"text-align: center;\"><span style=\"font-family: Amiri\"><em>War has</em></span></p><p style=\"text-align: center\"><span style=\"font-family: Amiri\"><em>no victors.</em></span></p>",
+      "martialArmor_equippable": false,
+      "martialMelee_equippable": true,
+      "martialRanged_equippable": true,
+      "martialShield_equippable": false,
+      "name": "Commander",
+      "project_performable": false,
+      "ritual_performable": false
+    },
+    "statusEffects": {},
+    "template": "hoxC3HFCtMYGScIo",
+    "templateSystemUniqueVersion": 504201233
+  },
+  "type": "character"
+}

@@ -1,0 +1,972 @@
+{
+  "_id": "vTNRJQnbzExoShmp",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1753929422744,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "jYbZuqwzbSuIOWl1",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Class%20Portrait/Zel.png",
+  "items": [
+    {
+      "_id": "1W4zI33EbQY6uCzJ",
+      "_stats": {
+        "compendiumSource": "Item.jge0RlvkNg0ICAV4",
+        "coreVersion": "12.343",
+        "createdTime": 1761089246463,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/CLOSERS/Tina/Phantom_Snipe.webp",
+      "name": "Phantom Snipe",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Sniper",
+          "cost": "10 MP",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>As an 【<strong>Skill】 </strong>Action, Perform a <strong>Free Attack </strong>on target creature, This attack deal <strong>【HR + (SL x 2)】physical </strong>damage.</p><p>While <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Hidden</span></strong></a><strong><span style=\"text-decoration: underline;\">, </span></strong></span></span>This skill deals <strong>【SL x 2】</strong>bonus damage</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "5",
+          "name": "Phantom Snipe",
+          "optional_params": {},
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p>Level</p></td><td data-colwidth=\"148\"><p>Damage</p></td><td data-colwidth=\"161\"><p>Bonus Damage</p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p><strong>【HR + 2】</strong></p></td><td data-colwidth=\"161\"><p>2</p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p><strong>【HR + 4】</strong></p></td><td data-colwidth=\"161\"><p>4</p></td></tr><tr><td data-colwidth=\"79\"><p>3</p></td><td data-colwidth=\"148\"><p><strong>【HR + 6】</strong></p></td><td data-colwidth=\"161\"><p>6</p></td></tr><tr><td data-colwidth=\"79\"><p>4</p></td><td data-colwidth=\"148\"><p><strong>【HR + 8】</strong></p></td><td data-colwidth=\"161\"><p>8</p></td></tr><tr><td data-colwidth=\"79\"><p>5</p></td><td data-colwidth=\"148\"><p><strong>【HR + 10】</strong></p></td><td data-colwidth=\"161\"><p>10</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Active",
+          "type_damage": "physical",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "jge0RlvkNg0ICAV4"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "FLcMh63v1UkAMQsV",
+      "_stats": {
+        "compendiumSource": "Item.IzjCssQJsOG0gLTb",
+        "coreVersion": "12.343",
+        "createdTime": 1754006750097,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/toad_oil.png",
+      "name": "Perfect Hiding",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Sniper",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>Enemies cannot use the <strong>【Objective】</strong>action to remove <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Hidden</span></strong></a></span></span>&nbsp;from you.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "level": "1",
+          "max_level": "1",
+          "name": "Perfect Hiding",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "IzjCssQJsOG0gLTb"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "OlwIdgxHdLUVeswe",
+      "_stats": {
+        "compendiumSource": "Item.ILh399i8aVuytKqB",
+        "coreVersion": "12.343",
+        "createdTime": 1753945198647,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215732.597.png",
+      "name": "Perfect Sniping",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Sniper",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you perform an Attack with a Ranged Firearm, you may spend 1 <strong>Focus, </strong>if you do, the attack gain <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.tQE9WGDt0bNhgxXw\" data-id=\"tQE9WGDt0bNhgxXw\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Homing</span></strong></a></span></span></p><p>Additionally, Your <strong>Attacks with Ranged Firearm </strong>ignore <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Hidden</span></strong></a><strong><span style=\"text-decoration: underline;\"> </span></strong></span></span>and<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><strong><span style=\"text-decoration: underline;\"> </span></strong><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.yE84jvVXyebDulAP\" data-id=\"yE84jvVXyebDulAP\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Isolate</span></strong></a></span></span></p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "level": "1",
+          "max_level": "1",
+          "name": "Perfect Sniping",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "ILh399i8aVuytKqB"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "rLYDyjZjLWLnRe0J",
+      "_stats": {
+        "compendiumSource": "Item.qqm2iANfzha5bIsh",
+        "coreVersion": "12.343",
+        "createdTime": 1761089238494,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/12_MCH/heartbreak.png",
+      "name": "Heartbreak",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 100000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Sniper",
+          "cost": "25 MP",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>Choose a <strong>target</strong>, Your first attack gains the target with a <strong>Ranged Firearm Weapon</strong> on your next turn gains <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KHCaZjNmClkp7yfM\" data-id=\"KHCaZjNmClkp7yfM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Execute</span></strong></a></span></span></p>",
+          "duration": "Until the end of your next turn",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Heartbreak",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "qqm2iANfzha5bIsh"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "VKa14MboPF9kz4y3",
+      "_stats": {
+        "compendiumSource": "Item.41hnrIbCLCe72nQG",
+        "coreVersion": "12.343",
+        "createdTime": 1761089248796,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/GrandArcherSkill8.png",
+      "name": "Take Aim",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Sniper",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>Your <strong>Attacks </strong>with a <strong>Ranged Firearm </strong>weapon gain <strong>【Focus + 1】</strong> bonus Accuracy</p><p>You gain <strong>【SL】</strong>bonus to <strong>Checks </strong>that involve <strong>Perception</strong></p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "2",
+          "name": "Take Aim",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "41hnrIbCLCe72nQG"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "XVapGhP1Yo4eagTW",
+      "_stats": {
+        "compendiumSource": "Item.MsyxTjKEchcqxYAs",
+        "coreVersion": "12.343",
+        "createdTime": 1761089243847,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/09_NIN/shade_shift.png",
+      "name": "Camouflage",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Sniper",
+          "cost": "25 MP",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>You may ask the GM if a <strong>Hiding Spot</strong> is available in the scene. If one exists, you can use an Action to spend <strong>25 MP</strong> to become <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Hidden</span></strong></a></span></span>.</p><p>The MP cost to use this skill is reduce by <strong>【SL x 5】</strong></p>",
+          "duration": "3 Rounds",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": true,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "4",
+          "name": "Camouflage",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p>Level</p></td><td data-colwidth=\"148\"><p>MP Cost</p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p><strong>20 MP</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p><strong>15 MP</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>3</p></td><td data-colwidth=\"148\"><p><strong>10 MP</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>4</p></td><td data-colwidth=\"148\"><p><strong>5 MP</strong></p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "Self",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "MsyxTjKEchcqxYAs"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "yHgY1FrVO2v6TYrT",
+      "_stats": {
+        "compendiumSource": "Item.YwYOjebS8L7KXtG5",
+        "coreVersion": "12.343",
+        "createdTime": 1761089247552,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/12_MCH/spread_shot.png",
+      "name": "Sniper Focus",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Sniper",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p data-start=\"117\" data-end=\"220\">When you level up this skill, you gain a <strong data-start=\"158\" data-end=\"173\">Focus Clock</strong> with segments equal to your 【<strong>SL】</strong>in this skill.</p><ul data-start=\"222\" data-end=\"408\"><li data-start=\"222\" data-end=\"319\"><p data-start=\"224\" data-end=\"319\">At the end of your turn, if you <strong data-start=\"256\" data-end=\"292\">didn’t perform a damaging action</strong>, increase your Focus by 1.</p></li><li data-start=\"320\" data-end=\"408\"><p data-start=\"322\" data-end=\"408\">If you are <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Hidden</span></strong></a></span></span>, you still gain Focus even if you did perform a damaging action.</p></li></ul><p data-start=\"410\" data-end=\"531\">When you <strong data-start=\"419\" data-end=\"451\">attack </strong>with a<strong data-start=\"419\" data-end=\"451\"> ranged firearm</strong>, you can <strong data-start=\"461\" data-end=\"485\">spend all your Focus</strong> to deal <strong data-start=\"494\" data-end=\"530\">10 bonus damage per Focus spent</strong>.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "3",
+          "name": "Sniper Focus",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "YwYOjebS8L7KXtG5"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Sniper",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar4": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "DEF",
+            "max": 13,
+            "maxcolor": "#f26d40",
+            "mincolor": "#f26d40",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 13
+          },
+          "bar5": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar5",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MDEF",
+            "max": 10,
+            "maxcolor": "#26d6ed",
+            "mincolor": "#26d6ed",
+            "opacity": null,
+            "order": 4,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 10
+          }
+        }
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Sniper",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Class%20Portrait/Zel.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 0,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {
+      "also_text": "Gunslinger, Rifleman, Deadeye",
+      "benefit_dropdown": "hp_benefit",
+      "classMechanic_text": "<h1>SNIPER’S FOCUS</h1><p></p><h3 data-start=\"288\" data-end=\"308\">BUILDING FOCUS</h3><p data-start=\"309\" data-end=\"462\">When wielding a Ranged Firearm, a Sniper gradually builds up Focus—a special resource that represents heightened awareness and concentration on a target.</p><p data-start=\"464\" data-end=\"778\">You begin tracking Focus once you acquire the <strong data-start=\"510\" data-end=\"528\">【Sniper Focus】</strong> skill. At the end of your turn, if you did <strong data-start=\"572\" data-end=\"579\">not</strong> perform a damaging action, you gain 1 Focus. If you are <strong data-start=\"636\" data-end=\"648\">【Hidden】</strong>, you gain 1 Focus regardless of your actions. You can accumulate Focus up to a maximum equal to your level in <strong data-start=\"759\" data-end=\"777\">【Sniper Focus】</strong>.</p><p></p><h3 data-start=\"780\" data-end=\"800\">SPENDING FOCUS</h3><p data-start=\"801\" data-end=\"921\">Focus can be spent to enhance your precision or unleash powerful attacks. When you make an attack with a Ranged Firearm:</p><ul data-start=\"923\" data-end=\"1065\"><li data-start=\"923\" data-end=\"981\"><p data-start=\"925\" data-end=\"981\">You gain <strong data-start=\"934\" data-end=\"959\">+1 Accuracy per Focus</strong> (via <strong data-start=\"965\" data-end=\"979\">【Take Aim】</strong>).</p></li><li data-start=\"982\" data-end=\"1065\"><p data-start=\"984\" data-end=\"1065\">You may <strong data-start=\"992\" data-end=\"1019\">spend all of your Focus</strong> to deal <strong data-start=\"1028\" data-end=\"1064\">+10 bonus damage per Focus spent</strong>.</p></li></ul><p data-start=\"1067\" data-end=\"1254\">Some skills, such as <strong data-start=\"1088\" data-end=\"1109\">【Perfect Sniping】</strong>, allow you to spend a single Focus to apply additional effects, such as <strong data-start=\"1182\" data-end=\"1192\">Homing</strong>, or allow your shot to bypass <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Hidden</span></strong></a></span></span> and <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.yE84jvVXyebDulAP\" data-id=\"yE84jvVXyebDulAP\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Isolate</span></strong></a></span></span>.</p><p></p><h3 data-start=\"1256\" data-end=\"1278\">FOCUS MANAGEMENT</h3><p data-start=\"1279\" data-end=\"1471\">Building Focus requires patience and careful timing. If you engage too early, you may lose the opportunity to deal maximum damage. On the other hand, waiting too long may leave you vulnerable.</p><p data-start=\"1473\" data-end=\"1596\">You may gain Focus even in the midst of combat by coordinating with <strong data-start=\"1541\" data-end=\"1557\">【Camouflage】</strong> or by delaying your offensive actions.</p>",
+      "class_facet": {
+        "283PPyQsA8iQooSM": {
+          "facet_cost": "",
+          "facet_description": "<p>Your <strong>Attacks </strong>with a <strong>Ranged Firearm </strong>weapon gain <strong>【Focus + 1】</strong> bonus Accuracy</p><p>You gain <strong>【SL】</strong>bonus to <strong>Checks </strong>that involve <strong>Perception</strong></p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Take Aim",
+          "uuid": "Actor.vTNRJQnbzExoShmp.Item.283PPyQsA8iQooSM"
+        },
+        "FLcMh63v1UkAMQsV": {
+          "facet_cost": "",
+          "facet_description": "<p>Enemies cannot use the <strong>【Objective】</strong>action to remove <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Hidden</span></strong></a></span></span>&nbsp;from you.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Perfect Hiding",
+          "uuid": "Actor.vTNRJQnbzExoShmp.Item.FLcMh63v1UkAMQsV"
+        },
+        "OlwIdgxHdLUVeswe": {
+          "facet_cost": "",
+          "facet_description": "<p>When you perform an Attack with a Ranged Firearm, you may spend 1 <strong>Focus, </strong>if you do, the attack gain <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.tQE9WGDt0bNhgxXw\" data-id=\"tQE9WGDt0bNhgxXw\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Homing</span></strong></a></span></span></p><p>Additionally, Your <strong>Attacks with Ranged Firearm </strong>ignore <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Hidden</span></strong></a><strong><span style=\"text-decoration: underline;\"> </span></strong></span></span>and<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><strong><span style=\"text-decoration: underline;\"> </span></strong><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.yE84jvVXyebDulAP\" data-id=\"yE84jvVXyebDulAP\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Isolate</span></strong></a></span></span></p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Perfect Sniping",
+          "uuid": "Actor.vTNRJQnbzExoShmp.Item.OlwIdgxHdLUVeswe"
+        },
+        "QTosaCbc8LRHf2RQ": {
+          "facet_cost": "25 MP",
+          "facet_description": "<p>Gain the following effects:</p><p>Your first attack with a <strong>Ranged Firearm Weapon</strong> on your next turn gains <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.qXBYN6c9FMZzmS2n\" data-id=\"qXBYN6c9FMZzmS2n\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Cripple</span></strong></a></span></span></p>",
+          "facet_offensive": "",
+          "facet_target": "Self",
+          "id": "${item.id}",
+          "name": "Heartbreak",
+          "uuid": "Actor.vTNRJQnbzExoShmp.Item.QTosaCbc8LRHf2RQ"
+        },
+        "QfCh8JDjhSpSpS28": {
+          "facet_cost": "25 MP",
+          "facet_description": "<p>You may ask the GM if a <strong>Hiding Spot</strong> is available in the scene. If one exists, you can use an Action to spend <strong>25 MP</strong> to become <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Hidden</span></strong></a></span></span>.</p><p>The MP cost to use this skill is reduce by <strong>【SL x 5】</strong></p>",
+          "facet_offensive": "",
+          "facet_target": "Self",
+          "id": "${item.id}",
+          "name": "Camouflage",
+          "uuid": "Actor.vTNRJQnbzExoShmp.Item.QfCh8JDjhSpSpS28"
+        },
+        "saLXjDabxEbK7vhW": {
+          "facet_cost": "",
+          "facet_description": "<p data-start=\"117\" data-end=\"220\">When you level up this skill, you gain a <strong data-start=\"158\" data-end=\"173\">Focus Clock</strong> with segments equal to your 【<strong>SL】</strong>in this skill.</p><ul data-start=\"222\" data-end=\"408\"><li data-start=\"222\" data-end=\"319\"><p data-start=\"224\" data-end=\"319\">At the end of your turn, if you <strong data-start=\"256\" data-end=\"292\">didn’t perform a damaging action</strong>, increase your Focus by 1.</p></li><li data-start=\"320\" data-end=\"408\"><p data-start=\"322\" data-end=\"408\">If you are <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Hidden</span></strong></a></span></span>, you still gain Focus even if you did perform a damaging action.</p></li></ul><p data-start=\"410\" data-end=\"531\">When you <strong data-start=\"419\" data-end=\"451\">attack </strong>with a<strong data-start=\"419\" data-end=\"451\"> ranged firearm</strong>, you can <strong data-start=\"461\" data-end=\"485\">spend all your Focus</strong> to deal <strong data-start=\"494\" data-end=\"530\">10 bonus damage per Focus spent</strong>.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Sniper Focus",
+          "uuid": "Actor.vTNRJQnbzExoShmp.Item.saLXjDabxEbK7vhW"
+        },
+        "tnchgPs698mzdpuy": {
+          "facet_cost": "10 MP",
+          "facet_description": "<p>As an 【<strong>Skill】 </strong>Action, Perform a <strong>Free Attack </strong>on target creature, This attack deal <strong>【HR + (SL x 2)】physical </strong>damage.</p><p>While <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Hidden</span></strong></a><strong><span style=\"text-decoration: underline;\">, </span></strong></span></span>This skill deals <strong>【SL x 2】</strong>bonus damage</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Phantom Snipe",
+          "uuid": "Actor.vTNRJQnbzExoShmp.Item.tnchgPs698mzdpuy"
+        }
+      },
+      "class_heroicSkill": {
+        "283PPyQsA8iQooSM": {
+          "id": "283PPyQsA8iQooSM",
+          "name": "Take Aim",
+          "skill_cost": "",
+          "skill_description": "<p>Your <strong>Attacks </strong>with a <strong>Ranged Firearm </strong>weapon gain <strong>【Focus + 1】</strong> bonus Accuracy</p><p>You gain <strong>【SL】</strong>bonus to <strong>Checks </strong>that involve <strong>Perception</strong></p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 2,
+          "skill_type": "Passive",
+          "uuid": "Actor.vTNRJQnbzExoShmp.Item.283PPyQsA8iQooSM"
+        },
+        "DYjNV3SSWskBhI5P": {
+          "id": "DYjNV3SSWskBhI5P",
+          "name": "Perfect Hiding",
+          "skill_cost": "",
+          "skill_description": "<p>Enemies cannot use the <strong>【Objective】</strong>action to remove <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Hidden</span></strong></a></span></span>&nbsp;from you.</p>",
+          "skill_isHeroic": true,
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.vTNRJQnbzExoShmp.Item.DYjNV3SSWskBhI5P"
+        },
+        "FLcMh63v1UkAMQsV": {
+          "id": "${item.id}",
+          "name": "Perfect Hiding",
+          "skill_cost": "",
+          "skill_description": "<p>Enemies cannot use the <strong>【Objective】</strong>action to remove <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Hidden</span></strong></a></span></span>&nbsp;from you.</p>",
+          "skill_isHeroic": true,
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.vTNRJQnbzExoShmp.Item.FLcMh63v1UkAMQsV"
+        },
+        "OlwIdgxHdLUVeswe": {
+          "id": "${item.id}",
+          "name": "Perfect Sniping",
+          "skill_cost": "",
+          "skill_description": "<p>When you perform an Attack with a Ranged Firearm, you may spend 1 <strong>Focus, </strong>if you do, the attack gain <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.tQE9WGDt0bNhgxXw\" data-id=\"tQE9WGDt0bNhgxXw\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Homing</span></strong></a></span></span></p><p>Additionally, Your <strong>Attacks with Ranged Firearm </strong>ignore <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Hidden</span></strong></a><strong><span style=\"text-decoration: underline;\"> </span></strong></span></span>and<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><strong><span style=\"text-decoration: underline;\"> </span></strong><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.yE84jvVXyebDulAP\" data-id=\"yE84jvVXyebDulAP\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Isolate</span></strong></a></span></span></p>",
+          "skill_isHeroic": true,
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.vTNRJQnbzExoShmp.Item.OlwIdgxHdLUVeswe"
+        },
+        "QTosaCbc8LRHf2RQ": {
+          "id": "QTosaCbc8LRHf2RQ",
+          "name": "Heartbreak",
+          "skill_cost": "25 MP",
+          "skill_description": "<p>Gain the following effects:</p><p>Your first attack with a <strong>Ranged Firearm Weapon</strong> on your next turn gains <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.qXBYN6c9FMZzmS2n\" data-id=\"qXBYN6c9FMZzmS2n\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Cripple</span></strong></a></span></span></p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.vTNRJQnbzExoShmp.Item.QTosaCbc8LRHf2RQ"
+        },
+        "QfCh8JDjhSpSpS28": {
+          "id": "QfCh8JDjhSpSpS28",
+          "name": "Camouflage",
+          "skill_cost": "25 MP",
+          "skill_description": "<p>You may ask the GM if a <strong>Hiding Spot</strong> is available in the scene. If one exists, you can use an Action to spend <strong>25 MP</strong> to become <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Hidden</span></strong></a></span></span>.</p><p>The MP cost to use this skill is reduce by <strong>【SL x 5】</strong></p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 4,
+          "skill_type": "Active",
+          "uuid": "Actor.vTNRJQnbzExoShmp.Item.QfCh8JDjhSpSpS28"
+        },
+        "saLXjDabxEbK7vhW": {
+          "id": "saLXjDabxEbK7vhW",
+          "name": "Sniper Focus",
+          "skill_cost": "",
+          "skill_description": "<p data-start=\"117\" data-end=\"220\">When you level up this skill, you gain a <strong data-start=\"158\" data-end=\"173\">Focus Clock</strong> with segments equal to your 【<strong>SL】</strong>in this skill.</p><ul data-start=\"222\" data-end=\"408\"><li data-start=\"222\" data-end=\"319\"><p data-start=\"224\" data-end=\"319\">At the end of your turn, if you <strong data-start=\"256\" data-end=\"292\">didn’t perform a damaging action</strong>, increase your Focus by 1.</p></li><li data-start=\"320\" data-end=\"408\"><p data-start=\"322\" data-end=\"408\">If you are <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Hidden</span></strong></a></span></span>, you still gain Focus even if you did perform a damaging action.</p></li></ul><p data-start=\"410\" data-end=\"531\">When you <strong data-start=\"419\" data-end=\"451\">attack </strong>with a<strong data-start=\"419\" data-end=\"451\"> ranged firearm</strong>, you can <strong data-start=\"461\" data-end=\"485\">spend all your Focus</strong> to deal <strong data-start=\"494\" data-end=\"530\">10 bonus damage per Focus spent</strong>.</p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 3,
+          "skill_type": "Passive",
+          "uuid": "Actor.vTNRJQnbzExoShmp.Item.saLXjDabxEbK7vhW"
+        },
+        "tnchgPs698mzdpuy": {
+          "id": "tnchgPs698mzdpuy",
+          "name": "Phantom Snipe",
+          "skill_cost": "10 MP",
+          "skill_description": "<p>As an 【<strong>Skill】 </strong>Action, Perform a <strong>Free Attack </strong>on target creature, This attack deal <strong>【HR + (SL x 2)】physical </strong>damage.</p><p>While <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Hidden</span></strong></a><strong><span style=\"text-decoration: underline;\">, </span></strong></span></span>This skill deals <strong>【SL x 2】</strong>bonus damage</p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 5,
+          "skill_type": "Active",
+          "uuid": "Actor.vTNRJQnbzExoShmp.Item.tnchgPs698mzdpuy"
+        }
+      },
+      "class_lore": "<blockquote><p>Snipers are silent executioners—those who trade the chaos of close combat for the deadly certainty of a single, well-placed shot. With a steady hand and a sharp eye, they wait patiently in the shadows, calculating every angle and heartbeat before they pull the trigger.</p><p data-start=\"1030\" data-end=\"1249\">In some cultures, Snipers are seen as ghost-like legends—hunters of men who disappear before the sound of the shot catches up to the kill. In war, they are whispered about in fear. In peace, they are rarely seen at all.</p></blockquote>",
+      "class_skill": {
+        "1W4zI33EbQY6uCzJ": {
+          "id": "${item.id}",
+          "name": "Phantom Snipe",
+          "skill_cost": "10 MP",
+          "skill_description": "<p>As an 【<strong>Skill】 </strong>Action, Perform a <strong>Free Attack </strong>on target creature, This attack deal <strong>【HR + (SL x 2)】physical </strong>damage.</p><p>While <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Hidden</span></strong></a><strong><span style=\"text-decoration: underline;\">, </span></strong></span></span>This skill deals <strong>【SL x 2】</strong>bonus damage</p>",
+          "skill_maxLevel": 5,
+          "skill_type": "Active",
+          "uuid": "Actor.vTNRJQnbzExoShmp.Item.1W4zI33EbQY6uCzJ"
+        },
+        "1g3oZoVNm45KbiGm": null,
+        "283PPyQsA8iQooSM": {
+          "id": "${item.id}",
+          "name": "Take Aim",
+          "skill_cost": "",
+          "skill_description": "<p>Your <strong>Attacks </strong>with a <strong>Ranged Firearm </strong>weapon gain <strong>【Focus + 1】</strong> bonus Accuracy</p><p>You gain <strong>【SL】</strong>bonus to <strong>Checks </strong>that involve <strong>Perception</strong></p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 2,
+          "skill_type": "Passive",
+          "uuid": "Actor.vTNRJQnbzExoShmp.Item.283PPyQsA8iQooSM"
+        },
+        "6H3LPRKoMjjAhsWj": null,
+        "DYjNV3SSWskBhI5P": {
+          "id": "DYjNV3SSWskBhI5P",
+          "name": "Perfect Hiding",
+          "skill_cost": "",
+          "skill_description": "<p>Enemies cannot use the <strong>【Objective】</strong>action to remove <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Hidden</span></strong></a></span></span>&nbsp;from you.</p>",
+          "skill_isHeroic": true,
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.vTNRJQnbzExoShmp.Item.DYjNV3SSWskBhI5P"
+        },
+        "FLcMh63v1UkAMQsV": {
+          "id": "FLcMh63v1UkAMQsV",
+          "name": "Perfect Hiding",
+          "skill_cost": "",
+          "skill_description": "<p>Enemies cannot use the <strong>【Objective】</strong>action to remove <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Hidden</span></strong></a></span></span>&nbsp;from you.</p>",
+          "skill_isHeroic": true,
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.vTNRJQnbzExoShmp.Item.FLcMh63v1UkAMQsV"
+        },
+        "OlwIdgxHdLUVeswe": {
+          "id": "OlwIdgxHdLUVeswe",
+          "name": "Perfect Sniping",
+          "skill_cost": "",
+          "skill_description": "<p>When you perform an Attack with a Ranged Firearm, you may spend 1 <strong>Focus, </strong>if you do, the attack gain <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.tQE9WGDt0bNhgxXw\" data-id=\"tQE9WGDt0bNhgxXw\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Homing</span></strong></a></span></span></p><p>Additionally, Your <strong>Attacks with Ranged Firearm </strong>ignore <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Hidden</span></strong></a><strong><span style=\"text-decoration: underline;\"> </span></strong></span></span>and<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><strong><span style=\"text-decoration: underline;\"> </span></strong><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.yE84jvVXyebDulAP\" data-id=\"yE84jvVXyebDulAP\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Isolate</span></strong></a></span></span></p>",
+          "skill_isHeroic": true,
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.vTNRJQnbzExoShmp.Item.OlwIdgxHdLUVeswe"
+        },
+        "QTosaCbc8LRHf2RQ": {
+          "id": "${item.id}",
+          "name": "Heartbreak",
+          "skill_cost": "25 MP",
+          "skill_description": "<p>Gain the following effects:</p><p>Your first attack with a <strong>Ranged Firearm Weapon</strong> on your next turn gains <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.qXBYN6c9FMZzmS2n\" data-id=\"qXBYN6c9FMZzmS2n\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Cripple</span></strong></a></span></span></p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.vTNRJQnbzExoShmp.Item.QTosaCbc8LRHf2RQ"
+        },
+        "QfCh8JDjhSpSpS28": {
+          "id": "${item.id}",
+          "name": "Camouflage",
+          "skill_cost": "25 MP",
+          "skill_description": "<p>You may ask the GM if a <strong>Hiding Spot</strong> is available in the scene. If one exists, you can use an Action to spend <strong>25 MP</strong> to become <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Hidden</span></strong></a></span></span>.</p><p>The MP cost to use this skill is reduce by <strong>【SL x 5】</strong></p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 4,
+          "skill_type": "Active",
+          "uuid": "Actor.vTNRJQnbzExoShmp.Item.QfCh8JDjhSpSpS28"
+        },
+        "VKa14MboPF9kz4y3": {
+          "id": "${item.id}",
+          "name": "Take Aim",
+          "skill_cost": "",
+          "skill_description": "<p>Your <strong>Attacks </strong>with a <strong>Ranged Firearm </strong>weapon gain <strong>【Focus + 1】</strong> bonus Accuracy</p><p>You gain <strong>【SL】</strong>bonus to <strong>Checks </strong>that involve <strong>Perception</strong></p>",
+          "skill_maxLevel": 2,
+          "skill_type": "Passive",
+          "uuid": "Actor.vTNRJQnbzExoShmp.Item.VKa14MboPF9kz4y3"
+        },
+        "XVapGhP1Yo4eagTW": {
+          "id": "${item.id}",
+          "name": "Camouflage",
+          "skill_cost": "25 MP",
+          "skill_description": "<p>You may ask the GM if a <strong>Hiding Spot</strong> is available in the scene. If one exists, you can use an Action to spend <strong>25 MP</strong> to become <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Hidden</span></strong></a></span></span>.</p><p>The MP cost to use this skill is reduce by <strong>【SL x 5】</strong></p>",
+          "skill_maxLevel": 4,
+          "skill_type": "Active",
+          "uuid": "Actor.vTNRJQnbzExoShmp.Item.XVapGhP1Yo4eagTW"
+        },
+        "rLYDyjZjLWLnRe0J": {
+          "id": "${item.id}",
+          "name": "Heartbreak",
+          "skill_cost": "25 MP",
+          "skill_description": "<p>Choose a <strong>target</strong>, Your first attack gains the target with a <strong>Ranged Firearm Weapon</strong> on your next turn gains <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KHCaZjNmClkp7yfM\" data-id=\"KHCaZjNmClkp7yfM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Execute</span></strong></a></span></span></p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.vTNRJQnbzExoShmp.Item.rLYDyjZjLWLnRe0J"
+        },
+        "saLXjDabxEbK7vhW": {
+          "id": "${item.id}",
+          "name": "Sniper Focus",
+          "skill_cost": "",
+          "skill_description": "<p data-start=\"117\" data-end=\"220\">When you level up this skill, you gain a <strong data-start=\"158\" data-end=\"173\">Focus Clock</strong> with segments equal to your 【<strong>SL】</strong>in this skill.</p><ul data-start=\"222\" data-end=\"408\"><li data-start=\"222\" data-end=\"319\"><p data-start=\"224\" data-end=\"319\">At the end of your turn, if you <strong data-start=\"256\" data-end=\"292\">didn’t perform a damaging action</strong>, increase your Focus by 1.</p></li><li data-start=\"320\" data-end=\"408\"><p data-start=\"322\" data-end=\"408\">If you are <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Hidden</span></strong></a></span></span>, you still gain Focus even if you did perform a damaging action.</p></li></ul><p data-start=\"410\" data-end=\"531\">When you <strong data-start=\"419\" data-end=\"451\">attack </strong>with a<strong data-start=\"419\" data-end=\"451\"> ranged firearm</strong>, you can <strong data-start=\"461\" data-end=\"485\">spend all your Focus</strong> to deal <strong data-start=\"494\" data-end=\"530\">10 bonus damage per Focus spent</strong>.</p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 3,
+          "skill_type": "Passive",
+          "uuid": "Actor.vTNRJQnbzExoShmp.Item.saLXjDabxEbK7vhW"
+        },
+        "tnchgPs698mzdpuy": {
+          "id": "${item.id}",
+          "name": "Phantom Snipe",
+          "skill_cost": "10 MP",
+          "skill_description": "<p>As an 【<strong>Skill】 </strong>Action, Perform a <strong>Free Attack </strong>on target creature, This attack deal <strong>【HR + (SL x 2)】physical </strong>damage.</p><p>While <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Hidden</span></strong></a><strong><span style=\"text-decoration: underline;\">, </span></strong></span></span>This skill deals <strong>【SL x 2】</strong>bonus damage</p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 5,
+          "skill_type": "Active",
+          "uuid": "Actor.vTNRJQnbzExoShmp.Item.tnchgPs698mzdpuy"
+        },
+        "yHgY1FrVO2v6TYrT": {
+          "id": "${item.id}",
+          "name": "Sniper Focus",
+          "skill_cost": "",
+          "skill_description": "<p data-start=\"117\" data-end=\"220\">When you level up this skill, you gain a <strong data-start=\"158\" data-end=\"173\">Focus Clock</strong> with segments equal to your 【<strong>SL】</strong>in this skill.</p><ul data-start=\"222\" data-end=\"408\"><li data-start=\"222\" data-end=\"319\"><p data-start=\"224\" data-end=\"319\">At the end of your turn, if you <strong data-start=\"256\" data-end=\"292\">didn’t perform a damaging action</strong>, increase your Focus by 1.</p></li><li data-start=\"320\" data-end=\"408\"><p data-start=\"322\" data-end=\"408\">If you are <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Hidden</span></strong></a></span></span>, you still gain Focus even if you did perform a damaging action.</p></li></ul><p data-start=\"410\" data-end=\"531\">When you <strong data-start=\"419\" data-end=\"451\">attack </strong>with a<strong data-start=\"419\" data-end=\"451\"> ranged firearm</strong>, you can <strong data-start=\"461\" data-end=\"485\">spend all your Focus</strong> to deal <strong data-start=\"494\" data-end=\"530\">10 bonus damage per Focus spent</strong>.</p>",
+          "skill_maxLevel": 3,
+          "skill_type": "Passive",
+          "uuid": "Actor.vTNRJQnbzExoShmp.Item.yHgY1FrVO2v6TYrT"
+        }
+      },
+      "flavor_text": "<p style=\"text-align: center\"><span style=\"font-family: Amiri\"><em>One Shot,</em></span></p><p style=\"text-align: center\"><span style=\"font-family: Amiri\"><em>One Kill</em></span></p>",
+      "martialArmor_equippable": false,
+      "martialMelee_equippable": false,
+      "martialRanged_equippable": true,
+      "martialShield_equippable": false,
+      "name": "Sniper",
+      "project_performable": false,
+      "ritual_performable": false
+    },
+    "statusEffects": {},
+    "template": "hoxC3HFCtMYGScIo",
+    "templateSystemUniqueVersion": 504201233
+  },
+  "type": "character"
+}

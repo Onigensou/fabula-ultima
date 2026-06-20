@@ -1,0 +1,19 @@
+{
+  "_id": "9ryuwnuLABXg6RDZ",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1752418269414,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": "#79519c",
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "Boss Loot FX Macros Free",
+  "sort": 100000,
+  "sorting": "m",
+  "type": "Compendium"
+}

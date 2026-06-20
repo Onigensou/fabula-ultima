@@ -1,0 +1,57 @@
+{
+  "_id": "D2OvRm2WM87MEOW6",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1758205066979,
+    "duplicateSource": "Item.2DXxFBhlmKJp8awe",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "yYTqxeiZBgJ0wAv0",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/fists_of_wind.png",
+  "name": "Soul Renewal",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Monk",
+      "cost": "2 MP per Bead",
+      "damage_bonus": "0",
+      "description": "<p>Choose up to three creatures. As an action, release your <strong>Soul Beads</strong> towards them, spending <strong>2 MP per Bead</strong>. Each delivered Bead restores <strong>10 HP or MP</strong>, at your discretion. Each Bead released in this way is destroyed.</p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20</strong> ― <em>Regeneration per Bead</em> increases to <strong>12 HP/MP</strong>.</p>\n<p><strong>Skill Enhancement Lv. 40</strong> ― <em>Regeneration per Bead</em> increases to <strong>15 HP/MP</strong>.</p>\n",
+      "duration": "Instantaneous",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Soul Renewal",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "Range",
+      "skill_target": "Up to three creature",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "D2OvRm2WM87MEOW6"
+  },
+  "type": "equippableItem"
+}

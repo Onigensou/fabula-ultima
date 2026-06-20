@@ -1,0 +1,54 @@
+{
+  "_id": "vXhqoRfPO5RK6Mdd",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1781820009974,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "H5HE3g8k3EvxVyvM",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Add/DiabolicEsperSkill7.png",
+  "name": "Hypercognition",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "effect_table": {
+        "0": {
+          "cost_amount": "-(SL + SL * FOCUS_IS_ONLY_TARGET)",
+          "cost_operation": "add",
+          "cost_resource": "mp",
+          "effect_kind": "adjust_cost",
+          "effect_label": "hc_discount"
+        }
+      },
+      "passive_logic_action": "<p>[{\"id\":\"hyper-crit-ramp\",\"label\":\"Hypercognition\",\"when\":{\"all\":[{\"actor\":{\"flagCompare\":{\"ns\":\"oni\",\"key\":\"focus.stacks\",\"op\":\">=\",\"value\":3}}}]},\"effects\":[{\"type\":\"critMult\",\"amount\":1.5},{\"type\":\"flat\",\"scope\":\"outgoing\",\"element\":\"ice\",\"amount\":250}]}]</p>",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "ANY_TARGET_HAS_MY_FOCUS == 1 && ACTION_IS_SPELL == 1",
+          "reaction_action_kind": "Attack,Spell,Skill",
+          "reaction_effect_ref": "hc_discount",
+          "reaction_passive_mode": "on",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_performs_action"
+        }
+      },
+      "skill_type": "Passive"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "vXhqoRfPO5RK6Mdd"
+  },
+  "type": "equippableItem"
+}

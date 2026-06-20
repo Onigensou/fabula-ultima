@@ -1,0 +1,62 @@
+{
+  "_id": "OHZETPJgAZNg0AUU",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1749408679065,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.4.2"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "OHZETPJgAZNg0AUU",
+        "itemName": "Blarthor",
+        "pickedOldProps": {
+          "cost": "2700",
+          "martial": true
+        },
+        "ts": 1769647435304
+      }
+    }
+  },
+  "folder": "D1OgeGHLjJ9dSkxS",
+  "img": "https://gbf.wiki/images/thumb/2/29/Weapon_b_1040220000.png/462px-Weapon_b_1040220000.png",
+  "name": "Blarthor",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3
+  },
+  "sort": 300000,
+  "system": {
+    "container": null,
+    "props": {
+      "category": "Spear",
+      "check_bonus": "0",
+      "damage_bonus": "15",
+      "description": "<ul><li><p>When you gain Zero Power, Deal 5 Light Damage to one target creature per Zero Power.</p></li></ul>",
+      "hand_slots": "Two-handed",
+      "isMartial": true,
+      "item_cost": "2700",
+      "item_type": "weapon",
+      "name": "Blarthor",
+      "rolled_atr1": "MIG",
+      "rolled_atr2": "DEX",
+      "set_name": "",
+      "skill_target": "One Enemy",
+      "type_damage": "Light",
+      "weapon_range": "Melee"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "OHZETPJgAZNg0AUU"
+  },
+  "type": "equippableItem"
+}

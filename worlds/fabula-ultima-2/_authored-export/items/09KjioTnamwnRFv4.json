@@ -1,0 +1,381 @@
+{
+  "_id": "09KjioTnamwnRFv4",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1753059963649,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "qqdyfXAFOUJYj9ZM",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1775334457929,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "base_defense",
+          "mode": 4,
+          "priority": 1,
+          "value": "${isEquipped ? (isMartial ? (item_baseDef * 1) : 0) : 0}$"
+        },
+        {
+          "key": "bonus_defense",
+          "mode": 2,
+          "priority": 2,
+          "value": "${isEquipped ? (isMartial ? 0 : (item_def_bonus * 1)) : 0}$"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "core": {
+          "overlay": false
+        },
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "qqdyfXAFOUJYj9ZM",
+          "originalParentId": "09KjioTnamwnRFv4",
+          "originalUuid": "Item.09KjioTnamwnRFv4.ActiveEffect.qqdyfXAFOUJYj9ZM"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-def-up",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUp.webp",
+      "name": "Armor DEF",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    },
+    {
+      "_id": "veAV6o6dQYQEsF2V",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1775334457984,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "base_magic_defense",
+          "mode": 4,
+          "priority": 1,
+          "value": "${isEquipped ? (isMartial ? (item_baseMdef * 1) : 0) : 0}$"
+        },
+        {
+          "key": "bonus_magic_defense",
+          "mode": 2,
+          "priority": 2,
+          "value": "${isEquipped ? (isMartial ? 0 : (item_mdef_bonus * 1)) : 0}$"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "core": {
+          "overlay": false
+        },
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "veAV6o6dQYQEsF2V",
+          "originalParentId": "09KjioTnamwnRFv4",
+          "originalUuid": "Item.09KjioTnamwnRFv4.ActiveEffect.veAV6o6dQYQEsF2V"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-mdef-up",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUpStack.webp",
+      "name": "Armor MDEF",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    },
+    "fabula-ultima-companion": {
+      "armorDefMdefAeMassPatchBackup_v1": {
+        "createdAt": 1777705755929,
+        "effects": [
+          {
+            "changes": [
+              {
+                "key": "defense",
+                "mode": 2,
+                "priority": 1,
+                "value": "${isEquipped ? (isMartial ? 0 : item_def_bonus) : 0}$"
+              },
+              {
+                "key": "defense",
+                "mode": 4,
+                "priority": 2,
+                "value": "${isEquipped ? (isMartial ? item_baseDef : 0) : 0}$"
+              }
+            ],
+            "id": "qqdyfXAFOUJYj9ZM",
+            "name": "Armor DEF"
+          },
+          {
+            "changes": [
+              {
+                "key": "magic_defense",
+                "mode": 2,
+                "priority": 1,
+                "value": "${isEquipped ? (isMartial ? 0 : item_mdef_bonus) : 0}$"
+              },
+              {
+                "key": "magic_defense",
+                "mode": 4,
+                "priority": 2,
+                "value": "${isEquipped ? (isMartial ? item_baseMdef : 0) : 0}$"
+              }
+            ],
+            "id": "veAV6o6dQYQEsF2V",
+            "name": "Armor MDEF"
+          }
+        ],
+        "itemName": "Hunter's Mantle",
+        "itemUuid": "Item.09KjioTnamwnRFv4",
+        "parentName": "",
+        "parentType": "World"
+      },
+      "defMdefHelperKeyPatchBackup_v1": {
+        "createdAt": 1777708465823,
+        "effects": [
+          {
+            "changes": [
+              {
+                "key": "defense",
+                "mode": 2,
+                "priority": 1,
+                "value": "${isEquipped ? (isMartial ? 0 : item_def_bonus) : 0}$"
+              },
+              {
+                "key": "defense",
+                "mode": 4,
+                "priority": 2,
+                "value": "${isEquipped ? (isMartial ? item_baseDef : 0) : 0}$"
+              }
+            ],
+            "id": "qqdyfXAFOUJYj9ZM",
+            "name": "Armor DEF"
+          },
+          {
+            "changes": [
+              {
+                "key": "magic_defense",
+                "mode": 2,
+                "priority": 1,
+                "value": "${isEquipped ? (isMartial ? 0 : item_mdef_bonus) : 0}$"
+              },
+              {
+                "key": "magic_defense",
+                "mode": 4,
+                "priority": 2,
+                "value": "${isEquipped ? (isMartial ? item_baseMdef : 0) : 0}$"
+              }
+            ],
+            "id": "veAV6o6dQYQEsF2V",
+            "name": "Armor MDEF"
+          }
+        ],
+        "itemId": "09KjioTnamwnRFv4",
+        "itemName": "Hunter's Mantle",
+        "itemType": "armor",
+        "itemUuid": "Item.09KjioTnamwnRFv4",
+        "owner": {
+          "actor": "",
+          "actorUuid": "",
+          "source": "World Item"
+        }
+      }
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "armor",
+        "fromTemplate": "5Z0gKtN5R51ebJOa",
+        "itemId": "09KjioTnamwnRFv4",
+        "itemName": "Hunter's Mantle",
+        "pickedOldProps": {
+          "cost": "2800",
+          "def_bonus": "2",
+          "defense": "0",
+          "defense_include_dex": true,
+          "initiative": "0",
+          "magic_defense": "0",
+          "magic_defense_include_ins": true,
+          "martial": false,
+          "mdef_bonus": "",
+          "shield": false
+        },
+        "ts": 1769647435764
+      }
+    }
+  },
+  "folder": "cSLVeZ3TavIe40F1",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Valkyrie%20Connect/Druid%2527s_Cloak_icon.webp",
+  "name": "Hunter's Mantle",
+  "ownership": {
+    "2vy7wrEUqBy0kzsU": 3,
+    "6DmgigM5jq76r0Gd": 3,
+    "7hKw8KGsimboeDif": 3,
+    "9sFgrDy4MvAgoCmQ": 3,
+    "Am7qxPOavfKeDGPd": 3,
+    "JQGNzKpDPHJmcUIW": 3,
+    "JvF9tXvr7aaiS06m": 3,
+    "KD5d0efqHETPpIux": 3,
+    "LT3Z8EnRdMVk5ncQ": 3,
+    "MwTL6zXFCEpVBTpI": 3,
+    "NozW36XIGEGx7oVH": 3,
+    "NpGkA7uxaarkPiwS": 3,
+    "ULBTZPjtza939Mvy": 3,
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3,
+    "eGu3tuw7HwJd2bpx": 3,
+    "iLeUVmwqnze8ulOI": 3,
+    "mE5aEkDlrQJIYyhG": 3,
+    "nSGZ1sz1rdKao0kz": 3,
+    "nXC7OD7u5Zw5UDDU": 3,
+    "t41knaXNbgCEygM5": 3,
+    "tz9BP9MKfNGf2P3n": 3,
+    "wNzPmItLYCKE1I8t": 3,
+    "yL2PQxh3R9ddt0te": 3,
+    "yUfwoVmEPVdFG3AY": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "aquatic_ef": "100",
+      "automaton_ef": "100",
+      "avian_ef": "100",
+      "beast_ef": "100",
+      "category": "Arcane",
+      "celestial_ef": "100",
+      "check_bonus": "0",
+      "construct_ef": "100",
+      "damage_bonus": "0",
+      "demiHuman_ef": "100",
+      "demon_ef": "100",
+      "description": "<ul><li><p>You may begins the <strong>conflict </strong>with the <strong>companion 🦅@UUID[Actor.GnEmdc02BDDTmeaU]</strong></p></li><li><p>You may use the skill 💥@UUID[Item.b6o08227mQqMU33t]</p><hr class=\"\" contenteditable=\"false\"></li></ul><p><strong>【Set Bonus】</strong></p><p><strong>2 Piece</strong></p><ul><li><p>Ally @UUID[Actor.GnEmdc02BDDTmeaU]'s <strong>【🏹 Dive Strike】</strong>apply <strong>Hunter's Mark </strong>to the target</p><hr contenteditable=\"false\"></li></ul><p><strong>3 Piece</strong></p><ul><li><p>Ally @UUID[Actor.GnEmdc02BDDTmeaU]'s <strong>Attacks </strong>gain +3 Accuracy</p><hr contenteditable=\"false\"></li></ul><p>&nbsp;<strong>4 Piece</strong></p><ul><li><p>Ally @UUID[Actor.GnEmdc02BDDTmeaU]'s <strong>【🏹 Dive Strike】</strong>gain <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.noUOPxPoZq65yYxV\" data-id=\"noUOPxPoZq65yYxV\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Chain</span></strong></a><strong><span style=\"text-decoration: underline;\"> </span></strong></span></span><strong>2</strong>&nbsp;<em>(Both attack must target the same creature)</em></p></li></ul>",
+      "dragon_ef": "100",
+      "elemental_ef": "100",
+      "enforcer_ef": "100",
+      "fey_ef": "100",
+      "flora_ef": "100",
+      "fungus_ef": "100",
+      "golem_ef": "100",
+      "gorger_ef": "100",
+      "hand_slots": "One-handed",
+      "human_ef": "100",
+      "humanoid_ef": "100",
+      "insect_ef": "100",
+      "ip_cost": "",
+      "isEquipped": false,
+      "isKey": false,
+      "isMartial": false,
+      "isModule": false,
+      "isRelatedItem": false,
+      "isSet": true,
+      "isUnique": false,
+      "item_baseDef": "0",
+      "item_baseMdef": "0",
+      "item_cost": "2800",
+      "item_def_bonus": "2",
+      "item_mdef_bonus": "0",
+      "item_quantity": "1",
+      "item_rarity": "Rare",
+      "item_type": "armor",
+      "mimic_ef": "100",
+      "monster_ef": "100",
+      "name": "Hunter's Mantle",
+      "optional_params": {},
+      "plant_ef": "100",
+      "reptilian_ef": "100",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "set_name": "Warden of the Wilds",
+      "soldier_ef": "100",
+      "spirit_ef": "100",
+      "type_damage": "Physical",
+      "undead_ef": "100",
+      "vehicle_ef": "100",
+      "weapon_range": "Melee"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "09KjioTnamwnRFv4"
+  },
+  "type": "equippableItem"
+}

@@ -1,0 +1,57 @@
+{
+  "_id": "0UvQrmVE10uyR6Oa",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1756967895298,
+    "duplicateSource": "Item.XhrZl2gJnOTmOT15",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "2OplVa9fwLYbzD8b",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/09_NIN/doton.png",
+  "name": "Spider's Web",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 6100000,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Weaponmaster",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>When you perform the 【⚔️Attack】 action with a <strong>melee</strong> weapon that belongs to the <strong>flail</strong> Category, if you have no other weapon equipped, you may perform two separate attacks instead of one (against the same target or against different targets). If you do, both attacks follow the rules for <strong>two-weapon fighting</strong>: each attack loses the <strong>multi</strong> property and cannot gain it, and you treat the <strong>High Roll</strong> of each Accuracy Check as being equal to 0 when determining damage.</p>\n<p>Note that this Heroic Skill does not stack with a custom weapon’s <em>quick</em> customization (using Spider’s Web with a quick flail doesn’t allow more than two attacks, in short).</p>\n",
+      "duration": "",
+      "heroic_requirement": "you must have mastered the Weaponmaster Class.",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Spider's Web",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "0UvQrmVE10uyR6Oa"
+  },
+  "type": "equippableItem"
+}

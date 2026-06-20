@@ -1,0 +1,58 @@
+{
+  "_id": "ofCKWctVhPv8vC9H",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1756853183452,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "SpOeLnDXVqot9DX9",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Gatherer-Crafter/04_ALC/basic_touch.png",
+  "name": "Basic Alchemy",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Tinkerer",
+      "cost": "3 IP",
+      "damage_bonus": "0",
+      "description": "<div class=\"potion-skill\">\n    <p>You may perform the <strong>【⚗️Inventory】</strong> action to rapidly craft a <strong>potion</strong> with powerful but somewhat unpredictable effects. Roll two <strong>d20s</strong> and assign one to <strong>target</strong> and one to <strong>effect</strong>.</p>\n    <details class=\"potion-foldout\">\n        <summary>Potion Tables (Target &amp; Effect)</summary>\n        <table class=\"book-table\">\n            <caption>TARGET</caption>\n            <thead>\n                <tr>\n                    <th class=\"die\">Die</th>\n                    <th>The potion affects…</th>\n                </tr>\n            </thead>\n            <tbody>\n                <tr>\n                    <td class=\"die\">1–6</td>\n                    <td>… you or one ally you can see that is present on the scene.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">7–11</td>\n                    <td>… one enemy you can see that is present on the scene.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">12–16</td>\n                    <td>… you and every ally present on the scene.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">17–20</td>\n                    <td>… every enemy present on the scene.</td>\n                </tr>\n            </tbody>\n        </table>\n        <table class=\"book-table\">\n            <caption>EFFECT</caption>\n            <thead>\n                <tr>\n                    <th class=\"die\">Die</th>\n                    <th>Each creature affected by the potion…</th>\n                </tr>\n            </thead>\n            <tbody>\n                <tr>\n                    <td class=\"die\">Any</td>\n                    <td>… suffers 20 <strong>poison</strong> damage.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">Any</td>\n                    <td>… recovers 30 Hit Points.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">1</td>\n                    <td>… treats their <strong>Dexterity</strong> and <strong>Might</strong> dice as if they were one size higher (up to a maximum of d12) until the end of your next turn.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">2</td>\n                    <td>As effect 1, but with <strong>Insight</strong> and <strong>Willpower</strong>.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">3</td>\n                    <td>… suffers 20 <strong>air</strong> damage. This amount increases to 30 damage if you are level 20 or higher, or to 40 damage if you are level 40 or higher.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">4</td>\n                    <td>As effect 3, but with <strong>bolt</strong> damage.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">5</td>\n                    <td>As effect 3, but with <strong>dark</strong> damage.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">6</td>\n                    <td>As effect 3, but with <strong>earth</strong> damage.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">7</td>\n                    <td>As effect 3, but with <strong>fire</strong> damage.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">8</td>\n                    <td>As effect 3, but with <strong>ice</strong> damage.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">9</td>\n                    <td>… gains <strong>Resistance</strong> to <strong>air</strong> and <strong>fire</strong> damage until the end of the scene.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">10</td>\n                    <td>As effect 9, but with <strong>bolt</strong> and <strong>ice</strong> damage.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">11</td>\n                    <td>As effect 9, but with <strong>dark</strong> and <strong>earth</strong> damage.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">12</td>\n                    <td>… suffers <strong>enraged</strong>.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">13</td>\n                    <td>… suffers <strong>poisoned</strong>.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">14</td>\n                    <td>… suffers <strong>dazed</strong>, <strong>shaken</strong>, <strong>slow</strong> and <strong>weak</strong>.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">15</td>\n                    <td>… recovers from all status effects.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">16–17</td>\n                    <td>… recovers 50 Hit Points and 50 Mind Points.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">18</td>\n                    <td>… recovers 100 Hit Points.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">19</td>\n                    <td>… recovers 100 Mind Points.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">20</td>\n                    <td>… recovers 100 Hit Points and 100 Mind Points.</td>\n                </tr>\n            </tbody>\n        </table>\n    </details>\n</div>",
+      "duration": "Instantaneous",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": true,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Basic Alchemy",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p><strong>Level</strong></p></td><td data-colwidth=\"148\"><p><strong>D20 roll</strong></p></td><td><p><strong>IP Cost</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>Basic</p></td><td data-colwidth=\"148\"><p>2</p></td><td><p>3</p></td></tr><tr><td data-colwidth=\"79\"><p>Advance</p></td><td data-colwidth=\"148\"><p>3</p></td><td><p>4</p></td></tr><tr><td data-colwidth=\"79\"><p>Superior</p></td><td data-colwidth=\"148\"><p>4</p></td><td><p>5</p></td></tr></tbody></table>",
+      "skill_range": "Range",
+      "skill_target": "Special",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "ofCKWctVhPv8vC9H"
+  },
+  "type": "equippableItem"
+}

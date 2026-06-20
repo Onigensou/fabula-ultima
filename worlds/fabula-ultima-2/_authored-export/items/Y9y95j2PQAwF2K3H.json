@@ -1,0 +1,105 @@
+{
+  "_id": "Y9y95j2PQAwF2K3H",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1734865172510,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "Y9y95j2PQAwF2K3H",
+        "itemName": "Cursed Sword",
+        "pickedOldProps": {
+          "cost": "4444",
+          "martial": true
+        },
+        "ts": 1769647435457
+      }
+    }
+  },
+  "folder": "xMVY94FXuACmcFkd",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Image/DALL%C2%B7E%202024-12-22%2018.08.40%20-%20An%20anime-style%2C%20cel-shaded%20illustration%20of%20a%20cursed%20sword%20with%20a%20dark%2C%20ominous%20aura.%20The%20sword%20should%20have%20a%20sleek%2C%20slightly%20jagged%20design%2C%20with%20a%20dar.png",
+  "name": "Cursed Sword",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "aquatic_ef": "100",
+      "automaton_ef": "100",
+      "avian_ef": "100",
+      "beast_ef": "100",
+      "category": "Sword",
+      "celestial_ef": "100",
+      "check_bonus": "1",
+      "construct_ef": "100",
+      "damage_bonus": "25",
+      "demiHuman_ef": "100",
+      "demon_ef": "100",
+      "description": "<ul><li>At the start of your turn, you lose <strong>20%</strong> of your <strong>MaxHP.</strong></li><li>This item cannot be <strong>unequip </strong>during <strong>conflict</strong></li><li>This item cannot be sold. Any attempt to discard this item will only make the sword reappear in your inventory 4 hour later.</li></ul>",
+      "dragon_ef": "100",
+      "elemental_ef": "100",
+      "enforcer_ef": "100",
+      "fey_ef": "100",
+      "flavor_text": "<blockquote>\n<p>Forged in darkness, this blade thirsts for its wielder's soul.</p>\n</blockquote>",
+      "flora_ef": "100",
+      "fungus_ef": "100",
+      "golem_ef": "100",
+      "gorger_ef": "100",
+      "hand_slots": "One-handed",
+      "human_ef": "100",
+      "humanoid_ef": "100",
+      "insect_ef": "100",
+      "ip_cost": "",
+      "isEquipped": false,
+      "isKey": false,
+      "isMartial": true,
+      "isModule": false,
+      "isRelatedItem": false,
+      "isSet": false,
+      "isUnique": false,
+      "item_baseDef": "0",
+      "item_baseMdef": "0",
+      "item_cost": "4444",
+      "item_def_bonus": "0",
+      "item_mdef_bonus": "0",
+      "item_quantity": "1",
+      "item_rarity": "Legendary",
+      "item_type": "weapon",
+      "mimic_ef": "100",
+      "monster_ef": "100",
+      "name": "Cursed Sword",
+      "optional_params": {},
+      "plant_ef": "100",
+      "reptilian_ef": "100",
+      "rolled_atr1": "MIG",
+      "rolled_atr2": "MIG",
+      "set_name": "",
+      "skill_target": "One Enemy",
+      "soldier_ef": "100",
+      "spirit_ef": "100",
+      "type_damage": "Dark",
+      "undead_ef": "100",
+      "vehicle_ef": "100",
+      "weapon_range": "Melee"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "Y9y95j2PQAwF2K3H"
+  },
+  "type": "equippableItem"
+}

@@ -1,0 +1,19 @@
+{
+  "_id": "92Kqr3xkhWwyD12k",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": null,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "2.1.0"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "NZzmXPcBYP9HDPXd",
+  "name": "Miscellaneous",
+  "sort": 0,
+  "sorting": "a",
+  "type": "JournalEntry"
+}

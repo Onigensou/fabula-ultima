@@ -1,0 +1,19 @@
+{
+  "_id": "Xm2UmDrxO6gJdChA",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1768193290597,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "kRdFjxKiTGo3MBpt",
+  "name": "Notes",
+  "sort": 0,
+  "sorting": "a",
+  "type": "JournalEntry"
+}

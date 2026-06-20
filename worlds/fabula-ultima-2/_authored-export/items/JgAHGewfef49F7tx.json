@@ -1,0 +1,52 @@
+{
+  "_id": "JgAHGewfef49F7tx",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1751459123947,
+    "duplicateSource": "Item.JXezG8T9yiKaJ3jd",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "recipe",
+        "fromTemplate": "VJCHYWOx1mPsMSip",
+        "itemId": "JgAHGewfef49F7tx",
+        "itemName": "Magic Mushroom",
+        "pickedOldProps": {
+          "recipe_description": "<ul><li>Inflicts a <strong>Random Status Effect </strong>to you. <em>(Randomize from all status in the game)</em></li></ul>",
+          "recipe_ip": "1",
+          "recipe_label": ""
+        },
+        "ts": 1769647435941
+      }
+    }
+  },
+  "folder": "MOf4y5KdI6ZvNBHg",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/item%20icon.pngmush.png",
+  "name": "Magic Mushroom",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 37500,
+  "system": {
+    "container": null,
+    "props": {
+      "description": "<ul><li>Inflicts a <strong>Random Status Effect </strong>to you. <em>(Randomize from all status in the game)</em></li></ul>",
+      "ip_cost": "1",
+      "item_type": "recipe",
+      "name": "Magic Mushroom"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "JgAHGewfef49F7tx"
+  },
+  "type": "equippableItem"
+}

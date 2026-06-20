@@ -1,0 +1,19 @@
+{
+  "_id": "D1OgeGHLjJ9dSkxS",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1746819998350,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.4.2"
+  },
+  "color": "#9959d9",
+  "description": "",
+  "flags": {},
+  "folder": "yIXRZeBsb9OQyi02",
+  "name": "Prototype Equipments",
+  "sort": 800000,
+  "sorting": "a",
+  "type": "Item"
+}

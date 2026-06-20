@@ -1,0 +1,19 @@
+{
+  "_id": "AJgQVD7Q6DFwASCn",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1753896323391,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "VVjpCERIXMrOJna7",
+  "name": "Fury",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

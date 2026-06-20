@@ -1,0 +1,19 @@
+{
+  "_id": "T5obITZcB97IkuXz",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1746204633347,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.4.2"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "DuRdEOgbsdCjJ7Pl",
+  "name": "Travel_map",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Scene"
+}

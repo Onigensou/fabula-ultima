@@ -1,0 +1,1581 @@
+{
+  "_id": "8nncIhGQAEJ0ABjl",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1773370745892,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "theatre": {
+      "settings": {
+        "emote": null,
+        "textcolor": null,
+        "textflyin": "typewriter",
+        "textfont": null,
+        "textsize": null,
+        "textstanding": "none"
+      }
+    }
+  },
+  "folder": "Nd8LnosrPid1eX1r",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Jack/Jack_Standard.png",
+  "items": [
+    {
+      "_id": "2paM8AUY07YPEweg",
+      "_stats": {
+        "compendiumSource": "Item.CCgNOkaxbjVg55M9",
+        "coreVersion": "12.343",
+        "createdTime": 1781875204633,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1744.gif",
+      "name": "Thief Bow",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Bow",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "6",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.2JlZwoTU5Ql7sUyS\" data-id=\"2JlZwoTU5Ql7sUyS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Snipe</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;20 </span></strong></span></span>The target loses <strong>1 IP </strong>and you <strong>gain 1 IP</strong></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "Two-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "CCgNOkaxbjVg55M9",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1744.gif",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "2000",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Rare",
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Thief Bow",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "INS",
+          "set_name": "<Set Name>",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.CCgNOkaxbjVg55M9",
+          "vehicle_ef": "100",
+          "weapon_range": "Ranged"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "CCgNOkaxbjVg55M9"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "c2mUdptLSISV21LI",
+      "_stats": {
+        "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
+        "coreVersion": "12.343",
+        "createdTime": 1781875204633,
+        "duplicateSource": "Item.UKzHkmIJcjXZ4GFR",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/11_BRD/apex_arrow.png",
+      "name": "Zero Power: Apex Arrow",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "<div><div><p>(async () =&gt; {</p></div><p><br></p><div><p>const TAG = \"[ONI][Anim][ApexArrow]\";</p></div><p><br></p><div><p>const ANIM_KEY = \"oni.apexArrow\";</p></div><p><br></p><div><p>const ACTION_NAME = \"Zero Power: Apex Arrow\";</p></div><p><br></p><div><p>const CUTIN_PROP_PATH = \"system.props.cut_in_zero_power\";</p></div><p><br></p><div><p>const CFG = {</p></div><p><br></p><div><p>// Jump / motion</p></div><p><br></p><div><p>jumpTargetX: 645,</p></div><p><br></p><div><p>jumpTargetY: 76,</p></div><p><br></p><div><p>jumpMs: 650,</p></div><p><br></p><div><p>jumpArcPx: 220,</p></div><p><br></p><div><p>spinTurns: 1.5,</p></div><p><br></p><div><p>afterimageIntervalMs: 35,</p></div><p><br></p><div><p>afterimageFadeMs: 220,</p></div><p><br></p><div><p>afterimageScaleBoost: 0.06,</p></div><p><br></p><div><p>// Layering</p></div><p><br></p><div><p>blackZ: 95000,</p></div><p><br></p><div><p>afterimageZ: 95005,</p></div><p><br></p><div><p>spriteZ: 95010,</p></div><p><br></p><div><p>vfxZ: 95020,</p></div><p><br></p><div><p>cutinZ: 98000,</p></div><p><br></p><div><p>whiteZ: 999999,</p></div><p><br></p><div><p>// Cut-in tuning</p></div><p><br></p><div><p>cutinSlideInMs: 500,</p></div><p><br></p><div><p>cutinHoldMs: 700,</p></div><p><br></p><div><p>cutinSlideOutMs: 500,</p></div><p><br></p><div><p>cutinPortraitHeightRatio: 0.92,</p></div><p><br></p><div><p>cutinPortraitInsetX: 220,</p></div><p><br></p><div><p>cutinPortraitBottomMargin: 40,</p></div><p><br></p><div><p>cutinPortraitYOffset: -130,</p></div><p><br></p><div><p>cutinFlashPeak: 0.92,</p></div><p><br></p><div><p>cutinFlashDelayMs: 50,</p></div><p><br></p><div><p>cutinFlashInMs: 70,</p></div><p><br></p><div><p>cutinFlashOutMs: 170,</p></div><p><br></p><div><p>// Main VFX</p></div><div><p>vfxFile: \"modules/boss-loot-assets-free/artwork/05-spell/homebrew/fire/EmberGaze_Ray_1_YELLOW_RANGE_30ft_1600x400.webm\",</p></div><div><p>vfxScale: 2,</p></div><div><p>vfxOffsetX: 0,</p></div><div><p>vfxOffsetY: 0,</p></div><div><p>vfxRotationDeg: 45,</p></div><div><p>vfxTtlMs: 1000,</p></div><p><br></p><div><p>// SFX</p></div><div><p>cutinSfx: \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Overdrive.wav\",</p></div><div><p>cutinSfxVolume: 0.9,</p></div><div><p>vfxSfx: \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Shukuchi.wav\",</p></div><div><p>vfxSfxVolume: 0.9,</p></div><p><br></p><div><p>// Whiteout</p></div><p><br></p><div><p>whiteoutInMs: 1800,</p></div><p><br></p><div><p>whiteoutOutMs: 650,</p></div><p><br></p><div><p>totalTimeoutMs: 20000</p></div><p><br></p><div><p>};</p></div><p><br></p><div><p>const P = globalThis.__PAYLOAD ?? {};</p></div><p><br></p><div><p>globalThis.ONI = globalThis.ONI ?? {};</p></div><p><br></p><div><p>if (!ONI.emit) {</p></div><p><br></p><div><p>ONI.emit = (eventName, payload = {}, options = {}) =&gt; {</p></div><p><br></p><div><p>const { local = true, world = false } = options;</p></div><p><br></p><div><p>if (local) Hooks.callAll(eventName, payload);</p></div><p><br></p><div><p>if (world) game.socket.emit(\"world\", { action: eventName, payload });</p></div><p><br></p><div><p>};</p></div><p><br></p><div><p>}</p></div><p><br></p><div><p>function asTokenPlaceable(doc) {</p></div><p><br></p><div><p>if (!doc) return null;</p></div><p><br></p><div><p>if (doc.object) return doc.object;</p></div><p><br></p><div><p>if (doc.token?.object) return doc.token.object;</p></div><p><br></p><div><p>if (doc.documentName === \"Token\") return canvas.tokens?.get(doc.id) ?? null;</p></div><p><br></p><div><p>if (doc.documentName === \"Actor\") {</p></div><p><br></p><div><p>return canvas.tokens?.placeables?.find(t =&gt; t.actor?.id === doc.id) ?? null;</p></div><p><br></p><div><p>}</p></div><p><br></p><div><p>return null;</p></div><p><br></p><div><p>}</p></div><p><br></p><div><p>async function fromUuidSafe(uuid) {</p></div><p><br></p><div><p>if (!uuid) return null;</p></div><p><br></p><div><p>try {</p></div><p><br></p><div><p>return await fromUuid(uuid);</p></div><p><br></p><div><p>} catch (err) {</p></div><p><br></p><div><p>console.warn(TAG, \"fromUuid failed\", uuid, err);</p></div><p><br></p><div><p>return null;</p></div><p><br></p><div><p>}</p></div><p><br></p><div><p>}</p></div><p><br></p><div><p>async function resolveSourceToken() {</p></div><p><br></p><div><p>const candidates = [</p></div><p><br></p><div><p>P.attackerUuid,</p></div><p><br></p><div><p>P.sourceTokenUuid,</p></div><p><br></p><div><p>P.casterTokenUuid,</p></div><p><br></p><div><p>P.sourceUuid,</p></div><p><br></p><div><p>P.tokenUuid,</p></div><p><br></p><div><p>P.actorUuid</p></div><p><br></p><div><p>].filter(Boolean);</p></div><p><br></p><div><p>for (const uuid of candidates) {</p></div><p><br></p><div><p>const doc = await fromUuidSafe(uuid);</p></div><p><br></p><div><p>const token = asTokenPlaceable(doc);</p></div><p><br></p><div><p>if (token) return token;</p></div><p><br></p><div><p>}</p></div><p><br></p><div><p>return canvas.tokens?.controlled?.[0] ?? null;</p></div><p><br></p><div><p>}</p></div><p><br></p><div><p>async function resolveTargets() {</p></div><p><br></p><div><p>const raw = [];</p></div><p><br></p><div><p>const maybeArrays = [</p></div><p><br></p><div><p>P.targets,</p></div><p><br></p><div><p>P.targetTokenUuids,</p></div><p><br></p><div><p>P.originalTargetUUIDs,</p></div><p><br></p><div><p>P?.meta?.originalTargetUUIDs</p></div><p><br></p><div><p>];</p></div><p><br></p><div><p>for (const arr of maybeArrays) {</p></div><p><br></p><div><p>if (Array.isArray(arr)) raw.push(...arr);</p></div><p><br></p><div><p>}</p></div><p><br></p><div><p>const out = [];</p></div><p><br></p><div><p>for (const uuid of raw) {</p></div><p><br></p><div><p>const doc = await fromUuidSafe(uuid);</p></div><p><br></p><div><p>const token = asTokenPlaceable(doc);</p></div><p><br></p><div><p>if (token) out.push(token);</p></div><p><br></p><div><p>}</p></div><p><br></p><div><p>return out;</p></div><p><br></p><div><p>}</p></div><p><br></p><div><p>function onceHook(hookName, timeoutMs = 15000) {</p></div><p><br></p><div><p>return new Promise((resolve) =&gt; {</p></div><p><br></p><div><p>let settled = false;</p></div><p><br></p><div><p>const timer = setTimeout(() =&gt; {</p></div><p><br></p><div><p>if (settled) return;</p></div><p><br></p><div><p>settled = true;</p></div><p><br></p><div><p>Hooks.off(hookName, handler);</p></div><p><br></p><div><p>console.warn(TAG, \"Timed out waiting for hook\", hookName);</p></div><p><br></p><div><p>resolve({ ok: false, timeout: true });</p></div><p><br></p><div><p>}, timeoutMs);</p></div><p><br></p><div><p>const handler = (data) =&gt; {</p></div><p><br></p><div><p>if (settled) return;</p></div><p><br></p><div><p>settled = true;</p></div><p><br></p><div><p>clearTimeout(timer);</p></div><p><br></p><div><p>Hooks.off(hookName, handler);</p></div><p><br></p><div><p>resolve(data ?? { ok: true });</p></div><p><br></p><div><p>};</p></div><p><br></p><div><p>Hooks.on(hookName, handler);</p></div><p><br></p><div><p>});</p></div><p><br></p><div><p>}</p></div><p><br></p><div><p>const sourceToken = await resolveSourceToken();</p></div><p><br></p><div><p>const targets = await resolveTargets();</p></div><p><br></p><div><p>if (!sourceToken) {</p></div><p><br></p><div><p>ui.notifications.warn(\"Apex Arrow animation: no caster token found.\");</p></div><p><br></p><div><p>return;</p></div><p><br></p><div><p>}</p></div><p><br></p><div><p>if (!game?.ONI?.pseudo?.play) {</p></div><p><br></p><div><p>ui.notifications.error(\"Apex Arrow animation: ONI Pseudo API not found.\");</p></div><p><br></p><div><p>return;</p></div><p><br></p><div><p>}</p></div><p><br></p><div><p>const cutinUrl = foundry.utils.getProperty(sourceToken.actor, CUTIN_PROP_PATH) ?? \"\";</p></div><p><br></p><div><p>const doneHook = `${ANIM_KEY}.done.${randomID()}`;</p></div><p><br></p><div><p>const payloadForEmit = {</p></div><p><br></p><div><p>type: ANIM_KEY,</p></div><p><br></p><div><p>sourceTokenId: sourceToken.id,</p></div><p><br></p><div><p>targetTokenIds: targets.map(t =&gt; t.id),</p></div><p><br></p><div><p>sceneId: canvas.scene?.id ?? null,</p></div><p><br></p><div><p>timestamp: Date.now()</p></div><p><br></p><div><p>};</p></div><p><br></p><div><p>const scriptSource = String.raw`</p></div><p><br></p><div><p>const { casterToken, targetTokens, params } = ctx;</p></div><div><p>if (!casterToken) throw new Error('Apex Arrow pseudo script: missing casterToken');</p></div><p><br></p><div><p>const cfg = Object.assign({</p></div><p><br></p><div><p>jumpTargetX: 645,</p></div><p><br></p><div><p>jumpTargetY: 76,</p></div><p><br></p><div><p>jumpMs: 650,</p></div><p><br></p><div><p>jumpArcPx: 220,</p></div><p><br></p><div><p>spinTurns: 1.5,</p></div><p><br></p><div><p>afterimageIntervalMs: 35,</p></div><p><br></p><div><p>afterimageFadeMs: 220,</p></div><p><br></p><div><p>afterimageScaleBoost: 0.06,</p></div><p><br></p><div><p>blackZ: 95000,</p></div><p><br></p><div><p>afterimageZ: 95005,</p></div><p><br></p><div><p>spriteZ: 95010,</p></div><p><br></p><div><p>vfxZ: 95020,</p></div><p><br></p><div><p>cutinZ: 98000,</p></div><p><br></p><div><p>whiteZ: 999999,</p></div><p><br></p><div><p>cutinSlideInMs: 500,</p></div><p><br></p><div><p>cutinHoldMs: 700,</p></div><p><br></p><div><p>cutinSlideOutMs: 500,</p></div><p><br></p><div><p>cutinPortraitHeightRatio: 0.92,</p></div><p><br></p><div><p>cutinPortraitInsetX: 220,</p></div><p><br></p><div><p>cutinPortraitBottomMargin: 40,</p></div><p><br></p><div><p>cutinPortraitYOffset: -130,</p></div><p><br></p><div><p>cutinFlashPeak: 0.92,</p></div><p><br></p><div><p>cutinFlashDelayMs: 50,</p></div><p><br></p><div><p>cutinFlashInMs: 70,</p></div><p><br></p><div><p>cutinFlashOutMs: 170,</p></div><p><br></p><div><p>&nbsp; vfxScale: 2,</p></div><div><p>&nbsp; vfxOffsetX: 0,</p></div><div><p>&nbsp; vfxOffsetY: 0,</p></div><div><p>&nbsp; vfxRotationDeg: 45,</p></div><div><p>&nbsp; vfxTtlMs: 1000,</p></div><div><p>&nbsp; whiteoutInMs: 1800,</p></div><div><p>&nbsp; whiteoutOutMs: 650,</p></div><div><p>&nbsp; cutinSfxVolume: 0.9,</p></div><div><p>&nbsp; vfxSfxVolume: 0.9</p></div><div><p>}, params.cfg ?? {});</p></div><p><br></p><div><p>const loadTex = globalThis.loadTextureSafe ?? loadTexture;</p></div><p><br></p><div><p>const waitMs = (ms) =&gt; new Promise(resolve =&gt; setTimeout(resolve, Number(ms) || 0));</p></div><p><br></p><div><p>const degToRad = (deg) =&gt; (Number(deg) || 0) * (Math.PI / 180);</p></div><p><br></p><div><p>const lerp = (a, b, t) =&gt; a + (b - a) * t;</p></div><p><br></p><div><p>const easeInOutCubic = (t) =&gt; t &lt; 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;</p></div><p><br></p><div><p>const easeOutCubic = (t) =&gt; 1 - Math.pow(1 - t, 3);</p></div><p><br></p><div><p>function safeRemove(obj) {</p></div><p><br></p><div><p>try {</p></div><p><br></p><div><p>if (obj?.parent) obj.parent.removeChild(obj);</p></div><p><br></p><div><p>} catch (_) {}</p></div><p><br></p><div><p>}</p></div><p><br></p><div><p>function safeDestroy(obj) {</p></div><p><br></p><div><p>try {</p></div><p><br></p><div><p>obj?.destroy?.();</p></div><p><br></p><div><p>} catch (_) {}</p></div><p><br></p><div><p>}</p></div><p><br></p><div><p>function applyDisplaySizeAndFlip(sprite, baseObj) {</p></div><p><br></p><div><p>const texW = sprite.texture?.width || 1;</p></div><p><br></p><div><p>const texH = sprite.texture?.height || 1;</p></div><p><br></p><div><p>const dispW = Math.abs(Number(baseObj?.width) || texW);</p></div><p><br></p><div><p>const dispH = Math.abs(Number(baseObj?.height) || texH);</p></div><p><br></p><div><p>const flipX = Math.sign(Number(baseObj?.scale?.x) || 1) || 1;</p></div><p><br></p><div><p>const flipY = Math.sign(Number(baseObj?.scale?.y) || 1) || 1;</p></div><p><br></p><div><p>sprite.scale.set((dispW / texW) * flipX, (dispH / texH) * flipY);</p></div><p><br></p><div><p>}</p></div><p><br></p><div><p>function resolveLandingFacingSign(firstTarget, startX, endX, currentScaleX) {</p></div><div><p>&nbsp; const currentSign = Math.sign(Number(currentScaleX) || 1) || 1;</p></div><div><p>&nbsp; if (!firstTarget) return currentSign;</p></div><p><br></p><div><p>&nbsp; const homeSide = Math.sign((firstTarget.center?.x ?? startX) - startX) || 0;</p></div><div><p>&nbsp; const landingSide = Math.sign((firstTarget.center?.x ?? endX) - endX) || 0;</p></div><p><br></p><div><p>&nbsp; if (homeSide === 0 || landingSide === 0) return currentSign;</p></div><p><br></p><div><p>&nbsp; return homeSide === landingSide ? currentSign : -currentSign;</p></div><div><p>}</p></div><p><br></p><div><p>function addStageChild(obj, z) {</p></div><p><br></p><div><p>canvas.stage.sortableChildren = true;</p></div><p><br></p><div><p>obj.zIndex = Number(z) || 0;</p></div><p><br></p><div><p>canvas.stage.addChild(obj);</p></div><p><br></p><div><p>canvas.stage.sortChildren();</p></div><p><br></p><div><p>return obj;</p></div><p><br></p><div><p>}</p></div><p><br></p><div><p>function tweenValue(onUpdate, from, to, durMs, easeFn = easeInOutCubic) {</p></div><p><br></p><div><p>return new Promise(resolve =&gt; {</p></div><p><br></p><div><p>const start = performance.now();</p></div><p><br></p><div><p>const ticker = canvas.app.ticker;</p></div><p><br></p><div><p>const duration = Math.max(1, Number(durMs) || 1);</p></div><p><br></p><div><p>const update = () =&gt; {</p></div><p><br></p><div><p>const raw = (performance.now() - start) / duration;</p></div><p><br></p><div><p>const t = Math.min(Math.max(raw, 0), 1);</p></div><p><br></p><div><p>const e = easeFn(t);</p></div><p><br></p><div><p>onUpdate(lerp(from, to, e), t, e);</p></div><p><br></p><div><p>if (t &gt;= 1) {</p></div><p><br></p><div><p>ticker.remove(update);</p></div><p><br></p><div><p>resolve();</p></div><p><br></p><div><p>}</p></div><p><br></p><div><p>};</p></div><p><br></p><div><p>ticker.add(update);</p></div><p><br></p><div><p>});</p></div><p><br></p><div><p>}</p></div><p><br></p><div><p>function fadeAlpha(obj, from, to, durMs, easeFn = easeInOutCubic) {</p></div><p><br></p><div><p>obj.alpha = from;</p></div><p><br></p><div><p>return tweenValue(v =&gt; { obj.alpha = v; }, from, to, durMs, easeFn);</p></div><p><br></p><div><p>}</p></div><p><br></p><div><p>function tweenXY(obj, fromX, toX, fromY, toY, durMs, easeFn = easeInOutCubic, onStep = null) {</p></div><p><br></p><div><p>return new Promise(resolve =&gt; {</p></div><p><br></p><div><p>const start = performance.now();</p></div><p><br></p><div><p>const ticker = canvas.app.ticker;</p></div><p><br></p><div><p>const duration = Math.max(1, Number(durMs) || 1);</p></div><p><br></p><div><p>const update = () =&gt; {</p></div><p><br></p><div><p>const raw = (performance.now() - start) / duration;</p></div><p><br></p><div><p>const t = Math.min(Math.max(raw, 0), 1);</p></div><p><br></p><div><p>const e = easeFn(t);</p></div><p><br></p><div><p>obj.x = lerp(fromX, toX, e);</p></div><p><br></p><div><p>obj.y = lerp(fromY, toY, e);</p></div><p><br></p><div><p>if (onStep) onStep({ t, e, rawX: lerp(fromX, toX, t), rawY: lerp(fromY, toY, t) });</p></div><p><br></p><div><p>if (t &gt;= 1) {</p></div><p><br></p><div><p>ticker.remove(update);</p></div><p><br></p><div><p>resolve();</p></div><p><br></p><div><p>}</p></div><p><br></p><div><p>};</p></div><p><br></p><div><p>ticker.add(update);</p></div><p><br></p><div><p>});</p></div><p><br></p><div><p>}</p></div><p><br></p><div><p>async function createCasterClone(token) {</p></div><p><br></p><div><p>const baseObj = token.mesh ?? token.icon;</p></div><p><br></p><div><p>const texture = baseObj?.texture ?? await loadTex(token.document.texture.src);</p></div><p><br></p><div><p>const sprite = new PIXI.Sprite(texture);</p></div><p><br></p><div><p>sprite.anchor.set(0.5);</p></div><p><br></p><div><p>sprite.x = token.center.x;</p></div><p><br></p><div><p>sprite.y = token.center.y;</p></div><p><br></p><div><p>applyDisplaySizeAndFlip(sprite, baseObj);</p></div><p><br></p><div><p>sprite.rotation = Number(baseObj?.rotation) || 0;</p></div><p><br></p><div><p>sprite.alpha = 1;</p></div><p><br></p><div><p>return sprite;</p></div><p><br></p><div><p>}</p></div><p><br></p><div><p>function spawnAfterimageFrom(sourceSprite, layer) {</p></div><p><br></p><div><p>const img = new PIXI.Sprite(sourceSprite.texture);</p></div><p><br></p><div><p>img.anchor.set(sourceSprite.anchor.x, sourceSprite.anchor.y);</p></div><p><br></p><div><p>img.x = sourceSprite.x;</p></div><p><br></p><div><p>img.y = sourceSprite.y;</p></div><p><br></p><div><p>img.rotation = sourceSprite.rotation;</p></div><p><br></p><div><p>img.scale.set(sourceSprite.scale.x, sourceSprite.scale.y);</p></div><p><br></p><div><p>img.alpha = 0.55;</p></div><p><br></p><div><p>layer.addChild(img);</p></div><p><br></p><div><p>void Promise.all([</p></div><p><br></p><div><p>fadeAlpha(img, img.alpha, 0, cfg.afterimageFadeMs, easeOutCubic),</p></div><p><br></p><div><p>tweenValue(v =&gt; {</p></div><p><br></p><div><p>const signX = Math.sign(sourceSprite.scale.x) || 1;</p></div><p><br></p><div><p>const signY = Math.sign(sourceSprite.scale.y) || 1;</p></div><p><br></p><div><p>img.scale.set(</p></div><p><br></p><div><p>signX * (Math.abs(sourceSprite.scale.x) + v),</p></div><p><br></p><div><p>signY * (Math.abs(sourceSprite.scale.y) + v)</p></div><p><br></p><div><p>);</p></div><p><br></p><div><p>}, 0, Number(cfg.afterimageScaleBoost) || 0, cfg.afterimageFadeMs, easeOutCubic)</p></div><p><br></p><div><p>]).finally(() =&gt; {</p></div><p><br></p><div><p>safeRemove(img);</p></div><p><br></p><div><p>safeDestroy(img);</p></div><p><br></p><div><p>});</p></div><p><br></p><div><p>}</p></div><p><br></p><div><p>async function playCutIn(url) {</p></div><p><br></p><div><p>if (!url) return;</p></div><p><br></p><div><p>const W = canvas.app.renderer.screen.width;</p></div><p><br></p><div><p>const H = canvas.app.renderer.screen.height;</p></div><p><br></p><div><p>const overlay = addStageChild(new PIXI.Container(), cfg.cutinZ);</p></div><p><br></p><div><p>overlay.sortableChildren = true;</p></div><p><br></p><div><p>const flash = new PIXI.Graphics();</p></div><p><br></p><div><p>flash.beginFill(0xFFFFFF, 1);</p></div><p><br></p><div><p>flash.drawRect(0, 0, W, H);</p></div><p><br></p><div><p>flash.endFill();</p></div><p><br></p><div><p>flash.alpha = 0;</p></div><p><br></p><div><p>flash.zIndex = 2;</p></div><p><br></p><div><p>overlay.addChild(flash);</p></div><p><br></p><div><p>const portraitTex = await loadTex(url);</p></div><p><br></p><div><p>const portrait = new PIXI.Sprite(portraitTex);</p></div><p><br></p><div><p>portrait.anchor.set(0, 1);</p></div><p><br></p><div><p>portrait.zIndex = 3;</p></div><p><br></p><div><p>portrait.scale.set((H * Number(cfg.cutinPortraitHeightRatio || 0.92)) / (portrait.texture?.height || 1));</p></div><p><br></p><div><p>portrait.x = -portrait.width - 80;</p></div><p><br></p><div><p>portrait.y = (H - Number(cfg.cutinPortraitBottomMargin || 40)) + Number(cfg.cutinPortraitYOffset || 0);</p></div><p><br></p><div><p>&nbsp; overlay.addChild(portrait);</p></div><div><p>&nbsp; overlay.sortChildren();</p></div><p><br></p><div><p>&nbsp; try {</p></div><div><p>&nbsp; &nbsp; if (globalThis.Sequence &amp;&amp; params.cutinSfx) {</p></div><div><p>&nbsp; &nbsp; &nbsp; new Sequence()</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; .sound()</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; .file(params.cutinSfx)</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; .volume(Number(cfg.cutinSfxVolume || 0.9))</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; .play();</p></div><div><p>&nbsp; &nbsp; }</p></div><div><p>&nbsp; } catch (_) {}</p></div><p><br></p><div><p>&nbsp; await waitMs(Number(cfg.cutinFlashDelayMs) || 0);</p></div><p><br></p><div><p>&nbsp; const flashOut = (async () =&gt; {</p></div><p><br></p><div><p>await fadeAlpha(flash, 0, Number(cfg.cutinFlashPeak || 0.92), cfg.cutinFlashInMs, easeOutCubic);</p></div><p><br></p><div><p>await fadeAlpha(flash, flash.alpha, 0, cfg.cutinFlashOutMs, easeOutCubic);</p></div><p><br></p><div><p>})();</p></div><p><br></p><div><p>await tweenXY(</p></div><p><br></p><div><p>portrait,</p></div><p><br></p><div><p>portrait.x,</p></div><p><br></p><div><p>Number(cfg.cutinPortraitInsetX || 220),</p></div><p><br></p><div><p>portrait.y,</p></div><p><br></p><div><p>portrait.y,</p></div><p><br></p><div><p>cfg.cutinSlideInMs,</p></div><p><br></p><div><p>easeOutCubic</p></div><p><br></p><div><p>);</p></div><p><br></p><div><p>await flashOut;</p></div><p><br></p><div><p>await waitMs(Number(cfg.cutinHoldMs) || 0);</p></div><p><br></p><div><p>await tweenXY(</p></div><p><br></p><div><p>portrait,</p></div><p><br></p><div><p>portrait.x,</p></div><p><br></p><div><p>W + 60,</p></div><p><br></p><div><p>portrait.y,</p></div><p><br></p><div><p>portrait.y,</p></div><p><br></p><div><p>cfg.cutinSlideOutMs,</p></div><p><br></p><div><p>easeInOutCubic</p></div><p><br></p><div><p>);</p></div><p><br></p><div><p>safeRemove(overlay);</p></div><p><br></p><div><p>overlay.destroy({ children: true, texture: false, baseTexture: false });</p></div><p><br></p><div><p>}</p></div><p><br></p><div><p>async function playVfxAt(x, y) {</p></div><p><br></p><div><p>const tex = await loadTex(params.vfxFile);</p></div><p><br></p><div><p>const sprite = new PIXI.Sprite(tex);</p></div><p><br></p><div><p>sprite.anchor.set(0.5);</p></div><p><br></p><div><p>sprite.x = Number(x) + Number(cfg.vfxOffsetX || 0);</p></div><p><br></p><div><p>sprite.y = Number(y) + Number(cfg.vfxOffsetY || 0);</p></div><p><br></p><div><p>sprite.rotation = degToRad(Number(cfg.vfxRotationDeg || 45));</p></div><p><br></p><div><p>sprite.scale.set(Number(cfg.vfxScale || 1));</p></div><p><br></p><div><p>sprite.alpha = 1;</p></div><p><br></p><div><p>addStageChild(sprite, cfg.vfxZ);</p></div><p><br></p><div><p>try {</p></div><p><br></p><div><p>if (globalThis.Sequence &amp;&amp; params.vfxSfx) {</p></div><p><br></p><div><p>new Sequence()</p></div><p><br></p><div><p>.sound()</p></div><p><br></p><div><p>.file(params.vfxSfx)</p></div><p><br></p><div><p>.volume(Number(cfg.vfxSfxVolume || 0.9))</p></div><p><br></p><div><p>.play();</p></div><p><br></p><div><p>}</p></div><p><br></p><div><p>} catch (_) {}</p></div><p><br></p><div><p>const video = sprite.texture?.baseTexture?.resource?.source;</p></div><p><br></p><div><p>let ttl = Number(cfg.vfxTtlMs || 1000);</p></div><p><br></p><div><p>try {</p></div><p><br></p><div><p>if (video) {</p></div><p><br></p><div><p>video.currentTime = 0;</p></div><p><br></p><div><p>video.loop = false;</p></div><p><br></p><div><p>await video.play?.().catch(() =&gt; {});</p></div><p><br></p><div><p>if (Number.isFinite(video.duration) &amp;&amp; video.duration &gt; 0) {</p></div><p><br></p><div><p>ttl = Math.ceil(video.duration * 1000);</p></div><p><br></p><div><p>}</p></div><p><br></p><div><p>}</p></div><p><br></p><div><p>} catch (_) {}</p></div><p><br></p><div><p>await waitMs(ttl);</p></div><p><br></p><div><p>return sprite;</p></div><p><br></p><div><p>}</p></div><p><br></p><div><p>let blackOverlay;</p></div><p><br></p><div><p>let whiteOverlay;</p></div><p><br></p><div><p>let afterimageLayer;</p></div><p><br></p><div><p>let casterSprite;</p></div><p><br></p><div><p>let vfxSprite;</p></div><p><br></p><div><p>const baseMesh = casterToken.mesh ?? casterToken.icon;</p></div><p><br></p><div><p>const originalMeshVisible = baseMesh?.visible ?? true;</p></div><p><br></p><div><p>const originalTokenVisible = casterToken.visible;</p></div><p><br></p><div><p>try {</p></div><p><br></p><div><p>blackOverlay = new PIXI.Graphics();</p></div><p><br></p><div><p>blackOverlay.beginFill(0x000000, 1);</p></div><p><br></p><div><p>blackOverlay.drawRect(0, 0, canvas.app.renderer.screen.width, canvas.app.renderer.screen.height);</p></div><p><br></p><div><p>blackOverlay.endFill();</p></div><p><br></p><div><p>blackOverlay.alpha = 1;</p></div><p><br></p><div><p>addStageChild(blackOverlay, cfg.blackZ);</p></div><p><br></p><div><p>afterimageLayer = addStageChild(new PIXI.Container(), cfg.afterimageZ);</p></div><p><br></p><div><p>casterSprite = await createCasterClone(casterToken);</p></div><p><br></p><div><p>addStageChild(casterSprite, cfg.spriteZ);</p></div><p><br></p><div><p>if (baseMesh) baseMesh.visible = false;</p></div><p><br></p><div><p>casterToken.visible = false;</p></div><p><br></p><div><p>const startX = casterSprite.x;</p></div><div><p>const startY = casterSprite.y;</p></div><div><p>const endX = Number(cfg.jumpTargetX);</p></div><div><p>const endY = Number(cfg.jumpTargetY);</p></div><p><br></p><div><p>const startRot = Number(casterSprite.rotation) || 0;</p></div><p><br></p><div><p>// Force the somersault to end upright by using a whole number of turns.</p></div><div><p>// If cfg.spinTurns is 1.5, this will round to 2.</p></div><div><p>const fullTurns = Math.max(1, Math.round(Number(cfg.spinTurns || 1.5)));</p></div><div><p>const totalRot = degToRad(360 * fullTurns);</p></div><p><br></p><div><p>const firstTarget = Array.isArray(targetTokens) &amp;&amp; targetTokens.length ? targetTokens[0] : null;</p></div><div><p>const absScaleX = Math.abs(Number(casterSprite.scale.x) || 1);</p></div><div><p>const landingFacingSign = resolveLandingFacingSign(firstTarget, startX, endX, casterSprite.scale.x);</p></div><p><br></p><div><p>let lastAfter = 0;</p></div><p><br></p><div><p>await tweenXY(</p></div><div><p>&nbsp; casterSprite,</p></div><div><p>&nbsp; startX,</p></div><div><p>&nbsp; endX,</p></div><div><p>&nbsp; startY,</p></div><div><p>&nbsp; endY,</p></div><div><p>&nbsp; cfg.jumpMs,</p></div><div><p>&nbsp; easeInOutCubic,</p></div><div><p>&nbsp; ({ t }) =&gt; {</p></div><div><p>&nbsp; &nbsp; const eased = easeInOutCubic(t);</p></div><div><p>&nbsp; &nbsp; const arc = -4 * Number(cfg.jumpArcPx || 220) * t * (1 - t);</p></div><p><br></p><div><p>&nbsp; &nbsp; casterSprite.x = lerp(startX, endX, eased);</p></div><div><p>&nbsp; &nbsp; casterSprite.y = lerp(startY, endY, eased) + arc;</p></div><div><p>&nbsp; &nbsp; casterSprite.rotation = startRot + totalRot * eased;</p></div><p><br></p><div><p>&nbsp; &nbsp; const now = performance.now();</p></div><div><p>&nbsp; &nbsp; if (now - lastAfter &gt;= Number(cfg.afterimageIntervalMs || 35)) {</p></div><div><p>&nbsp; &nbsp; &nbsp; lastAfter = now;</p></div><div><p>&nbsp; &nbsp; &nbsp; spawnAfterimageFrom(casterSprite, afterimageLayer);</p></div><div><p>&nbsp; &nbsp; }</p></div><div><p>&nbsp; }</p></div><div><p>);</p></div><p><br></p><div><p>// Land upright, then face the target correctly by flipping horizontally if needed.</p></div><div><p>casterSprite.rotation = startRot;</p></div><div><p>casterSprite.scale.x = absScaleX * landingFacingSign;</p></div><p><br></p><div><p>await playCutIn(params.cutinUrl || \"\");</p></div><p><br></p><div><p>vfxSprite = await playVfxAt(casterSprite.x, casterSprite.y);</p></div><p><br></p><div><p>whiteOverlay = new PIXI.Graphics();</p></div><p><br></p><div><p>whiteOverlay.beginFill(0xFFFFFF, 1);</p></div><p><br></p><div><p>whiteOverlay.drawRect(0, 0, canvas.app.renderer.screen.width, canvas.app.renderer.screen.height);</p></div><p><br></p><div><p>whiteOverlay.endFill();</p></div><p><br></p><div><p>whiteOverlay.alpha = 0;</p></div><p><br></p><div><p>addStageChild(whiteOverlay, cfg.whiteZ);</p></div><p><br></p><div><p>await fadeAlpha(whiteOverlay, 0, 1, cfg.whiteoutInMs, easeInOutCubic);</p></div><p><br></p><div><p>safeRemove(vfxSprite);</p></div><p><br></p><div><p>safeDestroy(vfxSprite);</p></div><p><br></p><div><p>safeRemove(casterSprite);</p></div><p><br></p><div><p>safeDestroy(casterSprite);</p></div><p><br></p><div><p>safeRemove(afterimageLayer);</p></div><p><br></p><div><p>safeDestroy(afterimageLayer);</p></div><p><br></p><div><p>safeRemove(blackOverlay);</p></div><p><br></p><div><p>safeDestroy(blackOverlay);</p></div><p><br></p><div><p>if (baseMesh) baseMesh.visible = originalMeshVisible;</p></div><p><br></p><div><p>casterToken.visible = originalTokenVisible;</p></div><p><br></p><div><p>await fadeAlpha(whiteOverlay, 1, 0, cfg.whiteoutOutMs, easeInOutCubic);</p></div><p><br></p><div><p>safeRemove(whiteOverlay);</p></div><p><br></p><div><p>safeDestroy(whiteOverlay);</p></div><p><br></p><div><p>Hooks.callAll(params.doneHook, { ok: true });</p></div><p><br></p><div><p>} catch (err) {</p></div><p><br></p><div><p>console.error(\"[ONI][Anim][ApexArrow][Pseudo]\", err);</p></div><p><br></p><div><p>try {</p></div><p><br></p><div><p>if (baseMesh) baseMesh.visible = originalMeshVisible;</p></div><p><br></p><div><p>casterToken.visible = originalTokenVisible;</p></div><p><br></p><div><p>} catch (_) {}</p></div><p><br></p><div><p>safeRemove(vfxSprite); safeDestroy(vfxSprite);</p></div><p><br></p><div><p>safeRemove(casterSprite); safeDestroy(casterSprite);</p></div><p><br></p><div><p>safeRemove(afterimageLayer); safeDestroy(afterimageLayer);</p></div><p><br></p><div><p>safeRemove(blackOverlay); safeDestroy(blackOverlay);</p></div><p><br></p><div><p>safeRemove(whiteOverlay); safeDestroy(whiteOverlay);</p></div><p><br></p><div><p>Hooks.callAll(params.doneHook, { ok: false, error: String(err?.message || err) });</p></div><p><br></p><div><p>}</p></div><p><br></p><div><p>`;</p></div><p><br></p><div><p>try {</p></div><p><br></p><div><p>ONI.emit(\"oni:animationStart\", payloadForEmit, { local: true, world: false });</p></div><p><br></p><div><p>const waitDone = onceHook(doneHook, CFG.totalTimeoutMs);</p></div><p><br></p><div><p>await game.ONI.pseudo.play({</p></div><p><br></p><div><p>scriptId: ANIM_KEY,</p></div><p><br></p><div><p>scriptSource,</p></div><p><br></p><div><p>casterTokenUuid: sourceToken.document.uuid,</p></div><p><br></p><div><p>targetTokenUuids: targets.map(t =&gt; t.document.uuid),</p></div><p><br></p><div><p>params: {</p></div><p><br></p><div><p>actionName: ACTION_NAME,</p></div><p><br></p><div><p>doneHook,</p></div><p><br></p><div><p>cutinUrl,</p></div><p><br></p><div><p>vfxFile: CFG.vfxFile,</p></div><p><br></p><div><p>vfxSfx: CFG.vfxSfx,</p></div><p><br></p><div><p>cfg: CFG</p></div><p><br></p><div><p>},</p></div><p><br></p><div><p>meta: { source: ACTION_NAME }</p></div><p><br></p><div><p>});</p></div><p><br></p><div><p>const result = await waitDone;</p></div><p><br></p><div><p>if (!result?.ok) {</p></div><p><br></p><div><p>console.warn(TAG, \"Pseudo animation reported a non-OK result\", result);</p></div><p><br></p><div><p>}</p></div><p><br></p><div><p>} catch (err) {</p></div><p><br></p><div><p>console.error(TAG, \"Animation crashed\", err);</p></div><p><br></p><div><p>} finally {</p></div><p><br></p><div><p>ONI.emit(\"oni:animationEnd\", {</p></div><p><br></p><div><p>...payloadForEmit,</p></div><p><br></p><div><p>timestamp: Date.now()</p></div><p><br></p><div><p>}, { local: true, world: false });</p></div><p><br></p><div><p>}</p></div><p><br></p><div><p>})();</p></div></div>",
+          "check_bonus": "12",
+          "class": "NPC",
+          "cost": "6 Zero Power",
+          "custom_logic_action": "<p>const TAG = \"[CL-ACTION][Apex Arrow]\";</p><p>const p = __PAYLOAD;</p><p>if (!p) {</p><p>  console.warn(TAG, \"Missing __PAYLOAD.\");</p><p>  return;</p><p>}</p><p>p.advPayload = p.advPayload || {};</p><p>p.meta = p.meta || {};</p><p>const targetUuids = Array.isArray(p.targets) ? p.targets : [];</p><p>const firstTargetUuid = targetUuids[0] ?? null;</p><p>if (!firstTargetUuid) {</p><p>  console.log(TAG, \"No target found. Skipping Apex Arrow logic.\");</p><p>  return;</p><p>}</p><p>const targetDoc = await fromUuid(firstTargetUuid);</p><p>const targetActor = targetDoc?.actor ?? targetDoc;</p><p>if (!targetActor) {</p><p>  console.warn(TAG, \"Could not resolve first target actor.\", { firstTargetUuid });</p><p>  return;</p><p>}</p><p>/* ----------------------------------------- */</p><p>/* 1) EXECUTE                                */</p><p>/* Deals 200% damage to targets in Crisis    */</p><p>/* ----------------------------------------- */</p><p>const CRISIS_EFFECT_ID = \"5jkr80zqdzaR003d\";</p><p>const crisisEffect =</p><p>  targetActor.effects?.find(e =&gt; String(e?.id ?? e?._id ?? \"\") === CRISIS_EFFECT_ID) ??</p><p>  targetActor.effects?.find(e =&gt; e?.name === \"Crisis\");</p><p>if (crisisEffect) {</p><p>  const beforeMult = Number(p.advPayload.multiplier ?? 100) || 100;</p><p>  const afterMult = beforeMult * 2;</p><p>  p.advPayload.multiplier = afterMult;</p><p>  p.meta.apexArrowExecute = true;</p><p>  p.meta.apexArrowExecuteTargetUuid = firstTargetUuid;</p><p>  context.log(\"Execute applied\", {</p><p>    target: targetActor?.name,</p><p>    effectMatched: crisisEffect?.name ?? crisisEffect?.id ?? null,</p><p>    multiplierBefore: beforeMult,</p><p>    multiplierAfter: afterMult</p><p>  });</p><p>} else {</p><p>  context.log(\"Execute skipped - target is not in Crisis\", {</p><p>    target: targetActor?.name</p><p>  });</p><p>}</p><p>/* ----------------------------------------- */</p><p>/* 2) DEADLY MARKSMANSHIP                    */</p><p>/* Apply after Execute is calculated         */</p><p>/* ----------------------------------------- */</p><p>const DEADLY_TAG = \"[CL-ACTION][DEADLY-MARKSMANSHIP]\";</p><p>// Read final action accuracy total AFTER other accuracy bonuses</p><p>const accTotal = Number(p?.accuracy?.total ?? NaN);</p><p>// Read target defense from defense snapshot first, actor data as fallback</p><p>const getDef = (targetUuid, actor) =&gt; {</p><p>  const row = p?.meta?.defenseSnapshot?.perTarget?.find(r =&gt; r?.uuid === targetUuid);</p><p>  return Number(row?.defense ?? actor?.system?.props?.defense ?? 0) || 0;</p><p>};</p><p>const targetDef = getDef(firstTargetUuid, targetActor);</p><p>// Bonus damage = positive difference only</p><p>const deadlyBonus = Number.isFinite(accTotal)</p><p>  ? Math.max(0, accTotal - targetDef)</p><p>  : 0;</p><p>const bonusBefore = Number(p?.advPayload?.bonus ?? 0) || 0;</p><p>const bonusAfter = bonusBefore + deadlyBonus;</p><p>p.advPayload.bonus = bonusAfter;</p><p>p.meta.deadlyMarksmanshipDebug = {</p><p>  target: targetActor.name,</p><p>  accuracyTotal: accTotal,</p><p>  targetDef,</p><p>  deadlyBonus,</p><p>  bonusBefore,</p><p>  bonusAfter</p><p>};</p><p>context.log(\"Deadly Marksmanship applied\", {</p><p>  target: targetActor.name,</p><p>  accuracyTotal: accTotal,</p><p>  targetDef,</p><p>  deadlyBonus,</p><p>  bonusBefore,</p><p>  bonusAfter</p><p>});</p>",
+          "custom_logic_resolution": "<p>const TAG = \"[CL-RES][Apex Arrow]\";</p><p>const p = __PAYLOAD;</p><p>if (!p) {</p><p>  console.warn(TAG, \"Missing __PAYLOAD.\");</p><p>  return;</p><p>}</p><p>const attackerUuid = p?.meta?.attackerUuid ?? p?.attackerUuid ?? \"\";</p><p>if (!attackerUuid) {</p><p>  console.warn(TAG, \"Missing attacker UUID.\");</p><p>  return;</p><p>}</p><p>const attackerDoc = await fromUuid(attackerUuid);</p><p>const casterActor = attackerDoc?.actor ?? attackerDoc;</p><p>if (!casterActor) {</p><p>  console.warn(TAG, \"Could not resolve caster actor.\", { attackerUuid });</p><p>  return;</p><p>}</p><p>const EFFECT_NAME = \"Apex Arrow\";</p><p>const EFFECT_ICON = \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/11_BRD/apex_arrow.png\";</p><p>// Remove older copy first so the buff refreshes cleanly</p><p>const existing = casterActor.effects.filter(e =&gt; e.name === EFFECT_NAME);</p><p>for (const eff of existing) {</p><p>  await eff.delete();</p><p>}</p><p>const combat = game.combat ?? null;</p><p>const currentRound = Number(combat?.round ?? 0) || 0;</p><p>// It should remain for:</p><p>// - the rest of the current round</p><p>// - the whole next round</p><p>// and disappear at the END of next round,</p><p>// which means removal when the combat advances past currentRound + 1.</p><p>const expireAfterRound = currentRound + 1;</p><p>const effectData = {</p><p>  name: EFFECT_NAME,</p><p>  img: EFFECT_ICON,</p><p>  description: \"Gaining significant Accuracy increase\",</p><p>  disabled: false,</p><p>  changes: [</p><p>    {</p><p>      key: \"attack_accuracy_mod_all\",</p><p>      mode: CONST.ACTIVE_EFFECT_MODES.ADD,</p><p>      value: \"5\",</p><p>      priority: 1</p><p>    }</p><p>  ],</p><p>  duration: combat</p><p>    ? {</p><p>        startRound: currentRound,</p><p>        rounds: 2</p><p>      }</p><p>    : {},</p><p>  flags: {</p><p>    world: {</p><p>      apexArrowBuff: true,</p><p>      expireCombatId: combat?.id ?? null,</p><p>      expireAfterRound</p><p>    }</p><p>  }</p><p>};</p><p>const [effect] = await casterActor.createEmbeddedDocuments(\"ActiveEffect\", [effectData]);</p><p>console.log(TAG, \"Apex Arrow buff created.\", {</p><p>  caster: casterActor?.name,</p><p>  effectId: effect?.id,</p><p>  combatId: combat?.id ?? null,</p><p>  currentRound,</p><p>  expireAfterRound</p><p>});</p><p>// Cleanup old hook for this actor/skill if one exists</p><p>globalThis.__oniApexArrowHookStore ??= {};</p><p>const hookKey = `${casterActor.id}:ApexArrow`;</p><p>const oldHookId = globalThis.__oniApexArrowHookStore[hookKey];</p><p>if (oldHookId != null) {</p><p>  Hooks.off(\"updateCombat\", oldHookId);</p><p>  delete globalThis.__oniApexArrowHookStore[hookKey];</p><p>}</p><p>// Reliable expiration in combat</p><p>if (combat) {</p><p>  const sourceCombatId = combat.id;</p><p>  const sourceActorId = casterActor.id;</p><p>  const sourceEffectId = effect.id;</p><p>  const hookId = Hooks.on(\"updateCombat\", async (updatedCombat, changed) =&gt; {</p><p>    if (updatedCombat?.id !== sourceCombatId) return;</p><p>    if (changed.round === undefined) return;</p><p>    const liveActor = game.actors.get(sourceActorId);</p><p>    if (!liveActor) {</p><p>      Hooks.off(\"updateCombat\", hookId);</p><p>      if (globalThis.__oniApexArrowHookStore?.[hookKey] === hookId) {</p><p>        delete globalThis.__oniApexArrowHookStore[hookKey];</p><p>      }</p><p>      return;</p><p>    }</p><p>    const liveEffect =</p><p>      liveActor.effects.get(sourceEffectId) ??</p><p>      liveActor.effects.find(e =&gt; e.name === EFFECT_NAME);</p><p>    if (!liveEffect) {</p><p>      Hooks.off(\"updateCombat\", hookId);</p><p>      if (globalThis.__oniApexArrowHookStore?.[hookKey] === hookId) {</p><p>        delete globalThis.__oniApexArrowHookStore[hookKey];</p><p>      }</p><p>      return;</p><p>    }</p><p>    const newRound = Number(updatedCombat?.round ?? 0) || 0;</p><p>    // Remove at the start of the round AFTER next round,</p><p>    // which is effectively the end of next round.</p><p>    if (newRound &lt;= expireAfterRound) return;</p><p>    Hooks.off(\"updateCombat\", hookId);</p><p>    if (globalThis.__oniApexArrowHookStore?.[hookKey] === hookId) {</p><p>      delete globalThis.__oniApexArrowHookStore[hookKey];</p><p>    }</p><p>    await liveEffect.delete();</p><p>    console.log(TAG, \"Apex Arrow buff expired.\", {</p><p>      caster: liveActor?.name,</p><p>      removedAtRound: newRound,</p><p>      intendedExpireAfterRound: expireAfterRound</p><p>    });</p><p>  });</p><p>  globalThis.__oniApexArrowHookStore[hookKey] = hookId;</p><p>} else {</p><p>  console.warn(TAG, \"No active combat found. Buff created, but timed expiry hook was not attached.\");</p><p>}</p>",
+          "damage_bonus": "30",
+          "defense_target_type": "def",
+          "description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KHCaZjNmClkp7yfM\" data-id=\"KHCaZjNmClkp7yfM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Execute</span></strong></a></span></span></p></li></ul><p>Fires a fast moving arrow at a target, deals heavy <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(72, 199, 116) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(168, 255, 187) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a></span> &nbsp;damage, during the next round <strong>⭐️ Jack's</strong> attacks gain the following effects:</p><ul><li><p>Gain +5 Accuracy Check</p></li></ul>",
+          "duration": "-",
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Zero Power: Apex Arrow",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "INS",
+          "skill_animation_default": "",
+          "skill_animation_mode": "custom",
+          "skill_information": "",
+          "skill_range": "Any",
+          "skill_target": "-",
+          "skill_type": "Active",
+          "type_damage": "Air",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "aZsP1q7CHCB33kXz"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "c2vGHtzV97Np3rV4",
+      "_stats": {
+        "compendiumSource": "Item.A87i0WJvlVD1w3E7",
+        "coreVersion": "12.343",
+        "createdTime": 1781875204633,
+        "duplicateSource": "Item.yWlkWZC2vLf4J5Pv",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213353.399.png",
+      "name": "Thief Bow",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "5",
+          "class": "NPC",
+          "cost": "-",
+          "custom_logic_action": "<p>const TAG = \"[CL-ACTION][THIEF-BOW]\";</p><p>const p = __PAYLOAD;</p><p>if (!p) {</p><p>  console.warn(TAG, \"Missing __PAYLOAD\");</p><p>  return;</p><p>}</p><p>const attackerActor = await context.helpers.getAttackerActor();</p><p>if (!attackerActor) {</p><p>  return context.cancelPipeline(\"Thief Bow: missing attacker actor.\");</p><p>}</p><p>const combat = game.combat;</p><p>const targetUuids = Array.isArray(p.targets) ? p.targets : [];</p><p>const firstTargetUuid = targetUuids[0] ?? null;</p><p>if (!firstTargetUuid) {</p><p>  console.log(TAG, \"No target. Skipping.\");</p><p>  return;</p><p>}</p><p>const targetDoc = await fromUuid(firstTargetUuid);</p><p>const targetRef = targetDoc?.document ?? targetDoc;</p><p>const targetActor = targetDoc?.actor ?? targetDoc;</p><p>if (!targetActor) {</p><p>  return context.cancelPipeline(\"Thief Bow: missing target actor.\");</p><p>}</p><p>p.accuracy = p.accuracy || {};</p><p>p.advPayload = p.advPayload || {};</p><p>p.meta = p.meta || {};</p><p>const getTokenId = (doc) =&gt; doc?.token?.id ?? doc?.id ?? doc?.document?.id ?? null;</p><p>const getSceneId = (doc) =&gt; doc?.parent?.id ?? doc?.document?.parent?.id ?? null;</p><p>const getCombatantForDoc = (docLike, actorLike) =&gt; {</p><p>  const ref = docLike?.document ?? docLike;</p><p>  const tokenId = getTokenId(ref);</p><p>  const sceneId = getSceneId(ref);</p><p>  const actorId = actorLike?.id ?? ref?.actor?.id ?? ref?.id ?? null;</p><p>  if (!combat) return null;</p><p>  let c = combat.combatants.find(cmb =&gt; {</p><p>    const cSceneId = cmb.sceneId ?? cmb.parent?.scene?.id ?? cmb.scene?.id ?? null;</p><p>    const cTokenId = cmb.tokenId ?? cmb.token?.id ?? null;</p><p>    return tokenId &amp;&amp; cTokenId === tokenId &amp;&amp; (!sceneId || !cSceneId || cSceneId === sceneId);</p><p>  });</p><p>  if (c) return c;</p><p>  c = combat.combatants.find(cmb =&gt; (cmb.actor?.id ?? null) === actorId);</p><p>  if (c) return c;</p><p>  return null;</p><p>};</p><p>const getDisposition = (combatant, docLike, actorLike) =&gt; {</p><p>  const fromCombatant =</p><p>    combatant?.getFlag?.(\"lancer-initiative\", \"disposition\") ??</p><p>    combatant?.token?.disposition ??</p><p>    combatant?.actor?.prototypeToken?.disposition;</p><p>  const ref = docLike?.document ?? docLike;</p><p>  const fromDoc =</p><p>    ref?.disposition ??</p><p>    ref?.token?.disposition ??</p><p>    actorLike?.prototypeToken?.disposition;</p><p>  const disp = fromCombatant ?? fromDoc;</p><p>  return Number.isFinite(Number(disp)) ? Number(disp) : null;</p><p>};</p><p>const isEnemyToAttacker = (attackerDisp, targetDisp) =&gt; {</p><p>  if (!Number.isFinite(attackerDisp) || !Number.isFinite(targetDisp)) return true;</p><p>  if (attackerDisp &gt;= 1) return targetDisp &lt; 0;</p><p>  if (attackerDisp &lt; 0) return targetDisp &gt;= 1;</p><p>  return attackerDisp !== targetDisp;</p><p>};</p><p>// -----------------------------</p><p>// 1) Backstab: +5 Accuracy if target has not acted yet this round</p><p>// -----------------------------</p><p>let backstabApplied = false;</p><p>let backstabMatchedTarget = null;</p><p>let checkedTarget = null;</p><p>if (combat) {</p><p>  const attackerDoc = await fromUuid(p?.meta?.attackerUuid ?? p?.attackerUuid ?? \"\");</p><p>  const attackerRef = attackerDoc?.document ?? attackerDoc;</p><p>  const attackerCombatant = getCombatantForDoc(attackerRef, attackerActor);</p><p>  const attackerDisp = getDisposition(attackerCombatant, attackerRef, attackerActor);</p><p>  const targetCombatant = getCombatantForDoc(targetRef, targetActor);</p><p>  if (targetCombatant) {</p><p>    const targetDisp = getDisposition(targetCombatant, targetRef, targetActor);</p><p>    const isEnemy = isEnemyToAttacker(attackerDisp, targetDisp);</p><p>    const currentActs = Number(</p><p>      targetCombatant.getFlag(\"lancer-initiative\", \"activations.value\") ??</p><p>      targetCombatant.flags?.[\"lancer-initiative\"]?.activations?.value ??</p><p>      NaN</p><p>    );</p><p>    const maxActs = Number(</p><p>      targetCombatant.getFlag(\"lancer-initiative\", \"activations.max\") ??</p><p>      targetCombatant.flags?.[\"lancer-initiative\"]?.activations?.max ??</p><p>      NaN</p><p>    );</p><p>    let hasNotActivatedYet = false;</p><p>    let mode = \"none\";</p><p>    if (Number.isFinite(currentActs) &amp;&amp; Number.isFinite(maxActs)) {</p><p>      hasNotActivatedYet = (maxActs &gt; 0 &amp;&amp; currentActs === maxActs);</p><p>      mode = \"current===max\";</p><p>    } else if (Number.isFinite(currentActs)) {</p><p>      hasNotActivatedYet = currentActs &gt; 0;</p><p>      mode = \"fallback current&gt;0\";</p><p>    }</p><p>    const matched = isEnemy &amp;&amp; hasNotActivatedYet;</p><p>    checkedTarget = {</p><p>      target: targetActor?.name ?? firstTargetUuid,</p><p>      isEnemy,</p><p>      currentActs,</p><p>      maxActs,</p><p>      mode,</p><p>      matched</p><p>    };</p><p>    if (matched) {</p><p>      const beforeBonus = Number(p.accuracy.bonus ?? 0) || 0;</p><p>      const beforeTotal = Number(p.accuracy.total ?? NaN);</p><p>      p.accuracy.bonus = beforeBonus + 5;</p><p>      if (Number.isFinite(beforeTotal)) {</p><p>        p.accuracy.total = beforeTotal + 5;</p><p>      }</p><p>      backstabApplied = true;</p><p>      backstabMatchedTarget = {</p><p>        uuid: firstTargetUuid,</p><p>        name: targetActor?.name ?? firstTargetUuid,</p><p>        currentActs,</p><p>        maxActs,</p><p>        mode</p><p>      };</p><p>      p.meta.backstabAccuracyBonus = 5;</p><p>      p.meta.backstabMatchedTarget = backstabMatchedTarget;</p><p>    }</p><p>  } else {</p><p>    checkedTarget = {</p><p>      target: targetActor?.name ?? firstTargetUuid,</p><p>      matched: false,</p><p>      reason: \"No combatant found\"</p><p>    };</p><p>  }</p><p>} else {</p><p>  checkedTarget = {</p><p>    target: targetActor?.name ?? firstTargetUuid,</p><p>    matched: false,</p><p>    reason: \"No active combat\"</p><p>  };</p><p>}</p><p>// -----------------------------</p><p>// 2) Deadly Marksmanship:</p><p>// bonus damage = positive difference between final accuracy total and target defense</p><p>// -----------------------------</p><p>const accTotal = Number(p?.accuracy?.total ?? NaN);</p><p>const getDef = (targetUuid, targetActor) =&gt; {</p><p>  const row = p?.meta?.defenseSnapshot?.perTarget?.find(r =&gt; r?.uuid === targetUuid);</p><p>  return Number(row?.defense ?? targetActor?.system?.props?.defense ?? 0) || 0;</p><p>};</p><p>const targetDef = getDef(firstTargetUuid, targetActor);</p><p>const deadlyBonus = Number.isFinite(accTotal) ? Math.max(0, accTotal - targetDef) : 0;</p><p>const bonusBefore = Number(p?.advPayload?.bonus ?? 0) || 0;</p><p>p.advPayload.bonus = bonusBefore + deadlyBonus;</p><p>p.meta.thiefBowDebug = {</p><p>  attacker: attackerActor.name,</p><p>  target: targetActor.name,</p><p>  backstabApplied,</p><p>  backstabMatchedTarget,</p><p>  checkedTarget,</p><p>  accuracyBonus: Number(p?.accuracy?.bonus ?? 0) || 0,</p><p>  accuracyTotal: Number(p?.accuracy?.total ?? NaN),</p><p>  targetDef,</p><p>  deadlyMarksmanshipBonus: deadlyBonus,</p><p>  damageBonusBefore: bonusBefore,</p><p>  damageBonusAfter: Number(p?.advPayload?.bonus ?? 0) || 0</p><p>};</p><p>context.log(\"Thief Bow action custom logic applied\", {</p><p>  attacker: attackerActor.name,</p><p>  target: targetActor.name,</p><p>  backstabApplied,</p><p>  backstabMatchedTarget,</p><p>  checkedTarget,</p><p>  accuracyBonus: Number(p?.accuracy?.bonus ?? 0) || 0,</p><p>  accuracyTotal: Number(p?.accuracy?.total ?? NaN),</p><p>  targetDef,</p><p>  deadlyMarksmanshipBonus: deadlyBonus,</p><p>  damageBonusBefore: bonusBefore,</p><p>  damageBonusAfter: Number(p?.advPayload?.bonus ?? 0) || 0</p><p>});</p>",
+          "custom_logic_resolution": "<p>const TAG = \"[CL-RES][THIEF-BOW-IP-DRAIN-2]\";</p><p>const p = __PAYLOAD;</p><p>const args = globalThis.__ARGS ?? p?.__confirmArgs ?? {};</p><p>if (!p) {</p><p>  console.warn(TAG, \"Missing __PAYLOAD.\");</p><p>  return;</p><p>}</p><p>const userActor = await context.helpers.getAttackerActor();</p><p>if (!userActor) {</p><p>  console.warn(TAG, \"Missing user actor.\");</p><p>  return;</p><p>}</p><p>const targetUuids = Array.isArray(p.targets) ? p.targets : [];</p><p>if (!targetUuids.length) {</p><p>  console.warn(TAG, \"No targets found.\");</p><p>  return;</p><p>}</p><p>const accTotal = Number(p?.accuracy?.total ?? args?.accuracyTotal ?? NaN);</p><p>const hasAccuracy =</p><p>  (typeof args?.hasAccuracy === \"boolean\") ? args.hasAccuracy : !!p?.accuracy;</p><p>const autoHit = !!(args?.autoHit || p?.advPayload?.autoHit || p?.accuracy?.isCrit);</p><p>const escapeHTML = foundry?.utils?.escapeHTML ?? ((v) =&gt; String(v ?? \"\"));</p><p>const getDef = (targetUuid, targetActor) =&gt; {</p><p>  const row = p?.meta?.defenseSnapshot?.perTarget?.find(r =&gt; r?.uuid === targetUuid);</p><p>  return Number(row?.defense ?? targetActor?.system?.props?.defense ?? 0) || 0;</p><p>};</p><p>const isHit = (targetUuid, targetActor) =&gt; {</p><p>  const targetDef = getDef(targetUuid, targetActor);</p><p>  if (!hasAccuracy) return true;</p><p>  if (autoHit) return true;</p><p>  if (!Number.isFinite(accTotal)) return false;</p><p>  return accTotal &gt;= targetDef;</p><p>};</p><p>const getUserTokenName = () =&gt; {</p><p>  if (typeof _token !== \"undefined\" &amp;&amp; _token?.name) return _token.name;</p><p>  return userActor?.name ?? \"User\";</p><p>};</p><p>const getTargetDisplayName = (targetDoc, targetActor) =&gt; {</p><p>  return targetDoc?.name ?? targetActor?.name ?? \"Target\";</p><p>};</p><p>async function postStealFeedbackHtml(innerHtml) {</p><p>  const FLAG_SCOPE = \"fabula-ultima-companion\";</p><p>  const FLAG_KEY = \"oniHideChatHeader\";</p><p>  let hookId = null;</p><p>  hookId = Hooks.on(\"renderChatMessage\", (message, html) =&gt; {</p><p>    if (!message?.getFlag?.(FLAG_SCOPE, FLAG_KEY)) return;</p><p>    html.find(\".message-header\").remove();</p><p>    html.find(\".message-sender\").remove();</p><p>    html.find(\".message-metadata\").remove();</p><p>    html.find(\".message-avatar\").remove();</p><p>    html.find(\".chat-portrait-container\").remove();</p><p>    html.find(\".chat-portrait-message-portrait\").remove();</p><p>    html.find(\".chat-portrait-image\").remove();</p><p>    html.find(\"img.chat-portrait\").remove();</p><p>    Hooks.off(\"renderChatMessage\", hookId);</p><p>  });</p><p>  await ChatMessage.create({</p><p>    user: game.user.id,</p><p>    type: CONST.CHAT_MESSAGE_TYPES.OTHER,</p><p>    speaker: { alias: \"\" },</p><p>    content: `&lt;div class=\"oni-steal-feedback\"&gt;${innerHtml}&lt;/div&gt;`,</p><p>    flags: {</p><p>      [FLAG_SCOPE]: {</p><p>        [FLAG_KEY]: true</p><p>      }</p><p>    }</p><p>  });</p><p>}</p><p>for (const targetUuid of targetUuids) {</p><p>  const targetDoc = await fromUuid(targetUuid);</p><p>  const targetActor = targetDoc?.actor ?? targetDoc;</p><p>  if (!targetActor) continue;</p><p>  const userTokenName = getUserTokenName();</p><p>  const targetName = getTargetDisplayName(targetDoc, targetActor);</p><p>  const targetDef = getDef(targetUuid, targetActor);</p><p>  const hit = isHit(targetUuid, targetActor);</p><p>  console.log(TAG, \"HIT CHECK\", {</p><p>    user: userActor?.name,</p><p>    userTokenName,</p><p>    target: targetActor?.name,</p><p>    targetName,</p><p>    accTotal,</p><p>    hasAccuracy,</p><p>    autoHit,</p><p>    targetDef,</p><p>    hit</p><p>  });</p><p>  if (!hit) {</p><p>    await postStealFeedbackHtml(`Fail to steal anything.`);</p><p>    continue;</p><p>  }</p><p>  const targetIpBefore = Math.max(</p><p>    0,</p><p>    parseInt(targetActor?.system?.props?.current_ip ?? \"0\", 10) || 0</p><p>  );</p><p>  const userIpBefore = Math.max(</p><p>    0,</p><p>    parseInt(userActor?.system?.props?.current_ip ?? \"0\", 10) || 0</p><p>  );</p><p>  const userMaxIp = Math.max(</p><p>    0,</p><p>    parseInt(userActor?.system?.props?.max_ip ?? \"0\", 10) || 0</p><p>  );</p><p>  const requestedSteal = 2;</p><p>  const actualSteal = Math.min(requestedSteal, targetIpBefore);</p><p>  if (actualSteal &lt;= 0) {</p><p>    console.log(TAG, \"No IP stolen\", {</p><p>      user: userActor?.name,</p><p>      userTokenName,</p><p>      target: targetActor?.name,</p><p>      targetName,</p><p>      requestedSteal,</p><p>      targetIpBefore,</p><p>      userIpBefore,</p><p>      userMaxIp</p><p>    });</p><p>    await postStealFeedbackHtml(`Fail to steal anything.`);</p><p>    continue;</p><p>  }</p><p>  const targetIpAfter = Math.max(0, targetIpBefore - actualSteal);</p><p>  const actualGain = Math.min(actualSteal, Math.max(0, userMaxIp - userIpBefore));</p><p>  const userIpAfter = Math.min(userMaxIp, userIpBefore + actualGain);</p><p>  await targetActor.update({</p><p>    \"system.props.current_ip\": String(targetIpAfter)</p><p>  });</p><p>  await userActor.update({</p><p>    \"system.props.current_ip\": String(userIpAfter)</p><p>  });</p><p>  console.log(TAG, \"IP TRANSFER APPLIED\", {</p><p>    user: userActor?.name,</p><p>    userTokenName,</p><p>    target: targetActor?.name,</p><p>    targetName,</p><p>    requestedSteal,</p><p>    actualSteal,</p><p>    actualGain,</p><p>    targetIpBefore,</p><p>    targetIpAfter,</p><p>    userIpBefore,</p><p>    userIpAfter,</p><p>    userMaxIp</p><p>  });</p><p>  await postStealFeedbackHtml(</p><p>    `${escapeHTML(userTokenName)} steals ${escapeHTML(actualSteal)} IP from ${escapeHTML(targetName)}!`</p><p>  );</p><p>}</p>",
+          "damage_bonus": "20",
+          "defense_target_type": "def",
+          "description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.7PQDwyX0RPf0djPL\" data-id=\"7PQDwyX0RPf0djPL\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Backstab</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>Gain +5 Accuracy</p></li><li><p><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KjziTkOpdzd99KZa\" data-id=\"KjziTkOpdzd99KZa\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Thievery</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;2</span></strong></span></p></li></ul><p>Deal <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(68, 68, 68) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span>damage to the target, on <strong>hit</strong>, the target loses <strong>2 IP</strong></p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Thief Bow",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "INS",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "One Creature",
+          "skill_type": "Attack",
+          "type_damage": "Physical",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "A87i0WJvlVD1w3E7"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "cB66iW3EgQukwjQE",
+      "_stats": {
+        "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
+        "coreVersion": "12.343",
+        "createdTime": 1781875204633,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "6usSqerMiLLKiAkD",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p>Decrease 【<strong>DEX】 </strong>by one stage</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 3,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "core": {
+              "overlay": false
+            },
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "isPredefined": true,
+              "originalId": "h3M2iAUzB26A4zNo",
+              "originalParentId": "XVOWOq9oUmEECGrU",
+              "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.h3M2iAUzB26A4zNo"
+            },
+            "dfreds-convenient-effects": {
+              "ceEffectId": "ce-slow",
+              "isBackup": false,
+              "isConvenient": true,
+              "isDynamic": false,
+              "isTemporary": false,
+              "isViewable": true
+            },
+            "effectmacro": {
+              "onCreate": {
+                "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isSlow\n// Works best when run by the Effect Macro module (uses the effect owner `actor`).\n// Falls back to the first selected token's actor only if no effect context is present.\n\n(async () => {\n  const PATH = \"system.props.isSlow\";\n\n  // Prefer the effect owner `actor` (provided by Effect Macro when the macro fires).\n  // Fallback to selected token's actor if you ever run this by hand.\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) {\n    ui.notifications?.warn(\"[isSlow Toggle] No actor context (need effect owner or a selected token).\");\n    return;\n  }\n\n  // Read current value (default to false when missing), then toggle.\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  const next = !current;\n\n  await effectActor.update({ [PATH]: next });\n})();\n"
+              },
+              "onDelete": {
+                "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isSlow\n// Works best when run by the Effect Macro module (uses the effect owner `actor`).\n// Falls back to the first selected token's actor only if no effect context is present.\n\n(async () => {\n  const PATH = \"system.props.isSlow\";\n\n  // Prefer the effect owner `actor` (provided by Effect Macro when the macro fires).\n  // Fallback to selected token's actor if you ever run this by hand.\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) {\n    ui.notifications?.warn(\"[isSlow Toggle] No actor context (need effect owner or a selected token).\");\n    return;\n  }\n\n  // Read current value (default to false when missing), then toggle.\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  const next = !current;\n\n  await effectActor.update({ [PATH]: next });\n})();\n"
+              },
+              "onDisable": {
+                "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isSlow\n// Works best when run by the Effect Macro module (uses the effect owner `actor`).\n// Falls back to the first selected token's actor only if no effect context is present.\n\n(async () => {\n  const PATH = \"system.props.isSlow\";\n\n  // Prefer the effect owner `actor` (provided by Effect Macro when the macro fires).\n  // Fallback to selected token's actor if you ever run this by hand.\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) {\n    ui.notifications?.warn(\"[isSlow Toggle] No actor context (need effect owner or a selected token).\");\n    return;\n  }\n\n  // Read current value (default to false when missing), then toggle.\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  const next = !current;\n\n  await effectActor.update({ [PATH]: next });\n})();\n"
+              },
+              "onEnable": {
+                "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isSlow\n// Works best when run by the Effect Macro module (uses the effect owner `actor`).\n// Falls back to the first selected token's actor only if no effect context is present.\n\n(async () => {\n  const PATH = \"system.props.isSlow\";\n\n  // Prefer the effect owner `actor` (provided by Effect Macro when the macro fires).\n  // Fallback to selected token's actor if you ever run this by hand.\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) {\n    ui.notifications?.warn(\"[isSlow Toggle] No actor context (need effect owner or a selected token).\");\n    return;\n  }\n\n  // Read current value (default to false when missing), then toggle.\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  const next = !current;\n\n  await effectActor.update({ [PATH]: next });\n})();\n"
+              },
+              "onToggle": {
+                "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isSlow\n// Works best when run by the Effect Macro module (uses the effect owner `actor`).\n// Falls back to the first selected token's actor only if no effect context is present.\n\n(async () => {\n  const PATH = \"system.props.isSlow\";\n\n  // Prefer the effect owner `actor` (provided by Effect Macro when the macro fires).\n  // Fallback to selected token's actor if you ever run this by hand.\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) {\n    ui.notifications?.warn(\"[isSlow Toggle] No actor context (need effect owner or a selected token).\");\n    return;\n  }\n\n  // Read current value (default to false when missing), then toggle.\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  const next = !current;\n\n  await effectActor.update({ [PATH]: next });\n})();\n"
+              }
+            },
+            "statuscounter": {
+              "config": {
+                "durationType": 1,
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEF%20DOWN.png",
+          "name": "Slow",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "hhqoSNhWfVD4KR7g"
+          ],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215350.578.png",
+      "name": "Snaring Arrow",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {
+            "0": {
+              "$deleted": false,
+              "active_effect_application": "add",
+              "active_effect_apply_mode": "percentage",
+              "active_effect_dice_1": "",
+              "active_effect_dice_2": "",
+              "active_effect_dl": "0",
+              "active_effect_id": "6usSqerMiLLKiAkD",
+              "active_effect_percent": "100",
+              "active_effect_target": "enemy",
+              "active_effect_trigger": "on_hit"
+            }
+          },
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "5",
+          "class": "NPC",
+          "cost": "1 IP",
+          "custom_logic_action": "<p>const TAG = \"[CL-ACTION][DEADLY-MARKSMANSHIP]\";</p><p>const p = __PAYLOAD;</p><p>if (!p) {</p><p>  console.warn(TAG, \"Missing __PAYLOAD\");</p><p>  return;</p><p>}</p><p>const targetUuids = Array.isArray(p.targets) ? p.targets : [];</p><p>const firstTargetUuid = targetUuids[0] ?? null;</p><p>if (!firstTargetUuid) {</p><p>  console.log(TAG, \"No target found. Skipping.\");</p><p>  return;</p><p>}</p><p>const targetDoc = await fromUuid(firstTargetUuid);</p><p>const targetActor = targetDoc?.actor ?? targetDoc;</p><p>if (!targetActor) {</p><p>  console.log(TAG, \"Missing target actor. Skipping.\");</p><p>  return;</p><p>}</p><p>p.advPayload = p.advPayload || {};</p><p>p.meta = p.meta || {};</p><p>// Read final action accuracy total AFTER all other accuracy bonuses</p><p>const accTotal = Number(p?.accuracy?.total ?? NaN);</p><p>// Read target defense from defense snapshot first, actor data as fallback</p><p>const getDef = (targetUuid, actor) =&gt; {</p><p>  const row = p?.meta?.defenseSnapshot?.perTarget?.find(r =&gt; r?.uuid === targetUuid);</p><p>  return Number(row?.defense ?? actor?.system?.props?.defense ?? 0) || 0;</p><p>};</p><p>const targetDef = getDef(firstTargetUuid, targetActor);</p><p>// Bonus damage = positive difference only</p><p>const deadlyBonus = Number.isFinite(accTotal)</p><p>  ? Math.max(0, accTotal - targetDef)</p><p>  : 0;</p><p>const bonusBefore = Number(p?.advPayload?.bonus ?? 0) || 0;</p><p>const bonusAfter = bonusBefore + deadlyBonus;</p><p>p.advPayload.bonus = bonusAfter;</p><p>p.meta.deadlyMarksmanshipDebug = {</p><p>  target: targetActor.name,</p><p>  accuracyTotal: accTotal,</p><p>  targetDef,</p><p>  deadlyBonus,</p><p>  bonusBefore,</p><p>  bonusAfter</p><p>};</p><p>context.log(\"Deadly Marksmanship applied\", {</p><p>  target: targetActor.name,</p><p>  accuracyTotal: accTotal,</p><p>  targetDef,</p><p>  deadlyBonus,</p><p>  bonusBefore,</p><p>  bonusAfter</p><p>});</p>",
+          "custom_logic_resolution": "<p>const TAG = \"[CL-RES][SNARING-ARROW][SNIPE20-SNARED]\";</p><p>const p = __PAYLOAD;</p><p>const args = globalThis.__ARGS ?? p?.__confirmArgs ?? {};</p><p>if (!p) {</p><p>console.warn(TAG, \"Missing __PAYLOAD.\");</p><p>return;</p><p>}</p><p>const targetUuids = Array.isArray(p.targets) ? p.targets : [];</p><p>if (!targetUuids.length) {</p><p>console.warn(TAG, \"No targets found.\");</p><p>return;</p><p>}</p><p>const accTotal = Number(p?.accuracy?.total ?? args?.accuracyTotal ?? NaN);</p><p>const hasAccuracy =</p><p>(typeof args?.hasAccuracy === \"boolean\") ? args.hasAccuracy : !!p?.accuracy;</p><p>const autoHit = !!(args?.autoHit || p?.advPayload?.autoHit || p?.accuracy?.isCrit);</p><p>const SNIPE_THRESHOLD = 15;</p><p>// Canonical source template = item-owned Active Effect</p><p>const EFFECT_UUID = \"Item.XVOWOq9oUmEECGrU.ActiveEffect.5K3lbMsHORKZCJWQ\";</p><p>const EFFECT_ID = \"5K3lbMsHORKZCJWQ\";</p><p>const EFFECT_NAME = \"Snared\";</p><p>const getDef = (targetUuid, targetActor) =&gt; {</p><p>const row = p?.meta?.defenseSnapshot?.perTarget?.find(r =&gt; r?.uuid === targetUuid);</p><p>return Number(row?.defense ?? targetActor?.system?.props?.defense ?? 0) || 0;</p><p>};</p><p>const isHit = (targetUuid, targetActor) =&gt; {</p><p>const targetDef = getDef(targetUuid, targetActor);</p><p>if (!hasAccuracy) return true;</p><p>if (autoHit) return true;</p><p>if (!Number.isFinite(accTotal)) return false;</p><p>return accTotal &gt;= targetDef;</p><p>};</p><p>// Snipe 20 gate</p><p>if (!Number.isFinite(accTotal) || accTotal &lt; SNIPE_THRESHOLD) {</p><p>console.log(TAG, \"Snipe 20 not met.\", {</p><p>accTotal,</p><p>threshold: SNIPE_THRESHOLD</p><p>});</p><p>return;</p><p>}</p><p>// Resolve source effect template</p><p>let sourceEffect = await fromUuid(EFFECT_UUID);</p><p>// Fallback: resolve source item, then find by id or name</p><p>if (!sourceEffect) {</p><p>const sourceItemUuid = EFFECT_UUID.split(\".ActiveEffect.\")[0];</p><p>const sourceItemDoc = await fromUuid(sourceItemUuid);</p><p>sourceEffect =</p><p>Array.from(sourceItemDoc?.effects ?? []).find(e =&gt; String(e?.id ?? \"\") === EFFECT_ID) ??</p><p>Array.from(sourceItemDoc?.effects ?? []).find(e =&gt; {</p><p>const n1 = String(e?.name ?? \"\").trim().toLowerCase();</p><p>const n2 = String(e?.label ?? \"\").trim().toLowerCase();</p><p>const wanted = EFFECT_NAME.toLowerCase();</p><p>return n1 === wanted || n2 === wanted;</p><p>}) ??</p><p>null;</p><p>}</p><p>if (!sourceEffect) {</p><p>console.warn(TAG, \"Could not resolve source effect template.\", {</p><p>EFFECT_UUID,</p><p>EFFECT_ID,</p><p>EFFECT_NAME</p><p>});</p><p>return;</p><p>}</p><p>for (const targetUuid of targetUuids) {</p><p>const targetDoc = await fromUuid(targetUuid);</p><p>const targetActor = targetDoc?.actor ?? targetDoc;</p><p>if (!targetActor) continue;</p><p>const hit = isHit(targetUuid, targetActor);</p><p>if (!hit) {</p><p>console.log(TAG, \"Target was not hit. Skipping.\", {</p><p>target: targetActor?.name,</p><p>accTotal,</p><p>targetDef: getDef(targetUuid, targetActor)</p><p>});</p><p>continue;</p><p>}</p><p>// Duplicate check on target:</p><p>// cloned AEs can get new ids/uuids on actor, so match by name</p><p>const existingEffect =</p><p>Array.from(targetActor.effects ?? []).find(e =&gt; {</p><p>const n1 = String(e?.name ?? \"\").trim().toLowerCase();</p><p>const n2 = String(e?.label ?? \"\").trim().toLowerCase();</p><p>const wanted = EFFECT_NAME.toLowerCase();</p><p>return n1 === wanted || n2 === wanted;</p><p>}) ?? null;</p><p>if (existingEffect) {</p><p>console.log(TAG, \"Effect already present. Skipping duplicate.\", {</p><p>target: targetActor?.name,</p><p>existingEffect: existingEffect?.name ?? existingEffect?.label ?? \"(unknown)\"</p><p>});</p><p>continue;</p><p>}</p><p>const effectData = sourceEffect.toObject();</p><p>delete effectData._id;</p><p>delete effectData.id;</p><p>await targetActor.createEmbeddedDocuments(\"ActiveEffect\", [effectData]);</p><p>console.log(TAG, \"Applied Snared.\", {</p><p>target: targetActor?.name,</p><p>accTotal,</p><p>sourceEffectName: sourceEffect?.name ?? sourceEffect?.label ?? \"(unknown)\"</p><p>});</p><p>}</p>",
+          "damage_bonus": "20",
+          "defense_target_type": "def",
+          "description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.2JlZwoTU5Ql7sUyS\" data-id=\"2JlZwoTU5Ql7sUyS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Snipe</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;15 </span></strong></span></span>Also inflicts<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><strong><span style=\"text-decoration: underline;\"> </span></strong><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.NtSCsFcZNQfUbSBn\" data-id=\"NtSCsFcZNQfUbSBn\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Snared</span></strong></a></span></span>&nbsp;to the target</p></li></ul><p>On hit, Inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>to the target</p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Snaring Arrow",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "INS",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "Air",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "UKzHkmIJcjXZ4GFR"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "gkr0QjHLazgoxAlq",
+      "_stats": {
+        "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
+        "coreVersion": "12.343",
+        "createdTime": 1781875204633,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "bMqd5XMy8dXnamsZ",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p>Taking <strong>Fire </strong>damage at the start of your turn</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 3,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "core": {
+              "overlay": false
+            },
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "isPredefined": true,
+              "originalId": "adwwNvnjvJM8BuK4",
+              "originalParentId": "XVOWOq9oUmEECGrU",
+              "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.adwwNvnjvJM8BuK4"
+            },
+            "dfreds-convenient-effects": {
+              "ceEffectId": "ce-burn",
+              "isBackup": false,
+              "isConvenient": true,
+              "isDynamic": false,
+              "isTemporary": false,
+              "isViewable": true
+            },
+            "effectmacro": {
+              "onCreate": {
+                "script": "await TokenMagic.addUpdateFiltersOnSelected(\"Burns\");\nnew Sequence()\n  .sound(\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Condition_Burn.ogg\")\n  .volume(0.5)\n  .play()"
+              },
+              "onDelete": {
+                "script": "await TokenMagic.deleteFiltersOnSelected(\"Burns\");\nnew Sequence()\n  .sound(\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Recovery.ogg\")\n  .volume(0.5)\n  .play()"
+              },
+              "onDisable": {
+                "script": "await TokenMagic.deleteFiltersOnSelected(\"Burns\");\nnew Sequence()\n  .sound(\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Recovery.ogg\")\n  .volume(0.5)\n  .play()"
+              },
+              "onEnable": {
+                "script": "await TokenMagic.addUpdateFiltersOnSelected(\"Burns\");\nnew Sequence()\n  .sound(\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Condition_Burn.ogg\")\n  .volume(0.5)\n  .play()"
+              },
+              "onTurnStart": {
+                "script": "// === Burn DOT v2 (Effect Macro → On Combat Turn Starting) ==================\n// Deals % Max HP fire damage via your Advance Damage macro, *without* UI\n// targeting flicker (uses headless targetIds override).\n//\n// • Default: 10% of max HP\n// • Champion rank (NPC): 5%\n// • PCs (no rank field): 10%\n// • Element: \"fire\", Weapon type: \"none_ef\"\n//\n// Requires: AdvanceDamage patched to accept __PAYLOAD.targetIds when __AUTO=true.\n// Macro name below must match your macro exactly.\n// ===========================================================================\n\n(async () => {\n  const ADV_DMG_MACRO_NAME = \"AdvanceDamage\"; // <-- change if yours is named differently\n\n  // --- Guard: must be owner’s actual turn ----------------------------------\n  if (!actor || !game.combat) return;\n  const isOwnersTurn = game.combat?.combatant?.actor?.id === actor.id;\n  if (!isOwnersTurn) return;\n\n  // --- Resolve the correct token id for this actor on this turn ------------\n  function pickTokenIdForActor(a) {\n    // Prefer the current combatant token if it belongs to this actor\n    const ct = game.combat?.combatant;\n    if (ct?.actor?.id === a.id && ct.token?.id) return ct.token.id;\n\n    // Else use module helper `token` if provided\n    if (token?.id) return token.id;\n\n    // Else first active token on the viewed scene\n    const t = a.getActiveTokens()?.[0];\n    return t?.id ?? t?.document?.id ?? null;\n  }\n  const tokenId = pickTokenIdForActor(actor);\n  if (!tokenId) return ui.notifications.warn(\"[Burn] No active token for effect owner.\");\n\n  // --- Determine DOT percent from NPC rank ---------------------------------\n  // NPC sheet sample uses system.props.npc_rank with values like \"sol\",\"eli\",\"cha\"\n  const props = actor.system?.props ?? {};\n  const rank  = String(props.npc_rank ?? \"\").toLowerCase();\n  const percent = (rank === \"cha\") ? 5 : 10;  // PCs or missing rank → 10%\n\n  // --- Build headless payload for AdvanceDamage ----------------------------\n  const payload = {\n    // magnitude as a percent number (no % sign)\n    baseValue: String(percent),\n    valueType: \"hp\",\n    targetAffinity: \"percentMax\",   // make ADV compute % of target's max HP\n    elementType: \"fire\",\n    weaponType: \"none_ef\",\n    ignoreDamageReduction: false,\n    ignoreShield: false,\n\n    // nice-to-have context for your logs/cards\n    attackerName: \"Burn\",\n    attackRange: \"DOT\",\n    sourceType : \"Effect: Burn\",\n\n    // HEADLESS target override (prevents crosshair UI)\n    targetIds: [tokenId]\n  };\n\n  // --- Execute your universal damage macro ---------------------------------\n  const ADV = game.macros.getName(ADV_DMG_MACRO_NAME);\n  if (!ADV) return ui.notifications.error(`[Burn] Macro \"${ADV_DMG_MACRO_NAME}\" not found.`);\n\n  await ADV.execute({ __AUTO: true, __PAYLOAD: payload });\n})();\n"
+              }
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Burn.png",
+          "name": "Burn",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "cDgbFRi9TA68TvYr"
+          ],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215350.578.png",
+      "name": "Burning Arrow",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {
+            "0": {
+              "$deleted": false,
+              "active_effect_application": "add",
+              "active_effect_apply_mode": "percentage",
+              "active_effect_dice_1": "",
+              "active_effect_dice_2": "",
+              "active_effect_dl": "0",
+              "active_effect_id": "bMqd5XMy8dXnamsZ",
+              "active_effect_percent": "100",
+              "active_effect_target": "enemy",
+              "active_effect_trigger": "on_hit"
+            }
+          },
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "5",
+          "class": "NPC",
+          "cost": "1 IP",
+          "custom_logic_action": "<p>const TAG = \"[CL-ACTION][BURNING-ARROW][SNIPE20+DEADLY-MARKSMANSHIP]\";</p><p>const p = __PAYLOAD;</p><p>if (!p) {</p><p>console.warn(TAG, \"Missing __PAYLOAD.\");</p><p>return;</p><p>}</p><p>const targetUuids = Array.isArray(p.targets) ? p.targets : [];</p><p>const firstTargetUuid = targetUuids[0] ?? null;</p><p>if (!firstTargetUuid) {</p><p>console.log(TAG, \"No target found. Skipping.\");</p><p>return;</p><p>}</p><p>const targetDoc = await fromUuid(firstTargetUuid);</p><p>const targetActor = targetDoc?.actor ?? targetDoc;</p><p>if (!targetActor) {</p><p>console.log(TAG, \"Missing target actor. Skipping.\");</p><p>return;</p><p>}</p><p>p.advPayload = p.advPayload || {};</p><p>p.meta = p.meta || {};</p><p>const accTotal = Number(p?.accuracy?.total ?? NaN);</p><p>const SNIPE_THRESHOLD = 15;</p><p>// -----------------------------</p><p>// Snipe 20 bonus:</p><p>// if accuracy total &gt;= 20,</p><p>// add ceil(10% of target max HP)</p><p>// -----------------------------</p><p>const targetMaxHp = Math.max(</p><p>0,</p><p>parseInt(targetActor?.system?.props?.max_hp ?? \"0\", 10) || 0</p><p>);</p><p>const snipeBonus =</p><p>(Number.isFinite(accTotal) &amp;&amp; accTotal &gt;= SNIPE_THRESHOLD)</p><p>? Math.ceil(targetMaxHp * 0.10)</p><p>: 0;</p><p>// -----------------------------</p><p>// Deadly Marksmanship bonus:</p><p>// add positive difference between accuracy total and target defense</p><p>// -----------------------------</p><p>const getDef = (targetUuid, actor) =&gt; {</p><p>const row = p?.meta?.defenseSnapshot?.perTarget?.find(r =&gt; r?.uuid === targetUuid);</p><p>return Number(row?.defense ?? actor?.system?.props?.defense ?? 0) || 0;</p><p>};</p><p>const targetDef = getDef(firstTargetUuid, targetActor);</p><p>const deadlyBonus =</p><p>Number.isFinite(accTotal)</p><p>? Math.max(0, accTotal - targetDef)</p><p>: 0;</p><p>// -----------------------------</p><p>// Apply both bonuses</p><p>// -----------------------------</p><p>const bonusBefore = Number(p?.advPayload?.bonus ?? 0) || 0;</p><p>const totalBonusToAdd = snipeBonus + deadlyBonus;</p><p>const bonusAfter = bonusBefore + totalBonusToAdd;</p><p>p.advPayload.bonus = bonusAfter;</p><p>p.meta.burningArrowDebug = {</p><p>target: targetActor.name,</p><p>accuracyTotal: accTotal,</p><p>snipeThreshold: SNIPE_THRESHOLD,</p><p>snipeTriggered: Number.isFinite(accTotal) &amp;&amp; accTotal &gt;= SNIPE_THRESHOLD,</p><p>targetMaxHp,</p><p>snipeBonus,</p><p>targetDef,</p><p>deadlyMarksmanshipBonus: deadlyBonus,</p><p>totalBonusToAdd,</p><p>bonusBefore,</p><p>bonusAfter</p><p>};</p><p>context.log(\"Burning Arrow custom logic applied\", {</p><p>target: targetActor.name,</p><p>accuracyTotal: accTotal,</p><p>snipeThreshold: SNIPE_THRESHOLD,</p><p>snipeTriggered: Number.isFinite(accTotal) &amp;&amp; accTotal &gt;= SNIPE_THRESHOLD,</p><p>targetMaxHp,</p><p>snipeBonus,</p><p>targetDef,</p><p>deadlyMarksmanshipBonus: deadlyBonus,</p><p>totalBonusToAdd,</p><p>bonusBefore,</p><p>bonusAfter</p><p>});</p>",
+          "custom_logic_resolution": "",
+          "damage_bonus": "20",
+          "defense_target_type": "def",
+          "description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.2JlZwoTU5Ql7sUyS\" data-id=\"2JlZwoTU5Ql7sUyS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Snipe</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span><strong>15</strong><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><strong><span style=\"text-decoration: underline;\"> </span></strong></span></span>Deals 10% of the target Max HP as bonus damage</p></li></ul><p>On hit, Inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Burn</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>to the target</p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Burning Arrow",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "INS",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "Fire",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "UKzHkmIJcjXZ4GFR"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "NKkIxFEoXMtIKTGy",
+      "_stats": {
+        "compendiumSource": "Item.iFdNNGp4OVZVMEcB",
+        "coreVersion": "12.343",
+        "createdTime": 1781875204633,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
+      "name": "Deadly Marksmanship",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "",
+          "defense_target_type": "def",
+          "description": "<p>All of <strong>⭐️ Jack</strong> damaging action deals bonus damage equal to <strong>【The Difference between the action's Accuracy Check and the target DEF】</strong></p>",
+          "duration": "-",
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Deadly Marksmanship",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "iFdNNGp4OVZVMEcB"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "NokOj9qTpdBwpQOZ",
+      "_stats": {
+        "compendiumSource": "Item.aGZAOUdRyopqoDyc",
+        "coreVersion": "12.343",
+        "createdTime": 1781875204633,
+        "duplicateSource": "Item.iFdNNGp4OVZVMEcB",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213702.523.png",
+      "name": "Zero Trigger: Twin",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "custom_logic_action": "<p>const TAG = \"[CL-ACTION][ZERO-TRIGGER:TWIN]\";</p><p>/* =========================</p><p>   CHANGE ONLY THESE 2 LINES</p><p>   ========================= */</p><p>// Jill:</p><p>// const TARGET_ACTOR_UUID = \"Actor.cPdnhK7AEVQG5ohd\";</p><p>// const TARGET_NAME = \"Jill\";</p><p>// Jack:</p><p>const TARGET_ACTOR_UUID = \"Actor.cPdnhK7AEVQG5ohd\";</p><p>const TARGET_NAME = \"Jill\";</p><p>/* =========================</p><p>   MAIN LOGIC</p><p>   ========================= */</p><p>const p = __PAYLOAD ?? {};</p><p>p.meta = p.meta || {};</p><p>const hardCancel = (reason) =&gt; {</p><p>  p.meta.__abortPipeline = true;</p><p>  if (typeof context?.cancelPipeline === \"function\") {</p><p>    return context.cancelPipeline(reason);</p><p>  }</p><p>  console.warn(TAG, reason);</p><p>  return;</p><p>};</p><p>const norm = (v) =&gt; String(v ?? \"\").trim().toLowerCase();</p><p>const resolveActorFromAny = async (value) =&gt; {</p><p>  try {</p><p>    if (!value) return null;</p><p>    if (value?.actor) return value.actor;</p><p>    if (value?.document?.actor) return value.document.actor;</p><p>    if (typeof value === \"string\" &amp;&amp; /^(Actor|Scene)\\./.test(value)) {</p><p>      const doc = await fromUuid(value);</p><p>      return doc?.actor ?? doc ?? null;</p><p>    }</p><p>    if (typeof value?.uuid === \"string\" &amp;&amp; /^(Actor|Scene)\\./.test(value.uuid)) {</p><p>      const doc = await fromUuid(value.uuid);</p><p>      return doc?.actor ?? doc ?? null;</p><p>    }</p><p>    return null;</p><p>  } catch (err) {</p><p>    console.warn(TAG, \"resolveActorFromAny failed\", value, err);</p><p>    return null;</p><p>  }</p><p>};</p><p>// Resolve caster</p><p>const casterDoc = await fromUuid(</p><p>  p?.meta?.attackerUuid ??</p><p>  p?.attackerUuid ??</p><p>  \"\"</p><p>);</p><p>const caster = casterDoc?.actor ?? casterDoc ?? null;</p><p>if (!caster) {</p><p>  return hardCancel(`${TAG} Missing caster.`);</p><p>}</p><p>// Read trigger payload</p><p>const phase =</p><p>  p?.meta?.reaction_phase_payload ??</p><p>  p?.reaction_phase_payload ??</p><p>  {};</p><p>const phaseByTrigger =</p><p>  p?.meta?.reaction_phase_payload_by_trigger ??</p><p>  p?.reaction_phase_payload_by_trigger ??</p><p>  {};</p><p>const triggerKey = String(</p><p>  p?.meta?.passiveTriggerKey ??</p><p>  p?.reaction_trigger_key ??</p><p>  phase?.trigger ??</p><p>  \"\"</p><p>).trim();</p><p>const keyedTriggerPayload =</p><p>  (triggerKey &amp;&amp; phaseByTrigger?.[triggerKey])</p><p>    ? phaseByTrigger[triggerKey]</p><p>    : null;</p><p>// Add explicit fallback for defeat trigger family</p><p>const triggerPayload =</p><p>  keyedTriggerPayload ??</p><p>  phaseByTrigger?.creature_defeated ??</p><p>  phaseByTrigger?.creature_takes_damage ??</p><p>  phase ??</p><p>  {};</p><p>const triggerSource = String(</p><p>  triggerPayload?.source ??</p><p>  phase?.source ??</p><p>  \"\"</p><p>).trim();</p><p>const flattenRefs = (arr) =&gt; {</p><p>  if (!Array.isArray(arr)) return [];</p><p>  return arr.flatMap(v =&gt; Array.isArray(v) ? v : [v]).filter(v =&gt; v != null &amp;&amp; v !== \"\");</p><p>};</p><p>// Try to locate the trigger creature</p><p>const triggerRefs = [</p><p>  triggerPayload?.triggerCreatureUuid,</p><p>  triggerPayload?.trigger_creature_uuid,</p><p>  triggerPayload?.triggerCreature,</p><p>  triggerPayload?.creatureUuid,</p><p>  triggerPayload?.creature_uuid,</p><p>  triggerPayload?.creature,</p><p>  triggerPayload?.actorUuid,</p><p>  triggerPayload?.actor_uuid,</p><p>  triggerPayload?.actor,</p><p>  triggerPayload?.targetUuid,</p><p>  triggerPayload?.target_uuid,</p><p>  triggerPayload?.target,</p><p>  triggerPayload?.victimUuid,</p><p>  triggerPayload?.victim_uuid,</p><p>  triggerPayload?.victim,</p><p>  triggerPayload?.tokenUuid,</p><p>  triggerPayload?.token_uuid,</p><p>  triggerPayload?.token,</p><p>  ...flattenRefs(triggerPayload?.targets),</p><p>  ...flattenRefs(triggerPayload?.targetUuids),</p><p>  ...flattenRefs(p?.originalTargetUUIDs),</p><p>  ...flattenRefs(p?.targets)</p><p>].filter(v =&gt; v != null &amp;&amp; v !== \"\");</p><p>const resolvedTriggerActors = [];</p><p>for (const ref of triggerRefs) {</p><p>  const actor = await resolveActorFromAny(ref);</p><p>  if (actor) resolvedTriggerActors.push(actor);</p><p>}</p><p>const triggerNameCandidates = [</p><p>  ...resolvedTriggerActors.map(a =&gt; a?.name).filter(Boolean),</p><p>  triggerPayload?.triggerCreatureName,</p><p>  triggerPayload?.trigger_creature_name,</p><p>  triggerPayload?.creatureName,</p><p>  triggerPayload?.creature_name,</p><p>  triggerPayload?.actorName,</p><p>  triggerPayload?.actor_name,</p><p>  triggerPayload?.targetName,</p><p>  triggerPayload?.target_name,</p><p>  triggerPayload?.victimName,</p><p>  triggerPayload?.victim_name</p><p>].filter(Boolean);</p><p>// UUID first, then name fallback</p><p>const matchedByUuid =</p><p>  resolvedTriggerActors.some(a =&gt; norm(a?.uuid) === norm(TARGET_ACTOR_UUID)) ||</p><p>  triggerRefs.some(v =&gt; typeof v === \"string\" &amp;&amp; norm(v) === norm(TARGET_ACTOR_UUID));</p><p>const matchedByName =</p><p>  !matchedByUuid &amp;&amp;</p><p>  triggerNameCandidates.some(name =&gt; norm(name) === norm(TARGET_NAME));</p><p>const matchedActor =</p><p>  resolvedTriggerActors.find(a =&gt;</p><p>    norm(a?.uuid) === norm(TARGET_ACTOR_UUID) ||</p><p>    norm(a?.name) === norm(TARGET_NAME)</p><p>  ) ?? null;</p><p>if (!matchedByUuid &amp;&amp; !matchedByName) {</p><p>  return hardCancel(`${TAG} Trigger creature did not match ${TARGET_NAME}.`);</p><p>}</p><p>// Determine trigger type</p><p>const tk = norm(triggerKey);</p><p>const sk = norm(triggerSource);</p><p>const hpAfterRaw = [</p><p>  triggerPayload?.hpAfter,</p><p>  triggerPayload?.afterHp,</p><p>  triggerPayload?.newHp,</p><p>  triggerPayload?.currentHpAfter,</p><p>  triggerPayload?.remainingHp</p><p>].find(v =&gt; v != null);</p><p>const hpAfter = Number(hpAfterRaw ?? NaN);</p><p>// Defeat / reduced to 0 HP detection</p><p>const reducedToZero =</p><p>  tk === \"creature_defeated\" ||</p><p>  tk === \"creature_reduced_to_0_hp\" ||</p><p>  tk === \"creature_reduced_to_zero_hp\" ||</p><p>  tk.includes(\"defeat\") ||</p><p>  tk.includes(\"reduce\") ||</p><p>  tk.includes(\"reduced\") ||</p><p>  tk.includes(\"0 hp\") ||</p><p>  sk === \"defeated_manual\" ||</p><p>  sk === \"defeated\" ||</p><p>  sk === \"reduced_to_0_hp\" ||</p><p>  sk === \"reduced_to_zero_hp\" ||</p><p>  triggerPayload?.reducedToZero === true ||</p><p>  triggerPayload?.isReducedToZero === true ||</p><p>  triggerPayload?.defeated === true ||</p><p>  triggerPayload?.isDefeated === true ||</p><p>  (Number.isFinite(hpAfter) &amp;&amp; hpAfter &lt;= 0);</p><p>// Normal damage detection</p><p>const damageAmount = Number(</p><p>  triggerPayload?.damage ??</p><p>  triggerPayload?.damageAmount ??</p><p>  triggerPayload?.hpLoss ??</p><p>  triggerPayload?.hp_loss ??</p><p>  0</p><p>) || 0;</p><p>const tookDamage =</p><p>  !reducedToZero &amp;&amp; (</p><p>    tk === \"creature_takes_damage\" ||</p><p>    tk === \"creature_deals_damage\" ||</p><p>    tk.includes(\"damage\") ||</p><p>    tk.includes(\"hp_loss\") ||</p><p>    damageAmount &gt; 0</p><p>  );</p><p>// 0 HP trigger takes priority</p><p>let gain = 0;</p><p>if (reducedToZero) gain = 6;</p><p>else if (tookDamage) gain = 2;</p><p>else {</p><p>  return hardCancel(`${TAG} Trigger type was not recognized.`);</p><p>}</p><p>// Clamp Zero Power</p><p>const before = Math.max(</p><p>  0,</p><p>  Number(caster?.system?.props?.zero_power_value ?? 0) || 0</p><p>);</p><p>const maxZero = Math.max(</p><p>  0,</p><p>  Number(caster?.system?.props?.max_zero ?? 0) || 0</p><p>);</p><p>const after = Math.min(maxZero, before + gain);</p><p>await caster.update({</p><p>  \"system.props.zero_power_value\": String(after)</p><p>});</p><p>p.meta.zeroTriggerTwin = {</p><p>  expectedTarget: TARGET_NAME,</p><p>  matchedBy: matchedByUuid ? \"uuid\" : \"name\",</p><p>  triggerKey,</p><p>  triggerSource,</p><p>  gain,</p><p>  before,</p><p>  after</p><p>};</p><p>console.log(TAG, \"APPLIED\", {</p><p>  caster: caster?.name,</p><p>  expectedTarget: TARGET_NAME,</p><p>  matchedBy: matchedByUuid ? \"uuid\" : \"name\",</p><p>  triggerKey,</p><p>  triggerSource,</p><p>  gain,</p><p>  before,</p><p>  after,</p><p>  matchedActor: matchedActor?.name ?? triggerNameCandidates[0] ?? null</p><p>});</p>",
+          "damage_bonus": "",
+          "defense_target_type": "def",
+          "description": "<p>Whenever <strong>Jill</strong> takes damage, Gain 2 Zero Power</p><p>When <strong>Jill</strong> is reduce to 0 HP, Gain 6 Zero Power</p>",
+          "duration": "-",
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Zero Trigger: Twin",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "reaction_damage_amount": "",
+              "reaction_damage_type": "",
+              "reaction_passive_mode": "ask",
+              "reaction_passive_target": "self",
+              "reaction_source": "ally",
+              "reaction_trigger": "creature_takes_damage"
+            },
+            "1": {
+              "$deleted": false,
+              "reaction_damage_amount": "",
+              "reaction_damage_type": "",
+              "reaction_passive_mode": "ask",
+              "reaction_passive_target": "",
+              "reaction_source": "ally",
+              "reaction_trigger": "creature_defeated"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "aGZAOUdRyopqoDyc"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "zGXNV8pGzKc4reH9",
+      "_stats": {
+        "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
+        "coreVersion": "12.343",
+        "createdTime": 1781875204633,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "XaHAJiv7uhytaAdh",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p>Decrease <strong>【MIG】</strong> and<strong> 【WLP】 </strong>by one stage</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 3,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "core": {
+              "overlay": false
+            },
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "isPredefined": true,
+              "originalId": "u6SHYfoeExl1etSf",
+              "originalParentId": "XVOWOq9oUmEECGrU",
+              "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.u6SHYfoeExl1etSf"
+            },
+            "dfreds-convenient-effects": {
+              "ceEffectId": "ce-poisoned",
+              "isBackup": false,
+              "isConvenient": true,
+              "isDynamic": false,
+              "isTemporary": false,
+              "isViewable": true
+            },
+            "effectmacro": {
+              "onCreate": {
+                "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isPoisoned\n(async () => {\n  const PATH = \"system.props.isPoisoned\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+              },
+              "onDelete": {
+                "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isPoisoned\n(async () => {\n  const PATH = \"system.props.isPoisoned\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+              },
+              "onDisable": {
+                "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isPoisoned\n(async () => {\n  const PATH = \"system.props.isPoisoned\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+              },
+              "onEnable": {
+                "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isPoisoned\n(async () => {\n  const PATH = \"system.props.isPoisoned\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+              },
+              "onToggle": {
+                "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isPoisoned\n(async () => {\n  const PATH = \"system.props.isPoisoned\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+              }
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/ATK%20DOUBLE%20DOWN.png",
+          "name": "Poisoned",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "DHsoSawNEZAxsnQ9"
+          ],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215350.578.png",
+      "name": "Poison Arrow",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {
+            "0": {
+              "$deleted": false,
+              "active_effect_application": "add",
+              "active_effect_apply_mode": "percentage",
+              "active_effect_dice_1": "",
+              "active_effect_dice_2": "",
+              "active_effect_dl": "0",
+              "active_effect_id": "XaHAJiv7uhytaAdh",
+              "active_effect_percent": "100",
+              "active_effect_target": "enemy",
+              "active_effect_trigger": "on_hit"
+            }
+          },
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "5",
+          "class": "NPC",
+          "cost": "1 IP",
+          "custom_logic_action": "<p>const TAG = \"[CL-ACTION][DEADLY-MARKSMANSHIP]\";</p><p>const p = __PAYLOAD;</p><p>if (!p) {</p><p>console.warn(TAG, \"Missing __PAYLOAD\");</p><p>return;</p><p>}</p><p>const targetUuids = Array.isArray(p.targets) ? p.targets : [];</p><p>const firstTargetUuid = targetUuids[0] ?? null;</p><p>if (!firstTargetUuid) {</p><p>console.log(TAG, \"No target found. Skipping.\");</p><p>return;</p><p>}</p><p>const targetDoc = await fromUuid(firstTargetUuid);</p><p>const targetActor = targetDoc?.actor ?? targetDoc;</p><p>if (!targetActor) {</p><p>console.log(TAG, \"Missing target actor. Skipping.\");</p><p>return;</p><p>}</p><p>p.advPayload = p.advPayload || {};</p><p>p.meta = p.meta || {};</p><p>// Read final action accuracy total AFTER all other accuracy bonuses</p><p>const accTotal = Number(p?.accuracy?.total ?? NaN);</p><p>// Read target defense from defense snapshot first, actor data as fallback</p><p>const getDef = (targetUuid, actor) =&gt; {</p><p>const row = p?.meta?.defenseSnapshot?.perTarget?.find(r =&gt; r?.uuid === targetUuid);</p><p>return Number(row?.defense ?? actor?.system?.props?.defense ?? 0) || 0;</p><p>};</p><p>const targetDef = getDef(firstTargetUuid, targetActor);</p><p>// Bonus damage = positive difference only</p><p>const deadlyBonus = Number.isFinite(accTotal)</p><p>? Math.max(0, accTotal - targetDef)</p><p>: 0;</p><p>const bonusBefore = Number(p?.advPayload?.bonus ?? 0) || 0;</p><p>const bonusAfter = bonusBefore + deadlyBonus;</p><p>p.advPayload.bonus = bonusAfter;</p><p>p.meta.deadlyMarksmanshipDebug = {</p><p>target: targetActor.name,</p><p>accuracyTotal: accTotal,</p><p>targetDef,</p><p>deadlyBonus,</p><p>bonusBefore,</p><p>bonusAfter</p><p>};</p><p>context.log(\"Deadly Marksmanship applied\", {</p><p>target: targetActor.name,</p><p>accuracyTotal: accTotal,</p><p>targetDef,</p><p>deadlyBonus,</p><p>bonusBefore,</p><p>bonusAfter</p><p>});</p>",
+          "custom_logic_resolution": "<p>const TAG = \"[CL-RES][POISON-ARROW][SNIPE20-ENVENOMED]\";</p><p>const p = __PAYLOAD;</p><p>const args = globalThis.__ARGS ?? p?.__confirmArgs ?? {};</p><p>if (!p) {</p><p>console.warn(TAG, \"Missing __PAYLOAD.\");</p><p>return;</p><p>}</p><p>const targetUuids = Array.isArray(p.targets) ? p.targets : [];</p><p>if (!targetUuids.length) {</p><p>console.warn(TAG, \"No targets found.\");</p><p>return;</p><p>}</p><p>const accTotal = Number(p?.accuracy?.total ?? args?.accuracyTotal ?? NaN);</p><p>const hasAccuracy =</p><p>(typeof args?.hasAccuracy === \"boolean\") ? args.hasAccuracy : !!p?.accuracy;</p><p>const autoHit = !!(args?.autoHit || p?.advPayload?.autoHit || p?.accuracy?.isCrit);</p><p>const SNIPE_THRESHOLD = 15;</p><p>// Canonical source template = item-owned Active Effect</p><p>const EFFECT_UUID = \"Item.XVOWOq9oUmEECGrU.ActiveEffect.TI6txApoPwgYLHXQ\";</p><p>const EFFECT_ID = \"TI6txApoPwgYLHXQ\";</p><p>const EFFECT_NAME = \"Envenomed\";</p><p>const getDef = (targetUuid, targetActor) =&gt; {</p><p>const row = p?.meta?.defenseSnapshot?.perTarget?.find(r =&gt; r?.uuid === targetUuid);</p><p>return Number(row?.defense ?? targetActor?.system?.props?.defense ?? 0) || 0;</p><p>};</p><p>const isHit = (targetUuid, targetActor) =&gt; {</p><p>const targetDef = getDef(targetUuid, targetActor);</p><p>if (!hasAccuracy) return true;</p><p>if (autoHit) return true;</p><p>if (!Number.isFinite(accTotal)) return false;</p><p>return accTotal &gt;= targetDef;</p><p>};</p><p>// Snipe 20 gate</p><p>if (!Number.isFinite(accTotal) || accTotal &lt; SNIPE_THRESHOLD) {</p><p>console.log(TAG, \"Snipe 20 not met.\", {</p><p>accTotal,</p><p>threshold: SNIPE_THRESHOLD</p><p>});</p><p>return;</p><p>}</p><p>// Resolve source effect template</p><p>let sourceEffect = await fromUuid(EFFECT_UUID);</p><p>// Fallback: resolve source item, then find by id or name</p><p>if (!sourceEffect) {</p><p>const sourceItemUuid = EFFECT_UUID.split(\".ActiveEffect.\")[0];</p><p>const sourceItemDoc = await fromUuid(sourceItemUuid);</p><p>sourceEffect =</p><p>Array.from(sourceItemDoc?.effects ?? []).find(e =&gt; String(e?.id ?? \"\") === EFFECT_ID) ??</p><p>Array.from(sourceItemDoc?.effects ?? []).find(e =&gt; {</p><p>const n1 = String(e?.name ?? \"\").trim().toLowerCase();</p><p>const n2 = String(e?.label ?? \"\").trim().toLowerCase();</p><p>const wanted = EFFECT_NAME.toLowerCase();</p><p>return n1 === wanted || n2 === wanted;</p><p>}) ??</p><p>null;</p><p>}</p><p>if (!sourceEffect) {</p><p>console.warn(TAG, \"Could not resolve source effect template.\", {</p><p>EFFECT_UUID,</p><p>EFFECT_ID,</p><p>EFFECT_NAME</p><p>});</p><p>return;</p><p>}</p><p>for (const targetUuid of targetUuids) {</p><p>const targetDoc = await fromUuid(targetUuid);</p><p>const targetActor = targetDoc?.actor ?? targetDoc;</p><p>if (!targetActor) continue;</p><p>const hit = isHit(targetUuid, targetActor);</p><p>if (!hit) {</p><p>console.log(TAG, \"Target was not hit. Skipping.\", {</p><p>target: targetActor?.name,</p><p>accTotal,</p><p>targetDef: getDef(targetUuid, targetActor)</p><p>});</p><p>continue;</p><p>}</p><p>// Duplicate check on target:</p><p>// do NOT trust UUID here, because cloned AEs can get new ids/uuids on actor</p><p>const existingEffect =</p><p>Array.from(targetActor.effects ?? []).find(e =&gt; {</p><p>const n1 = String(e?.name ?? \"\").trim().toLowerCase();</p><p>const n2 = String(e?.label ?? \"\").trim().toLowerCase();</p><p>const wanted = EFFECT_NAME.toLowerCase();</p><p>return n1 === wanted || n2 === wanted;</p><p>}) ?? null;</p><p>if (existingEffect) {</p><p>console.log(TAG, \"Effect already present. Skipping duplicate.\", {</p><p>target: targetActor?.name,</p><p>existingEffect: existingEffect?.name ?? existingEffect?.label ?? \"(unknown)\"</p><p>});</p><p>continue;</p><p>}</p><p>const effectData = sourceEffect.toObject();</p><p>delete effectData._id;</p><p>delete effectData.id;</p><p>await targetActor.createEmbeddedDocuments(\"ActiveEffect\", [effectData]);</p><p>console.log(TAG, \"Applied Envenomed.\", {</p><p>target: targetActor?.name,</p><p>accTotal,</p><p>sourceEffectName: sourceEffect?.name ?? sourceEffect?.label ?? \"(unknown)\"</p><p>});</p><p>}</p>",
+          "damage_bonus": "20",
+          "defense_target_type": "def",
+          "description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.2JlZwoTU5Ql7sUyS\" data-id=\"2JlZwoTU5Ql7sUyS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Snipe</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;15 </span></strong></span></span>Also inflicts<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><strong><span style=\"text-decoration: underline;\"> </span></strong><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.XRlyg27yLgoQUOXZ\" data-id=\"XRlyg27yLgoQUOXZ\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Envenomed</span></strong></a></span></span>&nbsp;to the target</p></li></ul><p>On hit, Inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.JltwIqzHbBKhkD45\" data-id=\"JltwIqzHbBKhkD45\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poisoned</span></strong></a></span></span>&nbsp;to the target</p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Poison Arrow",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "INS",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "Poison",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "UKzHkmIJcjXZ4GFR"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "⭐️ Jack",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "prototypeToken": {
+    "actorLink": true,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 50,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar4": {
+            "attribute": "attributeBar.zero_power_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#e3580d",
+            "mincolor": "#ec9736",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "percent",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          }
+        }
+      },
+      "hex-size-support": {
+        "hideBorder": true,
+        "hideFill": true
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "⭐️ Jack",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1.45,
+      "scaleY": 1.45,
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Jack/Jack_Standard.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 2500343,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {
+      "action_pattern_table": {
+        "0": {
+          "$deleted": false,
+          "action_pattern_condition": "always",
+          "action_pattern_name": "Thief Bow",
+          "action_pattern_priority": "2",
+          "action_pattern_string": "",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "100"
+        },
+        "1": {
+          "$deleted": false,
+          "action_pattern_condition": "ip",
+          "action_pattern_name": "Poison Arrow",
+          "action_pattern_priority": "5",
+          "action_pattern_string": "",
+          "action_pattern_value_1": "33",
+          "action_pattern_value_2": "100"
+        },
+        "2": {
+          "$deleted": false,
+          "action_pattern_condition": "ip",
+          "action_pattern_name": "Snaring Arrow",
+          "action_pattern_priority": "5",
+          "action_pattern_string": "",
+          "action_pattern_value_1": "33",
+          "action_pattern_value_2": "100"
+        },
+        "3": {
+          "$deleted": false,
+          "action_pattern_condition": "ip",
+          "action_pattern_name": "Burning Arrow",
+          "action_pattern_priority": "5",
+          "action_pattern_string": "",
+          "action_pattern_value_1": "33",
+          "action_pattern_value_2": "100"
+        },
+        "4": {
+          "$deleted": false,
+          "action_pattern_condition": "zero_power",
+          "action_pattern_name": "Zero Power: Apex Arrow",
+          "action_pattern_priority": "9",
+          "action_pattern_string": "",
+          "action_pattern_value_1": "100",
+          "action_pattern_value_2": "100"
+        }
+      },
+      "activation": "2",
+      "affinity_1": "NA",
+      "affinity_2": "VU",
+      "affinity_3": "NA",
+      "affinity_4": "NA",
+      "affinity_5": "NA",
+      "affinity_6": "NA",
+      "affinity_7": "NA",
+      "affinity_8": "NA",
+      "affinity_9": "RS",
+      "animation_table": {},
+      "arcane_ef": "100",
+      "attack_accuracy_mod_all": 0,
+      "attack_accuracy_mod_magic": 0,
+      "attack_accuracy_mod_melee": 0,
+      "attack_accuracy_mod_ranged": 0,
+      "attack_list": {
+        "c2vGHtzV97Np3rV4": {
+          "active_target": "One Creature",
+          "attack_description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.7PQDwyX0RPf0djPL\" data-id=\"7PQDwyX0RPf0djPL\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Backstab</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>Gain +5 Accuracy</p></li><li><p><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KjziTkOpdzd99KZa\" data-id=\"KjziTkOpdzd99KZa\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Thievery</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;2</span></strong></span></p></li></ul><p>Deal <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(68, 68, 68) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span>damage to the target, on <strong>hit</strong>, the target loses <strong>2 IP</strong></p>",
+          "attribute_die1": "DEX",
+          "attribute_die2": "INS",
+          "id": "${item.id}",
+          "name": "Thief Bow",
+          "roll": "",
+          "uuid": "Actor.8nncIhGQAEJ0ABjl.Item.c2vGHtzV97Np3rV4"
+        }
+      },
+      "attribute": "",
+      "battle_facing_direction": "left",
+      "bow_ef": "75",
+      "brawling_ef": "125",
+      "condition_anomaly": "NA",
+      "condition_bane": "NA",
+      "condition_berserk": "NA",
+      "condition_bleed": "NA",
+      "condition_blind": "NA",
+      "condition_burn": "NA",
+      "condition_charm": "NA",
+      "condition_confused": "NA",
+      "condition_curse": "NA",
+      "condition_dazed": "NA",
+      "condition_delayed": "NA",
+      "condition_despair": "NA",
+      "condition_disarmed": "NA",
+      "condition_doom": "NA",
+      "condition_enraged": "NA",
+      "condition_envenomed": "NA",
+      "condition_fatigue": "NA",
+      "condition_frightened": "NA",
+      "condition_grappled": "NA",
+      "condition_hypothermia": "NA",
+      "condition_isolate": "NA",
+      "condition_obscure": "NA",
+      "condition_oil": "NA",
+      "condition_panic": "NA",
+      "condition_paralyzed": "NA",
+      "condition_petrify": "NA",
+      "condition_poisoned": "NA",
+      "condition_shaken": "NA",
+      "condition_silence": "NA",
+      "condition_slow": "NA",
+      "condition_stagger": "NA",
+      "condition_suppress": "NA",
+      "condition_turbulence": "NA",
+      "condition_weak": "NA",
+      "condition_wet": "NA",
+      "condition_wither": "NA",
+      "condition_zombie": "NA",
+      "critical_damage_bonus": 0,
+      "critical_damage_multiplier": 1,
+      "critical_dice_range": 0,
+      "current_hp": "232",
+      "current_ip": "5",
+      "current_mp": "165",
+      "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Jack/Jack_Standard.png",
+      "cut_in_fumble": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Jack/Jack_Standard.png",
+      "cut_in_offset_y": "",
+      "cut_in_zero_power": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Jack/Jack_Standard.png",
+      "dagger_ef": "100",
+      "damage_receiving_mod_air": 0,
+      "damage_receiving_mod_all": 0,
+      "damage_receiving_mod_bolt": 0,
+      "damage_receiving_mod_dark": 0,
+      "damage_receiving_mod_earth": 0,
+      "damage_receiving_mod_fire": 0,
+      "damage_receiving_mod_ice": 0,
+      "damage_receiving_mod_light": 0,
+      "damage_receiving_mod_melee": 0,
+      "damage_receiving_mod_physical": 0,
+      "damage_receiving_mod_poison": 0,
+      "damage_receiving_mod_range": 0,
+      "def_mod": "+2",
+      "default_facing_direction": "right",
+      "defense": 12,
+      "dex_base": "10",
+      "dex_current": 10,
+      "enmity": 100,
+      "event_timeline_table": {},
+      "extra_damage_mod_air": 0,
+      "extra_damage_mod_all": 0,
+      "extra_damage_mod_arcane": 0,
+      "extra_damage_mod_bolt": 0,
+      "extra_damage_mod_bow": 0,
+      "extra_damage_mod_brawling": 0,
+      "extra_damage_mod_dagger": 0,
+      "extra_damage_mod_dark": 0,
+      "extra_damage_mod_earth": 0,
+      "extra_damage_mod_fire": 0,
+      "extra_damage_mod_firearm": 0,
+      "extra_damage_mod_flail": 0,
+      "extra_damage_mod_heavy": 0,
+      "extra_damage_mod_ice": 0,
+      "extra_damage_mod_light": 0,
+      "extra_damage_mod_melee": 0,
+      "extra_damage_mod_physical": 0,
+      "extra_damage_mod_poison": 0,
+      "extra_damage_mod_ranged": 0,
+      "extra_damage_mod_spear": 0,
+      "extra_damage_mod_spell": 0,
+      "extra_damage_mod_sword": 0,
+      "extra_damage_mod_thrown": 0,
+      "firearm_ef": "75",
+      "flail_ef": "100",
+      "gorger": false,
+      "heavy_ef": "125",
+      "icon_offset_x": "",
+      "icon_offset_y": "",
+      "icon_scale": "",
+      "id": "8nncIhGQAEJ0ABjl",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Jack/Jack_Standard.png",
+      "init": "6",
+      "ins_base": "8",
+      "ins_current": 8,
+      "isAlmighty": false,
+      "isAwake": false,
+      "isBoss": true,
+      "isClarity": false,
+      "isCustomEvent": false,
+      "isDazed": false,
+      "isEnergized": false,
+      "isEnlighten": false,
+      "isEnraged": false,
+      "isFocus": false,
+      "isMasterful": false,
+      "isPoisoned": false,
+      "isShaken": false,
+      "isShop": false,
+      "isSlow": false,
+      "isStolen": false,
+      "isStrong": false,
+      "isSummon": false,
+      "isSwift": false,
+      "isUnyielding": false,
+      "isVillain": false,
+      "isWeak": false,
+      "level": "30",
+      "lifesteal_percentage": 0,
+      "lifesteal_value": 0,
+      "magic_defense": 9,
+      "manadrain_percentage": 0,
+      "manadrain_value": 0,
+      "max_hp": "232",
+      "max_ip": "6",
+      "max_mp": "165",
+      "max_zero": "6",
+      "mdef_mod": "+1",
+      "mig_base": "6",
+      "mig_current": 6,
+      "mimic": false,
+      "minimum_critical_dice": 6,
+      "name": "⭐️ Jack",
+      "normal_spell_list": {
+        "ADRhndrppn58xppC": {
+          "cost": "10 MP",
+          "duration": "3 Rounds",
+          "id": "${item.id}",
+          "name": "Focus",
+          "roll": "",
+          "spell_description": "",
+          "spell_target": "Self",
+          "uuid": "Actor.8nncIhGQAEJ0ABjl.Item.ADRhndrppn58xppC"
+        }
+      },
+      "npc_rank": "champion",
+      "override_damage_type": "None",
+      "rare": false,
+      "resource_maxValue_1": "0",
+      "resource_maxValue_2": "0",
+      "resource_maxValue_3": "0",
+      "resource_value_1": "0",
+      "resource_value_2": "0",
+      "resource_value_3": "0",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "shield_type": "PHYSICAL",
+      "shield_value": "0",
+      "shop_weapon_list": {
+        "18ZgpUkzi9kNLao5": {
+          "id": "${item.id}",
+          "name": "Thief Bow",
+          "uuid": "Actor.8nncIhGQAEJ0ABjl.Item.18ZgpUkzi9kNLao5",
+          "weapon_buy": "",
+          "weapon_category": "Bow",
+          "weapon_cost": 2000,
+          "weapon_hand": "Two-handed",
+          "weapon_martial": "",
+          "weapon_quality": "<p><ul><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.2JlZwoTU5Ql7sUyS\" data-id=\"2JlZwoTU5Ql7sUyS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Snipe</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;20 </span></strong></span></span>The target loses <strong>2 IP,</strong>and you <strong>gain 2 IP</strong></li></ul></p>",
+          "weapon_quantity": 1,
+          "weapon_range": "Ranged",
+          "weapon_set": "<Set Name>"
+        },
+        "2paM8AUY07YPEweg": {
+          "id": "${item.id}",
+          "name": "Thief Bow",
+          "uuid": "Actor.8nncIhGQAEJ0ABjl.Item.2paM8AUY07YPEweg",
+          "weapon_buy": "",
+          "weapon_category": "Bow",
+          "weapon_cost": 2000,
+          "weapon_hand": "Two-handed",
+          "weapon_martial": "",
+          "weapon_quality": "<p><ul><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.2JlZwoTU5Ql7sUyS\" data-id=\"2JlZwoTU5Ql7sUyS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Snipe</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;20 </span></strong></span></span>The target loses <strong>1 IP </strong>and you <strong>gain 1 IP</strong></li></ul></p>",
+          "weapon_quantity": 1,
+          "weapon_range": "Ranged",
+          "weapon_set": "<Set Name>"
+        },
+        "aGxi1wwjUxYIqr1M": {
+          "id": "${item.id}",
+          "name": "Thief Bow",
+          "uuid": "Actor.8nncIhGQAEJ0ABjl.Item.aGxi1wwjUxYIqr1M",
+          "weapon_buy": "",
+          "weapon_category": "Bow",
+          "weapon_cost": 2000,
+          "weapon_hand": "Two-handed",
+          "weapon_martial": "",
+          "weapon_quality": "<p><ul><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.2JlZwoTU5Ql7sUyS\" data-id=\"2JlZwoTU5Ql7sUyS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Snipe</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;20 </span></strong></span></span>The target loses <strong>2 IP </strong>and you <strong>gain 2 IP</strong></li></ul></p>",
+          "weapon_quantity": 1,
+          "weapon_range": "Ranged",
+          "weapon_set": "<Set Name>"
+        }
+      },
+      "showMacro": false,
+      "skill_active_list": {
+        "c2mUdptLSISV21LI": {
+          "active_cost": "6 Zero Power",
+          "active_description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KHCaZjNmClkp7yfM\" data-id=\"KHCaZjNmClkp7yfM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Execute</span></strong></a></span></span></p></li></ul><p>Fires a fast moving arrow at a target, deals heavy <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(72, 199, 116) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(168, 255, 187) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a></span> &nbsp;damage, during the next round <strong>⭐️ Jack's</strong> attacks gain the following effects:</p><ul><li><p>Gain +5 Accuracy Check</p></li></ul>",
+          "active_duration": "-",
+          "active_target": "-",
+          "id": "${item.id}",
+          "name": "Zero Power: Apex Arrow",
+          "roll": "",
+          "uuid": "Actor.8nncIhGQAEJ0ABjl.Item.c2mUdptLSISV21LI"
+        },
+        "cB66iW3EgQukwjQE": {
+          "active_cost": "1 IP",
+          "active_description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.2JlZwoTU5Ql7sUyS\" data-id=\"2JlZwoTU5Ql7sUyS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Snipe</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;15 </span></strong></span></span>Also inflicts<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><strong><span style=\"text-decoration: underline;\"> </span></strong><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.NtSCsFcZNQfUbSBn\" data-id=\"NtSCsFcZNQfUbSBn\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Snared</span></strong></a></span></span>&nbsp;to the target</p></li></ul><p>On hit, Inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>to the target</p>",
+          "active_duration": "Instantaneous",
+          "active_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Snaring Arrow",
+          "roll": "",
+          "uuid": "Actor.8nncIhGQAEJ0ABjl.Item.cB66iW3EgQukwjQE"
+        },
+        "f9Gu7RcPKwkSn44m": {
+          "active_cost": "-",
+          "active_description": "",
+          "active_duration": "-",
+          "active_target": "-",
+          "id": "${item.id}",
+          "name": "Generic NPC Skill Template",
+          "roll": "",
+          "uuid": "Actor.8nncIhGQAEJ0ABjl.Item.f9Gu7RcPKwkSn44m"
+        },
+        "gkr0QjHLazgoxAlq": {
+          "active_cost": "1 IP",
+          "active_description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.2JlZwoTU5Ql7sUyS\" data-id=\"2JlZwoTU5Ql7sUyS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Snipe</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span><strong>15</strong><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><strong><span style=\"text-decoration: underline;\"> </span></strong></span></span>Deals 10% of the target Max HP as bonus damage</p></li></ul><p>On hit, Inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Burn</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>to the target</p>",
+          "active_duration": "Instantaneous",
+          "active_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Burning Arrow",
+          "roll": "",
+          "uuid": "Actor.8nncIhGQAEJ0ABjl.Item.gkr0QjHLazgoxAlq"
+        },
+        "nfEnw2rBa5FGlJuI": {
+          "active_cost": "10 MP",
+          "active_description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KjziTkOpdzd99KZa\" data-id=\"KjziTkOpdzd99KZa\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Thievery</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;2</span></strong></span></span></p></li></ul><p>Deal light <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(68, 68, 68) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a></span></span>&nbsp;damage to the target, if this attack <strong>hit</strong>, the target loses <strong>2 IP</strong></p>",
+          "active_duration": "Instantaneous",
+          "active_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Mug",
+          "roll": "",
+          "uuid": "Actor.8nncIhGQAEJ0ABjl.Item.nfEnw2rBa5FGlJuI"
+        },
+        "nmXcFpLehwCbbMn1": {
+          "active_cost": "2 IP",
+          "active_description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.2JlZwoTU5Ql7sUyS\" data-id=\"2JlZwoTU5Ql7sUyS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Snipe</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;20</span></strong></span></span> Gain<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><strong><span style=\"text-decoration: underline;\"> </span></strong><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KHCaZjNmClkp7yfM\" data-id=\"KHCaZjNmClkp7yfM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Execute</span></strong></a></span></span></p></li></ul><p>Deal heavy <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(68, 68, 68) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a></span>&nbsp;damage to the target</p>",
+          "active_duration": "Instantaneous",
+          "active_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Apex Arrow",
+          "roll": "",
+          "uuid": "Actor.8nncIhGQAEJ0ABjl.Item.nmXcFpLehwCbbMn1"
+        },
+        "zGXNV8pGzKc4reH9": {
+          "active_cost": "1 IP",
+          "active_description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.2JlZwoTU5Ql7sUyS\" data-id=\"2JlZwoTU5Ql7sUyS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Snipe</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;15 </span></strong></span></span>Also inflicts<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><strong><span style=\"text-decoration: underline;\"> </span></strong><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.XRlyg27yLgoQUOXZ\" data-id=\"XRlyg27yLgoQUOXZ\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Envenomed</span></strong></a></span></span>&nbsp;to the target</p></li></ul><p>On hit, Inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.JltwIqzHbBKhkD45\" data-id=\"JltwIqzHbBKhkD45\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poisoned</span></strong></a></span></span>&nbsp;to the target</p>",
+          "active_duration": "Instantaneous",
+          "active_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Poison Arrow",
+          "roll": "",
+          "uuid": "Actor.8nncIhGQAEJ0ABjl.Item.zGXNV8pGzKc4reH9"
+        },
+        "zHQ7JCkRgE5Tog8S": {
+          "active_cost": "-",
+          "active_description": "",
+          "active_duration": "-",
+          "active_target": "-",
+          "id": "${item.id}",
+          "name": "Generic NPC Skill Template",
+          "roll": "",
+          "uuid": "Actor.8nncIhGQAEJ0ABjl.Item.zHQ7JCkRgE5Tog8S"
+        }
+      },
+      "skill_passive_list": {
+        "NKkIxFEoXMtIKTGy": {
+          "id": "${item.id}",
+          "name": "Deadly Marksmanship",
+          "passive_description": "<p>All of <strong>⭐️ Jack</strong> damaging action deals bonus damage equal to <strong>【The Difference between the action's Accuracy Check and the target DEF】</strong></p>",
+          "roll": "",
+          "uuid": "Actor.8nncIhGQAEJ0ABjl.Item.NKkIxFEoXMtIKTGy"
+        },
+        "NokOj9qTpdBwpQOZ": {
+          "id": "${item.id}",
+          "name": "Zero Trigger: Twin",
+          "passive_description": "<p>Whenever <strong>Jill</strong> takes damage, Gain 2 Zero Power</p><p>When <strong>Jill</strong> is reduce to 0 HP, Gain 6 Zero Power</p>",
+          "roll": "",
+          "uuid": "Actor.8nncIhGQAEJ0ABjl.Item.NokOj9qTpdBwpQOZ"
+        },
+        "gIU9R6nwT2r3qmro": {
+          "id": "${item.id}",
+          "name": "Improve Critical",
+          "passive_description": "<p>This creature <strong>Critical Attacks </strong>deals 10 bonus damage</p>",
+          "roll": "",
+          "uuid": "Actor.8nncIhGQAEJ0ABjl.Item.gIU9R6nwT2r3qmro"
+        }
+      },
+      "spear_ef": "100",
+      "species": "HUMANOID",
+      "sprite_battle": "",
+      "sprite_standard": "",
+      "steal_percentage_table": {
+        "0": {
+          "$deleted": false,
+          "loot_id": "Thief Bow",
+          "loot_percentage": "100"
+        }
+      },
+      "stealable_loot": {
+        "18ZgpUkzi9kNLao5": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.2JlZwoTU5Ql7sUyS\" data-id=\"2JlZwoTU5Ql7sUyS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Snipe</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;20 </span></strong></span></span>The target loses <strong>2 IP,</strong>and you <strong>gain 2 IP</strong></li></ul>",
+          "name": "Thief Bow",
+          "roll": "",
+          "uuid": "Actor.8nncIhGQAEJ0ABjl.Item.18ZgpUkzi9kNLao5"
+        },
+        "2paM8AUY07YPEweg": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.2JlZwoTU5Ql7sUyS\" data-id=\"2JlZwoTU5Ql7sUyS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Snipe</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;20 </span></strong></span></span>The target loses <strong>1 IP </strong>and you <strong>gain 1 IP</strong></li></ul>",
+          "name": "Thief Bow",
+          "roll": "",
+          "uuid": "Actor.8nncIhGQAEJ0ABjl.Item.2paM8AUY07YPEweg"
+        },
+        "aGxi1wwjUxYIqr1M": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.2JlZwoTU5Ql7sUyS\" data-id=\"2JlZwoTU5Ql7sUyS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Snipe</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;20 </span></strong></span></span>The target loses <strong>2 IP </strong>and you <strong>gain 2 IP</strong></li></ul>",
+          "name": "Thief Bow",
+          "roll": "",
+          "uuid": "Actor.8nncIhGQAEJ0ABjl.Item.aGxi1wwjUxYIqr1M"
+        }
+      },
+      "study_text": "<p>A Young Orphan of Rauben's Bandit Gang, he excel in focusing down a <strong>single target, </strong>attacks using various <strong>debuffing arrows</strong></p>",
+      "subtype": "Sub-Type",
+      "subtype_list": "HUMAN",
+      "sword_ef": "100",
+      "tactic_notes": "",
+      "thrown_ef": "100",
+      "token_option_persist": false,
+      "traits": "Orphan, Theif, Archer, Calculated",
+      "ultima_point": "3",
+      "unique": false,
+      "uuid": "Actor.8nncIhGQAEJ0ABjl",
+      "wlp_base": "6",
+      "wlp_current": 6,
+      "zenit_reward_max": "130",
+      "zenit_reward_min": "100",
+      "zero_power_value": "6"
+    },
+    "statusEffects": {},
+    "template": "yegF6R8aaymhrvCg",
+    "templateSystemUniqueVersion": 4211423400
+  },
+  "type": "character"
+}

@@ -1,0 +1,19 @@
+{
+  "_id": "RBurzhUXBqf46PbU",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1772243166681,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "yvRW0RqT5kwSxKFl",
+  "name": "Valley of the Dragon",
+  "sort": 300000,
+  "sorting": "a",
+  "type": "Scene"
+}

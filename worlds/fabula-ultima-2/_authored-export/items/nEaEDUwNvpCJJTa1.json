@@ -1,0 +1,45 @@
+{
+  "_id": "nEaEDUwNvpCJJTa1",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1716292882534,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    }
+  },
+  "folder": "uVoBlDGLfc42N4Vu",
+  "img": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Item%20Icon/1.jpg",
+  "name": "Spell Edge",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>After you cast a spell, If the spell doesn't grant you free attack, you can make free attack with high roll = 0.</p>",
+      "duration": "",
+      "name": "Spell Edge",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "target": "",
+      "type_damage": ""
+    },
+    "template": "FZmpKcQRP7hZQqbV",
+    "templateSystemUniqueVersion": 1700837225,
+    "unique": false,
+    "uniqueId": "nEaEDUwNvpCJJTa1"
+  },
+  "type": "equippableItem"
+}

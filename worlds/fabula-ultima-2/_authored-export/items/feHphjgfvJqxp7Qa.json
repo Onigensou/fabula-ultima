@@ -1,0 +1,100 @@
+{
+  "_id": "feHphjgfvJqxp7Qa",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1781820017008,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "FIHoW0EB0vU7gMAa",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/RumblePumnTSkill1.png",
+  "name": "Create Phantasm: Strike",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "action_keywords": "pierce",
+      "cost": "",
+      "damage_bonus": "12 + (CHAR_LEVEL >= 20) * 4 + (CHAR_LEVEL >= 40) * 2",
+      "defense_target_type": "mdef",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "effect_kind": "open_action_menu",
+          "effect_label": "cps_menu",
+          "menu_option_labels": "Create a new Phantasm|Command an existing Phantasm",
+          "menu_option_refs": "cps_create, cps_existing",
+          "menu_title": "Create Phantasm: Strike"
+        },
+        "1": {
+          "$deleted": false,
+          "candidate_source": "self",
+          "effect_kind": "targeting",
+          "effect_label": "cps_self"
+        },
+        "2": {
+          "$deleted": false,
+          "chain_steps": "cps_cost, cps_summon",
+          "condition_formula": "CUR_MP >= 10 && OWN_PHANTASM_COUNT < 3",
+          "disable_ui_type": "dim",
+          "disabled_reason": "Need 10 MP & under 3 Phantasms",
+          "effect_kind": "chain",
+          "effect_label": "cps_create"
+        },
+        "3": {
+          "$deleted": false,
+          "consume_amount": "10",
+          "consume_resource": "mp",
+          "effect_kind": "consume_resource",
+          "effect_label": "cps_cost",
+          "on_empty": "abort",
+          "target_ref": "cps_self"
+        },
+        "4": {
+          "$deleted": false,
+          "effect_kind": "summon",
+          "effect_label": "cps_summon",
+          "summon_actor": "Fox fire",
+          "summon_count": 1,
+          "summon_max": 3,
+          "summon_type": "phantasm"
+        },
+        "5": {
+          "$deleted": false,
+          "candidate_source": "own_summons",
+          "condition_formula": "OWN_SUMMON_COUNT >= 1",
+          "count": 1,
+          "disable_ui_type": "dim",
+          "disabled_reason": "No Phantasm on the field",
+          "effect_kind": "targeting",
+          "effect_label": "cps_existing",
+          "mode": "exact"
+        }
+      },
+      "isCheck": true,
+      "on_activate_effect_ref": "cps_menu",
+      "pre_activate_effect_ref": "cps_menu",
+      "reaction_config_table": {},
+      "rolled_atr1": "INS",
+      "rolled_atr2": "WLP",
+      "skill_target": "One Enemy",
+      "skill_type": "Spell",
+      "type_damage": "Null"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "feHphjgfvJqxp7Qa"
+  },
+  "type": "equippableItem"
+}

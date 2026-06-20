@@ -1,0 +1,101 @@
+{
+  "_id": "eW2d3HmbS2ur9hax",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780667899370,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "GrXCu6oUXmMBW9yS",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/05_BLM/manaward.png",
+  "name": "Vismagus",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "check_bonus": "0",
+      "class": "Spiritist",
+      "cost": "",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>When you cast a spell, if you don't have enough Mind Points to pay for its total cost, you may choose to spend <strong>twice as many Hit Points instead</strong>. You cannot use this Skill if doing so would reduce you to 0 HP. If the spell would cause you to recover HP, you recover no HP <em>(the spell still works on other targets).</em></p>",
+      "duration": "",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "effect_kind": "substitute_cost",
+          "effect_label": "vismagus_swap",
+          "from_resource": "mp",
+          "menu_description": "",
+          "menu_label": "",
+          "min_remaining": 1,
+          "multiplier": 2,
+          "target_ref": "self",
+          "to_resource": "hp"
+        }
+      },
+      "heroic_requirement": "",
+      "ignore_hr": false,
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": true,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Vismagus",
+      "on_activate_effect_ref": "",
+      "optional_params": {},
+      "reaction_config_table": {
+        "0": {
+          "$deleted": false,
+          "condition_formula": "",
+          "reaction_action_intent": "",
+          "reaction_action_target": "",
+          "reaction_damage_amount": "",
+          "reaction_damage_source": "",
+          "reaction_damage_type": "",
+          "reaction_debuff_count_min": "",
+          "reaction_debuff_count_target": "",
+          "reaction_effect_ref": "vismagus_swap",
+          "reaction_ownership": "",
+          "reaction_passive_mode": "ask",
+          "reaction_passive_target": "self",
+          "reaction_source": "self",
+          "reaction_subject_kind": "",
+          "reaction_trigger": "caster_short_on_mp",
+          "requires_skill": ""
+        }
+      },
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "",
+      "skill_target": "-",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "eW2d3HmbS2ur9hax"
+  },
+  "type": "equippableItem"
+}

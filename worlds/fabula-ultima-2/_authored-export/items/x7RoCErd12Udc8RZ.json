@@ -1,0 +1,76 @@
+{
+  "_id": "x7RoCErd12Udc8RZ",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1781408917525,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "R7r4YaPVG9VGe9lS",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/09_NIN/dream_within_a_dream.png",
+  "name": "See you later",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "class": "Rogue",
+      "cost": "",
+      "description": "<p>Spend <strong>1 Fabula Point</strong> to leave the current conflict. You slip away from this scene and play resumes without you — you reappear in a later scene, as the story dictates.</p>",
+      "effect_table": {
+        "0": {
+          "chain_steps": "syl_confirm,syl_cost,syl_leave",
+          "effect_kind": "chain",
+          "effect_label": "syl_root"
+        },
+        "1": {
+          "confirm_cancel_label": "Stay",
+          "confirm_cancel_style": "default",
+          "confirm_message": "Leave the battle for 1 Fabula Point? You'll slip away from this scene and reappear in a later one.",
+          "confirm_ok_label": "See you later!",
+          "confirm_ok_style": "danger",
+          "confirm_title": "See you later?",
+          "effect_kind": "confirm",
+          "effect_label": "syl_confirm"
+        },
+        "2": {
+          "consume_amount": "1",
+          "consume_resource": "fp",
+          "effect_kind": "consume_resource",
+          "effect_label": "syl_cost",
+          "on_empty": "abort",
+          "target_ref": "self"
+        },
+        "3": {
+          "effect_kind": "leave_combat",
+          "effect_label": "syl_leave",
+          "target_ref": "self"
+        }
+      },
+      "isCheck": false,
+      "isHeroic": false,
+      "isReaction": false,
+      "level": 1,
+      "max_level": "1",
+      "name": "See you later",
+      "on_activate_effect_ref": "syl_root",
+      "skill_range": "-",
+      "skill_target": "Self",
+      "skill_type": "Active"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": true,
+    "uniqueId": "x7RoCErd12Udc8RZ"
+  },
+  "type": "equippableItem"
+}

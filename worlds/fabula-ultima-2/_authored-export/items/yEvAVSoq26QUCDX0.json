@@ -1,0 +1,46 @@
+{
+  "_id": "yEvAVSoq26QUCDX0",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1738684609466,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    }
+  },
+  "folder": "bLF9ovW1xUTIR9kP",
+  "img": "https://assets.forge-vtt.com/610e14108b6b6f68086799f0/Chara/Fabu/Skill_Icon/image_2025-02-07_185943615.png",
+  "name": "MagiSphere: Angry Pepper Ball",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 2,
+    "t41knaXNbgCEygM5": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Tinker",
+      "cost": "1 IP",
+      "damage_bonus": "0",
+      "description": "<p>Each target hit by this spell suffers<strong> enraged.</strong></p>",
+      "duration": "Instant",
+      "name": "MagiSphere: Angry Pepper Ball",
+      "rolled_atr1": "INS",
+      "rolled_atr2": "WLP",
+      "target": "Up to three creatures",
+      "type_damage": "Status FX"
+    },
+    "template": "FZmpKcQRP7hZQqbV",
+    "templateSystemUniqueVersion": 1700837225,
+    "unique": false,
+    "uniqueId": "yEvAVSoq26QUCDX0"
+  },
+  "type": "equippableItem"
+}

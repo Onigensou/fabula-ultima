@@ -1,0 +1,758 @@
+{
+  "_id": "GVJP8SF76cGu6PiG",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1742183996110,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.5.0"
+    },
+    "theatre": {
+      "baseinsert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Character%20Portrait/Stir_Portrait.png",
+      "disabledefault": false,
+      "emotes": {
+        "angry": {
+          "insert": ""
+        },
+        "annoyed": {
+          "insert": ""
+        },
+        "awe-struck": {
+          "insert": ""
+        },
+        "blushing": {
+          "insert": ""
+        },
+        "carefree": {
+          "insert": ""
+        },
+        "confused": {
+          "insert": ""
+        },
+        "cry": {
+          "insert": ""
+        },
+        "dissatisfied": {
+          "insert": ""
+        },
+        "dizzy": {
+          "insert": ""
+        },
+        "frown": {
+          "insert": ""
+        },
+        "frustrated": {
+          "insert": ""
+        },
+        "grin": {
+          "insert": ""
+        },
+        "happy": {
+          "insert": ""
+        },
+        "happytears": {
+          "insert": ""
+        },
+        "hearts": {
+          "insert": ""
+        },
+        "idea": {
+          "insert": ""
+        },
+        "innocent": {
+          "insert": ""
+        },
+        "kiss": {
+          "insert": ""
+        },
+        "laughing": {
+          "insert": ""
+        },
+        "laughingsquint": {
+          "insert": ""
+        },
+        "meh": {
+          "insert": ""
+        },
+        "mischevious": {
+          "insert": ""
+        },
+        "panic": {
+          "insert": ""
+        },
+        "playful": {
+          "insert": ""
+        },
+        "rofl": {
+          "insert": ""
+        },
+        "sad": {
+          "insert": ""
+        },
+        "scared": {
+          "insert": ""
+        },
+        "serious": {
+          "insert": ""
+        },
+        "sleeping": {
+          "insert": ""
+        },
+        "smile": {
+          "insert": ""
+        },
+        "smug": {
+          "insert": ""
+        },
+        "speechless": {
+          "insert": ""
+        },
+        "surprised": {
+          "insert": ""
+        },
+        "thinking": {
+          "insert": ""
+        },
+        "tongue": {
+          "insert": ""
+        },
+        "wink": {
+          "insert": ""
+        },
+        "worried": {
+          "insert": ""
+        }
+      },
+      "name": "Štír",
+      "optalign": "top"
+    }
+  },
+  "folder": "kWJqZHPj06vaaOR3",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/%C5%A0t%C3%ADr.png",
+  "name": "🌟 Štír",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "prototypeToken": {
+    "actorLink": true,
+    "alpha": 0,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar4": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "DEF",
+            "max": 13,
+            "maxcolor": "#f26d40",
+            "mincolor": "#f26d40",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 13
+          },
+          "bar5": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar5",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MDEF",
+            "max": 10,
+            "maxcolor": "#26d6ed",
+            "mincolor": "#26d6ed",
+            "opacity": null,
+            "order": 4,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 10
+          }
+        }
+      },
+      "hex-size-support": {
+        "alternateOrientation": false,
+        "hideBorder": true,
+        "hideFill": false,
+        "pivotx": null,
+        "pivoty": null
+      },
+      "token-variants": {
+        "disableHUDButton": false,
+        "randomImgDefault": ""
+      },
+      "token-z": {
+        "zIndex": 0
+      },
+      "wall-height": {
+        "tokenHeight": 0
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "🌟 Štír",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 0,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 2.1,
+      "scaleY": 2.1,
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/%C5%A0t%C3%ADr.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 5512500,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "activeEffects": {},
+    "props": {
+      "affinity_1": "NA",
+      "affinity_2": "RS",
+      "affinity_3": "RS",
+      "affinity_4": "NA",
+      "affinity_5": "NA",
+      "affinity_6": "VU",
+      "affinity_7": "RS",
+      "affinity_8": "NA",
+      "affinity_9": "VU",
+      "arcane_ef": "150",
+      "arcane_vu": "NA",
+      "attribute": "ICE",
+      "basic_attacks": {
+        "0": {
+          "$deleted": false,
+          "ailments": "@UUID[JournalEntry.p0XupN5rieyjMNaI]{Frozen}",
+          "ailments_chance": "100",
+          "attrib_1": "DEX",
+          "attrib_2": "DEX",
+          "basic_name": "⚔️Frost Kick",
+          "check_bonus": "10",
+          "defense_type": "M.DEF",
+          "detail": "<p>On hit, inflicts <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/blizzard.png\" width=\"21\" height=\"21\">@UUID[JournalEntry.p0XupN5rieyjMNaI]{Frozen: 100} to the target at the end of this turn.</p>",
+          "dmg_bonus": "50",
+          "icon": "<i class=\"fa-solid fa-swords\"></i>",
+          "macro_name": "",
+          "roll": "",
+          "type": "ice"
+        },
+        "1": {
+          "$deleted": false,
+          "ailments": "",
+          "ailments_chance": "0",
+          "attrib_1": "DEX",
+          "attrib_2": "DEX",
+          "basic_name": "⚔️Axe Kick",
+          "check_bonus": "10",
+          "defense_type": "DEF",
+          "detail": "<p>If the target is inflicted with <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/blizzard.png\" width=\"21\" height=\"21\">@UUID[JournalEntry.p0XupN5rieyjMNaI]{Frozen} before this attack resolve, remove their remaining&nbsp;<strong>Ice Shield&nbsp;</strong>and add it to this attacks damage.</p>",
+          "dmg_bonus": "50",
+          "icon": "<i class=\"fa-solid fa-swords\"></i>",
+          "macro_name": "",
+          "roll": "",
+          "type": "physical"
+        },
+        "2": {
+          "$deleted": false,
+          "ailments": "",
+          "ailments_chance": "0",
+          "attrib_1": "DEX",
+          "attrib_2": "DEX",
+          "basic_name": "⚔️Scythe Kick",
+          "check_bonus": "8",
+          "defense_type": "DEF",
+          "detail": "<p><img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/10_SAM/way_of_the_samurai.png\" width=\"21\" height=\"21\"><strong>@UUID[JournalEntry.Gm3upxgpUVoLSK5u]{Multi 3}</strong></p>\n<p>If the target is inflicted with <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/blizzard.png\" width=\"21\" height=\"21\">@UUID[JournalEntry.p0XupN5rieyjMNaI]{Frozen} before this attack resolve, remove their remaining&nbsp;<strong>Ice Shield</strong>&nbsp;and add it to this attacks damage.</p>",
+          "dmg_bonus": "30",
+          "icon": "<i class=\"fa-solid fa-swords\"></i>",
+          "macro_name": "",
+          "roll": "",
+          "type": "physical"
+        },
+        "3": {
+          "$deleted": false,
+          "ailments": "",
+          "ailments_chance": "0",
+          "attrib_1": "DEX",
+          "attrib_2": "DEX",
+          "basic_name": "🏹Gallow",
+          "check_bonus": "9",
+          "defense_type": "DEF",
+          "detail": "<p><strong><img class=\" centered\" style=\"float: left;\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/manafont.png\" width=\"21\" height=\"21\">@UUID[JournalEntry.1jxZfHZ3dh5grylN]{Channel 2 Turn}</strong></p>\n<p><strong><img style=\"display: block; margin-left: auto; margin-right: auto; float: left;\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/10_VPR/Flanksbane_Fang.png\" alt=\"\" width=\"21\" height=\"21\"></strong></p>\n<p><strong>@UUID[JournalEntry.YojfVwJv8ABa45c6]{Exploit}</strong></p>\n<p>On hit, the target cannot<strong>&nbsp;</strong>perform&nbsp;<strong>Actions</strong> or be&nbsp;<strong>Swap Out</strong> until this attack&nbsp;<strong>Channels&nbsp;</strong>end, only&nbsp;<strong>1&nbsp;</strong>creature can suffers this effect at a time.</p>\n<p>After this attack finished <strong>Channeling</strong>, perform <strong>【⚔️Guillotine】</strong>on the target</p>",
+          "dmg_bonus": "25",
+          "icon": "<i class=\"fa-solid fa-bow-arrow\"></i>",
+          "macro_name": "",
+          "roll": "",
+          "type": "physical"
+        },
+        "4": {
+          "$deleted": true,
+          "ailments": "",
+          "ailments_chance": "0",
+          "attrib_1": "DEX",
+          "attrib_2": "DEX",
+          "basic_name": "",
+          "check_bonus": "0",
+          "detail": "",
+          "dmg_bonus": "0",
+          "icon": "<i class=\"fa-solid fa-circle\"></i>",
+          "roll": "",
+          "type": "physical"
+        },
+        "5": {
+          "$deleted": false,
+          "ailments": "@UUID[JournalEntry.GePNxftPupElcCWp]{Bleed}",
+          "ailments_chance": "100",
+          "attrib_1": "DEX",
+          "attrib_2": "DEX",
+          "basic_name": "⚔️Guillotine",
+          "check_bonus": "99",
+          "defense_type": "DEF",
+          "detail": "<section class=\"secret\">\n<p><em>This attack can only be perform through Channeling</em></p>\n</section>\n<p style=\"text-align: justify;\"><img class=\" centered\" style=\"float: left;\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/10_VPR/Reaving_Fangs.png\" width=\"21\" height=\"21\" data-pm-slice=\"0 0 []\"></p>\n<p style=\"text-align: justify;\"><strong>@UUID[JournalEntry.qXBYN6c9FMZzmS2n]{Cripple}</strong></p>\n<p style=\"text-align: justify;\">On hit, Inflicts <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/RPR/cross_reaping.png\" width=\"21\" height=\"21\">@UUID[JournalEntry.GePNxftPupElcCWp]{Bleed}</p>",
+          "dmg_bonus": "70",
+          "icon": "<i class=\"fa-solid fa-swords\"></i>",
+          "macro_name": "",
+          "roll": "",
+          "type": "physical"
+        }
+      },
+      "bow_ef": "150",
+      "bow_vu": "NA",
+      "brawling_ef": "50",
+      "brawling_vu": "NA",
+      "condition_1": "IM",
+      "condition_10": "NA",
+      "condition_11": "NA",
+      "condition_12": "NA",
+      "condition_13": "IM",
+      "condition_14": "NA",
+      "condition_15": "IM",
+      "condition_16": "NA",
+      "condition_17": "NA",
+      "condition_18": "NA",
+      "condition_19": "NA",
+      "condition_2": "NA",
+      "condition_20": "NA",
+      "condition_21": "NA",
+      "condition_22": "IM",
+      "condition_23": "IM",
+      "condition_24": "IM",
+      "condition_25": "IM",
+      "condition_26": "IM",
+      "condition_27": "NA",
+      "condition_28": "NA",
+      "condition_29": "NA",
+      "condition_3": "NA",
+      "condition_30": "NA",
+      "condition_31": "IM",
+      "condition_32": "IM",
+      "condition_33": "IM",
+      "condition_34": "IM",
+      "condition_35": "NA",
+      "condition_36": "NA",
+      "condition_4": "IM",
+      "condition_5": "NA",
+      "condition_6": "IM",
+      "condition_7": "NA",
+      "condition_8": "NA",
+      "condition_9": "IM",
+      "current_def": "<b><i class=\"fa-solid fa-shield\"></i> DEF: </b>\n20",
+      "current_hp": "1812",
+      "current_ip": "0",
+      "current_mdef": "<b><i class=\"fa-solid fa-shield-halved\"></i> MDEF: </b>\n20",
+      "current_mp": "1000",
+      "dagger_ef": "150",
+      "dagger_vu": "NA",
+      "def_mod": "+8",
+      "desc": "<p>Description</p>",
+      "dex_base": "12",
+      "dex_current": 12,
+      "firearm_ef": "50",
+      "firearm_vu": "NA",
+      "flail_ef": "50",
+      "flail_vu": "NA",
+      "fp": "10",
+      "gorger": false,
+      "heavy_ef": "50",
+      "heavy_vu": "NA",
+      "id": "GVJP8SF76cGu6PiG",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/%C5%A0t%C3%ADr.png",
+      "init": "6",
+      "ins_base": "10",
+      "ins_current": 10,
+      "isAlmighty": false,
+      "isAwake": false,
+      "isClarity": false,
+      "isDazed": false,
+      "isEnergized": false,
+      "isEnlighten": false,
+      "isEnraged": false,
+      "isFocus": false,
+      "isMasterful": false,
+      "isPoisoned": false,
+      "isShaken": false,
+      "isSlow": false,
+      "isStrong": false,
+      "isSwift": false,
+      "isUnyielding": false,
+      "isWeak": false,
+      "level": "50",
+      "max_hp": "1812",
+      "max_ip": "0",
+      "max_mp": "1000",
+      "max_zero": "0",
+      "mdef_mod": "+10",
+      "mig_base": "10",
+      "mig_current": 10,
+      "mimic": false,
+      "name": "🌟 Štír",
+      "npc_rank": "",
+      "other_list": {
+        "0": {
+          "$deleted": false,
+          "details": "<p>Deals&nbsp;<strong>60 Ice Damage</strong> and inflicts <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/northerlies.png\" width=\"21\" height=\"21\">@UUID[JournalEntry.QgECPH7ZhbRhag3K]{Hypothermia} to all enemy, until the end of the next round, <strong>Clocks&nbsp;</strong>cannot be increase or decrease.</p>\n<p>At the end of the next round when this effects end, all enemy suffering from @UUID[JournalEntry.QgECPH7ZhbRhag3K]{Hypothermia} will be inflict with <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/blizzard.png\" width=\"21\" height=\"21\">@UUID[JournalEntry.p0XupN5rieyjMNaI]{Frozen: 100}</p>",
+          "icon": "",
+          "other_name": "💮Subzero Subjugation",
+          "roll": ""
+        }
+      },
+      "rare": false,
+      "resource_value_1": "0",
+      "resource_value_2": "0",
+      "resource_value_3": "0",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "shield_type": "PHYSICAL",
+      "shield_value": "0",
+      "spear_ef": "150",
+      "spear_vu": "NA",
+      "special_list": {
+        "0": {
+          "$deleted": false,
+          "details": "<p><img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/purification.png\" alt=\"\" width=\"21\" height=\"21\"><strong>@UUID[JournalEntry.FbwTycwFuAdCfXi7]{Innate}</strong></p>\n<p data-start=\"102\" data-end=\"202\">At the start of each <strong data-start=\"157\" data-end=\"166\">Round</strong>, randomly select one action type:</p>\n<ul data-start=\"203\" data-end=\"245\">\n<li data-start=\"203\" data-end=\"217\"><strong data-start=\"205\" data-end=\"215\">Attack</strong></li>\n<li data-start=\"218\" data-end=\"231\"><strong data-start=\"220\" data-end=\"229\">Skill</strong></li>\n<li data-start=\"232\" data-end=\"245\"><strong data-start=\"234\" data-end=\"243\">Spell</strong></li>\n</ul>\n<p data-start=\"247\" data-end=\"418\">For the rest of the round, whenever an enemy <strong data-start=\"292\" data-end=\"304\">performs</strong> the chosen action, <strong data-start=\"324\" data-end=\"332\">&Scaron;t&iacute;r</strong> immediately executes a <strong>【⚔️Frost Kick】</strong> against them <strong data-start=\"385\" data-end=\"395\">before</strong> their action resolves. This <strong>Attack&nbsp;</strong>gains +3 bonus&nbsp;<strong>Accuracy.</strong></p>",
+          "icon": "",
+          "macro_name": "",
+          "roll": "",
+          "special_name": "📜Absolute Authority"
+        },
+        "1": {
+          "$deleted": true,
+          "details": "",
+          "icon": "",
+          "roll": "",
+          "special_name": ""
+        },
+        "2": {
+          "$deleted": false,
+          "details": "<p><img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/purification.png\" alt=\"\" width=\"21\" height=\"21\"><strong>@UUID[JournalEntry.FbwTycwFuAdCfXi7]{Innate}</strong></p>\n<p>At the end of each round, <strong data-start=\"324\" data-end=\"332\">&Scaron;t&iacute;r&nbsp;</strong>gains&nbsp;<strong>2 Zero Power&nbsp;</strong>and gain additional 2 for each condition met:</p>\n<ul>\n<li>An enemy is inflicted <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/blizzard.png\" width=\"21\" height=\"21\">@UUID[JournalEntry.p0XupN5rieyjMNaI]{Frozen}</li>\n<li><strong data-start=\"324\" data-end=\"332\">&Scaron;t&iacute;r </strong>have an @UUID[JournalEntry.wrw2ENSwzCBjztvt]{Ice Shield}</li>\n</ul>\n<p>If she cannot gain any more&nbsp;<strong>Zero Power&nbsp;</strong>due to having maximum&nbsp;<strong>Zero Power&nbsp;</strong>already, gains <strong>100 MP&nbsp;</strong>instead</p>",
+          "icon": "",
+          "macro_name": "",
+          "roll": "",
+          "special_name": "📜【Zero Trigger】Righteous Retribution"
+        },
+        "3": {
+          "$deleted": false,
+          "details": "<p><img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/purification.png\" alt=\"\" width=\"21\" height=\"21\"><strong>@UUID[JournalEntry.FbwTycwFuAdCfXi7]{Innate}</strong></p>\n<p><strong><img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/basic_instinct.png\" alt=\"\" width=\"21\" height=\"21\">@UUID[JournalEntry.0XjR7LzG6oiU74Lj]{Desperation}</strong></p>\n<p>When&nbsp;<strong>&Scaron;t&iacute;r&nbsp;</strong>enter <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/08_DRG/blood_for_blood.png\" width=\"21\" height=\"21\">@UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis} for the first time in this&nbsp;<strong>Conflict,&nbsp;</strong>remove all debuff from her</p>",
+          "icon": "",
+          "macro_name": "",
+          "roll": "",
+          "special_name": "📜Beastial Fury"
+        },
+        "4": {
+          "$deleted": false,
+          "details": "<p>At the start of each round, <strong data-start=\"324\" data-end=\"332\">&Scaron;t&iacute;r&nbsp;</strong>gain <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/blizzard.png\" width=\"21\" height=\"21\">@UUID[JournalEntry.wrw2ENSwzCBjztvt]{40 Ice Shield}</p>",
+          "icon": "",
+          "macro_name": "",
+          "roll": "",
+          "special_name": "📜 Frost Guard"
+        }
+      },
+      "species": "BEAST",
+      "spell_list": {
+        "0": {
+          "$deleted": false,
+          "ailments": "@UUID[JournalEntry.p0XupN5rieyjMNaI]{Frozen}",
+          "ailments_chance": "100",
+          "attrib_1": "DEX",
+          "attrib_2": "WLP",
+          "check_bonus": "8",
+          "cost": "100 MP",
+          "defense_type": "MDEF",
+          "details": "<p><img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/10_SAM/way_of_the_samurai.png\" width=\"21\" height=\"21\"><strong>@UUID[JournalEntry.Gm3upxgpUVoLSK5u]{Multi 3}</strong></p>\n<p>On hit, inflicts <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/blizzard.png\" width=\"21\" height=\"21\">@UUID[JournalEntry.p0XupN5rieyjMNaI]{Frozen: 80}</p>",
+          "dmg_bonus": "35",
+          "has_damage": "YES",
+          "icon": "<i class=\"fa-solid fa-star\"></i>",
+          "macro_name": "",
+          "roll": "",
+          "spell_name": "⚡️Northern Wind",
+          "type": "ice"
+        },
+        "1": {
+          "$deleted": true,
+          "ailments": "",
+          "ailments_chance": "0",
+          "attrib_1": "DEX",
+          "attrib_2": "DEX",
+          "check_bonus": "3",
+          "cost": "20 MP",
+          "details": "<p>On hit, Inflicts <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Bludgeon.png\" alt=\"\" width=\"21\" height=\"21\">@UUID[JournalEntry.FV8JefaHsehzgXR7]{Grappled}</p>",
+          "dmg_bonus": "0",
+          "has_damage": "YES",
+          "icon": "<i class=\"fa-solid fa-star\"></i>",
+          "macro_name": "",
+          "roll": "",
+          "spell_name": "⚡️Wolf Fang",
+          "type": "physical"
+        },
+        "2": {
+          "$deleted": true,
+          "ailments": "",
+          "ailments_chance": "0",
+          "attrib_1": "DEX",
+          "attrib_2": "DEX",
+          "check_bonus": "0",
+          "cost": "20 MP",
+          "details": "",
+          "dmg_bonus": "0",
+          "has_damage": "YES",
+          "icon": "<i class=\"fa-solid fa-star\"></i>",
+          "macro_name": "",
+          "roll": "",
+          "spell_name": "✨Bloodlust",
+          "type": "physical"
+        },
+        "3": {
+          "$deleted": false,
+          "ailments": "",
+          "ailments_chance": "0",
+          "attrib_1": "NO",
+          "attrib_2": "NO",
+          "check_bonus": "0",
+          "cost": "100 MP",
+          "defense_type": "MDEF",
+          "details": "<blockquote>\n<p>💬\" Shatter..!\"</p>\n</blockquote>\n<p data-start=\"88\" data-end=\"216\">Remove <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/blizzard.png\" width=\"21\" height=\"21\">@UUID[JournalEntry.p0XupN5rieyjMNaI]{Frozen} from all enemies.<br data-start=\"126\" data-end=\"129\">Then, deal <strong data-start=\"140\" data-end=\"154\">Ice Damage</strong> to each enemy equal to the amount of <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/blizzard.png\" width=\"21\" height=\"21\">@UUID[JournalEntry.wrw2ENSwzCBjztvt]{Ice Shield}&nbsp;they had.</p>",
+          "dmg_bonus": "0",
+          "has_damage": "NO",
+          "icon": "<i class=\"fa-solid fa-star\"></i>",
+          "macro_name": "",
+          "roll": "",
+          "spell_name": "⚡️Glacial Ruin",
+          "type": "ice"
+        }
+      },
+      "stolen_check": false,
+      "study_text": "<p>The Empire&rsquo;s High Commissioner. Fights with bladed boots and a magitech whip. Excels at kick combos and locking down foes. Stay mobile to avoid getting trapped and don't let down your offense.</p>",
+      "subtype": "Sub-Type",
+      "subtype_list": "HUMAN",
+      "sword_ef": "100",
+      "sword_vu": "NA",
+      "tactic_notes": "<p style=\"text-align: left;\"><strong>Stir&nbsp;</strong>core combat combines Locking down opponents with agression, She challenge the player to keep up the offense while dealing with her status effects</p>\n<h2 style=\"text-align: left;\"><strong>Core Mechanic</strong></h2>\n<p style=\"text-align: left;\"><strong data-start=\"324\" data-end=\"332\">&Scaron;t&iacute;r&nbsp;</strong>core mechanic revolves around inflicting Freeze on enemy to get damage bonus from her&nbsp;<strong>attacks</strong></p>\n<p style=\"text-align: left;\">Attack that deals bonus damage to Frozen target</p>\n<ul style=\"text-align: left;\">\n<li style=\"text-align: left;\"><strong>⚔️Axe Kick </strong></li>\n<li style=\"text-align: left;\"><strong>⚔️Scythe Kick&nbsp;</strong></li>\n<li style=\"text-align: left;\"><strong>⚡️Glacial Ruin </strong>&lt;&lt;&lt; Used when everybody is Frozen</li>\n</ul>\n<p style=\"text-align: left;\">Attack that Inflicts Frozen on target</p>\n<ul style=\"text-align: left;\">\n<li style=\"text-align: left;\"><strong>⚔️Frost Kick</strong></li>\n<li style=\"text-align: left;\"><strong>⚡️Northern Wind</strong></li>\n</ul>\n<h2 style=\"text-align: left;\"><strong>Combo</strong></h2>\n<p style=\"text-align: left;\"><strong>Magitech Claw&nbsp;</strong>and&nbsp;<strong>Guillotine&nbsp;</strong>are attacks that combo into each other. Try to use at least&nbsp;<strong>one&nbsp;</strong>Magitech Claw each turn</p>\n<p style=\"text-align: left;\">&nbsp;</p>\n<h2 style=\"text-align: left;\"><strong>Utility</strong></h2>\n<p style=\"text-align: left;\"><strong data-start=\"324\" data-end=\"332\">&Scaron;t&iacute;r&nbsp;</strong>Zero Power <strong>💮Subzero Subjugation&nbsp;</strong>doesn't deal as much damage as her normal attacks, but have the powerful effects of&nbsp;<strong>Freezing&nbsp;</strong>all clocks in the scene. Try to chain this skill effect while keeping up the agression with her normal attacks</p>\n<p style=\"text-align: left;\">&nbsp;</p>\n<h2 style=\"text-align: left;\">Passive</h2>\n<p style=\"text-align: left;\"><strong data-start=\"324\" data-end=\"332\">&Scaron;t&iacute;r&nbsp;</strong>Passive 📜<strong>Absolute Authority </strong>is a utility skill which locks down one of the opponent action each round.</p>\n<p style=\"text-align: left;\">Her Zero Trigger, 📜<strong>Righteous Retribution</strong> combines with 📜<strong>Frostguard</strong> provides her with additional resource each round</p>\n<h2 style=\"text-align: left;\">Example Turn</h2>\n<ol>\n<li style=\"text-align: left;\"><strong>🏹Magitech Claw</strong>&gt;&gt;&gt;<strong>⚔️Frost Kick</strong>&gt;&gt;&gt;⚔️<strong>Guillotine</strong>&gt;&gt;&gt;<strong>⚔️Kick Attack</strong></li>\n<li style=\"text-align: left;\"><strong>⚡️Northern Wind&gt;&gt;&gt;⚔️Scythe Kick&gt;&gt;&gt;</strong><strong>⚔️Frost Kick&gt;&gt;&gt;⚔️Axe Kick</strong></li>\n</ol>\n<p style=\"text-align: center;\"><strong>Backstory</strong></p>\n<p style=\"text-align: left;\"><strong>High Commissioner &Scaron;t&iacute;r</strong> was born a hybrid wolf beastmen in a violent, crime-ridden slum where her kind were brutally oppressed. After losing her family to systemic abuse, she vowed to gain power and change the system from within. Hiding her true identity, she rose through the ranks to become the Wiarachia Empire&rsquo;s Head Enforcer.</p>",
+      "thrown_ef": "100",
+      "thrown_vu": "NA",
+      "traits": "High Commissioner, Absolute Justice, Punishment",
+      "unique": true,
+      "uuid": "Actor.GVJP8SF76cGu6PiG",
+      "wlp_base": "12",
+      "wlp_current": 12,
+      "zero_power_value": "0"
+    },
+    "statusEffects": {},
+    "template": "yibwK7D0bMmrmXhL",
+    "templateSystemUniqueVersion": 3152673362
+  },
+  "type": "character"
+}

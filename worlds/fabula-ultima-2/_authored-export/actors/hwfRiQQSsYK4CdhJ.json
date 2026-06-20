@@ -1,0 +1,1336 @@
+{
+  "_id": "hwfRiQQSsYK4CdhJ",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1773370645750,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "Nd8LnosrPid1eX1r",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/GoblinBandit_Standard.png",
+  "items": [
+    {
+      "_id": "eW8FaRLiblcw6TnH",
+      "_stats": {
+        "compendiumSource": "Item.3jT3wIWyzV7sgAb6",
+        "coreVersion": "12.343",
+        "createdTime": 1775143029186,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Headgear/5180.gif",
+      "name": "Red Bandana",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 600000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p><strong>【Dodge】SL+1</strong></p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flavor_text": "<p><em>A red headwear popular among bandit groups</em></p>",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": true,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "500",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Uncommon",
+          "item_skill_passive": {
+            "exgCOBlP7WOmbbuK": {
+              "id": "${item.id}",
+              "name": "Dodge",
+              "skill_cost": "",
+              "skill_description": "<p>As long as you have no <strong>shields</strong> and no <strong>martial armor</strong> equipped, your Defense score is increased by <strong>【SL】.</strong></p>",
+              "skill_maxLevel": 3,
+              "uuid": ""
+            },
+            "yHZ9soDXTvalWPGx": {
+              "id": "${item.id}",
+              "name": "Dodge",
+              "skill_cost": "",
+              "skill_description": "<p>As long as you have no <strong>shields</strong> and no <strong>martial armor</strong> equipped, your Defense score is increased by <strong>【SL】.</strong></p>",
+              "skill_maxLevel": 3,
+              "uuid": "Item.yHZ9soDXTvalWPGx"
+            }
+          },
+          "item_type": "accessory",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Red Bandana",
+          "optional_params": {},
+          "plant_ef": "100",
+          "related_item_list": {
+            "exgCOBlP7WOmbbuK": {
+              "id": "${item.id}",
+              "name": "Dodge",
+              "related_item_description": "<p>As long as you have no <strong>shields</strong> and no <strong>martial armor</strong> equipped, your Defense score is increased by <strong>【SL】.</strong></p>",
+              "uuid": ""
+            },
+            "yHZ9soDXTvalWPGx": {
+              "id": "${item.id}",
+              "name": "Dodge",
+              "related_item_description": "<p>As long as you have no <strong>shields</strong> and no <strong>martial armor</strong> equipped, your Defense score is increased by <strong>【SL】.</strong></p>",
+              "uuid": "Item.yHZ9soDXTvalWPGx"
+            }
+          },
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "<Set Name>",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "3jT3wIWyzV7sgAb6"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "exgCOBlP7WOmbbuK",
+      "_stats": {
+        "compendiumSource": "Item.P4dQ5Ms73YVs9gPv",
+        "coreVersion": "12.343",
+        "createdTime": 1775143029186,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/WindSneakerPassive3.png",
+      "name": "Dodge",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": "eW8FaRLiblcw6TnH",
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Rogue",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>As long as you have no <strong>shields</strong> and no <strong>martial armor</strong> equipped, your Defense score is increased by <strong>【SL】.</strong></p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "3",
+          "name": "Dodge",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_mode": "default",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p><strong>Level</strong></p></td><td data-colwidth=\"148\"><p><strong>Bonus Defense</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p>+1</p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p>+2</p></td></tr><tr><td data-colwidth=\"79\"><p>3</p></td><td data-colwidth=\"148\"><p>+3</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "yHZ9soDXTvalWPGx"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "f0g2O74TrjdBqQLj",
+      "_stats": {
+        "compendiumSource": "Item.SUYqRKHBGXUhiOL1",
+        "coreVersion": "12.343",
+        "createdTime": 1775143057170,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "icons/svg/item-bag.svg",
+      "name": "(Empty)",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<pre><code>Use this item as placeholder for failing to steals any item from the target</code></pre>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "0",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Common",
+          "item_type": "material",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "(Empty)",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "<Set Name>",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "SUYqRKHBGXUhiOL1"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "F8wY2kKzvNvJ2Ovs",
+      "_stats": {
+        "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
+        "coreVersion": "12.343",
+        "createdTime": 1774146657626,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "TpF4FbfaDXbCJiWO",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1774146738166,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p>Decrease <strong>【MIG】</strong> and<strong> 【WLP】 </strong>by one stage</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 3,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "core": {
+              "overlay": false
+            },
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "isPredefined": true,
+              "originalId": "u6SHYfoeExl1etSf",
+              "originalParentId": "XVOWOq9oUmEECGrU",
+              "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.u6SHYfoeExl1etSf"
+            },
+            "dfreds-convenient-effects": {
+              "ceEffectId": "ce-poisoned",
+              "isBackup": false,
+              "isConvenient": true,
+              "isDynamic": false,
+              "isTemporary": false,
+              "isViewable": true
+            },
+            "effectmacro": {
+              "onCreate": {
+                "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isPoisoned\n(async () => {\n  const PATH = \"system.props.isPoisoned\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+              },
+              "onDelete": {
+                "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isPoisoned\n(async () => {\n  const PATH = \"system.props.isPoisoned\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+              },
+              "onDisable": {
+                "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isPoisoned\n(async () => {\n  const PATH = \"system.props.isPoisoned\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+              },
+              "onEnable": {
+                "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isPoisoned\n(async () => {\n  const PATH = \"system.props.isPoisoned\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+              },
+              "onToggle": {
+                "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isPoisoned\n(async () => {\n  const PATH = \"system.props.isPoisoned\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+              }
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/ATK%20DOUBLE%20DOWN.png",
+          "name": "Poisoned",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "DHsoSawNEZAxsnQ9"
+          ],
+          "system": {
+            "tags": [
+              "debuff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
+      "name": "Poison-laced Dagger",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {
+            "0": {
+              "$deleted": false,
+              "active_effect_application": "add",
+              "active_effect_apply_mode": "percentage",
+              "active_effect_dice_1": "",
+              "active_effect_dice_2": "",
+              "active_effect_dl": "0",
+              "active_effect_id": "TpF4FbfaDXbCJiWO",
+              "active_effect_percent": "25",
+              "active_effect_target": "enemy",
+              "active_effect_trigger": "on_hit"
+            }
+          },
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "5",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "15",
+          "defense_target_type": "def",
+          "description": "<p>Deal light <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(68, 68, 68) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span>damage to the target, low chance of inflicting<span style=\"font-family: Signika, sans-serif\"><strong><span style=\"text-decoration: underline;\"> </span></strong><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.JltwIqzHbBKhkD45\" data-id=\"JltwIqzHbBKhkD45\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poisoned</span></strong></a></span></p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Poison-laced Dagger",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Melee",
+          "skill_target": "One Creature",
+          "skill_type": "Attack",
+          "type_damage": "Physical",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "yWlkWZC2vLf4J5Pv"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "HspUQxy7HpWQjoTE",
+      "_stats": {
+        "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
+        "coreVersion": "12.343",
+        "createdTime": 1774400911256,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215350.578.png",
+      "name": "Goblin Bomb",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "5",
+          "class": "NPC",
+          "cost": "2 IP",
+          "damage_bonus": "20",
+          "defense_target_type": "def",
+          "description": "<ul><li><p><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Multi</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;3</span></strong></span></p></li></ul><p>Deals <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(226, 88, 34) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span>&nbsp;damage to multiple target</p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Goblin Bomb",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "INS",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "Up to three creature",
+          "skill_type": "Active",
+          "type_damage": "Fire",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "UKzHkmIJcjXZ4GFR"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "PCKNCmAamgkUqO0t",
+      "_stats": {
+        "compendiumSource": "Item.UUWalUbZ5HIZyRnQ",
+        "coreVersion": "12.343",
+        "createdTime": 1775143215511,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "u9azxXcATNKCI6dl",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p>Taking <strong>Poison </strong>damage when performing an <strong>action</strong></p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 3,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "core": {
+              "overlay": false
+            },
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "isPredefined": true,
+              "originalId": "TI6txApoPwgYLHXQ",
+              "originalParentId": "XVOWOq9oUmEECGrU",
+              "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.TI6txApoPwgYLHXQ"
+            },
+            "dfreds-convenient-effects": {
+              "ceEffectId": "ce-envenomed",
+              "isBackup": false,
+              "isConvenient": true,
+              "isDynamic": false,
+              "isTemporary": false,
+              "isViewable": true
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Poison.png",
+          "name": "Envenomed",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "StnYeDADYo2xX99O"
+          ],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/13039.gif",
+      "name": "Poisoned Dagger",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {
+            "0": {
+              "$deleted": true,
+              "active_effect_application": "add",
+              "active_effect_apply_mode": "percentage",
+              "active_effect_dice_1": "",
+              "active_effect_dice_2": "",
+              "active_effect_dl": "0",
+              "active_effect_id": "u9azxXcATNKCI6dl",
+              "active_effect_percent": "50",
+              "active_effect_target": "enemy",
+              "active_effect_trigger": "on_hit"
+            }
+          },
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Dagger",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "4",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<p>On hit, 15% chance to inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.XRlyg27yLgoQUOXZ\" data-id=\"XRlyg27yLgoQUOXZ\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Envenomed</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>to the target</p>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "800",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Uncommon",
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Poisoned Dagger",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "INS",
+          "set_name": "<Set Name>",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Poison",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "UUWalUbZ5HIZyRnQ"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "uyhtBRLHaRGMc0hf",
+      "_stats": {
+        "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
+        "coreVersion": "12.343",
+        "createdTime": 1774146838122,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215350.578.png",
+      "name": "Mug",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "<p>(async () =&gt; {</p><p>const TAG = \"[ONI][Anim][RunFront-SFX-Return]\";</p><p>const payload = globalThis.__PAYLOAD ?? {};</p><p>const DEBUG = true;</p><p>const SOUND_SRC = \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Damage3.ogg\";</p><p>const IMPACT_VFX_SRC = \"modules/JB2A_DnD5e/Library/Generic/Weapon_Attacks/Melee/Group02/TrailAttack02_01_04_Regular_OrangeRed_800x600.webm\";</p><p>const SOUND_VOLUME = 0.5;</p><p>const MOVE_OUT_MS = 320;</p><p>const HOLD_MS = 1500; // wait after impact before running back</p><p>const MOVE_BACK_MS = 320;</p><p>const APPROACH_GAP = 70;</p><p>function dbg(...args) {</p><p>if (!DEBUG) return;</p><p>console.log(TAG, ...args);</p><p>}</p><p>function warn(...args) {</p><p>console.warn(TAG, ...args);</p><p>}</p><p>function err(...args) {</p><p>console.error(TAG, ...args);</p><p>}</p><p>globalThis.ONI = globalThis.ONI ?? {};</p><p>if (!ONI.emit) {</p><p>ONI.emit = (eventName, eventPayload = {}, options = {}) =&gt; {</p><p>const { local = true, world = false } = options;</p><p>if (local) Hooks.callAll(eventName, eventPayload);</p><p>if (world) game.socket.emit(\"world\", { action: eventName, payload: eventPayload });</p><p>};</p><p>}</p><p>async function toTokenPlaceable(ref) {</p><p>if (!ref) return null;</p><p>if (typeof ref === \"string\") {</p><p>const byId = canvas.tokens?.get(ref);</p><p>if (byId) return byId;</p><p>try {</p><p>const doc = await fromUuid(ref);</p><p>if (!doc) return null;</p><p>return doc.object ?? doc.token?.object ?? doc;</p><p>} catch (e) {</p><p>warn(\"toTokenPlaceable failed fromUuid:\", ref, e);</p><p>return null;</p><p>}</p><p>}</p><p>return ref.object ?? ref.token?.object ?? ref ?? null;</p><p>}</p><p>function uniq(arr) {</p><p>return [...new Set(arr.filter(Boolean))];</p><p>}</p><p>function summarizeToken(tok) {</p><p>if (!tok) return null;</p><p>return {</p><p>id: tok.id ?? null,</p><p>name: tok.name ?? tok.document?.name ?? null,</p><p>uuid: tok.document?.uuid ?? null,</p><p>center: tok.center ? { x: tok.center.x, y: tok.center.y } : null,</p><p>x: tok.x ?? null,</p><p>y: tok.y ?? null</p><p>};</p><p>}</p><p>async function resolveSourceToken() {</p><p>const candidates = [</p><p>payload.casterTokenUuid,</p><p>payload.sourceTokenUuid,</p><p>payload.performerTokenUuid,</p><p>payload.tokenUuid,</p><p>payload.sourceTokenId,</p><p>payload.casterTokenId,</p><p>globalThis._token?.document?.uuid,</p><p>globalThis.token?.document?.uuid</p><p>];</p><p>dbg(\"resolveSourceToken candidates:\", candidates);</p><p>for (const c of candidates) {</p><p>const tok = await toTokenPlaceable(c);</p><p>if (tok) return tok;</p><p>}</p><p>return canvas.tokens?.controlled?.[0] ?? null;</p><p>}</p><p>async function resolveTargetTokens() {</p><p>const raw = uniq([</p><p>...(Array.isArray(payload.targetTokenUuids) ? payload.targetTokenUuids : []),</p><p>...(Array.isArray(payload.targetUUIDs) ? payload.targetUUIDs : []),</p><p>...(Array.isArray(payload.originalTargetUUIDs) ? payload.originalTargetUUIDs : []),</p><p>...(Array.isArray(payload.targets) ? payload.targets : []),</p><p>...(Array.from(game.user?.targets ?? []).map(t =&gt; t?.document?.uuid))</p><p>]);</p><p>dbg(\"resolveTargetTokens raw refs:\", raw);</p><p>const out = [];</p><p>for (const r of raw) {</p><p>const tok = await toTokenPlaceable(r);</p><p>if (tok) out.push(tok);</p><p>}</p><p>return out;</p><p>}</p><p>let resolvedSourceToken = null;</p><p>let resolvedTargets = [];</p><p>try {</p><p>if (!game.modules.get(\"sequencer\")?.active) {</p><p>ui.notifications.error(\"Sequencer module is not active.\");</p><p>return;</p><p>}</p><p>const sourceToken = await resolveSourceToken();</p><p>const targets = await resolveTargetTokens();</p><p>const firstTarget = targets[0] ?? null;</p><p>resolvedSourceToken = sourceToken;</p><p>resolvedTargets = targets;</p><p>dbg(\"Resolved source token:\", summarizeToken(sourceToken));</p><p>dbg(\"Resolved targets:\", targets.map(summarizeToken));</p><p>dbg(\"Payload snapshot:\", payload);</p><p>if (!sourceToken) {</p><p>ui.notifications.warn(\"No caster token found.\");</p><p>return;</p><p>}</p><p>if (!firstTarget) {</p><p>ui.notifications.warn(\"No target token found.\");</p><p>return;</p><p>}</p><p>ONI.emit(\"oni:animationStart\", {</p><p>type: \"oni.runFrontSfxReturn\",</p><p>sourceTokenId: sourceToken.id,</p><p>targetTokenIds: targets.map(t =&gt; t.id),</p><p>sceneId: canvas.scene?.id ?? null,</p><p>timestamp: Date.now()</p><p>}, { local: true, world: false });</p><p>const scriptSource = `</p><p>const { casterToken, targetTokens, params } = ctx;</p><p>if (!casterToken) throw new Error(\"Need casterToken\");</p><p>function easeInOutCubic(t) {</p><p>return t &lt; 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;</p><p>}</p><p>function animateXY(obj, from, to, durMs) {</p><p>return new Promise(resolve =&gt; {</p><p>const start = performance.now();</p><p>const ticker = canvas.app.ticker;</p><p>const update = () =&gt; {</p><p>const raw = (performance.now() - start) / durMs;</p><p>const t = Math.min(Math.max(raw, 0), 1);</p><p>const e = easeInOutCubic(t);</p><p>obj.x = from.x + (to.x - from.x) * e;</p><p>obj.y = from.y + (to.y - from.y) * e;</p><p>if (t &gt;= 1) {</p><p>ticker.remove(update);</p><p>resolve();</p><p>}</p><p>};</p><p>ticker.add(update);</p><p>});</p><p>}</p><p>function getNativeFlipX(token) {</p><p>const values = [</p><p>token?.document?.texture?.scaleX,</p><p>token?.mesh?.scale?.x,</p><p>token?.icon?.scale?.x</p><p>].filter(v =&gt; typeof v === \"number\");</p><p>if (values.some(v =&gt; v &lt; 0)) return true;</p><p>const mirrorX = token?.document?.texture?.mirrorX;</p><p>if (typeof mirrorX === \"boolean\") return mirrorX;</p><p>return false;</p><p>}</p><p>function setSpriteFlipX(sprite, flipped) {</p><p>const sx = Math.abs(sprite.scale.x || 1);</p><p>sprite.scale.x = flipped ? -sx : sx;</p><p>}</p><p>async function createClone(token) {</p><p>const baseObj = token.mesh ?? token.icon;</p><p>const texture = baseObj?.texture ?? await loadTexture(token.document.texture.src);</p><p>const sprite = new PIXI.Sprite(texture);</p><p>sprite.anchor.set(0.5);</p><p>const home = { x: token.center.x, y: token.center.y };</p><p>sprite.x = home.x;</p><p>sprite.y = home.y;</p><p>if (baseObj) {</p><p>sprite.width = Math.abs(baseObj.width);</p><p>sprite.height = Math.abs(baseObj.height);</p><p>sprite.alpha = baseObj.worldAlpha ?? 1;</p><p>sprite.rotation = baseObj.rotation ?? 0;</p><p>}</p><p>sprite.zIndex = Number(params.zIndex ?? 5000);</p><p>canvas.stage.sortableChildren = true;</p><p>canvas.stage.addChild(sprite);</p><p>canvas.stage.sortChildren();</p><p>setSpriteFlipX(sprite, getNativeFlipX(token));</p><p>return sprite;</p><p>}</p><p>const activeFx = new Set();</p><p>async function playImpactVfx(targetToken, src) {</p><p>if (!targetToken || !src) return;</p><p>let sprite = null;</p><p>let cleaned = false;</p><p>const cleanup = () =&gt; {</p><p>if (cleaned) return;</p><p>cleaned = true;</p><p>try {</p><p>const source = sprite?.texture?.baseTexture?.resource?.source;</p><p>if (source &amp;&amp; typeof source.pause === \"function\") source.pause();</p><p>} catch (_) {}</p><p>try {</p><p>if (sprite?.parent) sprite.parent.removeChild(sprite);</p><p>} catch (_) {}</p><p>try {</p><p>sprite?.destroy();</p><p>} catch (_) {}</p><p>activeFx.delete(sprite);</p><p>};</p><p>try {</p><p>const texture = await loadTexture(src);</p><p>sprite = new PIXI.Sprite(texture);</p><p>activeFx.add(sprite);</p><p>sprite.anchor.set(0.5);</p><p>const center = targetToken.center ?? { x: 0, y: 0 };</p><p>const maxDim = Math.max(targetToken.w ?? 100, targetToken.h ?? 100);</p><p>const width = Number(params.impactVfxWidth ?? (maxDim * 2.4));</p><p>const height = Number(params.impactVfxHeight ?? (width * 0.75));</p><p>sprite.x = center.x;</p><p>sprite.y = center.y;</p><p>sprite.width = width;</p><p>sprite.height = height;</p><p>sprite.alpha = Number(params.impactVfxAlpha ?? 1);</p><p>sprite.rotation = 0;</p><p>sprite.zIndex = Number(params.impactVfxZIndex ?? ((params.zIndex ?? 5000) + 1));</p><p>canvas.stage.sortableChildren = true;</p><p>canvas.stage.addChild(sprite);</p><p>canvas.stage.sortChildren();</p><p>const media = texture?.baseTexture?.resource?.source;</p><p>if (media) {</p><p>try {</p><p>media.muted = true;</p><p>media.loop = false;</p><p>media.currentTime = 0;</p><p>} catch (_) {}</p><p>if (typeof media.play === \"function\") {</p><p>const playPromise = media.play();</p><p>if (playPromise?.catch) playPromise.catch(() =&gt; {});</p><p>}</p><p>if (\"onended\" in media) {</p><p>media.onended = () =&gt; cleanup();</p><p>}</p><p>}</p><p>const durationMs =</p><p>Number.isFinite(media?.duration) &amp;&amp; media.duration &gt; 0</p><p>? Math.ceil(media.duration * 1000) + 50</p><p>: Number(params.impactVfxFallbackMs ?? 900);</p><p>await wait(durationMs);</p><p>cleanup();</p><p>} catch (e) {</p><p>console.error(\"[ONI][Anim][RunFront-SFX-Return][PseudoVFX] Failed to play impact VFX:\", e);</p><p>cleanup();</p><p>}</p><p>}</p><p>const baseMesh = casterToken.mesh ?? casterToken.icon;</p><p>const originalTokenVisible = casterToken.visible;</p><p>const originalMeshVisible = baseMesh?.visible ?? true;</p><p>const originalFlipX = getNativeFlipX(casterToken);</p><p>const home = { x: casterToken.center.x, y: casterToken.center.y };</p><p>const target = targetTokens?.[0] ?? null;</p><p>let sprite;</p><p>try {</p><p>sprite = await createClone(casterToken);</p><p>if (baseMesh) baseMesh.visible = false;</p><p>casterToken.visible = false;</p><p>let front = {</p><p>x: home.x + Number(params.fallbackDx ?? -120),</p><p>y: home.y</p><p>};</p><p>if (target) {</p><p>const targetCenter = target.center ?? { x: home.x, y: home.y };</p><p>const approachDir = home.x &gt;= targetCenter.x ? 1 : -1;</p><p>const gap = Number(</p><p>params.approachGap ??</p><p>Math.max(casterToken.w ?? 100, target.w ?? 100) * 0.6</p><p>);</p><p>front = {</p><p>x: targetCenter.x + (approachDir * gap),</p><p>y: targetCenter.y</p><p>};</p><p>}</p><p>// Run in</p><p>setSpriteFlipX(sprite, originalFlipX);</p><p>await animateXY(</p><p>sprite,</p><p>home,</p><p>front,</p><p>Number(params.moveOutMs ?? 320)</p><p>);</p><p>// Play target impact VFX right when the caster reaches the target.</p><p>if (target &amp;&amp; params.impactVfxSrc) {</p><p>playImpactVfx(target, params.impactVfxSrc);</p><p>}</p><p>// Hold while the impact window plays</p><p>if (Number(params.holdMs ?? 0) &gt; 0) {</p><p>await wait(Number(params.holdMs ?? 0));</p><p>}</p><p>// Flip for the run back</p><p>setSpriteFlipX(sprite, !originalFlipX);</p><p>await animateXY(</p><p>sprite,</p><p>front,</p><p>home,</p><p>Number(params.moveBackMs ?? params.moveOutMs ?? 320)</p><p>);</p><p>} finally {</p><p>for (const fx of Array.from(activeFx)) {</p><p>try {</p><p>const source = fx?.texture?.baseTexture?.resource?.source;</p><p>if (source &amp;&amp; typeof source.pause === \"function\") source.pause();</p><p>} catch (_) {}</p><p>try {</p><p>if (fx?.parent) fx.parent.removeChild(fx);</p><p>} catch (_) {}</p><p>try {</p><p>fx?.destroy();</p><p>} catch (_) {}</p><p>}</p><p>activeFx.clear();</p><p>if (sprite) {</p><p>canvas.stage.removeChild(sprite);</p><p>sprite.destroy();</p><p>}</p><p>if (baseMesh) baseMesh.visible = originalMeshVisible;</p><p>casterToken.visible = originalTokenVisible;</p><p>}</p><p>`;</p><p>dbg(\"Starting pseudo movement session.\");</p><p>game.ONI.pseudo.play({</p><p>scriptId: \"oni.runFrontSfxReturn.flipAware\",</p><p>scriptSource,</p><p>casterTokenUuid: sourceToken.document.uuid,</p><p>targetTokenUuids: [firstTarget.document.uuid],</p><p>params: {</p><p>moveOutMs: MOVE_OUT_MS,</p><p>holdMs: HOLD_MS,</p><p>moveBackMs: MOVE_BACK_MS,</p><p>approachGap: APPROACH_GAP,</p><p>fallbackDx: sourceToken.center.x &gt;= firstTarget.center.x ? -120 : 120,</p><p>zIndex: 5000,</p><p>impactVfxSrc: IMPACT_VFX_SRC,</p><p>impactVfxFallbackMs: 900,</p><p>impactVfxWidth: Math.max(firstTarget.w ?? 100, firstTarget.h ?? 100) * 2.4,</p><p>impactVfxHeight: Math.max(firstTarget.w ?? 100, firstTarget.h ?? 100) * 1.8,</p><p>impactVfxAlpha: 1,</p><p>impactVfxZIndex: 5001</p><p>},</p><p>meta: {</p><p>source: \"RunFrontSfxReturn\",</p><p>soundSrc: SOUND_SRC,</p><p>impactVfxSrc: IMPACT_VFX_SRC</p><p>}</p><p>});</p><p>// Sequencer handles SFX only.</p><p>dbg(\"Starting Sequencer SFX.\");</p><p>const sfxSeq = new Sequence();</p><p>sfxSeq</p><p>.wait(MOVE_OUT_MS)</p><p>.sound()</p><p>.file(SOUND_SRC)</p><p>.volume(SOUND_VOLUME);</p><p>sfxSeq.play();</p><p>// Wait for the whole cinematic window before ending.</p><p>await wait(MOVE_OUT_MS + HOLD_MS + MOVE_BACK_MS + 80);</p><p>dbg(\"Animation wait window finished.\");</p><p>} catch (e) {</p><p>err(\"Animation crashed:\", e);</p><p>} finally {</p><p>try {</p><p>ONI.emit(\"oni:animationEnd\", {</p><p>type: \"oni.runFrontSfxReturn\",</p><p>sourceTokenId: resolvedSourceToken?.id ?? null,</p><p>targetTokenIds: resolvedTargets.map(t =&gt; t.id),</p><p>sceneId: canvas.scene?.id ?? null,</p><p>timestamp: Date.now()</p><p>}, { local: true, world: false });</p><p>dbg(\"Emitted oni:animationEnd.\", {</p><p>sourceTokenId: resolvedSourceToken?.id ?? null,</p><p>targetTokenIds: resolvedTargets.map(t =&gt; t.id)</p><p>});</p><p>} catch (e) {</p><p>err(\"Failed to emit animationEnd:\", e);</p><p>}</p><p>}</p><p>})();</p>",
+          "check_bonus": "5",
+          "class": "NPC",
+          "cost": "10 MP",
+          "custom_logic_resolution": "<p>const TAG = \"[CL-RES][IP-DRAIN-2]\";</p><p>const p = __PAYLOAD;</p><p>const args = globalThis.__ARGS ?? p?.__confirmArgs ?? {};</p><p>if (!p) {</p><p>console.warn(TAG, \"Missing __PAYLOAD.\");</p><p>return;</p><p>}</p><p>const userActor = await context.helpers.getAttackerActor();</p><p>if (!userActor) {</p><p>console.warn(TAG, \"Missing user actor.\");</p><p>return;</p><p>}</p><p>const targetUuids = Array.isArray(p.targets) ? p.targets : [];</p><p>if (!targetUuids.length) {</p><p>console.warn(TAG, \"No targets found.\");</p><p>return;</p><p>}</p><p>const accTotal = Number(p?.accuracy?.total ?? args?.accuracyTotal ?? NaN);</p><p>const hasAccuracy =</p><p>(typeof args?.hasAccuracy === \"boolean\") ? args.hasAccuracy : !!p?.accuracy;</p><p>const autoHit = !!(args?.autoHit || p?.advPayload?.autoHit || p?.accuracy?.isCrit);</p><p>const escapeHTML = foundry?.utils?.escapeHTML ?? ((v) =&gt; String(v ?? \"\"));</p><p>const getDef = (targetUuid, targetActor) =&gt; {</p><p>const row = p?.meta?.defenseSnapshot?.perTarget?.find(r =&gt; r?.uuid === targetUuid);</p><p>return Number(row?.defense ?? targetActor?.system?.props?.defense ?? 0) || 0;</p><p>};</p><p>const isHit = (targetUuid, targetActor) =&gt; {</p><p>const targetDef = getDef(targetUuid, targetActor);</p><p>if (!hasAccuracy) return true;</p><p>if (autoHit) return true;</p><p>if (!Number.isFinite(accTotal)) return false;</p><p>return accTotal &gt;= targetDef;</p><p>};</p><p>const getUserTokenName = () =&gt; {</p><p>if (typeof _token !== \"undefined\" &amp;&amp; _token?.name) return _token.name;</p><p>return userActor?.name ?? \"User\";</p><p>};</p><p>const getTargetDisplayName = (targetDoc, targetActor) =&gt; {</p><p>return targetDoc?.name ?? targetActor?.name ?? \"Target\";</p><p>};</p><p>async function postStealFeedbackHtml(innerHtml) {</p><p>const FLAG_SCOPE = \"fabula-ultima-companion\";</p><p>const FLAG_KEY = \"oniHideChatHeader\";</p><p>let hookId = null;</p><p>hookId = Hooks.on(\"renderChatMessage\", (message, html) =&gt; {</p><p>if (!message?.getFlag?.(FLAG_SCOPE, FLAG_KEY)) return;</p><p>html.find(\".message-header\").remove();</p><p>html.find(\".message-sender\").remove();</p><p>html.find(\".message-metadata\").remove();</p><p>html.find(\".message-avatar\").remove();</p><p>html.find(\".chat-portrait-container\").remove();</p><p>html.find(\".chat-portrait-message-portrait\").remove();</p><p>html.find(\".chat-portrait-image\").remove();</p><p>html.find(\"img.chat-portrait\").remove();</p><p>Hooks.off(\"renderChatMessage\", hookId);</p><p>});</p><p>await ChatMessage.create({</p><p>user: game.user.id,</p><p>type: CONST.CHAT_MESSAGE_TYPES.OTHER,</p><p>speaker: { alias: \"\" },</p><p>content: `</p><p></p><div class=\"oni-ip-steal-feedback\" style=\"padding:4px 2px;\"><p></p><p>${innerHtml}</p><p></p></div><p></p><p>`,</p><p>flags: {</p><p>[FLAG_SCOPE]: {</p><p>[FLAG_KEY]: true</p><p>}</p><p>}</p><p>});</p><p>}</p><p>for (const targetUuid of targetUuids) {</p><p>const targetDoc = await fromUuid(targetUuid);</p><p>const targetActor = targetDoc?.actor ?? targetDoc;</p><p>if (!targetActor) continue;</p><p>const userTokenName = getUserTokenName();</p><p>const targetName = getTargetDisplayName(targetDoc, targetActor);</p><p>const targetDef = getDef(targetUuid, targetActor);</p><p>const hit = isHit(targetUuid, targetActor);</p><p>console.log(TAG, \"HIT CHECK\", {</p><p>user: userActor?.name,</p><p>userTokenName,</p><p>target: targetActor?.name,</p><p>targetName,</p><p>accTotal,</p><p>hasAccuracy,</p><p>autoHit,</p><p>targetDef,</p><p>hit</p><p>});</p><p>if (!hit) {</p><p>await postStealFeedbackHtml(`Fail to steal anything.`);</p><p>continue;</p><p>}</p><p>const targetIpBefore = Math.max(</p><p>0,</p><p>parseInt(targetActor?.system?.props?.current_ip ?? \"0\", 10) || 0</p><p>);</p><p>const userIpBefore = Math.max(</p><p>0,</p><p>parseInt(userActor?.system?.props?.current_ip ?? \"0\", 10) || 0</p><p>);</p><p>const userMaxIp = Math.max(</p><p>0,</p><p>parseInt(userActor?.system?.props?.max_ip ?? \"0\", 10) || 0</p><p>);</p><p>const requestedSteal = 2;</p><p>// The steal amount depends only on the target's current IP.</p><p>// Even if the user is already at max IP, the target still loses IP.</p><p>const actualSteal = Math.min(requestedSteal, targetIpBefore);</p><p>if (actualSteal &lt;= 0) {</p><p>console.log(TAG, \"No IP stolen\", {</p><p>user: userActor?.name,</p><p>userTokenName,</p><p>target: targetActor?.name,</p><p>targetName,</p><p>requestedSteal,</p><p>targetIpBefore,</p><p>userIpBefore,</p><p>userMaxIp</p><p>});</p><p>await postStealFeedbackHtml(`Fail to steal anything.`);</p><p>continue;</p><p>}</p><p>const targetIpAfter = Math.max(0, targetIpBefore - actualSteal);</p><p>// User gain is clamped by max IP, but does not affect the steal amount.</p><p>const actualGain = Math.min(actualSteal, Math.max(0, userMaxIp - userIpBefore));</p><p>const userIpAfter = Math.min(userMaxIp, userIpBefore + actualGain);</p><p>await targetActor.update({</p><p>\"system.props.current_ip\": String(targetIpAfter)</p><p>});</p><p>await userActor.update({</p><p>\"system.props.current_ip\": String(userIpAfter)</p><p>});</p><p>console.log(TAG, \"IP TRANSFER APPLIED\", {</p><p>user: userActor?.name,</p><p>userTokenName,</p><p>target: targetActor?.name,</p><p>targetName,</p><p>requestedSteal,</p><p>actualSteal,</p><p>actualGain,</p><p>targetIpBefore,</p><p>targetIpAfter,</p><p>userIpBefore,</p><p>userIpAfter,</p><p>userMaxIp</p><p>});</p><p>await postStealFeedbackHtml(</p><p>`<strong>${escapeHTML(userTokenName)}</strong> steals <strong>${escapeHTML(actualSteal)} IP</strong> from <strong>${escapeHTML(targetName)}</strong>!`</p><p>);</p><p>}</p>",
+          "damage_bonus": "15",
+          "defense_target_type": "def",
+          "description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KjziTkOpdzd99KZa\" data-id=\"KjziTkOpdzd99KZa\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Thievery</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;2</span></strong></span></span></p></li></ul><p>Deal light <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(68, 68, 68) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a></span></span>&nbsp;damage to the target, if this attack <strong>hit</strong>, the target loses <strong>2 IP</strong></p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Mug",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "INS",
+          "skill_animation_default": "",
+          "skill_animation_mode": "custom",
+          "skill_information": "",
+          "skill_range": "Melee",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "Physical",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "UKzHkmIJcjXZ4GFR"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Goblin Bandit",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 50,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          }
+        }
+      },
+      "hex-size-support": {
+        "hideBorder": true,
+        "hideFill": true
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Goblin Bandit",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1.33,
+      "scaleY": 1.33,
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/GoblinBandit_Standard.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 2300000,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {
+      "action_pattern_table": {
+        "0": {
+          "$deleted": false,
+          "action_pattern_condition": "always",
+          "action_pattern_name": "Poison-laced Dagger",
+          "action_pattern_priority": "5",
+          "action_pattern_string": "",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "100"
+        },
+        "1": {
+          "$deleted": false,
+          "action_pattern_condition": "always",
+          "action_pattern_name": "Mug",
+          "action_pattern_priority": "5",
+          "action_pattern_string": "",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "100"
+        },
+        "2": {
+          "$deleted": false,
+          "action_pattern_condition": "ip",
+          "action_pattern_name": "Goblin Bomb",
+          "action_pattern_priority": "5",
+          "action_pattern_string": "",
+          "action_pattern_value_1": "33",
+          "action_pattern_value_2": "100"
+        }
+      },
+      "activation": "1",
+      "affinity_1": "NA",
+      "affinity_2": "NA",
+      "affinity_3": "NA",
+      "affinity_4": "NA",
+      "affinity_5": "NA",
+      "affinity_6": "VU",
+      "affinity_7": "NA",
+      "affinity_8": "NA",
+      "affinity_9": "NA",
+      "animation_table": {},
+      "arcane_ef": "100",
+      "attack_list": {
+        "F8wY2kKzvNvJ2Ovs": {
+          "active_target": "One Creature",
+          "attack_description": "<p>Deal light <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(68, 68, 68) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span>damage to the target, low chance of inflicting<span style=\"font-family: Signika, sans-serif\"><strong><span style=\"text-decoration: underline;\"> </span></strong><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.JltwIqzHbBKhkD45\" data-id=\"JltwIqzHbBKhkD45\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poisoned</span></strong></a></span></p>",
+          "attribute_die1": "DEX",
+          "attribute_die2": "DEX",
+          "id": "${item.id}",
+          "name": "Poison-laced Dagger",
+          "roll": "",
+          "uuid": "Actor.hwfRiQQSsYK4CdhJ.Item.F8wY2kKzvNvJ2Ovs"
+        }
+      },
+      "attribute": "",
+      "battle_facing_direction": "right",
+      "bow_ef": "100",
+      "brawling_ef": "100",
+      "condition_anomaly": "NA",
+      "condition_bane": "NA",
+      "condition_berserk": "NA",
+      "condition_bleed": "NA",
+      "condition_blind": "NA",
+      "condition_burn": "NA",
+      "condition_charm": "NA",
+      "condition_confused": "NA",
+      "condition_curse": "NA",
+      "condition_dazed": "NA",
+      "condition_delayed": "NA",
+      "condition_despair": "NA",
+      "condition_disarmed": "NA",
+      "condition_doom": "NA",
+      "condition_enraged": "NA",
+      "condition_envenomed": "NA",
+      "condition_fatigue": "NA",
+      "condition_frightened": "NA",
+      "condition_grappled": "NA",
+      "condition_hypothermia": "NA",
+      "condition_isolate": "NA",
+      "condition_obscure": "NA",
+      "condition_oil": "NA",
+      "condition_panic": "NA",
+      "condition_paralyzed": "NA",
+      "condition_petrify": "NA",
+      "condition_poisoned": "NA",
+      "condition_shaken": "NA",
+      "condition_silence": "NA",
+      "condition_slow": "NA",
+      "condition_stagger": "NA",
+      "condition_suppress": "NA",
+      "condition_turbulence": "NA",
+      "condition_weak": "NA",
+      "condition_wet": "NA",
+      "condition_wither": "NA",
+      "condition_zombie": "NA",
+      "current_hp": "43",
+      "current_ip": "0",
+      "current_mp": "20",
+      "cut_in_critical": "",
+      "cut_in_fumble": "",
+      "cut_in_offset_y": "",
+      "cut_in_zero_power": "",
+      "dagger_ef": "125",
+      "def_mod": "+0",
+      "default_facing_direction": "left",
+      "dex_base": "8",
+      "event_timeline_table": {},
+      "firearm_ef": "100",
+      "flail_ef": "100",
+      "gorger": false,
+      "heavy_ef": "75",
+      "icon_offset_x": "",
+      "icon_offset_y": "",
+      "icon_scale": "",
+      "init": "6",
+      "ins_base": "6",
+      "isAlmighty": false,
+      "isAwake": false,
+      "isBoss": false,
+      "isClarity": false,
+      "isCustomEvent": false,
+      "isDazed": false,
+      "isEnergized": false,
+      "isEnlighten": false,
+      "isEnraged": false,
+      "isFocus": false,
+      "isMasterful": false,
+      "isPoisoned": false,
+      "isShaken": false,
+      "isShop": false,
+      "isSlow": false,
+      "isStolen": false,
+      "isStrong": false,
+      "isSummon": false,
+      "isSwift": false,
+      "isUnyielding": false,
+      "isVillain": false,
+      "isWeak": false,
+      "level": "24",
+      "max_hp": "43",
+      "max_ip": "4",
+      "max_mp": "20",
+      "max_zero": "6",
+      "mdef_mod": "+0",
+      "mig_base": "6",
+      "mimic": false,
+      "name": "Goblin Bandit",
+      "npc_rank": "soldier",
+      "rare": false,
+      "resource_maxValue_1": "0",
+      "resource_maxValue_2": "0",
+      "resource_maxValue_3": "0",
+      "resource_value_1": "0",
+      "resource_value_2": "0",
+      "resource_value_3": "0",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "shield_type": "PHYSICAL",
+      "shield_value": "0",
+      "shop_accessory_list": {
+        "eW8FaRLiblcw6TnH": {
+          "accessory_bonusdef": 0,
+          "accessory_bonusmdef": 0,
+          "accessory_buy": "",
+          "accessory_cost": 500,
+          "accessory_description": "<ul><li><p><strong>【Dodge】SL+1</strong></p></li></ul>",
+          "accessory_quantity": 1,
+          "accessory_set": false,
+          "id": "${item.id}",
+          "name": "Red Bandana",
+          "uuid": "Actor.hwfRiQQSsYK4CdhJ.Item.eW8FaRLiblcw6TnH"
+        }
+      },
+      "shop_weapon_list": {
+        "J6N8tLLHZZEXr1pk": {
+          "id": "${item.id}",
+          "name": "Poisoned Dagger",
+          "uuid": "Actor.hwfRiQQSsYK4CdhJ.Item.J6N8tLLHZZEXr1pk",
+          "weapon_buy": "",
+          "weapon_category": "Dagger",
+          "weapon_cost": 800,
+          "weapon_hand": "One-handed",
+          "weapon_martial": "",
+          "weapon_quality": "<p><p>On hit, 50% chance to inflicts <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.XRlyg27yLgoQUOXZ\" data-id=\"XRlyg27yLgoQUOXZ\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Envenomed</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span>to the target</p></p>",
+          "weapon_quantity": 1,
+          "weapon_range": "Melee",
+          "weapon_set": "<Set Name>"
+        },
+        "MMPvG8UGBGiUb3ka": {
+          "id": "${item.id}",
+          "name": "Poisoned Dagger",
+          "uuid": "Actor.hwfRiQQSsYK4CdhJ.Item.MMPvG8UGBGiUb3ka",
+          "weapon_buy": "",
+          "weapon_category": "Dagger",
+          "weapon_cost": 800,
+          "weapon_hand": "One-handed",
+          "weapon_martial": "",
+          "weapon_quality": "<p><p>On hit, 50% chance to inflicts <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.XRlyg27yLgoQUOXZ\" data-id=\"XRlyg27yLgoQUOXZ\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Envenomed</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span>to the target</p></p>",
+          "weapon_quantity": 1,
+          "weapon_range": "Melee",
+          "weapon_set": "<Set Name>"
+        },
+        "PCKNCmAamgkUqO0t": {
+          "id": "${item.id}",
+          "name": "Poisoned Dagger",
+          "uuid": "Actor.hwfRiQQSsYK4CdhJ.Item.PCKNCmAamgkUqO0t",
+          "weapon_buy": "",
+          "weapon_category": "Dagger",
+          "weapon_cost": 800,
+          "weapon_hand": "One-handed",
+          "weapon_martial": "",
+          "weapon_quality": "<p><p>On hit, 15% chance to inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.XRlyg27yLgoQUOXZ\" data-id=\"XRlyg27yLgoQUOXZ\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Envenomed</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>to the target</p></p>",
+          "weapon_quantity": 1,
+          "weapon_range": "Melee",
+          "weapon_set": "<Set Name>"
+        }
+      },
+      "showMacro": false,
+      "skill_active_list": {
+        "HspUQxy7HpWQjoTE": {
+          "active_cost": "2 IP",
+          "active_description": "<ul><li><p><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Multi</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;3</span></strong></span></p></li></ul><p>Deals <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(226, 88, 34) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span>&nbsp;damage to multiple target</p>",
+          "active_duration": "Instantaneous",
+          "active_target": "Up to three creature",
+          "id": "${item.id}",
+          "name": "Goblin Bomb",
+          "roll": "",
+          "uuid": "Actor.hwfRiQQSsYK4CdhJ.Item.HspUQxy7HpWQjoTE"
+        },
+        "uyhtBRLHaRGMc0hf": {
+          "active_cost": "10 MP",
+          "active_description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KjziTkOpdzd99KZa\" data-id=\"KjziTkOpdzd99KZa\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Thievery</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;2</span></strong></span></span></p></li></ul><p>Deal light <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(68, 68, 68) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a></span></span>&nbsp;damage to the target, if this attack <strong>hit</strong>, the target loses <strong>2 IP</strong></p>",
+          "active_duration": "Instantaneous",
+          "active_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Mug",
+          "roll": "",
+          "uuid": "Actor.hwfRiQQSsYK4CdhJ.Item.uyhtBRLHaRGMc0hf"
+        }
+      },
+      "spear_ef": "100",
+      "species": "HUMANOID",
+      "sprite_battle": "",
+      "sprite_standard": "",
+      "steal_percentage_table": {
+        "0": {
+          "$deleted": false,
+          "loot_id": "Poisoned Dagger",
+          "loot_percentage": "10"
+        },
+        "1": {
+          "$deleted": false,
+          "loot_id": "Red Bandana",
+          "loot_percentage": "10"
+        },
+        "2": {
+          "$deleted": false,
+          "loot_id": "(Empty)",
+          "loot_percentage": "80"
+        }
+      },
+      "stealable_loot": {
+        "J6N8tLLHZZEXr1pk": {
+          "id": "${item.id}",
+          "loot_description": "<p>On hit, 50% chance to inflicts <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.XRlyg27yLgoQUOXZ\" data-id=\"XRlyg27yLgoQUOXZ\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Envenomed</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span>to the target</p>",
+          "name": "Poisoned Dagger",
+          "roll": "",
+          "uuid": "Actor.hwfRiQQSsYK4CdhJ.Item.J6N8tLLHZZEXr1pk"
+        },
+        "MMPvG8UGBGiUb3ka": {
+          "id": "${item.id}",
+          "loot_description": "<p>On hit, 50% chance to inflicts <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.XRlyg27yLgoQUOXZ\" data-id=\"XRlyg27yLgoQUOXZ\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Envenomed</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span>to the target</p>",
+          "name": "Poisoned Dagger",
+          "roll": "",
+          "uuid": "Actor.hwfRiQQSsYK4CdhJ.Item.MMPvG8UGBGiUb3ka"
+        },
+        "PCKNCmAamgkUqO0t": {
+          "id": "${item.id}",
+          "loot_description": "<p>On hit, 15% chance to inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.XRlyg27yLgoQUOXZ\" data-id=\"XRlyg27yLgoQUOXZ\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Envenomed</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>to the target</p>",
+          "name": "Poisoned Dagger",
+          "roll": "",
+          "uuid": "Actor.hwfRiQQSsYK4CdhJ.Item.PCKNCmAamgkUqO0t"
+        },
+        "eW8FaRLiblcw6TnH": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><p><strong>【Dodge】SL+1</strong></p></li></ul>",
+          "name": "Red Bandana",
+          "roll": "",
+          "uuid": "Actor.hwfRiQQSsYK4CdhJ.Item.eW8FaRLiblcw6TnH"
+        },
+        "f0g2O74TrjdBqQLj": {
+          "id": "${item.id}",
+          "loot_description": "<pre><code>Use this item as placeholder for failing to steals any item from the target</code></pre>",
+          "name": "(Empty)",
+          "roll": "",
+          "uuid": "Actor.hwfRiQQSsYK4CdhJ.Item.f0g2O74TrjdBqQLj"
+        }
+      },
+      "study_text": "<p>A Goblin monster who have been forcefully included as part of the Bandit gangs, goblins have low intelligence in nature, so they resorted to stealing and raiding as part of their survival instinct, Seeing that their goals are similar, the Bandit Gang have reach out to them to join forces, it is not quite known whether the Goblins agrees to this or not or are they just tagging along because they don't understand human language</p>",
+      "subtype_list": "",
+      "sword_ef": "75",
+      "tactic_notes": "",
+      "thrown_ef": "75",
+      "token_option_persist": false,
+      "traits": "Thieving monster, mischievious",
+      "ultima_point": "0",
+      "unique": false,
+      "wlp_base": "6",
+      "zenit_reward_max": "45",
+      "zenit_reward_min": "20",
+      "zero_power_value": ""
+    },
+    "statusEffects": {},
+    "template": "yegF6R8aaymhrvCg",
+    "templateSystemUniqueVersion": 3867751361
+  },
+  "type": "character"
+}

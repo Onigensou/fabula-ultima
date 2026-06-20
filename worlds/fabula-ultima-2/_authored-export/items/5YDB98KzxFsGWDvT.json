@@ -1,0 +1,58 @@
+{
+  "_id": "5YDB98KzxFsGWDvT",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1758201926327,
+    "duplicateSource": "Item.YDzMWktTnD9J9Jun",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "rpPOSjJwHOJs3mb4",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/DaydreamerPassive3.png",
+  "name": "Phantasmal Recovery",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Illusionist",
+      "cost": "-",
+      "damage_bonus": "0",
+      "description": "<p>Shatter one of your Phantasms to recover <strong>[SL × 5 HP]</strong>. Shattering a Phantasm this way will not trigger the <strong>Phantasmal Echo</strong> Skill.</p>\n",
+      "duration": "Instantaneous",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "5",
+      "name": "Phantasmal Recovery",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>HP Recovered</strong></p></td></tr><tr><td><p>1</p></td><td><p>5</p></td></tr><tr><td><p>2</p></td><td><p>10</p></td></tr><tr><td><p>3</p></td><td><p>15</p></td></tr><tr><td><p>4</p></td><td><p>20</p></td></tr><tr><td><p>5</p></td><td><p>25</p></td></tr></tbody></table>",
+      "skill_range": "Any",
+      "skill_target": "One of your Phantasm",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "5YDB98KzxFsGWDvT"
+  },
+  "type": "equippableItem"
+}

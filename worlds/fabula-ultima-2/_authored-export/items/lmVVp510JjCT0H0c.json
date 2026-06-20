@@ -1,0 +1,145 @@
+{
+  "_id": "lmVVp510JjCT0H0c",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1781447493148,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "nnWAoBsrDZGLvdOK",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1781447493874,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><em>Emergency Item:</em> ready — once per conflict.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "nnWAoBsrDZGLvdOK",
+          "originalParentId": "lmVVp510JjCT0H0c",
+          "originalUuid": "Item.lmVVp510JjCT0H0c.ActiveEffect.nnWAoBsrDZGLvdOK"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "chargeKey": "emergency_item",
+          "charges": 1,
+          "chargesMax": 1,
+          "directorPermanent": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/12_MCH/heat_blast.png",
+      "name": "Emergency Item Ready",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-emergency-item-ready"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "vE96q7FVLmhb7wDD",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/12_MCH/heat_blast.png",
+  "name": "Emergency Item",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "class": "Tinkerer",
+      "cost": "-",
+      "description": "<p>Once per conflict, when you enter <strong>Crisis</strong>, you may immediately perform a free <strong>Inventory (Item) action</strong>.</p>",
+      "effect_table": {
+        "0": {
+          "chain_steps": "em_consume,em_free",
+          "effect_kind": "chain",
+          "effect_label": "em_use"
+        },
+        "1": {
+          "charge_key": "emergency_item",
+          "count": "1",
+          "effect_kind": "consume_charge",
+          "effect_label": "em_consume",
+          "on_empty": "abort",
+          "target_ref": "self"
+        },
+        "2": {
+          "action_ref": "item",
+          "effect_kind": "free_action",
+          "effect_label": "em_free"
+        },
+        "3": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Emergency Item Ready",
+          "effect_kind": "apply_ae",
+          "effect_label": "em_refresh",
+          "target_ref": "self"
+        }
+      },
+      "isCheck": false,
+      "isHeroic": false,
+      "isReaction": false,
+      "level": 1,
+      "max_level": "1",
+      "reaction_config_table": {
+        "0": {
+          "reaction_effect_ref": "em_use",
+          "reaction_passive_mode": "ask",
+          "reaction_source": "self",
+          "reaction_status_filter": "Crisis",
+          "reaction_trigger": "creature_status_applied"
+        },
+        "1": {
+          "reaction_effect_ref": "em_refresh",
+          "reaction_passive_mode": "force",
+          "reaction_source": "",
+          "reaction_trigger": "conflict_start"
+        }
+      },
+      "skill_range": "-",
+      "skill_target": "-",
+      "skill_type": "Passive"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": true,
+    "uniqueId": "lmVVp510JjCT0H0c"
+  },
+  "type": "equippableItem"
+}

@@ -1,0 +1,62 @@
+{
+  "_id": "TVhBQQMu37z9mkkb",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1743847432556,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "TVhBQQMu37z9mkkb",
+        "itemName": "Magitech Armament",
+        "pickedOldProps": {
+          "cost": "0",
+          "martial": false
+        },
+        "ts": 1769647435949
+      }
+    }
+  },
+  "folder": "1y9u2EmZuTTt3cpv",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wingd.png",
+  "name": "Magitech Armament",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 500000,
+  "system": {
+    "container": null,
+    "props": {
+      "category": "Arcane",
+      "check_bonus": "1",
+      "damage_bonus": "12",
+      "description": "<ul>\n<li>This weapon type can be either <strong>Melee&nbsp;</strong>or&nbsp;<strong>Range</strong></li>\n<li>This weapon&nbsp;<strong>Category</strong> can be <strong>a</strong><strong>rcane, brawling, firearm, heavy, spear&nbsp;</strong>or sword</li>\n<li>This weapon type can be&nbsp;<strong>Physical, Air, Bolt, Fire&nbsp;</strong>or&nbsp;<strong>Ice</strong></li>\n<li><strong>This&nbsp;</strong>weapon formula can either be <strong>【DEX】+【INS】+1</strong> or <strong>【INS】+【MIG】+1</strong></li>\n<li>This weapon always occupy both hand slots</li>\n</ul>",
+      "hand_slots": "One-handed",
+      "isMartial": false,
+      "item_cost": "0",
+      "item_type": "weapon",
+      "name": "Magitech Armament",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "INS",
+      "set_name": "",
+      "skill_target": "One Enemy",
+      "type_damage": "Physical",
+      "weapon_range": "Melee"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "TVhBQQMu37z9mkkb"
+  },
+  "type": "equippableItem"
+}

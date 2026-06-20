@@ -1,0 +1,54 @@
+{
+  "_id": "YneWCZhxu0KFmHkK",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1739815654384,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "consumable",
+        "fromTemplate": "xdZPhVF8AnmwQEPM",
+        "itemId": "YneWCZhxu0KFmHkK",
+        "itemName": "Magic Mushroom Recipe",
+        "pickedOldProps": {
+          "consumable_cost": "1000",
+          "consumable_description": "<ul>\n<li>Learned how to create <strong>Magic Mushroom</strong> with <strong>1</strong><strong>&nbsp;IP</strong></li>\n</ul>",
+          "consumable_ip": "0",
+          "consumable_label": ""
+        },
+        "ts": 1769647435943
+      }
+    }
+  },
+  "folder": "3xHGNagIXPyzukcU",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/book.png",
+  "name": "Magic Mushroom Recipe",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 600000,
+  "system": {
+    "container": null,
+    "props": {
+      "description": "<ul>\n<li>Learned how to create <strong>Magic Mushroom</strong> with <strong>1</strong><strong>&nbsp;IP</strong></li>\n</ul>",
+      "ip_cost": "0",
+      "item_cost": "1000",
+      "item_type": "consumable",
+      "name": "Magic Mushroom Recipe"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "YneWCZhxu0KFmHkK"
+  },
+  "type": "equippableItem"
+}

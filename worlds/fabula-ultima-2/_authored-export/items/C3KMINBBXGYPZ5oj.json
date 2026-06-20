@@ -1,0 +1,58 @@
+{
+  "_id": "C3KMINBBXGYPZ5oj",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780667902838,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "w7ey5G3zPC78EXos",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/SGE/pepsis.png",
+  "name": "Cleanse",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "class": "Spiritist",
+      "cost": "5 x T MP",
+      "damage_bonus": "0",
+      "description": "<p>You strengthen and purify the soul energy coursing through your companions. Each target <strong>recovers from 1 debuff</strong> of your choice <em>(any active effect tagged as a debuff)</em>.</p>",
+      "effect_table": {
+        "0": {
+          "count": 1,
+          "effect_kind": "remove_tagged_ae",
+          "effect_label": "cleanse_pick",
+          "filter_tag": "debuff",
+          "menu_subtitle": "Removes 1 debuff",
+          "menu_title": "Cleanse: choose a debuff to remove",
+          "target_ref": "action_targets"
+        }
+      },
+      "isCheck": false,
+      "isOffensiveSpell": false,
+      "name": "Cleanse",
+      "on_activate_effect_ref": "cleanse_pick",
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_range": "Range",
+      "skill_target": "Up to three creatures",
+      "skill_type": "Spell",
+      "type_damage": ""
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": true,
+    "uniqueId": "C3KMINBBXGYPZ5oj"
+  },
+  "type": "equippableItem"
+}

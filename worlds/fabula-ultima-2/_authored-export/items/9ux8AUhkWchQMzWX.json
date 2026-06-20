@@ -1,0 +1,122 @@
+{
+  "_id": "9ux8AUhkWchQMzWX",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780631499060,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "wduKJRAqPKxE8MLf",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><em>Dual Shieldbearer:</em> Two shields equipped: gain Twin Shields attack (MIG+MIG, HR+5 physical, +SL Defensive Mastery damage).</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "JAMLEXgK5RaDgQbM",
+          "originalParentId": "9E6l5ufpG2syhyOq",
+          "originalUuid": "Item.9E6l5ufpG2syhyOq.ActiveEffect.JAMLEXgK5RaDgQbM"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "exposedVirtualAttack": {
+            "condition_formula": "EQUIPPED_SHIELD_COUNT >= 2",
+            "profile": {
+              "A1": "MIG",
+              "A2": "MIG",
+              "checkBonus": 0,
+              "damageBonus": "5 + SL_DEFENSIVE_MASTERY",
+              "damageType": "Physical",
+              "imageUrl": "icons/equipment/shield/heater-steel-gray.webp",
+              "name": "Twin Shields",
+              "range": "Melee",
+              "weaponType": "Brawling"
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/enhanced_divine_veil.png",
+      "name": "Dual Shieldbearer",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "48mIiEzH4lkVf0Xf",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/enhanced_divine_veil.png",
+  "name": "Dual Shieldbearer",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "class": "Guardian",
+      "cost": "",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>You may now equip a <strong>shield</strong> in your <strong>main hand</strong> slot. As long as you have two shields equipped, you gain the benefits of both items and may treat them as the following combined two-handed melee brawling weapon:</p><blockquote><p><strong>Twin Shields</strong> — Accuracy: <strong>【MIG + MIG】</strong> — Damage: <strong>【HR + 5】 physical</strong></p><p>Deals extra damage equal to your <strong>SL</strong> in <em>Defensive Mastery</em>.</p></blockquote>",
+      "isCheck": false,
+      "isHeroic": false,
+      "isReaction": false,
+      "level": 1,
+      "max_level": "1",
+      "name": "Dual Shieldbearer",
+      "on_activate_effect_ref": "",
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_range": "-",
+      "skill_target": "-",
+      "skill_type": "Passive",
+      "type_damage": ""
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "9ux8AUhkWchQMzWX"
+  },
+  "type": "equippableItem"
+}

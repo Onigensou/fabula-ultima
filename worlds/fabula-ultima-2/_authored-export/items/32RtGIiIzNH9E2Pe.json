@@ -1,0 +1,62 @@
+{
+  "_id": "32RtGIiIzNH9E2Pe",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1752206014632,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "32RtGIiIzNH9E2Pe",
+        "itemName": "Holy Avenger",
+        "pickedOldProps": {
+          "cost": "0",
+          "martial": true
+        },
+        "ts": 1769647435725
+      }
+    }
+  },
+  "folder": "D1OgeGHLjJ9dSkxS",
+  "img": "https://img.altema.jp/valkyrieconnect/sobi/ico/1129.jpg",
+  "name": "Holy Avenger",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3
+  },
+  "sort": 900000,
+  "system": {
+    "container": null,
+    "props": {
+      "category": "Brawling",
+      "check_bonus": "0",
+      "damage_bonus": "10",
+      "description": "<p>If you take 30 or more damage in one hit, Your next attack gain +10 damage and @UUID[JournalEntry.CRPjA4dHUYLSAh0M]{Drain}</p>",
+      "hand_slots": "One-handed",
+      "isMartial": true,
+      "item_cost": "0",
+      "item_type": "weapon",
+      "name": "Holy Avenger",
+      "rolled_atr1": "MIG",
+      "rolled_atr2": "WLP",
+      "set_name": "",
+      "skill_target": "One Enemy",
+      "type_damage": "Light",
+      "weapon_range": "Melee"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "32RtGIiIzNH9E2Pe"
+  },
+  "type": "equippableItem"
+}

@@ -1,0 +1,55 @@
+{
+  "_id": "X8nWZK2iCZwZQ2dH",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1754274988448,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "aTaylB4Xgk03yr9M",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/tingle.png",
+  "name": "Spell Mimic",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Chimerist",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>When you see a creature belonging to the <strong>beast, monster</strong> or <strong>plant</strong> Species cast a spell, you may immediately choose to learn that spell as a Chimerist spell of your own: if you do, record the <strong>Species</strong> of the creature you learned it from.</p><p> When you first acquire this Skill, choose <strong>【INS + WLP】</strong>or<strong>【MIG + WLP】</strong>. From now on, your offensive (⚡) Chimerist spells will use the chosen Attributes for the Magic Check, regardless of the Attributes used by the creature you learned the spell from.</p><p> You may have <strong>up to 【SL + 2】 different Chimerist spells</strong> memorized this way. If you want to memorize a new Chimerist spell but are already at your limit, you must forget one of your old spells and replace it with the new spell.</p>",
+      "duration": "",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "level": "1",
+      "max_level": "10",
+      "name": "Spell Mimic",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_target": "",
+      "skill_type": "Other",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "X8nWZK2iCZwZQ2dH"
+  },
+  "type": "equippableItem"
+}

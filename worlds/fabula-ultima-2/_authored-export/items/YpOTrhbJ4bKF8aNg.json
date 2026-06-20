@@ -1,0 +1,58 @@
+{
+  "_id": "YpOTrhbJ4bKF8aNg",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757104632394,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "psfnGsn4Yf9vLVKe",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rose/MHPassive.png",
+  "name": "Flexible Configuration",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Pilot",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>When you perform the 【🥋Equipment】 or 【🛡️Guard】 action while driving your <em>personal vehicle</em>, you may choose up to <strong>【SL】</strong> of its enabled modules and disable them. If you do, choose up to an equal amount of its disabled modules and enable them.</p>\n",
+      "duration": "",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "4",
+      "name": "Flexible Configuration",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Disable Up To</strong></p></td><td><p><strong>Enable Up To</strong></p></td></tr><tr><td><p>1</p></td><td><p>1 module</p></td><td><p>1 module</p></td></tr><tr><td><p>2</p></td><td><p>2 modules</p></td><td><p>2 modules</p></td></tr><tr><td><p>3</p></td><td><p>3 modules</p></td><td><p>3 modules</p></td></tr><tr><td><p>4</p></td><td><p>4 modules</p></td><td><p>4 modules</p></td></tr></tbody></table>",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "YpOTrhbJ4bKF8aNg"
+  },
+  "type": "equippableItem"
+}

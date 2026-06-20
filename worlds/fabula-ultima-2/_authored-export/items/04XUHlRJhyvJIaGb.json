@@ -1,0 +1,111 @@
+{
+  "_id": "04XUHlRJhyvJIaGb",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780667912507,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "hkQh8SjJJRnTDwwv",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1781408921822,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "ip_reduction_value",
+          "mode": 2,
+          "priority": 20,
+          "value": "1"
+        }
+      ],
+      "description": "<p><em>Deep Pockets:</em> spend 1 less Inventory Point (minimum 1).</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "hkQh8SjJJRnTDwwv",
+          "originalParentId": "04XUHlRJhyvJIaGb",
+          "originalUuid": "Item.04XUHlRJhyvJIaGb.ActiveEffect.hkQh8SjJJRnTDwwv"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lithia/FortuneFinderPassive1.png",
+      "name": "Deep Pockets",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "vE96q7FVLmhb7wDD",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lithia/FortuneFinderPassive1.png",
+  "name": "Deep Pockets",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "class": "Tinkerer",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>When you spend Inventory Points, you spend <strong>1 less Inventory Point</strong> (to a minimum of 1).</p>",
+      "isCheck": false,
+      "level": 1,
+      "max_level": 1,
+      "name": "Deep Pockets",
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_range": "-",
+      "skill_target": "-",
+      "skill_type": "Passive",
+      "type_damage": ""
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": true,
+    "uniqueId": "04XUHlRJhyvJIaGb"
+  },
+  "type": "equippableItem"
+}

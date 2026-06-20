@@ -1,0 +1,19 @@
+{
+  "_id": "4gMC1IxdJlF59BSi",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1769380889999,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "Nd8LnosrPid1eX1r",
+  "name": "Current Dungeon",
+  "sort": 100000,
+  "sorting": "a",
+  "type": "Actor"
+}

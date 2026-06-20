@@ -1,0 +1,46 @@
+{
+  "_id": "I3pJvA7mt6xWqWyQ",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1701709594018,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    }
+  },
+  "folder": "qpw46aFVTAeQSyTP",
+  "img": "icons/magic/death/hand-undead-skeleton-fire-green.webp",
+  "name": "Drain Vigor",
+  "ownership": {
+    "default": 3,
+    "nXC7OD7u5Zw5UDDU": 3
+  },
+  "sort": 100000,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Entropist",
+      "cost": "10",
+      "damage_bonus": "15",
+      "description": "<p>You consume a creature's psyche. The target loses <strong>【HR + 15】</strong> Mind Points. Then, you recover an amount of Mind Points equal to half the Mind Points loss they suffered (if the loss was reduced to 0 in some way, you recover none).</p>",
+      "discipline": "",
+      "duration": "Instantaneous",
+      "name": "Drain Vigor",
+      "rolled_atr1": "INS",
+      "rolled_atr2": "WLP",
+      "target": "One Creature",
+      "type_damage": "Dark"
+    },
+    "template": "FZmpKcQRP7hZQqbV",
+    "templateSystemUniqueVersion": 1700837225,
+    "unique": false,
+    "uniqueId": "I3pJvA7mt6xWqWyQ"
+  },
+  "type": "equippableItem"
+}

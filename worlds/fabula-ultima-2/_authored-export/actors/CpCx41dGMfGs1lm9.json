@@ -1,0 +1,1670 @@
+{
+  "_id": "CpCx41dGMfGs1lm9",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1758196335042,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "lrk2jhOW5Ok9sgH1",
+  "img": "https://static.tvtropes.org/pmwiki/pub/images/ta2_humeillusionist.png",
+  "items": [
+    {
+      "_id": "3AvBqpA8zfixKa80",
+      "_stats": {
+        "compendiumSource": "Item.bbEv9kibtZscX9eJ",
+        "coreVersion": "12.343",
+        "createdTime": 1758208782684,
+        "duplicateSource": "Item.WYUnQzanvuduKdSy",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/RumblePumnSkill5.png",
+      "name": "Multi Shatter",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "Illusionist",
+          "cost": "10 MP",
+          "damage_bonus": "15",
+          "defense_target_type": "def",
+          "description": "<p>You command all your Phantasms to charge at your foes, shattering on impact. They all share the same Magic Check. Each affected target suffers <strong>[HR + 15]</strong> \n<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\">\n  <a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\">\n    <strong><span style=\"text-decoration: underline;\">Physical</span></strong>\n  </a>\n</span></span> damage. You can target <strong>only one foe per Phantasm</strong>. Damage dealt by this spell <strong>ignores Resistances</strong>.</p>\n",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": true,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": true,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Multi Shatter",
+          "optional_params": {},
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "Up to three creature",
+          "skill_type": "Spell",
+          "type_damage": "Physical",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "bbEv9kibtZscX9eJ"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "46fCo5iu7NwsIjNN",
+      "_stats": {
+        "compendiumSource": "Item.TpHy6WcxSkQRhgtS",
+        "coreVersion": "12.343",
+        "createdTime": 1777032839523,
+        "duplicateSource": "Item.OsIQ6VBzU7XklPUQ",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/RumblePumnTSkill1.png",
+      "name": "Create Phantasm: Strike",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 50000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "2000",
+          "animation_damage_timing_options": "offset",
+          "animation_script": "<p>// ============================================================================</p><p>// Sneak → Flurry - Sequencer (Pipeline Version + PSEUDO caster step / step back)</p><p>// - Pseudo movement uses ONE continuous session (no snap)</p><p>// - Adds easing (easeInOutCubic)</p><p>// ============================================================================</p><p>(async () =&gt; {</p><p>const TAG = \"[SneakFlurry]\";</p><p>try {</p><p>if (!game.modules.get(\"sequencer\")?.active) {</p><p>ui.notifications.error(\"Sequencer module is not active.\");</p><p>return;</p><p>}</p><p>// Minimal ONI.emit helper (same pattern)</p><p>globalThis.ONI = globalThis.ONI ?? {};</p><p>if (!ONI.emit) {</p><p>ONI.emit = function (eventName, payload = {}, options = {}) {</p><p>const { local = true, world = false } = options;</p><p>if (local) Hooks.callAll(eventName, payload);</p><p>if (world) game.socket.emit(\"world\", { action: eventName, payload });</p><p>};</p><p>}</p><p>// --- Payload ---</p><p>const payload = globalThis.__PAYLOAD ?? {};</p><p>// --- Helpers ---</p><p>const isUuid = (v) =&gt; typeof v === \"string\" &amp;&amp; v.includes(\".\");</p><p>async function resolveToken(ref) {</p><p>if (!ref) return null;</p><p>if (ref?.document &amp;&amp; ref?.object) return ref;</p><p>if (ref?.id &amp;&amp; canvas.tokens?.get(ref.id)) return canvas.tokens.get(ref.id);</p><p>if (isUuid(ref)) {</p><p>const doc = await fromUuid(ref);</p><p>if (!doc) return null;</p><p>if (doc.object) return doc.object;</p><p>if (doc.document?.object) return doc.document.object;</p><p>return null;</p><p>}</p><p>if (typeof ref === \"string\") return canvas.tokens.get(ref) ?? null;</p><p>return null;</p><p>}</p><p>function pickTargetsFromPayload(p) {</p><p>if (Array.isArray(p.targetTokenIds) &amp;&amp; p.targetTokenIds.length) return p.targetTokenIds;</p><p>if (Array.isArray(p.targets) &amp;&amp; p.targets.length) {</p><p>const out = [];</p><p>for (const t of p.targets) {</p><p>if (typeof t === \"string\") out.push(t);</p><p>else if (t?.tokenId) out.push(t.tokenId);</p><p>else if (t?.tokenUuid) out.push(t.tokenUuid);</p><p>}</p><p>return out.filter(Boolean);</p><p>}</p><p>if (Array.isArray(p.rows)) {</p><p>const out = [];</p><p>for (const r of p.rows) {</p><p>if (r?.targetTokenId) out.push(r.targetTokenId);</p><p>if (r?.targetTokenUuid) out.push(r.targetTokenUuid);</p><p>}</p><p>if (out.length) return out;</p><p>}</p><p>return [];</p><p>}</p><p>// --- Resolve caster &amp; targets from pipeline ---</p><p>const sourceRef =</p><p>payload.sourceTokenUuid ??</p><p>payload.sourceTokenId ??</p><p>payload.casterTokenUuid ??</p><p>payload.casterTokenId ??</p><p>payload.attackerTokenUuid ??</p><p>payload.attackerTokenId ??</p><p>null;</p><p>const targetRefs = pickTargetsFromPayload(payload);</p><p>// Fallbacks for quick testing</p><p>const fallbackSource = canvas.tokens.controlled?.[0] ?? null;</p><p>const fallbackTargets = Array.from(game.user.targets ?? []);</p><p>const sourceToken = (await resolveToken(sourceRef)) ?? fallbackSource;</p><p>const targets = [];</p><p>for (const r of targetRefs) {</p><p>const tok = await resolveToken(r);</p><p>if (tok) targets.push(tok);</p><p>}</p><p>if (!targets.length &amp;&amp; fallbackTargets.length) targets.push(...fallbackTargets);</p><p>if (!sourceToken) {</p><p>ui.notifications.warn(\"SneakFlurry: No caster token (payload missing and nothing selected).\");</p><p>return;</p><p>}</p><p>if (!targets.length) {</p><p>ui.notifications.warn(\"SneakFlurry: No targets (payload missing and nothing targeted).\");</p><p>return;</p><p>}</p><p>const targetToken = targets[0];</p><p>// --- TARGET disposition (for side + flip) ---</p><p>const targetDisposition =</p><p>targetToken?._token?.actor?.document?.disposition ??</p><p>targetToken?.actor?.document?.disposition ??</p><p>targetToken?.document?.disposition ??</p><p>0;</p><p>const targetHostile = targetDisposition === -1;</p><p>const SIDE_OFFSET_PX = 140;</p><p>const sideOffsetX = targetHostile ? SIDE_OFFSET_PX : -SIDE_OFFSET_PX;</p><p>const mirrorX = targetHostile;</p><p>// --- CASTER disposition (for step movement) ---</p><p>const casterDisposition =</p><p>sourceToken?.actor?.document?.disposition ??</p><p>sourceToken?.document?.disposition ??</p><p>0;</p><p>const casterMoveRight = casterDisposition === -1;</p><p>// --- Caster step distance (X-only) ---</p><p>const squares = 0.35;</p><p>const offsetPx = canvas.grid.size * squares;</p><p>const dx = casterMoveRight ? +offsetPx : -offsetPx;</p><p>// --- Assets ---</p><p>const FX_1 =</p><p>\"modules/JB2A_DnD5e/Library/1st_Level/Sneak_Attack/Sneak_Attack_Dark_Green_300x300.webm\";</p><p>const FX_2 =</p><p>\"modules/JB2A_DnD5e/Library/Generic/Unarmed_Attacks/Flurry_Of_Blows/FlurryOfBlows_01_Regular_Blue_Magical01_800x600.webm\";</p><p>const SFX_MOVE = \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Beginspell.mp3\";</p><p>const SFX_1 = \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Beginspell.mp3\";</p><p>const SFX_2 =</p><p>\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Damage3.ogg\";</p><p>// --- Broadcast start ---</p><p>ONI.emit(</p><p>\"oni:animationStart\",</p><p>{</p><p>type: \"sneakFlurry\",</p><p>sourceTokenId: sourceToken.id,</p><p>targetTokenIds: [targetToken.id],</p><p>sceneId: canvas.scene?.id ?? null,</p><p>timestamp: Date.now(),</p><p>},</p><p>{ local: true, world: false }</p><p>);</p><p>// --- Timing constants (match your original sequence timing) ---</p><p>const MOVE_DURATION = 350;</p><p>const WAIT_AFTER_STEP_OUT = 150;</p><p>const WAIT_BETWEEN_FX = 1500;</p><p>const WAIT_BEFORE_STEP_BACK = 150;</p><p>// Total \"hold forward\" time inside pseudo session:</p><p>// after move-out finishes, we previously waited 150, then ran VFX timeline (1500), then waited 150 before moving back</p><p>const HOLD_FORWARD_MS = WAIT_AFTER_STEP_OUT + WAIT_BETWEEN_FX + WAIT_BEFORE_STEP_BACK;</p><p>// --- Pseudo availability ---</p><p>const hasPseudo = !!game.ONI?.pseudo?.play;</p><p>// --- MAIN ---</p><p>if (!hasPseudo) {</p><p>// ===== Fallback (your old real-token movement) =====</p><p>const original = { x: sourceToken.document.x, y: sourceToken.document.y };</p><p>const destOut = { x: original.x + dx, y: original.y };</p><p>const destBack = { x: original.x, y: original.y };</p><p>const seq = new Sequence();</p><p>seq.sound().file(SFX_MOVE).volume(0.9);</p><p>seq.animation().on(sourceToken).moveTowards(destOut).duration(MOVE_DURATION).waitUntilFinished();</p><p>seq.wait(WAIT_AFTER_STEP_OUT);</p><p>seq.effect()</p><p>.file(FX_1)</p><p>.atLocation(targetToken, { offset: { x: sideOffsetX, y: 0 } })</p><p>.scale(1.2)</p><p>.mirrorX(mirrorX)</p><p>.fadeIn(150)</p><p>.fadeOut(200);</p><p>seq.sound().file(SFX_1).volume(0.8);</p><p>seq.wait(WAIT_BETWEEN_FX);</p><p>seq.effect()</p><p>.file(FX_2)</p><p>.atLocation(targetToken)</p><p>.scale(1.0)</p><p>.mirrorX(mirrorX)</p><p>.fadeIn(100)</p><p>.fadeOut(200);</p><p>seq.sound().file(SFX_2).volume(0.8);</p><p>seq.wait(WAIT_BEFORE_STEP_BACK);</p><p>seq.animation().on(sourceToken).moveTowards(destBack).duration(MOVE_DURATION).waitUntilFinished();</p><p>await seq.play();</p><p>if (sourceToken.document.x !== original.x || sourceToken.document.y !== original.y) {</p><p>await sourceToken.document.update({ x: original.x, y: original.y });</p><p>}</p><p>} else {</p><p>// ===== Pseudo path (NO SNAP): one continuous session =====</p><p>// 1) Start pseudo movement session (does: hide real -&gt; clone -&gt; ease move out -&gt; hold -&gt; ease move back -&gt; unhide)</p><p>const pseudoScriptSource = `</p><p>const { casterToken, params } = ctx;</p><p>if (!casterToken) throw new Error(\"SneakFlurryPseudo: casterToken missing\");</p><p>const dx = Number(params.dx ?? 0);</p><p>const dur = Number(params.dur ?? 300);</p><p>const hold = Number(params.hold ?? 0);</p><p>// Easing: easeInOutCubic</p><p>function easeInOutCubic(t) {</p><p>return t &lt; 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3)/2;</p><p>}</p><p>function animate(obj, fromX, fromY, toX, toY, durMs) {</p><p>return new Promise(resolve =&gt; {</p><p>const startTime = performance.now();</p><p>const ticker = canvas.app.ticker;</p><p>const update = () =&gt; {</p><p>const raw = (performance.now() - startTime) / durMs;</p><p>const t = Math.min(Math.max(raw, 0), 1);</p><p>const e = easeInOutCubic(t);</p><p>obj.x = fromX + (toX - fromX) * e;</p><p>obj.y = fromY + (toY - fromY) * e;</p><p>if (t &gt;= 1) { ticker.remove(update); resolve(); }</p><p>};</p><p>ticker.add(update);</p><p>});</p><p>}</p><p>async function createClone(token) {</p><p>const baseObj = token.mesh ?? token.icon;</p><p>const texture = baseObj?.texture ?? await loadTexture(token.document.texture.src);</p><p>const sprite = new PIXI.Sprite(texture);</p><p>sprite.anchor.set(0.5);</p><p>sprite.x = token.center.x;</p><p>sprite.y = token.center.y;</p><p>if (baseObj) { sprite.width = baseObj.width; sprite.height = baseObj.height; }</p><p>sprite.zIndex = 5000;</p><p>canvas.stage.sortableChildren = true;</p><p>canvas.stage.addChild(sprite);</p><p>canvas.stage.sortChildren();</p><p>return sprite;</p><p>}</p><p>const baseMesh = casterToken.mesh ?? casterToken.icon;</p><p>// IMPORTANT: keep real token hidden for the entire session (no re-show between moves)</p><p>const originalTokenVisible = casterToken.visible;</p><p>const originalMeshVisible = baseMesh?.visible ?? true;</p><p>let sprite;</p><p>try {</p><p>sprite = await createClone(casterToken);</p><p>// Hide real token visuals (local only)</p><p>if (baseMesh) baseMesh.visible = false;</p><p>casterToken.visible = false;</p><p>// Move out (ease)</p><p>const startX = sprite.x;</p><p>const startY = sprite.y;</p><p>const outX = startX + dx;</p><p>const outY = startY;</p><p>await animate(sprite, startX, startY, outX, outY, dur);</p><p>// Hold forward position while VFX plays</p><p>if (hold &gt; 0) await new Promise(r =&gt; setTimeout(r, hold));</p><p>// Move back (ease)</p><p>await animate(sprite, outX, outY, startX, startY, dur);</p><p>} finally {</p><p>if (sprite) {</p><p>canvas.stage.removeChild(sprite);</p><p>sprite.destroy();</p><p>}</p><p>// Unhide real token only AFTER clone is back + destroyed</p><p>if (baseMesh) baseMesh.visible = originalMeshVisible;</p><p>casterToken.visible = originalTokenVisible;</p><p>}</p><p>`;</p><p>// Kick the pseudo session (movement + hold + return)</p><p>game.ONI.pseudo.play({</p><p>scriptId: \"sneakFlurry.pseudoSession\",</p><p>scriptSource: pseudoScriptSource,</p><p>casterTokenUuid: sourceToken.document.uuid,</p><p>targetTokenUuids: [],</p><p>params: { dx, dur: MOVE_DURATION, hold: HOLD_FORWARD_MS },</p><p>meta: { source: \"SneakFlurry\" },</p><p>});</p><p>// 2) Play move sound right away (feels like “step out starts now”)</p><p>new Sequence().sound().file(SFX_MOVE).volume(0.9).play();</p><p>// 3) Run VFX timeline while pseudo is holding forward (timed to match)</p><p>// Wait exactly like original: 150 after step-out finishes</p><p>await new Promise((r) =&gt; setTimeout(r, MOVE_DURATION + WAIT_AFTER_STEP_OUT));</p><p>const fxSeq = new Sequence();</p><p>fxSeq.effect()</p><p>.file(FX_1)</p><p>.atLocation(targetToken, { offset: { x: sideOffsetX, y: 0 } })</p><p>.scale(1.2)</p><p>.mirrorX(mirrorX)</p><p>.fadeIn(150)</p><p>.fadeOut(200);</p><p>fxSeq.sound().file(SFX_1).volume(0.8);</p><p>fxSeq.wait(WAIT_BETWEEN_FX);</p><p>fxSeq.effect()</p><p>.file(FX_2)</p><p>.atLocation(targetToken)</p><p>.scale(1.0)</p><p>.mirrorX(mirrorX)</p><p>.fadeIn(100)</p><p>.fadeOut(200);</p><p>fxSeq.sound().file(SFX_2).volume(0.8);</p><p>await fxSeq.play();</p><p>// Note: pseudo script will automatically start moving back after HOLD_FORWARD_MS</p><p>// We just wait long enough for the pseudo session to finish so end-event timing feels right.</p><p>const pseudoTotalMs = MOVE_DURATION + HOLD_FORWARD_MS + MOVE_DURATION;</p><p>await new Promise((r) =&gt; setTimeout(r, Math.max(0, pseudoTotalMs - (MOVE_DURATION + WAIT_AFTER_STEP_OUT)) + 30));</p><p>}</p><p>// --- Broadcast end ---</p><p>ONI.emit(</p><p>\"oni:animationEnd\",</p><p>{</p><p>type: \"sneakFlurry\",</p><p>sourceTokenId: sourceToken.id,</p><p>targetTokenIds: [targetToken.id],</p><p>sceneId: canvas.scene?.id ?? null,</p><p>timestamp: Date.now(),</p><p>},</p><p>{ local: true, world: false }</p><p>);</p><p>console.log(TAG, \"END\");</p><p>} catch (err) {</p><p>console.error(`${TAG} Animation crashed:`, err);</p><p>try {</p><p>globalThis.ONI?.emit?.(</p><p>\"oni:animationEnd\",</p><p>{ type: \"sneakFlurry\", error: true, timestamp: Date.now() },</p><p>{ local: true }</p><p>);</p><p>} catch (_) {}</p><p>}</p><p>})();</p>",
+          "check_bonus": "0",
+          "class": "Illusionist",
+          "cost": "10 MP",
+          "custom_logic_action": "<p>// Phantasm Choice — Custom Logic (Action Phase)</p><p>// - Waits for player choice (hard cancel if closed)</p><p>// - If \"Use Existing\" =&gt; cost becomes 0 MP + store a flag for later reference</p><p>const TAG = \"[CL-ACT][PHANTASM-CHOICE]\";</p><p>const DEBUG = true;</p><p>const dlog = (...a) =&gt; DEBUG &amp;&amp; context?.log ? context.log(TAG, ...a) : console.log(TAG, ...a);</p><p>const dwarn = (...a) =&gt; DEBUG &amp;&amp; context?.warn ? context.warn(TAG, ...a) : console.warn(TAG, ...a);</p><p>const p = __PAYLOAD;</p><p>if (!p) { console.warn(TAG, \"Missing __PAYLOAD\"); return; }</p><p>p.meta = p.meta || {};</p><p>// ---- Resolve attacker actor (for storing the persistent flag) ----</p><p>let attackerActor = null;</p><p>try {</p><p>const ad = await fromUuid(p?.meta?.attackerUuid ?? \"\");</p><p>attackerActor = ad?.actor ?? ad; // Token -&gt; Actor, or Actor directly</p><p>} catch (e) {</p><p>dwarn(\"Could not resolve attacker actor fromUuid\", e);</p><p>}</p><p>// ---- Debug snapshot (before) ----</p><p>dlog(\"BEFORE\", {</p><p>skillName: context?.skillName ?? p?.core?.skillName ?? null,</p><p>attackerUuid: p?.meta?.attackerUuid ?? null,</p><p>costRaw: p?.meta?.costRaw ?? null,</p><p>costRawOverride: p?.meta?.costRawOverride ?? null,</p><p>costRawFinal: p?.meta?.costRawFinal ?? null</p><p>});</p><p>// ---- Ask user ----</p><p>const pick = await context.ui.chooseButtons({</p><p>title: \"Phantasm Decision\",</p><p>bodyHtml: `</p><p></p><p style=\"margin: 0\"><strong>Choose how you will use Phantasm:</strong></p><p></p><p></p><p style=\"margin: .35rem 0 0; opacity: .8; font-size: 12px\"></p><p>• Create New: normal cost<br></p><p>• Use Existing: cost becomes <strong>0 MP</strong></p><p></p><p></p><p>`,</p><p>choices: [</p><p>{ id: \"new\", label: \"Create New Phantasm\", value: \"new\" },</p><p>{ id: \"existing\", label: \"Use Existing Phantasm\", value: \"existing\" },</p><p>],</p><p>cancelLabel: \"Cancel\",</p><p>hardCancel: false</p><p>});</p><p>// If dialog was closed/cancelled: hardCancel already marks abort flag,</p><p>// but we also do a clean explicit cancel for clarity + consistent reason.</p><p>if (!pick) {</p><p>return context.cancelPipeline(\"Action cancelled (no Phantasm choice).\");</p><p>}</p><p>dlog(\"CHOICE\", pick);</p><p>// ---- Apply behavior ----</p><p>if (pick.value === \"existing\") {</p><p>// 1) Make this action cost 0 MP (instead of e.g. \"10 MP\")</p><p>// ResourceGate priority: costRawFinal &gt; costRawOverride &gt; costRaw</p><p>p.meta.costRawOverride = \"0 MP\";</p><p>// 2) Store a “used existing phantasm” mark in payload (for later steps this turn)</p><p>p.meta.__phantasmChoice = {</p><p>mode: \"existing\",</p><p>pickedAt: Date.now(),</p><p>runId: context?.runId ?? null</p><p>};</p><p>// 3) Persist a flag in the game for later reference</p><p>// (You can read it later with: attackerActor.getFlag(\"fabula-ultima-companion\",\"phantasmChoice\"))</p><p>try {</p><p>if (attackerActor?.setFlag) {</p><p>await attackerActor.setFlag(\"fabula-ultima-companion\", \"phantasmChoice\", {</p><p>mode: \"existing\",</p><p>at: Date.now(),</p><p>skillName: context?.skillName ?? p?.core?.skillName ?? null</p><p>});</p><p>dlog(\"FLAG SAVED\", { actor: attackerActor?.name, mode: \"existing\" });</p><p>} else {</p><p>dwarn(\"No attackerActor.setFlag available; flag not saved.\");</p><p>}</p><p>} catch (e) {</p><p>dwarn(\"Failed to setFlag (permission or other error).\", e);</p><p>}</p><p>} else {</p><p>// \"Create New Phantasm\" =&gt; do nothing to cost (keep default)</p><p>// Optional: clear overrides/flags so it doesn't persist accidentally</p><p>delete p.meta.costRawOverride;</p><p>p.meta.__phantasmChoice = {</p><p>mode: \"new\",</p><p>pickedAt: Date.now(),</p><p>runId: context?.runId ?? null</p><p>};</p><p>try {</p><p>// Optional: record that they chose \"new\" too (useful for debugging)</p><p>if (attackerActor?.setFlag) {</p><p>await attackerActor.setFlag(\"fabula-ultima-companion\", \"phantasmChoice\", {</p><p>mode: \"new\",</p><p>at: Date.now(),</p><p>skillName: context?.skillName ?? p?.core?.skillName ?? null</p><p>});</p><p>dlog(\"FLAG SAVED\", { actor: attackerActor?.name, mode: \"new\" });</p><p>}</p><p>} catch (e) {</p><p>dwarn(\"Failed to setFlag for 'new' choice (non-fatal).\", e);</p><p>}</p><p>}</p><p>// ---- Debug snapshot (after) ----</p><p>dlog(\"AFTER\", {</p><p>chosenMode: p?.meta?.__phantasmChoice?.mode ?? null,</p><p>costRaw: p?.meta?.costRaw ?? null,</p><p>costRawOverride: p?.meta?.costRawOverride ?? null,</p><p>costRawFinal: p?.meta?.costRawFinal ?? null</p><p>});</p>",
+          "custom_logic_resolution": "<p>// ============================================================================</p><p>// [CustomLogic-Resolution] Summon LEFT COLUMN (fixed X) + 2s Delay + TokenEase Z-Index Offset + Pseudo Fade-In</p><p>// Summon Actor UUID: Actor.VLaGqwrMzpmq0whe</p><p>//</p><p>// UPDATE (2026-02-28):</p><p>// - Read Phantasm choice from CustomLogic-Action:</p><p>// - If choice = \"new\" =&gt; keep existing behavior (summon Fox Fire)</p><p>// - If choice = \"existing\" =&gt; SKIP summoning entirely (early return)</p><p>// - NEW: Whatever the user picked, CLEAR the stored Phantasm choice afterward</p><p>// (payload + persisted actor flag), so the next use can define it again.</p><p>// ============================================================================</p><p>(async () =&gt; {</p><p>const TAG = \"[CL-RES][SUMMON_LEFT_COLUMN]\";</p><p>const SUMMON_ACTOR_UUID = \"Actor.VLaGqwrMzpmq0whe\";</p><p>const SPAWN_DELAY_MS = 2000;</p><p>const Z_INDEX_OFFSET = 20; // Token Configuration -&gt; \"Z-Index Offset\"</p><p>// -----------------------------</p><p>// Helpers</p><p>// -----------------------------</p><p>function warn(...a) { console.warn(TAG, ...a); }</p><p>function log(...a) { console.log(TAG, ...a); }</p><p>function sleep(ms) { return new Promise(r =&gt; setTimeout(r, ms)); }</p><p>function snapToGrid(x, y) {</p><p>const g = canvas?.grid;</p><p>if (!g) return { x, y };</p><p>const p = g.getSnappedPosition(x, y, 1);</p><p>return { x: p.x, y: p.y };</p><p>}</p><p>function isInsideScene(x, y) {</p><p>const s = canvas?.scene;</p><p>if (!s) return true;</p><p>const w = s.dimensions?.sceneWidth ?? s.width ?? 0;</p><p>const h = s.dimensions?.sceneHeight ?? s.height ?? 0;</p><p>return (x &gt;= 0 &amp;&amp; y &gt;= 0 &amp;&amp; x &lt; w &amp;&amp; y &lt; h);</p><p>}</p><p>function tokenOccupiesXY(token, x, y) {</p><p>const td = token?.document;</p><p>if (!td) return false;</p><p>return (td.x === x &amp;&amp; td.y === y);</p><p>}</p><p>// Tries multiple known flag paths (because \"Z-Index Offset\" is module-provided in many setups)</p><p>function buildZIndexOffsetFlags(value) {</p><p>return {</p><p>// Token Ease (you have a \"Token Ease\" tab in your config UI)</p><p>\"token-ease\": { zIndexOffset: value },</p><p>\"tokenEase\": { zIndexOffset: value },</p><p>// Token Z (common z-index manager module)</p><p>\"token-z\": { zIndexOffset: value, zIndex: value },</p><p>\"tokenZ\": { zIndexOffset: value, zIndex: value }</p><p>};</p><p>}</p><p>// -----------------------------</p><p>// 0) Read payload + resolve attacker actor + Phantasm choice gate</p><p>// -----------------------------</p><p>const p = globalThis.__PAYLOAD;</p><p>if (!p) return warn(\"Missing __PAYLOAD\");</p><p>p.meta = p.meta || {};</p><p>let attackerActor0 = null;</p><p>try {</p><p>const attackerUuid0 = p?.meta?.attackerUuid ?? p?.attackerUuid ?? \"\";</p><p>if (attackerUuid0) {</p><p>const attackerDoc0 = await fromUuid(attackerUuid0);</p><p>attackerActor0 = attackerDoc0?.actor ?? attackerDoc0; // Token -&gt; Actor, or Actor directly</p><p>}</p><p>} catch (e) {</p><p>warn(\"Could not resolve attacker actor for choice/cleanup (non-fatal).\", e);</p><p>}</p><p>// Prefer: choice stored for this pipeline run</p><p>let choiceMode = p?.meta?.__phantasmChoice?.mode ?? null;</p><p>// Fallback: persisted actor flag (in case payload got rebuilt)</p><p>try {</p><p>if (!choiceMode &amp;&amp; attackerActor0?.getFlag) {</p><p>const flag = attackerActor0.getFlag(\"fabula-ultima-companion\", \"phantasmChoice\");</p><p>if (flag?.mode) choiceMode = flag.mode;</p><p>}</p><p>} catch (e) {</p><p>warn(\"Choice fallback read failed (non-fatal).\", e);</p><p>}</p><p>log(\"Phantasm choice resolved\", {</p><p>mode: choiceMode ?? \"unknown(default=new)\",</p><p>fromPayload: !!p?.meta?.__phantasmChoice,</p><p>});</p><p>// -----------------------------</p><p>// 0.5) CLEANUP helper (ALWAYS clear choice for next use)</p><p>// -----------------------------</p><p>async function clearPhantasmChoice() {</p><p>// 1) Clear payload (this run)</p><p>if (p?.meta) delete p.meta.__phantasmChoice;</p><p>// 2) Clear persisted flag (so future uses must set it again)</p><p>try {</p><p>if (attackerActor0?.unsetFlag) {</p><p>await attackerActor0.unsetFlag(\"fabula-ultima-companion\", \"phantasmChoice\");</p><p>log(\"Phantasm choice flag CLEARED\", { actor: attackerActor0?.name ?? \"?\" });</p><p>}</p><p>} catch (e) {</p><p>warn(\"Failed to unsetFlag phantasmChoice (non-fatal).\", e);</p><p>}</p><p>}</p><p>// -----------------------------</p><p>// 1) Main logic wrapped so cleanup runs no matter what</p><p>// -----------------------------</p><p>try {</p><p>// If user chose \"Use Existing Phantasm\" =&gt; skip ALL resolution logic (no summon)</p><p>if (choiceMode === \"existing\") {</p><p>log(\"SKIP: Using existing Phantasm — no new Fox Fire will be summoned.\");</p><p>return; // (cleanup will still run in finally)</p><p>}</p><p>// Otherwise: continue original behavior (summon new Fox Fire)</p><p>// -----------------------------</p><p>// 2) Resolve caster token from __PAYLOAD</p><p>// -----------------------------</p><p>const attackerUuid = p?.meta?.attackerUuid ?? p?.attackerUuid ?? \"\";</p><p>if (!attackerUuid) { warn(\"No attackerUuid in payload meta\"); return; }</p><p>const attackerDoc = await fromUuid(attackerUuid);</p><p>if (!attackerDoc) { warn(\"Could not resolve attackerUuid\", attackerUuid); return; }</p><p>let casterToken = null;</p><p>// TokenDocument path</p><p>if (attackerDoc?.documentName === \"Token\" || attackerDoc?.constructor?.name === \"TokenDocument\") {</p><p>casterToken = attackerDoc?.object ?? canvas.tokens.get(attackerDoc.id) ?? null;</p><p>}</p><p>// Actor path</p><p>if (!casterToken) {</p><p>const casterActor = attackerDoc?.actor ?? attackerDoc;</p><p>casterToken = canvas.tokens.placeables.find(t =&gt; t?.actor?.id === casterActor?.id) ?? null;</p><p>}</p><p>if (!casterToken) { warn(\"Could not find casterToken on canvas for\", attackerUuid); return; }</p><p>// -----------------------------</p><p>// 3) Resolve summon actor</p><p>// -----------------------------</p><p>const summonActor = await fromUuid(SUMMON_ACTOR_UUID);</p><p>if (!summonActor) { warn(\"Could not resolve summon actor\", SUMMON_ACTOR_UUID); return; }</p><p>// -----------------------------</p><p>// 4) Pick spawn location: LEFT column (fixed X), spread along Y if occupied</p><p>// -----------------------------</p><p>const gridSize = canvas?.grid?.size ?? 100;</p><p>const casterX = casterToken.document.x;</p><p>const casterY = casterToken.document.y;</p><p>// Fixed X: 1 grid LEFT of caster (always)</p><p>const preferredXRaw = casterX - gridSize;</p><p>// Vertical column Y offsets (0, +1, -1, +2, -2, ...)</p><p>const Y_OFFSETS = [0, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5];</p><p>// Existing summons of the same actor on scene</p><p>const existingSummons = canvas.tokens.placeables.filter(t =&gt; t?.actor?.id === summonActor?.id);</p><p>const candidates = Y_OFFSETS</p><p>.map(dy =&gt; {</p><p>const raw = snapToGrid(preferredXRaw, casterY + dy * gridSize);</p><p>return { x: raw.x, y: raw.y, dy };</p><p>})</p><p>.filter(c =&gt; isInsideScene(c.x, c.y));</p><p>let chosen = null;</p><p>for (const c of candidates) {</p><p>const occupiedBySameSummon = existingSummons.some(t =&gt; tokenOccupiesXY(t, c.x, c.y));</p><p>if (!occupiedBySameSummon) { chosen = c; break; }</p><p>}</p><p>if (!chosen) {</p><p>chosen = candidates[0];</p><p>warn(\"All LEFT-column candidate spots occupied by same summon. Falling back to first candidate.\", chosen);</p><p>}</p><p>log(\"Spawn chosen\", {</p><p>caster: casterToken?.name,</p><p>summon: summonActor?.name,</p><p>x: chosen.x, y: chosen.y,</p><p>fixedLeftX: true,</p><p>dy: chosen.dy</p><p>});</p><p>// -----------------------------</p><p>// 5) Wait 2000ms before spawning</p><p>// -----------------------------</p><p>await sleep(SPAWN_DELAY_MS);</p><p>// -----------------------------</p><p>// 6) Spawn summon token (set Z-Index Offset, NOT elevation)</p><p>// -----------------------------</p><p>const tokenDoc = await summonActor.getTokenDocument({</p><p>x: chosen.x,</p><p>y: chosen.y,</p><p>flags: buildZIndexOffsetFlags(Z_INDEX_OFFSET)</p><p>});</p><p>const created = await canvas.scene.createEmbeddedDocuments(\"Token\", [tokenDoc.toObject()]);</p><p>const createdTokenDoc = created?.[0];</p><p>if (!createdTokenDoc) { warn(\"Token spawn failed (no created TokenDocument returned)\"); return; }</p><p>const summonTokenUuid = createdTokenDoc.uuid;</p><p>// -----------------------------</p><p>// 7) Pseudo Animation: Fade-in with easing</p><p>// -----------------------------</p><p>if (!game?.ONI?.pseudo?.play) {</p><p>warn(\"Pseudo API not found at game.ONI.pseudo.play — spawn succeeded but no fade animation played.\");</p><p>return;</p><p>}</p><p>const fadeScript = `</p><p>const TAG = \"[ONI][Pseudo][FadeInSummon]\";</p><p>const { casterToken, params } = ctx;</p><p>if (!casterToken) throw new Error(TAG + \" missing casterToken\");</p><p>const fadeMs = Number(params.fadeMs ?? 450);</p><p>function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }</p><p>async function createClone(token) {</p><p>const baseObj = token.mesh ?? token.icon;</p><p>const texture = baseObj?.texture ?? await loadTexture(token.document.texture.src);</p><p>const sprite = new PIXI.Sprite(texture);</p><p>sprite.anchor.set(0.5);</p><p>sprite.x = token.center.x;</p><p>sprite.y = token.center.y;</p><p>if (baseObj) { sprite.width = baseObj.width; sprite.height = baseObj.height; }</p><p>sprite.zIndex = 5000;</p><p>sprite.alpha = 0;</p><p>canvas.stage.sortableChildren = true;</p><p>canvas.stage.addChild(sprite);</p><p>canvas.stage.sortChildren();</p><p>return sprite;</p><p>}</p><p>function animateAlpha(obj, fromA, toA, durMs) {</p><p>return new Promise(resolve =&gt; {</p><p>const start = performance.now();</p><p>const ticker = canvas.app.ticker;</p><p>const update = () =&gt; {</p><p>const raw = (performance.now() - start) / durMs;</p><p>const t = Math.min(Math.max(raw, 0), 1);</p><p>const e = easeOutCubic(t);</p><p>obj.alpha = fromA + (toA - fromA) * e;</p><p>if (t &gt;= 1) { ticker.remove(update); resolve(); }</p><p>};</p><p>ticker.add(update);</p><p>});</p><p>}</p><p>const baseMesh = casterToken.mesh ?? casterToken.icon;</p><p>const originalTokenVisible = casterToken.visible;</p><p>const originalMeshVisible = baseMesh?.visible ?? true;</p><p>let sprite;</p><p>try {</p><p>sprite = await createClone(casterToken);</p><p>if (baseMesh) baseMesh.visible = false;</p><p>casterToken.visible = false;</p><p>await animateAlpha(sprite, 0, 1, fadeMs);</p><p>} finally {</p><p>if (sprite) { canvas.stage.removeChild(sprite); sprite.destroy(); }</p><p>if (baseMesh) baseMesh.visible = originalMeshVisible;</p><p>casterToken.visible = originalTokenVisible;</p><p>}</p><p>`;</p><p>game.ONI.pseudo.play({</p><p>scriptId: \"dynamic.fadeInSummon\",</p><p>scriptSource: fadeScript,</p><p>casterTokenUuid: summonTokenUuid,</p><p>targetTokenUuids: [],</p><p>params: { fadeMs: 450 },</p><p>meta: { source: \"CustomLogic: Summon FadeIn\" }</p><p>});</p><p>} finally {</p><p>// ALWAYS clear the choice so next use can define it again</p><p>await clearPhantasmChoice();</p><p>}</p><p>})();</p>",
+          "damage_bonus": "16",
+          "defense_target_type": "mdef",
+          "description": "<p>You may spend one action to create a Phantasm and command it to attack a creature. The target hit by the Phantasm suffers <strong>[HR + 12]</strong> damage.</p><p>The <strong>range</strong> of the attack is determined by your current weapon. On any subsequent turn, you can perform an action and another Magic Check to command the Phantasm to attack again, with no MP requirements. Damage dealt by this spell <strong>ignores Resistances</strong>.</p><hr contenteditable=\"false\" class=\"\"><p><strong>Skill Enhancement Lv. 20</strong> ― This damage becomes <strong>16</strong>.</p><p><strong>Skill Enhancement Lv. 40</strong> ― This damage becomes <strong>18</strong>.</p>",
+          "duration": "Scene",
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": true,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": true,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Create Phantasm: Strike",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "skill_animation_default": "",
+          "skill_animation_mode": "custom",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "One Creature",
+          "skill_type": "Spell",
+          "type_damage": "Elementaless",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "CJRJAE0NG7Kyk48Y"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "Bf7Byi1jgUI8An8V",
+      "_stats": {
+        "compendiumSource": "Item.j9ve2lwzoHiOo6bM",
+        "coreVersion": "12.343",
+        "createdTime": 1758208764021,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/RustyChildSkill4.png",
+      "name": "Create Phantasm: Numen",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "Illusionist",
+          "cost": "-",
+          "damage_bonus": "14",
+          "defense_target_type": "def",
+          "description": "<p>You can now have up to <strong>4</strong> active Phantasms, but one of them must necessarily be <strong>Numen</strong>. Also, you cannot have more than one Numen Phantasm active at a time. This Phantasm cannot be used in any of the Illusionist’s Skills or Spells.</p>\n<p>Numen is bound by the same set of special rules as any other Phantasm, with the following exceptions:</p>\n<ul>\n  <li>Numen Phantasms cost <strong>50 MP</strong> to cast.</li>\n  <li>Numen’s Phantasmal Vitality equals <strong>twice your base Insight die size plus your level</strong>.</li>\n  <li>Once active, Numen has its <strong>own turn and a single action</strong>. It does not benefit from Spells that grant additional actions. Numen’s turn can be taken either before or after the Illusionist’s turn.</li>\n</ul>\n\n<p>When creating a Numen Phantasm, choose one essence, which dictates Numen’s damage type:</p>\n<ul>\n  <li><strong>Ravana</strong> — <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:rgb(153,153,153) 0 0 4px;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a></span></span></li>\n  <li><strong>Asura</strong> — <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:rgb(202,189,154) 0 0 4px;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></span></li>\n  <li><strong>Diablos</strong> — <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:rgb(182,102,210) 0 0 4px;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span></li>\n</ul>\n\n<p>The target hit by Numen suffers <strong>[HR + 14]</strong> damage.</p>\n<p>Damage dealt by Numen <strong>ignores Resistances and Immunities</strong>.</p>\n<p>The <strong>range</strong> of the attack is determined by your current weapon.</p>\n\n<hr>\n\n<p><strong>Skill Enhancement Lv. 20</strong> ― <em>Numen’s on-hit damage</em> increases to <strong>18</strong>.</p>\n<p><strong>Skill Enhancement Lv. 40</strong> ― <em>Numen’s on-hit damage</em> increases to <strong>20</strong>.</p>\n",
+          "duration": "-",
+          "heroic_requirement": "You must have mastered the Illusionist Class.",
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": true,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Create Phantasm: Numen",
+          "optional_params": {},
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Active",
+          "type_damage": "Special",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "j9ve2lwzoHiOo6bM"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "Bxr578oFagp4p4uQ",
+      "_stats": {
+        "compendiumSource": "Item.5YDB98KzxFsGWDvT",
+        "coreVersion": "12.343",
+        "createdTime": 1758208647681,
+        "duplicateSource": "Item.YDzMWktTnD9J9Jun",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/DaydreamerPassive3.png",
+      "name": "Phantasmal Recovery",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Illusionist",
+          "cost": "-",
+          "damage_bonus": "0",
+          "description": "<p>Shatter one of your Phantasms to recover <strong>[SL × 5 HP]</strong>. Shattering a Phantasm this way will not trigger the <strong>Phantasmal Echo</strong> Skill.</p>\n",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "5",
+          "name": "Phantasmal Recovery",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>HP Recovered</strong></p></td></tr><tr><td><p>1</p></td><td><p>5</p></td></tr><tr><td><p>2</p></td><td><p>10</p></td></tr><tr><td><p>3</p></td><td><p>15</p></td></tr><tr><td><p>4</p></td><td><p>20</p></td></tr><tr><td><p>5</p></td><td><p>25</p></td></tr></tbody></table>",
+          "skill_range": "Any",
+          "skill_target": "One of your Phantasm",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "5YDB98KzxFsGWDvT"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "ChuSqFPh1zSJtcC2",
+      "_stats": {
+        "compendiumSource": "Item.jUhunlAkAcNTpD4s",
+        "coreVersion": "12.343",
+        "createdTime": 1758208648799,
+        "duplicateSource": "Item.5YDB98KzxFsGWDvT",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/NishaLabyrinthPassive1.png",
+      "name": "Phantasmal Recycling",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Illusionist",
+          "cost": "-",
+          "damage_bonus": "0",
+          "description": "<p>When you cast a spell, if you don't have enough MP to pay for its total cost, you may choose to shatter one of your Phantasms instead. Destroying a Phantasm this way will not trigger the <strong>Phantasmal Echo</strong> skill. You cannot use this skill to create a Phantasm.</p>\n",
+          "duration": "-",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Phantasmal Recycling",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "jUhunlAkAcNTpD4s"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "CqAmHzX4w14RdIix",
+      "_stats": {
+        "compendiumSource": "Item.peLYH0zSiab4UQ4E",
+        "coreVersion": "12.343",
+        "createdTime": 1758208786942,
+        "duplicateSource": "Item.zbulFnM318NgBgh5",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/RadiantSoulHyper.png",
+      "name": "Placebo Energy",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Illusionist",
+          "cost": "10 MP",
+          "damage_bonus": "0",
+          "description": "<p>You create an illusion that makes your companions feel healthier and refreshed for a while. For their next <strong>3 turns</strong>, they gain <strong>40 additional HP</strong> — this increases both their maximum and their current HP by 40.</p><p>After 3 turns, they lose this additional HP. If reduced to 0 HP at the end of the spell, the Sacrifice and Surrender rules apply as normal.</p><hr contenteditable=\"false\"><p><strong>Skill Enhancement Lv. 20</strong> ― This amount increases to <strong>50 HP</strong>.</p><p><strong>Skill Enhancement Lv. 40</strong> ― This amount increases to <strong>60 HP</strong>.</p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Placebo Energy",
+          "optional_params": {},
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "skill_range": "Range",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "peLYH0zSiab4UQ4E"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "EPm4hLBO5E2dSsXk",
+      "_stats": {
+        "compendiumSource": "Item.5J4eJJ466ztg20zm",
+        "coreVersion": "12.343",
+        "createdTime": 1758208649885,
+        "duplicateSource": "Item.jUhunlAkAcNTpD4s",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/DaydreamerPassive1.png",
+      "name": "Ritual Illusionism",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Illusionist",
+          "cost": "-",
+          "damage_bonus": "0",
+          "description": "<p>You may perform Rituals whose effects fall within the <strong>Illusionism</strong> discipline. Illusionism Rituals use <strong>[INS + WLP]</strong> for the Magic Check.</p>\n",
+          "duration": "-",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Ritual Illusionism",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "5J4eJJ466ztg20zm"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "f9jYqJbh4RHTfxr1",
+      "_stats": {
+        "compendiumSource": "Item.WYUnQzanvuduKdSy",
+        "coreVersion": "12.343",
+        "createdTime": 1758208781234,
+        "duplicateSource": "Item.8g79dzk64n7b0kIb",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/ShiningRomanticaTSkill2.png",
+      "name": "Mirage Blitz",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "Illusionist",
+          "cost": "10 MP",
+          "damage_bonus": "10",
+          "defense_target_type": "def",
+          "description": "<p>You command all your active Phantasms to charge at a single enemy with incredible speed, shattering on impact. They all share a single Magic Check. If they hit, the target suffers <strong>[HR + 10]</strong> <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:rgb(153,153,153)0 0 4px;\"><strong><span style=\"text-decoration: underline;\">Physical </span></strong></a></span></span>damage <strong>per Phantasm</strong> and <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\"><strong><span style=\"text-decoration: underline;\">Dazed </span></strong></a></span></span>. Damage dealt by this spell <strong>ignores Resistances</strong>.</p><hr contenteditable=\"false\"><p><strong>Skill Enhancement Lv. 20</strong> ― Damage becomes <strong>15</strong> per Phantasm.</p><p><strong>Skill Enhancement Lv. 40</strong> ― Damage becomes <strong>20</strong> per Phantasm.</p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": true,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": true,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Mirage Blitz",
+          "optional_params": {},
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "One Creature",
+          "skill_type": "Spell",
+          "type_damage": "Physical",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "WYUnQzanvuduKdSy"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "HuFg03GeErzQ0ldi",
+      "_stats": {
+        "compendiumSource": "Item.ivCSQcT8cuj07ELa",
+        "coreVersion": "12.343",
+        "createdTime": 1758208645178,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/DaydreamerPassive2.png",
+      "name": "Illusionist Magic",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Illusionist",
+          "cost": "-",
+          "damage_bonus": "0",
+          "description": "<p>Each time you acquire this Skill, learn one Illusionist spell. </p><p>【⚡️ Offensive Spell】 Illusionist spells and Phantasm use <strong>[INS + WLP]</strong> for their Checks.</p>",
+          "duration": "-",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "10",
+          "name": "Illusionist Magic",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Other",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "ivCSQcT8cuj07ELa"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "IIp1xnmHgtej5pze",
+      "_stats": {
+        "compendiumSource": "Item.OsIQ6VBzU7XklPUQ",
+        "coreVersion": "12.343",
+        "createdTime": 1758208774511,
+        "duplicateSource": "Item.VXzpUvjAr9Z5wfBA",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/TwinsPicaroPassive2.png",
+      "name": "Create Phantasm: Mockery",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "Illusionist",
+          "cost": "10 MP",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>You may spend one action to create a vexing Phantasm that taunts and distracts your foe. For the next 【⚔️ Attack】, if the target rolls an even number for its Accuracy Check, the attack misses.</p>\n<p>On any subsequent turn, you can perform an action and another Magic Check to command the Phantasm to taunt again, with no MP requirements.</p>\n",
+          "duration": "Scene",
+          "heroic_requirement": "",
+          "isCheck": true,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": true,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Create Phantasm: Mockery",
+          "optional_params": {},
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "One Creature",
+          "skill_type": "Spell",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "OsIQ6VBzU7XklPUQ"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "JiO6GqyH0GSyP4GJ",
+      "_stats": {
+        "compendiumSource": "Item.k7gaSnhF7IynAnfG",
+        "coreVersion": "12.343",
+        "createdTime": 1758208777078,
+        "duplicateSource": "Item.TpHy6WcxSkQRhgtS",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/LumenTellusStage4.png",
+      "name": "Detonate Phantasm",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "Illusionist",
+          "cost": "10 MP",
+          "damage_bonus": "25",
+          "defense_target_type": "def",
+          "description": "<p>You overflow one Phantasm with energy, making it explode to devastating effect. Choose a damage type:</p>\n<ul>\n  <li>\n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\">\n      <a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\">\n        <strong><span style=\"text-decoration: underline;\">Light</span></strong>\n      </a>\n    </span></span>\n  </li>\n  <li>\n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\">\n      <a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\">\n        <strong><span style=\"text-decoration: underline;\">Dark</span></strong>\n      </a>\n    </span></span>\n  </li>\n</ul>\n<p>The target hit by this spell suffers <strong>[HR + 25]</strong> damage of the chosen type. This shatters the Phantasm.</p>\n",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": true,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": true,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Detonate Phantasm",
+          "optional_params": {},
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "One Creature",
+          "skill_type": "Spell",
+          "type_damage": "Special",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "k7gaSnhF7IynAnfG"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "k8da2BsIXo4XWsWk",
+      "_stats": {
+        "compendiumSource": "Item.zbulFnM318NgBgh5",
+        "coreVersion": "12.343",
+        "createdTime": 1758208784057,
+        "duplicateSource": "Item.bbEv9kibtZscX9eJ",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/RumblePumnTPassive1.png",
+      "name": "Nocebo Weapon",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Illusionist",
+          "cost": "10 MP",
+          "damage_bonus": "0",
+          "description": "<p>You make a weapon appear as if it were imbued with soul energy. Choose a damage type:</p><ul><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></span></li><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span></li></ul><p>Until this spell ends, all damage dealt by the weapon becomes of the chosen type. If you have that weapon equipped while casting this spell, you may perform a <strong>free</strong> <strong>attack</strong> with it as part of the same action. This spell can only be cast on a weapon equipped by a willing creature.</p>",
+          "duration": "Scene",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Nocebo Weapon",
+          "optional_params": {},
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "skill_range": "Range",
+          "skill_target": "One Weapon",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "zbulFnM318NgBgh5"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "LpUX9OQZyZnx1E5L",
+      "_stats": {
+        "compendiumSource": "Item.CE5U6a1EOie45LP7",
+        "coreVersion": "12.343",
+        "createdTime": 1758208789651,
+        "duplicateSource": "Item.xp8F3W3gtYpTGXSi",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/DaydreamerSkill2.png",
+      "name": "Vital Sacrifice",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Illusionist",
+          "cost": "10 MP",
+          "damage_bonus": "0",
+          "description": "<p>You command your Phantasms to heal your allies. Each Phantasm runs towards a companion and shatters itself in a cloud of healing energy. Each target recovers <strong>20 HP</strong>. A single ally cannot be healed by more than one Phantasm per action.</p>\n",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Vital Sacrifice",
+          "optional_params": {},
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "skill_range": "Range",
+          "skill_target": "Up to three allies",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "CE5U6a1EOie45LP7"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "MbmzXKQnOGp6kGly",
+      "_stats": {
+        "compendiumSource": "Item.xp8F3W3gtYpTGXSi",
+        "coreVersion": "12.343",
+        "createdTime": 1758208788327,
+        "duplicateSource": "Item.peLYH0zSiab4UQ4E",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/EternityWinnerHyper.png",
+      "name": "Spectral Light",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Illusionist",
+          "cost": "10 MP",
+          "damage_bonus": "0",
+          "description": "<p>You command all your active Phantasms to shatter with a blinding light. Choose one; you inflict the chosen status effect on each target hit by this spell:</p>\n<ul>\n  <li>\n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\">\n      <a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\">\n        <strong><span style=\"text-decoration: underline;\">Dazed</span></strong>\n      </a>\n    </span></span>\n  </li>\n  <li>\n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\">\n      <a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\">\n        <strong><span style=\"text-decoration: underline;\">Shaken</span></strong>\n      </a>\n    </span></span>\n  </li>\n</ul>\n",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": true,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": true,
+          "level": "1",
+          "max_level": "1",
+          "name": "Spectral Light",
+          "optional_params": {},
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "skill_range": "Range",
+          "skill_target": "Up to three creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "xp8F3W3gtYpTGXSi"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "qIbPWqh6b7jz1J5j",
+      "_stats": {
+        "compendiumSource": "Item.8g79dzk64n7b0kIb",
+        "coreVersion": "12.343",
+        "createdTime": 1758208780001,
+        "duplicateSource": "Item.QJw9MuxrOXtRVOxx",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/EternityWinnerPassive1.png",
+      "name": "Illusory Shield",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "Illusionist",
+          "cost": "10 MP",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>When another creature is threatened by an 【⚔️ Attack】, 【📕 Spell】, or other danger, command one Phantasm to take their place. Any Checks that are part of the danger will be performed against the Phantasm. The Phantasm shields the creature, suffering an amount of damage corresponding to how much PV it has left, until it shatters. The remaining damage goes to the creature being defended. All status effects related to the attack are nullified.</p>\n",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Illusory Shield",
+          "optional_params": {},
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "One Creature",
+          "skill_type": "Spell",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "8g79dzk64n7b0kIb"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "rLC5iund3SQOo1e8",
+      "_stats": {
+        "compendiumSource": "Item.VXzpUvjAr9Z5wfBA",
+        "coreVersion": "12.343",
+        "createdTime": 1777032874502,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/DaydreamerSkill3.png",
+      "name": "Create Phantasm: Dread",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 100000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "<p>// ============================================================================</p><p>// Create Phantasm: Dread — Animation Script</p><p>// Mirrors Sneak → Flurry first part:</p><p>// - Caster pseudo-slides forward</p><p>// - Sneak Attack / stealth figure appears in front of target</p><p>// - Then skull smoke appears on target</p><p>// - Hit SFX is Spook.mp3</p><p>// ============================================================================</p><p>return (async () =&gt; {</p><p>const TAG = \"[ANIM][PHANTASM-DREAD]\";</p><p>const FX_SNEAK =</p><p>\"modules/JB2A_DnD5e/Library/1st_Level/Sneak_Attack/Sneak_Attack_Dark_Green_300x300.webm\";</p><p>const FX_DREAD =</p><p>\"modules/JB2A_DnD5e/Library/Cantrip/Toll_The_Dead/TollTheDeadSkullSmoke_01_Regular_Green_400x400.webm\";</p><p>const SFX_MOVE =</p><p>\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Beginspell.mp3\";</p><p>const SFX_SNEAK =</p><p>\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Beginspell.mp3\";</p><p>const SFX_HIT =</p><p>\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Spook.mp3\";</p><p>const TUNE = {</p><p>// Caster movement</p><p>moveDurationMs: 350,</p><p>casterStepSquares: 0.35,</p><p>// Timing</p><p>waitAfterStepOutMs: 150,</p><p>waitBetweenSneakAndSkullMs: 1500,</p><p>waitBeforeStepBackMs: 150,</p><p>endBufferMs: 80,</p><p>// Sneak figure VFX</p><p>sneakScaleToTarget: 2.20,</p><p>sneakOffsetX: 140,</p><p>sneakOffsetY: 0,</p><p>sneakLifeMs: 900,</p><p>sneakFadeInMs: 120,</p><p>sneakFadeOutMs: 220,</p><p>// Skull smoke VFX</p><p>skullScaleToTarget: 1.55,</p><p>skullOffsetX: 0,</p><p>skullOffsetY: -8,</p><p>skullLifeMs: 1150,</p><p>skullFadeInMs: 80,</p><p>skullFadeOutMs: 260,</p><p>// General</p><p>zIndexCaster: 5000,</p><p>zIndexVfx: 7000,</p><p>// Sound</p><p>moveVolume: 0.9,</p><p>sneakVolume: 0.8,</p><p>hitVolume: 0.85</p><p>};</p><p>// ---------------------------------------------------------------------------</p><p>// ONI emit helper</p><p>// ---------------------------------------------------------------------------</p><p>globalThis.ONI = globalThis.ONI ?? {};</p><p>if (!globalThis.ONI.emit) {</p><p>globalThis.ONI.emit = function (eventName, payload = {}, options = {}) {</p><p>const { local = true, world = false } = options;</p><p>if (local) Hooks.callAll(eventName, payload);</p><p>if (world) game.socket.emit(\"world\", { action: eventName, payload });</p><p>};</p><p>}</p><p>const wait = (ms) =&gt; new Promise(resolve =&gt; setTimeout(resolve, ms));</p><p>const isUuid = (v) =&gt; typeof v === \"string\" &amp;&amp; v.includes(\".\");</p><p>const uniq = (arr) =&gt; {</p><p>return Array.from(new Set((Array.isArray(arr) ? arr : []).filter(Boolean).map(String)));</p><p>};</p><p>async function resolveToken(ref) {</p><p>if (!ref) return null;</p><p>if (ref?.document?.documentName === \"Token\") return ref;</p><p>if (ref?.documentName === \"Token\") return ref.object ?? canvas.tokens?.get?.(ref.id) ?? null;</p><p>if (typeof ref === \"string\" &amp;&amp; canvas.tokens?.get?.(ref)) {</p><p>return canvas.tokens.get(ref);</p><p>}</p><p>if (isUuid(ref)) {</p><p>try {</p><p>const doc = await fromUuid(ref);</p><p>if (!doc) return null;</p><p>if (doc.documentName === \"Token\") {</p><p>return doc.object ?? canvas.tokens?.get?.(doc.id) ?? null;</p><p>}</p><p>if (doc.documentName === \"Actor\") {</p><p>return doc.getActiveTokens?.(true, true)?.[0] ?? doc.getActiveTokens?.()?.[0] ?? null;</p><p>}</p><p>if (doc?.actor?.getActiveTokens) {</p><p>return doc.actor.getActiveTokens(true, true)?.[0] ?? doc.actor.getActiveTokens()?.[0] ?? null;</p><p>}</p><p>return doc?.object ?? null;</p><p>} catch (err) {</p><p>console.warn(TAG, \"resolveToken failed:\", ref, err);</p><p>return null;</p><p>}</p><p>}</p><p>return null;</p><p>}</p><p>function collectSourceRef(p) {</p><p>return (</p><p>p?.sourceTokenUuid ??</p><p>p?.casterTokenUuid ??</p><p>p?.attackerTokenUuid ??</p><p>p?.sourceTokenId ??</p><p>p?.casterTokenId ??</p><p>p?.attackerTokenId ??</p><p>p?.meta?.attackerUuid ??</p><p>p?.attackerUuid ??</p><p>p?.attackerActorUuid ??</p><p>null</p><p>);</p><p>}</p><p>function collectTargetRefs(p, targetArg) {</p><p>const out = [];</p><p>if (Array.isArray(targetArg)) {</p><p>for (const t of targetArg) {</p><p>if (t?.document?.uuid) out.push(t.document.uuid);</p><p>else if (t?.documentName === \"Token\" &amp;&amp; t.uuid) out.push(t.uuid);</p><p>else if (typeof t === \"string\") out.push(t);</p><p>}</p><p>}</p><p>if (Array.isArray(p?.targetTokenUuids)) out.push(...p.targetTokenUuids);</p><p>if (Array.isArray(p?.targetTokenIds)) out.push(...p.targetTokenIds);</p><p>if (Array.isArray(p?.originalTargetUUIDs)) out.push(...p.originalTargetUUIDs);</p><p>if (Array.isArray(p?.meta?.originalTargetUUIDs)) out.push(...p.meta.originalTargetUUIDs);</p><p>if (Array.isArray(p?.targets)) out.push(...p.targets);</p><p>return uniq(out);</p><p>}</p><p>const actionPayload =</p><p>(globalThis.__PAYLOAD &amp;&amp; typeof globalThis.__PAYLOAD === \"object\")</p><p>? globalThis.__PAYLOAD</p><p>: ((typeof payload !== \"undefined\" &amp;&amp; payload) ? payload : {});</p><p>const passedTargets =</p><p>Array.isArray(globalThis.__TARGETS)</p><p>? globalThis.__TARGETS</p><p>: ((typeof targets !== \"undefined\" &amp;&amp; Array.isArray(targets)) ? targets : []);</p><p>const sourceRef = collectSourceRef(actionPayload);</p><p>const targetRefs = collectTargetRefs(actionPayload, passedTargets);</p><p>const sourceToken = await resolveToken(sourceRef);</p><p>const targetTokens = [];</p><p>const seenTargetIds = new Set();</p><p>for (const ref of targetRefs) {</p><p>const tok = await resolveToken(ref);</p><p>if (!tok?.document?.uuid) continue;</p><p>if (seenTargetIds.has(tok.id)) continue;</p><p>seenTargetIds.add(tok.id);</p><p>targetTokens.push(tok);</p><p>}</p><p>if (!sourceToken) {</p><p>console.warn(TAG, \"No caster token resolved from payload. Animation skipped.\", {</p><p>sourceRef,</p><p>actionPayload</p><p>});</p><p>return false;</p><p>}</p><p>if (!targetTokens.length) {</p><p>console.warn(TAG, \"No target tokens resolved from payload. Animation skipped.\", {</p><p>targetRefs,</p><p>actionPayload</p><p>});</p><p>return false;</p><p>}</p><p>const firstTarget = targetTokens[0];</p><p>const pseudo = game?.ONI?.pseudo ?? globalThis.ONI?.pseudo ?? null;</p><p>if (!pseudo?.play) {</p><p>ui.notifications?.warn?.(\"Create Phantasm: Dread animation skipped: ONI Pseudo API not found.\");</p><p>console.warn(TAG, \"Missing game.ONI.pseudo.play.\");</p><p>return false;</p><p>}</p><p>let started = false;</p><p>try {</p><p>started = true;</p><p>ONI.emit(\"oni:animationStart\", {</p><p>type: \"phantasmDread\",</p><p>sourceTokenId: sourceToken.id,</p><p>targetTokenIds: targetTokens.map(t =&gt; t.id),</p><p>sceneId: canvas.scene?.id ?? null,</p><p>timestamp: Date.now()</p><p>}, { local: true, world: false });</p><p>const casterDisposition =</p><p>sourceToken?.actor?.document?.disposition ??</p><p>sourceToken?.document?.disposition ??</p><p>0;</p><p>const casterMoveRight = casterDisposition === -1;</p><p>const stepPx = (canvas.grid?.size ?? 100) * TUNE.casterStepSquares;</p><p>const casterDx = casterMoveRight ? +stepPx : -stepPx;</p><p>const skullTotalMs =</p><p>TUNE.skullFadeInMs +</p><p>TUNE.skullLifeMs +</p><p>TUNE.skullFadeOutMs;</p><p>const holdForwardMs =</p><p>TUNE.waitAfterStepOutMs +</p><p>TUNE.waitBetweenSneakAndSkullMs +</p><p>skullTotalMs +</p><p>TUNE.waitBeforeStepBackMs;</p><p>const pseudoScriptSource = `</p><p>const { casterToken, targetTokens, params } = ctx;</p><p>if (!casterToken) throw new Error(\"PhantasmDreadPseudo: casterToken missing\");</p><p>const cfg = params.cfg ?? {};</p><p>const FX_SNEAK = String(params.fxSneak ?? \"\");</p><p>const FX_DREAD = String(params.fxDread ?? \"\");</p><p>const SFX_MOVE = String(params.sfxMove ?? \"\");</p><p>const SFX_SNEAK = String(params.sfxSneak ?? \"\");</p><p>const SFX_HIT = String(params.sfxHit ?? \"\");</p><p>const wait = (ms) =&gt; new Promise(resolve =&gt; setTimeout(resolve, ms));</p><p>function num(v, d = 0) {</p><p>const n = Number(v);</p><p>return Number.isFinite(n) ? n : d;</p><p>}</p><p>function easeOutCubic(t) {</p><p>return 1 - Math.pow(1 - t, 3);</p><p>}</p><p>function easeInOutCubic(t) {</p><p>return t &lt; 0.5</p><p>? 4 * t * t * t</p><p>: 1 - Math.pow(-2 * t + 2, 3) / 2;</p><p>}</p><p>function tweenValue(setter, from, to, durMs, ease = easeOutCubic) {</p><p>return new Promise(resolve =&gt; {</p><p>const dur = Math.max(0, Number(durMs) || 0);</p><p>if (dur &lt;= 0) {</p><p>setter(to, 1);</p><p>resolve();</p><p>return;</p><p>}</p><p>const start = performance.now();</p><p>const ticker = canvas.app.ticker;</p><p>const update = () =&gt; {</p><p>const raw = (performance.now() - start) / dur;</p><p>const t = Math.min(Math.max(raw, 0), 1);</p><p>const e = ease(t);</p><p>const v = from + ((to - from) * e);</p><p>setter(v, t);</p><p>if (t &gt;= 1) {</p><p>ticker.remove(update);</p><p>resolve();</p><p>}</p><p>};</p><p>ticker.add(update);</p><p>});</p><p>}</p><p>function animateXY(obj, fromX, fromY, toX, toY, durMs) {</p><p>return new Promise(resolve =&gt; {</p><p>const dur = Math.max(0, Number(durMs) || 0);</p><p>if (dur &lt;= 0) {</p><p>obj.x = toX;</p><p>obj.y = toY;</p><p>resolve();</p><p>return;</p><p>}</p><p>const start = performance.now();</p><p>const ticker = canvas.app.ticker;</p><p>const update = () =&gt; {</p><p>const raw = (performance.now() - start) / dur;</p><p>const t = Math.min(Math.max(raw, 0), 1);</p><p>const e = easeInOutCubic(t);</p><p>obj.x = fromX + ((toX - fromX) * e);</p><p>obj.y = fromY + ((toY - fromY) * e);</p><p>if (t &gt;= 1) {</p><p>ticker.remove(update);</p><p>resolve();</p><p>}</p><p>};</p><p>ticker.add(update);</p><p>});</p><p>}</p><p>function safeCenter(token) {</p><p>if (token?.center) return { x: token.center.x, y: token.center.y };</p><p>const d = token?.document ?? token;</p><p>const grid = canvas?.grid?.size ?? 100;</p><p>const w = Number(d?.width ?? 1) * grid;</p><p>const h = Number(d?.height ?? 1) * grid;</p><p>return {</p><p>x: Number(d?.x ?? 0) + w / 2,</p><p>y: Number(d?.y ?? 0) + h / 2</p><p>};</p><p>}</p><p>function playSfx(file, volume = 0.8) {</p><p>if (!file) return;</p><p>try {</p><p>if (typeof Sequence !== \"undefined\") {</p><p>new Sequence()</p><p>.sound()</p><p>.file(file)</p><p>.volume(volume)</p><p>.play();</p><p>return;</p><p>}</p><p>} catch (err) {</p><p>console.warn(\"[ANIM][PHANTASM-DREAD][PSEUDO] Sequencer SFX failed, trying AudioHelper.\", err);</p><p>}</p><p>try {</p><p>const helper = foundry?.audio?.AudioHelper ?? AudioHelper ?? null;</p><p>helper?.play?.({ src: file, volume, autoplay: true, loop: false }, true);</p><p>} catch (err) {</p><p>console.warn(\"[ANIM][PHANTASM-DREAD][PSEUDO] Audio fallback failed.\", err);</p><p>}</p><p>}</p><p>async function createCasterClone(token) {</p><p>const baseObj = token.mesh ?? token.icon;</p><p>const texture = baseObj?.texture ?? await loadTexture(token.document.texture.src);</p><p>const sprite = new PIXI.Sprite(texture);</p><p>sprite.anchor.set(0.5);</p><p>sprite.x = token.center.x;</p><p>sprite.y = token.center.y;</p><p>if (baseObj) {</p><p>sprite.width = baseObj.width;</p><p>sprite.height = baseObj.height;</p><p>}</p><p>sprite.zIndex = num(cfg.zIndexCaster, 5000);</p><p>canvas.stage.sortableChildren = true;</p><p>canvas.stage.addChild(sprite);</p><p>canvas.stage.sortChildren();</p><p>return sprite;</p><p>}</p><p>async function createVideoSprite(url) {</p><p>const video = document.createElement(\"video\");</p><p>video.src = url;</p><p>video.crossOrigin = \"anonymous\";</p><p>video.muted = true;</p><p>video.loop = false;</p><p>video.playsInline = true;</p><p>video.preload = \"auto\";</p><p>await new Promise(resolve =&gt; {</p><p>let done = false;</p><p>const finish = () =&gt; {</p><p>if (done) return;</p><p>done = true;</p><p>resolve();</p><p>};</p><p>video.addEventListener(\"loadeddata\", finish, { once: true });</p><p>video.addEventListener(\"canplay\", finish, { once: true });</p><p>video.addEventListener(\"error\", finish, { once: true });</p><p>try { video.load(); } catch (_) {}</p><p>setTimeout(finish, 1500);</p><p>});</p><p>const texture = PIXI.Texture.from(video);</p><p>const sprite = new PIXI.Sprite(texture);</p><p>sprite.anchor.set(0.5, 0.5);</p><p>sprite.alpha = 0;</p><p>sprite.zIndex = num(cfg.zIndexVfx, 7000);</p><p>return { video, texture, sprite };</p><p>}</p><p>async function playVideoVfx({</p><p>url,</p><p>targetToken,</p><p>offsetX = 0,</p><p>offsetY = 0,</p><p>scaleToTarget = 1,</p><p>mirrorX = false,</p><p>fadeInMs = 100,</p><p>lifeMs = 900,</p><p>fadeOutMs = 200</p><p>} = {}) {</p><p>if (!url || !targetToken) return;</p><p>const center = safeCenter(targetToken);</p><p>const container = new PIXI.Container();</p><p>container.zIndex = num(cfg.zIndexVfx, 7000);</p><p>container.sortableChildren = true;</p><p>canvas.stage.sortableChildren = true;</p><p>canvas.stage.addChild(container);</p><p>canvas.stage.sortChildren();</p><p>let pack = null;</p><p>try {</p><p>pack = await createVideoSprite(url);</p><p>const { video, sprite, texture } = pack;</p><p>const grid = canvas?.grid?.size ?? 100;</p><p>const targetW = Number(targetToken?.w ?? targetToken?.width ?? grid) || grid;</p><p>const targetH = Number(targetToken?.h ?? targetToken?.height ?? grid) || grid;</p><p>const side = Math.max(targetW, targetH) * Number(scaleToTarget || 1);</p><p>const naturalW = Number(video.videoWidth || texture.width || 400) || 400;</p><p>const naturalH = Number(video.videoHeight || texture.height || 400) || 400;</p><p>sprite.width = side;</p><p>sprite.height = side * (naturalH / naturalW);</p><p>if (mirrorX) {</p><p>sprite.scale.x = -Math.abs(sprite.scale.x);</p><p>}</p><p>sprite.x = center.x + Number(offsetX || 0);</p><p>sprite.y = center.y + Number(offsetY || 0);</p><p>container.addChild(sprite);</p><p>try {</p><p>video.currentTime = 0;</p><p>await video.play();</p><p>} catch (err) {</p><p>console.warn(\"[ANIM][PHANTASM-DREAD][PSEUDO] Video play warning.\", err);</p><p>}</p><p>await tweenValue(</p><p>(v) =&gt; { sprite.alpha = v; },</p><p>0,</p><p>1,</p><p>fadeInMs,</p><p>easeOutCubic</p><p>);</p><p>await wait(lifeMs);</p><p>await tweenValue(</p><p>(v) =&gt; { sprite.alpha = v; },</p><p>sprite.alpha,</p><p>0,</p><p>fadeOutMs,</p><p>easeInOutCubic</p><p>);</p><p>} finally {</p><p>try {</p><p>if (pack?.video) {</p><p>pack.video.pause();</p><p>pack.video.removeAttribute(\"src\");</p><p>pack.video.load();</p><p>}</p><p>} catch (_) {}</p><p>try {</p><p>if (pack?.sprite?.parent) pack.sprite.parent.removeChild(pack.sprite);</p><p>pack?.sprite?.destroy?.({ texture: false, baseTexture: false });</p><p>} catch (_) {}</p><p>try {</p><p>if (container?.parent) container.parent.removeChild(container);</p><p>container?.destroy?.({ children: true, texture: false, baseTexture: false });</p><p>} catch (_) {}</p><p>}</p><p>}</p><p>async function runCasterStep() {</p><p>const baseMesh = casterToken.mesh ?? casterToken.icon;</p><p>const originalTokenVisible = casterToken.visible;</p><p>const originalMeshVisible = baseMesh?.visible ?? true;</p><p>let sprite;</p><p>try {</p><p>sprite = await createCasterClone(casterToken);</p><p>if (baseMesh) baseMesh.visible = false;</p><p>casterToken.visible = false;</p><p>const startX = sprite.x;</p><p>const startY = sprite.y;</p><p>const outX = startX + num(params.casterDx, 0);</p><p>const outY = startY;</p><p>await animateXY(</p><p>sprite,</p><p>startX,</p><p>startY,</p><p>outX,</p><p>outY,</p><p>num(cfg.moveDurationMs, 350)</p><p>);</p><p>const hold = num(params.holdForwardMs, 0);</p><p>if (hold &gt; 0) await wait(hold);</p><p>await animateXY(</p><p>sprite,</p><p>outX,</p><p>outY,</p><p>startX,</p><p>startY,</p><p>num(cfg.moveDurationMs, 350)</p><p>);</p><p>} finally {</p><p>if (sprite) {</p><p>try {</p><p>if (sprite.parent) sprite.parent.removeChild(sprite);</p><p>sprite.destroy({ texture: false, baseTexture: false });</p><p>} catch (_) {}</p><p>}</p><p>if (baseMesh) baseMesh.visible = originalMeshVisible;</p><p>casterToken.visible = originalTokenVisible;</p><p>}</p><p>}</p><p>async function runVfxTimeline() {</p><p>const targetToken = targetTokens?.[0];</p><p>if (!targetToken) return;</p><p>const targetDisposition =</p><p>targetToken?._token?.actor?.document?.disposition ??</p><p>targetToken?.actor?.document?.disposition ??</p><p>targetToken?.document?.disposition ??</p><p>0;</p><p>const targetHostile = targetDisposition === -1;</p><p>const sneakOffsetX = targetHostile</p><p>? Math.abs(num(cfg.sneakOffsetX, 140))</p><p>: -Math.abs(num(cfg.sneakOffsetX, 140));</p><p>const sneakMirrorX = targetHostile;</p><p>// Move sound starts immediately.</p><p>playSfx(SFX_MOVE, num(cfg.moveVolume, 0.9));</p><p>// Wait until caster has stepped out, then show the stealth figure.</p><p>await wait(num(cfg.moveDurationMs, 350) + num(cfg.waitAfterStepOutMs, 150));</p><p>playSfx(SFX_SNEAK, num(cfg.sneakVolume, 0.8));</p><p>void playVideoVfx({</p><p>url: FX_SNEAK,</p><p>targetToken,</p><p>offsetX: sneakOffsetX,</p><p>offsetY: num(cfg.sneakOffsetY, 0),</p><p>scaleToTarget: num(cfg.sneakScaleToTarget, 1.2),</p><p>mirrorX: sneakMirrorX,</p><p>fadeInMs: num(cfg.sneakFadeInMs, 120),</p><p>lifeMs: num(cfg.sneakLifeMs, 900),</p><p>fadeOutMs: num(cfg.sneakFadeOutMs, 220)</p><p>});</p><p>// Wait like the original Sneak → Flurry before the \"hit\" VFX.</p><p>await wait(num(cfg.waitBetweenSneakAndSkullMs, 1500));</p><p>playSfx(SFX_HIT, num(cfg.hitVolume, 0.85));</p><p>await playVideoVfx({</p><p>url: FX_DREAD,</p><p>targetToken,</p><p>offsetX: num(cfg.skullOffsetX, 0),</p><p>offsetY: num(cfg.skullOffsetY, -8),</p><p>scaleToTarget: num(cfg.skullScaleToTarget, 1.55),</p><p>mirrorX: false,</p><p>fadeInMs: num(cfg.skullFadeInMs, 80),</p><p>lifeMs: num(cfg.skullLifeMs, 1150),</p><p>fadeOutMs: num(cfg.skullFadeOutMs, 260)</p><p>});</p><p>}</p><p>await Promise.all([</p><p>runCasterStep(),</p><p>runVfxTimeline()</p><p>]);</p><p>`;</p><p>pseudo.play({</p><p>scriptId: \"phantasmDread.sneakThenSkull\",</p><p>scriptSource: pseudoScriptSource,</p><p>casterTokenUuid: sourceToken.document.uuid,</p><p>targetTokenUuids: [firstTarget.document.uuid],</p><p>params: {</p><p>fxSneak: FX_SNEAK,</p><p>fxDread: FX_DREAD,</p><p>sfxMove: SFX_MOVE,</p><p>sfxSneak: SFX_SNEAK,</p><p>sfxHit: SFX_HIT,</p><p>casterDx,</p><p>holdForwardMs,</p><p>cfg: TUNE</p><p>},</p><p>meta: {</p><p>source: \"Create Phantasm: Dread\",</p><p>animation: \"Sneak Attack into Toll the Dead Skull Smoke\"</p><p>}</p><p>});</p><p>const totalMs =</p><p>TUNE.moveDurationMs +</p><p>holdForwardMs +</p><p>TUNE.moveDurationMs +</p><p>TUNE.endBufferMs;</p><p>await wait(totalMs);</p><p>console.log(TAG, \"END\", {</p><p>caster: sourceToken.name,</p><p>target: firstTarget.name,</p><p>totalMs,</p><p>skullAppearsAtMs:</p><p>TUNE.moveDurationMs +</p><p>TUNE.waitAfterStepOutMs +</p><p>TUNE.waitBetweenSneakAndSkullMs</p><p>});</p><p>return true;</p><p>} catch (err) {</p><p>console.error(TAG, \"Animation crashed:\", err);</p><p>return false;</p><p>} finally {</p><p>if (started) {</p><p>ONI.emit(\"oni:animationEnd\", {</p><p>type: \"phantasmDread\",</p><p>sourceTokenId: sourceToken?.id ?? null,</p><p>targetTokenIds: targetTokens.map(t =&gt; t.id),</p><p>sceneId: canvas.scene?.id ?? null,</p><p>timestamp: Date.now()</p><p>}, { local: true, world: false });</p><p>}</p><p>}</p><p>})();</p>",
+          "check_bonus": "0",
+          "class": "Illusionist",
+          "cost": "10 MP",
+          "custom_logic_action": "<p>// @local-ui-only</p><p>// ============================================================================</p><p>// [CustomLogic-Action] Create Phantasm: Dread</p><p>// - Opens one modal toggle dialog.</p><p>// - Requires 2 choices before Confirm:</p><p>//   1) Create New Phantasm / Use Existing Phantasm</p><p>//   2) Weak / Shaken</p><p>// - If Use Existing =&gt; cost becomes 0 MP.</p><p>// - Stores both choices in payload + actor flag for Resolution.</p><p>// ============================================================================</p><p>const TAG = \"[CL-ACT][PHANTASM-DREAD]\";</p><p>const MODULE_ID = \"fabula-ultima-companion\";</p><p>const DEBUG = true;</p><p>const dlog = (...a) =&gt; DEBUG &amp;&amp; context?.log ? context.log(TAG, ...a) : console.log(TAG, ...a);</p><p>const dwarn = (...a) =&gt; DEBUG &amp;&amp; context?.warn ? context.warn(TAG, ...a) : console.warn(TAG, ...a);</p><p>const p = __PAYLOAD;</p><p>if (!p) {</p><p>  console.warn(TAG, \"Missing __PAYLOAD\");</p><p>  return;</p><p>}</p><p>p.meta = p.meta || {};</p><p>// ---------------------------------------------------------------------------</p><p>// Resolve attacker actor</p><p>// ---------------------------------------------------------------------------</p><p>let attackerActor = null;</p><p>try {</p><p>  const attackerUuid = p?.meta?.attackerUuid ?? p?.attackerUuid ?? \"\";</p><p>  if (attackerUuid) {</p><p>    const ad = await fromUuid(attackerUuid);</p><p>    attackerActor = ad?.actor ?? ad;</p><p>  }</p><p>} catch (e) {</p><p>  dwarn(\"Could not resolve attacker actor fromUuid\", e);</p><p>}</p><p>// ---------------------------------------------------------------------------</p><p>// Modal toggle UI</p><p>// ---------------------------------------------------------------------------</p><p>async function choosePhantasmDreadOptions() {</p><p>  return await new Promise((resolve) =&gt; {</p><p>    let settled = false;</p><p>    const content = `</p><p>&lt;style&gt;</p><p>  .pd-wrap {</p><p>    padding: 10px 8px 4px;</p><p>    color: #2b2117;</p><p>  }</p><p>  .pd-help {</p><p>    margin: 0 0 10px;</p><p>    font-size: 13px;</p><p>    opacity: 0.85;</p><p>    line-height: 1.35;</p><p>  }</p><p>  .pd-section {</p><p>    margin-top: 10px;</p><p>    padding: 10px;</p><p>    border: 1px solid rgba(80, 55, 30, 0.35);</p><p>    border-radius: 8px;</p><p>    background: rgba(255, 246, 220, 0.45);</p><p>  }</p><p>  .pd-title {</p><p>    font-weight: 700;</p><p>    margin-bottom: 8px;</p><p>    font-size: 14px;</p><p>  }</p><p>  .pd-grid {</p><p>    display: grid;</p><p>    grid-template-columns: 1fr 1fr;</p><p>    gap: 8px;</p><p>  }</p><p>  .pd-card {</p><p>    position: relative;</p><p>    cursor: pointer;</p><p>    user-select: none;</p><p>    border: 2px solid rgba(90, 65, 35, 0.35);</p><p>    background: rgba(255, 255, 255, 0.35);</p><p>    border-radius: 9px;</p><p>    padding: 10px;</p><p>    min-height: 58px;</p><p>    transition: transform 120ms ease, border-color 120ms ease, background 120ms ease, box-shadow 120ms ease;</p><p>  }</p><p>  .pd-card:hover {</p><p>    transform: translateY(-1px);</p><p>    border-color: rgba(140, 80, 25, 0.7);</p><p>    box-shadow: 0 2px 8px rgba(0,0,0,0.15);</p><p>  }</p><p>  .pd-card.selected {</p><p>    border-color: #8c1717;</p><p>    background: rgba(255, 230, 210, 0.9);</p><p>    box-shadow: 0 0 0 2px rgba(140, 23, 23, 0.16), 0 2px 10px rgba(0,0,0,0.2);</p><p>  }</p><p>  .pd-card input {</p><p>    position: absolute;</p><p>    opacity: 0;</p><p>    pointer-events: none;</p><p>  }</p><p>  .pd-card-main {</p><p>    font-weight: 700;</p><p>    font-size: 14px;</p><p>    margin-bottom: 3px;</p><p>  }</p><p>  .pd-card-sub {</p><p>    font-size: 12px;</p><p>    opacity: 0.82;</p><p>    line-height: 1.3;</p><p>  }</p><p>  .pd-debuff-weak .pd-card-main::before {</p><p>    content: \"🛡️ \";</p><p>  }</p><p>  .pd-debuff-shaken .pd-card-main::before {</p><p>    content: \"💥 \";</p><p>  }</p><p>  .pd-warning {</p><p>    margin-top: 8px;</p><p>    font-size: 12px;</p><p>    color: #7a1a1a;</p><p>    opacity: 0.9;</p><p>  }</p><p>&lt;/style&gt;</p><p>&lt;div class=\"pd-wrap\"&gt;</p><p>  &lt;p class=\"pd-help\"&gt;</p><p>    Choose how you will use the Phantasm, then choose which debuff it will inflict.</p><p>  &lt;/p&gt;</p><p>  &lt;div class=\"pd-section\"&gt;</p><p>    &lt;div class=\"pd-title\"&gt;Phantasm Mode&lt;/div&gt;</p><p>    &lt;div class=\"pd-grid\"&gt;</p><p>      &lt;label class=\"pd-card\"&gt;</p><p>        &lt;input type=\"radio\" name=\"pd-mode\" value=\"new\"&gt;</p><p>        &lt;div class=\"pd-card-main\"&gt;Create New Phantasm&lt;/div&gt;</p><p>        &lt;div class=\"pd-card-sub\"&gt;Pay the normal MP cost and summon a new Phantasm.&lt;/div&gt;</p><p>      &lt;/label&gt;</p><p>      &lt;label class=\"pd-card\"&gt;</p><p>        &lt;input type=\"radio\" name=\"pd-mode\" value=\"existing\"&gt;</p><p>        &lt;div class=\"pd-card-main\"&gt;Use Existing Phantasm&lt;/div&gt;</p><p>        &lt;div class=\"pd-card-sub\"&gt;Cost becomes 0 MP. No new Phantasm is summoned.&lt;/div&gt;</p><p>      &lt;/label&gt;</p><p>    &lt;/div&gt;</p><p>  &lt;/div&gt;</p><p>  &lt;div class=\"pd-section\"&gt;</p><p>    &lt;div class=\"pd-title\"&gt;Debuff to Inflict&lt;/div&gt;</p><p>    &lt;div class=\"pd-grid\"&gt;</p><p>      &lt;label class=\"pd-card pd-debuff-weak\"&gt;</p><p>        &lt;input type=\"radio\" name=\"pd-debuff\" value=\"weak\"&gt;</p><p>        &lt;div class=\"pd-card-main\"&gt;Weak&lt;/div&gt;</p><p>        &lt;div class=\"pd-card-sub\"&gt;The Phantasm inflicts Weak on hit.&lt;/div&gt;</p><p>      &lt;/label&gt;</p><p>      &lt;label class=\"pd-card pd-debuff-shaken\"&gt;</p><p>        &lt;input type=\"radio\" name=\"pd-debuff\" value=\"shaken\"&gt;</p><p>        &lt;div class=\"pd-card-main\"&gt;Shaken&lt;/div&gt;</p><p>        &lt;div class=\"pd-card-sub\"&gt;The Phantasm inflicts Shaken on hit.&lt;/div&gt;</p><p>      &lt;/label&gt;</p><p>    &lt;/div&gt;</p><p>  &lt;/div&gt;</p><p>  &lt;div class=\"pd-warning\"&gt;</p><p>    Confirm becomes available after both choices are selected.</p><p>  &lt;/div&gt;</p><p>&lt;/div&gt;</p><p>`;</p><p>    const dlg = new Dialog({</p><p>      title: \"Create Phantasm: Dread\",</p><p>      content,</p><p>      buttons: {</p><p>        confirm: {</p><p>          icon: `&lt;i class=\"fas fa-check\"&gt;&lt;/i&gt;`,</p><p>          label: \"Confirm\",</p><p>          callback: (html) =&gt; {</p><p>            const $html = html?.find ? html : $(html);</p><p>            const mode = String($html.find(`input[name=\"pd-mode\"]:checked`).val() ?? \"\").trim();</p><p>            const debuff = String($html.find(`input[name=\"pd-debuff\"]:checked`).val() ?? \"\").trim();</p><p>            if (!mode || !debuff) {</p><p>              ui.notifications?.warn?.(\"Choose both a Phantasm mode and a debuff.\");</p><p>              return false;</p><p>            }</p><p>            settled = true;</p><p>            resolve({ mode, debuff });</p><p>          }</p><p>        },</p><p>        cancel: {</p><p>          icon: `&lt;i class=\"fas fa-times\"&gt;&lt;/i&gt;`,</p><p>          label: \"Cancel\",</p><p>          callback: () =&gt; {</p><p>            settled = true;</p><p>            resolve(null);</p><p>          }</p><p>        }</p><p>      },</p><p>      default: \"confirm\",</p><p>      close: () =&gt; {</p><p>        if (!settled) {</p><p>          settled = true;</p><p>          resolve(null);</p><p>        }</p><p>      },</p><p>      render: (html) =&gt; {</p><p>        const $html = html?.find ? html : $(html);</p><p>        const $app = $html.closest(\".app\");</p><p>        const $confirm = $app.find(`button[data-button=\"confirm\"]`);</p><p>        function sync() {</p><p>          const mode = String($html.find(`input[name=\"pd-mode\"]:checked`).val() ?? \"\").trim();</p><p>          const debuff = String($html.find(`input[name=\"pd-debuff\"]:checked`).val() ?? \"\").trim();</p><p>          $html.find(\".pd-card\").removeClass(\"selected\");</p><p>          $html.find(`input[name=\"pd-mode\"]:checked`).closest(\".pd-card\").addClass(\"selected\");</p><p>          $html.find(`input[name=\"pd-debuff\"]:checked`).closest(\".pd-card\").addClass(\"selected\");</p><p>          $confirm.prop(\"disabled\", !(mode &amp;&amp; debuff));</p><p>        }</p><p>        $html.on(\"click\", \".pd-card\", function () {</p><p>          const $input = $(this).find(\"input[type='radio']\");</p><p>          $input.prop(\"checked\", true).trigger(\"change\");</p><p>          sync();</p><p>        });</p><p>        $html.on(\"change\", `input[name=\"pd-mode\"], input[name=\"pd-debuff\"]`, sync);</p><p>        sync();</p><p>      }</p><p>    });</p><p>    dlg.render(true);</p><p>  });</p><p>}</p><p>// ---------------------------------------------------------------------------</p><p>// Debug snapshot before</p><p>// ---------------------------------------------------------------------------</p><p>dlog(\"BEFORE\", {</p><p>  skillName: context?.skillName ?? p?.core?.skillName ?? null,</p><p>  attackerUuid: p?.meta?.attackerUuid ?? null,</p><p>  costRaw: p?.meta?.costRaw ?? null,</p><p>  costRawOverride: p?.meta?.costRawOverride ?? null,</p><p>  costRawFinal: p?.meta?.costRawFinal ?? null</p><p>});</p><p>// ---------------------------------------------------------------------------</p><p>// Ask player</p><p>// ---------------------------------------------------------------------------</p><p>const pick = await choosePhantasmDreadOptions();</p><p>if (!pick) {</p><p>  return context.cancelPipeline(\"Action cancelled: no Phantasm Dread choice.\");</p><p>}</p><p>const debuffLabel = pick.debuff === \"shaken\" ? \"Shaken\" : \"Weak\";</p><p>dlog(\"CHOICE\", {</p><p>  mode: pick.mode,</p><p>  debuff: pick.debuff,</p><p>  debuffLabel</p><p>});</p><p>// ---------------------------------------------------------------------------</p><p>// Store choice</p><p>// ---------------------------------------------------------------------------</p><p>const choiceData = {</p><p>  mode: pick.mode,</p><p>  debuff: pick.debuff,</p><p>  debuffLabel,</p><p>  pickedAt: Date.now(),</p><p>  runId: context?.runId ?? null,</p><p>  skillName: context?.skillName ?? p?.core?.skillName ?? null</p><p>};</p><p>p.meta.__phantasmChoice = choiceData;</p><p>p.meta.__phantasmDreadChoice = choiceData;</p><p>// Use Existing =&gt; cost becomes 0 MP.</p><p>if (pick.mode === \"existing\") {</p><p>  p.meta.costRawOverride = \"0 MP\";</p><p>} else {</p><p>  delete p.meta.costRawOverride;</p><p>}</p><p>// Persist fallback flag on actor in case payload gets rebuilt.</p><p>try {</p><p>  if (attackerActor?.setFlag) {</p><p>    await attackerActor.setFlag(MODULE_ID, \"phantasmChoice\", choiceData);</p><p>    await attackerActor.setFlag(MODULE_ID, \"phantasmDreadChoice\", choiceData);</p><p>    dlog(\"FLAGS SAVED\", {</p><p>      actor: attackerActor?.name,</p><p>      mode: pick.mode,</p><p>      debuff: debuffLabel</p><p>    });</p><p>  } else {</p><p>    dwarn(\"No attackerActor.setFlag available; flags not saved.\");</p><p>  }</p><p>} catch (e) {</p><p>  dwarn(\"Failed to save Phantasm Dread flags.\", e);</p><p>}</p><p>// ---------------------------------------------------------------------------</p><p>// Debug snapshot after</p><p>// ---------------------------------------------------------------------------</p><p>dlog(\"AFTER\", {</p><p>  chosenMode: p?.meta?.__phantasmDreadChoice?.mode ?? null,</p><p>  chosenDebuff: p?.meta?.__phantasmDreadChoice?.debuffLabel ?? null,</p><p>  costRaw: p?.meta?.costRaw ?? null,</p><p>  costRawOverride: p?.meta?.costRawOverride ?? null,</p><p>  costRawFinal: p?.meta?.costRawFinal ?? null</p><p>});</p>",
+          "custom_logic_resolution": "<p>// ============================================================================</p><p>// [CustomLogic-Resolution] Create Phantasm: Dread</p><p>// - Reads mode + debuff choice from Action script.</p><p>// - Applies chosen debuff on hit: Weak or Shaken.</p><p>// - If Create New =&gt; summons Phantasm using the same left-column logic as Strike.</p><p>// - If Use Existing =&gt; skips the summon but still applies the chosen debuff.</p><p>// - Clears stored Phantasm choice afterward.</p><p>// ============================================================================</p><p>const TAG = \"[CL-RES][PHANTASM-DREAD]\";</p><p>const MODULE_ID = \"fabula-ultima-companion\";</p><p>// Change this if Create Phantasm: Dread uses a different summoned actor.</p><p>const SUMMON_ACTOR_UUID = \"Actor.VLaGqwrMzpmq0whe\";</p><p>const SPAWN_DELAY_MS = 2000;</p><p>const Z_INDEX_OFFSET = 20;</p><p>// Your Dread item shows \"vs Defense\", so this is false.</p><p>// If you later change the skill to \"vs Magic Defense\", set this to true.</p><p>const USE_MAGIC_DEFENSE = false;</p><p>function warn(...a) { console.warn(TAG, ...a); }</p><p>function log(...a) { console.log(TAG, ...a); }</p><p>function sleep(ms) { return new Promise(r =&gt; setTimeout(r, ms)); }</p><p>function norm(v) {</p><p>  return String(v ?? \"\").trim().toLowerCase();</p><p>}</p><p>function uniq(arr) {</p><p>  return Array.from(new Set((Array.isArray(arr) ? arr : []).filter(Boolean).map(String)));</p><p>}</p><p>function clone(obj, fallback = {}) {</p><p>  try {</p><p>    if (obj == null) return foundry?.utils?.deepClone ? foundry.utils.deepClone(fallback) : fallback;</p><p>    return foundry?.utils?.deepClone ? foundry.utils.deepClone(obj) : JSON.parse(JSON.stringify(obj));</p><p>  } catch {</p><p>    if (Array.isArray(obj)) return [...obj];</p><p>    if (obj &amp;&amp; typeof obj === \"object\") return { ...obj };</p><p>    return fallback;</p><p>  }</p><p>}</p><p>function snapToGrid(x, y) {</p><p>  const g = canvas?.grid;</p><p>  if (!g) return { x, y };</p><p>  const pos = g.getSnappedPosition(x, y, 1);</p><p>  return { x: pos.x, y: pos.y };</p><p>}</p><p>function isInsideScene(x, y) {</p><p>  const s = canvas?.scene;</p><p>  if (!s) return true;</p><p>  const w = s.dimensions?.sceneWidth ?? s.width ?? 0;</p><p>  const h = s.dimensions?.sceneHeight ?? s.height ?? 0;</p><p>  return (x &gt;= 0 &amp;&amp; y &gt;= 0 &amp;&amp; x &lt; w &amp;&amp; y &lt; h);</p><p>}</p><p>function tokenOccupiesXY(token, x, y) {</p><p>  const td = token?.document;</p><p>  if (!td) return false;</p><p>  return td.x === x &amp;&amp; td.y === y;</p><p>}</p><p>function buildZIndexOffsetFlags(value) {</p><p>  return {</p><p>    \"token-ease\": { zIndexOffset: value },</p><p>    \"tokenEase\": { zIndexOffset: value },</p><p>    \"token-z\": { zIndexOffset: value, zIndex: value },</p><p>    \"tokenZ\": { zIndexOffset: value, zIndex: value }</p><p>  };</p><p>}</p><p>async function resolveActor(uuidOrDoc) {</p><p>  if (!uuidOrDoc) return null;</p><p>  let doc = uuidOrDoc;</p><p>  if (typeof uuidOrDoc === \"string\") {</p><p>    try {</p><p>      doc = await fromUuid(uuidOrDoc);</p><p>    } catch (e) {</p><p>      warn(\"fromUuid failed while resolving actor.\", { uuidOrDoc, error: String(e?.message ?? e) });</p><p>      return null;</p><p>    }</p><p>  }</p><p>  if (!doc) return null;</p><p>  if (doc?.documentName === \"Actor\" || doc?.constructor?.name === \"Actor\") return doc;</p><p>  if (doc?.actor) return doc.actor;</p><p>  if (doc?.object?.actor) return doc.object.actor;</p><p>  if (doc?.token?.actor) return doc.token.actor;</p><p>  if (doc?.parent?.actor) return doc.parent.actor;</p><p>  if (doc?.document?.actor) return doc.document.actor;</p><p>  return null;</p><p>}</p><p>async function resolveToken(uuidOrDoc) {</p><p>  if (!uuidOrDoc) return null;</p><p>  let doc = uuidOrDoc;</p><p>  if (typeof uuidOrDoc === \"string\") {</p><p>    try {</p><p>      doc = await fromUuid(uuidOrDoc);</p><p>    } catch {</p><p>      return null;</p><p>    }</p><p>  }</p><p>  if (!doc) return null;</p><p>  if (doc?.documentName === \"Token\" || doc?.constructor?.name === \"TokenDocument\") {</p><p>    return doc.object ?? canvas.tokens?.get?.(doc.id) ?? null;</p><p>  }</p><p>  const actor = doc?.actor ?? (doc?.documentName === \"Actor\" ? doc : null);</p><p>  if (actor?.getActiveTokens) {</p><p>    return actor.getActiveTokens(true, true)?.[0] ?? actor.getActiveTokens()?.[0] ?? null;</p><p>  }</p><p>  return null;</p><p>}</p><p>// ---------------------------------------------------------------------------</p><p>// Payload / args</p><p>// ---------------------------------------------------------------------------</p><p>const p = (typeof __PAYLOAD !== \"undefined\" &amp;&amp; __PAYLOAD) ? __PAYLOAD : globalThis.__PAYLOAD;</p><p>const args = (typeof __ARGS !== \"undefined\" &amp;&amp; __ARGS) ? __ARGS : (globalThis.__ARGS ?? {});</p><p>if (!p) {</p><p>  warn(\"Missing __PAYLOAD\");</p><p>  return;</p><p>}</p><p>p.meta = p.meta || {};</p><p>const attackerUuid = p?.meta?.attackerUuid ?? p?.attackerUuid ?? args?.attackerUuid ?? \"\";</p><p>let attackerActor = null;</p><p>try {</p><p>  attackerActor = await resolveActor(attackerUuid);</p><p>} catch (e) {</p><p>  warn(\"Could not resolve attacker actor.\", e);</p><p>}</p><p>// ---------------------------------------------------------------------------</p><p>// Read choice from payload first, actor flag second</p><p>// ---------------------------------------------------------------------------</p><p>let choice =</p><p>  p?.meta?.__phantasmDreadChoice ??</p><p>  p?.meta?.__phantasmChoice ??</p><p>  null;</p><p>try {</p><p>  if (!choice &amp;&amp; attackerActor?.getFlag) {</p><p>    choice =</p><p>      attackerActor.getFlag(MODULE_ID, \"phantasmDreadChoice\") ??</p><p>      attackerActor.getFlag(MODULE_ID, \"phantasmChoice\") ??</p><p>      null;</p><p>  }</p><p>} catch (e) {</p><p>  warn(\"Choice fallback read failed.\", e);</p><p>}</p><p>const choiceMode = norm(choice?.mode) || \"new\";</p><p>const chosenDebuffKey = [\"weak\", \"shaken\"].includes(norm(choice?.debuff))</p><p>  ? norm(choice.debuff)</p><p>  : \"weak\";</p><p>const DEBUFFS = {</p><p>  weak: {</p><p>    id: \"weak\",</p><p>    label: \"Weak\",</p><p>    fallbackImg: \"icons/svg/downgrade.svg\"</p><p>  },</p><p>  shaken: {</p><p>    id: \"shaken\",</p><p>    label: \"Shaken\",</p><p>    fallbackImg: \"icons/svg/terror.svg\"</p><p>  }</p><p>};</p><p>const chosenDebuff = DEBUFFS[chosenDebuffKey] ?? DEBUFFS.weak;</p><p>log(\"Phantasm Dread choice resolved\", {</p><p>  mode: choiceMode,</p><p>  debuff: chosenDebuff.label,</p><p>  fromPayload: !!(p?.meta?.__phantasmDreadChoice || p?.meta?.__phantasmChoice)</p><p>});</p><p>// ---------------------------------------------------------------------------</p><p>// Cleanup helper</p><p>// ---------------------------------------------------------------------------</p><p>async function clearPhantasmChoice() {</p><p>  if (p?.meta) {</p><p>    delete p.meta.__phantasmChoice;</p><p>    delete p.meta.__phantasmDreadChoice;</p><p>  }</p><p>  try {</p><p>    if (attackerActor?.unsetFlag) {</p><p>      await attackerActor.unsetFlag(MODULE_ID, \"phantasmChoice\");</p><p>      await attackerActor.unsetFlag(MODULE_ID, \"phantasmDreadChoice\");</p><p>      log(\"Phantasm choice flags CLEARED\", {</p><p>        actor: attackerActor?.name ?? \"?\"</p><p>      });</p><p>    }</p><p>  } catch (e) {</p><p>    warn(\"Failed to clear Phantasm choice flags.\", e);</p><p>  }</p><p>}</p><p>// ---------------------------------------------------------------------------</p><p>// Hit check helpers</p><p>// ---------------------------------------------------------------------------</p><p>function readDefenseValue(targetUuid, targetActor) {</p><p>  const row = p?.meta?.defenseSnapshot?.perTarget?.find(r =&gt; String(r?.uuid) === String(targetUuid));</p><p>  const props = targetActor?.system?.props ?? targetActor?.system ?? {};</p><p>  if (USE_MAGIC_DEFENSE) {</p><p>    return Number(</p><p>      row?.mdef ??</p><p>      props?.magic_defense ??</p><p>      props?.current_mdef ??</p><p>      props?.mdef ??</p><p>      0</p><p>    ) || 0;</p><p>  }</p><p>  return Number(</p><p>    row?.def ??</p><p>    props?.defense ??</p><p>    props?.current_def ??</p><p>    props?.def ??</p><p>    0</p><p>  ) || 0;</p><p>}</p><p>function isHit(targetUuid, targetActor) {</p><p>  const accTotal = Number(p?.accuracy?.total ?? args?.accuracyTotal ?? NaN);</p><p>  const hasAccuracy =</p><p>    (typeof args?.hasAccuracy === \"boolean\")</p><p>      ? args.hasAccuracy</p><p>      : !!p?.accuracy;</p><p>  const autoHit = !!(</p><p>    args?.autoHit ||</p><p>    p?.advPayload?.autoHit ||</p><p>    p?.accuracy?.isCrit</p><p>  );</p><p>  const defenseValue = readDefenseValue(targetUuid, targetActor);</p><p>  if (!hasAccuracy) {</p><p>    return {</p><p>      hit: true,</p><p>      reason: \"no_accuracy_check\",</p><p>      accTotal,</p><p>      defenseValue</p><p>    };</p><p>  }</p><p>  if (autoHit) {</p><p>    return {</p><p>      hit: true,</p><p>      reason: \"auto_hit\",</p><p>      accTotal,</p><p>      defenseValue</p><p>    };</p><p>  }</p><p>  if (!Number.isFinite(accTotal)) {</p><p>    return {</p><p>      hit: false,</p><p>      reason: \"missing_accuracy_total\",</p><p>      accTotal,</p><p>      defenseValue</p><p>    };</p><p>  }</p><p>  return {</p><p>    hit: accTotal &gt;= defenseValue,</p><p>    reason: accTotal &gt;= defenseValue ? \"accuracy_gte_defense\" : \"accuracy_lt_defense\",</p><p>    accTotal,</p><p>    defenseValue</p><p>  };</p><p>}</p><p>// ---------------------------------------------------------------------------</p><p>// Debuff application helpers</p><p>// ---------------------------------------------------------------------------</p><p>function findStatusEffectTemplate(debuff) {</p><p>  const want = norm(debuff.label);</p><p>  const wantId = norm(debuff.id);</p><p>  const list = Array.from(CONFIG?.statusEffects ?? []);</p><p>  return list.find(se =&gt; {</p><p>    const id = norm(se?.id);</p><p>    const name = norm(se?.name);</p><p>    const label = norm(se?.label);</p><p>    const localizedName = se?.name ? norm(game.i18n?.localize?.(se.name) ?? se.name) : \"\";</p><p>    return (</p><p>      id === wantId ||</p><p>      id === want ||</p><p>      name === want ||</p><p>      label === want ||</p><p>      localizedName === want</p><p>    );</p><p>  }) ?? null;</p><p>}</p><p>function effectHasStatus(effect, statusId) {</p><p>  if (!effect || !statusId) return false;</p><p>  try {</p><p>    const statuses = effect.statuses</p><p>      ? Array.from(effect.statuses)</p><p>      : Array.isArray(effect?.statuses)</p><p>        ? effect.statuses</p><p>        : [];</p><p>    return statuses.map(String).includes(String(statusId));</p><p>  } catch {</p><p>    return false;</p><p>  }</p><p>}</p><p>function actorAlreadyHasDebuff(actor, debuff, statusId) {</p><p>  const wantName = norm(debuff.label);</p><p>  for (const e of (actor?.effects ?? [])) {</p><p>    if (!e || e.disabled) continue;</p><p>    const eName = norm(e.name ?? e.label ?? \"\");</p><p>    const sameName = eName === wantName;</p><p>    const sameStatus = statusId ? effectHasStatus(e, statusId) : false;</p><p>    if (sameName || sameStatus) return true;</p><p>  }</p><p>  return false;</p><p>}</p><p>async function tryApplyConditionApi(actor, debuff) {</p><p>  // Preferred if you have Dfreds Convenient Effects installed.</p><p>  try {</p><p>    const cei = game?.dfreds?.effectInterface;</p><p>    if (cei?.addEffect) {</p><p>      try {</p><p>        await cei.addEffect({</p><p>          effectName: debuff.label,</p><p>          uuid: actor.uuid,</p><p>          origin: attackerUuid || null</p><p>        });</p><p>        return true;</p><p>      } catch (e1) {</p><p>        try {</p><p>          await cei.addEffect({</p><p>            effectName: debuff.label,</p><p>            actor,</p><p>            origin: attackerUuid || null</p><p>          });</p><p>          return true;</p><p>        } catch (e2) {</p><p>          warn(\"Dfreds addEffect failed; falling back to direct ActiveEffect.\", {</p><p>            effect: debuff.label,</p><p>            e1: String(e1?.message ?? e1),</p><p>            e2: String(e2?.message ?? e2)</p><p>          });</p><p>        }</p><p>      }</p><p>    }</p><p>  } catch (e) {</p><p>    warn(\"Dfreds condition API check failed.\", e);</p><p>  }</p><p>  // Fallback if Combat Utility Belt exposes addCondition in your setup.</p><p>  try {</p><p>    const cub = game?.cub;</p><p>    if (cub?.addCondition) {</p><p>      try {</p><p>        await cub.addCondition(debuff.label, actor);</p><p>        return true;</p><p>      } catch (e1) {</p><p>        try {</p><p>          await cub.addCondition(debuff.label, [actor]);</p><p>          return true;</p><p>        } catch (e2) {</p><p>          warn(\"CUB addCondition failed; falling back to direct ActiveEffect.\", {</p><p>            condition: debuff.label,</p><p>            e1: String(e1?.message ?? e1),</p><p>            e2: String(e2?.message ?? e2)</p><p>          });</p><p>        }</p><p>      }</p><p>    }</p><p>  } catch (e) {</p><p>    warn(\"CUB condition API check failed.\", e);</p><p>  }</p><p>  return false;</p><p>}</p><p>async function applyDebuffToActor(actor, debuff, targetUuid) {</p><p>  if (!actor) return { ok: false, reason: \"missing_actor\" };</p><p>  const statusTemplate = findStatusEffectTemplate(debuff);</p><p>  const statusId = statusTemplate?.id ? String(statusTemplate.id) : \"\";</p><p>  if (actorAlreadyHasDebuff(actor, debuff, statusId)) {</p><p>    log(\"SKIP debuff: target already has it.\", {</p><p>      target: actor.name,</p><p>      debuff: debuff.label,</p><p>      statusId</p><p>    });</p><p>    return { ok: true, skipped: true, reason: \"already_has_debuff\" };</p><p>  }</p><p>  // Try your installed condition APIs first, because those usually preserve</p><p>  // the real predefined condition behavior.</p><p>  const apiApplied = await tryApplyConditionApi(actor, debuff);</p><p>  if (apiApplied) {</p><p>    log(\"APPLIED debuff through condition API.\", {</p><p>      target: actor.name,</p><p>      debuff: debuff.label</p><p>    });</p><p>    return { ok: true, via: \"condition_api\" };</p><p>  }</p><p>  // Direct ActiveEffect fallback.</p><p>  const effectData = {</p><p>    name: debuff.label,</p><p>    img: statusTemplate?.img ?? statusTemplate?.icon ?? debuff.fallbackImg,</p><p>    description: `Inflicted by Create Phantasm: Dread.`,</p><p>    disabled: false,</p><p>    changes: Array.isArray(statusTemplate?.changes) ? clone(statusTemplate.changes, []) : [],</p><p>    statuses: statusId ? [statusId] : [],</p><p>    duration: {},</p><p>    origin: attackerUuid || null,</p><p>    flags: {</p><p>      [MODULE_ID]: {</p><p>        source: \"Create Phantasm: Dread\",</p><p>        sourceSkill: \"Create Phantasm: Dread\",</p><p>        debuff: debuff.id,</p><p>        targetUuid,</p><p>        createdAt: Date.now()</p><p>      }</p><p>    }</p><p>  };</p><p>  await actor.createEmbeddedDocuments(\"ActiveEffect\", [effectData]);</p><p>  log(\"APPLIED debuff through direct ActiveEffect fallback.\", {</p><p>    target: actor.name,</p><p>    debuff: debuff.label,</p><p>    statusId: statusId || null</p><p>  });</p><p>  return { ok: true, via: \"direct_active_effect\" };</p><p>}</p><p>// ---------------------------------------------------------------------------</p><p>// Summon helper</p><p>// ---------------------------------------------------------------------------</p><p>async function summonNewPhantasm() {</p><p>  if (!attackerUuid) {</p><p>    warn(\"No attackerUuid in payload meta; cannot summon.\");</p><p>    return;</p><p>  }</p><p>  const casterToken = await resolveToken(attackerUuid);</p><p>  if (!casterToken) {</p><p>    warn(\"Could not find caster token on canvas.\", { attackerUuid });</p><p>    return;</p><p>  }</p><p>  const summonActor = await fromUuid(SUMMON_ACTOR_UUID);</p><p>  if (!summonActor) {</p><p>    warn(\"Could not resolve summon actor.\", { SUMMON_ACTOR_UUID });</p><p>    return;</p><p>  }</p><p>  const gridSize = canvas?.grid?.size ?? 100;</p><p>  const casterX = casterToken.document.x;</p><p>  const casterY = casterToken.document.y;</p><p>  // Fixed X: 1 grid LEFT of caster.</p><p>  const preferredXRaw = casterX - gridSize;</p><p>  // Vertical column Y offsets: 0, +1, -1, +2, -2...</p><p>  const Y_OFFSETS = [0, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5];</p><p>  const existingSummons = canvas.tokens.placeables.filter(t =&gt; t?.actor?.id === summonActor?.id);</p><p>  const candidates = Y_OFFSETS</p><p>    .map(dy =&gt; {</p><p>      const raw = snapToGrid(preferredXRaw, casterY + dy * gridSize);</p><p>      return { x: raw.x, y: raw.y, dy };</p><p>    })</p><p>    .filter(c =&gt; isInsideScene(c.x, c.y));</p><p>  let chosen = null;</p><p>  for (const c of candidates) {</p><p>    const occupiedBySameSummon = existingSummons.some(t =&gt; tokenOccupiesXY(t, c.x, c.y));</p><p>    if (!occupiedBySameSummon) {</p><p>      chosen = c;</p><p>      break;</p><p>    }</p><p>  }</p><p>  if (!chosen) {</p><p>    chosen = candidates[0];</p><p>    warn(\"All left-column candidate spots occupied by same summon. Falling back to first candidate.\", chosen);</p><p>  }</p><p>  log(\"Spawn chosen.\", {</p><p>    caster: casterToken?.name,</p><p>    summon: summonActor?.name,</p><p>    x: chosen.x,</p><p>    y: chosen.y,</p><p>    dy: chosen.dy</p><p>  });</p><p>  await sleep(SPAWN_DELAY_MS);</p><p>  const tokenDoc = await summonActor.getTokenDocument({</p><p>    x: chosen.x,</p><p>    y: chosen.y,</p><p>    flags: buildZIndexOffsetFlags(Z_INDEX_OFFSET)</p><p>  });</p><p>  const created = await canvas.scene.createEmbeddedDocuments(\"Token\", [tokenDoc.toObject()]);</p><p>  const createdTokenDoc = created?.[0];</p><p>  if (!createdTokenDoc) {</p><p>    warn(\"Token spawn failed: no created TokenDocument returned.\");</p><p>    return;</p><p>  }</p><p>  const summonTokenUuid = createdTokenDoc.uuid;</p><p>  if (!game?.ONI?.pseudo?.play) {</p><p>    warn(\"Pseudo API not found at game.ONI.pseudo.play. Spawn succeeded, but fade animation was skipped.\");</p><p>    return;</p><p>  }</p><p>  const fadeScript = `</p><p>const TAG = \"[ONI][Pseudo][FadeInSummon]\";</p><p>const { casterToken, params } = ctx;</p><p>if (!casterToken) throw new Error(TAG + \" missing casterToken\");</p><p>const fadeMs = Number(params.fadeMs ?? 450);</p><p>function easeOutCubic(t) {</p><p>  return 1 - Math.pow(1 - t, 3);</p><p>}</p><p>async function createClone(token) {</p><p>  const baseObj = token.mesh ?? token.icon;</p><p>  const texture = baseObj?.texture ?? await loadTexture(token.document.texture.src);</p><p>  const sprite = new PIXI.Sprite(texture);</p><p>  sprite.anchor.set(0.5);</p><p>  sprite.x = token.center.x;</p><p>  sprite.y = token.center.y;</p><p>  if (baseObj) {</p><p>    sprite.width = baseObj.width;</p><p>    sprite.height = baseObj.height;</p><p>  }</p><p>  sprite.zIndex = 5000;</p><p>  sprite.alpha = 0;</p><p>  canvas.stage.sortableChildren = true;</p><p>  canvas.stage.addChild(sprite);</p><p>  canvas.stage.sortChildren();</p><p>  return sprite;</p><p>}</p><p>function animateAlpha(obj, fromA, toA, durMs) {</p><p>  return new Promise(resolve =&gt; {</p><p>    const start = performance.now();</p><p>    const ticker = canvas.app.ticker;</p><p>    const update = () =&gt; {</p><p>      const raw = (performance.now() - start) / durMs;</p><p>      const t = Math.min(Math.max(raw, 0), 1);</p><p>      const e = easeOutCubic(t);</p><p>      obj.alpha = fromA + (toA - fromA) * e;</p><p>      if (t &gt;= 1) {</p><p>        ticker.remove(update);</p><p>        resolve();</p><p>      }</p><p>    };</p><p>    ticker.add(update);</p><p>  });</p><p>}</p><p>const baseMesh = casterToken.mesh ?? casterToken.icon;</p><p>const originalTokenVisible = casterToken.visible;</p><p>const originalMeshVisible = baseMesh?.visible ?? true;</p><p>let sprite;</p><p>try {</p><p>  sprite = await createClone(casterToken);</p><p>  if (baseMesh) baseMesh.visible = false;</p><p>  casterToken.visible = false;</p><p>  await animateAlpha(sprite, 0, 1, fadeMs);</p><p>} finally {</p><p>  if (sprite) {</p><p>    canvas.stage.removeChild(sprite);</p><p>    sprite.destroy();</p><p>  }</p><p>  if (baseMesh) baseMesh.visible = originalMeshVisible;</p><p>  casterToken.visible = originalTokenVisible;</p><p>}</p><p>`;</p><p>  game.ONI.pseudo.play({</p><p>    scriptId: \"dynamic.fadeInSummon\",</p><p>    scriptSource: fadeScript,</p><p>    casterTokenUuid: summonTokenUuid,</p><p>    targetTokenUuids: [],</p><p>    params: { fadeMs: 450 },</p><p>    meta: { source: \"CustomLogic: Create Phantasm Dread FadeIn\" }</p><p>  });</p><p>}</p><p>// ---------------------------------------------------------------------------</p><p>// Main</p><p>// ---------------------------------------------------------------------------</p><p>try {</p><p>  const targetUuids = uniq(</p><p>    (Array.isArray(p?.originalTargetUUIDs) &amp;&amp; p.originalTargetUUIDs.length)</p><p>      ? p.originalTargetUUIDs</p><p>      : (Array.isArray(p?.meta?.originalTargetUUIDs) &amp;&amp; p.meta.originalTargetUUIDs.length)</p><p>        ? p.meta.originalTargetUUIDs</p><p>        : (Array.isArray(p?.targets) ? p.targets : [])</p><p>  );</p><p>  if (!targetUuids.length) {</p><p>    warn(\"No targets found; no debuff can be applied.\");</p><p>  }</p><p>  for (const tuuid of targetUuids) {</p><p>    const targetActor = await resolveActor(tuuid);</p><p>    if (!targetActor) {</p><p>      warn(\"Could not resolve target actor.\", { tuuid });</p><p>      continue;</p><p>    }</p><p>    const hitResult = isHit(tuuid, targetActor);</p><p>    log(\"HIT CHECK\", {</p><p>      target: targetActor.name,</p><p>      debuff: chosenDebuff.label,</p><p>      hit: hitResult.hit,</p><p>      reason: hitResult.reason,</p><p>      accTotal: hitResult.accTotal,</p><p>      defenseType: USE_MAGIC_DEFENSE ? \"MDEF\" : \"DEF\",</p><p>      defenseValue: hitResult.defenseValue</p><p>    });</p><p>    if (!hitResult.hit) {</p><p>      log(\"MISS -&gt; no debuff.\", {</p><p>        target: targetActor.name,</p><p>        debuff: chosenDebuff.label</p><p>      });</p><p>      continue;</p><p>    }</p><p>    await applyDebuffToActor(targetActor, chosenDebuff, tuuid);</p><p>  }</p><p>  if (choiceMode === \"existing\") {</p><p>    log(\"Use Existing Phantasm: debuff handled, summon skipped.\");</p><p>    return;</p><p>  }</p><p>  await summonNewPhantasm();</p><p>} finally {</p><p>  await clearPhantasmChoice();</p><p>}</p>",
+          "damage_bonus": "",
+          "defense_target_type": "def",
+          "description": "<p>You may spend one action to conjure a terrifying Phantasm. Choose one:</p><ul><li>the Phantasm inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a></span></span></li><li>the Phantasm inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span></span></li></ul><p>The Phantasm inflicts the chosen status effect on the target hit by this spell.</p><p>On any subsequent turn, you can perform an action and perform another Magic Check to command the Phantasm to inflict the effects again, with no MP requirements.</p>",
+          "duration": "Scene",
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": true,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": true,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Create Phantasm: Dread",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "skill_animation_default": "",
+          "skill_animation_mode": "custom",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "One Creature",
+          "skill_type": "Spell",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "n72OGOx8TLGF1i9u"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "vqkHK8ZeWCqDMmi9",
+      "_stats": {
+        "compendiumSource": "Item.YDzMWktTnD9J9Jun",
+        "coreVersion": "12.343",
+        "createdTime": 1758208646512,
+        "duplicateSource": "Item.ivCSQcT8cuj07ELa",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/PunkyPoppetSkill10.png",
+      "name": "Phantasmal Echo",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Illusionist",
+          "cost": "-",
+          "damage_bonus": "0",
+          "description": "<p>After any of your Phantasms is shattered, you recover <strong>[SL + 2]</strong> MP.</p>\n",
+          "duration": "-",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "5",
+          "name": "Phantasmal Echo",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>MP Recovered</strong></p></td></tr><tr><td><p>1</p></td><td><p>3</p></td></tr><tr><td><p>2</p></td><td><p>4</p></td></tr><tr><td><p>3</p></td><td><p>5</p></td></tr><tr><td><p>4</p></td><td><p>6</p></td></tr><tr><td><p>5</p></td><td><p>7</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "YDzMWktTnD9J9Jun"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "WHzVR6qknwEfJvfU",
+      "_stats": {
+        "compendiumSource": "Item.peLYH0zSiab4UQ4E",
+        "coreVersion": "12.343",
+        "createdTime": 1758208785274,
+        "duplicateSource": "Item.zbulFnM318NgBgh5",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/RadiantSoulHyper.png",
+      "name": "Placebo Energy",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Illusionist",
+          "cost": "10 MP",
+          "damage_bonus": "0",
+          "description": "<p>You create an illusion that makes your companions feel healthier and refreshed for a while. For their next <strong>3 turns</strong>, they gain <strong>40 additional HP</strong> — this increases both their maximum and their current HP by 40.</p><p>After 3 turns, they lose this additional HP. If reduced to 0 HP at the end of the spell, the Sacrifice and Surrender rules apply as normal.</p><hr contenteditable=\"false\"><p><strong>Skill Enhancement Lv. 20</strong> ― This amount increases to <strong>50 HP</strong>.</p><p><strong>Skill Enhancement Lv. 40</strong> ― This amount increases to <strong>60 HP</strong>.</p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Placebo Energy",
+          "optional_params": {},
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "skill_range": "Range",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "peLYH0zSiab4UQ4E"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "yPNASzx9H8HU1udO",
+      "_stats": {
+        "compendiumSource": "Item.QJw9MuxrOXtRVOxx",
+        "coreVersion": "12.343",
+        "createdTime": 1758208778557,
+        "duplicateSource": "Item.k7gaSnhF7IynAnfG",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/ShiningRomanticaHyper.png",
+      "name": "Essence Sacrifice",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "Illusionist",
+          "cost": "10 MP",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>You command your Phantasms to replenish your allies’ MP. Each Phantasm runs towards a companion and shatters itself in a spray of mana. Each target recovers <strong>20 MP</strong>. A single ally cannot be replenished by more than one Phantasm per action.</p>\n",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Essence Sacrifice",
+          "optional_params": {},
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "Up to three allies",
+          "skill_type": "Spell",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "QJw9MuxrOXtRVOxx"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Illusionist",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar4": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "DEF",
+            "max": 13,
+            "maxcolor": "#f26d40",
+            "mincolor": "#f26d40",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 13
+          },
+          "bar5": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar5",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MDEF",
+            "max": 10,
+            "maxcolor": "#26d6ed",
+            "mincolor": "#26d6ed",
+            "opacity": null,
+            "order": 4,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 10
+          }
+        }
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Illusionist",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://static.tvtropes.org/pmwiki/pub/images/ta2_humeillusionist.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 300000,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {
+      "also_text": "Mesmerist, Prestidigitator, Trickster",
+      "benefit_dropdown": "mp_benefit",
+      "classMechanic_text": "<h1 style=\"font-family: Signika, sans-serif; letter-spacing:.5px; color:#6c3aa6; text-align:center; border-bottom:3px solid #caa654; padding-bottom:.25rem; margin:.25rem 0 .5rem;\"><span style=\"font-family: Signika, sans-serif\">ILLUSIONIST MECHANIC — </span><span style=\"color:#a979ff;\"><span style=\"font-family: Signika, sans-serif\">PHANTASMS</span></span></h1><p style=\"font-style: italic; color: #5b3192; margin: .25rem 0 1rem; text-align: center\"><em>“Thought made form. Command made motion.”</em></p><div style=\"display:grid; gap:.75rem; grid-template-columns:1fr;\"><section style=\"border:1px solid #caa654; background:#faf6ee; padding:.75rem; border-radius:.6rem;\"><h2 style=\"margin:.25rem 0; color:#6c3aa6;\">What Are Phantasms?</h2><ul style=\"margin:.25rem 0 .5rem 1rem;\"><li><strong>Phantasms</strong> are entities of pure energy that can take on different sizes and forms—<em>even exact replicas of you</em>.</li><li>They <strong>do not think, talk, or reason</strong>. They obey, they don’t improvise.</li><li>They follow only <strong>simple, one-clause commands</strong> and cannot infer meaning beyond those words.</li></ul><div style=\"border-left:6px solid #a979ff; background:linear-gradient(90deg, rgba(169,121,255,.12), transparent); padding:.55rem .6rem; border-radius:.35rem; color:#3b2670;\"><p><strong>Design intent:</strong> You shape intent into action. Keep commands crisp (“Move to the door.” “Attack that archer.” “Guard me.”).</p></div></section><section style=\"border:1px solid #caa654; background:#fffaf2; padding:.75rem; border-radius:.6rem;\"><h2 style=\"margin:.25rem 0; color:#6c3aa6;\">Core Traits & Stats</h2><div style=\"display:grid; grid-template-columns:1fr 1fr; gap:.5rem;\"><div style=\"border:1px dashed #e2c98f; border-radius:.5rem; padding:.55rem; background:#ffffff;\"><p style=\"margin: .25rem 0 0 0\"><strong>Attributes & Defenses</strong></p><p style=\"margin: .25rem 0 0 0\">A Phantasm uses <strong>your base Attributes</strong> and <strong>your Defenses</strong>.</p><p style=\"margin: .25rem 0 0 0\"><strong>MP:</strong> none. <strong>Status:</strong> <em>Immune to all status effects.</em></p></div><div style=\"border:1px dashed #e2c98f; border-radius:.5rem; padding:.55rem; background:#ffffff;\"><p style=\"margin: .25rem 0 0 0\"><strong>Phantasmal Vitality (PV)</strong></p><p style=\"margin: .25rem 0 0 0\">PV = <strong>your base Insight die size + your level</strong>. Track per Phantasm.</p><p style=\"margin: .25rem 0 0 0\">All Phantasm attacks (when applicable) target <strong>Magical Defense</strong>.</p></div></div></section><section style=\"border:1px solid #caa654; background:#ffffff; padding:.75rem; border-radius:.6rem;\"><h2 style=\"margin:.25rem 0; color:#6c3aa6;\">Turn Economy — Commanding Phantasms</h2><ul style=\"margin:.25rem 0 .5rem 1rem;\"><li><strong>No Initiative:</strong> Phantasms <em>do not</em> take their own turns.</li><li>On <strong>your</strong> turn, you can spend an <strong>action</strong> to <strong>command one or more Phantasms</strong> (as allowed by the <em>spell’s wording</em>).</li><li>You may <strong>create a Phantasm and immediately command it in the same action</strong>. After that first command, it takes a <strong>full action</strong> on a later turn to command again.</li><li>You <strong>cannot</strong> command Phantasm A and then also create Phantasm B in the <em>same</em> action.</li><li>Unless a spell says otherwise, you may have up to <strong>3 Phantasms active</strong>. Further casts beyond 3 simply fail.</li></ul><div style=\"border-left:6px solid #e06a6a; background:linear-gradient(90deg, rgba(224,106,106,.12), transparent); padding:.55rem .6rem; border-radius:.35rem; color:#6b1d1d;\"><p><strong>Shattering & End of Scene:</strong> A Phantasm shatters if its <strong>PV reaches 0</strong>, if <strong>you</strong> fall to 0 HP, or if <strong>you leave the scene</strong>. You can also shatter them through your skills, spells, or at will.</p></div></section><section style=\"border:1px solid #caa654; background:#fffdf7; padding:.75rem; border-radius:.6rem;\"><h2 style=\"margin:.25rem 0; color:#6c3aa6;\">Vitality Examples (PV)</h2><div class=\"tableWrapper\" style=\"margin:.25rem 0;\"><table style=\"width:100%; border-collapse:collapse;\"><thead><tr style=\"background:#f1e3c4; color:#5b3192;\"><th style=\"text-align:left; padding:.4rem .5rem;\">Your Insight Die</th><th style=\"text-align:left; padding:.4rem .5rem;\">Your Level</th><th style=\"text-align:left; padding:.4rem .5rem;\">Phantasmal Vitality (PV)</th><th style=\"text-align:left; padding:.4rem .5rem;\">Notes</th></tr></thead><tbody><tr style=\"background:#ffffff;\"><td style=\"padding:.4rem .5rem;\">d6</td><td style=\"padding:.4rem .5rem;\">5</td><td style=\"padding:.4rem .5rem;\"><strong>11</strong></td><td style=\"padding:.4rem .5rem;\">PV = 6 + 5</td></tr><tr style=\"background:#fffaf2;\"><td style=\"padding:.4rem .5rem;\">d8</td><td style=\"padding:.4rem .5rem;\">10</td><td style=\"padding:.4rem .5rem;\"><strong>18</strong></td><td style=\"padding:.4rem .5rem;\">PV = 8 + 10</td></tr><tr style=\"background:#ffffff;\"><td style=\"padding:.4rem .5rem;\">d10</td><td style=\"padding:.4rem .5rem;\">12</td><td style=\"padding:.4rem .5rem;\"><strong>22</strong></td><td style=\"padding:.4rem .5rem;\">PV = 10 + 12</td></tr></tbody></table></div><p style=\"margin: .25rem 0 0 0; color: #5b3192\"><em>Adjust for your table’s die sizes / level cap.</em></p></section><section style=\"border:1px solid #caa654; background:#ffffff; padding:.75rem; border-radius:.6rem;\"><h2 style=\"margin:.25rem 0; color:#6c3aa6;\">Create & Command — Step by Step</h2><ol style=\"margin:.25rem 0 .5rem 1.25rem;\"><li><strong>Cast/Conjure:</strong> Create 1 Phantasm (or more, if the spell says so). Place it per spell text.</li><li><strong>First Command (free with creation):</strong> Give a <em>single, simple clause</em> (“Move to the door.” “Attack the ogre.” “Guard me.”).</li><li><strong>Later Turns:</strong> Spend a full <strong>action</strong> to command Phantasms again (one or more, as permitted by the spell).</li><li><strong>Resolve Actions:</strong> Phantasm attacks target <strong>Magical Defense</strong>. They are immune to statuses.</li><li><strong>Track PV:</strong> When PV hits 0, the Phantasm shatters.</li></ol><div style=\"border-left:4px solid #caa654; background:#fff6e2; padding:.55rem; border-radius:.25rem;\"><p style=\"margin: .25rem 0\"><strong>Command Craft:</strong> Use location (“north doorway”), subject (“that archer”), and mode (“block”/“attack”/“follow”). Avoid conditions that require judgment (“until safe,” “if threatened”).</p></div></section><section style=\"display:grid; grid-template-columns:1fr 1fr; gap:.5rem;\"><div style=\"border:1px solid #caa654; background:#fffaf2; padding:.75rem; border-radius:.6rem;\"><h2 style=\"margin:.25rem 0; color:#6c3aa6;\">Quick Reference</h2><ul style=\"margin:.25rem 0 .5rem 1rem;\"><li>Phantasms use <strong>your Attributes/Defenses</strong>; no MP; <strong>status-immune</strong>.</li><li><strong>PV =</strong> Insight die size + Level.</li><li><strong>No turn</strong> on Initiative; you <strong>command</strong> them on your turn.</li><li>Create + <strong>immediate command</strong> in the same action; later commands cost a full action.</li><li>Max <strong>3 active</strong> unless a spell says otherwise.</li><li>Shatter on <strong>PV 0</strong>, if <strong>you 0 HP</strong>, or if <strong>you leave</strong> the scene.</li></ul></div><div style=\"border:1px solid #caa654; background:#fffaf2; padding:.75rem; border-radius:.6rem;\"><h2 style=\"margin:.25rem 0; color:#6c3aa6;\">Play Tips (Table-Ready)</h2><ul style=\"margin:.25rem 0 .5rem 1rem;\"><li><strong>Position first.</strong> Your opening command should place or screen.</li><li><strong>Economize commands.</strong> Use wording that covers multiple Phantasms (“All Phantasms: form a wall in front of us.”) if the spell allows it.</li><li><strong>Protect PV.</strong> Rotate fresh Phantasms forward; shatter low-PV ones to deny enemy on-hit riders.</li><li><strong>Synergy:</strong> Pair with zones, illusions, or terrain that benefits extra bodies/blocks.</li></ul></div></section><section style=\"border:1px solid #caa654; background:#ffffff; padding:.75rem; border-radius:.6rem;\"><h2 style=\"margin:.25rem 0; color:#6c3aa6;\">Worked Examples</h2><div style=\"border:1px dashed #a979ff; background:linear-gradient(180deg,#f4edff,#ffffff); border-radius:.6rem; padding:.6rem; margin-bottom:.6rem;\"><p style=\"margin: .25rem 0\"><strong>Example A — Mirror Guard (creation + command):</strong> You conjure a Phantasm adjacent to you and immediately command: <em>“Guard me.”</em> It moves to interpose and will block the next enemy trying to pass. Next round, you spend an action to command again: <em>“Hold that doorway.”</em></p></div><div style=\"border:1px dashed #e2c98f; background:linear-gradient(180deg,#fff7e3,#ffffff); border-radius:.6rem; padding:.6rem;\"><p style=\"margin: .25rem 0\"><strong>Example B — Multi-Unit Order (as wording allows):</strong> You already have 3 Phantasms out. You spend 1 action: <em>“All Phantasms, attack the ogre.”</em> Each uses your stats, targets Magical Defense, and resolves per spell. None act outside your command window.</p></div></section><section style=\"border:2px dashed #caa654; background:linear-gradient(180deg,#fffaf0,#ffffff); padding:.75rem; border-radius:.8rem;\"><h2 style=\"margin:.25rem 0; color:#6c3aa6;\">Pocket Card (Hand to Players)</h2><ol style=\"margin:.25rem 0 .5rem 1.25rem;\"><li><strong>Create</strong> a Phantasm (spell). Uses your Attributes/Defenses. PV = Insight die size + Level.</li><li><strong>Immediate Command</strong> (same action): give a <em>simple</em> one-clause order.</li><li><strong>Later Commands</strong>: spend an action on your turn to command again (one or more, as the spell allows).</li><li><strong>Limits</strong>: Max 3 active. Status-immune. Attacks vs <strong>Magical Defense</strong>.</li><li><strong>Shatter</strong>: PV 0, you 0 HP, or you leave the scene (or shatter at will).</li></ol></section></div>",
+      "class_facet": {
+        "3AvBqpA8zfixKa80": {
+          "facet_cost": "10 MP",
+          "facet_description": "<p>You command all your Phantasms to charge at your foes, shattering on impact. They all share the same Magic Check. Each affected target suffers <strong>[HR + 15]</strong> \n<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\">\n  <a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\">\n    <strong><span style=\"text-decoration: underline;\">Physical</span></strong>\n  </a>\n</span></span> damage. You can target <strong>only one foe per Phantasm</strong>. Damage dealt by this spell <strong>ignores Resistances</strong>.</p>\n",
+          "facet_offensive": "⚡",
+          "facet_target": "Up to three creature",
+          "id": "${item.id}",
+          "name": "Multi Shatter",
+          "uuid": "Actor.CpCx41dGMfGs1lm9.Item.3AvBqpA8zfixKa80"
+        },
+        "8IgaUzRFS7TE908Q": {
+          "facet_cost": "10 MP",
+          "facet_description": "<p>You may spend one action to create a Phantasm and command it to attack a creature. The target hit by the Phantasm suffers <strong>[HR + 12]</strong> damage.</p><p>The <strong>range</strong> of the attack is determined by your current weapon. On any subsequent turn, you can perform an action and another Magic Check to command the Phantasm to attack again, with no MP requirements. Damage dealt by this spell <strong>ignores Resistances</strong>.</p><hr contenteditable=\"false\" class=\"\"><p><strong>Skill Enhancement Lv. 20</strong> ― This damage becomes <strong>16</strong>.</p><p><strong>Skill Enhancement Lv. 40</strong> ― This damage becomes <strong>18</strong>.</p>",
+          "facet_offensive": "⚡",
+          "facet_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Create Phantasm: Strike",
+          "uuid": "Actor.CpCx41dGMfGs1lm9.Item.8IgaUzRFS7TE908Q"
+        },
+        "Bf7Byi1jgUI8An8V": {
+          "facet_cost": "-",
+          "facet_description": "<p>You can now have up to <strong>4</strong> active Phantasms, but one of them must necessarily be <strong>Numen</strong>. Also, you cannot have more than one Numen Phantasm active at a time. This Phantasm cannot be used in any of the Illusionist’s Skills or Spells.</p>\n<p>Numen is bound by the same set of special rules as any other Phantasm, with the following exceptions:</p>\n<ul>\n  <li>Numen Phantasms cost <strong>50 MP</strong> to cast.</li>\n  <li>Numen’s Phantasmal Vitality equals <strong>twice your base Insight die size plus your level</strong>.</li>\n  <li>Once active, Numen has its <strong>own turn and a single action</strong>. It does not benefit from Spells that grant additional actions. Numen’s turn can be taken either before or after the Illusionist’s turn.</li>\n</ul>\n\n<p>When creating a Numen Phantasm, choose one essence, which dictates Numen’s damage type:</p>\n<ul>\n  <li><strong>Ravana</strong> — <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:rgb(153,153,153) 0 0 4px;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a></span></span></li>\n  <li><strong>Asura</strong> — <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:rgb(202,189,154) 0 0 4px;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></span></li>\n  <li><strong>Diablos</strong> — <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:rgb(182,102,210) 0 0 4px;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span></li>\n</ul>\n\n<p>The target hit by Numen suffers <strong>[HR + 14]</strong> damage.</p>\n<p>Damage dealt by Numen <strong>ignores Resistances and Immunities</strong>.</p>\n<p>The <strong>range</strong> of the attack is determined by your current weapon.</p>\n\n<hr>\n\n<p><strong>Skill Enhancement Lv. 20</strong> ― <em>Numen’s on-hit damage</em> increases to <strong>18</strong>.</p>\n<p><strong>Skill Enhancement Lv. 40</strong> ― <em>Numen’s on-hit damage</em> increases to <strong>20</strong>.</p>\n",
+          "facet_offensive": "⚡",
+          "facet_target": "-",
+          "id": "${item.id}",
+          "name": "Create Phantasm: Numen",
+          "uuid": "Actor.CpCx41dGMfGs1lm9.Item.Bf7Byi1jgUI8An8V"
+        },
+        "Bxr578oFagp4p4uQ": {
+          "facet_cost": "-",
+          "facet_description": "<p>Shatter one of your Phantasms to recover <strong>[SL × 5 HP]</strong>. Shattering a Phantasm this way will not trigger the <strong>Phantasmal Echo</strong> Skill.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "One of your Phantasm",
+          "id": "${item.id}",
+          "name": "Phantasmal Recovery",
+          "uuid": "Actor.CpCx41dGMfGs1lm9.Item.Bxr578oFagp4p4uQ"
+        },
+        "ChuSqFPh1zSJtcC2": {
+          "facet_cost": "-",
+          "facet_description": "<p>When you cast a spell, if you don't have enough MP to pay for its total cost, you may choose to shatter one of your Phantasms instead. Destroying a Phantasm this way will not trigger the <strong>Phantasmal Echo</strong> skill. You cannot use this skill to create a Phantasm.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "-",
+          "id": "${item.id}",
+          "name": "Phantasmal Recycling",
+          "uuid": "Actor.CpCx41dGMfGs1lm9.Item.ChuSqFPh1zSJtcC2"
+        },
+        "CqAmHzX4w14RdIix": {
+          "facet_cost": "10 MP",
+          "facet_description": "<p>You create an illusion that makes your companions feel healthier and refreshed for a while. For their next <strong>3 turns</strong>, they gain <strong>40 additional HP</strong> — this increases both their maximum and their current HP by 40.</p><p>After 3 turns, they lose this additional HP. If reduced to 0 HP at the end of the spell, the Sacrifice and Surrender rules apply as normal.</p><hr contenteditable=\"false\"><p><strong>Skill Enhancement Lv. 20</strong> ― This amount increases to <strong>50 HP</strong>.</p><p><strong>Skill Enhancement Lv. 40</strong> ― This amount increases to <strong>60 HP</strong>.</p>",
+          "facet_offensive": "",
+          "facet_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Placebo Energy",
+          "uuid": "Actor.CpCx41dGMfGs1lm9.Item.CqAmHzX4w14RdIix"
+        },
+        "EPm4hLBO5E2dSsXk": {
+          "facet_cost": "-",
+          "facet_description": "<p>You may perform Rituals whose effects fall within the <strong>Illusionism</strong> discipline. Illusionism Rituals use <strong>[INS + WLP]</strong> for the Magic Check.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "-",
+          "id": "${item.id}",
+          "name": "Ritual Illusionism",
+          "uuid": "Actor.CpCx41dGMfGs1lm9.Item.EPm4hLBO5E2dSsXk"
+        },
+        "HuFg03GeErzQ0ldi": {
+          "facet_cost": "-",
+          "facet_description": "<p>Each time you acquire this Skill, learn one Illusionist spell. </p><p>【⚡️ Offensive Spell】 Illusionist spells and Phantasm use <strong>[INS + WLP]</strong> for their Checks.</p>",
+          "facet_offensive": "",
+          "facet_target": "-",
+          "id": "${item.id}",
+          "name": "Illusionist Magic",
+          "uuid": "Actor.CpCx41dGMfGs1lm9.Item.HuFg03GeErzQ0ldi"
+        },
+        "IIp1xnmHgtej5pze": {
+          "facet_cost": "10 MP",
+          "facet_description": "<p>You may spend one action to create a vexing Phantasm that taunts and distracts your foe. For the next 【⚔️ Attack】, if the target rolls an even number for its Accuracy Check, the attack misses.</p>\n<p>On any subsequent turn, you can perform an action and another Magic Check to command the Phantasm to taunt again, with no MP requirements.</p>\n",
+          "facet_offensive": "⚡",
+          "facet_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Create Phantasm: Mockery",
+          "uuid": "Actor.CpCx41dGMfGs1lm9.Item.IIp1xnmHgtej5pze"
+        },
+        "JiO6GqyH0GSyP4GJ": {
+          "facet_cost": "10 MP",
+          "facet_description": "<p>You overflow one Phantasm with energy, making it explode to devastating effect. Choose a damage type:</p>\n<ul>\n  <li>\n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\">\n      <a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\">\n        <strong><span style=\"text-decoration: underline;\">Light</span></strong>\n      </a>\n    </span></span>\n  </li>\n  <li>\n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\">\n      <a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\">\n        <strong><span style=\"text-decoration: underline;\">Dark</span></strong>\n      </a>\n    </span></span>\n  </li>\n</ul>\n<p>The target hit by this spell suffers <strong>[HR + 25]</strong> damage of the chosen type. This shatters the Phantasm.</p>\n",
+          "facet_offensive": "⚡",
+          "facet_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Detonate Phantasm",
+          "uuid": "Actor.CpCx41dGMfGs1lm9.Item.JiO6GqyH0GSyP4GJ"
+        },
+        "LpUX9OQZyZnx1E5L": {
+          "facet_cost": "10 MP",
+          "facet_description": "<p>You command your Phantasms to heal your allies. Each Phantasm runs towards a companion and shatters itself in a cloud of healing energy. Each target recovers <strong>20 HP</strong>. A single ally cannot be healed by more than one Phantasm per action.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "Up to three allies",
+          "id": "${item.id}",
+          "name": "Vital Sacrifice",
+          "uuid": "Actor.CpCx41dGMfGs1lm9.Item.LpUX9OQZyZnx1E5L"
+        },
+        "MbmzXKQnOGp6kGly": {
+          "facet_cost": "10 MP",
+          "facet_description": "<p>You command all your active Phantasms to shatter with a blinding light. Choose one; you inflict the chosen status effect on each target hit by this spell:</p>\n<ul>\n  <li>\n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\">\n      <a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\">\n        <strong><span style=\"text-decoration: underline;\">Dazed</span></strong>\n      </a>\n    </span></span>\n  </li>\n  <li>\n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\">\n      <a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\">\n        <strong><span style=\"text-decoration: underline;\">Shaken</span></strong>\n      </a>\n    </span></span>\n  </li>\n</ul>\n",
+          "facet_offensive": "⚡",
+          "facet_target": "Up to three creature",
+          "id": "${item.id}",
+          "name": "Spectral Light",
+          "uuid": "Actor.CpCx41dGMfGs1lm9.Item.MbmzXKQnOGp6kGly"
+        },
+        "WHzVR6qknwEfJvfU": {
+          "facet_cost": "10 MP",
+          "facet_description": "<p>You create an illusion that makes your companions feel healthier and refreshed for a while. For their next <strong>3 turns</strong>, they gain <strong>40 additional HP</strong> — this increases both their maximum and their current HP by 40.</p><p>After 3 turns, they lose this additional HP. If reduced to 0 HP at the end of the spell, the Sacrifice and Surrender rules apply as normal.</p><hr contenteditable=\"false\"><p><strong>Skill Enhancement Lv. 20</strong> ― This amount increases to <strong>50 HP</strong>.</p><p><strong>Skill Enhancement Lv. 40</strong> ― This amount increases to <strong>60 HP</strong>.</p>",
+          "facet_offensive": "",
+          "facet_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Placebo Energy",
+          "uuid": "Actor.CpCx41dGMfGs1lm9.Item.WHzVR6qknwEfJvfU"
+        },
+        "f9jYqJbh4RHTfxr1": {
+          "facet_cost": "10 MP",
+          "facet_description": "<p>You command all your active Phantasms to charge at a single enemy with incredible speed, shattering on impact. They all share a single Magic Check. If they hit, the target suffers <strong>[HR + 10]</strong> <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:rgb(153,153,153)0 0 4px;\"><strong><span style=\"text-decoration: underline;\">Physical </span></strong></a></span></span>damage <strong>per Phantasm</strong> and <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\"><strong><span style=\"text-decoration: underline;\">Dazed </span></strong></a></span></span>. Damage dealt by this spell <strong>ignores Resistances</strong>.</p><hr contenteditable=\"false\"><p><strong>Skill Enhancement Lv. 20</strong> ― Damage becomes <strong>15</strong> per Phantasm.</p><p><strong>Skill Enhancement Lv. 40</strong> ― Damage becomes <strong>20</strong> per Phantasm.</p>",
+          "facet_offensive": "⚡",
+          "facet_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Mirage Blitz",
+          "uuid": "Actor.CpCx41dGMfGs1lm9.Item.f9jYqJbh4RHTfxr1"
+        },
+        "jzxJa369DMa09xUh": {
+          "facet_cost": "10 MP",
+          "facet_description": "<p>You may spend one action to conjure a terrifying Phantasm. Choose one:</p><ul><li>the Phantasm inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a></span></span></li><li>the Phantasm inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span></span></li></ul><p>The Phantasm inflicts the chosen status effect on the target hit by this spell.</p><p>On any subsequent turn, you can perform an action and perform another Magic Check to command the Phantasm to inflict the effects again, with no MP requirements.</p>",
+          "facet_offensive": "⚡",
+          "facet_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Create Phantasm: Dread",
+          "uuid": "Actor.CpCx41dGMfGs1lm9.Item.jzxJa369DMa09xUh"
+        },
+        "k8da2BsIXo4XWsWk": {
+          "facet_cost": "10 MP",
+          "facet_description": "<p>You make a weapon appear as if it were imbued with soul energy. Choose a damage type:</p><ul><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></span></li><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span></li></ul><p>Until this spell ends, all damage dealt by the weapon becomes of the chosen type. If you have that weapon equipped while casting this spell, you may perform a <strong>free</strong> <strong>attack</strong> with it as part of the same action. This spell can only be cast on a weapon equipped by a willing creature.</p>",
+          "facet_offensive": "",
+          "facet_target": "One Weapon",
+          "id": "${item.id}",
+          "name": "Nocebo Weapon",
+          "uuid": "Actor.CpCx41dGMfGs1lm9.Item.k8da2BsIXo4XWsWk"
+        },
+        "qIbPWqh6b7jz1J5j": {
+          "facet_cost": "10 MP",
+          "facet_description": "<p>When another creature is threatened by an 【⚔️ Attack】, 【📕 Spell】, or other danger, command one Phantasm to take their place. Any Checks that are part of the danger will be performed against the Phantasm. The Phantasm shields the creature, suffering an amount of damage corresponding to how much PV it has left, until it shatters. The remaining damage goes to the creature being defended. All status effects related to the attack are nullified.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Illusory Shield",
+          "uuid": "Actor.CpCx41dGMfGs1lm9.Item.qIbPWqh6b7jz1J5j"
+        },
+        "vqkHK8ZeWCqDMmi9": {
+          "facet_cost": "-",
+          "facet_description": "<p>After any of your Phantasms is shattered, you recover <strong>[SL + 2]</strong> MP.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "-",
+          "id": "${item.id}",
+          "name": "Phantasmal Echo",
+          "uuid": "Actor.CpCx41dGMfGs1lm9.Item.vqkHK8ZeWCqDMmi9"
+        },
+        "yPNASzx9H8HU1udO": {
+          "facet_cost": "10 MP",
+          "facet_description": "<p>You command your Phantasms to replenish your allies’ MP. Each Phantasm runs towards a companion and shatters itself in a spray of mana. Each target recovers <strong>20 MP</strong>. A single ally cannot be replenished by more than one Phantasm per action.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "Up to three allies",
+          "id": "${item.id}",
+          "name": "Essence Sacrifice",
+          "uuid": "Actor.CpCx41dGMfGs1lm9.Item.yPNASzx9H8HU1udO"
+        }
+      },
+      "class_heroicSkill": {
+        "Bf7Byi1jgUI8An8V": {
+          "id": "${item.id}",
+          "name": "Create Phantasm: Numen",
+          "skill_cost": "-",
+          "skill_description": "<p>You can now have up to <strong>4</strong> active Phantasms, but one of them must necessarily be <strong>Numen</strong>. Also, you cannot have more than one Numen Phantasm active at a time. This Phantasm cannot be used in any of the Illusionist’s Skills or Spells.</p>\n<p>Numen is bound by the same set of special rules as any other Phantasm, with the following exceptions:</p>\n<ul>\n  <li>Numen Phantasms cost <strong>50 MP</strong> to cast.</li>\n  <li>Numen’s Phantasmal Vitality equals <strong>twice your base Insight die size plus your level</strong>.</li>\n  <li>Once active, Numen has its <strong>own turn and a single action</strong>. It does not benefit from Spells that grant additional actions. Numen’s turn can be taken either before or after the Illusionist’s turn.</li>\n</ul>\n\n<p>When creating a Numen Phantasm, choose one essence, which dictates Numen’s damage type:</p>\n<ul>\n  <li><strong>Ravana</strong> — <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:rgb(153,153,153) 0 0 4px;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a></span></span></li>\n  <li><strong>Asura</strong> — <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:rgb(202,189,154) 0 0 4px;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></span></li>\n  <li><strong>Diablos</strong> — <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:rgb(182,102,210) 0 0 4px;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span></li>\n</ul>\n\n<p>The target hit by Numen suffers <strong>[HR + 14]</strong> damage.</p>\n<p>Damage dealt by Numen <strong>ignores Resistances and Immunities</strong>.</p>\n<p>The <strong>range</strong> of the attack is determined by your current weapon.</p>\n\n<hr>\n\n<p><strong>Skill Enhancement Lv. 20</strong> ― <em>Numen’s on-hit damage</em> increases to <strong>18</strong>.</p>\n<p><strong>Skill Enhancement Lv. 40</strong> ― <em>Numen’s on-hit damage</em> increases to <strong>20</strong>.</p>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.CpCx41dGMfGs1lm9.Item.Bf7Byi1jgUI8An8V"
+        }
+      },
+      "class_lore": "<blockquote><p><strong>Illusionists</strong> are masters of deception and manipulation, blurring the lines of reality to protect their allies and disorient their foes. Thriving on uncertainty, their presence on the battlefield is marked by unpredictability, sowing chaos across the enemy lines. But an Illusionist's powers go beyond mere trickery: they can conjure material Phantasms that mimic their own form, sending these mindless doppelgangers into the fray on their behalf.</p></blockquote>",
+      "class_skill": {
+        "Bxr578oFagp4p4uQ": {
+          "id": "${item.id}",
+          "name": "Phantasmal Recovery",
+          "skill_cost": "-",
+          "skill_description": "<p>Shatter one of your Phantasms to recover <strong>[SL × 5 HP]</strong>. Shattering a Phantasm this way will not trigger the <strong>Phantasmal Echo</strong> Skill.</p>\n",
+          "skill_maxLevel": 5,
+          "skill_type": "Active",
+          "uuid": "Actor.CpCx41dGMfGs1lm9.Item.Bxr578oFagp4p4uQ"
+        },
+        "ChuSqFPh1zSJtcC2": {
+          "id": "${item.id}",
+          "name": "Phantasmal Recycling",
+          "skill_cost": "-",
+          "skill_description": "<p>When you cast a spell, if you don't have enough MP to pay for its total cost, you may choose to shatter one of your Phantasms instead. Destroying a Phantasm this way will not trigger the <strong>Phantasmal Echo</strong> skill. You cannot use this skill to create a Phantasm.</p>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.CpCx41dGMfGs1lm9.Item.ChuSqFPh1zSJtcC2"
+        },
+        "EPm4hLBO5E2dSsXk": {
+          "id": "${item.id}",
+          "name": "Ritual Illusionism",
+          "skill_cost": "-",
+          "skill_description": "<p>You may perform Rituals whose effects fall within the <strong>Illusionism</strong> discipline. Illusionism Rituals use <strong>[INS + WLP]</strong> for the Magic Check.</p>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.CpCx41dGMfGs1lm9.Item.EPm4hLBO5E2dSsXk"
+        },
+        "HuFg03GeErzQ0ldi": {
+          "id": "${item.id}",
+          "name": "Illusionist Magic",
+          "skill_cost": "-",
+          "skill_description": "<p>Each time you acquire this Skill, learn one Illusionist spell. </p><p>【⚡️ Offensive Spell】 Illusionist spells and Phantasm use <strong>[INS + WLP]</strong> for their Checks.</p>",
+          "skill_maxLevel": 10,
+          "skill_type": "Other",
+          "uuid": "Actor.CpCx41dGMfGs1lm9.Item.HuFg03GeErzQ0ldi"
+        },
+        "vqkHK8ZeWCqDMmi9": {
+          "id": "${item.id}",
+          "name": "Phantasmal Echo",
+          "skill_cost": "-",
+          "skill_description": "<p>After any of your Phantasms is shattered, you recover <strong>[SL + 2]</strong> MP.</p>\n",
+          "skill_maxLevel": 5,
+          "skill_type": "Passive",
+          "uuid": "Actor.CpCx41dGMfGs1lm9.Item.vqkHK8ZeWCqDMmi9"
+        }
+      },
+      "flavor_text": "<p style=\"text-align: center;\"><span style=\"font-family: Amiri\"><em>If knowledge is power</em></span></p><p style=\"text-align: center\"><span style=\"font-family: Amiri\"><em>I've got bad news for you</em></span></p>",
+      "martialArmor_equippable": false,
+      "martialMelee_equippable": false,
+      "martialRanged_equippable": false,
+      "martialShield_equippable": false,
+      "name": "Illusionist",
+      "project_performable": false,
+      "ritual_performable": true
+    },
+    "statusEffects": {},
+    "template": "hoxC3HFCtMYGScIo",
+    "templateSystemUniqueVersion": 504201233
+  },
+  "type": "character"
+}

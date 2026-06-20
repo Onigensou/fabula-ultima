@@ -1,0 +1,19 @@
+{
+  "_id": "w7ey5G3zPC78EXos",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780593558554,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "w8fzwQIgXEgGQJRq",
+  "name": "Spell",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

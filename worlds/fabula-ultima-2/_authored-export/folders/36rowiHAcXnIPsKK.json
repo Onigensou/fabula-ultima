@@ -1,0 +1,19 @@
+{
+  "_id": "36rowiHAcXnIPsKK",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1772020821544,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "color": "#7a7a7a",
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "💎 Material",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

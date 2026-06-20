@@ -1,0 +1,52 @@
+{
+  "_id": "aUD8pniI0w86w1HA",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780667872366,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "coreAction": "equipment"
+    }
+  },
+  "folder": "Zrv5DRCx5PzFvLUj",
+  "img": "icons/svg/upgrade.svg",
+  "name": "Equipment",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "cost": "",
+      "description": "<p>Store equipped items in your backpack and equip items from it (armor excepted). No roll.</p>",
+      "effect_table": {
+        "0": {
+          "effect_kind": "equip_swap",
+          "effect_label": "equipment_swap",
+          "target_ref": "self"
+        }
+      },
+      "isCheck": false,
+      "isReaction": false,
+      "max_level": "1",
+      "name": "Equipment",
+      "on_activate_effect_ref": "equipment_swap",
+      "skill_target": "Self",
+      "skill_type": "Active"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": true,
+    "uniqueId": "aUD8pniI0w86w1HA"
+  },
+  "type": "equippableItem"
+}

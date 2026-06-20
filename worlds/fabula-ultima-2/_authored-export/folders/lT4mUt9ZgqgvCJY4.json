@@ -1,0 +1,19 @@
+{
+  "_id": "lT4mUt9ZgqgvCJY4",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1769519069146,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "eZWKkXNgeaFs6HSS",
+  "name": "Kusai's PC",
+  "sort": 400000,
+  "sorting": "a",
+  "type": "Actor"
+}

@@ -1,0 +1,882 @@
+{
+  "_id": "WtBFZhIad3fxPVwD",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1756862509454,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "tmNVy5jIbM9rzx80",
+  "img": "https://tiermaker.com/images/media/template_images/2024/16720717/fabula-ultima-classes-16720717/wayfarer.png",
+  "items": [
+    {
+      "_id": "2amtYSrRS83lzT7H",
+      "_stats": {
+        "compendiumSource": "Item.E1dOu3pYQKL60blD",
+        "coreVersion": "12.343",
+        "createdTime": 1756863965539,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Gatherer-Crafter/12_BTN/stealth.png",
+      "name": "Well-Traveled",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Wayfarer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>You reduce the die rolled for your <strong>travel rolls</strong> by one size (to a minimum of <strong>d6</strong>). If multiple characters have this Skill, the effects are <strong>not</strong> cumulative.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Well-Traveled",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "E1dOu3pYQKL60blD"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "2HCWunsXrIrCNX5k",
+      "_stats": {
+        "compendiumSource": "Item.vpFPtAgKm2tB93w0",
+        "coreVersion": "12.343",
+        "createdTime": 1756863963363,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/11_BRD/PhysicalRangedRollAction/head_graze.png",
+      "name": "Tavern Talk",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Wayfarer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you <strong>rest</strong> inside an inn or tavern, you may ask the Game Master up to <strong>【SL】</strong> questions about your surroundings and the people who live here; the Game Master will answer truthfully and you describe how you gathered the information</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "3",
+          "name": "Tavern Talk",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "vpFPtAgKm2tB93w0"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "6dBpxXmkt2WXbXIW",
+      "_stats": {
+        "compendiumSource": "Item.K36wz3QkVDODDnfv",
+        "coreVersion": "12.343",
+        "createdTime": 1757996948360,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/GrandArcherPassive3.png",
+      "name": "Harvester",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Slayer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you make an Accuracy Check and roll a <strong>critical success</strong>, you or another creature of your choice regains 1 Inventory Point.</p>\n",
+          "duration": "",
+          "heroic_requirement": "You must have mastered one or more Classes among the following: Loremaster, Slayer, or Wayfarer",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Harvester",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "K36wz3QkVDODDnfv"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "gyzWIVEBfEieLNwh",
+      "_stats": {
+        "compendiumSource": "Item.SO2A00eWNyxfnGfP",
+        "coreVersion": "12.343",
+        "createdTime": 1756863985514,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/05_SCH/fey_covenant.png",
+      "name": "Heroic Companion",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Wayfarer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<div class=\"companion-upgrade\">\n  <p><strong>Your bond with your companion grows stronger.</strong><br>\n     You gain the following benefits:</p>\n\n  <ul class=\"book-bullets\">\n    <li>The companion’s maximum Hit Points increase by 10.</li>\n    <li>\n      Choose one of the companion’s Attributes:\n      <strong>Dexterity, Insight, Might</strong>, or <strong>Willpower</strong>.\n      The chosen Attribute is permanently increased by one die size\n      (up to a maximum size of <strong>d12</strong>).\n    </li>\n    <li>\n      The companion gains an additional Skill. When you reach level 40, or if you have\n      already reached it, the companion gains an additional Skill. Make sure to discuss\n      your Skill choices with the Game Master and the other Players.\n    </li>\n  </ul>\n</div>\n\n<style>\n  .companion-upgrade { font-family: var(--chat-font, \"Signika\", system-ui, sans-serif); line-height: 1.45; }\n  .book-bullets { margin: .3rem 0 0; padding-left: 1.4rem; }\n  .book-bullets li {\n    list-style: none;\n    position: relative;\n    margin: .25rem 0;\n  }\n  .book-bullets li::before {\n    content: \"◆\";\n    position: absolute;\n    left: -1.2rem;\n    top: .1rem;\n    font-weight: 800;\n    /* use current text color so it matches your theme */\n    color: currentColor;\n  }\n</style>\n",
+          "duration": "",
+          "heroic_requirement": "Requirements: You must have mastered the Wayfarer Class, and must have acquired the Faithful Companion Skill",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Heroic Companion",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "SO2A00eWNyxfnGfP"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "PpTMiE4oSJ7XlBHI",
+      "_stats": {
+        "compendiumSource": "Item.T0HplvOxcpR0NdWX",
+        "coreVersion": "12.343",
+        "createdTime": 1756864444378,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/05_SCH/embrace_eos.png",
+      "name": "Faithful Companion",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Wayfarer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>Together with the rest of your group, design a <strong>level 5 beast, construct, elemental </strong>or<strong> plant</strong> creature that becomes your <strong>companion</strong>. This creature has <strong>no</strong> <strong>Initiative score</strong> and <strong>does not level up</strong>, can have <strong>up to two basic attacks</strong>, gains a bonus equal to <strong>【SL】</strong> to Accuracy Checks and Magic Checks, and their maximum Hit Points are equal to <strong>【(SL multiplied by the companion's base Might die size) + half your level】</strong>.</p><p>Your companion doesn't get a turn during conflicts, but on your turn you can use an action to have the companion perform an action (only once per turn). If you leave a scene, your companion leaves with you.</p><p>If your companion falls to 0 Hit Points, they flee and rejoin you at the start of the next scene in which you are present, with HP equal to their <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span> score. When you rest, your companion also gains the full benefits of resting.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "5",
+          "name": "Faithful Companion",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p><strong>Level</strong></p></td><td data-colwidth=\"148\"><p><strong>Companion Max HP</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p>【(1 x MIG die) + half your level】</p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p>【(2 x MIG die) + half your level】</p></td></tr><tr><td data-colwidth=\"79\"><p>3</p></td><td data-colwidth=\"148\"><p>【(3 x MIG die) + half your level】</p></td></tr><tr><td data-colwidth=\"79\"><p>4</p></td><td data-colwidth=\"148\"><p>【(4 x MIG die) + half your level】</p></td></tr><tr><td data-colwidth=\"79\"><p>5</p></td><td data-colwidth=\"148\"><p>【(5 x MIG die) + half your level】</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Other",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "T0HplvOxcpR0NdWX"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "UDKkNARcCfg6NboU",
+      "_stats": {
+        "compendiumSource": "Item.zgb1ZKLnw50WNjlG",
+        "coreVersion": "12.343",
+        "createdTime": 1756863964350,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lithia/TrickFinderSkill1.png",
+      "name": "Treasure Hunter",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Wayfarer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When your group journeys on the world map, you will make a <strong>discovery</strong> on a roll of <strong>【SL + 1】 or lower</strong> on the <strong>travel roll</strong> <em>(instead of only on a 1).</em></p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "2",
+          "name": "Treasure Hunter",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "zgb1ZKLnw50WNjlG"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "UDZCCxA0SQPvKj8S",
+      "_stats": {
+        "compendiumSource": "Item.CA8Ilu2bkIkYhfgY",
+        "coreVersion": "12.343",
+        "createdTime": 1756863987789,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/NWTrans3.png",
+      "name": "Status Immunity",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Wayfarer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>You become completely immune to a single status effect of your choice.</p>",
+          "duration": "",
+          "heroic_requirement": "You must have mastered the Wayfarer Class.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Status Immunity",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "CA8Ilu2bkIkYhfgY"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "WJS9dyE8WMi3RRZn",
+      "_stats": {
+        "compendiumSource": "Item.EO5v5UChnByyIVGp",
+        "coreVersion": "12.343",
+        "createdTime": 1756863962339,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Gatherer-Crafter/12_BTN/nophica%27s_counsel.png",
+      "name": "Resourceful",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Wayfarer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>You recover <strong>【SL】</strong> Inventory Points after each <strong>travel roll</strong></p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "4",
+          "name": "Resourceful",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "EO5v5UChnByyIVGp"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Wayfarer",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar4": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "DEF",
+            "max": 13,
+            "maxcolor": "#f26d40",
+            "mincolor": "#f26d40",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 13
+          },
+          "bar5": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar5",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MDEF",
+            "max": 10,
+            "maxcolor": "#26d6ed",
+            "mincolor": "#26d6ed",
+            "opacity": null,
+            "order": 4,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 10
+          }
+        }
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Wayfarer",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://tiermaker.com/images/media/template_images/2024/16720717/fabula-ultima-classes-16720717/wayfarer.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 0,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {
+      "also_text": "Adventurer, Explorer, Treasure Hunter",
+      "benefit_dropdown": "ip_benefit",
+      "classMechanic_text": "<h1>WAYFARER’S COMPANION</h1><p></p><h3>THE COMPANION</h3><p>Together with the rest of your group, design a <strong>level 5</strong> <em>beast, construct, elemental,</em> or <em>plant</em> creature that becomes your companion.</p><ul><li>The companion has <strong>no Initiative score</strong> and <strong>does not level up</strong>.</li><li>It can have <strong>up to two basic attacks</strong>.</li><li>It gains a bonus equal to <strong>【SL】</strong> to <strong>Accuracy Checks</strong> and <strong>Magic Checks</strong>.</li><li>Its maximum Hit Points are equal to <strong>【(SL × the companion’s base Might die size) + half your level】</strong>.</li></ul><p></p><h3>TURN AND ACTION ECONOMY</h3><p>Your companion does not receive its own turn during conflicts. <strong>On your turn, you may use an action to have the companion perform one action</strong> (only once per turn). This action is resolved by the companion using its own statistics and position on the scene, but it <strong>consumes your action</strong>.</p><p></p><h3>SCENE INTERACTIONS</h3><ul><li>If you <strong>leave a scene</strong>, your companion leaves with you.</li><li>At the <strong>start of any scene in which you are present</strong>, your companion appears with you and can be commanded as above.</li><li>When you <strong>rest</strong>, your companion also gains the full benefits of resting.</li></ul><p></p><h3>CRISIS AND RETURN</h3><p>If your companion <strong>falls to 0 Hit Points</strong>, it flees and cannot act. It <strong>rejoins you at the start of the next scene</strong> in which you are present with HP equal to its <strong>【Crisis】</strong> score.</p><p></p><h3>NOTES</h3><ul><li>The companion counts as an allied creature and is affected by effects that target allies or creatures as normal.</li><li>Only one commanding action for the companion may be issued per your turn, even if you gain additional actions from other effects.</li></ul>",
+      "class_facet": {
+        "2HCWunsXrIrCNX5k": {
+          "facet_cost": "",
+          "facet_description": "<p>When you <strong>rest</strong> inside an inn or tavern, you may ask the Game Master up to <strong>【SL】</strong> questions about your surroundings and the people who live here; the Game Master will answer truthfully and you describe how you gathered the information</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Tavern Talk",
+          "uuid": "Actor.WtBFZhIad3fxPVwD.Item.2HCWunsXrIrCNX5k"
+        },
+        "2amtYSrRS83lzT7H": {
+          "facet_cost": "",
+          "facet_description": "<p>You reduce the die rolled for your <strong>travel rolls</strong> by one size (to a minimum of <strong>d6</strong>). If multiple characters have this Skill, the effects are <strong>not</strong> cumulative.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Well-Traveled",
+          "uuid": "Actor.WtBFZhIad3fxPVwD.Item.2amtYSrRS83lzT7H"
+        },
+        "6dBpxXmkt2WXbXIW": {
+          "facet_cost": "",
+          "facet_description": "<p>When you make an Accuracy Check and roll a <strong>critical success</strong>, you or another creature of your choice regains 1 Inventory Point.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Harvester",
+          "uuid": "Actor.WtBFZhIad3fxPVwD.Item.6dBpxXmkt2WXbXIW"
+        },
+        "PpTMiE4oSJ7XlBHI": {
+          "facet_cost": "",
+          "facet_description": "<p>Together with the rest of your group, design a <strong>level 5 beast, construct, elemental </strong>or<strong> plant</strong> creature that becomes your <strong>companion</strong>. This creature has <strong>no</strong> <strong>Initiative score</strong> and <strong>does not level up</strong>, can have <strong>up to two basic attacks</strong>, gains a bonus equal to <strong>【SL】</strong> to Accuracy Checks and Magic Checks, and their maximum Hit Points are equal to <strong>【(SL multiplied by the companion's base Might die size) + half your level】</strong>.</p><p>Your companion doesn't get a turn during conflicts, but on your turn you can use an action to have the companion perform an action (only once per turn). If you leave a scene, your companion leaves with you.</p><p>If your companion falls to 0 Hit Points, they flee and rejoin you at the start of the next scene in which you are present, with HP equal to their <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span> score. When you rest, your companion also gains the full benefits of resting.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Faithful Companion",
+          "uuid": "Actor.WtBFZhIad3fxPVwD.Item.PpTMiE4oSJ7XlBHI"
+        },
+        "UDKkNARcCfg6NboU": {
+          "facet_cost": "",
+          "facet_description": "<p>When your group journeys on the world map, you will make a <strong>discovery</strong> on a roll of <strong>【SL + 1】 or lower</strong> on the <strong>travel roll</strong> <em>(instead of only on a 1).</em></p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Treasure Hunter",
+          "uuid": "Actor.WtBFZhIad3fxPVwD.Item.UDKkNARcCfg6NboU"
+        },
+        "UDZCCxA0SQPvKj8S": {
+          "facet_cost": "",
+          "facet_description": "<p>You become completely immune to a single status effect of your choice.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Status Immunity",
+          "uuid": "Actor.WtBFZhIad3fxPVwD.Item.UDZCCxA0SQPvKj8S"
+        },
+        "WJS9dyE8WMi3RRZn": {
+          "facet_cost": "",
+          "facet_description": "<p>You recover <strong>【SL】</strong> Inventory Points after each <strong>travel roll</strong></p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Resourceful",
+          "uuid": "Actor.WtBFZhIad3fxPVwD.Item.WJS9dyE8WMi3RRZn"
+        },
+        "gyzWIVEBfEieLNwh": {
+          "facet_cost": "",
+          "facet_description": "<div class=\"companion-upgrade\">\n  <p><strong>Your bond with your companion grows stronger.</strong><br>\n     You gain the following benefits:</p>\n\n  <ul class=\"book-bullets\">\n    <li>The companion’s maximum Hit Points increase by 10.</li>\n    <li>\n      Choose one of the companion’s Attributes:\n      <strong>Dexterity, Insight, Might</strong>, or <strong>Willpower</strong>.\n      The chosen Attribute is permanently increased by one die size\n      (up to a maximum size of <strong>d12</strong>).\n    </li>\n    <li>\n      The companion gains an additional Skill. When you reach level 40, or if you have\n      already reached it, the companion gains an additional Skill. Make sure to discuss\n      your Skill choices with the Game Master and the other Players.\n    </li>\n  </ul>\n</div>\n\n<style>\n  .companion-upgrade { font-family: var(--chat-font, \"Signika\", system-ui, sans-serif); line-height: 1.45; }\n  .book-bullets { margin: .3rem 0 0; padding-left: 1.4rem; }\n  .book-bullets li {\n    list-style: none;\n    position: relative;\n    margin: .25rem 0;\n  }\n  .book-bullets li::before {\n    content: \"◆\";\n    position: absolute;\n    left: -1.2rem;\n    top: .1rem;\n    font-weight: 800;\n    /* use current text color so it matches your theme */\n    color: currentColor;\n  }\n</style>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Heroic Companion",
+          "uuid": "Actor.WtBFZhIad3fxPVwD.Item.gyzWIVEBfEieLNwh"
+        }
+      },
+      "class_heroicSkill": {
+        "6dBpxXmkt2WXbXIW": {
+          "id": "${item.id}",
+          "name": "Harvester",
+          "skill_cost": "",
+          "skill_description": "<p>When you make an Accuracy Check and roll a <strong>critical success</strong>, you or another creature of your choice regains 1 Inventory Point.</p>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.WtBFZhIad3fxPVwD.Item.6dBpxXmkt2WXbXIW"
+        },
+        "UDZCCxA0SQPvKj8S": {
+          "id": "${item.id}",
+          "name": "Status Immunity",
+          "skill_cost": "",
+          "skill_description": "<p>You become completely immune to a single status effect of your choice.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.WtBFZhIad3fxPVwD.Item.UDZCCxA0SQPvKj8S"
+        },
+        "gyzWIVEBfEieLNwh": {
+          "id": "${item.id}",
+          "name": "Heroic Companion",
+          "skill_cost": "",
+          "skill_description": "<div class=\"companion-upgrade\">\n  <p><strong>Your bond with your companion grows stronger.</strong><br>\n     You gain the following benefits:</p>\n\n  <ul class=\"book-bullets\">\n    <li>The companion’s maximum Hit Points increase by 10.</li>\n    <li>\n      Choose one of the companion’s Attributes:\n      <strong>Dexterity, Insight, Might</strong>, or <strong>Willpower</strong>.\n      The chosen Attribute is permanently increased by one die size\n      (up to a maximum size of <strong>d12</strong>).\n    </li>\n    <li>\n      The companion gains an additional Skill. When you reach level 40, or if you have\n      already reached it, the companion gains an additional Skill. Make sure to discuss\n      your Skill choices with the Game Master and the other Players.\n    </li>\n  </ul>\n</div>\n\n<style>\n  .companion-upgrade { font-family: var(--chat-font, \"Signika\", system-ui, sans-serif); line-height: 1.45; }\n  .book-bullets { margin: .3rem 0 0; padding-left: 1.4rem; }\n  .book-bullets li {\n    list-style: none;\n    position: relative;\n    margin: .25rem 0;\n  }\n  .book-bullets li::before {\n    content: \"◆\";\n    position: absolute;\n    left: -1.2rem;\n    top: .1rem;\n    font-weight: 800;\n    /* use current text color so it matches your theme */\n    color: currentColor;\n  }\n</style>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.WtBFZhIad3fxPVwD.Item.gyzWIVEBfEieLNwh"
+        }
+      },
+      "class_lore": "<blockquote><p>Nomads searching for a fabled continent, explorers braving the wilds, grizzled hunters and travelers have one thing in common: they are <strong>Wayfarers.</strong></p><p>While a majority of heroes travel the world during their adventures, Wayfarers live for the journey. They are always eager to visit new places and learn from others.</p><p>In the eyes of a Wayfarer, the wilderness is neither foe nor an ally, but rather a stern teacher who can reveal many forgotten truths.</p></blockquote>",
+      "class_skill": {
+        "2HCWunsXrIrCNX5k": {
+          "id": "${item.id}",
+          "name": "Tavern Talk",
+          "skill_cost": "",
+          "skill_description": "<p>When you <strong>rest</strong> inside an inn or tavern, you may ask the Game Master up to <strong>【SL】</strong> questions about your surroundings and the people who live here; the Game Master will answer truthfully and you describe how you gathered the information</p>",
+          "skill_maxLevel": 3,
+          "skill_type": "Passive",
+          "uuid": "Actor.WtBFZhIad3fxPVwD.Item.2HCWunsXrIrCNX5k"
+        },
+        "2amtYSrRS83lzT7H": {
+          "id": "${item.id}",
+          "name": "Well-Traveled",
+          "skill_cost": "",
+          "skill_description": "<p>You reduce the die rolled for your <strong>travel rolls</strong> by one size (to a minimum of <strong>d6</strong>). If multiple characters have this Skill, the effects are <strong>not</strong> cumulative.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.WtBFZhIad3fxPVwD.Item.2amtYSrRS83lzT7H"
+        },
+        "PpTMiE4oSJ7XlBHI": {
+          "id": "${item.id}",
+          "name": "Faithful Companion",
+          "skill_cost": "",
+          "skill_description": "<p>Together with the rest of your group, design a <strong>level 5 beast, construct, elemental </strong>or<strong> plant</strong> creature that becomes your <strong>companion</strong>. This creature has <strong>no</strong> <strong>Initiative score</strong> and <strong>does not level up</strong>, can have <strong>up to two basic attacks</strong>, gains a bonus equal to <strong>【SL】</strong> to Accuracy Checks and Magic Checks, and their maximum Hit Points are equal to <strong>【(SL multiplied by the companion's base Might die size) + half your level】</strong>.</p><p>Your companion doesn't get a turn during conflicts, but on your turn you can use an action to have the companion perform an action (only once per turn). If you leave a scene, your companion leaves with you.</p><p>If your companion falls to 0 Hit Points, they flee and rejoin you at the start of the next scene in which you are present, with HP equal to their <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span> score. When you rest, your companion also gains the full benefits of resting.</p>",
+          "skill_maxLevel": 5,
+          "skill_type": "Other",
+          "uuid": "Actor.WtBFZhIad3fxPVwD.Item.PpTMiE4oSJ7XlBHI"
+        },
+        "UDKkNARcCfg6NboU": {
+          "id": "${item.id}",
+          "name": "Treasure Hunter",
+          "skill_cost": "",
+          "skill_description": "<p>When your group journeys on the world map, you will make a <strong>discovery</strong> on a roll of <strong>【SL + 1】 or lower</strong> on the <strong>travel roll</strong> <em>(instead of only on a 1).</em></p>",
+          "skill_maxLevel": 2,
+          "skill_type": "Passive",
+          "uuid": "Actor.WtBFZhIad3fxPVwD.Item.UDKkNARcCfg6NboU"
+        },
+        "WJS9dyE8WMi3RRZn": {
+          "id": "${item.id}",
+          "name": "Resourceful",
+          "skill_cost": "",
+          "skill_description": "<p>You recover <strong>【SL】</strong> Inventory Points after each <strong>travel roll</strong></p>",
+          "skill_maxLevel": 4,
+          "skill_type": "Passive",
+          "uuid": "Actor.WtBFZhIad3fxPVwD.Item.WJS9dyE8WMi3RRZn"
+        }
+      },
+      "flavor_text": "<p style=\"text-align: center\"><span style=\"font-family: Amiri\"><em>Borders are</em></span></p><p style=\"text-align: center\"><span style=\"font-family: Amiri\"><em>a trick of</em></span></p><p style=\"text-align: center\"><span style=\"font-family: Amiri\"><em>the mind.</em></span></p>",
+      "martialArmor_equippable": false,
+      "martialMelee_equippable": false,
+      "martialRanged_equippable": false,
+      "martialShield_equippable": false,
+      "name": "Wayfarer",
+      "project_performable": false,
+      "ritual_performable": false
+    },
+    "statusEffects": {},
+    "template": "hoxC3HFCtMYGScIo",
+    "templateSystemUniqueVersion": 504201233
+  },
+  "type": "character"
+}

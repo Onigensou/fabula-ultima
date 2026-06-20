@@ -1,0 +1,45 @@
+{
+  "_id": "uf8ifn1JuEflXJ6E",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1747468598959,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.4.2"
+    }
+  },
+  "folder": "BDkKSz76tGYP6v9g",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/glower.png",
+  "name": "Blind",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Hexer",
+      "cost": "20",
+      "damage_bonus": "0",
+      "description": "<p>You cover the target’s eyes with pitch-black shadows, blocking their sight. Until the spell ends, the target suffers a <strong>-2 penalty</strong> to <strong>Accuracy Checks.</strong></p><p>This spell has no effect on creatures that do not rely on sight. An effect that can remove a status effect can end this effect instead.</p>",
+      "duration": "Scene",
+      "name": "Blind",
+      "rolled_atr1": "INS",
+      "rolled_atr2": "WLP",
+      "target": "One creature",
+      "type_damage": ""
+    },
+    "template": "FZmpKcQRP7hZQqbV",
+    "templateSystemUniqueVersion": 1700837225,
+    "unique": false,
+    "uniqueId": "uf8ifn1JuEflXJ6E"
+  },
+  "type": "equippableItem"
+}

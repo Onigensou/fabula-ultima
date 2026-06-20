@@ -1,0 +1,19 @@
+{
+  "_id": "7YQ4ZWxpYvijJPmb",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1765677075287,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "SPvX0PiXpGCzQ7YQ",
+  "name": "Scene",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Scene"
+}

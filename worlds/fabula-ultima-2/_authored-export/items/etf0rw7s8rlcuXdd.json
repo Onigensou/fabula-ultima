@@ -1,0 +1,105 @@
+{
+  "_id": "etf0rw7s8rlcuXdd",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1751905917539,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "etf0rw7s8rlcuXdd",
+        "itemName": "Thief Dagger",
+        "pickedOldProps": {
+          "cost": "2000",
+          "martial": false
+        },
+        "ts": 1769647042072
+      }
+    }
+  },
+  "folder": "VyleP6z3sywDX4eL",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Dagger.gif",
+  "name": "Thief Dagger",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 200000,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "aquatic_ef": "100",
+      "automaton_ef": "100",
+      "avian_ef": "100",
+      "beast_ef": "100",
+      "category": "Dagger",
+      "celestial_ef": "100",
+      "check_bonus": "0",
+      "construct_ef": "100",
+      "damage_bonus": "5",
+      "demiHuman_ef": "100",
+      "demon_ef": "100",
+      "description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.7PQDwyX0RPf0djPL\" data-id=\"7PQDwyX0RPf0djPL\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Backstab</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;5</span></strong></span></span></p></li><li><p>You gain +1 to all Checks involving Picking Locks</p></li><li><p>You may perform the skill 【<strong>💥 Mug</strong>】</p><hr></li></ul><details><summary><strong>💥 Mug</strong></summary><p><strong>Cost:</strong> 10 MP</p><p><strong>Target:</strong> One Creature</p><p><strong>Duration:</strong> Instantaneous</p><p>Perform a <strong>Free Attack</strong> on the target. If the attack reduces the target to 0 HP, roll <strong>1d200</strong>. You gain zenit equal to the result rolled.</p><p></p><p></p></details>",
+      "dragon_ef": "100",
+      "elemental_ef": "100",
+      "enforcer_ef": "100",
+      "fey_ef": "100",
+      "flora_ef": "100",
+      "fungus_ef": "100",
+      "golem_ef": "100",
+      "gorger_ef": "100",
+      "hand_slots": "One-handed",
+      "human_ef": "100",
+      "humanoid_ef": "100",
+      "insect_ef": "100",
+      "ip_cost": "",
+      "isEquipped": false,
+      "isKey": false,
+      "isMartial": false,
+      "isModule": false,
+      "isRelatedItem": false,
+      "isSet": true,
+      "isUnique": false,
+      "item_baseDef": "0",
+      "item_baseMdef": "0",
+      "item_cost": "2000",
+      "item_def_bonus": "0",
+      "item_mdef_bonus": "0",
+      "item_quantity": "1",
+      "item_rarity": "Rare",
+      "item_type": "weapon",
+      "mimic_ef": "100",
+      "monster_ef": "100",
+      "name": "Thief Dagger",
+      "optional_params": {},
+      "plant_ef": "100",
+      "reptilian_ef": "100",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "set_description": "<p><strong>【Set Bonus】</strong></p><p><strong>2-Piece</strong></p><ul><li><p>You gain an additional <strong>100 Zenit </strong>when successfully triggering the <strong>💥 Mug </strong>skill</p></li></ul><hr><p><strong>3-Piece</strong></p><ul><li><p><strong>【Dodge】 SL +2</strong></p></li></ul>",
+      "set_name": "Master Thief",
+      "skill_target": "One Enemy",
+      "soldier_ef": "100",
+      "spirit_ef": "100",
+      "type_damage": "Physical",
+      "undead_ef": "100",
+      "vehicle_ef": "100",
+      "weapon_range": "Melee"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "etf0rw7s8rlcuXdd"
+  },
+  "type": "equippableItem"
+}

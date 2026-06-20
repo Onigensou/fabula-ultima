@@ -1,0 +1,45 @@
+{
+  "_id": "OWiE9KadNXPpPE6j",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1728833549266,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    }
+  },
+  "folder": "pGXFZwdTcrOIIgOO",
+  "img": "icons/magic/earth/orb-stone-smoke-teal.webp",
+  "name": "Egg Bomb",
+  "ownership": {
+    "Am7qxPOavfKeDGPd": 3,
+    "default": 3
+  },
+  "sort": 200000,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Chimerist",
+      "cost": "50 MP",
+      "damage_bonus": "30",
+      "description": "<p>This spell also target all enemies adjacent to its original target.</p>\n<p>On hit, 15% chance to inflicts <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Burn.png\" alt=\"\" width=\"21\" height=\"21\"> <strong>@UUID[JournalEntry.MSRXG4jUMPFpM9sN]{Burn}</strong></p>",
+      "duration": "Instantaneous",
+      "name": "Egg Bomb",
+      "rolled_atr1": "INS",
+      "rolled_atr2": "WLP",
+      "target": "One creature",
+      "type_damage": "Fire"
+    },
+    "template": "FZmpKcQRP7hZQqbV",
+    "templateSystemUniqueVersion": 1700837225,
+    "unique": false,
+    "uniqueId": "OWiE9KadNXPpPE6j"
+  },
+  "type": "equippableItem"
+}

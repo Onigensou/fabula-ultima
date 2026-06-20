@@ -1,0 +1,57 @@
+{
+  "_id": "334Ga6H8jZlUfVWZ",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1756939125866,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "wfhbB1TfqBSosGCC",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/11_BRD/troubadour.png",
+  "name": "Magichant",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Chanter",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>On your turn during a conflict scene, you may use an action and spend a variable amount of MP to weave voice and music into a magical effect known as a <strong>verse.</strong></p><p>You may only sing <strong>one verse</strong> per turn, even if you have access to multiple actions; the full rules for <strong>verses</strong> can be found starting on the next page.</p><p>When you first acquire this Skill, you learn <strong>all three volumes</strong>, plus <strong>one key</strong> and <strong>one tone</strong> (see class mechanic). Whenever you acquire this Skill again, you may learn <strong>one key</strong> or <strong>one tone</strong> (your choice).</p>",
+      "duration": "",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "10",
+      "name": "Magichant",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Other",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "334Ga6H8jZlUfVWZ"
+  },
+  "type": "equippableItem"
+}

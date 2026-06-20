@@ -1,0 +1,55 @@
+{
+  "_id": "tF3FlbbmeOOgnYvl",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1754168843674,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "uuBCmFnWytMuWiTe",
+  "img": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/dragupload/fabula%20class/pirate/13.jpg",
+  "name": "Boardside Cannon Salvo",
+  "ownership": {
+    "default": 3,
+    "nXC7OD7u5Zw5UDDU": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Pirate",
+      "cost": "X IP",
+      "damage_bonus": "0",
+      "description": "<p>You call a full bombardment fire support from your ship. Choose to spend any amount of IP.</p><p>This action deal <strong>【10 x amount of IP spend】</strong> to all enemy present in the scene.</p><p>This skill is considered an <strong>【Inventory】</strong>Action.</p>",
+      "duration": "Instantanoeus",
+      "heroic_requirement": "You must have mastered the Pirate Class.",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "level": "1",
+      "max_level": "1",
+      "name": "Boardside Cannon Salvo",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_target": "",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "tF3FlbbmeOOgnYvl"
+  },
+  "type": "equippableItem"
+}

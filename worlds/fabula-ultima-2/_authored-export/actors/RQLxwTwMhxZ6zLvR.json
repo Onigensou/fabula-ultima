@@ -1,0 +1,884 @@
+{
+  "_id": "RQLxwTwMhxZ6zLvR",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1757993612255,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "lrk2jhOW5Ok9sgH1",
+  "img": "https://serenesforest.net/wp-content/uploads/2014/06/roy-full.jpg",
+  "items": [
+    {
+      "_id": "7y6N4xoDYa7znJgp",
+      "_stats": {
+        "compendiumSource": "Item.SqaW8fCWW1tdQWng",
+        "coreVersion": "12.343",
+        "createdTime": 1757996879426,
+        "duplicateSource": "Item.9Jia1mhze8Nop6f8",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/rouse.png",
+      "name": "Wildlife Expert",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Slayer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you rest in the wilderness, you may ask the Game Master up to <strong>[SL]</strong> questions about creatures in the area; the Game Master will answer truthfully.</p>\n",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "3",
+          "name": "Wildlife Expert",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>Questions You May Ask</strong></p></td></tr><tr><td><p>1</p></td><td><p>1</p></td></tr><tr><td><p>2</p></td><td><p>2</p></td></tr><tr><td><p>3</p></td><td><p>3</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "SqaW8fCWW1tdQWng"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "8OjnNG6sf69ZKI0F",
+      "_stats": {
+        "compendiumSource": "Item.2t9fQihUfuKxSR7Z",
+        "coreVersion": "12.343",
+        "createdTime": 1757996874580,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/CLOSERS/J/Triple_Blending_Shot.webp",
+      "name": "Bane Oils",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Slayer",
+          "cost": "2 IP",
+          "damage_bonus": "0",
+          "description": "<p>Each time you take this Skill, choose a <strong>creature Species</strong>. You may use an action and spend 2 Inventory Points to apply a <strong>bane oil</strong> for one of your chosen Species to a weapon equipped by you or a willing creature. If you have the weapon equipped, you may perform a <strong>free attack</strong> with it as part of the same action.</p>\n\n<p>Until the end of the scene or a different bane oil is applied to the weapon, when a creature of the same Species as the bane oil is hit by the weapon, the attacker picks one of the following:</p>\n<ul>\n  <li>the creature becomes \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\">\n      <a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px;\">\n        <strong><span style=\"text-decoration: underline;\">Slow</span></strong>\n      </a>\n    </span></span>\n  </li>\n  <li>the creature becomes \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\">\n      <a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px;\">\n        <strong><span style=\"text-decoration: underline;\">Weak</span></strong>\n      </a>\n    </span></span>\n  </li>\n  <li>the creature loses one of its damage Resistances until the end of the scene</li>\n</ul>\n<p>The attacker may choose the damage type; otherwise, the GM chooses one at random.</p>\n",
+          "duration": "Scene",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "5",
+          "name": "Bane Oils",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Any",
+          "skill_target": "One creature of the chosen species",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "2t9fQihUfuKxSR7Z"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "g2LvI3PtvnVwrKtA",
+      "_stats": {
+        "compendiumSource": "Item.vrCJoVQmhvdVrWxQ",
+        "coreVersion": "12.343",
+        "createdTime": 1757996643895,
+        "duplicateSource": "Item.K36wz3QkVDODDnfv",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/passage_of_arms.png",
+      "name": "Protective Strike",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Guardian",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you <strong>hit</strong> with a <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.10LjF01NAYNKpRvn\" data-id=\"10LjF01NAYNKpRvn\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Melee</span></strong></a></span></span> attack, you may choose to cover an ally as though you took the 【🛡️Guard】 action. This does not provide any of the other benefits of the 【🛡️Guard】 action.</p>",
+          "duration": "",
+          "heroic_requirement": "You must have mastered one or more Classes among the following: Guardian or Slayer.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Protective Strike",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "vrCJoVQmhvdVrWxQ"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "J62QcjhrrUuTXGqS",
+      "_stats": {
+        "compendiumSource": "Item.473VXhCLo6zThIqf",
+        "coreVersion": "12.343",
+        "createdTime": 1757996877554,
+        "duplicateSource": "Item.3uLvY7VYyDEzxU1U",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/11_BRD/misery%27s_end.png",
+      "name": "Giant Killer",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Slayer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you hit a <em>non-soldier</em> creature with an attack that deals damage, you deal extra damage equal to <strong>[2 × the number of soldiers the creature replaces]</strong>.</p>\n",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Giant Killer",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "473VXhCLo6zThIqf"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "LiSn88DPui1LNevT",
+      "_stats": {
+        "compendiumSource": "Item.9Jia1mhze8Nop6f8",
+        "coreVersion": "12.343",
+        "createdTime": 1757996878609,
+        "duplicateSource": "Item.473VXhCLo6zThIqf",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/11_BRD/PhysicalRangedRollAction/arm_graze.png",
+      "name": "Lockdown",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Slayer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you hit a creature with an attack you may spend 10 Mind Points and choose one of the target’s <em>basic attacks</em> or <em>spells</em>. Until the start of your next turn, the target deals <strong>[SL × 2]</strong> less damage with the chosen action.</p>\n",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "4",
+          "name": "Lockdown",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>Less Damage Dealt</strong></p></td></tr><tr><td><p>1</p></td><td><p>2</p></td></tr><tr><td><p>2</p></td><td><p>4</p></td></tr><tr><td><p>3</p></td><td><p>6</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "9Jia1mhze8Nop6f8"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "QMI7xGBmXusqDdHH",
+      "_stats": {
+        "compendiumSource": "Item.3uLvY7VYyDEzxU1U",
+        "coreVersion": "12.343",
+        "createdTime": 1757996876296,
+        "duplicateSource": "Item.2t9fQihUfuKxSR7Z",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/10_VPR/Twinfang_Bite.png",
+      "name": "Exploit",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Slayer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you make an Accuracy Check, Magic Check, or contested Check, you may spend <strong>1 Fabula Point</strong> and invoke one of the target’s Traits to add <strong>[SL]</strong> to your result against that target. A Villain may <strong>spend 2 Ultima Points</strong> to cancel out this effect. If the Check includes multiple targets, your result against those other targets is unchanged.</p>\n",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "5",
+          "name": "Exploit",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>Bonus to Check Result</strong></p></td></tr><tr><td><p>1</p></td><td><p>+1</p></td></tr><tr><td><p>2</p></td><td><p>+2</p></td></tr><tr><td><p>3</p></td><td><p>+3</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "3uLvY7VYyDEzxU1U"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "SejzAyW68lvEzlyV",
+      "_stats": {
+        "compendiumSource": "Item.Zuk8uGImgpGzieVQ",
+        "coreVersion": "12.343",
+        "createdTime": 1757996646012,
+        "duplicateSource": "Item.vrCJoVQmhvdVrWxQ",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/11_BRD/Heartbreak_Shot.png",
+      "name": "Weak Point",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Slayer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you hit with a ranged attack, you may spend 10 Mind Points to leave behind a weak point. The next time a creature hits the same target with an attack this scene, they may spend 10 Mind Points to deal <strong>15 extra damage</strong> and inflict one status effect of their choice:</p><ul><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Dazed</span></strong></a></span></span></li><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span></span></li><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span></span></li><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a></span></span></li></ul><hr contenteditable=\"false\"><p><strong>Skill Enhancement Lv. 40</strong> ― This extra damage becomes <strong>25</strong>.</p>",
+          "duration": "",
+          "heroic_requirement": "You must have mastered one or more Classes among the following: Sharpshooter or Slayer.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Weak Point",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "Zuk8uGImgpGzieVQ"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "y3lsZbIibUARuDfg",
+      "_stats": {
+        "compendiumSource": "Item.K36wz3QkVDODDnfv",
+        "coreVersion": "12.343",
+        "createdTime": 1757996626314,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/GrandArcherPassive3.png",
+      "name": "Harvester",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Slayer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you make an Accuracy Check and roll a <strong>critical success</strong>, you or another creature of your choice regains 1 Inventory Point.</p>\n",
+          "duration": "",
+          "heroic_requirement": "You must have mastered one or more Classes among the following: Loremaster, Slayer, or Wayfarer",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Harvester",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "K36wz3QkVDODDnfv"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Slayer",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar4": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "DEF",
+            "max": 13,
+            "maxcolor": "#f26d40",
+            "mincolor": "#f26d40",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 13
+          },
+          "bar5": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar5",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MDEF",
+            "max": 10,
+            "maxcolor": "#26d6ed",
+            "mincolor": "#26d6ed",
+            "opacity": null,
+            "order": 4,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 10
+          }
+        }
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Slayer",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://serenesforest.net/wp-content/uploads/2014/06/roy-full.jpg",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 500000,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {
+      "also_text": "Monster Hunter, Ranger, Exorcist",
+      "benefit_dropdown": "ip_benefit",
+      "classMechanic_text": "",
+      "class_facet": {
+        "7y6N4xoDYa7znJgp": {
+          "facet_cost": "",
+          "facet_description": "<p>When you rest in the wilderness, you may ask the Game Master up to <strong>[SL]</strong> questions about creatures in the area; the Game Master will answer truthfully.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Wildlife Expert",
+          "uuid": "Actor.RQLxwTwMhxZ6zLvR.Item.7y6N4xoDYa7znJgp"
+        },
+        "8OjnNG6sf69ZKI0F": {
+          "facet_cost": "2 IP",
+          "facet_description": "<p>Each time you take this Skill, choose a <strong>creature Species</strong>. You may use an action and spend 2 Inventory Points to apply a <strong>bane oil</strong> for one of your chosen Species to a weapon equipped by you or a willing creature. If you have the weapon equipped, you may perform a <strong>free attack</strong> with it as part of the same action.</p>\n\n<p>Until the end of the scene or a different bane oil is applied to the weapon, when a creature of the same Species as the bane oil is hit by the weapon, the attacker picks one of the following:</p>\n<ul>\n  <li>the creature becomes \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\">\n      <a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px;\">\n        <strong><span style=\"text-decoration: underline;\">Slow</span></strong>\n      </a>\n    </span></span>\n  </li>\n  <li>the creature becomes \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\">\n      <a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px;\">\n        <strong><span style=\"text-decoration: underline;\">Weak</span></strong>\n      </a>\n    </span></span>\n  </li>\n  <li>the creature loses one of its damage Resistances until the end of the scene</li>\n</ul>\n<p>The attacker may choose the damage type; otherwise, the GM chooses one at random.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "One creature of the chosen species",
+          "id": "${item.id}",
+          "name": "Bane Oils",
+          "uuid": "Actor.RQLxwTwMhxZ6zLvR.Item.8OjnNG6sf69ZKI0F"
+        },
+        "J62QcjhrrUuTXGqS": {
+          "facet_cost": "",
+          "facet_description": "<p>When you hit a <em>non-soldier</em> creature with an attack that deals damage, you deal extra damage equal to <strong>[2 × the number of soldiers the creature replaces]</strong>.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Giant Killer",
+          "uuid": "Actor.RQLxwTwMhxZ6zLvR.Item.J62QcjhrrUuTXGqS"
+        },
+        "LiSn88DPui1LNevT": {
+          "facet_cost": "",
+          "facet_description": "<p>When you hit a creature with an attack you may spend 10 Mind Points and choose one of the target’s <em>basic attacks</em> or <em>spells</em>. Until the start of your next turn, the target deals <strong>[SL × 2]</strong> less damage with the chosen action.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Lockdown",
+          "uuid": "Actor.RQLxwTwMhxZ6zLvR.Item.LiSn88DPui1LNevT"
+        },
+        "QMI7xGBmXusqDdHH": {
+          "facet_cost": "",
+          "facet_description": "<p>When you make an Accuracy Check, Magic Check, or contested Check, you may spend <strong>1 Fabula Point</strong> and invoke one of the target’s Traits to add <strong>[SL]</strong> to your result against that target. A Villain may <strong>spend 2 Ultima Points</strong> to cancel out this effect. If the Check includes multiple targets, your result against those other targets is unchanged.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Exploit",
+          "uuid": "Actor.RQLxwTwMhxZ6zLvR.Item.QMI7xGBmXusqDdHH"
+        },
+        "SejzAyW68lvEzlyV": {
+          "facet_cost": "",
+          "facet_description": "<p>When you hit with a ranged attack, you may spend 10 Mind Points to leave behind a weak point. The next time a creature hits the same target with an attack this scene, they may spend 10 Mind Points to deal <strong>15 extra damage</strong> and inflict one status effect of their choice:</p><ul><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Dazed</span></strong></a></span></span></li><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span></span></li><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span></span></li><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a></span></span></li></ul><hr contenteditable=\"false\"><p><strong>Skill Enhancement Lv. 40</strong> ― This extra damage becomes <strong>25</strong>.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Weak Point",
+          "uuid": "Actor.RQLxwTwMhxZ6zLvR.Item.SejzAyW68lvEzlyV"
+        },
+        "g2LvI3PtvnVwrKtA": {
+          "facet_cost": "",
+          "facet_description": "<p>When you <strong>hit</strong> with a <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.10LjF01NAYNKpRvn\" data-id=\"10LjF01NAYNKpRvn\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Melee</span></strong></a></span></span> attack, you may choose to cover an ally as though you took the 【🛡️Guard】 action. This does not provide any of the other benefits of the 【🛡️Guard】 action.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Protective Strike",
+          "uuid": "Actor.RQLxwTwMhxZ6zLvR.Item.g2LvI3PtvnVwrKtA"
+        },
+        "y3lsZbIibUARuDfg": {
+          "facet_cost": "",
+          "facet_description": "<p>When you make an Accuracy Check and roll a <strong>critical success</strong>, you or another creature of your choice regains 1 Inventory Point.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Harvester",
+          "uuid": "Actor.RQLxwTwMhxZ6zLvR.Item.y3lsZbIibUARuDfg"
+        }
+      },
+      "class_heroicSkill": {
+        "SejzAyW68lvEzlyV": {
+          "id": "${item.id}",
+          "name": "Weak Point",
+          "skill_cost": "",
+          "skill_description": "<p>When you hit with a ranged attack, you may spend 10 Mind Points to leave behind a weak point. The next time a creature hits the same target with an attack this scene, they may spend 10 Mind Points to deal <strong>15 extra damage</strong> and inflict one status effect of their choice:</p><ul><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Dazed</span></strong></a></span></span></li><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span></span></li><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span></span></li><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a></span></span></li></ul><hr contenteditable=\"false\"><p><strong>Skill Enhancement Lv. 40</strong> ― This extra damage becomes <strong>25</strong>.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.RQLxwTwMhxZ6zLvR.Item.SejzAyW68lvEzlyV"
+        },
+        "g2LvI3PtvnVwrKtA": {
+          "id": "${item.id}",
+          "name": "Protective Strike",
+          "skill_cost": "",
+          "skill_description": "<p>When you <strong>hit</strong> with a <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.10LjF01NAYNKpRvn\" data-id=\"10LjF01NAYNKpRvn\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Melee</span></strong></a></span></span> attack, you may choose to cover an ally as though you took the 【🛡️Guard】 action. This does not provide any of the other benefits of the 【🛡️Guard】 action.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.RQLxwTwMhxZ6zLvR.Item.g2LvI3PtvnVwrKtA"
+        },
+        "y3lsZbIibUARuDfg": {
+          "id": "${item.id}",
+          "name": "Harvester",
+          "skill_cost": "",
+          "skill_description": "<p>When you make an Accuracy Check and roll a <strong>critical success</strong>, you or another creature of your choice regains 1 Inventory Point.</p>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.RQLxwTwMhxZ6zLvR.Item.y3lsZbIibUARuDfg"
+        }
+      },
+      "class_lore": "<blockquote><p><strong>Slayers</strong> are skilled hunters who specialize in tracking, studying, and destroying monsters, and who become even more deadly when given time to observe and prepare against their quarry. </p><p>Over time, many Slayers find themselves becoming more and more like the creatures they face. Some hold tight to their last threads of humanity,while others give into their darker impulses, determined to continue the hunt regardless of personal cost.</p></blockquote>",
+      "class_skill": {
+        "7y6N4xoDYa7znJgp": {
+          "id": "${item.id}",
+          "name": "Wildlife Expert",
+          "skill_cost": "",
+          "skill_description": "<p>When you rest in the wilderness, you may ask the Game Master up to <strong>[SL]</strong> questions about creatures in the area; the Game Master will answer truthfully.</p>\n",
+          "skill_maxLevel": 3,
+          "skill_type": "Passive",
+          "uuid": "Actor.RQLxwTwMhxZ6zLvR.Item.7y6N4xoDYa7znJgp"
+        },
+        "8OjnNG6sf69ZKI0F": {
+          "id": "${item.id}",
+          "name": "Bane Oils",
+          "skill_cost": "2 IP",
+          "skill_description": "<p>Each time you take this Skill, choose a <strong>creature Species</strong>. You may use an action and spend 2 Inventory Points to apply a <strong>bane oil</strong> for one of your chosen Species to a weapon equipped by you or a willing creature. If you have the weapon equipped, you may perform a <strong>free attack</strong> with it as part of the same action.</p>\n\n<p>Until the end of the scene or a different bane oil is applied to the weapon, when a creature of the same Species as the bane oil is hit by the weapon, the attacker picks one of the following:</p>\n<ul>\n  <li>the creature becomes \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\">\n      <a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px;\">\n        <strong><span style=\"text-decoration: underline;\">Slow</span></strong>\n      </a>\n    </span></span>\n  </li>\n  <li>the creature becomes \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\">\n      <a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px;\">\n        <strong><span style=\"text-decoration: underline;\">Weak</span></strong>\n      </a>\n    </span></span>\n  </li>\n  <li>the creature loses one of its damage Resistances until the end of the scene</li>\n</ul>\n<p>The attacker may choose the damage type; otherwise, the GM chooses one at random.</p>\n",
+          "skill_maxLevel": 5,
+          "skill_type": "Active",
+          "uuid": "Actor.RQLxwTwMhxZ6zLvR.Item.8OjnNG6sf69ZKI0F"
+        },
+        "J62QcjhrrUuTXGqS": {
+          "id": "${item.id}",
+          "name": "Giant Killer",
+          "skill_cost": "",
+          "skill_description": "<p>When you hit a <em>non-soldier</em> creature with an attack that deals damage, you deal extra damage equal to <strong>[2 × the number of soldiers the creature replaces]</strong>.</p>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.RQLxwTwMhxZ6zLvR.Item.J62QcjhrrUuTXGqS"
+        },
+        "LiSn88DPui1LNevT": {
+          "id": "${item.id}",
+          "name": "Lockdown",
+          "skill_cost": "",
+          "skill_description": "<p>When you hit a creature with an attack you may spend 10 Mind Points and choose one of the target’s <em>basic attacks</em> or <em>spells</em>. Until the start of your next turn, the target deals <strong>[SL × 2]</strong> less damage with the chosen action.</p>\n",
+          "skill_maxLevel": 4,
+          "skill_type": "Passive",
+          "uuid": "Actor.RQLxwTwMhxZ6zLvR.Item.LiSn88DPui1LNevT"
+        },
+        "QMI7xGBmXusqDdHH": {
+          "id": "${item.id}",
+          "name": "Exploit",
+          "skill_cost": "",
+          "skill_description": "<p>When you make an Accuracy Check, Magic Check, or contested Check, you may spend <strong>1 Fabula Point</strong> and invoke one of the target’s Traits to add <strong>[SL]</strong> to your result against that target. A Villain may <strong>spend 2 Ultima Points</strong> to cancel out this effect. If the Check includes multiple targets, your result against those other targets is unchanged.</p>\n",
+          "skill_maxLevel": 5,
+          "skill_type": "Passive",
+          "uuid": "Actor.RQLxwTwMhxZ6zLvR.Item.QMI7xGBmXusqDdHH"
+        }
+      },
+      "flavor_text": "",
+      "martialArmor_equippable": false,
+      "martialMelee_equippable": true,
+      "martialRanged_equippable": true,
+      "martialShield_equippable": false,
+      "name": "Slayer",
+      "project_performable": false,
+      "ritual_performable": false
+    },
+    "statusEffects": {},
+    "template": "hoxC3HFCtMYGScIo",
+    "templateSystemUniqueVersion": 504201233
+  },
+  "type": "character"
+}

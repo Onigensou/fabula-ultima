@@ -1,0 +1,132 @@
+{
+  "_id": "PdMEWL0xZ4Hqg1D5",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1781820018196,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "FIHoW0EB0vU7gMAa",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/DaydreamerSkill3.png",
+  "name": "Create Phantasm: Dread",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "cost": "",
+      "defense_target_type": "mdef",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "chain_steps": "dread_cx, dread_status",
+          "effect_kind": "chain",
+          "effect_label": "dread_pre"
+        },
+        "1": {
+          "$deleted": false,
+          "chain_steps": "dread_cx, dread_status",
+          "effect_kind": "chain",
+          "effect_label": "dread_on"
+        },
+        "2": {
+          "$deleted": false,
+          "effect_kind": "open_action_menu",
+          "effect_label": "dread_cx",
+          "menu_option_labels": "Create a new Phantasm|Command an existing Phantasm",
+          "menu_option_refs": "dread_create, dread_existing",
+          "menu_title": "Create Phantasm: Dread"
+        },
+        "3": {
+          "$deleted": false,
+          "candidate_source": "self",
+          "effect_kind": "targeting",
+          "effect_label": "dread_self"
+        },
+        "4": {
+          "$deleted": false,
+          "chain_steps": "dread_cost, dread_summon",
+          "condition_formula": "CUR_MP >= 10 && OWN_PHANTASM_COUNT < 3",
+          "disable_ui_type": "dim",
+          "disabled_reason": "Need 10 MP & under 3 Phantasms",
+          "effect_kind": "chain",
+          "effect_label": "dread_create"
+        },
+        "5": {
+          "$deleted": false,
+          "consume_amount": "10",
+          "consume_resource": "mp",
+          "effect_kind": "consume_resource",
+          "effect_label": "dread_cost",
+          "on_empty": "abort",
+          "target_ref": "dread_self"
+        },
+        "6": {
+          "$deleted": false,
+          "effect_kind": "summon",
+          "effect_label": "dread_summon",
+          "summon_actor": "Fox fire",
+          "summon_count": 1,
+          "summon_max": 3,
+          "summon_type": "phantasm"
+        },
+        "7": {
+          "$deleted": false,
+          "candidate_source": "own_summons",
+          "condition_formula": "OWN_SUMMON_COUNT >= 1",
+          "count": 1,
+          "disable_ui_type": "dim",
+          "disabled_reason": "No Phantasm on the field",
+          "effect_kind": "targeting",
+          "effect_label": "dread_existing",
+          "mode": "exact"
+        },
+        "8": {
+          "$deleted": false,
+          "effect_kind": "open_action_menu",
+          "effect_label": "dread_status",
+          "menu_option_labels": "Weak|Shaken",
+          "menu_option_refs": "dread_weak, dread_shaken",
+          "menu_title": "Dread — choose a status"
+        },
+        "9": {
+          "$deleted": false,
+          "ae_template_ref": "Weak",
+          "effect_kind": "apply_ae",
+          "effect_label": "dread_weak",
+          "target_ref": "hit_action_targets"
+        },
+        "10": {
+          "$deleted": false,
+          "ae_template_ref": "Shaken",
+          "effect_kind": "apply_ae",
+          "effect_label": "dread_shaken",
+          "target_ref": "hit_action_targets"
+        }
+      },
+      "isCheck": true,
+      "on_activate_effect_ref": "dread_on",
+      "pre_activate_effect_ref": "dread_pre",
+      "reaction_config_table": {},
+      "rolled_atr1": "INS",
+      "rolled_atr2": "WLP",
+      "skill_target": "One Enemy",
+      "skill_type": "Spell",
+      "type_damage": ""
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "PdMEWL0xZ4Hqg1D5"
+  },
+  "type": "equippableItem"
+}

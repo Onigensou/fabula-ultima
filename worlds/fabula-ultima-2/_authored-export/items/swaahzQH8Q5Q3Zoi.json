@@ -1,0 +1,53 @@
+{
+  "_id": "swaahzQH8Q5Q3Zoi",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1753957949797,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "Sypglcm85sjY8KNe",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/05_SCH/Concitation.png",
+  "name": "Synergize",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Tactician",
+      "cost": "10 x T MP",
+      "damage_bonus": "0",
+      "description": "<p>Choose a <strong>buff </strong>affecting you, spend up to <strong>【SL x 10】MP,</strong> For each 10 MP spent this way, Choose an Ally, gives that ally the chosen buff.</p>",
+      "duration": "instantaneous",
+      "isCheck": false,
+      "isHeroic": false,
+      "level": "1",
+      "max_level": "3",
+      "name": "Synergize",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_target": "Ally",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "swaahzQH8Q5Q3Zoi"
+  },
+  "type": "equippableItem"
+}

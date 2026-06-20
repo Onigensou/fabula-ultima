@@ -1,0 +1,161 @@
+{
+  "_id": "iYTRG3YcHC2PVLYm",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1781898552556,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "xaJdAkD2wJVFYXWX",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1781898553289,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><em>Pases:</em> Adoration Clock — fills on enemy misses, resets when you take damage.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "xaJdAkD2wJVFYXWX",
+          "originalParentId": "iYTRG3YcHC2PVLYm",
+          "originalUuid": "Item.iYTRG3YcHC2PVLYm.ActiveEffect.xaJdAkD2wJVFYXWX"
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "adoration",
+          "charges": 0,
+          "chargesMax": 5,
+          "lifetimeMode": "persistent_counter"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/emboite.png",
+      "name": "Adoration Clock",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-adoration-clock"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "7XPRzEprVTXCugxm",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/emboite.png",
+  "name": "Pases",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "description": "<p>Each time you acquire this Skill, you learn a <strong>Pass</strong>. You may acquire this Skill multiple times.</p><p>When you first learn this Skill, you gain the <strong>Adoration Clock</strong> (5 sections). Fill <strong>1</strong> section whenever an enemy attacks you and <strong>misses</strong>. The Adoration Clock <strong>resets to 0</strong> whenever an enemy successfully deals damage to you.</p>",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "candidate_source": "self",
+          "effect_kind": "targeting",
+          "effect_label": "ado_self"
+        },
+        "1": {
+          "$deleted": false,
+          "ae_duplicate_mode": "replace",
+          "ae_initial_charges": "0",
+          "ae_initial_charges_max": "5",
+          "ae_template_ref": "Adoration Clock",
+          "effect_kind": "apply_ae",
+          "effect_label": "ado_seed",
+          "target_ref": "ado_self"
+        },
+        "2": {
+          "$deleted": false,
+          "ae_duplicate_mode": "add_charges",
+          "ae_initial_charges": "1 + HAS_SKILL_ELEGANCE_SHOWMANSHIP",
+          "ae_initial_charges_max": "5",
+          "ae_template_ref": "Adoration Clock",
+          "effect_kind": "apply_ae",
+          "effect_label": "ado_fill",
+          "target_ref": "ado_self"
+        },
+        "3": {
+          "$deleted": false,
+          "ae_duplicate_mode": "replace",
+          "ae_initial_charges": "0",
+          "ae_initial_charges_max": "5",
+          "ae_template_ref": "Adoration Clock",
+          "effect_kind": "apply_ae",
+          "effect_label": "ado_reset",
+          "target_ref": "ado_self"
+        }
+      },
+      "level": 1,
+      "max_level": "10",
+      "reaction_config_table": {
+        "0": {
+          "$deleted": false,
+          "reaction_effect_ref": "ado_seed",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "",
+          "reaction_trigger": "conflict_start"
+        },
+        "1": {
+          "$deleted": false,
+          "reaction_action_intent": "harmful",
+          "reaction_effect_ref": "ado_fill",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "enemy",
+          "reaction_trigger": "creature_miss_action"
+        },
+        "2": {
+          "$deleted": false,
+          "reaction_effect_ref": "ado_reset",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_resource_filter": "hp",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_lose_resource"
+        }
+      },
+      "skill_type": "Other"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": true,
+    "uniqueId": "iYTRG3YcHC2PVLYm"
+  },
+  "type": "equippableItem"
+}

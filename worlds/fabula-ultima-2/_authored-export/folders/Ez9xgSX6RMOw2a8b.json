@@ -1,0 +1,19 @@
+{
+  "_id": "Ez9xgSX6RMOw2a8b",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1767664857548,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "yIXRZeBsb9OQyi02",
+  "name": "Module",
+  "sort": 600000,
+  "sorting": "a",
+  "type": "Item"
+}

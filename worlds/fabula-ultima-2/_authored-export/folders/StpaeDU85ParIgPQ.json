@@ -1,0 +1,19 @@
+{
+  "_id": "StpaeDU85ParIgPQ",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1756396114490,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "eZWKkXNgeaFs6HSS",
+  "name": "Okine's PC",
+  "sort": 100000,
+  "sorting": "a",
+  "type": "Actor"
+}

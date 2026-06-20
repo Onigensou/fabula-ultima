@@ -1,0 +1,19 @@
+{
+  "_id": "oXoLCnRRoVwg6GJw",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1773641614611,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "yvRW0RqT5kwSxKFl",
+  "name": "Ruhig Village",
+  "sort": 200000,
+  "sorting": "a",
+  "type": "Scene"
+}

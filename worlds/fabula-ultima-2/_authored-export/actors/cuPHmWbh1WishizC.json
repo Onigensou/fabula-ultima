@@ -1,0 +1,326 @@
+{
+  "_id": "cuPHmWbh1WishizC",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1674803596926,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.5.0"
+    }
+  },
+  "folder": "HMMNuNW9gXSoNCxy",
+  "img": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Miya/portrait.png",
+  "name": "Miya",
+  "ownership": {
+    "Am7qxPOavfKeDGPd": 3,
+    "default": 0
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": null
+    },
+    "bar2": {
+      "attribute": null
+    },
+    "detectionModes": [],
+    "displayBars": 0,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {
+      "Border-Control": {
+        "borderCustomBaseOpacity": 0.5,
+        "borderCustomColorExt": "#000000",
+        "borderCustomColorInt": "#000000",
+        "borderCustomFrameOpacity": 0.5,
+        "noBorder": false
+      },
+      "token-variants": {
+        "disableHUDButton": false,
+        "randomImgDefault": ""
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Miya",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Miya/standard.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 200000,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "activeEffects": {},
+    "props": {
+      "accesory_details": "<p>The user is immune to weak status effect.</p>",
+      "accesory_name": "Ring of Strong",
+      "arcanism": false,
+      "armor_mod": "1",
+      "armor_name": "Combat Tunic",
+      "backpack": "",
+      "backstory": "",
+      "bond_1": "Hako",
+      "bond_2": "Lweetam",
+      "bond_3": "",
+      "bond_4": "",
+      "bond_5": "",
+      "bond_6": "",
+      "char_identity": "Farland Wanderer",
+      "check_roller": "Roll!",
+      "chimerism": false,
+      "class_list": {
+        "0": {
+          "$deleted": false,
+          "benefit": "hp",
+          "class_name": "Weaponmaster",
+          "level": "3"
+        },
+        "1": {
+          "$deleted": false,
+          "benefit": "hp",
+          "class_name": "Guardian",
+          "level": "1"
+        },
+        "2": {
+          "$deleted": false,
+          "benefit": "mp",
+          "class_name": "Arcanist",
+          "level": "1"
+        }
+      },
+      "crisis_hp": "ERROR",
+      "current_hp": "35",
+      "current_ip": "6",
+      "current_mp": "40",
+      "dex_base": "12",
+      "dex_current": 12,
+      "elementalism": false,
+      "emotion_1_1": "",
+      "emotion_1_2": "1",
+      "emotion_1_3": "",
+      "emotion_2_1": "",
+      "emotion_2_2": "1",
+      "emotion_2_3": "",
+      "emotion_3_1": "",
+      "emotion_3_2": "",
+      "emotion_3_3": "",
+      "emotion_4_1": "",
+      "emotion_4_2": "",
+      "emotion_4_3": "",
+      "emotion_5_1": "",
+      "emotion_5_2": "",
+      "emotion_5_3": "",
+      "emotion_6_1": "",
+      "emotion_6_2": "",
+      "emotion_6_3": "",
+      "entropism": false,
+      "experience": "0",
+      "fp": "2",
+      "id": "cuPHmWbh1WishizC",
+      "img": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Miya/portrait.png",
+      "init_penalty": "0",
+      "ins_base": "6",
+      "ins_current": 6,
+      "inventory_label": "💼 Inventory",
+      "inventory_list": {},
+      "isAwake": false,
+      "isClarity": false,
+      "isDazed": false,
+      "isEnergized": false,
+      "isEnraged": false,
+      "isFocus": false,
+      "isPoisoned": false,
+      "isShaken": false,
+      "isSlow": false,
+      "isStrong": false,
+      "isSwift": false,
+      "isWeak": false,
+      "is_martialarmor": false,
+      "key_list": {},
+      "level": "5",
+      "magic_defense_mod": "1",
+      "main_attrib_1": "DEX",
+      "main_attrib_2": "INS",
+      "main_details": "<p>Counter attack deals 15 damage.</p>",
+      "main_hand": "Katana",
+      "main_hand_attack": "",
+      "max_hp": "ERROR",
+      "max_ip": "ERROR",
+      "max_mp": "ERROR",
+      "memories_list": {},
+      "mig_base": "8",
+      "mig_current": 8,
+      "name": "Miya",
+      "normal_spell_list": {
+        "0": {
+          "$deleted": true,
+          "class": "Weaponmaster",
+          "cost": "0",
+          "description": "",
+          "duration": "",
+          "roll": "",
+          "spell_name": "Counter attack",
+          "target": "Creature"
+        }
+      },
+      "notes_text": "",
+      "off_attrib_1": "DEX",
+      "off_attrib_2": "INS",
+      "off_hand": "Spirited Katana",
+      "off_hand_attack": "",
+      "off_mod_1": "3",
+      "off_mod_2": "15",
+      "origin": "Far east",
+      "passive_list": {},
+      "pronouns": "M'Lady",
+      "re_experience": "",
+      "reaction_list": {},
+      "relationship_1": "",
+      "relationship_2": "",
+      "relationship_3": "",
+      "relationship_4": "",
+      "relationship_5": "",
+      "relationship_6": "",
+      "resource_value_1": "0",
+      "resource_value_2": "0",
+      "resource_value_3": "0",
+      "ritualism": false,
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "INS",
+      "shield_type": "PHYSICAL",
+      "shield_value": "0",
+      "skill_hp": "0",
+      "skill_ip": "",
+      "skill_list": {
+        "0": {
+          "$deleted": false,
+          "class": "Weaponmaster",
+          "description": "<p>You gain a bonus equal to 【SL】 to all Accuracy Checks with melee weapons.</p>",
+          "level": "2",
+          "roll": "",
+          "skill_name": "Melee Weapon Mastery"
+        },
+        "1": {
+          "$deleted": false,
+          "class": "Weaponmaster",
+          "description": "<p>After an enemy hits or misses you with a melee attack, if the Result of their Accuracy<br>Check was an even number, you may perform a free attack against that enemy (after<br>their attack has been fully resolved). This attack must be a melee attack and must have<br>that enemy as its only target; treat your High Roll (HR) as 0 when calculating damage<br>dealt by this attack.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Counter Attack"
+        },
+        "2": {
+          "$deleted": false,
+          "class": "Guardian",
+          "description": "<p>When another creature is threatened by an attack, spell or other danger, you may take<br>their place (any Checks that are part of the danger will be performed against you; you<br>may declare the use of this Skill before or after the Checks have been made). If the<br>danger already affected you, it affects you twice (resolve both instances separately);<br>you also cannot protect multiple creatures from the same danger. If you use this Skill<br>during a conflict, you cannot use it again until the start of your next turn.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Protect"
+        },
+        "3": {
+          "$deleted": false,
+          "class": "Arcanist",
+          "description": "<p>You may bind Arcana to your soul and summon them later. The Game Master will<br>tell you the details of each binding process when you first encounter the Arcanum in<br>question.<br>You may use an action and spend 40 Mind Points to summon an Arcanum you have<br>bound: the details of this process are explained on the next page.<br>If you take this Skill at character creation, you begin play with one Arcanum of your<br>choice already bound to you, chosen from the list on the next pages. Other than that,<br>you may only obtain new Arcana through exploration and story progression.</p>\n<hr>\n<p>&nbsp;</p>\n<p>ARCANUM OF THE SWORD<br>Domains: conquest, heroism, leadership.<br>Your attacks deal 5 extra damage, and all damage dealt by your attacks is treated as<br>having no type (thus being unaffected by damage Affinities). Damage dealt by your<br>attacks cannot gain a type as long as you are merged with this Arcanum.<br>When you perform an attack, you may have that attack gain the multi (any number<br>of targets) property. If you do, this Arcanum will be automatically dismissed after the<br>attack is resolved (this is not considered a willing dismiss)</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Bind and Summon"
+        }
+      },
+      "skill_mp": "0",
+      "spiritism": false,
+      "theme": "Duty",
+      "uuid": "Actor.cuPHmWbh1WishizC",
+      "weapon1_damage": "10",
+      "weapon1_damagetype": "Physical",
+      "weapon1_mod": "3",
+      "weapon2_damagetype": "Pure",
+      "wlp_base": "6",
+      "wlp_current": 6,
+      "your_class_name": "",
+      "zenit": "350",
+      "zero_effect_description": "",
+      "zero_effect_label": "💬 Zero Effect",
+      "zero_label": "💥 Zero Power : ",
+      "zero_power_name": "",
+      "zero_power_value": "0",
+      "zero_trigger_description": "",
+      "zero_trigger_label": "⚔️ Zero Trigger"
+    },
+    "statusEffects": {},
+    "template": "gN4AtNuVF4Tc5LxK",
+    "templateSystemUniqueVersion": 93170772
+  },
+  "type": "character"
+}

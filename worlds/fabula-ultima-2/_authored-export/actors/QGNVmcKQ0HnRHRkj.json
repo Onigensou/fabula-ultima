@@ -1,0 +1,1045 @@
+{
+  "_id": "QGNVmcKQ0HnRHRkj",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1761167906999,
+    "duplicateSource": "Actor.ACeF4jLu5XRNPf3o",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "tmNVy5jIbM9rzx80",
+  "img": "https://tiermaker.com/images/media/template_images/2024/16720717/fabula-ultima-classes-16720717/arcanist.png",
+  "items": [
+    {
+      "_id": "2M88NHc82YMwK0n9",
+      "_stats": {
+        "compendiumSource": "Item.1rHmB0ft56cIj9iy",
+        "coreVersion": "12.343",
+        "createdTime": 1761169245877,
+        "duplicateSource": "Item.BXB2fkuzzAidzZNt",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/aetherial_manipulation.png",
+      "name": "Arcane Regeneration (variant)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 100000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Arcanist Variant",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>After you willingly <strong>dismiss</strong> an Arcanum you are <strong>merged</strong> with, if you are in <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span>, you may have yourself and every ally present on the scene recover <strong>【SL × 5】</strong> Hit Points.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "0",
+          "max_level": "6",
+          "name": "Arcane Regeneration (variant)",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "1rHmB0ft56cIj9iy"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "b5xBNQvrXyPGmefZ",
+      "_stats": {
+        "compendiumSource": "Item.qTPwunpyLYSM958Z",
+        "coreVersion": "12.343",
+        "createdTime": 1761169251386,
+        "duplicateSource": "Item.soSETT1ahFCMf5Aa",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/crimson_cyclone.png",
+      "name": "Quick Summoning",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Arcanist Variant",
+          "cost": "-",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>When you summon an Arcanum on your turn during a conflict, choose up to two options:</p>\n<ul>\n  <li>reduce its MP cost by <strong>[SL × 5]</strong>;</li>\n  <li>after you summon the Arcanum, if you are merged with it, immediately perform its <em>pulse</em>.</li>\n</ul>\n<p>If you choose at least one option, you cannot willingly dismiss that Arcanum until the start of your next turn; if you choose both options, that Arcanum’s dismiss effect will not be available for this summoning.</p>\n",
+          "duration": "-",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "0",
+          "max_level": "6",
+          "name": "Quick Summoning",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "<p></p><table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>MP Cost Reduction</strong></p></td></tr><tr><td><p>1</p></td><td><p>5 MP</p></td></tr><tr><td><p>2</p></td><td><p>10 MP</p></td></tr></tbody></table><p></p><p></p>",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "qTPwunpyLYSM958Z"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "cMbaaFTtVqYwCWSr",
+      "_stats": {
+        "compendiumSource": "Item.bzi79ApAA922A5DD",
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lithia/CynicalSneerSkill4.png",
+      "name": "Forbidden Monarch",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Ace of Cards",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>As long as there are <strong>one or more cards</strong> in your <strong>discard pile</strong>, you have <strong>Resistance</strong> to the damage type matching the <strong>suit</strong> of the card on top of your discard pile (if that card is a <strong>joker</strong>, you have <strong>Resistance</strong> to all four damage types: <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(168, 255, 187) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(210, 180, 140) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span>, and <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(166, 227, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span></span>).</p><p>You also add the following <strong>effect</strong> to your list of <strong>sets</strong>:</p><details open=\"\" style=\"border:2px solid #b3002d; border-radius:10px; overflow:hidden; margin-top:10px;\"><summary style=\"cursor:pointer; background:#b3002d; color:#fff; padding:8px 12px; font-weight:700; font-family:Signika, sans-serif; letter-spacing:.3px;\"><span style=\"font-family: Signika, sans-serif\"><strong>♠ ♥ ♦ ♣ Additional Set Effect (click to hide)</strong></span></summary><div class=\"tableWrapper\" style=\"background:#fff;\"><div class=\"tableWrapper\"><table style=\"min-width: 75px;\"><colgroup><col contenteditable=\"false\"><col contenteditable=\"false\"><col contenteditable=\"false\"></colgroup><tbody><tr style=\"background:#b3002d; color:#fff;\"><td style=\"padding:6px; border-right:1px solid #a00027;\"><p><strong>Effect</strong></p></td><td style=\"padding:6px; border-right:1px solid #a00027;\"><p><strong>Set Requirements</strong></p></td><td style=\"padding:6px;\"><p><strong>Resolve</strong></p></td></tr><tr><td style=\"padding:8px; border-bottom:1px solid #e9d6da;\"><p><strong>Forbidden Monarch</strong></p></td><td style=\"padding:8px; border-bottom:1px solid #e9d6da;\"><p>4 cards of the same value, none of which is a <strong>joker</strong> + 1 <strong>joker</strong></p></td><td style=\"padding:8px; border-bottom:1px solid #e9d6da;\"><p>You deal <strong>777</strong> damage to each enemy present on the scene; the type of this damage is <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(202, 189, 154) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></span> if 【<strong>the common value of the 4 cards】</strong> is <strong>even</strong>, or <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span> if that total is <strong>odd</strong>.</p><p>If there is a <strong>joker</strong> in your <strong>discard pile</strong>, the damage dealt by this effect <strong>ignores Immunities and Resistances</strong>.</p></td></tr></tbody></table></div></div></details>",
+          "duration": "",
+          "heroic_requirement": "you must have mastered one or more Classes among Ace of Cards and Arcanist, and you must have acquired 3 Skill Levels in the Magic Cards Skill.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Forbidden Monarch",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "bzi79ApAA922A5DD"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "KdQvvcKAqiGOv4Ne",
+      "_stats": {
+        "compendiumSource": "Item.jYKFnEb09ArDvBjb",
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": "Item.2bE1L41MlCogVPB0",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/revelation.png",
+      "name": "Grand Summoning",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Arcanist",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you summon an <strong>Arcanum</strong>, you may decide to spend 1 <strong>Fabula Point</strong> and spend half of your current <strong>Hit Points</strong> (rounded down) to shape your lifeforce into a full manifestation of their power. If you do, the Arcanum manifests as a <strong>soldier-rank</strong> creature of the <strong>demon</strong> Species under your control (they count as an ally and have their own independent turn during conflicts—if you use this Skill during a conflict scene, the Arcanum joins the scene at the end of the current round). You also do not gain any of the <strong>merge benefits</strong> you would normally enjoy when summoning that Arcanum. The summoned creature has the following profile:</p>\n<ul>\n  <li><strong>Level</strong> is equal to your level (thus gaining the bonuses to Checks and damage listed under steps 8 on page 303 of the Core Rulebook).</li>\n  <li>A <strong>d10</strong> in one <strong>Attribute</strong> of your choice, and a <strong>d8</strong> in all other Attributes.</li>\n  <li><strong>Maximum Hit Points</strong> equal to <strong>[twice the creature’s base Might die size, plus half of your maximum Hit Points]</strong>. The creature has no <strong>Mind Points</strong>.</li>\n  <li><strong>Resistance</strong> to two damage types of your choice.</li>\n  <li>The creature receives all the <strong>merge benefits</strong> the Arcanum would normally grant you when summoned (damage Affinities, immunity to status effects, increased Attribute sizes, etc.). If a merge benefit would cause the Arcanum to be dismissed, this will cause the summoned creature to vanish unless you spend <strong>20 Mind Points</strong>.</li>\n  <li>A <strong>melee basic attack</strong> whose Accuracy Check relies on two different Attributes of your choice and deals <strong>[HR + 8]</strong> physical damage. Choose two different options: that the attack is a <strong>ranged</strong> attack; or it deals 4 extra damage; or it deals damage of a type other than physical; or the Accuracy Check relies on a single Attribute.</li>\n  <li>The creature may perform the 【💥Skill】 action to produce one of the <strong>dismiss</strong> effects normally granted by that Arcanum, but doing so will cause the summoned creature to vanish unless you spend <strong>20 Mind Points</strong>.</li>\n</ul>\n<p><strong>The following rules apply</strong> when you <strong>Grand Summon</strong> an Arcanum:</p>\n<ul>\n  <li>The creature is always summoned at full <strong>Hit Points</strong>, with no status effects.</li>\n  <li>The creature vanishes if it reaches 0 <strong>Hit Points</strong>; if you die, lose consciousness or become unconscious; or if you <strong>summon</strong> or <strong>Grand Summon</strong> an Arcanum again.</li>\n  <li>The creature leaves when a scene ends, or if you simply command them to do so (without triggering the corresponding Arcanum’s dismiss effects).</li>\n  <li>You make all choices made for Attributes and basic attack during the first time you <strong>Summon</strong> a given Arcanum: these choices will remain unchanged whenever you <strong>Grand Summon</strong> that same Arcanum again in the future.</li>\n</ul>\n",
+          "duration": "",
+          "heroic_requirement": "you must have mastered the Arcanist Class, and your character must be level 30 or higher.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Grand Summoning",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "jYKFnEb09ArDvBjb"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "kZYV58rs46QYy2UU",
+      "_stats": {
+        "compendiumSource": "Item.XkWX6YXCUyPH4bCA",
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "icons/svg/item-bag.svg",
+      "name": "test skill",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {},
+        "template": "r0yZpLPAK9VXhM2p",
+        "templateSystemUniqueVersion": 1853581118,
+        "unique": true,
+        "uniqueId": "XkWX6YXCUyPH4bCA"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "LuM6wvVTjcow24PJ",
+      "_stats": {
+        "compendiumSource": "Item.x2HmuRVSAnpKVoex",
+        "coreVersion": "12.343",
+        "createdTime": 1761169253210,
+        "duplicateSource": "Item.NqgJHogtrenPHxPP",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/ruin_II.png",
+      "name": "Ritual Arcanism (variant)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 150000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Arcanist Variant",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>You may perform Rituals of the <strong>Arcanism</strong> discipline, as long as their effects fall within the domains of one or more Arcana you have bound.</p><p>Arcanism Rituals use <strong>【WLP + WLP】</strong> for the Magic Check.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "0",
+          "max_level": "1",
+          "name": "Ritual Arcanism (variant)",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "x2HmuRVSAnpKVoex"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "mt4ybsEoJ3ZGBWLL",
+      "_stats": {
+        "compendiumSource": "Item.FPPoi5iBGBTzQ7zR",
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/painflare.png",
+      "name": "Arcane Echoes",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Arcanist",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you successfully perform a Check to fill or erase one or more sections of a Clock, if the <strong>domains</strong> of one or more Arcana you have bound are applicable to the Check in question, you may fill or erase an <strong>additional section</strong> of that Clock. </p><p>The Game Master has final say on whether a given domain applies or not.</p>",
+          "duration": "",
+          "heroic_requirement": "you must have mastered the Arcanist Class",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Arcane Echoes",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "FPPoi5iBGBTzQ7zR"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "nth9P7gwpv784Imm",
+      "_stats": {
+        "compendiumSource": "Item.WVC5pXW6w1WHVJSm",
+        "coreVersion": "12.343",
+        "createdTime": 1761169248574,
+        "duplicateSource": "Item.PPbGO3BZOBtULyxy",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/akh_morn.png",
+      "name": "Bind and Summon (variant)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 200000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Arcanist Variant",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>You may bind Arcana to your soul and summon them later. The Game Master will tell you the details of each binding process when you first encounter the Arcanum in question.</p><p> You may use an action and spend <strong>40 Mind Points</strong> to summon an Arcanum you have bound: the details of this process are explained on the next page. If you take this Skill at character creation, you begin play with one Arcanum of your choice already bound to you, chosen from the list on the next pages. Other than that, you may only obtain new Arcana through exploration and story progression</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "0",
+          "max_level": "1",
+          "name": "Bind and Summon (variant)",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Other",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "WVC5pXW6w1WHVJSm"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "uyJAwXfj5Bzk1RHF",
+      "_stats": {
+        "compendiumSource": "Item.soSETT1ahFCMf5Aa",
+        "coreVersion": "12.343",
+        "createdTime": 1761169250051,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/aetherflow.png",
+      "name": "Phantom Strength",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Arcanist Variant",
+          "cost": "-",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>When you perform a <em><strong>pulse</strong></em>, before resolving its effects, you may choose to have all damage you deal ignore Affinities until the end of this turn. If you do, the next time you deal damage before the end of this turn, you deal <strong>[SL + 4]</strong> extra damage.</p>",
+          "duration": "-",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "0",
+          "max_level": "6",
+          "name": "Phantom Strength",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>Extra Damage (next time this turn)</strong></p></td></tr><tr><td><p>1</p></td><td><p>5</p></td></tr><tr><td><p>2</p></td><td><p>6</p></td></tr><tr><td><p>3</p></td><td><p>7</p></td></tr><tr><td><p>4</p></td><td><p>8</p></td></tr><tr><td><p>5</p></td><td><p>9</p></td></tr><tr><td><p>6</p></td><td><p>10</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "soSETT1ahFCMf5Aa"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "YtRiBOxNyGrJJKjZ",
+      "_stats": {
+        "compendiumSource": "Item.GIMjNZBMu5Riek1k",
+        "coreVersion": "12.343",
+        "createdTime": 1761169730086,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/ruin_iv.png",
+      "name": "Revelation",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 5400000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Arcanist",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>You make contact with an unknown Arcanum and bind it to your soul. This Arcanum must be something you design together with the rest of the group; as long as you live, no one else in your world will be able to bind that Arcanum. </p><p><strong>Once per scene</strong> while you are merged with an Arcanum, you may use an action and spend <strong>2 Fabula Points</strong> to trigger that Arcanum's dismiss effect (if any) without dismissing them. Doing so does not trigger the 【<strong>Arcane Circle】</strong> Skill</p>",
+          "duration": "",
+          "heroic_requirement": "you must have mastered the Arcanist Class, and your character must be level 30 or higher.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Revelation",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "GIMjNZBMu5Riek1k"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Arcanist (Variant)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar4": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "DEF",
+            "max": 13,
+            "maxcolor": "#f26d40",
+            "mincolor": "#f26d40",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 13
+          },
+          "bar5": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar5",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MDEF",
+            "max": 10,
+            "maxcolor": "#26d6ed",
+            "mincolor": "#26d6ed",
+            "opacity": null,
+            "order": 4,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 10
+          }
+        }
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Arcanist",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://tiermaker.com/images/media/template_images/2024/16720717/fabula-ultima-classes-16720717/arcanist.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 0,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {
+      "also_text": "Avatar, Chosen, Summoner",
+      "benefit_dropdown": "mp_benefit",
+      "classMechanic_text": "<h1>THE ARCANA</h1><p></p><h2>MERGING WITH AN ARCANUM</h2><p>When you summon an Arcanum, you gain its <strong>merge</strong> benefits; those benefits last until the Arcanum is dismissed (see below). You cannot summon an Arcanum while already merged with one; you must first dismiss the current Arcanum.</p><p></p><h2>DISMISSING AN ARCANUM</h2><p>An Arcanum can be dismissed in several ways:</p><ul><li><p> Once the current scene ends, all Arcana are automatically dismissed.</p></li><li><p> If you die or fall unconscious while merged with an Arcanum, they are dismissed.</p></li><li><p> If you leave the scene while merged with an Arcanum, they are dismissed.</p></li><li><p> You may <strong>willingly</strong> dismiss your Arcanum: this doesn't require an action, but during a conflict it can only be done on your turn, <strong>before or after</strong> an action.</p></li></ul><p></p><h2>DISMISS EFFECTS</h2><p>Most Arcana have a powerful <strong>dismiss</strong> effect, which may only be activated when you <strong>willingly</strong> dismiss the Arcanum as described above — if the Arcanum is dismissed for any other reason, the dismiss effect cannot be triggered.</p><blockquote><p>If the dismiss effect of an Arcanum deals damage, it will deal 10 extra damage if you are level 20 or higher, or 20 extra damage if you are level 40 or higher.</p></blockquote><p>You are also free to ignore the dismiss effect if you don't want to use it.</p><p></p><h2>DOMAINS</h2><p>Each Arcanum is associated with a few key concepts or domains. The Game Master should use these to establish the trials needed to bind the Arcanum, and to adjudicate Rituals performed through the Ritual Arcanism Skill. If you create new Arcana for your world, make sure to associate them with domains that allow for interesting Rituals.</p>",
+      "class_facet": {
+        "3yimfleCB20QSM24": {
+          "facet_cost": "",
+          "facet_description": "<p>As long as you are in <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span>, the cost for summoning your Arcana is reduced by <strong>【SL × 5】</strong> Mind Points.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Emergency Arcanum",
+          "uuid": "Actor.ACeF4jLu5XRNPf3o.Item.3yimfleCB20QSM24"
+        },
+        "7J7G9sIoIOsfnz56": {
+          "facet_cost": "2 Fabula Points",
+          "facet_description": "<p>You make contact with an unknown Arcanum and bind it to your soul. This Arcanum must be something you design together with the rest of the group; as long as you live, no one else in your world will be able to bind that Arcanum. </p><p><strong>Once per scene</strong> while you are merged with an Arcanum, you may use an action and spend <strong>2 Fabula Points</strong> to trigger that Arcanum's dismiss effect (if any) without dismissing them. Doing so does not trigger the 【<strong>Arcane Circle】</strong> Skill</p>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Revelation",
+          "uuid": "Actor.ACeF4jLu5XRNPf3o.Item.7J7G9sIoIOsfnz56"
+        },
+        "JMbeYGM1e8oKzJGN": {
+          "facet_cost": "",
+          "facet_description": "<p>You may bind Arcana to your soul and summon them later. The Game Master will tell you the details of each binding process when you first encounter the Arcanum in question.</p><p> You may use an action and spend <strong>40 Mind Points</strong> to summon an Arcanum you have bound: the details of this process are explained on the next page. If you take this Skill at character creation, you begin play with one Arcanum of your choice already bound to you, chosen from the list on the next pages. Other than that, you may only obtain new Arcana through exploration and story progression</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Bind and Summon",
+          "uuid": "Actor.ACeF4jLu5XRNPf3o.Item.JMbeYGM1e8oKzJGN"
+        },
+        "KdQvvcKAqiGOv4Ne": {
+          "facet_cost": "",
+          "facet_description": "<p>When you summon an <strong>Arcanum</strong>, you may decide to spend 1 <strong>Fabula Point</strong> and spend half of your current <strong>Hit Points</strong> (rounded down) to shape your lifeforce into a full manifestation of their power. If you do, the Arcanum manifests as a <strong>soldier-rank</strong> creature of the <strong>demon</strong> Species under your control (they count as an ally and have their own independent turn during conflicts—if you use this Skill during a conflict scene, the Arcanum joins the scene at the end of the current round). You also do not gain any of the <strong>merge benefits</strong> you would normally enjoy when summoning that Arcanum. The summoned creature has the following profile:</p>\n<ul>\n  <li><strong>Level</strong> is equal to your level (thus gaining the bonuses to Checks and damage listed under steps 8 on page 303 of the Core Rulebook).</li>\n  <li>A <strong>d10</strong> in one <strong>Attribute</strong> of your choice, and a <strong>d8</strong> in all other Attributes.</li>\n  <li><strong>Maximum Hit Points</strong> equal to <strong>[twice the creature’s base Might die size, plus half of your maximum Hit Points]</strong>. The creature has no <strong>Mind Points</strong>.</li>\n  <li><strong>Resistance</strong> to two damage types of your choice.</li>\n  <li>The creature receives all the <strong>merge benefits</strong> the Arcanum would normally grant you when summoned (damage Affinities, immunity to status effects, increased Attribute sizes, etc.). If a merge benefit would cause the Arcanum to be dismissed, this will cause the summoned creature to vanish unless you spend <strong>20 Mind Points</strong>.</li>\n  <li>A <strong>melee basic attack</strong> whose Accuracy Check relies on two different Attributes of your choice and deals <strong>[HR + 8]</strong> physical damage. Choose two different options: that the attack is a <strong>ranged</strong> attack; or it deals 4 extra damage; or it deals damage of a type other than physical; or the Accuracy Check relies on a single Attribute.</li>\n  <li>The creature may perform the 【💥Skill】 action to produce one of the <strong>dismiss</strong> effects normally granted by that Arcanum, but doing so will cause the summoned creature to vanish unless you spend <strong>20 Mind Points</strong>.</li>\n</ul>\n<p><strong>The following rules apply</strong> when you <strong>Grand Summon</strong> an Arcanum:</p>\n<ul>\n  <li>The creature is always summoned at full <strong>Hit Points</strong>, with no status effects.</li>\n  <li>The creature vanishes if it reaches 0 <strong>Hit Points</strong>; if you die, lose consciousness or become unconscious; or if you <strong>summon</strong> or <strong>Grand Summon</strong> an Arcanum again.</li>\n  <li>The creature leaves when a scene ends, or if you simply command them to do so (without triggering the corresponding Arcanum’s dismiss effects).</li>\n  <li>You make all choices made for Attributes and basic attack during the first time you <strong>Summon</strong> a given Arcanum: these choices will remain unchanged whenever you <strong>Grand Summon</strong> that same Arcanum again in the future.</li>\n</ul>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Grand Summoning",
+          "uuid": "Actor.ACeF4jLu5XRNPf3o.Item.KdQvvcKAqiGOv4Ne"
+        },
+        "YEvurCZ1YdqXCoj6": {
+          "facet_cost": "",
+          "facet_description": "<p>You may perform Rituals of the <strong>Arcanism</strong> discipline, as long as their effects fall within the domains of one or more Arcana you have bound.</p><p> Arcanism Rituals use <strong>【WLP + WLP】</strong> for the Magic Check.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Ritual Arcanism",
+          "uuid": "Actor.ACeF4jLu5XRNPf3o.Item.YEvurCZ1YdqXCoj6"
+        },
+        "cMbaaFTtVqYwCWSr": {
+          "facet_cost": "",
+          "facet_description": "<p>As long as there are <strong>one or more cards</strong> in your <strong>discard pile</strong>, you have <strong>Resistance</strong> to the damage type matching the <strong>suit</strong> of the card on top of your discard pile (if that card is a <strong>joker</strong>, you have <strong>Resistance</strong> to all four damage types: <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(168, 255, 187) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(210, 180, 140) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span>, and <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(166, 227, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span></span>).</p><p>You also add the following <strong>effect</strong> to your list of <strong>sets</strong>:</p><details open=\"\" style=\"border:2px solid #b3002d; border-radius:10px; overflow:hidden; margin-top:10px;\"><summary style=\"cursor:pointer; background:#b3002d; color:#fff; padding:8px 12px; font-weight:700; font-family:Signika, sans-serif; letter-spacing:.3px;\"><span style=\"font-family: Signika, sans-serif\"><strong>♠ ♥ ♦ ♣ Additional Set Effect (click to hide)</strong></span></summary><div class=\"tableWrapper\" style=\"background:#fff;\"><div class=\"tableWrapper\"><table style=\"min-width: 75px;\"><colgroup><col contenteditable=\"false\"><col contenteditable=\"false\"><col contenteditable=\"false\"></colgroup><tbody><tr style=\"background:#b3002d; color:#fff;\"><td style=\"padding:6px; border-right:1px solid #a00027;\"><p><strong>Effect</strong></p></td><td style=\"padding:6px; border-right:1px solid #a00027;\"><p><strong>Set Requirements</strong></p></td><td style=\"padding:6px;\"><p><strong>Resolve</strong></p></td></tr><tr><td style=\"padding:8px; border-bottom:1px solid #e9d6da;\"><p><strong>Forbidden Monarch</strong></p></td><td style=\"padding:8px; border-bottom:1px solid #e9d6da;\"><p>4 cards of the same value, none of which is a <strong>joker</strong> + 1 <strong>joker</strong></p></td><td style=\"padding:8px; border-bottom:1px solid #e9d6da;\"><p>You deal <strong>777</strong> damage to each enemy present on the scene; the type of this damage is <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(202, 189, 154) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></span> if 【<strong>the common value of the 4 cards】</strong> is <strong>even</strong>, or <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span> if that total is <strong>odd</strong>.</p><p>If there is a <strong>joker</strong> in your <strong>discard pile</strong>, the damage dealt by this effect <strong>ignores Immunities and Resistances</strong>.</p></td></tr></tbody></table></div></div></details>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Forbidden Monarch",
+          "uuid": "Actor.ACeF4jLu5XRNPf3o.Item.cMbaaFTtVqYwCWSr"
+        },
+        "hoyRzB8ZsBZ7n2uN": {
+          "facet_cost": "",
+          "facet_description": "<p>When you summon an <strong>Arcanum</strong>, you immediately recover <strong>【SL × 5】</strong> Hit Points.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Arcane Regeneration",
+          "uuid": "Actor.ACeF4jLu5XRNPf3o.Item.hoyRzB8ZsBZ7n2uN"
+        },
+        "mt4ybsEoJ3ZGBWLL": {
+          "facet_cost": "",
+          "facet_description": "<p>When you successfully perform a Check to fill or erase one or more sections of a Clock, if the <strong>domains</strong> of one or more Arcana you have bound are applicable to the Check in question, you may fill or erase an <strong>additional section</strong> of that Clock. </p><p>The Game Master has final say on whether a given domain applies or not.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Arcane Echoes",
+          "uuid": "Actor.ACeF4jLu5XRNPf3o.Item.mt4ybsEoJ3ZGBWLL"
+        },
+        "oSUaZw9yXDK6mjUX": {
+          "facet_cost": "",
+          "facet_description": "<p>After you willingly dismiss an Arcanum on your turn during a <strong>conflict</strong>, if that Arcanum had not been summoned during this same turn and you have an arcane weapon equipped, you may immediately perform the Spell action for free. The spell you cast this way must have a total Mind Point cost of <strong>【SL × 5】</strong>or lower <em>(you must still pay the spell's MP cost).</em></p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Arcane Circle",
+          "uuid": "Actor.ACeF4jLu5XRNPf3o.Item.oSUaZw9yXDK6mjUX"
+        }
+      },
+      "class_heroicSkill": {
+        "7J7G9sIoIOsfnz56": {
+          "id": "${item.id}",
+          "name": "Revelation",
+          "skill_cost": "2 Fabula Points",
+          "skill_description": "<p>You make contact with an unknown Arcanum and bind it to your soul. This Arcanum must be something you design together with the rest of the group; as long as you live, no one else in your world will be able to bind that Arcanum. </p><p><strong>Once per scene</strong> while you are merged with an Arcanum, you may use an action and spend <strong>2 Fabula Points</strong> to trigger that Arcanum's dismiss effect (if any) without dismissing them. Doing so does not trigger the 【<strong>Arcane Circle】</strong> Skill</p>",
+          "skill_isHeroic": true,
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.ACeF4jLu5XRNPf3o.Item.7J7G9sIoIOsfnz56"
+        },
+        "KdQvvcKAqiGOv4Ne": {
+          "id": "${item.id}",
+          "name": "Grand Summoning",
+          "skill_cost": "",
+          "skill_description": "<p>When you summon an <strong>Arcanum</strong>, you may decide to spend 1 <strong>Fabula Point</strong> and spend half of your current <strong>Hit Points</strong> (rounded down) to shape your lifeforce into a full manifestation of their power. If you do, the Arcanum manifests as a <strong>soldier-rank</strong> creature of the <strong>demon</strong> Species under your control (they count as an ally and have their own independent turn during conflicts—if you use this Skill during a conflict scene, the Arcanum joins the scene at the end of the current round). You also do not gain any of the <strong>merge benefits</strong> you would normally enjoy when summoning that Arcanum. The summoned creature has the following profile:</p>\n<ul>\n  <li><strong>Level</strong> is equal to your level (thus gaining the bonuses to Checks and damage listed under steps 8 on page 303 of the Core Rulebook).</li>\n  <li>A <strong>d10</strong> in one <strong>Attribute</strong> of your choice, and a <strong>d8</strong> in all other Attributes.</li>\n  <li><strong>Maximum Hit Points</strong> equal to <strong>[twice the creature’s base Might die size, plus half of your maximum Hit Points]</strong>. The creature has no <strong>Mind Points</strong>.</li>\n  <li><strong>Resistance</strong> to two damage types of your choice.</li>\n  <li>The creature receives all the <strong>merge benefits</strong> the Arcanum would normally grant you when summoned (damage Affinities, immunity to status effects, increased Attribute sizes, etc.). If a merge benefit would cause the Arcanum to be dismissed, this will cause the summoned creature to vanish unless you spend <strong>20 Mind Points</strong>.</li>\n  <li>A <strong>melee basic attack</strong> whose Accuracy Check relies on two different Attributes of your choice and deals <strong>[HR + 8]</strong> physical damage. Choose two different options: that the attack is a <strong>ranged</strong> attack; or it deals 4 extra damage; or it deals damage of a type other than physical; or the Accuracy Check relies on a single Attribute.</li>\n  <li>The creature may perform the 【💥Skill】 action to produce one of the <strong>dismiss</strong> effects normally granted by that Arcanum, but doing so will cause the summoned creature to vanish unless you spend <strong>20 Mind Points</strong>.</li>\n</ul>\n<p><strong>The following rules apply</strong> when you <strong>Grand Summon</strong> an Arcanum:</p>\n<ul>\n  <li>The creature is always summoned at full <strong>Hit Points</strong>, with no status effects.</li>\n  <li>The creature vanishes if it reaches 0 <strong>Hit Points</strong>; if you die, lose consciousness or become unconscious; or if you <strong>summon</strong> or <strong>Grand Summon</strong> an Arcanum again.</li>\n  <li>The creature leaves when a scene ends, or if you simply command them to do so (without triggering the corresponding Arcanum’s dismiss effects).</li>\n  <li>You make all choices made for Attributes and basic attack during the first time you <strong>Summon</strong> a given Arcanum: these choices will remain unchanged whenever you <strong>Grand Summon</strong> that same Arcanum again in the future.</li>\n</ul>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.ACeF4jLu5XRNPf3o.Item.KdQvvcKAqiGOv4Ne"
+        },
+        "cMbaaFTtVqYwCWSr": {
+          "id": "${item.id}",
+          "name": "Forbidden Monarch",
+          "skill_cost": "",
+          "skill_description": "<p>As long as there are <strong>one or more cards</strong> in your <strong>discard pile</strong>, you have <strong>Resistance</strong> to the damage type matching the <strong>suit</strong> of the card on top of your discard pile (if that card is a <strong>joker</strong>, you have <strong>Resistance</strong> to all four damage types: <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(168, 255, 187) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(210, 180, 140) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span>, and <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(166, 227, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span></span>).</p><p>You also add the following <strong>effect</strong> to your list of <strong>sets</strong>:</p><details open=\"\" style=\"border:2px solid #b3002d; border-radius:10px; overflow:hidden; margin-top:10px;\"><summary style=\"cursor:pointer; background:#b3002d; color:#fff; padding:8px 12px; font-weight:700; font-family:Signika, sans-serif; letter-spacing:.3px;\"><span style=\"font-family: Signika, sans-serif\"><strong>♠ ♥ ♦ ♣ Additional Set Effect (click to hide)</strong></span></summary><div class=\"tableWrapper\" style=\"background:#fff;\"><div class=\"tableWrapper\"><table style=\"min-width: 75px;\"><colgroup><col contenteditable=\"false\"><col contenteditable=\"false\"><col contenteditable=\"false\"></colgroup><tbody><tr style=\"background:#b3002d; color:#fff;\"><td style=\"padding:6px; border-right:1px solid #a00027;\"><p><strong>Effect</strong></p></td><td style=\"padding:6px; border-right:1px solid #a00027;\"><p><strong>Set Requirements</strong></p></td><td style=\"padding:6px;\"><p><strong>Resolve</strong></p></td></tr><tr><td style=\"padding:8px; border-bottom:1px solid #e9d6da;\"><p><strong>Forbidden Monarch</strong></p></td><td style=\"padding:8px; border-bottom:1px solid #e9d6da;\"><p>4 cards of the same value, none of which is a <strong>joker</strong> + 1 <strong>joker</strong></p></td><td style=\"padding:8px; border-bottom:1px solid #e9d6da;\"><p>You deal <strong>777</strong> damage to each enemy present on the scene; the type of this damage is <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(202, 189, 154) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></span> if 【<strong>the common value of the 4 cards】</strong> is <strong>even</strong>, or <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span> if that total is <strong>odd</strong>.</p><p>If there is a <strong>joker</strong> in your <strong>discard pile</strong>, the damage dealt by this effect <strong>ignores Immunities and Resistances</strong>.</p></td></tr></tbody></table></div></div></details>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.ACeF4jLu5XRNPf3o.Item.cMbaaFTtVqYwCWSr"
+        },
+        "mt4ybsEoJ3ZGBWLL": {
+          "id": "${item.id}",
+          "name": "Arcane Echoes",
+          "skill_cost": "",
+          "skill_description": "<p>When you successfully perform a Check to fill or erase one or more sections of a Clock, if the <strong>domains</strong> of one or more Arcana you have bound are applicable to the Check in question, you may fill or erase an <strong>additional section</strong> of that Clock. </p><p>The Game Master has final say on whether a given domain applies or not.</p>",
+          "skill_isHeroic": true,
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.ACeF4jLu5XRNPf3o.Item.mt4ybsEoJ3ZGBWLL"
+        }
+      },
+      "class_lore": "<blockquote><p>Arcanists can fall into a deep trance and temporarily project a considerable portion of their soul outside the body, giving it physical form. Surrounded by this magical shroud, the Arcanist gains a variety of supernatural abilities; these summoned forms are said to be manifestations of the ancestral souls belonging to mythical entities of legend, known as the Arcana. In some worlds, the Arcana are even worshipped as deities.</p></blockquote>",
+      "class_skill": {
+        "3yimfleCB20QSM24": {
+          "id": "${item.id}",
+          "name": "Emergency Arcanum",
+          "skill_cost": "",
+          "skill_description": "<p>As long as you are in <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span>, the cost for summoning your Arcana is reduced by <strong>【SL × 5】</strong> Mind Points.</p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 6,
+          "skill_type": "Passive",
+          "uuid": "Actor.ACeF4jLu5XRNPf3o.Item.3yimfleCB20QSM24"
+        },
+        "7J7G9sIoIOsfnz56": {
+          "id": "7J7G9sIoIOsfnz56",
+          "name": "Revelation",
+          "skill_cost": "",
+          "skill_description": "<p>You make contact with an unknown Arcanum and bind it to your soul. This Arcanum must be something you design together with the rest of the group; as long as you live, no one else in your world will be able to bind that Arcanum. </p><p><strong>Once per scene</strong> while you are merged with an Arcanum, you may use an action and spend <strong>2 Fabula Points</strong> to trigger that Arcanum's dismiss effect (if any) without dismissing them. Doing so does not trigger the 【<strong>Arcane Circle】</strong> Skill</p>",
+          "skill_isHeroic": true,
+          "skill_maxLevel": 1,
+          "skill_type": "",
+          "uuid": "Actor.ACeF4jLu5XRNPf3o.Item.7J7G9sIoIOsfnz56"
+        },
+        "JMbeYGM1e8oKzJGN": {
+          "id": "${item.id}",
+          "name": "Bind and Summon",
+          "skill_cost": "",
+          "skill_description": "<p>You may bind Arcana to your soul and summon them later. The Game Master will tell you the details of each binding process when you first encounter the Arcanum in question.</p><p> You may use an action and spend <strong>40 Mind Points</strong> to summon an Arcanum you have bound: the details of this process are explained on the next page. If you take this Skill at character creation, you begin play with one Arcanum of your choice already bound to you, chosen from the list on the next pages. Other than that, you may only obtain new Arcana through exploration and story progression</p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 1,
+          "skill_type": "Other",
+          "uuid": "Actor.ACeF4jLu5XRNPf3o.Item.JMbeYGM1e8oKzJGN"
+        },
+        "YEvurCZ1YdqXCoj6": {
+          "id": "${item.id}",
+          "name": "Ritual Arcanism",
+          "skill_cost": "",
+          "skill_description": "<p>You may perform Rituals of the <strong>Arcanism</strong> discipline, as long as their effects fall within the domains of one or more Arcana you have bound.</p><p> Arcanism Rituals use <strong>【WLP + WLP】</strong> for the Magic Check.</p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.ACeF4jLu5XRNPf3o.Item.YEvurCZ1YdqXCoj6"
+        },
+        "hoyRzB8ZsBZ7n2uN": {
+          "id": "${item.id}",
+          "name": "Arcane Regeneration",
+          "skill_cost": "",
+          "skill_description": "<p>When you summon an <strong>Arcanum</strong>, you immediately recover <strong>【SL × 5】</strong> Hit Points.</p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 2,
+          "skill_type": "Passive",
+          "uuid": "Actor.ACeF4jLu5XRNPf3o.Item.hoyRzB8ZsBZ7n2uN"
+        },
+        "mt4ybsEoJ3ZGBWLL": {
+          "id": "mt4ybsEoJ3ZGBWLL",
+          "name": "Arcane Echoes",
+          "skill_cost": "",
+          "skill_description": "<p>When you successfully perform a Check to fill or erase one or more sections of a Clock, if the <strong>domains</strong> of one or more Arcana you have bound are applicable to the Check in question, you may fill or erase an <strong>additional section</strong> of that Clock. </p><p>The Game Master has final say on whether a given domain applies or not.</p>",
+          "skill_isHeroic": true,
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.ACeF4jLu5XRNPf3o.Item.mt4ybsEoJ3ZGBWLL"
+        },
+        "oSUaZw9yXDK6mjUX": {
+          "id": "${item.id}",
+          "name": "Arcane Circle",
+          "skill_cost": "",
+          "skill_description": "<p>After you willingly dismiss an Arcanum on your turn during a <strong>conflict</strong>, if that Arcanum had not been summoned during this same turn and you have an arcane weapon equipped, you may immediately perform the Spell action for free. The spell you cast this way must have a total Mind Point cost of <strong>【SL × 5】</strong>or lower <em>(you must still pay the spell's MP cost).</em></p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 4,
+          "skill_type": "Passive",
+          "uuid": "Actor.ACeF4jLu5XRNPf3o.Item.oSUaZw9yXDK6mjUX"
+        }
+      },
+      "flavor_text": "<p style=\"text-align: center\"><span style=\"font-family: Amiri\"><em>Some fates are</em></span></p><p style=\"text-align: center\"><span style=\"font-family: Amiri\"><em>not easily avoided.</em></span></p>",
+      "martialArmor_equippable": false,
+      "martialMelee_equippable": false,
+      "martialRanged_equippable": false,
+      "martialShield_equippable": false,
+      "name": "Arcanist",
+      "project_performable": false,
+      "ritual_performable": false
+    },
+    "statusEffects": {},
+    "template": "hoxC3HFCtMYGScIo",
+    "templateSystemUniqueVersion": 504201233
+  },
+  "type": "character"
+}

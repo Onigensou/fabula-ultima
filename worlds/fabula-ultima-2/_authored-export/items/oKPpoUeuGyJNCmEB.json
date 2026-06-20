@@ -1,0 +1,63 @@
+{
+  "_id": "oKPpoUeuGyJNCmEB",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1747282333482,
+    "duplicateSource": "Item.wj3d3T5zY4hd7xqH",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.4.2"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "oKPpoUeuGyJNCmEB",
+        "itemName": "Loudhailer",
+        "pickedOldProps": {
+          "cost": "300",
+          "martial": false
+        },
+        "ts": 1769647435900
+      }
+    }
+  },
+  "folder": "1y9u2EmZuTTt3cpv",
+  "img": "systems/pf2e/icons/equipment/staves/staff-of-enchantment.webp",
+  "name": "Loudhailer",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3
+  },
+  "sort": 400000,
+  "system": {
+    "container": null,
+    "props": {
+      "category": "Arcane",
+      "check_bonus": "2",
+      "damage_bonus": "7",
+      "description": "<p><strong>Accurate</strong></p><p>Adds a +2 bonus to the weapon’s Accuracy Check formula.</p><p><strong>Defense Boost</strong></p><p>You gain a +2 bonus to Defense, and you are treated as having a shield equipped for the sake of your Skills (for instance, Defensive Mastery or Dodge; see Core Rulebook, page 197 and 203)</p><p><strong>Elemental</strong></p><p>Choose air, bolt, dark, earth, fire, ice, <strong>light</strong> or poison. The weapon now deals damage of the chosen type instead of physical, and also deals 2 extra damage.</p><hr contenteditable=\"false\"><p><em>Ishasha's microphone</em></p><p></p>",
+      "hand_slots": "Two-handed",
+      "isMartial": false,
+      "item_cost": "300",
+      "item_type": "weapon",
+      "name": "Loudhailer",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "MIG",
+      "set_name": "",
+      "skill_target": "One Enemy",
+      "type_damage": "Light",
+      "weapon_range": "Ranged"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "oKPpoUeuGyJNCmEB"
+  },
+  "type": "equippableItem"
+}

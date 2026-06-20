@@ -1,0 +1,57 @@
+{
+  "_id": "XpSvvPKiAzoY4nqp",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1756967688353,
+    "duplicateSource": "Item.P3iAf8dGAQLg8tLS",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "2OplVa9fwLYbzD8b",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/Blade_of_Honor.png",
+  "name": "Iron Forest",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 5500000,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Commander",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>After you hit one or more creatures with a <strong>melee</strong> attack using a weapon that belongs to the <strong>spear</strong> Category, if you have no other weapon equipped, you may spend <strong>20 Mind Points</strong> and choose one of those creatures. If you do, the attack deals <strong>half</strong> the normal amount of damage to each of its targets, and you <strong>choose one type of action</strong> from the following:</p><ul><li><p>【⚔️Attack】</p></li><li><p>【🛡️Guard】</p></li><li><p>【❗️Objective】</p></li><li><p>【📕Spell】</p></li><li><p>【💥Skill】</p></li></ul><p>From now on, the chosen creature must spend <strong>10 Mind Points</strong> whenever they wish to perform that type of action. If they can’t, they must perform a different type of action. This effect lasts until the start of your next turn, or until you use this Skill again.</p>",
+      "duration": "",
+      "heroic_requirement": "you must have mastered one or more Classes among Commander and Weaponmaster.",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Iron Forest",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "XpSvvPKiAzoY4nqp"
+  },
+  "type": "equippableItem"
+}

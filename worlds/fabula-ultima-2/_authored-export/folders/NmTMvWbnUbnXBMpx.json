@@ -1,0 +1,19 @@
+{
+  "_id": "NmTMvWbnUbnXBMpx",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1753057992059,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": "#5fa44c",
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "Companion",
+  "sort": 500000,
+  "sorting": "a",
+  "type": "Actor"
+}

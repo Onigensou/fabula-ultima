@@ -1,0 +1,815 @@
+{
+  "_id": "0hQ3oO09XZhhcd53",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1753954784793,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "jYbZuqwzbSuIOWl1",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Xingyue/Xingyue_Token.png",
+  "items": [
+    {
+      "_id": "7T1cLHIiqNsqFLqK",
+      "_stats": {
+        "compendiumSource": "Item.965Uv1PDdNWdtjtk",
+        "coreVersion": "12.343",
+        "createdTime": 1753959493552,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Els/SwordKnightPassive2.png",
+      "name": "Last Stand",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Tactician",
+          "cost": "50 MP",
+          "damage_bonus": "0",
+          "description": "<p>All ally gain <strong>1 Turn Activation</strong></p><p>This skill may only be used <strong>Once per conflicts </strong>and only if all ally are in <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span>&nbsp;<em>(Counting all ally usage of Last Stand)</em></p>",
+          "duration": "Instantaneous",
+          "isCheck": false,
+          "isHeroic": true,
+          "level": "1",
+          "max_level": "1",
+          "name": "Last Stand",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "All Ally",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "965Uv1PDdNWdtjtk"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "9rTN4cqTb9GdfZns",
+      "_stats": {
+        "compendiumSource": "Item.63pwoJC6rSF82KZo",
+        "coreVersion": "12.343",
+        "createdTime": 1753972518747,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/05_SCH/chain_stratagem.png",
+      "name": "Chain Strategem",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Tactician",
+          "cost": "30 MP",
+          "damage_bonus": "0",
+          "description": "<p>Once per round, You may spend <strong>40 MP, </strong>if you do,<strong> </strong>Choose another Player Character that can hear you who has yet to take a turn during this round. That character may take their turn immediately after yours during this round. The MP usage of this skill is reduce by <strong>【SL x 10】</strong></p><p>You may use this skill during the end of an ally turn.</p>",
+          "duration": "Instantaneous",
+          "isCheck": false,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "3",
+          "name": "Chain Strategem",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "One ally",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "63pwoJC6rSF82KZo"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "ixfQNmgD9Ik6Kq2T",
+      "_stats": {
+        "compendiumSource": "Item.4BXUowZewDxTQsKb",
+        "coreVersion": "12.343",
+        "createdTime": 1753959490919,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/05_SCH/recitation.png",
+      "name": "Blitzkrieg",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Tactician",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>Once per round, you may use an <strong>【Objective】</strong>action as a <strong>Free Action</strong></p>",
+          "duration": "",
+          "isCheck": false,
+          "isHeroic": true,
+          "level": "1",
+          "max_level": "1",
+          "name": "Blitzkrieg",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "4BXUowZewDxTQsKb"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "l2mC9URfg6j1VPVI",
+      "_stats": {
+        "compendiumSource": "Item.swaahzQH8Q5Q3Zoi",
+        "coreVersion": "12.343",
+        "createdTime": 1753959494816,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/05_SCH/Concitation.png",
+      "name": "Synergize",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Tactician",
+          "cost": "10 x T MP",
+          "damage_bonus": "0",
+          "description": "<p>Choose a <strong>buff </strong>affecting you, spend up to <strong>【SL x 10】MP,</strong> For each 10 MP spent this way, Choose an Ally, gives that ally the chosen buff.</p>",
+          "duration": "instantaneous",
+          "isCheck": false,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "3",
+          "name": "Synergize",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "Ally",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "swaahzQH8Q5Q3Zoi"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "lnzoeuXlBWupZEca",
+      "_stats": {
+        "compendiumSource": "Item.STHqqvPEntwFev7N",
+        "coreVersion": "12.343",
+        "createdTime": 1753972115545,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/05_SCH/consolation.png",
+      "name": "Strategic Retreat",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Tactician",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When an ally fall into <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a><strong><span style=\"text-decoration: underline;\">, </span></strong></span></span>You may have that ally immediately <strong>Switch Out </strong>as a <strong>Free Action</strong></p><p></p>",
+          "duration": "Instantaneous",
+          "isCheck": false,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Strategic Retreat",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "One Ally",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "STHqqvPEntwFev7N"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "srjJdAft6BpGNLXb",
+      "_stats": {
+        "compendiumSource": "Item.5SSvuvojZ9L9R0lQ",
+        "coreVersion": "12.343",
+        "createdTime": 1753959488123,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/05_SCH/art_of_war.png",
+      "name": "Art of War",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Tactician",
+          "cost": "10 MP",
+          "damage_bonus": "0",
+          "description": "<p>Target ally next <strong>Accuracy </strong>or <strong>Magic Check </strong>gain a 【SL】bonus</p>",
+          "duration": "Instantaneous",
+          "isCheck": false,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "3",
+          "name": "Art of War",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "One ally",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "5SSvuvojZ9L9R0lQ"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "Vzl1Ae0aG58fNjZz",
+      "_stats": {
+        "compendiumSource": "Item.xcR5dYrIFysvIt5E",
+        "coreVersion": "12.343",
+        "createdTime": 1753959489411,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/05_SCH/enhanced_deployment_tactics.png",
+      "name": "Battle Formation",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Tactician",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>Each time you take this <strong>Skill</strong>, you learn a <strong>Formation</strong> <em>(see Class Mechanic)</em></p><p>On your turn during a conflict scene, You may use an <strong>【Objective】</strong>action to <strong>deploy a Formation</strong>.</p><p>You may only have one Formation active at a time, Deploying a new Formation replace your current active one, a Formation grants passive benefits to all allies, but only if you have a specific party member in your party.</p>",
+          "duration": "",
+          "isCheck": false,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "10",
+          "name": "Battle Formation",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Other",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "xcR5dYrIFysvIt5E"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Tactician",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar4": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "DEF",
+            "max": 13,
+            "maxcolor": "#f26d40",
+            "mincolor": "#f26d40",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 13
+          },
+          "bar5": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar5",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MDEF",
+            "max": 10,
+            "maxcolor": "#26d6ed",
+            "mincolor": "#26d6ed",
+            "opacity": null,
+            "order": 4,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 10
+          }
+        }
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Tactician",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Xingyue/Xingyue_Token.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 0,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {
+      "also_text": "Strategist, Advisor, Chessmaster",
+      "benefit_dropdown": "mp_benefit",
+      "classMechanic_text": "<h1>FORMATION</h1><p></p><h3 data-start=\"288\" data-end=\"308\">BUILDING FOCUS</h3><p data-start=\"309\" data-end=\"462\">When wielding a Ranged Firearm, a Sniper gradually builds up Focus—a special resource that represents heightened awareness and concentration on a target.</p><p data-start=\"464\" data-end=\"778\">You begin tracking Focus once you acquire the <strong data-start=\"510\" data-end=\"528\">【Sniper Focus】</strong> skill. At the end of your turn, if you did <strong data-start=\"572\" data-end=\"579\">not</strong> perform a damaging action, you gain 1 Focus. If you are <strong data-start=\"636\" data-end=\"648\">【Hidden】</strong>, you gain 1 Focus regardless of your actions. You can accumulate Focus up to a maximum equal to your level in <strong data-start=\"759\" data-end=\"777\">【Sniper Focus】</strong>.</p><p></p><h3 data-start=\"780\" data-end=\"800\">SPENDING FOCUS</h3><p data-start=\"801\" data-end=\"921\">Focus can be spent to enhance your precision or unleash powerful attacks. When you make an attack with a Ranged Firearm:</p><ul data-start=\"923\" data-end=\"1065\"><li data-start=\"923\" data-end=\"981\"><p data-start=\"925\" data-end=\"981\">You gain <strong data-start=\"934\" data-end=\"959\">+1 Accuracy per Focus</strong> (via <strong data-start=\"965\" data-end=\"979\">【Take Aim】</strong>).</p></li><li data-start=\"982\" data-end=\"1065\"><p data-start=\"984\" data-end=\"1065\">You may <strong data-start=\"992\" data-end=\"1019\">spend all of your Focus</strong> to deal <strong data-start=\"1028\" data-end=\"1064\">+10 bonus damage per Focus spent</strong>.</p></li></ul><p data-start=\"1067\" data-end=\"1254\">Some skills, such as <strong data-start=\"1088\" data-end=\"1109\">【Perfect Sniping】</strong>, allow you to spend a single Focus to apply additional effects, such as <strong data-start=\"1182\" data-end=\"1192\">Homing</strong>, or allow your shot to bypass <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Hidden</span></strong></a></span></span> and <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.yE84jvVXyebDulAP\" data-id=\"yE84jvVXyebDulAP\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Isolate</span></strong></a></span></span>.</p><p></p><h3 data-start=\"1256\" data-end=\"1278\">FOCUS MANAGEMENT</h3><p data-start=\"1279\" data-end=\"1471\">Building Focus requires patience and careful timing. If you engage too early, you may lose the opportunity to deal maximum damage. On the other hand, waiting too long may leave you vulnerable.</p><p data-start=\"1473\" data-end=\"1596\">You may gain Focus even in the midst of combat by coordinating with <strong data-start=\"1541\" data-end=\"1557\">【Camouflage】</strong> or by delaying your offensive actions.</p>",
+      "class_facet": {
+        "7T1cLHIiqNsqFLqK": {
+          "facet_cost": "50 MP",
+          "facet_description": "<p>All ally gain <strong>1 Turn Activation</strong></p><p>This skill may only be used <strong>Once per conflicts </strong>and only if all ally are in <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span>&nbsp;<em>(Counting all ally usage of Last Stand)</em></p>",
+          "facet_offensive": "",
+          "facet_target": "All Ally",
+          "id": "${item.id}",
+          "name": "Last Stand",
+          "uuid": "Actor.0hQ3oO09XZhhcd53.Item.7T1cLHIiqNsqFLqK"
+        },
+        "9rTN4cqTb9GdfZns": {
+          "facet_cost": "30 MP",
+          "facet_description": "<p>Once per round, You may spend <strong>40 MP, </strong>if you do,<strong> </strong>Choose another Player Character that can hear you who has yet to take a turn during this round. That character may take their turn immediately after yours during this round. The MP usage of this skill is reduce by <strong>【SL x 10】</strong></p><p>You may use this skill during the end of an ally turn.</p>",
+          "facet_offensive": "",
+          "facet_target": "One ally",
+          "id": "${item.id}",
+          "name": "Chain Strategem",
+          "uuid": "Actor.0hQ3oO09XZhhcd53.Item.9rTN4cqTb9GdfZns"
+        },
+        "Vzl1Ae0aG58fNjZz": {
+          "facet_cost": "",
+          "facet_description": "<p>Each time you take this <strong>Skill</strong>, you learn a <strong>Formation</strong> <em>(see Class Mechanic)</em></p><p>On your turn during a conflict scene, You may use an <strong>【Objective】</strong>action to <strong>deploy a Formation</strong>.</p><p>You may only have one Formation active at a time, Deploying a new Formation replace your current active one, a Formation grants passive benefits to all allies, but only if you have a specific party member in your party.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Battle Formation",
+          "uuid": "Actor.0hQ3oO09XZhhcd53.Item.Vzl1Ae0aG58fNjZz"
+        },
+        "ixfQNmgD9Ik6Kq2T": {
+          "facet_cost": "",
+          "facet_description": "<p>Once per round, you may use an <strong>【Objective】</strong>action as a <strong>Free Action</strong></p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Blitzkrieg",
+          "uuid": "Actor.0hQ3oO09XZhhcd53.Item.ixfQNmgD9Ik6Kq2T"
+        },
+        "l2mC9URfg6j1VPVI": {
+          "facet_cost": "10 x T MP",
+          "facet_description": "<p>Choose a <strong>buff </strong>affecting you, spend up to <strong>【SL x 10】MP,</strong> For each 10 MP spent this way, Choose an Ally, gives that ally the chosen buff.</p>",
+          "facet_offensive": "",
+          "facet_target": "Ally",
+          "id": "${item.id}",
+          "name": "Synergize",
+          "uuid": "Actor.0hQ3oO09XZhhcd53.Item.l2mC9URfg6j1VPVI"
+        },
+        "lnzoeuXlBWupZEca": {
+          "facet_cost": "",
+          "facet_description": "<p>When an ally fall into <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a><strong><span style=\"text-decoration: underline;\">, </span></strong></span></span>You may have that ally immediately <strong>Switch Out </strong>as a <strong>Free Action</strong></p><p></p>",
+          "facet_offensive": "",
+          "facet_target": "One Ally",
+          "id": "${item.id}",
+          "name": "Strategic Retreat",
+          "uuid": "Actor.0hQ3oO09XZhhcd53.Item.lnzoeuXlBWupZEca"
+        },
+        "srjJdAft6BpGNLXb": {
+          "facet_cost": "10 MP",
+          "facet_description": "<p>Target ally next <strong>Accuracy </strong>or <strong>Magic Check </strong>gain a 【SL】bonus</p>",
+          "facet_offensive": "",
+          "facet_target": "One ally",
+          "id": "${item.id}",
+          "name": "Art of War",
+          "uuid": "Actor.0hQ3oO09XZhhcd53.Item.srjJdAft6BpGNLXb"
+        }
+      },
+      "class_heroicSkill": {
+        "7T1cLHIiqNsqFLqK": {
+          "id": "${item.id}",
+          "name": "Last Stand",
+          "skill_cost": "50 MP",
+          "skill_description": "<p>All ally gain <strong>1 Turn Activation</strong></p><p>This skill may only be used <strong>Once per conflicts </strong>and only if all ally are in <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span>&nbsp;<em>(Counting all ally usage of Last Stand)</em></p>",
+          "skill_isHeroic": true,
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.0hQ3oO09XZhhcd53.Item.7T1cLHIiqNsqFLqK"
+        },
+        "ixfQNmgD9Ik6Kq2T": {
+          "id": "${item.id}",
+          "name": "Blitzkrieg",
+          "skill_cost": "",
+          "skill_description": "<p>Once per round, you may use an <strong>【Objective】</strong>action as a <strong>Free Action</strong></p>",
+          "skill_isHeroic": true,
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.0hQ3oO09XZhhcd53.Item.ixfQNmgD9Ik6Kq2T"
+        }
+      },
+      "class_lore": "",
+      "class_skill": {
+        "7T1cLHIiqNsqFLqK": {
+          "id": "${item.id}",
+          "name": "Last Stand",
+          "skill_cost": "50 MP",
+          "skill_description": "<p>All ally gain <strong>1 Turn Activation</strong></p><p>This skill may only be used <strong>Once per conflicts </strong>and only if all ally are in <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span>&nbsp;<em>(Counting all ally usage of Last Stand)</em></p>",
+          "skill_isHeroic": true,
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.0hQ3oO09XZhhcd53.Item.7T1cLHIiqNsqFLqK"
+        },
+        "9rTN4cqTb9GdfZns": {
+          "id": "${item.id}",
+          "name": "Chain Strategem",
+          "skill_cost": "30 MP",
+          "skill_description": "<p>Once per round, You may spend <strong>40 MP, </strong>if you do,<strong> </strong>Choose another Player Character that can hear you who has yet to take a turn during this round. That character may take their turn immediately after yours during this round. The MP usage of this skill is reduce by <strong>【SL x 10】</strong></p><p>You may use this skill during the end of an ally turn.</p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 3,
+          "skill_type": "Active",
+          "uuid": "Actor.0hQ3oO09XZhhcd53.Item.9rTN4cqTb9GdfZns"
+        },
+        "PQFCJsrwWA7o1BHT": {
+          "id": "PQFCJsrwWA7o1BHT",
+          "name": "Chain Strategem",
+          "skill_description": "<p>Once per round, You may spend <strong>【40 − (SL × 10)】MP, </strong>if you do,<strong> </strong>Choose another Player Character that can hear you who has yet to take a turn during this round. That character may take their turn immediately after yours during this round.</p><p>You may use this skill during the end of an ally turn.</p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 3,
+          "skill_type": "Active",
+          "uuid": "Actor.0hQ3oO09XZhhcd53.Item.PQFCJsrwWA7o1BHT"
+        },
+        "Vzl1Ae0aG58fNjZz": {
+          "id": "${item.id}",
+          "name": "Battle Formation",
+          "skill_cost": "",
+          "skill_description": "<p>Each time you take this <strong>Skill</strong>, you learn a <strong>Formation</strong> <em>(see Class Mechanic)</em></p><p>On your turn during a conflict scene, You may use an <strong>【Objective】</strong>action to <strong>deploy a Formation</strong>.</p><p>You may only have one Formation active at a time, Deploying a new Formation replace your current active one, a Formation grants passive benefits to all allies, but only if you have a specific party member in your party.</p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 10,
+          "skill_type": "Other",
+          "uuid": "Actor.0hQ3oO09XZhhcd53.Item.Vzl1Ae0aG58fNjZz"
+        },
+        "ixfQNmgD9Ik6Kq2T": {
+          "id": "${item.id}",
+          "name": "Blitzkrieg",
+          "skill_cost": "",
+          "skill_description": "<p>Once per round, you may use an <strong>【Objective】</strong>action as a <strong>Free Action</strong></p>",
+          "skill_isHeroic": true,
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.0hQ3oO09XZhhcd53.Item.ixfQNmgD9Ik6Kq2T"
+        },
+        "l2mC9URfg6j1VPVI": {
+          "id": "${item.id}",
+          "name": "Synergize",
+          "skill_cost": "10 x T MP",
+          "skill_description": "<p>Choose a <strong>buff </strong>affecting you, spend up to <strong>【SL x 10】MP,</strong> For each 10 MP spent this way, Choose an Ally, gives that ally the chosen buff.</p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 3,
+          "skill_type": "Active",
+          "uuid": "Actor.0hQ3oO09XZhhcd53.Item.l2mC9URfg6j1VPVI"
+        },
+        "lnzoeuXlBWupZEca": {
+          "id": "${item.id}",
+          "name": "Strategic Retreat",
+          "skill_cost": "",
+          "skill_description": "<p>When an ally fall into <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a><strong><span style=\"text-decoration: underline;\">, </span></strong></span></span>You may have that ally immediately <strong>Switch Out </strong>as a <strong>Free Action</strong></p><p></p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.0hQ3oO09XZhhcd53.Item.lnzoeuXlBWupZEca"
+        },
+        "srjJdAft6BpGNLXb": {
+          "id": "${item.id}",
+          "name": "Art of War",
+          "skill_cost": "10 MP",
+          "skill_description": "<p>Target ally next <strong>Accuracy </strong>or <strong>Magic Check </strong>gain a 【SL】bonus</p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 3,
+          "skill_type": "Active",
+          "uuid": "Actor.0hQ3oO09XZhhcd53.Item.srjJdAft6BpGNLXb"
+        }
+      },
+      "flavor_text": "<p style=\"text-align: center;\"><span style=\"font-family: Amiri\"><em>Keep your friends close,</em></span></p><p style=\"text-align: center\"><span style=\"font-family: Amiri\"><em>but enemy closer</em></span></p>",
+      "martialArmor_equippable": false,
+      "martialMelee_equippable": false,
+      "martialRanged_equippable": false,
+      "martialShield_equippable": false,
+      "name": "Tactician",
+      "project_performable": false,
+      "ritual_performable": false
+    },
+    "statusEffects": {},
+    "template": "hoxC3HFCtMYGScIo",
+    "templateSystemUniqueVersion": 504201233
+  },
+  "type": "character"
+}

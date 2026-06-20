@@ -1,0 +1,120 @@
+{
+  "_id": "OFaq1NASo4uD8huP",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1756407960206,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "FUOvYTfwXyCWUISd",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.331",
+        "createdTime": 1757965164385,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.6.4"
+      },
+      "changes": [
+        {
+          "key": "attack_accuracy_mod_all",
+          "mode": 2,
+          "priority": 1,
+          "value": "${level}$"
+        }
+      ],
+      "description": "<p>This attack receives a bonus equal to <strong>[SL]</strong> to its Accuracy Check; if it is successful, all its damage becomes of the same type dealt by your ally, and all <strong>“hex” invocations</strong> present on its target end immediately after the attack has been resolved.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "FUOvYTfwXyCWUISd",
+          "originalParentId": "OFaq1NASo4uD8huP",
+          "originalUuid": "Item.OFaq1NASo4uD8huP.ActiveEffect.FUOvYTfwXyCWUISd"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/dragon_kick.png",
+      "name": "Ripples",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "passive",
+          "class_skill"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "RrGa6q1F9XMvUnC4",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/dragon_kick.png",
+  "name": "Ripples",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Invoker",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>After an enemy you can see loses Hit Points due to damage dealt by one of your allies, if that damage was increased by one or more of your <strong>“hex” invocations</strong>, you may perform a <strong>free attack</strong> with a weapon you have equipped. This attack may only target that enemy, and receives a bonus equal to <strong>[SL]</strong> to its Accuracy Check; if it is successful, all its damage becomes of the same type dealt by your ally, and all <strong>“hex” invocations</strong> present on its target end immediately after the attack has been resolved.</p><p>If two or more enemies trigger this Skill at the same time, you can perform a <strong>free attack</strong> against each of them, in whatever order you prefer.</p>",
+      "duration": "Instantanious",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "5",
+      "name": "Ripples",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>Accuracy Bonus</strong></p></td></tr><tr><td><p>1</p></td><td><p>+1</p></td></tr><tr><td><p>2</p></td><td><p>+2</p></td></tr><tr><td><p>3</p></td><td><p>+3</p></td></tr><tr><td><p>4</p></td><td><p>+4</p></td></tr><tr><td><p>5</p></td><td><p>+5</p></td></tr></tbody></table>",
+      "skill_range": "Any",
+      "skill_target": "Special",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": true,
+    "uniqueId": "OFaq1NASo4uD8huP"
+  },
+  "type": "equippableItem"
+}

@@ -1,0 +1,883 @@
+{
+  "_id": "DH4LTRX2NkmBrHgP",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1757104278792,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "tmNVy5jIbM9rzx80",
+  "img": "https://i.ytimg.com/vi/_cicqCjjNrE/maxresdefault.jpg",
+  "items": [
+    {
+      "_id": "32yuGMRPpIM4xv8C",
+      "_stats": {
+        "compendiumSource": "Item.I1ei4lpXd6dA8T3V",
+        "coreVersion": "12.343",
+        "createdTime": 1757123173976,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Eve/SI_Assaultspear.png",
+      "name": "Strong Grip",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Pilot",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you perform an <strong>Accuracy Check</strong> with a <strong>weapon module</strong>, you may replace one of the <strong>Attributes</strong> with <strong>Might</strong> (such as <strong>[MIG + WLP]</strong> for an <strong>arcane</strong> module).</p>\n",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Strong Grip",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "I1ei4lpXd6dA8T3V"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "3OP7boZsst1A6C3U",
+      "_stats": {
+        "compendiumSource": "Item.lwmvhCwHF1RzN63X",
+        "coreVersion": "12.343",
+        "createdTime": 1757123207425,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Eve/CodeUnknownSkill3.png",
+      "name": "Heart in the Engine",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Pilot",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>At the start of your turn during a conflict, if you are driving your <em>personal vehicle</em>, you may spend <strong>10 Mind Points</strong>. If you do, <strong>choose one option:</strong></p><ul><li>The next time you deal damage during this turn, deal <strong>【SL × 2】</strong> extra damage</li><li>The next time you suffer damage before the start of your next turn, that damage is reduced by <strong>【SL × 2】</strong> <em>(applied before damage Affinities)</em></li><li>You recover from either the <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span></span> or <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a></span></span> status effects</li></ul>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "3",
+          "name": "Heart in the Engine",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Extra Damage</strong></p></td><td><p><strong>Damage Reduction</strong></p></td></tr><tr><td><p>1</p></td><td><p>2</p></td><td><p>2</p></td></tr><tr><td><p>2</p></td><td><p>4</p></td><td><p>4</p></td></tr><tr><td><p>3</p></td><td><p>6</p></td><td><p>6</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "lwmvhCwHF1RzN63X"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "AJVyQHie93KVGJ0b",
+      "_stats": {
+        "compendiumSource": "Item.JZSH0skLxYZ4ZACR",
+        "coreVersion": "12.343",
+        "createdTime": 1757122964525,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/12_MCH/automaton_queen.png",
+      "name": "Dynamic Synchronization",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Pilot",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>At the start of your turn during a conflict, if you are driving your <em>personal vehicle</em>, you may choose one option: you synchronize with another Player Character who is present on the scene and driving their own <em>personal vehicle</em>, or you synchronize with another Player Character who is a passenger on your <em>personal vehicle</em>. Describe how the two of you join forces! You and the chosen character both receive the following benefits as long as the synchronization remains active:</p>\n<ul>\n  <li>When you perform a <strong>Check</strong>, you may use the current <strong>Attribute</strong> die sizes of the other PC in place of yours (for one or both dice).</li>\n  <li>When you deal damage, deal extra damage equal to <strong>[the strength of your Bond towards the other PC, plus the strength of their Bond towards you]</strong>.</li>\n  <li>You may use an action to perform a free 【⚔️Attack】 with one enabled or disabled <strong>weapon module</strong> present on the <em>personal vehicle</em> the other PC is currently on.</li>\n  <li>When your turn ends, if the other PC has yet to take their turn during this round, they may take their turn immediately after yours.</li>\n</ul>\n<p>This synchronization lasts until the end of the scene, or until you or the other Player Character die, fall unconscious, leave the scene, synchronize with someone else, or are no longer aboard a <em>personal vehicle</em>.</p>\n",
+          "duration": "",
+          "heroic_requirement": "You must have mastered the Pilot Class.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Dynamic Synchronization",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "JZSH0skLxYZ4ZACR"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "I271CHjFr01RlsEn",
+      "_stats": {
+        "compendiumSource": "Item.hmHV04cN1JkaZYqB",
+        "coreVersion": "12.343",
+        "createdTime": 1757122961508,
+        "duplicateSource": "Item.uMIItEHpqu7mII8g",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rose/MagneticGenerator.png",
+      "name": "Steel Witch",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Pilot",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>After you cast the first <strong>spell</strong> of your turn during a conflict, if you are driving your <em>personal vehicle</em>, you may <strong>choose one option</strong> (after the spell has been resolved):</p>\n<ul>\n  <li>Choose one enabled module and disable it; then choose one disabled module and enable it</li>\n  <li>The next spell you cast before the end of this scene that deals damage deals <strong>5</strong> extra damage</li>\n  <li>The next spell you cast before the end of this scene that restores <strong>Hit Points</strong> to one or more creatures restores <strong>10</strong> additional <strong>Hit Points</strong> to each of those creatures</li>\n</ul>\n",
+          "duration": "",
+          "heroic_requirement": "You must have mastered the Pilot Class.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Steel Witch",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "hmHV04cN1JkaZYqB"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "m144qtR3k9NRw6jI",
+      "_stats": {
+        "compendiumSource": "Item.cVpSIG0RR2A2px19",
+        "coreVersion": "12.343",
+        "createdTime": 1757123167805,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rose/FreySkill10.png",
+      "name": "Compression Tech",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Pilot",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>As long as there is no one aboard your <em>personal vehicle</em>, you may have it safely disappear from the game world at any time. What magic or technology allows it?</p><p>If your <em>personal vehicle</em> is not present in the game world and you are in a space big enough to contain it, you may perform the <strong>【⚗️Inventory】</strong> action and spend <strong>2 Inventory Points</strong> to have the vehicle appear near you, and enter it for free.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Compression Tech",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "cVpSIG0RR2A2px19"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "SGXkGlYhlzhYxked",
+      "_stats": {
+        "compendiumSource": "Item.uMIItEHpqu7mII8g",
+        "coreVersion": "12.343",
+        "createdTime": 1757122969492,
+        "duplicateSource": "Item.JZSH0skLxYZ4ZACR",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/CLOSERS/Tina/Rank_3_Special_Move_Finish_Them.webp",
+      "name": "Overload Burst",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Pilot",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p><strong>Choose a damage type:</strong></p><ul><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(215, 169, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a></span></span></li><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); text-shadow: rgb(182, 102, 210) 0px 0px 4px; padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span></li><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span></li><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(166, 227, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span></span></li><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(202, 189, 154) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></span></li></ul><p>When you are reduced to 0 <strong>Hit Points</strong> for the first time during a scene, if you are driving your <em>personal vehicle</em>, you may choose to be reduced to exactly 1 <strong>Hit Point</strong> instead. If you do, you and any passengers leave your <em>personal vehicle</em>, which <strong>disappears</strong> from the game world. Then, you may deal an amount of damage equal to your <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span> score to a single creature you can see. This damage is of the type you have chosen from the list above. If your <em>personal vehicle</em> disappears from the game world this way, the next use of your <strong>Compression Tech</strong> Skill has an additional cost of 1 <strong>Fabula Point</strong>.</p>",
+          "duration": "",
+          "heroic_requirement": "You must have mastered the Pilot Class.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Overload Burst",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "uMIItEHpqu7mII8g"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "TIUIC8ElS2Gqx9X4",
+      "_stats": {
+        "compendiumSource": "Item.JUkdf5oqk7yiMUmJ",
+        "coreVersion": "12.343",
+        "createdTime": 1757123172501,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rose/MHSActive1.png",
+      "name": "Personal Vehicle",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Pilot",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you acquire this Skill, you gain a <em>personal vehicle</em> with a frame of your choice and <strong>three</strong> different modules of your choice (see Facet).</p><p>Whenever you acquire this Skill again, you acquire <strong>two</strong> additional modules of your choice.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "5",
+          "name": "Personal Vehicle",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Other",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "JUkdf5oqk7yiMUmJ"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "xwb4afhZFjCarlv7",
+      "_stats": {
+        "compendiumSource": "Item.YpOTrhbJ4bKF8aNg",
+        "coreVersion": "12.343",
+        "createdTime": 1757123169703,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rose/MHPassive.png",
+      "name": "Flexible Configuration",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Pilot",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you perform the 【🥋Equipment】 or 【🛡️Guard】 action while driving your <em>personal vehicle</em>, you may choose up to <strong>【SL】</strong> of its enabled modules and disable them. If you do, choose up to an equal amount of its disabled modules and enable them.</p>\n",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "4",
+          "name": "Flexible Configuration",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Disable Up To</strong></p></td><td><p><strong>Enable Up To</strong></p></td></tr><tr><td><p>1</p></td><td><p>1 module</p></td><td><p>1 module</p></td></tr><tr><td><p>2</p></td><td><p>2 modules</p></td><td><p>2 modules</p></td></tr><tr><td><p>3</p></td><td><p>3 modules</p></td><td><p>3 modules</p></td></tr><tr><td><p>4</p></td><td><p>4 modules</p></td><td><p>4 modules</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "YpOTrhbJ4bKF8aNg"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Pilot",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar4": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "DEF",
+            "max": 13,
+            "maxcolor": "#f26d40",
+            "mincolor": "#f26d40",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 13
+          },
+          "bar5": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar5",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MDEF",
+            "max": 10,
+            "maxcolor": "#26d6ed",
+            "mincolor": "#26d6ed",
+            "opacity": null,
+            "order": 4,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 10
+          }
+        }
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Pilot",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://i.ytimg.com/vi/_cicqCjjNrE/maxresdefault.jpg",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 0,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {
+      "also_text": "Biker, Mecha Pilot, Sky Pirate",
+      "benefit_dropdown": "hp_benefit",
+      "classMechanic_text": "<h1>PILOT</h1><p>The Pilot is the rider, driver, and ace of the party. Your <strong>personal vehicle</strong> is more than gear—it’s a second body you swap into when the mission heats up. Pick a <em>frame</em> (Steed, Exoskeleton, or Mecha), bolt on <em>modules</em>, and switch loadouts between scenes to match the challenge.</p><ul><li><strong>Custom Ride:</strong> Build a chassis + modules; enable up to <strong>3 + SL</strong> at once, swap outside conflicts.</li><li><strong>On the Stick:</strong> Enter as an <strong>【❗️Objective】</strong> action; exit for free (on your turn). While driving, your vehicle’s armor/weapon <em>modules replace your gear</em>.</li><li><strong>Tough but Story-Driven:</strong> Vehicles don’t have separate stats; damage and repairs are handled narratively (see below).</li></ul><hr><h1>PILOT — PERSONAL VEHICLE</h1><p></p><h2>BOOT-UP OVERVIEW</h2><ul><li><strong>Enter / Mount:</strong> During a conflict, getting into your <strong>personal vehicle</strong> is an <strong>【❗️Objective】</strong> action. If the vehicle is already at hand when a conflict starts, you can jump in <strong>before the Initiative Check</strong>.</li><li><strong>Exit / Dismount:</strong> Leaving the vehicle doesn’t cost an action, but in a conflict you may only do it on your turn, <strong>before or after</strong> an action.</li><li><strong>Pilot Only Drives:</strong> Passengers can ride depending on the frame/modules, but only <strong>you</strong> can drive. Passengers <strong>can’t Guard to cover others</strong> while riding.</li><li><strong>Enabled Module Limit:</strong> At any time you can have up to <strong>3 + your SL in Personal Vehicle</strong> modules <em>enabled</em>. You may freely swap which modules are enabled/disabled <strong>outside</strong> conflicts.</li></ul><blockquote><p><strong>Tip:</strong> Some options (e.g., “Flexible Configuration”, “Secondary Offensive”) help you quickly toggle or momentarily use a disabled module. Your table can add similar quality-of-life tech as needed.</p></blockquote><p></p><h2>BUILDING YOUR RIDE</h2><p>A personal vehicle is made of:</p><ul><li><p><strong>1 Frame (pick once when you gain the Skill):</strong></p><ul><li><strong>Steed</strong> — bikes, boards, rides and mounts.</li><li><strong>Exoskeleton</strong> — powered armor and mech-limbs.</li><li><strong>Mecha</strong> — cockpit-piloted robots, walkers, tanks.</li></ul><p>The frame sets look-and-feel and what “makes sense” to carry.</p></li><li><p><strong>Modules:</strong> attachable systems you can enable/disable:</p><ul><li><strong>Armor Modules</strong> (defensive plating, shells).</li><li><strong>Weapon Modules</strong> (mounted guns, blades, cannons).</li><li><strong>Support Modules</strong> (seats, sensors, power units, mobility).</li></ul></li></ul><hr><h2>ARMOR MODULES (while driving)</h2><ul><li>Your normal <strong>armor slot</strong> is treated as occupied by the vehicle’s <strong>armor module</strong>. If you have <em>no</em> armor module enabled, you use your own armor as usual.</li><li>As soon as you stop driving, you immediately regain your normal equipped armor.</li><li>Armor modules marked with <strong>+</strong> count as <strong>martial armor</strong> for Skills/effects and set your <strong>Defense</strong> and <strong>Magic Defense</strong> to fixed scores (shield bonuses and other extras still apply). You can enable these even if you normally can’t wear martial armor.</li></ul><blockquote><p><strong>Example:</strong> A Guardian still benefits from defensive class perks while Heavy Plating is enabled, but doesn’t gain “evasion/dodge” perks that require wearing light armor instead.</p></blockquote><p></p><h2>WEAPON MODULES (while driving)</h2><ul><li>Your normal <strong>hand slots</strong> are treated as occupied by the vehicle’s <strong>weapon modules</strong>. With no weapon modules enabled, you use your own weapons/shields.</li><li>When you stop driving, you immediately regain your normal weapons/shield.</li><li>Each weapon module counts as a <strong>one-handed, non-martial weapon</strong> for Skills/effects (the <strong>Shield module</strong> is treated as a <strong>shield</strong>).</li><li>Assign modules to <strong>Main-hand</strong> and <strong>Off-hand</strong> when you configure the loadout.</li><li>Some weapon modules are marked <strong>cumbersome</strong>: you can’t enable them together with other weapon modules (including Shield) on the same vehicle.</li></ul><blockquote><p><strong>Two-Weapon Rules:</strong> If you enable <em>two</em> weapon modules of the <strong>same Category</strong>, you use the game’s two-weapon fighting rules. With the Ambidextrous Heroic Skill, you can fully leverage dual modules.</p></blockquote><p></p><h2>SUPPORT MODULES</h2><ul><li>Utility tech that helps you and often your passengers.</li><li>You can’t enable <strong>more than one</strong> support module of the <strong>same name</strong>.</li><li>Some support modules are big/complex and count as <strong>two modules</strong> toward your enabled total.</li></ul><p></p><h2>DAMAGE & REPAIRS</h2><ul><li>Your vehicle has <em>no separate stat block</em>; treat it as an extension of you. It can be damaged, disabled, or temporarily unusable as a narrative consequence (e.g., after <strong>Surrender</strong>).</li><li><strong>It isn’t destroyed</strong> unless the Player agrees to it.</li><li><strong>Repair Cost (narrative damage):</strong> pay <strong>100 × your SL</strong> in Personal Vehicle (zenit) to get it back in action.</li><li>Rebuilding a truly destroyed ride should be part of your story arc (special mission, project, or reward).</li></ul><p></p><h2>REWARDS & RARE MODULES</h2><ul><li><p><strong>Weapon/Armor modules:</strong> base cost about <strong>500 zenit</strong>. Rare versions follow the game’s rare-item rules with exceptions:</p><ul><li>A weapon module’s damage can be increased by up to <strong>+4 total</strong> (higher cost); it <strong>can’t become two-handed</strong>.</li><li>A weapon module <strong>can never become martial</strong>, even at high damage formulas.</li></ul></li><li><strong>Support modules:</strong> typically cost around <strong>1000 zenit</strong> and are treated as rare items; compare to existing ones for balance.</li><li>Special rule text printed on some modules (e.g., Claymore’s “no other weapon modules”, Shield specifics) are <strong>not Qualities</strong> and can’t be lost/replaced.</li><li>Find/buy modules in labs, factories, black-markets, or as loot from robots/artifice. Keep stacking of similar support effects <strong>non-cumulative</strong>.</li></ul><p></p><h2>TINKERER SYNERGY</h2><p>Tinkerers can use <strong>Upgrade</strong> and <strong>Projects</strong> to craft new tech or custom improvements (anti-magic vanes, jump jets, special sensors). As a group, ensure upgrades don’t erase other characters’ niches; keep the number of upgrades meaningful so choices stay interesting.</p><hr><h2>GAINING THE SKILL</h2><div style=\"border:1px solid var(--color-border); padding:8px; border-radius:6px;\"><p><strong>PERSONAL VEHICLE [+5]</strong></p><p>When you acquire this Skill, you gain a <strong>personal vehicle</strong> with a <strong>frame</strong> of your choice and <strong>three different modules</strong> of your choice.</p><p>Whenever you acquire this Skill again, you gain <strong>two additional modules</strong> of your choice.</p></div><p></p><h2>QUICK REMINDERS (HUD)</h2><ul><li><strong>Enter:</strong> Objective action; free “pre-initiative” board if already at hand.</li><li><strong>Exit:</strong> free (on your turn only; before/after an action).</li><li><strong>Limit:</strong> Enabled modules = <strong>3 + SL</strong>.</li><li><strong>Armor mod on =</strong> replaces your worn armor for stats.</li><li><strong>Weapon mod on =</strong> occupies hands; one-handed by default; assign main/off.</li><li><strong>Support:</strong> no duplicates by name; some count as two.</li></ul><hr><details><summary><strong>▼ SAMPLE PERSONAL VEHICLES (click to expand)</strong></summary><p></p><ul><li><p><strong>HOVERSKATE</strong> — Frame: <em>Steed</em>; Recommended SL: 1 <br><em>Enabled:</em> Aerial, Claymore, Rapid Interface</p></li><li><p><strong>ARMORED MOTORCYCLE</strong> — Frame: <em>Steed</em>; Recommended SL: 2 <br><em>Enabled:</em> Expanded Plating, Heavy Plating, Machine Gun, Seat, Turbo</p></li><li><p><strong>ASSAULT EXOSKELETON</strong> — Frame: <em>Exoskeleton</em>; Recommended SL: 3 <br><em>Enabled:</em> Advanced Targeting, Counterstrike, Heavy Plating, Rifle, Sensor, Shield <br><em>Disabled:</em> Aerial</p></li><li><p><strong>BIPEDAL DESTROYER</strong> — Frame: <em>Mecha</em>; Recommended SL: 2 <br><em>Enabled:</em> Axe, Flamer, Secondary Offensive (Cannon), Standard Plating <br><em>Disabled:</em> Cannon</p></li><li><p><strong>INFILTRATOR SCOUT</strong> — Frame: <em>Mecha</em>; Recommended SL: 2 <br><em>Enabled:</em> Anti-Element, Rifle, Runic Plating, Sensor, Spear</p></li><li><p><strong>MECHANICAL CRAB</strong> — Frame: <em>Mecha</em>; Recommended SL: 2 <br><em>Enabled:</em> Claw ×2, Heavy Plating, Power, Seafarer</p></li><li><p><strong>SCORPION-CLASS ARMORSUIT</strong> — Frame: <em>Exoskeleton</em>; Recommended SL: 2 <br><em>Enabled:</em> Blade ×2, Flexible Plating, Secondary Offensive (Scythe) <br><em>Disabled:</em> Scythe</p></li><li><p><strong>STARFIGHTER</strong> — Frame: <em>Steed</em>; Recommended SL: 2 <br><em>Enabled:</em> Advanced Targeting, Aerial, Machine Gun, Standard Plating <br><em>Disabled:</em> Cannon</p></li></ul><blockquote><p><strong>Use as starting loadouts:</strong> Swap any module to fit your table’s tech level and story. Keep within the enabled-module limit.</p></blockquote></details><p></p>",
+      "class_facet": {
+        "32yuGMRPpIM4xv8C": {
+          "facet_cost": "",
+          "facet_description": "<p>When you perform an <strong>Accuracy Check</strong> with a <strong>weapon module</strong>, you may replace one of the <strong>Attributes</strong> with <strong>Might</strong> (such as <strong>[MIG + WLP]</strong> for an <strong>arcane</strong> module).</p>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Strong Grip",
+          "uuid": "Actor.DH4LTRX2NkmBrHgP.Item.32yuGMRPpIM4xv8C"
+        },
+        "3OP7boZsst1A6C3U": {
+          "facet_cost": "",
+          "facet_description": "<p>At the start of your turn during a conflict, if you are driving your <em>personal vehicle</em>, you may spend <strong>10 Mind Points</strong>. If you do, <strong>choose one option:</strong></p><ul><li>The next time you deal damage during this turn, deal <strong>【SL × 2】</strong> extra damage</li><li>The next time you suffer damage before the start of your next turn, that damage is reduced by <strong>【SL × 2】</strong> <em>(applied before damage Affinities)</em></li><li>You recover from either the <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span></span> or <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a></span></span> status effects</li></ul>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Heart in the Engine",
+          "uuid": "Actor.DH4LTRX2NkmBrHgP.Item.3OP7boZsst1A6C3U"
+        },
+        "AJVyQHie93KVGJ0b": {
+          "facet_cost": "",
+          "facet_description": "<p>At the start of your turn during a conflict, if you are driving your <em>personal vehicle</em>, you may choose one option: you synchronize with another Player Character who is present on the scene and driving their own <em>personal vehicle</em>, or you synchronize with another Player Character who is a passenger on your <em>personal vehicle</em>. Describe how the two of you join forces! You and the chosen character both receive the following benefits as long as the synchronization remains active:</p>\n<ul>\n  <li>When you perform a <strong>Check</strong>, you may use the current <strong>Attribute</strong> die sizes of the other PC in place of yours (for one or both dice).</li>\n  <li>When you deal damage, deal extra damage equal to <strong>[the strength of your Bond towards the other PC, plus the strength of their Bond towards you]</strong>.</li>\n  <li>You may use an action to perform a free 【⚔️Attack】 with one enabled or disabled <strong>weapon module</strong> present on the <em>personal vehicle</em> the other PC is currently on.</li>\n  <li>When your turn ends, if the other PC has yet to take their turn during this round, they may take their turn immediately after yours.</li>\n</ul>\n<p>This synchronization lasts until the end of the scene, or until you or the other Player Character die, fall unconscious, leave the scene, synchronize with someone else, or are no longer aboard a <em>personal vehicle</em>.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Dynamic Synchronization",
+          "uuid": "Actor.DH4LTRX2NkmBrHgP.Item.AJVyQHie93KVGJ0b"
+        },
+        "I271CHjFr01RlsEn": {
+          "facet_cost": "",
+          "facet_description": "<p>After you cast the first <strong>spell</strong> of your turn during a conflict, if you are driving your <em>personal vehicle</em>, you may <strong>choose one option</strong> (after the spell has been resolved):</p>\n<ul>\n  <li>Choose one enabled module and disable it; then choose one disabled module and enable it</li>\n  <li>The next spell you cast before the end of this scene that deals damage deals <strong>5</strong> extra damage</li>\n  <li>The next spell you cast before the end of this scene that restores <strong>Hit Points</strong> to one or more creatures restores <strong>10</strong> additional <strong>Hit Points</strong> to each of those creatures</li>\n</ul>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Steel Witch",
+          "uuid": "Actor.DH4LTRX2NkmBrHgP.Item.I271CHjFr01RlsEn"
+        },
+        "SGXkGlYhlzhYxked": {
+          "facet_cost": "",
+          "facet_description": "<p><strong>Choose a damage type:</strong></p><ul><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(215, 169, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a></span></span></li><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); text-shadow: rgb(182, 102, 210) 0px 0px 4px; padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span></li><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span></li><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(166, 227, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span></span></li><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(202, 189, 154) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></span></li></ul><p>When you are reduced to 0 <strong>Hit Points</strong> for the first time during a scene, if you are driving your <em>personal vehicle</em>, you may choose to be reduced to exactly 1 <strong>Hit Point</strong> instead. If you do, you and any passengers leave your <em>personal vehicle</em>, which <strong>disappears</strong> from the game world. Then, you may deal an amount of damage equal to your <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span> score to a single creature you can see. This damage is of the type you have chosen from the list above. If your <em>personal vehicle</em> disappears from the game world this way, the next use of your <strong>Compression Tech</strong> Skill has an additional cost of 1 <strong>Fabula Point</strong>.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Overload Burst",
+          "uuid": "Actor.DH4LTRX2NkmBrHgP.Item.SGXkGlYhlzhYxked"
+        },
+        "TIUIC8ElS2Gqx9X4": {
+          "facet_cost": "",
+          "facet_description": "<p>When you acquire this Skill, you gain a <em>personal vehicle</em> with a frame of your choice and <strong>three</strong> different modules of your choice (see Facet).</p><p>Whenever you acquire this Skill again, you acquire <strong>two</strong> additional modules of your choice.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Personal Vehicle",
+          "uuid": "Actor.DH4LTRX2NkmBrHgP.Item.TIUIC8ElS2Gqx9X4"
+        },
+        "m144qtR3k9NRw6jI": {
+          "facet_cost": "",
+          "facet_description": "<p>As long as there is no one aboard your <em>personal vehicle</em>, you may have it safely disappear from the game world at any time. What magic or technology allows it?</p><p>If your <em>personal vehicle</em> is not present in the game world and you are in a space big enough to contain it, you may perform the <strong>【⚗️Inventory】</strong> action and spend <strong>2 Inventory Points</strong> to have the vehicle appear near you, and enter it for free.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Compression Tech",
+          "uuid": "Actor.DH4LTRX2NkmBrHgP.Item.m144qtR3k9NRw6jI"
+        },
+        "xwb4afhZFjCarlv7": {
+          "facet_cost": "",
+          "facet_description": "<p>When you perform the 【🥋Equipment】 or 【🛡️Guard】 action while driving your <em>personal vehicle</em>, you may choose up to <strong>【SL】</strong> of its enabled modules and disable them. If you do, choose up to an equal amount of its disabled modules and enable them.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Flexible Configuration",
+          "uuid": "Actor.DH4LTRX2NkmBrHgP.Item.xwb4afhZFjCarlv7"
+        }
+      },
+      "class_heroicSkill": {
+        "AJVyQHie93KVGJ0b": {
+          "id": "${item.id}",
+          "name": "Dynamic Synchronization",
+          "skill_cost": "",
+          "skill_description": "<p>At the start of your turn during a conflict, if you are driving your <em>personal vehicle</em>, you may choose one option: you synchronize with another Player Character who is present on the scene and driving their own <em>personal vehicle</em>, or you synchronize with another Player Character who is a passenger on your <em>personal vehicle</em>. Describe how the two of you join forces! You and the chosen character both receive the following benefits as long as the synchronization remains active:</p>\n<ul>\n  <li>When you perform a <strong>Check</strong>, you may use the current <strong>Attribute</strong> die sizes of the other PC in place of yours (for one or both dice).</li>\n  <li>When you deal damage, deal extra damage equal to <strong>[the strength of your Bond towards the other PC, plus the strength of their Bond towards you]</strong>.</li>\n  <li>You may use an action to perform a free 【⚔️Attack】 with one enabled or disabled <strong>weapon module</strong> present on the <em>personal vehicle</em> the other PC is currently on.</li>\n  <li>When your turn ends, if the other PC has yet to take their turn during this round, they may take their turn immediately after yours.</li>\n</ul>\n<p>This synchronization lasts until the end of the scene, or until you or the other Player Character die, fall unconscious, leave the scene, synchronize with someone else, or are no longer aboard a <em>personal vehicle</em>.</p>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.DH4LTRX2NkmBrHgP.Item.AJVyQHie93KVGJ0b"
+        },
+        "I271CHjFr01RlsEn": {
+          "id": "${item.id}",
+          "name": "Steel Witch",
+          "skill_cost": "",
+          "skill_description": "<p>After you cast the first <strong>spell</strong> of your turn during a conflict, if you are driving your <em>personal vehicle</em>, you may <strong>choose one option</strong> (after the spell has been resolved):</p>\n<ul>\n  <li>Choose one enabled module and disable it; then choose one disabled module and enable it</li>\n  <li>The next spell you cast before the end of this scene that deals damage deals <strong>5</strong> extra damage</li>\n  <li>The next spell you cast before the end of this scene that restores <strong>Hit Points</strong> to one or more creatures restores <strong>10</strong> additional <strong>Hit Points</strong> to each of those creatures</li>\n</ul>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.DH4LTRX2NkmBrHgP.Item.I271CHjFr01RlsEn"
+        },
+        "SGXkGlYhlzhYxked": {
+          "id": "${item.id}",
+          "name": "Overload Burst",
+          "skill_cost": "",
+          "skill_description": "<p><strong>Choose a damage type:</strong></p><ul><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(215, 169, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a></span></span></li><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); text-shadow: rgb(182, 102, 210) 0px 0px 4px; padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span></li><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span></li><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(166, 227, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span></span></li><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(202, 189, 154) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></span></li></ul><p>When you are reduced to 0 <strong>Hit Points</strong> for the first time during a scene, if you are driving your <em>personal vehicle</em>, you may choose to be reduced to exactly 1 <strong>Hit Point</strong> instead. If you do, you and any passengers leave your <em>personal vehicle</em>, which <strong>disappears</strong> from the game world. Then, you may deal an amount of damage equal to your <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span> score to a single creature you can see. This damage is of the type you have chosen from the list above. If your <em>personal vehicle</em> disappears from the game world this way, the next use of your <strong>Compression Tech</strong> Skill has an additional cost of 1 <strong>Fabula Point</strong>.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.DH4LTRX2NkmBrHgP.Item.SGXkGlYhlzhYxked"
+        }
+      },
+      "class_lore": "<blockquote><p>Be they boastful racers, trained soldiers or elegant chaffeurs, <strong>Pilots</strong> develop a special bond with their vehicle – in a way, it becomes an extension of their body, which they can rely on for battle and travel.</p><p>While transports of all sorts are frequently seen in every <strong>Fabula Ultima</strong> world, a Pilot’s vehicle is something unique and irreplaceable: it could be the very mecha their mother piloted in battle, a jury-rigged aviobike that shouldn’t even be able to fly, or some sort of technological marvel.</p></blockquote>",
+      "class_skill": {
+        "32yuGMRPpIM4xv8C": {
+          "id": "${item.id}",
+          "name": "Strong Grip",
+          "skill_cost": "",
+          "skill_description": "<p>When you perform an <strong>Accuracy Check</strong> with a <strong>weapon module</strong>, you may replace one of the <strong>Attributes</strong> with <strong>Might</strong> (such as <strong>[MIG + WLP]</strong> for an <strong>arcane</strong> module).</p>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.DH4LTRX2NkmBrHgP.Item.32yuGMRPpIM4xv8C"
+        },
+        "3OP7boZsst1A6C3U": {
+          "id": "${item.id}",
+          "name": "Heart in the Engine",
+          "skill_cost": "",
+          "skill_description": "<p>At the start of your turn during a conflict, if you are driving your <em>personal vehicle</em>, you may spend <strong>10 Mind Points</strong>. If you do, <strong>choose one option:</strong></p><ul><li>The next time you deal damage during this turn, deal <strong>【SL × 2】</strong> extra damage</li><li>The next time you suffer damage before the start of your next turn, that damage is reduced by <strong>【SL × 2】</strong> <em>(applied before damage Affinities)</em></li><li>You recover from either the <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span></span> or <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a></span></span> status effects</li></ul>",
+          "skill_maxLevel": 3,
+          "skill_type": "Passive",
+          "uuid": "Actor.DH4LTRX2NkmBrHgP.Item.3OP7boZsst1A6C3U"
+        },
+        "TIUIC8ElS2Gqx9X4": {
+          "id": "${item.id}",
+          "name": "Personal Vehicle",
+          "skill_cost": "",
+          "skill_description": "<p>When you acquire this Skill, you gain a <em>personal vehicle</em> with a frame of your choice and <strong>three</strong> different modules of your choice (see Facet).</p><p>Whenever you acquire this Skill again, you acquire <strong>two</strong> additional modules of your choice.</p>",
+          "skill_maxLevel": 5,
+          "skill_type": "Other",
+          "uuid": "Actor.DH4LTRX2NkmBrHgP.Item.TIUIC8ElS2Gqx9X4"
+        },
+        "m144qtR3k9NRw6jI": {
+          "id": "${item.id}",
+          "name": "Compression Tech",
+          "skill_cost": "",
+          "skill_description": "<p>As long as there is no one aboard your <em>personal vehicle</em>, you may have it safely disappear from the game world at any time. What magic or technology allows it?</p><p>If your <em>personal vehicle</em> is not present in the game world and you are in a space big enough to contain it, you may perform the <strong>【⚗️Inventory】</strong> action and spend <strong>2 Inventory Points</strong> to have the vehicle appear near you, and enter it for free.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.DH4LTRX2NkmBrHgP.Item.m144qtR3k9NRw6jI"
+        },
+        "xwb4afhZFjCarlv7": {
+          "id": "${item.id}",
+          "name": "Flexible Configuration",
+          "skill_cost": "",
+          "skill_description": "<p>When you perform the 【🥋Equipment】 or 【🛡️Guard】 action while driving your <em>personal vehicle</em>, you may choose up to <strong>【SL】</strong> of its enabled modules and disable them. If you do, choose up to an equal amount of its disabled modules and enable them.</p>\n",
+          "skill_maxLevel": 4,
+          "skill_type": "Passive",
+          "uuid": "Actor.DH4LTRX2NkmBrHgP.Item.xwb4afhZFjCarlv7"
+        }
+      },
+      "flavor_text": "<p style=\"text-align: center\"><span style=\"font-family: Amiri\"><em>Within this steel beats</em></span></p><p style=\"text-align: center\"><span style=\"font-family: Amiri\"><em>the hearts and hopes of all</em></span></p><p style=\"text-align: center\"><span style=\"font-family: Amiri\"><em>of Minerva IV, The Empire</em></span></p><p style=\"text-align: center;\"><span style=\"font-family: Amiri\"><em>has already lost, they</em></span></p><p style=\"text-align: center;\"><span style=\"font-family: Amiri\"><em>just don't know it yet.</em></span></p>",
+      "martialArmor_equippable": false,
+      "martialMelee_equippable": true,
+      "martialRanged_equippable": true,
+      "martialShield_equippable": false,
+      "name": "Pilot",
+      "project_performable": false,
+      "ritual_performable": false
+    },
+    "statusEffects": {},
+    "template": "hoxC3HFCtMYGScIo",
+    "templateSystemUniqueVersion": 504201233
+  },
+  "type": "character"
+}

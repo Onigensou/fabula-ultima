@@ -1,0 +1,19 @@
+{
+  "_id": "cZFr8Jrws41eCfyO",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1767627656447,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "SPvX0PiXpGCzQ7YQ",
+  "name": "Battlemap",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Scene"
+}

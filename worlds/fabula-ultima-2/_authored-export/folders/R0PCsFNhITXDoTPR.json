@@ -1,0 +1,19 @@
+{
+  "_id": "R0PCsFNhITXDoTPR",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1756713584894,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "tX9WPMEGfOLF9j97",
+  "name": "Entropist Spell",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

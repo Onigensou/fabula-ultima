@@ -1,0 +1,257 @@
+{
+  "_id": "nShy3C3UAbIdMzRa",
+  "_stats": {
+    "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
+    "coreVersion": "12.343",
+    "createdTime": 1775837922123,
+    "duplicateSource": "Item.UKzHkmIJcjXZ4GFR",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "627XPJEbST2Ut5PR",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "enable_action_only",
+          "mode": 5,
+          "priority": 0,
+          "value": "Attack"
+        }
+      ],
+      "description": "<p>Gain <strong>increased damage, </strong>but only able to perform the <strong>Attack </strong>action</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "core": {
+          "overlay": false
+        },
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "WGLPo0XUtClK9hac",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.WGLPo0XUtClK9hac"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-berserk",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "fabula-ultima-companion": {
+          "lifetimeMode": "target_turn_end",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "damage_amount": "2",
+                "damage_operation": "multiply",
+                "damage_stage": "outgoing",
+                "effect_kind": "adjust_damage",
+                "effect_label": "berserk_dmg_x2"
+              }
+            },
+            "reaction_config_table": {
+              "0": {
+                "reaction_effect_ref": "berserk_dmg_x2",
+                "reaction_passive_mode": "force",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_will_deal_damage"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "durationType": 1,
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/02_WAR/infuriate.png",
+      "name": "Berserk",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "vLM7q3rdXVCgHYD4"
+      ],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "h5QtOEdiyTY99nTk",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "mig_current",
+          "mode": 2,
+          "priority": 1,
+          "value": "2"
+        }
+      ],
+      "description": "<p>Increse <strong>【MIG】</strong>die by one stage</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "core": {
+          "overlay": false
+        },
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "3nsIFfF2H0A9HxON",
+          "originalParentId": "0rfKFWTyPt7TfUvl",
+          "originalUuid": "Item.0rfKFWTyPt7TfUvl.ActiveEffect.3nsIFfF2H0A9HxON"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "strong",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/AttackUp.png",
+      "name": "Strong",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.4"
+    }
+  },
+  "folder": "HxH8pRIAy3tVzGFP",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/02_WAR/infuriate.png",
+  "name": "Zero Power: Temper Tantrum",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 162500,
+  "system": {
+    "props": {
+      "active_effect_config_table": {
+        "0": {
+          "$deleted": false,
+          "active_effect_application": "add",
+          "active_effect_apply_mode": "percentage",
+          "active_effect_dice_1": "",
+          "active_effect_dice_2": "",
+          "active_effect_dl": "0",
+          "active_effect_id": "627XPJEbST2Ut5PR",
+          "active_effect_percent": "100",
+          "active_effect_target": "self",
+          "active_effect_trigger": "on_attack"
+        },
+        "1": {
+          "$deleted": false,
+          "active_effect_application": "add",
+          "active_effect_apply_mode": "percentage",
+          "active_effect_dice_1": "",
+          "active_effect_dice_2": "",
+          "active_effect_dl": "0",
+          "active_effect_id": "h5QtOEdiyTY99nTk",
+          "active_effect_percent": "100",
+          "active_effect_target": "self",
+          "active_effect_trigger": "on_attack"
+        }
+      },
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_script": "<div><div><p>// ============================================================================</p></div><div><p>// Zero Power: Temper Tantrum (Foundry VTT v12)</p></div><div><p>// Flavor:</p></div><div><p>// 1) Play a Jill cut-in (styled after Rebellion example)</p></div><div><p>// 2) At the start of the fire VFX, spawn a pseudo clone of the caster image</p></div><div><p>// &nbsp; &nbsp;and make it scale outward + fade out</p></div><div><p>// 3) Play fire cone VFX on caster using ONI Pseudo Animation</p></div><div><p>// 4) At the same time, play both SFX with Sequencer</p></div><div><p>// 5) Tint the caster token red</p></div><div><p>//</p></div><div><p>// NOTE:</p></div><div><p>// - VFX is handled by Pseudo Animation</p></div><div><p>// - SFX is handled by Sequencer only</p></div><div><p>// - Red tint is LEFT ON at the end intentionally</p></div><div><p>// ============================================================================</p></div><p><br></p><div><p>(async () =&gt; {</p></div><div><p>&nbsp; const TAG = \"[ONI][Anim][ZeroPower][TemperTantrum]\";</p></div><p><br></p><div><p>&nbsp; // -----------------------------</p></div><div><p>&nbsp; // Assets</p></div><div><p>&nbsp; // -----------------------------</p></div><div><p>&nbsp; const CUTIN_URL =</p></div><div><p>&nbsp; &nbsp; \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Jill/Jill_Standard.png\";</p></div><p><br></p><div><p>&nbsp; const FIRE_VFX =</p></div><div><p>&nbsp; &nbsp; \"modules/JB2A_DnD5e/Library/Generic/Template/Cone/Breath_Weapon/Breathweapon02_Fire02_Regular_Orange_Cone_Burst_800x800.webm\";</p></div><p><br></p><div><p>const CUTIN_SFX_URL =</p></div><div><p>&nbsp; \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BurstMax.ogg\";</p></div><p><br></p><div><p>const SFX_CAST =</p></div><div><p>&nbsp; \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BerzerkerCaster.wav\";</p></div><p><br></p><div><p>const SFX_EXPLOSION =</p></div><div><p>&nbsp; \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Explosion2.ogg\";</p></div><p><br></p><div><p>&nbsp; // -----------------------------</p></div><div><p>&nbsp; // Tunables</p></div><div><p>&nbsp; // -----------------------------</p></div><div><p>const CUTIN = {</p></div><div><p>&nbsp; dimAlpha: 0.60,</p></div><div><p>&nbsp; dimFadeMs: 180,</p></div><div><p>&nbsp; flashPeak: 0.90,</p></div><div><p>&nbsp; flashDelayMs: 50,</p></div><div><p>&nbsp; flashInMs: 70,</p></div><div><p>&nbsp; flashOutMs: 170,</p></div><div><p>&nbsp; slideInMs: 650,</p></div><div><p>&nbsp; holdMs: 850,</p></div><div><p>&nbsp; slideOutMs: 650,</p></div><div><p>&nbsp; portraitHeightRatio: 0.90,</p></div><div><p>&nbsp; portraitInsetX: 220,</p></div><div><p>&nbsp; portraitBottomMargin: 40,</p></div><div><p>&nbsp; portraitYOffset: -140,</p></div><div><p>&nbsp; sfxVol: 0.90</p></div><div><p>};</p></div><p><br></p><div><p>&nbsp; const VFX = {</p></div><div><p>&nbsp; &nbsp; scale: 1,</p></div><div><p>&nbsp; &nbsp; offsetX: -15, &nbsp; // positive = move right, negative = move left</p></div><div><p>&nbsp; &nbsp; offsetY: -415, // positive = move down, negative = move up</p></div><div><p>&nbsp; &nbsp; rotationDeg: -90,</p></div><div><p>&nbsp; &nbsp; fallbackDurationMs: 1800,</p></div><div><p>&nbsp; &nbsp; zIndex: 999999</p></div><div><p>&nbsp; };</p></div><p><br></p><div><p>&nbsp; // New: caster clone burst tuning</p></div><div><p>&nbsp; const CLONE_BURST = {</p></div><div><p>&nbsp; &nbsp; startScale: 1.00,</p></div><div><p>&nbsp; &nbsp; endScale: 10.20,</p></div><div><p>&nbsp; &nbsp; startAlpha: 0.95,</p></div><div><p>&nbsp; &nbsp; endAlpha: 0.00,</p></div><div><p>&nbsp; &nbsp; durationMs: 320,</p></div><div><p>&nbsp; &nbsp; zIndexOffset: -1 // relative to fire VFX zIndex</p></div><div><p>&nbsp; };</p></div><p><br></p><div><p>&nbsp; const RED_TINT_HEX = 0xff3b30;</p></div><p><br></p><div><p>&nbsp; // -----------------------------</p></div><div><p>&nbsp; // Helpers</p></div><div><p>&nbsp; // -----------------------------</p></div><div><p>&nbsp; const wait = (ms) =&gt; new Promise((r) =&gt; setTimeout(r, Math.max(0, ms)));</p></div><p><br></p><div><p>&nbsp; globalThis.ONI = globalThis.ONI ?? {};</p></div><div><p>&nbsp; if (!ONI.emit) {</p></div><div><p>&nbsp; &nbsp; ONI.emit = (eventName, payload = {}, options = {}) =&gt; {</p></div><div><p>&nbsp; &nbsp; &nbsp; const { local = true, world = false } = options;</p></div><div><p>&nbsp; &nbsp; &nbsp; if (local) Hooks.callAll(eventName, payload);</p></div><div><p>&nbsp; &nbsp; &nbsp; if (world) game.socket.emit(\"world\", { action: eventName, payload });</p></div><div><p>&nbsp; &nbsp; };</p></div><div><p>&nbsp; }</p></div><p><br></p><div><p>&nbsp; function resolveCasterTokenSync() {</p></div><div><p>&nbsp; &nbsp; const p = globalThis.__PAYLOAD ?? {};</p></div><div><p>&nbsp; &nbsp; const uuid =</p></div><div><p>&nbsp; &nbsp; &nbsp; p.casterTokenUuid ||</p></div><div><p>&nbsp; &nbsp; &nbsp; p.attackerTokenUuid ||</p></div><div><p>&nbsp; &nbsp; &nbsp; p.attacker_token_uuid ||</p></div><div><p>&nbsp; &nbsp; &nbsp; p.attackerTokenUUID ||</p></div><div><p>&nbsp; &nbsp; &nbsp; p.sourceTokenUuid ||</p></div><div><p>&nbsp; &nbsp; &nbsp; p.source_token_uuid ||</p></div><div><p>&nbsp; &nbsp; &nbsp; null;</p></div><p><br></p><div><p>&nbsp; &nbsp; if (uuid &amp;&amp; typeof fromUuidSync === \"function\") {</p></div><div><p>&nbsp; &nbsp; &nbsp; const doc = fromUuidSync(uuid);</p></div><div><p>&nbsp; &nbsp; &nbsp; const token = doc?.object ?? null;</p></div><div><p>&nbsp; &nbsp; &nbsp; if (token) return token;</p></div><div><p>&nbsp; &nbsp; }</p></div><p><br></p><div><p>&nbsp; &nbsp; return canvas?.tokens?.controlled?.[0] ?? null;</p></div><div><p>&nbsp; }</p></div><p><br></p><div><p>&nbsp; async function resolveCasterTokenAsync() {</p></div><div><p>&nbsp; &nbsp; const p = globalThis.__PAYLOAD ?? {};</p></div><div><p>&nbsp; &nbsp; const uuid =</p></div><div><p>&nbsp; &nbsp; &nbsp; p.casterTokenUuid ||</p></div><div><p>&nbsp; &nbsp; &nbsp; p.attackerTokenUuid ||</p></div><div><p>&nbsp; &nbsp; &nbsp; p.attacker_token_uuid ||</p></div><div><p>&nbsp; &nbsp; &nbsp; p.attackerTokenUUID ||</p></div><div><p>&nbsp; &nbsp; &nbsp; p.sourceTokenUuid ||</p></div><div><p>&nbsp; &nbsp; &nbsp; p.source_token_uuid ||</p></div><div><p>&nbsp; &nbsp; &nbsp; null;</p></div><p><br></p><div><p>&nbsp; &nbsp; if (uuid) {</p></div><div><p>&nbsp; &nbsp; &nbsp; try {</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; const doc = await fromUuid(uuid);</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; return doc?.object ?? null;</p></div><div><p>&nbsp; &nbsp; &nbsp; } catch (_) {}</p></div><div><p>&nbsp; &nbsp; }</p></div><p><br></p><div><p>&nbsp; &nbsp; return canvas?.tokens?.controlled?.[0] ?? null;</p></div><div><p>&nbsp; }</p></div><p><br></p><div><p>&nbsp; let sourceToken = null;</p></div><div><p>&nbsp; let runId = null;</p></div><p><br></p><div><p>&nbsp; try {</p></div><div><p>&nbsp; &nbsp; if (!canvas?.ready) {</p></div><div><p>&nbsp; &nbsp; &nbsp; ui.notifications.warn(\"Canvas is not ready yet.\");</p></div><div><p>&nbsp; &nbsp; &nbsp; return;</p></div><div><p>&nbsp; &nbsp; }</p></div><p><br></p><div><p>&nbsp; &nbsp; if (!game?.ONI?.pseudo?.play) {</p></div><div><p>&nbsp; &nbsp; &nbsp; ui.notifications.error(\"ONI Pseudo Animation API not found: game.ONI.pseudo.play\");</p></div><div><p>&nbsp; &nbsp; &nbsp; return;</p></div><div><p>&nbsp; &nbsp; }</p></div><p><br></p><div><p>&nbsp; &nbsp; if (!game.modules.get(\"sequencer\")?.active) {</p></div><div><p>&nbsp; &nbsp; &nbsp; ui.notifications.error(\"Sequencer module is not active.\");</p></div><div><p>&nbsp; &nbsp; &nbsp; return;</p></div><div><p>&nbsp; &nbsp; }</p></div><p><br></p><div><p>&nbsp; &nbsp; sourceToken = resolveCasterTokenSync() ?? (await resolveCasterTokenAsync());</p></div><p><br></p><div><p>&nbsp; &nbsp; if (!sourceToken) {</p></div><div><p>&nbsp; &nbsp; &nbsp; ui.notifications.warn(\"No caster token found. Select a token or provide __PAYLOAD caster uuid.\");</p></div><div><p>&nbsp; &nbsp; &nbsp; return;</p></div><div><p>&nbsp; &nbsp; }</p></div><p><br></p><div><p>&nbsp; &nbsp; runId = `${Date.now()}-${foundry.utils.randomID(6)}`;</p></div><p><br></p><div><p>&nbsp; &nbsp; console.log(TAG, \"START\", {</p></div><div><p>&nbsp; &nbsp; &nbsp; runId,</p></div><div><p>&nbsp; &nbsp; &nbsp; caster: {</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; id: sourceToken.id,</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; name: sourceToken.name,</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; uuid: sourceToken.document.uuid</p></div><div><p>&nbsp; &nbsp; &nbsp; }</p></div><div><p>&nbsp; &nbsp; });</p></div><p><br></p><div><p>&nbsp; &nbsp; ONI.emit(</p></div><div><p>&nbsp; &nbsp; &nbsp; \"oni:animationStart\",</p></div><div><p>&nbsp; &nbsp; &nbsp; {</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; type: \"zeroPower.temperTantrum\",</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; runId,</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; sourceTokenId: sourceToken.id,</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; sourceTokenUuid: sourceToken.document.uuid,</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; sceneId: canvas.scene?.id ?? null,</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; timestamp: Date.now()</p></div><div><p>&nbsp; &nbsp; &nbsp; },</p></div><div><p>&nbsp; &nbsp; &nbsp; { local: true, world: false }</p></div><div><p>&nbsp; &nbsp; );</p></div><p><br></p><div><p>&nbsp; &nbsp; // =========================================================================</p></div><div><p>&nbsp; &nbsp; // PHASE A — Cut-in overlay (Pseudo Broadcast)</p></div><div><p>&nbsp; &nbsp; // =========================================================================</p></div><div><p>&nbsp; &nbsp; const phaseA = `</p></div><div><p>const TAG = \"[ONI][Pseudo][TemperTantrum][PhaseA]\";</p></div><div><p>const { params } = ctx;</p></div><p><br></p><div><p>if (!canvas?.ready) throw new Error(\"Canvas not ready\");</p></div><p><br></p><div><p>const wait = (ms) =&gt; new Promise(r =&gt; setTimeout(r, Math.max(0, ms)));</p></div><p><br></p><div><p>const CUTIN_URL = String(params.cutinUrl);</p></div><div><p>const CUTIN_SFX_URL = String(params.cutinSfxUrl ?? \"\");</p></div><div><p>const cfg = params.cutinCfg ?? {};</p></div><p><br></p><div><p>const easeOutCubic = (t) =&gt; 1 - Math.pow(1 - t, 3);</p></div><div><p>const easeInCubic = (t) =&gt; t * t * t;</p></div><div><p>const easeOutQuad = (t) =&gt; 1 - (1 - t) * (1 - t);</p></div><div><p>const easeInQuad = (t) =&gt; t * t;</p></div><p><br></p><div><p>function tween(obj, prop, from, to, ms, ease = easeOutQuad) {</p></div><div><p>&nbsp; return new Promise((resolve) =&gt; {</p></div><div><p>&nbsp; &nbsp; const dur = Math.max(1, Number(ms) || 1);</p></div><div><p>&nbsp; &nbsp; const start = performance.now();</p></div><div><p>&nbsp; &nbsp; obj[prop] = from;</p></div><p><br></p><div><p>&nbsp; &nbsp; const step = (now) =&gt; {</p></div><div><p>&nbsp; &nbsp; &nbsp; const t = Math.min(1, (now - start) / dur);</p></div><div><p>&nbsp; &nbsp; &nbsp; obj[prop] = from + (to - from) * ease(t);</p></div><div><p>&nbsp; &nbsp; &nbsp; if (t &lt; 1) requestAnimationFrame(step);</p></div><div><p>&nbsp; &nbsp; &nbsp; else resolve();</p></div><div><p>&nbsp; &nbsp; };</p></div><p><br></p><div><p>&nbsp; &nbsp; requestAnimationFrame(step);</p></div><div><p>&nbsp; });</p></div><div><p>}</p></div><p><br></p><div><p>function tweenXY(obj, xFrom, xTo, yFrom, yTo, ms, ease = easeOutQuad) {</p></div><div><p>&nbsp; return new Promise((resolve) =&gt; {</p></div><div><p>&nbsp; &nbsp; const dur = Math.max(1, Number(ms) || 1);</p></div><div><p>&nbsp; &nbsp; const start = performance.now();</p></div><div><p>&nbsp; &nbsp; obj.x = xFrom;</p></div><div><p>&nbsp; &nbsp; obj.y = yFrom;</p></div><p><br></p><div><p>&nbsp; &nbsp; const step = (now) =&gt; {</p></div><div><p>&nbsp; &nbsp; &nbsp; const t = Math.min(1, (now - start) / dur);</p></div><div><p>&nbsp; &nbsp; &nbsp; const k = ease(t);</p></div><div><p>&nbsp; &nbsp; &nbsp; obj.x = xFrom + (xTo - xFrom) * k;</p></div><div><p>&nbsp; &nbsp; &nbsp; obj.y = yFrom + (yTo - yFrom) * k;</p></div><div><p>&nbsp; &nbsp; &nbsp; if (t &lt; 1) requestAnimationFrame(step);</p></div><div><p>&nbsp; &nbsp; &nbsp; else resolve();</p></div><div><p>&nbsp; &nbsp; };</p></div><p><br></p><div><p>&nbsp; &nbsp; requestAnimationFrame(step);</p></div><div><p>&nbsp; });</p></div><div><p>}</p></div><p><br></p><div><p>function tweenCombo(items) {</p></div><div><p>&nbsp; return new Promise((resolve) =&gt; {</p></div><div><p>&nbsp; &nbsp; const start = performance.now();</p></div><div><p>&nbsp; &nbsp; for (const it of items) it.obj[it.prop] = it.from;</p></div><p><br></p><div><p>&nbsp; &nbsp; const step = (now) =&gt; {</p></div><div><p>&nbsp; &nbsp; &nbsp; let done = true;</p></div><p><br></p><div><p>&nbsp; &nbsp; &nbsp; for (const it of items) {</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; const ms = Math.max(1, Number(it.ms) || 1);</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; const t = Math.min(1, (now - start) / ms);</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; const k = (it.ease || easeOutQuad)(t);</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; it.obj[it.prop] = it.from + (it.to - it.from) * k;</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; if (t &lt; 1) done = false;</p></div><div><p>&nbsp; &nbsp; &nbsp; }</p></div><p><br></p><div><p>&nbsp; &nbsp; &nbsp; if (!done) requestAnimationFrame(step);</p></div><div><p>&nbsp; &nbsp; &nbsp; else resolve();</p></div><div><p>&nbsp; &nbsp; };</p></div><p><br></p><div><p>&nbsp; &nbsp; requestAnimationFrame(step);</p></div><div><p>&nbsp; });</p></div><div><p>}</p></div><p><br></p><div><p>async function loadTextureSafe(src) {</p></div><div><p>&nbsp; const fn = foundry?.utils?.preloadTexture ?? globalThis.loadTexture;</p></div><div><p>&nbsp; if (typeof fn === \"function\") return await fn(src);</p></div><div><p>&nbsp; if (PIXI?.Assets?.load) return await PIXI.Assets.load(src);</p></div><div><p>&nbsp; return PIXI.Texture.from(src);</p></div><div><p>}</p></div><p><br></p><div><p>async function playSfx(url, volume = 0.9) {</p></div><div><p>&nbsp; if (!url) return;</p></div><p><br></p><div><p>&nbsp; try {</p></div><div><p>&nbsp; &nbsp; if (globalThis.AudioHelper?.play) {</p></div><div><p>&nbsp; &nbsp; &nbsp; await AudioHelper.play({ src: url, volume, autoplay: true, loop: false }, true);</p></div><div><p>&nbsp; &nbsp; &nbsp; return;</p></div><div><p>&nbsp; &nbsp; }</p></div><div><p>&nbsp; } catch (e) {</p></div><div><p>&nbsp; &nbsp; console.warn(TAG, \"AudioHelper.play failed, falling back:\", e);</p></div><div><p>&nbsp; }</p></div><p><br></p><div><p>&nbsp; try {</p></div><div><p>&nbsp; &nbsp; const a = new Audio(url);</p></div><div><p>&nbsp; &nbsp; a.volume = Math.max(0, Math.min(1, volume));</p></div><div><p>&nbsp; &nbsp; await a.play();</p></div><div><p>&nbsp; } catch (e) {</p></div><div><p>&nbsp; &nbsp; console.warn(TAG, \"HTMLAudio play failed:\", e);</p></div><div><p>&nbsp; }</p></div><div><p>}</p></div><p><br></p><div><p>let overlay = null;</p></div><p><br></p><div><p>try {</p></div><div><p>&nbsp; const W = canvas.app.renderer.screen.width;</p></div><div><p>&nbsp; const H = canvas.app.renderer.screen.height;</p></div><p><br></p><div><p>&nbsp; overlay = new PIXI.Container();</p></div><div><p>&nbsp; overlay.zIndex = 999999;</p></div><div><p>&nbsp; canvas.stage.sortableChildren = true;</p></div><div><p>&nbsp; canvas.stage.addChild(overlay);</p></div><div><p>&nbsp; canvas.stage.sortChildren();</p></div><p><br></p><div><p>&nbsp; const dim = new PIXI.Graphics();</p></div><div><p>&nbsp; dim.beginFill(0x000000, 1).drawRect(0, 0, W, H).endFill();</p></div><div><p>&nbsp; dim.alpha = 0;</p></div><p><br></p><div><p>&nbsp; const flash = new PIXI.Graphics();</p></div><div><p>&nbsp; flash.beginFill(0xffffff, 1).drawRect(0, 0, W, H).endFill();</p></div><div><p>&nbsp; flash.alpha = 0;</p></div><p><br></p><div><p>&nbsp; overlay.addChild(dim, flash);</p></div><p><br></p><div><p>&nbsp; await tween(dim, \"alpha\", 0, Number(cfg.dimAlpha ?? 0.6), Number(cfg.dimFadeMs ?? 180), easeOutQuad);</p></div><p><br></p><div><p>&nbsp; const tex = await loadTextureSafe(CUTIN_URL);</p></div><div><p>&nbsp; const texture = tex instanceof PIXI.Texture ? tex : PIXI.Texture.from(CUTIN_URL);</p></div><p><br></p><div><p>&nbsp; const portrait = new PIXI.Sprite(texture);</p></div><div><p>&nbsp; portrait.anchor.set(0, 1);</p></div><div><p>&nbsp; overlay.addChild(portrait);</p></div><p><br></p><div><p>&nbsp; const targetH = H * Number(cfg.portraitHeightRatio ?? 0.9);</p></div><div><p>&nbsp; const scale = targetH / portrait.texture.height;</p></div><div><p>&nbsp; portrait.scale.set(scale);</p></div><p><br></p><div><p>&nbsp; const finalX = Number(cfg.portraitInsetX ?? 220);</p></div><div><p>&nbsp; const finalY =</p></div><div><p>&nbsp; &nbsp; (H - Number(cfg.portraitBottomMargin ?? 40)) +</p></div><div><p>&nbsp; &nbsp; Number(cfg.portraitYOffset ?? -140);</p></div><p><br></p><div><p>&nbsp; const startX = -portrait.width - 80;</p></div><div><p>&nbsp; portrait.x = startX;</p></div><div><p>&nbsp; portrait.y = finalY;</p></div><div><p>&nbsp; portrait.alpha = 1;</p></div><p><br></p><div><p>&nbsp; await wait(Number(cfg.flashDelayMs ?? 50));</p></div><p><br></p><div><p>await tween(flash, \"alpha\", 0, Number(cfg.flashPeak ?? 0.9), Number(cfg.flashInMs ?? 70), easeOutQuad);</p></div><div><p>const flashFadePromise = tween(flash, \"alpha\", flash.alpha, 0, Number(cfg.flashOutMs ?? 170), easeInQuad);</p></div><p><br></p><div><p>playSfx(CUTIN_SFX_URL, Number(cfg.sfxVol ?? 0.9)).catch(() =&gt; {});</p></div><p><br></p><div><p>await tweenXY(</p></div><div><p>&nbsp; portrait,</p></div><div><p>&nbsp; portrait.x,</p></div><div><p>&nbsp; finalX,</p></div><div><p>&nbsp; portrait.y,</p></div><div><p>&nbsp; finalY,</p></div><div><p>&nbsp; Number(cfg.slideInMs ?? 650),</p></div><div><p>&nbsp; easeOutCubic</p></div><div><p>);</p></div><p><br></p><div><p>&nbsp; await flashFadePromise;</p></div><div><p>&nbsp; await wait(Number(cfg.holdMs ?? 850));</p></div><p><br></p><div><p>&nbsp; const exitX = W + 40;</p></div><p><br></p><div><p>&nbsp; await Promise.all([</p></div><div><p>&nbsp; &nbsp; tween(dim, \"alpha\", dim.alpha, 0, 180, easeInQuad),</p></div><div><p>&nbsp; &nbsp; tweenCombo([</p></div><div><p>&nbsp; &nbsp; &nbsp; {</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; obj: portrait,</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; prop: \"x\",</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; from: portrait.x,</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; to: exitX,</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; ms: Number(cfg.slideOutMs ?? 650),</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; ease: easeInCubic</p></div><div><p>&nbsp; &nbsp; &nbsp; },</p></div><div><p>&nbsp; &nbsp; &nbsp; {</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; obj: portrait,</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; prop: \"alpha\",</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; from: 1,</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; to: 0,</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; ms: Number(cfg.slideOutMs ?? 650),</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; ease: easeInQuad</p></div><div><p>&nbsp; &nbsp; &nbsp; }</p></div><div><p>&nbsp; &nbsp; ])</p></div><div><p>&nbsp; ]);</p></div><p><br></p><div><p>&nbsp; console.log(TAG, \"Cut-in done\");</p></div><div><p>} catch (err) {</p></div><div><p>&nbsp; console.warn(TAG, \"Cut-in failed (non-fatal):\", err);</p></div><div><p>} finally {</p></div><div><p>&nbsp; try {</p></div><div><p>&nbsp; &nbsp; if (overlay) overlay.destroy({ children: true, texture: false, baseTexture: false });</p></div><div><p>&nbsp; } catch (_) {}</p></div><div><p>}</p></div><div><p>`;</p></div><p><br></p><div><p>const phaseAResult = game.ONI.pseudo.play({</p></div><div><p>&nbsp; scriptId: \"zeroPower.temperTantrum.phaseA\",</p></div><div><p>&nbsp; scriptSource: phaseA,</p></div><div><p>&nbsp; casterTokenUuid: sourceToken.document.uuid,</p></div><div><p>&nbsp; targetTokenUuids: [],</p></div><div><p>&nbsp; params: {</p></div><div><p>&nbsp; &nbsp; cutinUrl: CUTIN_URL,</p></div><div><p>&nbsp; &nbsp; cutinSfxUrl: CUTIN_SFX_URL,</p></div><div><p>&nbsp; &nbsp; cutinCfg: CUTIN</p></div><div><p>&nbsp; },</p></div><div><p>&nbsp; meta: { source: \"Zero Power: Temper Tantrum (Phase A Cut-In)\" }</p></div><div><p>});</p></div><p><br></p><div><p>&nbsp; &nbsp; if (phaseAResult &amp;&amp; typeof phaseAResult.then === \"function\") {</p></div><div><p>&nbsp; &nbsp; &nbsp; await phaseAResult;</p></div><div><p>&nbsp; &nbsp; } else {</p></div><div><p>&nbsp; &nbsp; &nbsp; await wait(CUTIN.slideInMs + CUTIN.holdMs + CUTIN.slideOutMs + 250);</p></div><div><p>&nbsp; &nbsp; }</p></div><p><br></p><div><p>&nbsp; &nbsp; // =========================================================================</p></div><div><p>&nbsp; &nbsp; // PHASE B — Caster Clone Burst + Fire VFX (Pseudo) + 2 SFX (Sequencer) + Red Tint</p></div><div><p>&nbsp; &nbsp; // =========================================================================</p></div><p><br></p><div><p>&nbsp; &nbsp; const sfxPromise = new Sequence()</p></div><div><p>&nbsp; &nbsp; &nbsp; .sound()</p></div><div><p>&nbsp; &nbsp; &nbsp; .file(SFX_CAST)</p></div><div><p>&nbsp; &nbsp; &nbsp; .volume(0.90)</p></div><div><p>&nbsp; &nbsp; &nbsp; .sound()</p></div><div><p>&nbsp; &nbsp; &nbsp; .file(SFX_EXPLOSION)</p></div><div><p>&nbsp; &nbsp; &nbsp; .volume(0.90)</p></div><div><p>&nbsp; &nbsp; &nbsp; .play();</p></div><p><br></p><div><p>&nbsp; &nbsp; const phaseB = `</p></div><div><p>const TAG = \"[ONI][Pseudo][TemperTantrum][PhaseB]\";</p></div><div><p>const { casterToken, params } = ctx;</p></div><p><br></p><div><p>if (!casterToken) throw new Error(\"Need casterToken\");</p></div><div><p>if (!canvas?.ready) throw new Error(\"Canvas not ready\");</p></div><p><br></p><div><p>const wait = (ms) =&gt; new Promise(r =&gt; setTimeout(r, Math.max(0, ms)));</p></div><p><br></p><div><p>const VFX_FILE = String(params.vfxFile);</p></div><div><p>const SCALE = Number(params.scale ?? 2);</p></div><div><p>const OFFSET_X = Number(params.offsetX ?? 0);</p></div><div><p>const OFFSET_Y = Number(params.offsetY ?? 0);</p></div><div><p>const ROT_DEG = Number(params.rotationDeg ?? -90);</p></div><div><p>const DURATION_MS = Number(params.durationMs ?? 1800);</p></div><div><p>const Z_INDEX = Number(params.zIndex ?? 999999);</p></div><div><p>const RED_TINT = Number(params.redTint ?? 0xff3b30);</p></div><p><br></p><div><p>const CLONE_START_SCALE = Number(params.cloneStartScale ?? 1.0);</p></div><div><p>const CLONE_END_SCALE = Number(params.cloneEndScale ?? 2.2);</p></div><div><p>const CLONE_START_ALPHA = Number(params.cloneStartAlpha ?? 0.95);</p></div><div><p>const CLONE_END_ALPHA = Number(params.cloneEndAlpha ?? 0.0);</p></div><div><p>const CLONE_DURATION_MS = Number(params.cloneDurationMs ?? 320);</p></div><div><p>const CLONE_Z_OFFSET = Number(params.cloneZOffset ?? -1);</p></div><p><br></p><div><p>function clamp01(x) {</p></div><div><p>&nbsp; return Math.min(1, Math.max(0, x));</p></div><div><p>}</p></div><p><br></p><div><p>function easeOutCubic(t) {</p></div><div><p>&nbsp; return 1 - Math.pow(1 - t, 3);</p></div><div><p>}</p></div><p><br></p><div><p>async function safeLoadTexture(src) {</p></div><div><p>&nbsp; try {</p></div><div><p>&nbsp; &nbsp; const fn = foundry?.utils?.preloadTexture ?? globalThis.loadTexture;</p></div><div><p>&nbsp; &nbsp; if (typeof fn === \"function\") {</p></div><div><p>&nbsp; &nbsp; &nbsp; const t = await fn(src);</p></div><div><p>&nbsp; &nbsp; &nbsp; return t instanceof PIXI.Texture ? t : PIXI.Texture.from(src);</p></div><div><p>&nbsp; &nbsp; }</p></div><div><p>&nbsp; } catch (_) {}</p></div><p><br></p><div><p>&nbsp; try {</p></div><div><p>&nbsp; &nbsp; if (PIXI?.Assets?.load) {</p></div><div><p>&nbsp; &nbsp; &nbsp; const t = await PIXI.Assets.load(src);</p></div><div><p>&nbsp; &nbsp; &nbsp; return t instanceof PIXI.Texture ? t : PIXI.Texture.from(src);</p></div><div><p>&nbsp; &nbsp; }</p></div><div><p>&nbsp; } catch (_) {}</p></div><p><br></p><div><p>&nbsp; return PIXI.Texture.from(src);</p></div><div><p>}</p></div><p><br></p><div><p>function animateProps(items, durMs, easeFn = easeOutCubic) {</p></div><div><p>&nbsp; return new Promise((resolve) =&gt; {</p></div><div><p>&nbsp; &nbsp; const dur = Math.max(1, Number(durMs) || 1);</p></div><div><p>&nbsp; &nbsp; const start = performance.now();</p></div><p><br></p><div><p>&nbsp; &nbsp; for (const it of items) {</p></div><div><p>&nbsp; &nbsp; &nbsp; it.obj[it.prop] = it.from;</p></div><div><p>&nbsp; &nbsp; }</p></div><p><br></p><div><p>&nbsp; &nbsp; const ticker = canvas.app.ticker;</p></div><p><br></p><div><p>&nbsp; &nbsp; const update = () =&gt; {</p></div><div><p>&nbsp; &nbsp; &nbsp; const raw = (performance.now() - start) / dur;</p></div><div><p>&nbsp; &nbsp; &nbsp; const t = clamp01(raw);</p></div><div><p>&nbsp; &nbsp; &nbsp; const k = easeFn(t);</p></div><p><br></p><div><p>&nbsp; &nbsp; &nbsp; for (const it of items) {</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; it.obj[it.prop] = it.from + (it.to - it.from) * k;</p></div><div><p>&nbsp; &nbsp; &nbsp; }</p></div><p><br></p><div><p>&nbsp; &nbsp; &nbsp; if (t &gt;= 1) {</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; ticker.remove(update);</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; resolve();</p></div><div><p>&nbsp; &nbsp; &nbsp; }</p></div><div><p>&nbsp; &nbsp; };</p></div><p><br></p><div><p>&nbsp; &nbsp; ticker.add(update);</p></div><div><p>&nbsp; });</p></div><div><p>}</p></div><p><br></p><div><p>async function ensureVideoPlays(texture) {</p></div><div><p>&nbsp; try {</p></div><div><p>&nbsp; &nbsp; const res = texture?.baseTexture?.resource;</p></div><div><p>&nbsp; &nbsp; const vid = res?.source;</p></div><p><br></p><div><p>&nbsp; &nbsp; if (vid instanceof HTMLVideoElement) {</p></div><div><p>&nbsp; &nbsp; &nbsp; vid.loop = false;</p></div><div><p>&nbsp; &nbsp; &nbsp; vid.muted = true;</p></div><div><p>&nbsp; &nbsp; &nbsp; vid.playsInline = true;</p></div><div><p>&nbsp; &nbsp; &nbsp; await vid.play().catch(() =&gt; {});</p></div><div><p>&nbsp; &nbsp; &nbsp; return vid;</p></div><div><p>&nbsp; &nbsp; }</p></div><p><br></p><div><p>&nbsp; &nbsp; if (typeof res?.play === \"function\") res.play();</p></div><div><p>&nbsp; } catch (e) {</p></div><div><p>&nbsp; &nbsp; console.warn(TAG, \"ensureVideoPlays failed:\", e);</p></div><div><p>&nbsp; }</p></div><p><br></p><div><p>&nbsp; return null;</p></div><div><p>}</p></div><p><br></p><div><p>async function getVideoDurationMs(texture, fallbackMs) {</p></div><div><p>&nbsp; try {</p></div><div><p>&nbsp; &nbsp; const res = texture?.baseTexture?.resource;</p></div><div><p>&nbsp; &nbsp; const vid = res?.source;</p></div><p><br></p><div><p>&nbsp; &nbsp; if (vid instanceof HTMLVideoElement) {</p></div><div><p>&nbsp; &nbsp; &nbsp; const dur = Number(vid.duration);</p></div><div><p>&nbsp; &nbsp; &nbsp; if (Number.isFinite(dur) &amp;&amp; dur &gt; 0) return Math.round(dur * 1000);</p></div><div><p>&nbsp; &nbsp; }</p></div><div><p>&nbsp; } catch (_) {}</p></div><p><br></p><div><p>&nbsp; return fallbackMs;</p></div><div><p>}</p></div><p><br></p><div><p>async function createCasterClone(token, zIndex) {</p></div><div><p>&nbsp; const baseObj = token.mesh ?? token.icon;</p></div><div><p>&nbsp; const tex = baseObj?.texture ?? await safeLoadTexture(token.document.texture.src);</p></div><p><br></p><div><p>&nbsp; const sprite = new PIXI.Sprite(tex);</p></div><div><p>&nbsp; sprite.anchor.set(0.5);</p></div><div><p>&nbsp; sprite.x = token.center.x;</p></div><div><p>&nbsp; sprite.y = token.center.y;</p></div><div><p>&nbsp; sprite.zIndex = zIndex;</p></div><div><p>&nbsp; sprite.alpha = CLONE_START_ALPHA;</p></div><p><br></p><div><p>&nbsp; if (baseObj) {</p></div><div><p>&nbsp; &nbsp; sprite.width = baseObj.width;</p></div><div><p>&nbsp; &nbsp; sprite.height = baseObj.height;</p></div><div><p>&nbsp; &nbsp; sprite.angle = baseObj.angle ?? 0;</p></div><div><p>&nbsp; }</p></div><p><br></p><div><p>&nbsp; const flipX = (baseObj?.scale?.x ?? 1) &lt; 0 ? -1 : 1;</p></div><div><p>&nbsp; const flipY = (baseObj?.scale?.y ?? 1) &lt; 0 ? -1 : 1;</p></div><p><br></p><div><p>&nbsp; sprite.scale.set(</p></div><div><p>&nbsp; &nbsp; Math.abs(sprite.scale.x || 1) * flipX * CLONE_START_SCALE,</p></div><div><p>&nbsp; &nbsp; Math.abs(sprite.scale.y || 1) * flipY * CLONE_START_SCALE</p></div><div><p>&nbsp; );</p></div><p><br></p><div><p>&nbsp; canvas.stage.sortableChildren = true;</p></div><div><p>&nbsp; canvas.stage.addChild(sprite);</p></div><div><p>&nbsp; canvas.stage.sortChildren();</p></div><p><br></p><div><p>&nbsp; return sprite;</p></div><div><p>}</p></div><p><br></p><div><p>let fireSprite = null;</p></div><div><p>let cloneSprite = null;</p></div><p><br></p><div><p>try {</p></div><div><p>&nbsp; const texture = await safeLoadTexture(VFX_FILE);</p></div><p><br></p><div><p>&nbsp; fireSprite = new PIXI.Sprite(texture);</p></div><div><p>&nbsp; fireSprite.anchor.set(0.5);</p></div><div><p>&nbsp; fireSprite.x = casterToken.center.x + OFFSET_X;</p></div><div><p>&nbsp; fireSprite.y = casterToken.center.y + OFFSET_Y;</p></div><div><p>&nbsp; fireSprite.scale.set(SCALE);</p></div><div><p>&nbsp; fireSprite.rotation = (ROT_DEG * Math.PI) / 180;</p></div><div><p>&nbsp; fireSprite.zIndex = Z_INDEX;</p></div><p><br></p><div><p>&nbsp; canvas.stage.sortableChildren = true;</p></div><div><p>&nbsp; canvas.stage.addChild(fireSprite);</p></div><div><p>&nbsp; canvas.stage.sortChildren();</p></div><p><br></p><div><p>&nbsp; // Clone burst happens at the START of the fire VFX</p></div><div><p>&nbsp; cloneSprite = await createCasterClone(casterToken, Z_INDEX + CLONE_Z_OFFSET);</p></div><p><br></p><div><p>&nbsp; await ensureVideoPlays(texture);</p></div><p><br></p><div><p>&nbsp; // Tint the real caster token red on every client</p></div><div><p>&nbsp; const baseMesh = casterToken.mesh ?? casterToken.icon;</p></div><div><p>&nbsp; if (baseMesh) {</p></div><div><p>&nbsp; &nbsp; baseMesh.tint = RED_TINT;</p></div><div><p>&nbsp; }</p></div><p><br></p><div><p>&nbsp; const cloneBaseScaleX = cloneSprite.scale.x;</p></div><div><p>&nbsp; const cloneBaseScaleY = cloneSprite.scale.y;</p></div><p><br></p><div><p>&nbsp; const cloneBurstPromise = (async () =&gt; {</p></div><div><p>&nbsp; &nbsp; await animateProps(</p></div><div><p>&nbsp; &nbsp; &nbsp; [</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; {</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; obj: cloneSprite.scale,</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; prop: \"x\",</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; from: cloneBaseScaleX,</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; to: cloneBaseScaleX * CLONE_END_SCALE</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; },</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; {</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; obj: cloneSprite.scale,</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; prop: \"y\",</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; from: cloneBaseScaleY,</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; to: cloneBaseScaleY * CLONE_END_SCALE</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; },</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; {</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; obj: cloneSprite,</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; prop: \"alpha\",</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; from: CLONE_START_ALPHA,</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; to: CLONE_END_ALPHA</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; }</p></div><div><p>&nbsp; &nbsp; &nbsp; ],</p></div><div><p>&nbsp; &nbsp; &nbsp; CLONE_DURATION_MS,</p></div><div><p>&nbsp; &nbsp; &nbsp; easeOutCubic</p></div><div><p>&nbsp; &nbsp; );</p></div><p><br></p><div><p>&nbsp; &nbsp; try {</p></div><div><p>&nbsp; &nbsp; &nbsp; if (cloneSprite) {</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; canvas.stage.removeChild(cloneSprite);</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; cloneSprite.destroy();</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; cloneSprite = null;</p></div><div><p>&nbsp; &nbsp; &nbsp; }</p></div><div><p>&nbsp; &nbsp; } catch (_) {}</p></div><div><p>&nbsp; })();</p></div><p><br></p><div><p>&nbsp; const realDuration = await getVideoDurationMs(texture, DURATION_MS);</p></div><p><br></p><div><p>&nbsp; await Promise.allSettled([</p></div><div><p>&nbsp; &nbsp; cloneBurstPromise,</p></div><div><p>&nbsp; &nbsp; wait(realDuration)</p></div><div><p>&nbsp; ]);</p></div><p><br></p><div><p>&nbsp; console.log(TAG, \"VFX done\");</p></div><div><p>} catch (err) {</p></div><div><p>&nbsp; console.error(TAG, \"PhaseB failed:\", err);</p></div><div><p>&nbsp; throw err;</p></div><div><p>} finally {</p></div><div><p>&nbsp; try {</p></div><div><p>&nbsp; &nbsp; if (cloneSprite) {</p></div><div><p>&nbsp; &nbsp; &nbsp; canvas.stage.removeChild(cloneSprite);</p></div><div><p>&nbsp; &nbsp; &nbsp; cloneSprite.destroy();</p></div><div><p>&nbsp; &nbsp; &nbsp; cloneSprite = null;</p></div><div><p>&nbsp; &nbsp; }</p></div><div><p>&nbsp; } catch (_) {}</p></div><p><br></p><div><p>&nbsp; try {</p></div><div><p>&nbsp; &nbsp; if (fireSprite) {</p></div><div><p>&nbsp; &nbsp; &nbsp; canvas.stage.removeChild(fireSprite);</p></div><div><p>&nbsp; &nbsp; &nbsp; fireSprite.destroy();</p></div><div><p>&nbsp; &nbsp; &nbsp; fireSprite = null;</p></div><div><p>&nbsp; &nbsp; }</p></div><div><p>&nbsp; } catch (_) {}</p></div><div><p>}</p></div><div><p>`;</p></div><p><br></p><div><p>&nbsp; &nbsp; const phaseBResult = game.ONI.pseudo.play({</p></div><div><p>&nbsp; &nbsp; &nbsp; scriptId: \"zeroPower.temperTantrum.phaseB\",</p></div><div><p>&nbsp; &nbsp; &nbsp; scriptSource: phaseB,</p></div><div><p>&nbsp; &nbsp; &nbsp; casterTokenUuid: sourceToken.document.uuid,</p></div><div><p>&nbsp; &nbsp; &nbsp; targetTokenUuids: [],</p></div><div><p>&nbsp; &nbsp; &nbsp; params: {</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; vfxFile: FIRE_VFX,</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; scale: VFX.scale,</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; offsetX: VFX.offsetX,</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; offsetY: VFX.offsetY,</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; rotationDeg: VFX.rotationDeg,</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; durationMs: VFX.fallbackDurationMs,</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; zIndex: VFX.zIndex,</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; redTint: RED_TINT_HEX,</p></div><p><br></p><div><p>&nbsp; &nbsp; &nbsp; &nbsp; cloneStartScale: CLONE_BURST.startScale,</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; cloneEndScale: CLONE_BURST.endScale,</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; cloneStartAlpha: CLONE_BURST.startAlpha,</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; cloneEndAlpha: CLONE_BURST.endAlpha,</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; cloneDurationMs: CLONE_BURST.durationMs,</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; cloneZOffset: CLONE_BURST.zIndexOffset</p></div><div><p>&nbsp; &nbsp; &nbsp; },</p></div><div><p>&nbsp; &nbsp; &nbsp; meta: { source: \"Zero Power: Temper Tantrum (Phase B VFX)\" }</p></div><div><p>&nbsp; &nbsp; });</p></div><p><br></p><div><p>&nbsp; &nbsp; await Promise.allSettled([</p></div><div><p>&nbsp; &nbsp; &nbsp; sfxPromise,</p></div><div><p>&nbsp; &nbsp; &nbsp; phaseBResult &amp;&amp; typeof phaseBResult.then === \"function\"</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; ? phaseBResult</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; : wait(VFX.fallbackDurationMs)</p></div><div><p>&nbsp; &nbsp; ]);</p></div><p><br></p><div><p>&nbsp; &nbsp; console.log(TAG, \"END\");</p></div><div><p>&nbsp; } catch (err) {</p></div><div><p>&nbsp; &nbsp; console.error(TAG, \"CRASHED:\", err);</p></div><div><p>&nbsp; &nbsp; ui.notifications.error(`Temper Tantrum animation crashed: ${err?.message ?? err}`);</p></div><div><p>&nbsp; } finally {</p></div><div><p>&nbsp; &nbsp; try {</p></div><div><p>&nbsp; &nbsp; &nbsp; ONI.emit(</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; \"oni:animationEnd\",</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; {</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; type: \"zeroPower.temperTantrum\",</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; runId: runId ?? null,</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; sourceTokenId: sourceToken?.id ?? null,</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; sourceTokenUuid: sourceToken?.document?.uuid ?? null,</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; sceneId: canvas.scene?.id ?? null,</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; timestamp: Date.now()</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; },</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; { local: true, world: false }</p></div><div><p>&nbsp; &nbsp; &nbsp; );</p></div><div><p>&nbsp; &nbsp; } catch (_) {}</p></div><div><p>&nbsp; }</p></div><div><p>})();</p></div></div>",
+      "check_bonus": "0",
+      "class": "NPC",
+      "cost": "6 Zero Power",
+      "damage_bonus": "",
+      "defense_target_type": "def",
+      "description": "<p>Inflicts <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.aPF9gzkqnUkcQmIC\" data-id=\"aPF9gzkqnUkcQmIC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Berserk</span></strong></a><strong><span style=\"text-decoration: underline;\"> </span></strong></span>and<span style=\"font-family: Signika, sans-serif\"><strong><span style=\"text-decoration: underline;\"> </span></strong><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Gg1ot3L3XPuiGkym\" data-id=\"Gg1ot3L3XPuiGkym\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); text-shadow: 0 0 8px var(--color-shadow-primary); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Strong</span></strong></a><strong><span style=\"text-decoration: underline;\"> </span></strong></span>to self, then, perform a <strong>Free Attack</strong></p>",
+      "duration": "3 Rounds",
+      "heroic_requirement": "",
+      "ignore_hr": false,
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Zero Power: Temper Tantrum",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "custom",
+      "skill_information": "",
+      "skill_range": "Any",
+      "skill_target": "Self",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "nShy3C3UAbIdMzRa"
+  },
+  "type": "equippableItem"
+}

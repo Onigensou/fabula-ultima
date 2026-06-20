@@ -1,0 +1,64 @@
+{
+  "_id": "lueZVICAFWrWnx6Q",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1781934528161,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Grade_2_Tincture_of_Dexterity_from_Final_Fantasy_XIV_icon%20(1).webp",
+  "name": "Grape Wine",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "0BK9PoXbrolOBbKI",
+    "props": {
+      "cost": "-",
+      "description": "<p><em>Grape Wine:</em> target ally recovers 60 MP, then is Dazed.</p>",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "chain_steps": "grapewine_mp,grapewine_daze",
+          "effect_kind": "chain",
+          "effect_label": "grapewine_use"
+        },
+        "1": {
+          "$deleted": false,
+          "effect_kind": "grant",
+          "effect_label": "grapewine_mp",
+          "grant_amount": "60",
+          "grant_resource": "mp",
+          "target_ref": "action_targets"
+        },
+        "2": {
+          "$deleted": false,
+          "ae_template_ref": "Dazed",
+          "effect_kind": "apply_ae",
+          "effect_label": "grapewine_daze",
+          "target_ref": "action_targets"
+        }
+      },
+      "isCheck": false,
+      "on_activate_effect_ref": "grapewine_use",
+      "skill_target": "One Ally",
+      "skill_type": "Item",
+      "type_damage": ""
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "lueZVICAFWrWnx6Q"
+  },
+  "type": "equippableItem"
+}

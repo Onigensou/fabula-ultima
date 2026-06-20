@@ -1,0 +1,278 @@
+{
+  "_id": "SQRFySnufW5bQ6RD",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1771707748458,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "idleAnimation": {
+        "bounce": false,
+        "float": false
+      }
+    },
+    "theatre": {
+      "baseinsert": "",
+      "disabledefault": false,
+      "emotes": {
+        "angry": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/f5.png"
+        },
+        "annoyed": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/f5.png"
+        },
+        "awe-struck": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/f3.png"
+        },
+        "blushing": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/f3.png"
+        },
+        "carefree": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/f3.png"
+        },
+        "confused": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/f3.png"
+        },
+        "cry": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/f4.png"
+        },
+        "custom1": {
+          "custom": true,
+          "image": "modules/theatre/assets/graphics/emotes/explosion.png",
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/f1.png",
+          "label": "Custom Name\n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    ",
+          "name": "custom1"
+        },
+        "dissatisfied": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/f3.png"
+        },
+        "dizzy": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/f3.png"
+        },
+        "frown": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/f3.png"
+        },
+        "frustrated": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/f5.png"
+        },
+        "grin": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/f4.png"
+        },
+        "happy": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/f3.png"
+        },
+        "happytears": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/f4.png"
+        },
+        "hearts": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/f3.png"
+        },
+        "idea": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/f3.png"
+        },
+        "innocent": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/f3.png"
+        },
+        "kiss": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/f3.png"
+        },
+        "laughing": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/f4.png"
+        },
+        "laughingsquint": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/f4.png"
+        },
+        "meh": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/f3.png"
+        },
+        "mischevious": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/f2.png"
+        },
+        "panic": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/f3.png"
+        },
+        "playful": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/f3.png"
+        },
+        "rofl": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/f4.png"
+        },
+        "sad": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/f4.png"
+        },
+        "scared": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/f3.png"
+        },
+        "serious": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/f3.png"
+        },
+        "sleeping": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/f4.png"
+        },
+        "smile": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/f3.png"
+        },
+        "smug": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/f4.png"
+        },
+        "speechless": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/f3.png"
+        },
+        "surprised": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/f3.png"
+        },
+        "thinking": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/f4.png"
+        },
+        "tongue": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/f3.png"
+        },
+        "wink": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/f4.png"
+        },
+        "worried": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/f3.png"
+        }
+      },
+      "name": "",
+      "optalign": "top",
+      "settings": {
+        "emote": "panic",
+        "textcolor": null,
+        "textflyin": "typewriter",
+        "textfont": null,
+        "textsize": null,
+        "textstanding": "none"
+      }
+    }
+  },
+  "folder": "HUGG8dxt2Wu7Zi8r",
+  "img": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/f3.png",
+  "name": "Freonia",
+  "ownership": {
+    "default": 0,
+    "yL2PQxh3R9ddt0te": 3
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": null
+    },
+    "bar2": {
+      "attribute": null
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 30,
+    "disposition": 0,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {}
+      },
+      "hex-size-support": {
+        "hideBorder": false,
+        "hideFill": false
+      },
+      "token-variants": {
+        "disableHUDButton": false,
+        "randomImgDefault": ""
+      },
+      "token-z": {
+        "zIndex": 0
+      },
+      "wall-height": {
+        "tokenHeight": 0
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Freonia",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 0,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/f3.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 0,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {},
+    "statusEffects": {},
+    "template": "c4KeS3XNO9ZTPI9C",
+    "templateSystemUniqueVersion": null
+  },
+  "type": "character"
+}

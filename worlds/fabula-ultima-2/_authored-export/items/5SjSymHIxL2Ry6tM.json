@@ -1,0 +1,107 @@
+{
+  "_id": "5SjSymHIxL2Ry6tM",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1755284674088,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "GzTGZUNPj87iTNAO",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.331",
+        "createdTime": 1755285233177,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.6.4"
+      },
+      "changes": [],
+      "description": "<p>You linger between life and death, sustained by the fading power of a stolen soul.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 1,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "GzTGZUNPj87iTNAO",
+          "originalParentId": "5SjSymHIxL2Ry6tM",
+          "originalUuid": "Item.5SjSymHIxL2Ry6tM.ActiveEffect.GzTGZUNPj87iTNAO"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/RPR/enshroud.png",
+      "name": "Beyond Death",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "AYqJLwzAu9WvlJ5C",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/RPR/enshroud.png",
+  "name": "Beyond Death",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Repaer",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p><strong data-start=\"116\" data-end=\"140\">When reduced to 0 HP</strong>, you may spend <strong data-start=\"156\" data-end=\"176\">6 Collected Soul</strong> to enter <strong data-start=\"186\" data-end=\"204\">【Beyond Death】</strong>.<br data-start=\"205\" data-end=\"208\">While in this state, you act normally on your next turn, gain <strong data-start=\"272\" data-end=\"304\">1 additional turn activation</strong>, but cannot be healed.<br data-start=\"327\" data-end=\"330\">If you bring a non-undead creature to 0 HP during this state, your HP becomes your <strong data-start=\"415\" data-end=\"425\">Crisis</strong> score.<br data-start=\"432\" data-end=\"435\">If you are still at 0 HP after your next turn, you must choose to <strong data-start=\"503\" data-end=\"516\">Surrender</strong> or <strong data-start=\"520\" data-end=\"533\">Sacrifice</strong> as normal.</p>",
+      "duration": "",
+      "heroic_requirement": "You must have mastered the Reaper Class.",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "level": "1",
+      "max_level": "1",
+      "name": "Beyond Death",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "5SjSymHIxL2Ry6tM"
+  },
+  "type": "equippableItem"
+}

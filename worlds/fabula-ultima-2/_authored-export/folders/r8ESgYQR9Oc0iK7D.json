@@ -1,0 +1,19 @@
+{
+  "_id": "r8ESgYQR9Oc0iK7D",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1753894351097,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "VVjpCERIXMrOJna7",
+  "name": "Guardian",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

@@ -1,0 +1,102 @@
+{
+  "_id": "MfBexg3RMmrBmeyO",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1781820015689,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "FIHoW0EB0vU7gMAa",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/EternityWinnerPassive1.png",
+  "name": "Illusory Shield",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "effect_table": {
+        "0": {
+          "chain_steps": "is_shield, is_cost",
+          "effect_kind": "chain",
+          "effect_label": "is_react"
+        },
+        "1": {
+          "destination_ref": "is_phantasm",
+          "effect_kind": "shield_redirect",
+          "effect_label": "is_shield",
+          "rebuild_card": true,
+          "target_ref": "is_incoming"
+        },
+        "2": {
+          "consume_amount": "10",
+          "consume_resource": "mp",
+          "effect_kind": "consume_resource",
+          "effect_label": "is_cost",
+          "on_empty": "abort",
+          "target_ref": "is_self"
+        },
+        "3": {
+          "auto_confirm_when_obvious": true,
+          "candidate_source": "action_targets",
+          "count": "1",
+          "effect_kind": "targeting",
+          "effect_label": "is_incoming",
+          "exclude_self": true,
+          "iteration_mode": "together",
+          "mode": "exact",
+          "skip_when_passive": false
+        },
+        "4": {
+          "auto_confirm_when_obvious": true,
+          "candidate_source": "own_summons",
+          "count": "1",
+          "effect_kind": "targeting",
+          "effect_label": "is_phantasm",
+          "exclude_action_targets": true,
+          "exclude_self": true,
+          "iteration_mode": "together",
+          "mode": "exact",
+          "skip_when_passive": false
+        },
+        "5": {
+          "auto_confirm_when_obvious": true,
+          "candidate_source": "self",
+          "count": "1",
+          "effect_kind": "targeting",
+          "effect_label": "is_self",
+          "iteration_mode": "together",
+          "mode": "exact",
+          "skip_when_passive": true
+        }
+      },
+      "isReaction": true,
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "OWN_PHANTASM_COUNT >= 1",
+          "reaction_action_intent": "harmful",
+          "reaction_effect_ref": "is_react",
+          "reaction_passive_mode": "ask",
+          "reaction_source": "ally",
+          "reaction_trigger": "creature_targeted_by_action",
+          "requires_skill": ""
+        }
+      },
+      "skill_type": "Spell",
+      "uniqueId": "MfBexg3RMmrBmeyO"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "MfBexg3RMmrBmeyO"
+  },
+  "type": "equippableItem"
+}

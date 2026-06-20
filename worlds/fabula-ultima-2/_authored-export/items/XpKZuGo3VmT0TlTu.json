@@ -1,0 +1,35 @@
+{
+  "_id": "XpKZuGo3VmT0TlTu",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1754405049457,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "0O2avGDasLUrz2sD",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Bludgeon.png",
+  "name": "Physical",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 2
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "name": "Physical"
+    },
+    "template": "nS5URyF3aoxhvPsZ",
+    "templateSystemUniqueVersion": 4221238629,
+    "unique": false,
+    "uniqueId": "XpKZuGo3VmT0TlTu"
+  },
+  "type": "equippableItem"
+}

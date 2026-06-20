@@ -1,0 +1,140 @@
+{
+  "_id": "BmgIHS4DdDAT1rUc",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1756713625771,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "6lWZxCMcLkmOuVML",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1768769825796,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>This creature future is being scanned</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": 999999,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "6lWZxCMcLkmOuVML",
+          "originalParentId": "BmgIHS4DdDAT1rUc",
+          "originalUuid": "Item.BmgIHS4DdDAT1rUc.ActiveEffect.6lWZxCMcLkmOuVML"
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "divination",
+          "charges": 2,
+          "chargesMax": 2
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/divination.png",
+      "name": "Divination",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "dispellable"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "R0PCsFNhITXDoTPR",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/divination.png",
+  "name": "Divination",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {
+        "0": {
+          "$deleted": false,
+          "active_effect_application": "add",
+          "active_effect_apply_mode": "percentage",
+          "active_effect_dice_1": "",
+          "active_effect_dice_2": "",
+          "active_effect_dl": "0",
+          "active_effect_id": "6lWZxCMcLkmOuVML",
+          "active_effect_percent": "100",
+          "active_effect_target": "any",
+          "active_effect_trigger": "on_attack"
+        }
+      },
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_script": "<p>// ONI — Divination (with timing hooks)</p><p>(async () =&gt; {</p><p>const TAG = \"[ONI][FX]\";</p><p>const FX_BURST = \"modules/JB2A_DnD5e/Library/Generic/Particles/ParticleBurstStar01_01_Regular_BluePurple_600x600.webm\";</p><p>const FX_CIRCLE = \"modules/JB2A_DnD5e/Library/Generic/Cast/CastShapeCircleSingle01_01_Regular_Blue_600x600.webm\";</p><p>const SFX_START_1 = \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Up3.ogg\";</p><p>const SFX_START_2 = \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Starlight.ogg\";</p><p>if (!game.modules.get(\"sequencer\")?.active) {</p><p>ui.notifications.error(`${TAG} Sequencer module is not active.`);</p><p>return;</p><p>}</p><p>const targets = Array.from(game.user.targets ?? []);</p><p>if (targets.length !== 1) {</p><p>ui.notifications.warn(`${TAG} Please target exactly 1 token.`);</p><p>return;</p><p>}</p><p>const token = targets[0];</p><p>const center = token.center;</p><p>const squaresUp = 0.9;</p><p>const yUpPx = canvas.grid.size * squaresUp;</p><p>const locAbove = { x: center.x, y: center.y - yUpPx };</p><p>const locOn = { x: center.x, y: center.y };</p><p>// ✅ Tell the handler “animation started”</p><p>Hooks.callAll(\"oni:animationStart\", { tag: \"Divination\", tokenId: token.id });</p><p>const seq = new Sequence()</p><p>.sound().file(SFX_START_1).volume(0.8)</p><p>.effect().file(FX_BURST).atLocation(locAbove).scaleToObject(1.3).anchor({ x: 0.5, y: 0.5 }).opacity(1.0).belowTokens(false)</p><p>.wait(1500)</p><p>.sound().file(SFX_START_2).volume(0.8)</p><p>.effect().file(FX_CIRCLE).atLocation(locOn).scaleToObject(1.8).anchor({ x: 0.5, y: 0.5 }).opacity(0.5).belowTokens(false);</p><p>// IMPORTANT: await play so we can emit “end” at the true end</p><p>await seq.play();</p><p>// ✅ Tell the handler “animation ended”</p><p>Hooks.callAll(\"oni:animationEnd\", { tag: \"Divination\", tokenId: token.id });</p><p>})();</p><p></p>",
+      "check_bonus": "0",
+      "class": "Entropist",
+      "cost": "10 MP",
+      "damage_bonus": "",
+      "defense_target_type": "def",
+      "description": "<p>You glimpse briefly into the future. Until this spell ends, after a creature you can see performs a Check, if it was not a <strong>fumble</strong> nor a <strong>critical success</strong>, you may force that creature to reroll both dice. Once you have forced <strong>two</strong> rerolls this way, this spell ends.</p>",
+      "duration": "Scene",
+      "heroic_requirement": "",
+      "ignore_hr": false,
+      "isCheck": false,
+      "isFacet": true,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Divination",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "custom",
+      "skill_information": "",
+      "skill_range": "Range",
+      "skill_target": "Self",
+      "skill_type": "Spell",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "BmgIHS4DdDAT1rUc"
+  },
+  "type": "equippableItem"
+}

@@ -1,0 +1,257 @@
+{
+  "_id": "gNgDIXArTpdtUBpe",
+  "_stats": {
+    "compendiumSource": "Item.nkKJD5vo65EM887m",
+    "coreVersion": "12.343",
+    "createdTime": 1781924507666,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "rQ0NKVLp2KJzHjS7",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1781961542335,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><em>Heart of Darkness:</em> armed for this scene.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "rQ0NKVLp2KJzHjS7",
+          "originalParentId": "gNgDIXArTpdtUBpe",
+          "originalUuid": "Item.gNgDIXArTpdtUBpe.ActiveEffect.rQ0NKVLp2KJzHjS7"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "chargeKey": "hod_ready",
+          "charges": 1,
+          "chargesMax": 1,
+          "directorPermanent": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/unholy/silhouette-evil-horned-giant.webp",
+      "name": "Heart of Darkness Ready",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-heart-of-darkness-ready"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "rYpfIYvmerJmCCZo",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1781961542335,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><em>Heart of Darkness:</em> a temporary Bond of hatred.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "rYpfIYvmerJmCCZo",
+          "originalParentId": "gNgDIXArTpdtUBpe",
+          "originalUuid": "Item.gNgDIXArTpdtUBpe.ActiveEffect.rYpfIYvmerJmCCZo"
+        },
+        "fabula-ultima-companion": {
+          "bondAE": {
+            "emotions": [
+              "hatred"
+            ]
+          },
+          "tags": [
+            "debuff"
+          ]
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/death/skull-energy-light-purple.webp",
+      "name": "Bond of Hatred",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-bond-hatred"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "H83kUcvIWorYKyr8",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/grit.png",
+  "name": "Heart of Darkness",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0,
+    "yL2PQxh3R9ddt0te": 3
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "check_bonus": "0",
+      "class": "Darkblade",
+      "cost": "",
+      "damage_bonus": "",
+      "defense_target_type": "def",
+      "description": "<p>Once per scene upon entering <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span>, you may choose a specific creature you can see that you don't have a <strong>Bond</strong> towards. If you do, create a <strong>Bond of hatred</strong> towards that creature.</p>",
+      "details_roller": "Show",
+      "duration": "",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "chain_steps": "hod_consume, hod_pick, hod_bond",
+          "effect_kind": "chain",
+          "effect_label": "hod_use"
+        },
+        "1": {
+          "$deleted": false,
+          "charge_key": "hod_ready",
+          "count": "1",
+          "effect_kind": "consume_charge",
+          "effect_label": "hod_consume",
+          "on_empty": "abort",
+          "target_ref": "self"
+        },
+        "2": {
+          "$deleted": false,
+          "auto_confirm_when_obvious": false,
+          "candidate_source": "combat",
+          "category": "",
+          "count": 1,
+          "effect_kind": "targeting",
+          "effect_label": "hod_pick",
+          "exclude_self": true,
+          "iteration_mode": "together",
+          "mode": "exact",
+          "skip_when_passive": false,
+          "target_filter": "SOURCE_BONDED_TO_ME == 0"
+        },
+        "3": {
+          "$deleted": false,
+          "ae_template_ref": "Bond of Hatred",
+          "bond_emotion": "hatred",
+          "effect_kind": "create_bond",
+          "effect_label": "hod_bond",
+          "target_ref": "hod_pick"
+        },
+        "4": {
+          "$deleted": false,
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Heart of Darkness Ready",
+          "effect_kind": "apply_ae",
+          "effect_label": "hod_refresh",
+          "target_ref": "self"
+        }
+      },
+      "heroic_requirement": "",
+      "id": "EGYilCNAGvl2BldF",
+      "ignore_hr": false,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/grit.png",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": true,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Heart of Darkness",
+      "on_activate_effect_ref": "",
+      "optional_params": {},
+      "passive_check_bonus_formula": "",
+      "passive_damage_bonus_formula": "",
+      "post_damage_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "$deleted": false,
+          "reaction_effect_ref": "hod_use",
+          "reaction_passive_mode": "ask",
+          "reaction_source": "self",
+          "reaction_status_filter": "Crisis",
+          "reaction_trigger": "creature_status_applied"
+        },
+        "1": {
+          "$deleted": false,
+          "reaction_effect_ref": "hod_refresh",
+          "reaction_passive_mode": "force",
+          "reaction_source": "",
+          "reaction_trigger": "conflict_start"
+        }
+      },
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false,
+      "uuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "gNgDIXArTpdtUBpe"
+  },
+  "type": "equippableItem"
+}

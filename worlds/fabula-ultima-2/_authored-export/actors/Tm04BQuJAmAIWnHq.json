@@ -1,0 +1,673 @@
+{
+  "_id": "Tm04BQuJAmAIWnHq",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1767911981897,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.4"
+    }
+  },
+  "folder": "Nd8LnosrPid1eX1r",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Lurkara.png",
+  "items": [
+    {
+      "_id": "Cqy74Q1ChUmY2m5B",
+      "_stats": {
+        "compendiumSource": "Item.iFdNNGp4OVZVMEcB",
+        "coreVersion": "12.343",
+        "createdTime": 1767912125514,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "MgrvwCpxqFuMuBc6",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.331",
+            "createdTime": 1767912605408,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.4"
+          },
+          "changes": [
+            {
+              "key": "attack_accuracy_mod_all",
+              "mode": 2,
+              "priority": null,
+              "value": "2"
+            }
+          ],
+          "description": "<p>Gain <strong>+2 Accuracy</strong></p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": 1
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "MgrvwCpxqFuMuBc6",
+              "originalParentId": "Cqy74Q1ChUmY2m5B",
+              "originalUuid": "Actor.Tm04BQuJAmAIWnHq.Item.Cqy74Q1ChUmY2m5B.ActiveEffect.MgrvwCpxqFuMuBc6"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/the_rose_of_destruction.png",
+          "name": "Follow the leader",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/the_rose_of_destruction.png",
+      "name": "Follow the leader",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {
+            "0": {
+              "$deleted": false,
+              "active_effect_application": "add",
+              "active_effect_apply_mode": "percentage",
+              "active_effect_dice_1": "",
+              "active_effect_dice_2": "",
+              "active_effect_dl": "0",
+              "active_effect_id": "MgrvwCpxqFuMuBc6",
+              "active_effect_percent": "100",
+              "active_effect_target": "self",
+              "active_effect_trigger": "on_attack"
+            }
+          },
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>When the <strong>Voidog</strong> targets an enemy that has been <strong>damaged </strong>by its ally this turn, gain <strong>+2 Accuracy</strong></p>",
+          "duration": "-",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Follow the leader",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "iFdNNGp4OVZVMEcB"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "ER8YbhzWmxlOj9wV",
+      "_stats": {
+        "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
+        "coreVersion": "12.343",
+        "createdTime": 1767912263145,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "UoCK347azUkVP7Lj",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1767912379671,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p>Decrease 【<strong>DEX】 </strong>by one stage</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 3,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "core": {
+              "overlay": false
+            },
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "isPredefined": true,
+              "originalId": "h3M2iAUzB26A4zNo",
+              "originalParentId": "XVOWOq9oUmEECGrU",
+              "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.h3M2iAUzB26A4zNo"
+            },
+            "dfreds-convenient-effects": {
+              "ceEffectId": "ce-slow",
+              "isBackup": false,
+              "isConvenient": true,
+              "isDynamic": false,
+              "isTemporary": false,
+              "isViewable": true
+            },
+            "effectmacro": {
+              "onCreate": {
+                "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isSlow\n// Works best when run by the Effect Macro module (uses the effect owner `actor`).\n// Falls back to the first selected token's actor only if no effect context is present.\n\n(async () => {\n  const PATH = \"system.props.isSlow\";\n\n  // Prefer the effect owner `actor` (provided by Effect Macro when the macro fires).\n  // Fallback to selected token's actor if you ever run this by hand.\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) {\n    ui.notifications?.warn(\"[isSlow Toggle] No actor context (need effect owner or a selected token).\");\n    return;\n  }\n\n  // Read current value (default to false when missing), then toggle.\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  const next = !current;\n\n  await effectActor.update({ [PATH]: next });\n})();\n"
+              },
+              "onDelete": {
+                "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isSlow\n// Works best when run by the Effect Macro module (uses the effect owner `actor`).\n// Falls back to the first selected token's actor only if no effect context is present.\n\n(async () => {\n  const PATH = \"system.props.isSlow\";\n\n  // Prefer the effect owner `actor` (provided by Effect Macro when the macro fires).\n  // Fallback to selected token's actor if you ever run this by hand.\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) {\n    ui.notifications?.warn(\"[isSlow Toggle] No actor context (need effect owner or a selected token).\");\n    return;\n  }\n\n  // Read current value (default to false when missing), then toggle.\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  const next = !current;\n\n  await effectActor.update({ [PATH]: next });\n})();\n"
+              },
+              "onDisable": {
+                "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isSlow\n// Works best when run by the Effect Macro module (uses the effect owner `actor`).\n// Falls back to the first selected token's actor only if no effect context is present.\n\n(async () => {\n  const PATH = \"system.props.isSlow\";\n\n  // Prefer the effect owner `actor` (provided by Effect Macro when the macro fires).\n  // Fallback to selected token's actor if you ever run this by hand.\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) {\n    ui.notifications?.warn(\"[isSlow Toggle] No actor context (need effect owner or a selected token).\");\n    return;\n  }\n\n  // Read current value (default to false when missing), then toggle.\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  const next = !current;\n\n  await effectActor.update({ [PATH]: next });\n})();\n"
+              },
+              "onEnable": {
+                "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isSlow\n// Works best when run by the Effect Macro module (uses the effect owner `actor`).\n// Falls back to the first selected token's actor only if no effect context is present.\n\n(async () => {\n  const PATH = \"system.props.isSlow\";\n\n  // Prefer the effect owner `actor` (provided by Effect Macro when the macro fires).\n  // Fallback to selected token's actor if you ever run this by hand.\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) {\n    ui.notifications?.warn(\"[isSlow Toggle] No actor context (need effect owner or a selected token).\");\n    return;\n  }\n\n  // Read current value (default to false when missing), then toggle.\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  const next = !current;\n\n  await effectActor.update({ [PATH]: next });\n})();\n"
+              },
+              "onToggle": {
+                "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isSlow\n// Works best when run by the Effect Macro module (uses the effect owner `actor`).\n// Falls back to the first selected token's actor only if no effect context is present.\n\n(async () => {\n  const PATH = \"system.props.isSlow\";\n\n  // Prefer the effect owner `actor` (provided by Effect Macro when the macro fires).\n  // Fallback to selected token's actor if you ever run this by hand.\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) {\n    ui.notifications?.warn(\"[isSlow Toggle] No actor context (need effect owner or a selected token).\");\n    return;\n  }\n\n  // Read current value (default to false when missing), then toggle.\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  const next = !current;\n\n  await effectActor.update({ [PATH]: next });\n})();\n"
+              }
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEF%20DOWN.png",
+          "name": "Slow",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "hhqoSNhWfVD4KR7g"
+          ],
+          "system": {
+            "tags": [
+              "debuff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215134.796.png",
+      "name": "Claw",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {
+            "0": {
+              "$deleted": false,
+              "active_effect_application": "add",
+              "active_effect_apply_mode": "percentage",
+              "active_effect_dice_1": "",
+              "active_effect_dice_2": "",
+              "active_effect_dl": "0",
+              "active_effect_id": "UoCK347azUkVP7Lj",
+              "active_effect_percent": "50",
+              "active_effect_target": "enemy",
+              "active_effect_trigger": "on_hit"
+            }
+          },
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "",
+          "cost": "-",
+          "damage_bonus": "5",
+          "defense_target_type": "def",
+          "description": "<p>On hit, 50% to inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span></span></p>",
+          "duration": "-",
+          "heroic_requirement": "",
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Claw",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Attack",
+          "type_damage": "Physical",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "yWlkWZC2vLf4J5Pv"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Voidog",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 50,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          }
+        }
+      },
+      "hex-size-support": {
+        "hideBorder": true,
+        "hideFill": true
+      },
+      "token-variants": {
+        "disableHUDButton": false,
+        "randomImgDefault": ""
+      },
+      "token-z": {
+        "zIndex": 0
+      },
+      "wall-height": {
+        "tokenHeight": 0
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Voidog",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 0,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Lurkara.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 3200000,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {
+      "activation": "1",
+      "affinity_1": "NA",
+      "affinity_2": "NA",
+      "affinity_3": "NA",
+      "affinity_4": "NA",
+      "affinity_5": "NA",
+      "affinity_6": "NA",
+      "affinity_7": "NA",
+      "affinity_8": "VU",
+      "affinity_9": "NA",
+      "animation_table": {},
+      "arcane_ef": "100",
+      "attack_list": {
+        "ER8YbhzWmxlOj9wV": {
+          "active_target": "-",
+          "attack_description": "<p>On hit, 50% to inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span></span></p>",
+          "attribute_die1": "DEX",
+          "attribute_die2": "DEX",
+          "id": "${item.id}",
+          "name": "Claw",
+          "roll": "",
+          "uuid": "Actor.Tm04BQuJAmAIWnHq.Item.ER8YbhzWmxlOj9wV"
+        }
+      },
+      "attribute": "DARK",
+      "battle_facing_direction": "right",
+      "bow_ef": "100",
+      "brawling_ef": "100",
+      "condition_anomaly": "NA",
+      "condition_bane": "NA",
+      "condition_berserk": "NA",
+      "condition_bleed": "NA",
+      "condition_blind": "NA",
+      "condition_burn": "NA",
+      "condition_charm": "NA",
+      "condition_confused": "NA",
+      "condition_curse": "NA",
+      "condition_dazed": "NA",
+      "condition_delayed": "NA",
+      "condition_despair": "NA",
+      "condition_disarmed": "NA",
+      "condition_doom": "NA",
+      "condition_enraged": "NA",
+      "condition_envenomed": "NA",
+      "condition_fatigue": "NA",
+      "condition_frightened": "NA",
+      "condition_grappled": "NA",
+      "condition_hypothermia": "NA",
+      "condition_isolate": "NA",
+      "condition_obscure": "NA",
+      "condition_oil": "NA",
+      "condition_panic": "NA",
+      "condition_paralyzed": "NA",
+      "condition_petrify": "NA",
+      "condition_poisoned": "NA",
+      "condition_shaken": "NA",
+      "condition_silence": "NA",
+      "condition_slow": "NA",
+      "condition_stagger": "NA",
+      "condition_suppress": "NA",
+      "condition_turbulence": "NA",
+      "condition_weak": "NA",
+      "condition_wet": "NA",
+      "condition_wither": "NA",
+      "condition_zombie": "NA",
+      "current_hp": "55",
+      "current_ip": "0",
+      "current_mp": "30",
+      "cut_in_critical": "",
+      "cut_in_fumble": "",
+      "cut_in_zero_power": "",
+      "dagger_ef": "100",
+      "def_mod": "+0",
+      "default_facing_direction": "left",
+      "dex_base": "8",
+      "event_timeline_table": {},
+      "firearm_ef": "100",
+      "flail_ef": "100",
+      "gorger": false,
+      "heavy_ef": "100",
+      "init": "6",
+      "ins_base": "8",
+      "isAlmighty": false,
+      "isAwake": false,
+      "isBoss": false,
+      "isClarity": false,
+      "isCustomEvent": false,
+      "isDazed": false,
+      "isEnergized": false,
+      "isEnlighten": false,
+      "isEnraged": false,
+      "isFocus": false,
+      "isMasterful": false,
+      "isPoisoned": false,
+      "isShaken": false,
+      "isSlow": false,
+      "isStrong": false,
+      "isSummon": false,
+      "isSwift": false,
+      "isUnyielding": false,
+      "isVillain": false,
+      "isWeak": false,
+      "level": "13",
+      "max_hp": "55",
+      "max_ip": "0",
+      "max_mp": "30",
+      "max_zero": "6",
+      "mdef_mod": "+0",
+      "mig_base": "6",
+      "mimic": false,
+      "name": "Voidog",
+      "npc_rank": "soldier",
+      "rare": false,
+      "resource_maxValue_1": "0",
+      "resource_maxValue_2": "0",
+      "resource_maxValue_3": "0",
+      "resource_value_1": "0",
+      "resource_value_2": "0",
+      "resource_value_3": "0",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "shield_type": "PHYSICAL",
+      "shield_value": "0",
+      "showMacro": false,
+      "skill_passive_list": {
+        "Cqy74Q1ChUmY2m5B": {
+          "id": "${item.id}",
+          "name": "Follow the leader",
+          "passive_description": "<p>When the <strong>Voidog</strong> targets an enemy that has been <strong>damaged </strong>by its ally this turn, gain <strong>+2 Accuracy</strong></p>",
+          "roll": "",
+          "uuid": "Actor.Tm04BQuJAmAIWnHq.Item.Cqy74Q1ChUmY2m5B"
+        }
+      },
+      "spear_ef": "100",
+      "species": "BEAST",
+      "study_text": "",
+      "subtype_list": "",
+      "sword_ef": "100",
+      "tactic_notes": "",
+      "thrown_ef": "100",
+      "traits": "Cowardly Stalker",
+      "ultima_point": "0",
+      "unique": false,
+      "wlp_base": "6",
+      "zenit_reward_max": "40",
+      "zenit_reward_min": "30",
+      "zero_power_value": ""
+    },
+    "statusEffects": {},
+    "template": "yegF6R8aaymhrvCg",
+    "templateSystemUniqueVersion": 3867751361
+  },
+  "type": "character"
+}

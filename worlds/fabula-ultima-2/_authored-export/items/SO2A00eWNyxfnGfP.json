@@ -1,0 +1,57 @@
+{
+  "_id": "SO2A00eWNyxfnGfP",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1756863136402,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "2OplVa9fwLYbzD8b",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/05_SCH/fey_covenant.png",
+  "name": "Heroic Companion",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 700000,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Wayfarer",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<div class=\"companion-upgrade\">\n  <p><strong>Your bond with your companion grows stronger.</strong><br>\n     You gain the following benefits:</p>\n\n  <ul class=\"book-bullets\">\n    <li>The companion’s maximum Hit Points increase by 10.</li>\n    <li>\n      Choose one of the companion’s Attributes:\n      <strong>Dexterity, Insight, Might</strong>, or <strong>Willpower</strong>.\n      The chosen Attribute is permanently increased by one die size\n      (up to a maximum size of <strong>d12</strong>).\n    </li>\n    <li>\n      The companion gains an additional Skill. When you reach level 40, or if you have\n      already reached it, the companion gains an additional Skill. Make sure to discuss\n      your Skill choices with the Game Master and the other Players.\n    </li>\n  </ul>\n</div>\n\n<style>\n  .companion-upgrade { font-family: var(--chat-font, \"Signika\", system-ui, sans-serif); line-height: 1.45; }\n  .book-bullets { margin: .3rem 0 0; padding-left: 1.4rem; }\n  .book-bullets li {\n    list-style: none;\n    position: relative;\n    margin: .25rem 0;\n  }\n  .book-bullets li::before {\n    content: \"◆\";\n    position: absolute;\n    left: -1.2rem;\n    top: .1rem;\n    font-weight: 800;\n    /* use current text color so it matches your theme */\n    color: currentColor;\n  }\n</style>\n",
+      "duration": "",
+      "heroic_requirement": "Requirements: You must have mastered the Wayfarer Class, and must have acquired the Faithful Companion Skill",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Heroic Companion",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "SO2A00eWNyxfnGfP"
+  },
+  "type": "equippableItem"
+}

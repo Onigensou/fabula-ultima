@@ -1,0 +1,534 @@
+{
+  "_id": "5XB4kpQobwSqgCtp",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1747464241717,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "DDbQHfWVmp8Cyf0E",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.331",
+        "createdTime": 1769830001436,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>This creature has less than 50% HP</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "4ldx00srGNv5AJBr",
+          "originalParentId": "0gIBYzSpjdXS6f25",
+          "originalUuid": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-crisis",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": false
+        },
+        "fabula-ultima-companion": {
+          "autoCrisis": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/08_DRG/blood_for_blood.png",
+      "name": "Crisis",
+      "origin": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr",
+      "sort": 0,
+      "statuses": [
+        "5jkr80zqdzaR003d"
+      ],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "n1KKXIdHNQznYGKM",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.331",
+        "createdTime": 1756046370626,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.6.4"
+      },
+      "changes": [
+        {
+          "key": "macro.tokenMagic",
+          "mode": 0,
+          "priority": null,
+          "value": "Bleed"
+        }
+      ],
+      "description": "<p>This creature has less than 50% HP</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": 3,
+        "startTime": 298800,
+        "startTurn": 5,
+        "turns": null
+      },
+      "flags": {
+        "combat-utility-belt": {
+          "conditionId": "5jkr80zqdzaR003d"
+        },
+        "condition-lab-triggler": {
+          "conditionId": "5jkr80zqdzaR003d"
+        },
+        "core": {
+          "overlay": false
+        },
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "n1KKXIdHNQznYGKM",
+          "originalParentId": "5XB4kpQobwSqgCtp",
+          "originalUuid": "Actor.5XB4kpQobwSqgCtp.ActiveEffect.n1KKXIdHNQznYGKM"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/08_DRG/blood_for_blood.png",
+      "name": "Crisis",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "5jkr80zqdzaR003d"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.5.0"
+    },
+    "theatre": {
+      "settings": {
+        "emote": null,
+        "textcolor": null,
+        "textflyin": null,
+        "textfont": null,
+        "textsize": null,
+        "textstanding": null
+      }
+    }
+  },
+  "folder": "NmTMvWbnUbnXBMpx",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Polka.png",
+  "name": "Polka",
+  "ownership": {
+    "7hKw8KGsimboeDif": 3,
+    "JQGNzKpDPHJmcUIW": 3,
+    "JvF9tXvr7aaiS06m": 3,
+    "default": 0,
+    "t41knaXNbgCEygM5": 3,
+    "yL2PQxh3R9ddt0te": 3
+  },
+  "prototypeToken": {
+    "actorLink": true,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 50,
+    "disposition": 1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          }
+        }
+      },
+      "hex-size-support": {
+        "hideBorder": true,
+        "hideFill": true
+      },
+      "token-variants": {
+        "disableHUDButton": false,
+        "randomImgDefault": ""
+      },
+      "token-z": {
+        "zIndex": 0
+      },
+      "wall-height": {
+        "tokenHeight": 0
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Polka",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 0,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Polka.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 100000,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "activeEffects": {},
+    "props": {
+      "affinity_1": "NA",
+      "affinity_2": "NA",
+      "affinity_3": "NA",
+      "affinity_4": "NA",
+      "affinity_5": "NA",
+      "affinity_6": "NA",
+      "affinity_7": "NA",
+      "affinity_8": "NA",
+      "affinity_9": "NA",
+      "arcane_ef": "100",
+      "attribute": "DARK",
+      "basic_attacks": {
+        "0": {
+          "$deleted": false,
+          "ailments": "",
+          "ailments_chance": "0",
+          "attrib_1": "DEX",
+          "attrib_2": "DEX",
+          "basic_name": "⚔️Black Cat Claw",
+          "check_bonus": "4",
+          "defense_type": "M.DEF",
+          "detail": "<p>This attacks deal bonus damage equal to <strong>【2 x The amount of status effects inflicted on this creature】</strong></p>",
+          "dmg_bonus": "15",
+          "icon": "<i class=\"fa-solid fa-swords\"></i>",
+          "macro_name": "",
+          "roll": "",
+          "type": "dark"
+        },
+        "1": {
+          "$deleted": false,
+          "ailments": "",
+          "ailments_chance": "0",
+          "attrib_1": "INS",
+          "attrib_2": "WLP",
+          "basic_name": "🏹Bye-Bye!",
+          "check_bonus": "99",
+          "defense_type": "M.DEF",
+          "detail": "<p>This attack deal bonus dark damage equal to <strong>【The amount of health missing + (5 x the amount status effects inflict on this creature)】</strong></p><p></p><p>After this attack resolve, reduce this creature HP to 0.</p>",
+          "dmg_bonus": "0",
+          "icon": "<i class=\"fa-solid fa-bow-arrow\"></i>",
+          "macro_name": "",
+          "roll": "",
+          "type": "dark"
+        }
+      },
+      "bow_ef": "100",
+      "brawling_ef": "100",
+      "condition_1": "NA",
+      "condition_10": "NA",
+      "condition_11": "NA",
+      "condition_12": "NA",
+      "condition_13": "NA",
+      "condition_14": "NA",
+      "condition_15": "NA",
+      "condition_16": "NA",
+      "condition_17": "NA",
+      "condition_18": "NA",
+      "condition_19": "NA",
+      "condition_2": "NA",
+      "condition_20": "NA",
+      "condition_21": "NA",
+      "condition_22": "NA",
+      "condition_23": "NA",
+      "condition_24": "NA",
+      "condition_25": "NA",
+      "condition_26": "NA",
+      "condition_27": "NA",
+      "condition_28": "NA",
+      "condition_29": "NA",
+      "condition_3": "NA",
+      "condition_30": "NA",
+      "condition_31": "NA",
+      "condition_32": "NA",
+      "condition_33": "NA",
+      "condition_34": "NA",
+      "condition_35": "NA",
+      "condition_36": "NA",
+      "condition_4": "NA",
+      "condition_5": "NA",
+      "condition_6": "NA",
+      "condition_7": "NA",
+      "condition_8": "NA",
+      "condition_9": "NA",
+      "current_def": "<b><i class=\"fa-solid fa-shield\"></i> DEF: </b>\n10",
+      "current_hp": 0,
+      "current_ip": "0",
+      "current_mdef": "<b><i class=\"fa-solid fa-shield-halved\"></i> MDEF: </b>\n8",
+      "current_mp": 0,
+      "dagger_ef": "100",
+      "def_mod": "+0",
+      "desc": "<p>Description</p>",
+      "dex_base": "10",
+      "dex_current": 10,
+      "firearm_ef": "100",
+      "flail_ef": "100",
+      "fp": "0",
+      "gorger": false,
+      "heavy_ef": "100",
+      "id": "5XB4kpQobwSqgCtp",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Polka.png",
+      "init": "6",
+      "ins_base": "8",
+      "ins_current": 8,
+      "isAlmighty": false,
+      "isAwake": false,
+      "isClarity": false,
+      "isDazed": false,
+      "isEnergized": false,
+      "isEnlighten": false,
+      "isEnraged": false,
+      "isFocus": false,
+      "isMasterful": false,
+      "isPoisoned": false,
+      "isShaken": false,
+      "isSlow": false,
+      "isStrong": false,
+      "isSwift": false,
+      "isUnyielding": false,
+      "isWeak": false,
+      "level": "5",
+      "max_hp": "76",
+      "max_ip": "0",
+      "max_mp": "0",
+      "max_zero": "0",
+      "mdef_mod": "+0",
+      "mig_base": "10",
+      "mig_current": 10,
+      "mimic": false,
+      "name": "Polka",
+      "npc_rank": "",
+      "other_list": {},
+      "rare": false,
+      "resource_value_1": "0",
+      "resource_value_2": "0",
+      "resource_value_3": "0",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "MIG",
+      "shield_type": "PHYSICAL",
+      "shield_value": 0,
+      "spear_ef": "100",
+      "special_list": {
+        "0": {
+          "$deleted": false,
+          "details": "<p>Whenever an ally is inflicts with a <strong>Status Effects, </strong>they may choose to have <strong>Poka </strong>be inflicted with that <strong>Status Effects </strong>instead.</p>",
+          "icon": "",
+          "macro_name": "",
+          "roll": "",
+          "special_name": "📜Curse Absorption"
+        }
+      },
+      "species": "CONSTRUCT",
+      "spell_list": {},
+      "stolen_check": false,
+      "subtype": "Sub-Type",
+      "subtype_list": "GOLEM",
+      "sword_ef": "100",
+      "thrown_ef": "100",
+      "traits": "Cursed Doll, Decoy, Bait",
+      "unique": false,
+      "uuid": "Actor.5XB4kpQobwSqgCtp",
+      "wlp_base": "8",
+      "wlp_current": 8,
+      "zero_power_value": "0"
+    },
+    "statusEffects": {},
+    "template": "yibwK7D0bMmrmXhL",
+    "templateSystemUniqueVersion": 1265373629
+  },
+  "type": "character"
+}

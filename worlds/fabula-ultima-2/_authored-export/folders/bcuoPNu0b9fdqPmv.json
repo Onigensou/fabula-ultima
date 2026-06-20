@@ -1,0 +1,19 @@
+{
+  "_id": "bcuoPNu0b9fdqPmv",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": null,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "2.1.0"
+  },
+  "color": "#e28b28",
+  "description": "",
+  "flags": {},
+  "folder": "CsoK6dCz8B4ZOdcY",
+  "name": "The Autumnland",
+  "sort": 100000,
+  "sorting": "a",
+  "type": "JournalEntry"
+}

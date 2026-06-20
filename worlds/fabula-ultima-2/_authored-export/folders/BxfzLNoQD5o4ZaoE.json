@@ -1,0 +1,19 @@
+{
+  "_id": "BxfzLNoQD5o4ZaoE",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1747630630650,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.4.2"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "Gdh443T6yYvJfvnq",
+  "name": "Winterland",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Actor"
+}

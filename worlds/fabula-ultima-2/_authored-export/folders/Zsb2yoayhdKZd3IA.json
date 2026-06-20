@@ -1,0 +1,19 @@
+{
+  "_id": "Zsb2yoayhdKZd3IA",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1769848583118,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "OeC0hsLCW5zTWD6w",
+  "name": "Overworld",
+  "sort": 0,
+  "sorting": "a",
+  "type": "RollTable"
+}

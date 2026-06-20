@@ -1,0 +1,19 @@
+{
+  "_id": "6W2pFEmLDrLbwvXy",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1762575797048,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "ao7MvDYKSVhEwWj3",
+  "name": "GM Permission Socket",
+  "sort": 700000,
+  "sorting": "a",
+  "type": "Macro"
+}

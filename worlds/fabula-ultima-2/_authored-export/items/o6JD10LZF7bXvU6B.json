@@ -1,0 +1,78 @@
+{
+  "_id": "o6JD10LZF7bXvU6B",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1781820021760,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "FIHoW0EB0vU7gMAa",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/LumenTellusStage4.png",
+  "name": "Detonate Phantasm",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "cost": "20 MP",
+      "damage_bonus": "25",
+      "defense_target_type": "mdef",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "chain_steps": "dp_phantasm, dp_element",
+          "effect_kind": "chain",
+          "effect_label": "dp_pre"
+        },
+        "1": {
+          "$deleted": false,
+          "auto_target": "confirm",
+          "candidate_source": "own_summons",
+          "count": 1,
+          "effect_kind": "targeting",
+          "effect_label": "dp_phantasm",
+          "mode": "exact",
+          "skip_when_passive": false,
+          "target_prompt": "Choose a Phantasm to detonate"
+        },
+        "2": {
+          "$deleted": false,
+          "effect_kind": "prompt_element",
+          "effect_label": "dp_element",
+          "element_options": "light|dark",
+          "menu_title": "Detonate Phantasm — choose a damage type",
+          "prompt_var": "element"
+        },
+        "3": {
+          "$deleted": false,
+          "effect_kind": "destroy_summon",
+          "effect_label": "dp_destroy",
+          "target_ref": "dp_phantasm"
+        }
+      },
+      "isCheck": true,
+      "on_activate_effect_ref": "dp_destroy",
+      "pre_activate_effect_ref": "dp_pre",
+      "reaction_config_table": {},
+      "rolled_atr1": "INS",
+      "rolled_atr2": "WLP",
+      "skill_target": "One Enemy",
+      "skill_type": "Spell",
+      "type_damage": "VAR_ELEMENT"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "o6JD10LZF7bXvU6B"
+  },
+  "type": "equippableItem"
+}

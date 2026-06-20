@@ -1,0 +1,85 @@
+{
+  "_id": "lhEd56bwUno81lcz",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1746741281830,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.4.2"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "lhEd56bwUno81lcz",
+        "itemName": "Heat HANDS Replica",
+        "pickedOldProps": {
+          "cost": "2550",
+          "martial": false
+        },
+        "ts": 1769647020027
+      }
+    }
+  },
+  "folder": "AW77WJGta3x8x3dy",
+  "img": "icons/magic/fire/flame-burning-fist-strike.webp",
+  "name": "Heat HANDS Replica",
+  "ownership": {
+    "2vy7wrEUqBy0kzsU": 3,
+    "6DmgigM5jq76r0Gd": 3,
+    "7hKw8KGsimboeDif": 3,
+    "9sFgrDy4MvAgoCmQ": 3,
+    "Am7qxPOavfKeDGPd": 3,
+    "JQGNzKpDPHJmcUIW": 3,
+    "JvF9tXvr7aaiS06m": 3,
+    "KD5d0efqHETPpIux": 3,
+    "LT3Z8EnRdMVk5ncQ": 3,
+    "MwTL6zXFCEpVBTpI": 3,
+    "NozW36XIGEGx7oVH": 3,
+    "NpGkA7uxaarkPiwS": 3,
+    "ULBTZPjtza939Mvy": 3,
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3,
+    "eGu3tuw7HwJd2bpx": 3,
+    "iLeUVmwqnze8ulOI": 3,
+    "mE5aEkDlrQJIYyhG": 3,
+    "nSGZ1sz1rdKao0kz": 3,
+    "nXC7OD7u5Zw5UDDU": 3,
+    "t41knaXNbgCEygM5": 3,
+    "tz9BP9MKfNGf2P3n": 3,
+    "wNzPmItLYCKE1I8t": 3,
+    "yL2PQxh3R9ddt0te": 3,
+    "yUfwoVmEPVdFG3AY": 3
+  },
+  "sort": 1000000,
+  "system": {
+    "container": null,
+    "props": {
+      "category": "Brawling",
+      "check_bonus": "1",
+      "damage_bonus": "15",
+      "description": "<p>When the creature equipping this weapon receives <strong>Fire </strong>damage, they receives following benefits <strong>until the end of round</strong>:</p><ul><li><p>You may considers this weapon as <strong>Arcane</strong> weapon for the purpose of performing <strong>attacks</strong>, <strong>spells</strong> or <strong>skills</strong>.</p></li><li><p>Your attack deals <strong>5</strong> extra damage.</p></li></ul>",
+      "hand_slots": "Two-handed",
+      "isMartial": false,
+      "item_cost": "2550",
+      "item_type": "weapon",
+      "name": "Heat HANDS Replica",
+      "rolled_atr1": "MIG",
+      "rolled_atr2": "DEX",
+      "set_name": "",
+      "skill_target": "One Enemy",
+      "type_damage": "Fire",
+      "weapon_range": "Melee"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "lhEd56bwUno81lcz"
+  },
+  "type": "equippableItem"
+}

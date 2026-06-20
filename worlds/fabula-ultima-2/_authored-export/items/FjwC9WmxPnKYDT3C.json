@@ -1,0 +1,100 @@
+{
+  "_id": "FjwC9WmxPnKYDT3C",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780644516830,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "coreAction": "hinder"
+    }
+  },
+  "folder": "Zrv5DRCx5PzFvLUj",
+  "img": "icons/svg/net.svg",
+  "name": "Hinder",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "action_command": "hinder",
+      "check_difficulty_level": 10,
+      "check_mode": "difficulty",
+      "cost": "",
+      "description": "<p>Make an attribute Check against a creature. On a success, it suffers a status of your choice (Dazed, Shaken, Slow, or Weak).</p>",
+      "details_roller": "Show",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace_same_status",
+          "ae_template_ref": "status_value",
+          "effect_kind": "open_action_menu",
+          "effect_label": "hinder_menu",
+          "menu_option_colors": "#9b59b6|#5a6a85|#8b5e3c|#c44a2a",
+          "menu_option_descriptions": "Lowers Insight|Lowers Willpower|Lowers Dexterity|Lowers Might",
+          "menu_option_icons": "icons/svg/daze.svg|icons/svg/terror.svg|icons/svg/clockwork.svg|icons/svg/degen.svg",
+          "menu_option_labels": "Dazed|Shaken|Slow|Weak",
+          "menu_option_refs": "hinder_dazed,hinder_shaken,hinder_slow,hinder_weak",
+          "menu_pick_count": 1,
+          "menu_subtitle": "Choose a status to inflict.",
+          "menu_title": "Hinder",
+          "target_ref": "action_targets"
+        },
+        "1": {
+          "ae_duplicate_mode": "replace_same_status",
+          "ae_template_ref": "Dazed",
+          "effect_kind": "apply_ae",
+          "effect_label": "hinder_dazed",
+          "target_ref": "action_targets"
+        },
+        "2": {
+          "ae_duplicate_mode": "replace_same_status",
+          "ae_template_ref": "Shaken",
+          "effect_kind": "apply_ae",
+          "effect_label": "hinder_shaken",
+          "target_ref": "action_targets"
+        },
+        "3": {
+          "ae_duplicate_mode": "replace_same_status",
+          "ae_template_ref": "Slow",
+          "effect_kind": "apply_ae",
+          "effect_label": "hinder_slow",
+          "target_ref": "action_targets"
+        },
+        "4": {
+          "ae_duplicate_mode": "replace_same_status",
+          "ae_template_ref": "Weak",
+          "effect_kind": "apply_ae",
+          "effect_label": "hinder_weak",
+          "target_ref": "action_targets"
+        }
+      },
+      "id": "FjwC9WmxPnKYDT3C",
+      "img": "icons/svg/net.svg",
+      "isCheck": true,
+      "isReaction": false,
+      "max_level": "1",
+      "name": "Hinder",
+      "on_activate_effect_ref": "hinder_menu",
+      "picker": "attribute_pair",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "INS",
+      "skill_target": "One Enemy",
+      "skill_type": "Active",
+      "uuid": "Item.FjwC9WmxPnKYDT3C"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": true,
+    "uniqueId": "FjwC9WmxPnKYDT3C"
+  },
+  "type": "equippableItem"
+}

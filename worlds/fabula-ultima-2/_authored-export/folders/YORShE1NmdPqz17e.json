@@ -1,0 +1,19 @@
+{
+  "_id": "YORShE1NmdPqz17e",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": null,
+    "duplicateSource": null,
+    "systemId": null,
+    "systemVersion": null
+  },
+  "color": "#cd785b",
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "Supports",
+  "sort": 1450000,
+  "sorting": "a",
+  "type": "Item"
+}

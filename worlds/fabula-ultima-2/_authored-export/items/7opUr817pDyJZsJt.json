@@ -1,0 +1,118 @@
+{
+  "_id": "7opUr817pDyJZsJt",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780801541710,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "4nfTLrlahxy3xTs8",
+  "img": "icons/skills/ranged/arrow-strike-glowing-orange.webp",
+  "name": "Warning Shot",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "active_effect_config_table": {},
+      "check_bonus": "0",
+      "class": "Sharpshooter",
+      "cost": "",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>When you hit one or more targets with a <strong>ranged attack</strong> that would deal damage, you may have the attack deal no damage. If you do, choose one option: inflict <strong>shaken</strong> on each target hit by the attack; or inflict <strong>slow</strong> on each target hit by the attack; or each target hit by the attack loses <strong>【SL】× 10</strong> Mind Points. Describe your maneuver!</p>",
+      "duration": "-",
+      "effect_table": {
+        "0": {
+          "chain_steps": "ws_nullify,ws_menu",
+          "effect_kind": "chain",
+          "effect_label": "warning_shot"
+        },
+        "1": {
+          "damage_amount": "0",
+          "damage_operation": "multiply",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "ws_nullify",
+          "target_ref": "hit_action_targets"
+        },
+        "2": {
+          "effect_kind": "open_action_menu",
+          "effect_label": "ws_menu",
+          "menu_option_refs": "ws_shaken,ws_slow,ws_mp",
+          "menu_pick_count": "1 + HAS_SKILL_PERFECT_AIM",
+          "menu_subtitle": "The attack deals no damage — choose an effect.",
+          "menu_title": "Warning Shot"
+        },
+        "3": {
+          "ae_template_ref": "Shaken",
+          "effect_kind": "apply_ae",
+          "effect_label": "ws_shaken",
+          "menu_description": "Each target hit by the attack becomes Shaken.",
+          "menu_label": "Inflict Shaken",
+          "target_ref": "hit_action_targets"
+        },
+        "4": {
+          "ae_template_ref": "Slow",
+          "effect_kind": "apply_ae",
+          "effect_label": "ws_slow",
+          "menu_description": "Each target hit by the attack becomes Slow.",
+          "menu_label": "Inflict Slow",
+          "target_ref": "hit_action_targets"
+        },
+        "5": {
+          "consume_amount": "SL * 10",
+          "consume_resource": "mp",
+          "effect_kind": "consume_resource",
+          "effect_label": "ws_mp",
+          "menu_description": "Each target hit loses SL × 10 Mind Points.",
+          "menu_label": "Drain Mind Points",
+          "on_empty": "skip",
+          "target_ref": "hit_action_targets"
+        }
+      },
+      "ignore_hr": false,
+      "img": "icons/skills/ranged/arrow-strike-glowing-orange.webp",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": true,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "4",
+      "name": "Warning Shot",
+      "on_activate_effect_ref": "",
+      "post_damage_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "ATTACK_IS_RANGED == 1",
+          "reaction_effect_ref": "warning_shot",
+          "reaction_passive_mode": "ask",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        }
+      },
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_range": "",
+      "skill_target": "-",
+      "skill_type": "Passive",
+      "type_damage": ""
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "7opUr817pDyJZsJt"
+  },
+  "type": "equippableItem"
+}

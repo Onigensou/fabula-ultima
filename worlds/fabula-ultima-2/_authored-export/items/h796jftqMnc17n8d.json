@@ -1,0 +1,109 @@
+{
+  "_id": "h796jftqMnc17n8d",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1754158961169,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "ptxo7JcoHmplIZWc",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.331",
+        "createdTime": 1754672662653,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.6.4"
+      },
+      "changes": [],
+      "description": "<p>When <strong>hit </strong>by an enemy attack, give the enemy some <strong>Zenit. </strong>Removed after <strong>1 Round</strong></p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "ptxo7JcoHmplIZWc",
+          "originalParentId": "h796jftqMnc17n8d",
+          "originalUuid": "Item.h796jftqMnc17n8d.ActiveEffect.ptxo7JcoHmplIZWc"
+        },
+        "statuscounter": {
+          "config": {
+            "durationType": 1,
+            "modifyDuration": false,
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lithia/GreedyWonderPassive1.png",
+      "name": "Pirate's Mark",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "uuBCmFnWytMuWiTe",
+  "img": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/dragupload/fabula%20class/pirate/xxx.jpg",
+  "name": "Plundering Assault",
+  "ownership": {
+    "default": 3,
+    "nXC7OD7u5Zw5UDDU": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Pirate",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<div class=\"skill-tooltip\"><p>At the start of a <strong>conflict scene</strong>, all enemies gain <span class=\"mark-icon\"><strong>10 Pirate's Mark</strong></span></p><p>Each time you successfully hit an enemy with an attack, remove <span class=\"mark-icon\"><strong>【Pirate's Mark】</strong> </span>equal to <strong>【SL】</strong>. You gain <strong>【10 × mark removed】 Zenit</strong>.</p><p>When you reduce a creature's <span class=\"mark-icon\"><strong>【Pirate's Mark】</strong> </span>to 0, gain <strong>2 IP</strong>.</p></div>",
+      "duration": "",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "level": "1",
+      "max_level": "5",
+      "name": "Plundering Assault",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "h796jftqMnc17n8d"
+  },
+  "type": "equippableItem"
+}

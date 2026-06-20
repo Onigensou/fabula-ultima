@@ -1,0 +1,62 @@
+{
+  "_id": "kALWkUzVhaUPCQuG",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1730690385631,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "kALWkUzVhaUPCQuG",
+        "itemName": "Blood Sword",
+        "pickedOldProps": {
+          "cost": "2000",
+          "martial": true
+        },
+        "ts": 1769647435328
+      }
+    }
+  },
+  "folder": "xMVY94FXuACmcFkd",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Image/Blood%20Shield.png",
+  "name": "Blood Sword",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 100000,
+  "system": {
+    "container": null,
+    "props": {
+      "category": "Sword",
+      "check_bonus": "0",
+      "damage_bonus": "15",
+      "description": "<ul><li><p>When you attack with this weapon, if you are in<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><span style=\"text-decoration: underline;\"> </span></span></span><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Crisis</strong></a><strong> </strong>this attack gain <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.CRPjA4dHUYLSAh0M\" data-id=\"CRPjA4dHUYLSAh0M\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Drain</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>and deals 200% damage</p><hr class=\"\" contenteditable=\"false\"></li></ul><p><strong>【Set Bonus】</strong></p><p><strong>2-Piece</strong></p><ul><li><p>Deals <strong>5</strong> extra damage if you are in <a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Crisis</strong></a></p></li></ul><hr contenteditable=\"false\"><p><strong>3-Piece</strong></p><ul><li><p>Reduce damage dealt to you by <strong>5&nbsp;</strong>if you are in <a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Crisis</strong></a></p></li></ul><hr contenteditable=\"false\"><p><strong>4-Piece</strong></p><ul><li><p>When your HP is reduce to 0. If you are not at 1 HP when your HP is reduced to 0. You may choose to persist at 1 HP.</p><hr contenteditable=\"false\"></li></ul><p>&nbsp;</p>",
+      "hand_slots": "One-handed",
+      "isMartial": true,
+      "item_cost": "2000",
+      "item_type": "weapon",
+      "name": "Blood Sword",
+      "rolled_atr1": "MIG",
+      "rolled_atr2": "MIG",
+      "set_name": "Bloodied Chivalry",
+      "skill_target": "One Enemy",
+      "type_damage": "Dark",
+      "weapon_range": "Melee"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "kALWkUzVhaUPCQuG"
+  },
+  "type": "equippableItem"
+}

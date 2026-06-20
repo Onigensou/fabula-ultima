@@ -1,0 +1,153 @@
+{
+  "_id": "Dy25jPf0Mx1xFyy2",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780631496201,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "tb7rnwyfItpPLmPF",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><em>Unbreakable:</em> Once per scene. Survive a fatal hit at 1 HP.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "uTjtf7nTSsLbChkl",
+          "originalParentId": "fvXs5bfYxD2On0Ns",
+          "originalUuid": "Item.fvXs5bfYxD2On0Ns.ActiveEffect.uTjtf7nTSsLbChkl"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "crossScene": false,
+          "directorPermanent": true,
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "consume_self": true,
+                "damage_amount": "CUR_HP - 1",
+                "damage_operation": "cap",
+                "damage_stage": "incoming",
+                "effect_kind": "adjust_damage",
+                "effect_label": "unbreakable_clamp",
+                "modify_mode": "set_hp_floor",
+                "modify_value": 1
+              }
+            },
+            "name": "Unbreakable",
+            "reaction_config_table": {
+              "0": {
+                "reaction_damage_outcome": "would_reduce_to_zero",
+                "reaction_effect_ref": "unbreakable_clamp",
+                "reaction_passive_mode": "ask",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_takes_damage"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/hallowed_ground.png",
+      "name": "Unbreakable Ready",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-unbreakable-ready"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "HEOkiQVr6cpvbXxl",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/hallowed_ground.png",
+  "name": "Unbreakable",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "class": "Guardian",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>Once per scene, when you would be reduced to <strong>0 Hit Points</strong>, you may have your Hit Points be reduced to <strong>1</strong> instead.</p>",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Unbreakable Ready",
+          "effect_kind": "apply_ae",
+          "effect_label": "unbreakable_arm",
+          "target_ref": "self"
+        }
+      },
+      "isCheck": false,
+      "isHeroic": true,
+      "isReaction": true,
+      "level": 1,
+      "max_level": "1",
+      "name": "Unbreakable",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "",
+          "reaction_effect_ref": "unbreakable_arm",
+          "reaction_passive_mode": "force",
+          "reaction_source": "",
+          "reaction_trigger": "conflict_start"
+        }
+      },
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_range": "-",
+      "skill_target": "-",
+      "skill_type": "Passive",
+      "type_damage": ""
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "Dy25jPf0Mx1xFyy2"
+  },
+  "type": "equippableItem"
+}

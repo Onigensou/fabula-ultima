@@ -1,0 +1,57 @@
+{
+  "_id": "2t9fQihUfuKxSR7Z",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757993884391,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "Jn1IfMC7vhZcZM4A",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/CLOSERS/J/Triple_Blending_Shot.webp",
+  "name": "Bane Oils",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Slayer",
+      "cost": "2 IP",
+      "damage_bonus": "0",
+      "description": "<p>Each time you take this Skill, choose a <strong>creature Species</strong>. You may use an action and spend 2 Inventory Points to apply a <strong>bane oil</strong> for one of your chosen Species to a weapon equipped by you or a willing creature. If you have the weapon equipped, you may perform a <strong>free attack</strong> with it as part of the same action.</p>\n\n<p>Until the end of the scene or a different bane oil is applied to the weapon, when a creature of the same Species as the bane oil is hit by the weapon, the attacker picks one of the following:</p>\n<ul>\n  <li>the creature becomes \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\">\n      <a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px;\">\n        <strong><span style=\"text-decoration: underline;\">Slow</span></strong>\n      </a>\n    </span></span>\n  </li>\n  <li>the creature becomes \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\">\n      <a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px;\">\n        <strong><span style=\"text-decoration: underline;\">Weak</span></strong>\n      </a>\n    </span></span>\n  </li>\n  <li>the creature loses one of its damage Resistances until the end of the scene</li>\n</ul>\n<p>The attacker may choose the damage type; otherwise, the GM chooses one at random.</p>\n",
+      "duration": "Scene",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "5",
+      "name": "Bane Oils",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "Any",
+      "skill_target": "One creature of the chosen species",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "2t9fQihUfuKxSR7Z"
+  },
+  "type": "equippableItem"
+}

@@ -1,0 +1,1478 @@
+{
+  "_id": "7mZK4hieNXvBz5er",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1754964006794,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "lrk2jhOW5Ok9sgH1",
+  "img": "https://static.wikia.nocookie.net/shadowverse/images/e/ea/Departed_Soultaker_leader.png",
+  "items": [
+    {
+      "_id": "1slZoC0BFNepM9IS",
+      "_stats": {
+        "compendiumSource": "Item.ueXM3rkOpzD5hBKq",
+        "coreVersion": "12.343",
+        "createdTime": 1755304939482,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/RPR/tempered_soul.png",
+      "name": "Tempered Soul",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Reaper",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>Each time you acquire this Skill, <strong>Choose</strong> one of the following effects:</p><ul><li><p>Your 【⚔️<strong>Attack】 </strong>with <strong>Arcane </strong>and <strong>Heavy </strong>weapons deals <strong>【Your Collected Soul】 </strong>bonus damage.</p></li><li><p>Your 【⚡️<strong>Offensive Spells】</strong> deals <strong>【Your Collected Soul】 </strong>bonus damage.</p></li><li><p>Your 【💥<strong>Skills】 </strong>deals <strong>【Your Collected Soul】 </strong>bonus damage.</p></li></ul><p>You gain the <strong>chosen </strong>effects. <em>(You may not choose the same option twice)</em></p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "3",
+          "name": "Tempered Soul",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "ueXM3rkOpzD5hBKq"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "754j4K0iaMqJRxUw",
+      "_stats": {
+        "compendiumSource": "Item.6pz9dnHgIYwPvJxW",
+        "coreVersion": "12.343",
+        "createdTime": 1755310090441,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/RPR/Perfectio.png",
+      "name": "Corpse Explosion",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Reaper",
+          "cost": "1 Collected Soul",
+          "damage_bonus": "0",
+          "description": "<p>Deals <strong>10 </strong><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>damage to all enemies.</p><p>You may perform this <strong>Skill </strong>as a <strong>Free Action </strong>whenever you reduce a creature to 0 HP.</p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "You must have mastered the Reaper Class.",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Corpse Explosion",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "All Enemies",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "6pz9dnHgIYwPvJxW"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "aAlFbk5ddwwus6TH",
+      "_stats": {
+        "compendiumSource": "Item.MPC3YFZXWrQKthVr",
+        "coreVersion": "12.343",
+        "createdTime": 1755310103111,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/RPR/plentiful_harvest.png",
+      "name": "Twilight Requiem",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Reaper",
+          "cost": "6 Collected Soul",
+          "damage_bonus": "0",
+          "description": "<p>Revive all <strong>KO</strong> allies to full HP, then inflict <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.RZIAnKw95vY6yh2W\" data-id=\"RZIAnKw95vY6yh2W\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Zombie</span></strong></a></span> on them.</p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Twilight Requiem",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "All ally",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "MPC3YFZXWrQKthVr"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "bkbpifz1bgpLmZoL",
+      "_stats": {
+        "compendiumSource": "Item.TC9KKOXUiy2ZNs9x",
+        "coreVersion": "12.343",
+        "createdTime": 1755310101942,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/RPR/soul_scythe.png",
+      "name": "Spirit Cleaver",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Reaper",
+          "cost": "3 Collected Soul",
+          "damage_bonus": "0",
+          "description": "<p>Perform a <strong>Free Attack, </strong>this attack  gains <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Multi</span></strong></a><strong><span style=\"text-decoration: underline;\"> 3,</span></strong></span> its damage type becomes <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span>and<span style=\"font-family: Signika, sans-serif\"><strong><span style=\"text-decoration: underline;\"> </span></strong></span>deals 13 bonus damage.</p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Spirit Cleaver",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "Up to three creatures",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "TC9KKOXUiy2ZNs9x"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "Du26cL8j0RecVjGR",
+      "_stats": {
+        "compendiumSource": "Item.wrPDxj4nxYTw0qvc",
+        "coreVersion": "12.343",
+        "createdTime": 1755286735936,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/RPR/cross_reaping.png",
+      "name": "Cross Reaping",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Reaper",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you reduce a creature to 0 HP, you may perform a <strong>Free Attack, </strong>this attack cannot gain <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Multi</span></strong></a><strong><span style=\"text-decoration: underline;\">,</span></strong></span><strong> </strong>treat your <strong>High Roll </strong>as 0 when calculating damage dealt by this attack. This effect may trigger up to <strong>【SL】 </strong>times<strong> </strong>per turn.</p>",
+          "duration": "",
+          "heroic_requirement": "You must have mastered the Reaper Class.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "3",
+          "name": "Cross Reaping",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p><strong>Level</strong></p></td><td data-colwidth=\"148\"><p><strong>Trigger</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p>1</p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p>2</p></td></tr><tr><td data-colwidth=\"79\"><p>3</p></td><td data-colwidth=\"148\"><p>3</p></td></tr></tbody></table>",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "wrPDxj4nxYTw0qvc"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "dUn7Wyew1QxPwdCH",
+      "_stats": {
+        "compendiumSource": "Item.moGoIJrb4sZYgvJi",
+        "coreVersion": "12.343",
+        "createdTime": 1755310098690,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/RPR/slice.png",
+      "name": "Rest in Peace",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "4",
+          "class": "Reaper",
+          "cost": "3 Collected Soul",
+          "damage_bonus": "35",
+          "description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.N1c190b6J1kKS6Vf\" data-id=\"N1c190b6J1kKS6Vf\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Benign</span></strong></a></span></span></p></li></ul><p>Deal <strong>【HR + 35】</strong><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span>&nbsp;damage to a target</p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": true,
+          "isFacet": true,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Rest in Peace",
+          "optional_params": {},
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "Dark",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "moGoIJrb4sZYgvJi"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "eLkhOFh5K2HdBqjK",
+      "_stats": {
+        "compendiumSource": "Item.4Zej9Ip5Sjjp3zUu",
+        "coreVersion": "12.343",
+        "createdTime": 1755310097532,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/RPR/soulsow.png",
+      "name": "Reaper's Scythe",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Reaper",
+          "cost": "1 Collected Soul",
+          "damage_bonus": "0",
+          "description": "<p>Perform a <strong>Free Attack, </strong>on hit, inflicts <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Do0VLf6wW9uCSLwD\" data-id=\"Do0VLf6wW9uCSLwD\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Doom</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span>on the target, if the target is already affected with <strong>Doom, </strong>decrease its duration by 1 instead.</p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Reaper's Scythe",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "Self",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "4Zej9Ip5Sjjp3zUu"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "FJVJR2YmxcLLkHnC",
+      "_stats": {
+        "compendiumSource": "Item.AbKdrta42H98h5ES",
+        "coreVersion": "12.343",
+        "createdTime": 1755310092972,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/RPR/gluttony.png",
+      "name": "Death's Shadow",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "13",
+          "class": "Reaper",
+          "cost": "6 Collected Soul",
+          "damage_bonus": "60",
+          "description": "<p>Unleash a strike embodying death itself, Deals <strong>【HR + 60】</strong><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a><span style=\"text-decoration: underline;\">&nbsp;</span></span></span>damage to a target, if this Skill reduce a creature to 0 HP, inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.TOF8epes1eGHwx5J\" data-id=\"TOF8epes1eGHwx5J\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Frightened</span></strong></a></span></span>&nbsp;to all other enemies.</p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": true,
+          "isFacet": true,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Death's Shadow",
+          "optional_params": {},
+          "rolled_atr1": "MIG",
+          "rolled_atr2": "WLP",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "Dark",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "AbKdrta42H98h5ES"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "G1TfprUAdyoEgcQN",
+      "_stats": {
+        "compendiumSource": "Item.5SjSymHIxL2Ry6tM",
+        "coreVersion": "12.343",
+        "createdTime": 1755316019221,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "GzTGZUNPj87iTNAO",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.331",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.6.4"
+          },
+          "changes": [],
+          "description": "<p>You linger between life and death, sustained by the fading power of a stolen soul.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 1,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "GzTGZUNPj87iTNAO",
+              "originalParentId": "5SjSymHIxL2Ry6tM",
+              "originalUuid": "Item.5SjSymHIxL2Ry6tM.ActiveEffect.GzTGZUNPj87iTNAO"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/RPR/enshroud.png",
+          "name": "Beyond Death",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/RPR/enshroud.png",
+      "name": "Beyond Death",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Repaer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p><strong data-start=\"116\" data-end=\"140\">When reduced to 0 HP</strong>, you may spend <strong data-start=\"156\" data-end=\"176\">6 Collected Soul</strong> to enter <strong data-start=\"186\" data-end=\"204\">【Beyond Death】</strong>.<br data-start=\"205\" data-end=\"208\">While in this state, you act normally on your next turn, gain <strong data-start=\"272\" data-end=\"304\">1 additional turn activation</strong>, but cannot be healed.<br data-start=\"327\" data-end=\"330\">If you bring a non-undead creature to 0 HP during this state, your HP becomes your <strong data-start=\"415\" data-end=\"425\">Crisis</strong> score.<br data-start=\"432\" data-end=\"435\">If you are still at 0 HP after your next turn, you must choose to <strong data-start=\"503\" data-end=\"516\">Surrender</strong> or <strong data-start=\"520\" data-end=\"533\">Sacrifice</strong> as normal.</p>",
+          "duration": "",
+          "heroic_requirement": "You must have mastered the Reaper Class.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "level": "1",
+          "max_level": "1",
+          "name": "Beyond Death",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "5SjSymHIxL2Ry6tM"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "HPJjX78rpalv5mxm",
+      "_stats": {
+        "compendiumSource": "Item.1qZYQN596w9F4YtT",
+        "coreVersion": "12.343",
+        "createdTime": 1755289716168,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/RPR/enhanced_arcane_crest.png",
+      "name": "Soul Eater",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Reaper",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you reduce a creature to 0 HP, you gain <strong>【SL x 5】</strong>MP</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "5",
+          "name": "Soul Eater",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "1qZYQN596w9F4YtT"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "IUeX3GqmNzrmkL5d",
+      "_stats": {
+        "compendiumSource": "Item.ToGH9jvk799CBOiG",
+        "coreVersion": "12.343",
+        "createdTime": 1755307557018,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/RPR/whorl_of_death.png",
+      "name": "Keeper of the Dead",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Reaper",
+          "cost": "30 MP",
+          "damage_bonus": "0",
+          "description": "<p>At the start of <strong>Conflicts,</strong> you may summon <strong>3</strong> <strong>@UUID[Actor.GnmiQwz9YET1SwZA]{Lost Soul} </strong>to the enemy side.</p><p>As a <strong>Action, </strong>You may spend 30 MP to summon <strong>3 @UUID[Actor.GnmiQwz9YET1SwZA]{ Lost Soul} </strong>to the enemy side.</p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "You must have mastered the Reaper Class.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "level": "1",
+          "max_level": "1",
+          "name": "Keeper of the Dead",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "Self",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "ToGH9jvk799CBOiG"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "Jsx2W3SZfDDZAgRB",
+      "_stats": {
+        "compendiumSource": "Item.uVzENlp8IxhPNE75",
+        "coreVersion": "12.343",
+        "createdTime": 1755304748147,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/RPR/arcane_circle.png",
+      "name": "Soulkeeper’s Rite",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Reaper",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When the acquire this skill for the <strong>first time, </strong>gain a <strong>6-section Collected Soul clock, </strong>When you reduce a creature to 0 HP, increase your <strong>Collected Soul </strong>clock by 1.</p><p>Each time you acquire this Skill, learn one <strong>Reaper's Dirge</strong> (see Facet).</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "10",
+          "name": "Soulkeeper’s Rite",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Other",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "uVzENlp8IxhPNE75"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "MooqOUutQ9IK2l46",
+      "_stats": {
+        "compendiumSource": "Item.EEoOIG5jz2C5nvrU",
+        "coreVersion": "12.343",
+        "createdTime": 1755310096364,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/RPR/harvest_moon.png",
+      "name": "Harvest Moon",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "1",
+          "class": "Reaper",
+          "cost": "1 Collected Soul",
+          "damage_bonus": "13",
+          "description": "<p>Deals <strong>【HR + 13】</strong><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>damage a target. If this damage reduce a non-undead creature to 0 HP, Increase your <strong>Collected Soul </strong>clock by 2</p>",
+          "duration": "Instantaneus",
+          "heroic_requirement": "",
+          "isCheck": true,
+          "isFacet": true,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Harvest Moon",
+          "optional_params": {},
+          "rolled_atr1": "MIG",
+          "rolled_atr2": "WLP",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "Dark",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "EEoOIG5jz2C5nvrU"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "nR7Xkf83j5na1M7y",
+      "_stats": {
+        "compendiumSource": "Item.f5oj8XMGXDUBboFP",
+        "coreVersion": "12.343",
+        "createdTime": 1755313786408,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/RPR/regress.png",
+      "name": "Soul Strike",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Reaper",
+          "cost": "1 Collected Soul",
+          "damage_bonus": "0",
+          "description": "<p>Shoot out departed soul at the target, Deal <strong>【HR + 5】</strong><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>damage, this attack deals <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-type=\"JournalEntry\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(61, 166, 255) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Magic Damage</span></strong></a></span></span>, then, you gain a <strong>Free Action, </strong>this action must be used to perform a <strong>Reaper's Dirge</strong> other than 【💥Soul Strike】</p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": true,
+          "isFacet": true,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Soul Strike",
+          "optional_params": {},
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "skill_target": "Self",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "f5oj8XMGXDUBboFP"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "RmSPDHgcX7Pu44Eo",
+      "_stats": {
+        "compendiumSource": "Item.fRGcZSraJ5IznPgU",
+        "coreVersion": "12.343",
+        "createdTime": 1755310099744,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/RPR/waxing_slice.png",
+      "name": "Soul Conversion",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Reaper",
+          "cost": "Up to 3 Collected Soul",
+          "damage_bonus": "0",
+          "description": "<p>Spend up to <strong>3 Collected Soul, </strong>For each soul you spent this way, you gain <strong>10 </strong><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shield</span></strong></a></span></span></p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Soul Conversion",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "Self",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "fRGcZSraJ5IznPgU"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "UvHoGm7Oyh3uJljv",
+      "_stats": {
+        "compendiumSource": "Item.8jDDFcIUcR6q41Ow",
+        "coreVersion": "12.343",
+        "createdTime": 1755182087580,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/DarkMagicianSkill5.png",
+      "name": "Trail of Death",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Reaper",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>You may perform Rituals of the <strong>Spiritism</strong> discipline, and you may perform a <strong>Ritual </strong>to <strong>Speak with the Dead, </strong>if the spirit you're trying to called is hostile towards you, they may choose to not appear</p><p>You gain 【SL】Bonus to <strong>Checks</strong> that involve <strong>Gathering information from Dead Bodies</strong></p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "2",
+          "name": "Trail of Death",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p>Level</p></td><td data-colwidth=\"148\"><p>Check Bonus</p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p><strong>+1</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p><strong>+2</strong></p></td></tr></tbody></table>",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "8jDDFcIUcR6q41Ow"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "V7stYsAUjiWnoEMm",
+      "_stats": {
+        "compendiumSource": "Item.RWlKlX7OxbhvhKra",
+        "coreVersion": "12.343",
+        "createdTime": 1755310094496,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/RPR/Executioner%27s_Gallows.png",
+      "name": "Executioner's Gallow",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Reaper",
+          "cost": "2 Collected Soul",
+          "damage_bonus": "0",
+          "description": "<p>Perform a <strong>Free Attack, </strong>This attack gains <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KHCaZjNmClkp7yfM\" data-id=\"KHCaZjNmClkp7yfM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Execute</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>and its type becomes<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><strong><span style=\"text-decoration: underline;\"> </span></strong><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span></p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Executioner's Gallow",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "Self",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "RWlKlX7OxbhvhKra"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Reaper",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar4": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "DEF",
+            "max": 13,
+            "maxcolor": "#f26d40",
+            "mincolor": "#f26d40",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 13
+          },
+          "bar5": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar5",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MDEF",
+            "max": 10,
+            "maxcolor": "#26d6ed",
+            "mincolor": "#26d6ed",
+            "opacity": null,
+            "order": 4,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 10
+          }
+        }
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Reaper",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://static.wikia.nocookie.net/shadowverse/images/e/ea/Departed_Soultaker_leader.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 1100000,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {
+      "also_text": "Executioner, Bloodseeker, Soul Shepherd",
+      "benefit_dropdown": "mp_benefit",
+      "classMechanic_text": "<h1>REAPER’S DIRGE</h1><p></p><h3>GATHERING SOULS</h3><p>Reapers fuel their dread powers through the harvest of souls. Whenever you reduce a creature to 0 HP, you advance your <strong>【Collected Soul】</strong> clock by 1 section. This represents the essence of the fallen being bound to your will. The clock begins once you acquire <strong>【Soulkeeper’s Rite】</strong>, and its maximum number of sections equals 6 by default.</p><p>Each section of the clock is a fragment of death’s toll, a resource you can spend to empower devastating techniques or to weave your <strong>【Reaper’s Dirge】</strong>. Unlike other resources, <strong>Collected Souls do not recover naturally</strong>; they must be claimed from the slain.</p><p></p><h3>SPENDING SOULS</h3><p>Collected Souls are consumed to unleash the Reaper’s most fearsome abilities:</p><ul><li><p><strong>Unleash Death:</strong> Spend Souls to empower <strong>Dirge skills</strong> such as <em>Corpse Explosion</em>, <em>Death’s Shadow</em>, or <em>Twilight Requiem</em>, dealing massive Dark damage or twisting the battlefield with dread effects.</p></li><li><p><strong>Sustain the Reaper:</strong> Certain abilities, such as <em>Beyond Death</em>, allow you to burn Souls to return from the brink, carrying on as a revenant of your own demise.</p></li><li><p><strong>Shaping Fate:</strong> Some skills offer unique interactions, like trading Souls for protection (<em>Soul Conversion</em>) or for strengthening allies through unholy revival.</p></li></ul><p></p><h3>THE DIRGE</h3><p>Each Reaper cultivates a personal <strong>【Dirge】</strong>—a manifestation of their pact with the departed. The Dirge shapes how their harvested Souls are expressed in combat. As you gain more levels in <strong>【Soulkeeper’s Rite】</strong>, you unlock new verses of this requiem, tailoring your style between merciless executioner, battlefield controller, or baleful revenant.</p><p></p><h3>SOUL MANAGEMENT</h3><p>Managing Souls is the essence of the Reaper’s playstyle. To hoard them is to prepare for overwhelming devastation, but spending them too freely may leave you powerless when death comes calling. Each decision—whether to claim, conserve, or expend—echoes like a bell toll across the battlefield, for both your foes and your allies.</p>",
+      "class_facet": {
+        "1slZoC0BFNepM9IS": {
+          "facet_cost": "",
+          "facet_description": "<p>Each time you acquire this Skill, <strong>Choose</strong> one of the following effects:</p><ul><li><p>Your 【⚔️<strong>Attack】 </strong>with <strong>Arcane </strong>and <strong>Heavy </strong>weapons deals <strong>【Your Collected Soul】 </strong>bonus damage.</p></li><li><p>Your 【⚡️<strong>Offensive Spells】</strong> deals <strong>【Your Collected Soul】 </strong>bonus damage.</p></li><li><p>Your 【💥<strong>Skills】 </strong>deals <strong>【Your Collected Soul】 </strong>bonus damage.</p></li></ul><p>You gain the <strong>chosen </strong>effects. <em>(You may not choose the same option twice)</em></p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Tempered Soul",
+          "uuid": "Actor.7mZK4hieNXvBz5er.Item.1slZoC0BFNepM9IS"
+        },
+        "754j4K0iaMqJRxUw": {
+          "facet_cost": "1 Collected Soul",
+          "facet_description": "<p>Deals <strong>10 </strong><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>damage to all enemies.</p><p>You may perform this <strong>Skill </strong>as a <strong>Free Action </strong>whenever you reduce a creature to 0 HP.</p>",
+          "facet_offensive": "",
+          "facet_target": "All Enemies",
+          "id": "${item.id}",
+          "name": "Corpse Explosion",
+          "uuid": "Actor.7mZK4hieNXvBz5er.Item.754j4K0iaMqJRxUw"
+        },
+        "Du26cL8j0RecVjGR": {
+          "facet_cost": "",
+          "facet_description": "<p>When you reduce a creature to 0 HP, you may perform a <strong>Free Attack, </strong>this attack cannot gain <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Multi</span></strong></a><strong><span style=\"text-decoration: underline;\">,</span></strong></span><strong> </strong>treat your <strong>High Roll </strong>as 0 when calculating damage dealt by this attack. This effect may trigger up to <strong>【SL】 </strong>times<strong> </strong>per turn.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Cross Reaping",
+          "uuid": "Actor.7mZK4hieNXvBz5er.Item.Du26cL8j0RecVjGR"
+        },
+        "FJVJR2YmxcLLkHnC": {
+          "facet_cost": "6 Collected Soul",
+          "facet_description": "<p>Unleash a strike embodying death itself, Deals <strong>【HR + 60】</strong><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a><span style=\"text-decoration: underline;\">&nbsp;</span></span></span>damage to a target, if this Skill reduce a creature to 0 HP, inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.TOF8epes1eGHwx5J\" data-id=\"TOF8epes1eGHwx5J\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Frightened</span></strong></a></span></span>&nbsp;to all other enemies.</p>",
+          "facet_offensive": "",
+          "facet_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Death's Shadow",
+          "uuid": "Actor.7mZK4hieNXvBz5er.Item.FJVJR2YmxcLLkHnC"
+        },
+        "G1TfprUAdyoEgcQN": {
+          "facet_cost": "",
+          "facet_description": "<p><strong data-start=\"116\" data-end=\"140\">When reduced to 0 HP</strong>, you may spend <strong data-start=\"156\" data-end=\"176\">6 Collected Soul</strong> to enter <strong data-start=\"186\" data-end=\"204\">【Beyond Death】</strong>.<br data-start=\"205\" data-end=\"208\">While in this state, you act normally on your next turn, gain <strong data-start=\"272\" data-end=\"304\">1 additional turn activation</strong>, but cannot be healed.<br data-start=\"327\" data-end=\"330\">If you bring a non-undead creature to 0 HP during this state, your HP becomes your <strong data-start=\"415\" data-end=\"425\">Crisis</strong> score.<br data-start=\"432\" data-end=\"435\">If you are still at 0 HP after your next turn, you must choose to <strong data-start=\"503\" data-end=\"516\">Surrender</strong> or <strong data-start=\"520\" data-end=\"533\">Sacrifice</strong> as normal.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Beyond Death",
+          "uuid": "Actor.7mZK4hieNXvBz5er.Item.G1TfprUAdyoEgcQN"
+        },
+        "HPJjX78rpalv5mxm": {
+          "facet_cost": "",
+          "facet_description": "<p>When you reduce a creature to 0 HP, you gain <strong>【SL x 5】</strong>MP</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Soul Eater",
+          "uuid": "Actor.7mZK4hieNXvBz5er.Item.HPJjX78rpalv5mxm"
+        },
+        "IUeX3GqmNzrmkL5d": {
+          "facet_cost": "30 MP",
+          "facet_description": "<p>At the start of <strong>Conflicts,</strong> you may summon <strong>3</strong> <strong>@UUID[Actor.GnmiQwz9YET1SwZA]{Lost Soul} </strong>to the enemy side.</p><p>As a <strong>Action, </strong>You may spend 30 MP to summon <strong>3 @UUID[Actor.GnmiQwz9YET1SwZA]{ Lost Soul} </strong>to the enemy side.</p>",
+          "facet_offensive": "",
+          "facet_target": "Self",
+          "id": "${item.id}",
+          "name": "Keeper of the Dead",
+          "uuid": "Actor.7mZK4hieNXvBz5er.Item.IUeX3GqmNzrmkL5d"
+        },
+        "Jsx2W3SZfDDZAgRB": {
+          "facet_cost": "",
+          "facet_description": "<p>When the acquire this skill for the <strong>first time, </strong>gain a <strong>6-section Collected Soul clock, </strong>When you reduce a creature to 0 HP, increase your <strong>Collected Soul </strong>clock by 1.</p><p>Each time you acquire this Skill, learn one <strong>Reaper's Dirge</strong> (see Facet).</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Soulkeeper’s Rite",
+          "uuid": "Actor.7mZK4hieNXvBz5er.Item.Jsx2W3SZfDDZAgRB"
+        },
+        "MooqOUutQ9IK2l46": {
+          "facet_cost": "1 Collected Soul",
+          "facet_description": "<p>Deals <strong>【HR + 13】</strong><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>damage a target. If this damage reduce a non-undead creature to 0 HP, Increase your <strong>Collected Soul </strong>clock by 2</p>",
+          "facet_offensive": "",
+          "facet_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Harvest Moon",
+          "uuid": "Actor.7mZK4hieNXvBz5er.Item.MooqOUutQ9IK2l46"
+        },
+        "RmSPDHgcX7Pu44Eo": {
+          "facet_cost": "Up to 3 Collected Soul",
+          "facet_description": "<p>Spend up to <strong>3 Collected Soul, </strong>For each soul you spent this way, you gain <strong>10 </strong><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shield</span></strong></a></span></span></p>",
+          "facet_offensive": "",
+          "facet_target": "Self",
+          "id": "${item.id}",
+          "name": "Soul Conversion",
+          "uuid": "Actor.7mZK4hieNXvBz5er.Item.RmSPDHgcX7Pu44Eo"
+        },
+        "UvHoGm7Oyh3uJljv": {
+          "facet_cost": "",
+          "facet_description": "<p>You may perform Rituals of the <strong>Spiritism</strong> discipline, and you may perform a <strong>Ritual </strong>to <strong>Speak with the Dead, </strong>if the spirit you're trying to called is hostile towards you, they may choose to not appear</p><p>You gain 【SL】Bonus to <strong>Checks</strong> that involve <strong>Gathering information from Dead Bodies</strong></p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Trail of Death",
+          "uuid": "Actor.7mZK4hieNXvBz5er.Item.UvHoGm7Oyh3uJljv"
+        },
+        "V7stYsAUjiWnoEMm": {
+          "facet_cost": "2 Collected Soul",
+          "facet_description": "<p>Perform a <strong>Free Attack, </strong>This attack gains <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KHCaZjNmClkp7yfM\" data-id=\"KHCaZjNmClkp7yfM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Execute</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>and its type becomes<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><strong><span style=\"text-decoration: underline;\"> </span></strong><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span></p>",
+          "facet_offensive": "",
+          "facet_target": "Self",
+          "id": "${item.id}",
+          "name": "Executioner's Gallow",
+          "uuid": "Actor.7mZK4hieNXvBz5er.Item.V7stYsAUjiWnoEMm"
+        },
+        "aAlFbk5ddwwus6TH": {
+          "facet_cost": "6 Collected Soul",
+          "facet_description": "<p>Revive all <strong>KO</strong> allies to full HP, then inflict <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.RZIAnKw95vY6yh2W\" data-id=\"RZIAnKw95vY6yh2W\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Zombie</span></strong></a></span> on them.</p>",
+          "facet_offensive": "",
+          "facet_target": "All ally",
+          "id": "${item.id}",
+          "name": "Twilight Requiem",
+          "uuid": "Actor.7mZK4hieNXvBz5er.Item.aAlFbk5ddwwus6TH"
+        },
+        "bkbpifz1bgpLmZoL": {
+          "facet_cost": "3 Collected Soul",
+          "facet_description": "<p>Perform a <strong>Free Attack, </strong>this attack  gains <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Multi</span></strong></a><strong><span style=\"text-decoration: underline;\"> 3,</span></strong></span> its damage type becomes <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span>and<span style=\"font-family: Signika, sans-serif\"><strong><span style=\"text-decoration: underline;\"> </span></strong></span>deals 13 bonus damage.</p>",
+          "facet_offensive": "",
+          "facet_target": "Up to three creatures",
+          "id": "${item.id}",
+          "name": "Spirit Cleaver",
+          "uuid": "Actor.7mZK4hieNXvBz5er.Item.bkbpifz1bgpLmZoL"
+        },
+        "dUn7Wyew1QxPwdCH": {
+          "facet_cost": "3 Collected Soul",
+          "facet_description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.N1c190b6J1kKS6Vf\" data-id=\"N1c190b6J1kKS6Vf\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Benign</span></strong></a></span></span></p></li></ul><p>Deal <strong>【HR + 35】</strong><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span>&nbsp;damage to a target</p>",
+          "facet_offensive": "",
+          "facet_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Rest in Peace",
+          "uuid": "Actor.7mZK4hieNXvBz5er.Item.dUn7Wyew1QxPwdCH"
+        },
+        "eLkhOFh5K2HdBqjK": {
+          "facet_cost": "1 Collected Soul",
+          "facet_description": "<p>Perform a <strong>Free Attack, </strong>on hit, inflicts <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Do0VLf6wW9uCSLwD\" data-id=\"Do0VLf6wW9uCSLwD\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Doom</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span>on the target, if the target is already affected with <strong>Doom, </strong>decrease its duration by 1 instead.</p>",
+          "facet_offensive": "",
+          "facet_target": "Self",
+          "id": "${item.id}",
+          "name": "Reaper's Scythe",
+          "uuid": "Actor.7mZK4hieNXvBz5er.Item.eLkhOFh5K2HdBqjK"
+        },
+        "nR7Xkf83j5na1M7y": {
+          "facet_cost": "1 Collected Soul",
+          "facet_description": "<p>Shoot out departed soul at the target, Deal <strong>【HR + 5】</strong><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>damage, this attack deals <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-type=\"JournalEntry\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(61, 166, 255) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Magic Damage</span></strong></a></span></span>, then, you gain a <strong>Free Action, </strong>this action must be used to perform a <strong>Reaper's Dirge</strong> other than 【💥Soul Strike】</p>",
+          "facet_offensive": "",
+          "facet_target": "Self",
+          "id": "${item.id}",
+          "name": "Soul Strike",
+          "uuid": "Actor.7mZK4hieNXvBz5er.Item.nR7Xkf83j5na1M7y"
+        }
+      },
+      "class_heroicSkill": {
+        "G1TfprUAdyoEgcQN": {
+          "id": "${item.id}",
+          "name": "Beyond Death",
+          "skill_cost": "",
+          "skill_description": "<p><strong data-start=\"116\" data-end=\"140\">When reduced to 0 HP</strong>, you may spend <strong data-start=\"156\" data-end=\"176\">6 Collected Soul</strong> to enter <strong data-start=\"186\" data-end=\"204\">【Beyond Death】</strong>.<br data-start=\"205\" data-end=\"208\">While in this state, you act normally on your next turn, gain <strong data-start=\"272\" data-end=\"304\">1 additional turn activation</strong>, but cannot be healed.<br data-start=\"327\" data-end=\"330\">If you bring a non-undead creature to 0 HP during this state, your HP becomes your <strong data-start=\"415\" data-end=\"425\">Crisis</strong> score.<br data-start=\"432\" data-end=\"435\">If you are still at 0 HP after your next turn, you must choose to <strong data-start=\"503\" data-end=\"516\">Surrender</strong> or <strong data-start=\"520\" data-end=\"533\">Sacrifice</strong> as normal.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.7mZK4hieNXvBz5er.Item.G1TfprUAdyoEgcQN"
+        },
+        "IUeX3GqmNzrmkL5d": {
+          "id": "${item.id}",
+          "name": "Keeper of the Dead",
+          "skill_cost": "30 MP",
+          "skill_description": "<p>At the start of <strong>Conflicts,</strong> you may summon <strong>3</strong> <strong>@UUID[Actor.GnmiQwz9YET1SwZA]{Lost Soul} </strong>to the enemy side.</p><p>As a <strong>Action, </strong>You may spend 30 MP to summon <strong>3 @UUID[Actor.GnmiQwz9YET1SwZA]{ Lost Soul} </strong>to the enemy side.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.7mZK4hieNXvBz5er.Item.IUeX3GqmNzrmkL5d"
+        }
+      },
+      "class_lore": "<blockquote><p><strong>Reapers</strong> are somber harvesters of souls, walking the thin line between life and death. To the fearful, they are omens of tragedy; to the desperate, they are shepherds who grant the fallen one last purpose. Bound by pacts with the departed, Reapers wield death itself as a weapon.</p><p>Though shunned as bearers of ill fate, Reapers command dread and awe in equal measure. By claiming souls from the slain, they conjure dire powers — reviving allies in cursed unlife or striking terror into their foes with shadows of the grave. To befriend one is to walk beside death… and to be their enemy is to hear the dirge of your own demise.</p></blockquote>",
+      "class_skill": {
+        "1slZoC0BFNepM9IS": {
+          "id": "${item.id}",
+          "name": "Tempered Soul",
+          "skill_cost": "",
+          "skill_description": "<p>Each time you acquire this Skill, <strong>Choose</strong> one of the following effects:</p><ul><li><p>Your 【⚔️<strong>Attack】 </strong>with <strong>Arcane </strong>and <strong>Heavy </strong>weapons deals <strong>【Your Collected Soul】 </strong>bonus damage.</p></li><li><p>Your 【⚡️<strong>Offensive Spells】</strong> deals <strong>【Your Collected Soul】 </strong>bonus damage.</p></li><li><p>Your 【💥<strong>Skills】 </strong>deals <strong>【Your Collected Soul】 </strong>bonus damage.</p></li></ul><p>You gain the <strong>chosen </strong>effects. <em>(You may not choose the same option twice)</em></p>",
+          "skill_maxLevel": 3,
+          "skill_type": "Passive",
+          "uuid": "Actor.7mZK4hieNXvBz5er.Item.1slZoC0BFNepM9IS"
+        },
+        "Du26cL8j0RecVjGR": {
+          "id": "${item.id}",
+          "name": "Cross Reaping",
+          "skill_cost": "",
+          "skill_description": "<p>When you reduce a creature to 0 HP, you may perform a <strong>Free Attack, </strong>this attack cannot gain <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Multi</span></strong></a><strong><span style=\"text-decoration: underline;\">,</span></strong></span><strong> </strong>treat your <strong>High Roll </strong>as 0 when calculating damage dealt by this attack. This effect may trigger up to <strong>【SL】 </strong>times<strong> </strong>per turn.</p>",
+          "skill_maxLevel": 3,
+          "skill_type": "Passive",
+          "uuid": "Actor.7mZK4hieNXvBz5er.Item.Du26cL8j0RecVjGR"
+        },
+        "HPJjX78rpalv5mxm": {
+          "id": "${item.id}",
+          "name": "Soul Eater",
+          "skill_cost": "",
+          "skill_description": "<p>When you reduce a creature to 0 HP, you gain <strong>【SL x 5】</strong>MP</p>",
+          "skill_maxLevel": 5,
+          "skill_type": "Passive",
+          "uuid": "Actor.7mZK4hieNXvBz5er.Item.HPJjX78rpalv5mxm"
+        },
+        "Jsx2W3SZfDDZAgRB": {
+          "id": "${item.id}",
+          "name": "Soulkeeper’s Rite",
+          "skill_cost": "",
+          "skill_description": "<p>When the acquire this skill for the <strong>first time, </strong>gain a <strong>6-section Collected Soul clock, </strong>When you reduce a creature to 0 HP, increase your <strong>Collected Soul </strong>clock by 1.</p><p>Each time you acquire this Skill, learn one <strong>Reaper's Dirge</strong> (see Facet).</p>",
+          "skill_maxLevel": 10,
+          "skill_type": "Other",
+          "uuid": "Actor.7mZK4hieNXvBz5er.Item.Jsx2W3SZfDDZAgRB"
+        },
+        "UvHoGm7Oyh3uJljv": {
+          "id": "${item.id}",
+          "name": "Trail of Death",
+          "skill_cost": "",
+          "skill_description": "<p>You may perform Rituals of the <strong>Spiritism</strong> discipline, and you may perform a <strong>Ritual </strong>to <strong>Speak with the Dead, </strong>if the spirit you're trying to called is hostile towards you, they may choose to not appear</p><p>You gain 【SL】Bonus to <strong>Checks</strong> that involve <strong>Gathering information from Dead Bodies</strong></p>",
+          "skill_maxLevel": 2,
+          "skill_type": "Passive",
+          "uuid": "Actor.7mZK4hieNXvBz5er.Item.UvHoGm7Oyh3uJljv"
+        }
+      },
+      "flavor_text": "<p style=\"text-align: center\"><span style=\"font-family: Amiri\"><em>The dead need guidance,</em></span></p><p style=\"text-align: center\"><span style=\"font-family: Amiri\"><em>to carry their weight is a burden few can endure</em></span></p>",
+      "martialArmor_equippable": false,
+      "martialMelee_equippable": true,
+      "martialRanged_equippable": false,
+      "martialShield_equippable": false,
+      "name": "Reaper",
+      "project_performable": false,
+      "ritual_performable": false
+    },
+    "statusEffects": {},
+    "template": "hoxC3HFCtMYGScIo",
+    "templateSystemUniqueVersion": 504201233
+  },
+  "type": "character"
+}

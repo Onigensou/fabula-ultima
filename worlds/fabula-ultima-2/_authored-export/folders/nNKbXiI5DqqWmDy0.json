@@ -1,0 +1,19 @@
+{
+  "_id": "nNKbXiI5DqqWmDy0",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1753927548396,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "VVjpCERIXMrOJna7",
+  "name": "Spell Fencer",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

@@ -1,0 +1,57 @@
+{
+  "_id": "TWBZrN3CtXZuJvuo",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757053545942,
+    "duplicateSource": "Item.QKEsByx8YcbNIhlE",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "2OplVa9fwLYbzD8b",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/05_SCH/adloquium.png",
+  "name": "Greater Ecdysis",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 8300000,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Mutant",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>When you use the <strong>Ecdysis</strong> Skill, you may also <strong>choose one or both options:</strong></p><ul><li>You recover from <strong>one status effects</strong></li><li>If you are affected by one or more <strong>spells</strong> with a <strong>duration</strong> of “Scene”, you are no longer affected by any of those spells</li></ul>",
+      "duration": "",
+      "heroic_requirement": "You must have mastered the Mutant Class.",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Greater Ecdysis",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "TWBZrN3CtXZuJvuo"
+  },
+  "type": "equippableItem"
+}

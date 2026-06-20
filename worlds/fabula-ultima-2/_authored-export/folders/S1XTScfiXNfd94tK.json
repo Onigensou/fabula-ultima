@@ -1,0 +1,19 @@
+{
+  "_id": "S1XTScfiXNfd94tK",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1746734922969,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.4.2"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "7i0o1cnEBxFHsJBk",
+  "name": "Legacy",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Actor"
+}

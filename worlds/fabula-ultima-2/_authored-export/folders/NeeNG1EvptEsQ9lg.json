@@ -1,0 +1,19 @@
+{
+  "_id": "NeeNG1EvptEsQ9lg",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1748002285629,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.4.2"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "OnmQOiAz7vgNYZrN",
+  "name": "Farin",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Macro"
+}

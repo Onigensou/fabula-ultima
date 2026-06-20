@@ -1,0 +1,765 @@
+{
+  "_id": "ehhO581DreiWDFnB",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1699211303653,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "Q03zEFzbKoxIDpCF",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.331",
+        "createdTime": 1769830001429,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>This creature has less than 50% HP</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "4ldx00srGNv5AJBr",
+          "originalParentId": "0gIBYzSpjdXS6f25",
+          "originalUuid": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-crisis",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": false
+        },
+        "fabula-ultima-companion": {
+          "autoCrisis": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/08_DRG/blood_for_blood.png",
+      "name": "Crisis",
+      "origin": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr",
+      "sort": 0,
+      "statuses": [
+        "5jkr80zqdzaR003d"
+      ],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.5.0"
+    },
+    "theatre": {
+      "baseinsert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Portrait/Nemu_Standard.png",
+      "disabledefault": false,
+      "emotes": {
+        "angry": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Portrait/Nemu_Angry.png"
+        },
+        "annoyed": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Portrait/Nemu_Annoyed.png"
+        },
+        "awe-struck": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Portrait/Nemu_Shock.png"
+        },
+        "blushing": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Portrait/Nemu_Surprised.png"
+        },
+        "carefree": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Portrait/Nemu_Happy.png"
+        },
+        "confused": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Portrait/Nemu_Shock.png"
+        },
+        "cry": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Portrait/Nemu_Sad.png"
+        },
+        "custom1": {
+          "custom": true,
+          "image": "modules/theatre/app/graphics/emotes/explosion.png",
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Portrait/Nemu_ElectricShock.png",
+          "label": "Electrocute\n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    ",
+          "name": "custom1"
+        },
+        "custom2": {
+          "custom": true,
+          "image": "modules/theatre/app/graphics/emotes/blank.png",
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Portrait/Nemu_BloodyA.png",
+          "label": "Bloody Trance",
+          "name": "custom2"
+        },
+        "dissatisfied": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Portrait/Nemu_Annoyed.png"
+        },
+        "dizzy": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Portrait/Nemu_ElectricShock.png"
+        },
+        "frown": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Portrait/Nemu_Annoyed.png"
+        },
+        "frustrated": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Portrait/Nemu_Annoyed.png"
+        },
+        "grin": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Portrait/Nemu_Happy.png"
+        },
+        "happy": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Portrait/Nemu_Happy.png"
+        },
+        "happytears": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Portrait/Nemu_Happy.png"
+        },
+        "hearts": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Portrait/Nemu_Happy.png"
+        },
+        "idea": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Portrait/Nemu_Shock.png"
+        },
+        "innocent": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Portrait/Nemu_Happy.png"
+        },
+        "kiss": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Portrait/Nemu_Happy.png"
+        },
+        "laughing": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Portrait/Nemu_Happy.png"
+        },
+        "laughingsquint": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Portrait/Nemu_Happy.png"
+        },
+        "meh": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Portrait/Nemu_ClosedEyes.png"
+        },
+        "mischevious": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Portrait/Nemu_Annoyed.png"
+        },
+        "panic": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Portrait/Nemu_Shock.png"
+        },
+        "playful": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Portrait/Nemu_Happy.png"
+        },
+        "rofl": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Portrait/Nemu_Happy.png"
+        },
+        "sad": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Portrait/Nemu_Sad.png"
+        },
+        "scared": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Portrait/Nemu_Sad.png"
+        },
+        "serious": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Portrait/Nemu_Standard.png"
+        },
+        "sleeping": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Portrait/Nemu_Pout.png"
+        },
+        "smile": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Portrait/Nemu_Standard.png"
+        },
+        "smug": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Portrait/Nemu_Happy.png"
+        },
+        "speechless": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Portrait/Nemu_Surprised.png"
+        },
+        "surprised": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Portrait/Nemu_Surprised.png"
+        },
+        "thinking": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Portrait/Nemu_ClosedEyes.png"
+        },
+        "tongue": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Portrait/Nemu_Happy.png"
+        },
+        "wink": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Portrait/Nemu_Happy.png"
+        },
+        "worried": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Portrait/Nemu_Annoyed.png"
+        }
+      },
+      "name": "Nemu",
+      "optalign": "top",
+      "settings": {
+        "emote": "surprised",
+        "textcolor": null,
+        "textflyin": null,
+        "textfont": null,
+        "textsize": null,
+        "textstanding": null
+      }
+    }
+  },
+  "folder": "KxLrVD3mmlt6jekG",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Portrait/Nemu_Standard.png",
+  "name": "Nemu",
+  "ownership": {
+    "7hKw8KGsimboeDif": 3,
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "prototypeToken": {
+    "actorLink": true,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": 1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 30,
+            "ownerVisibility": 30,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 30,
+            "ownerVisibility": 30,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          }
+        }
+      },
+      "hex-size-support": {
+        "alternateOrientation": false,
+        "hideBorder": true,
+        "pivotx": null,
+        "pivoty": null
+      },
+      "token-variants": {
+        "disableHUDButton": false,
+        "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Nemu_TestSprite2.png"
+      },
+      "token-z": {
+        "zIndex": 0
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Nemu",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": true,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1.2,
+      "scaleY": 1.2,
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/*",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 300000,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "activeEffects": {},
+    "props": {
+      "accessory2_name": "",
+      "accessory_name": "",
+      "arcanism": false,
+      "armor_mod": "2",
+      "armor_name": "No Armor",
+      "attack_accuracy_mod_all": "0",
+      "attack_accuracy_mod_melee": "0",
+      "attack_accuracy_mod_range": "0",
+      "attack_accuracy_mod_spell": "0",
+      "backpack": "",
+      "backstory": "<div style=\"display:inline-block;margin:14px 0 8px;padding:6px 10px 7px 38px;background:linear-gradient(180deg,#f9f4ea,#e9e1d3);border:1px solid #d1c4ad;border-radius:6px;box-shadow:inset 0 1px 0 #fff,0 1px 0 #00000010;color:#3b332d;font-weight:700;position:relative;font-family:'Signika','Noto Sans Thai','Prompt',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;\"><p><span style=\"font-family: 'Signika','Noto Sans Thai','Prompt',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\"><strong>Backstory — Nemu</strong></span></p></div><div style=\"background:linear-gradient(180deg,#fbf7ee,#f3edde);border:1px solid #ddd1bd;border-radius:8px;padding:12px 14px;box-shadow:inset 0 1px 0 #ffffffcc;color:#2e2a28;font-family:'Signika','Noto Sans Thai','Prompt',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;line-height:1.42;letter-spacing:.2px;font-size:14px;\"><p style=\"margin: 6px 0\"><span style=\"font-family: 'Signika','Noto Sans Thai','Prompt',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\">【<strong>Nemu</strong>】(19)</span></p><p style=\"margin: 6px 0\"><span style=\"font-family: 'Signika','Noto Sans Thai','Prompt',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\">\"<strong>Nemu</strong>\" (เนมุ) เเละน้องสาวของเธอ \"<strong>Nea</strong>\" (นิอา) เป็นคู่พี่น้องที่อาศัยอยู่ในเขตุรอบนอกของเมืองLlynderyn ทั้งสองสูญเสียเเม่ไปตั้งเเต่ยังเล็กเพราะโรคระบาด ทําให้Nemuต้องรับหน้าที่ดูเเลเเละหาเงินมาเลี้ยงน้องสาวของเธอตั้งเเต่ยังเด็ก เธอมักจะต้องคอยค้นของเก่าที่คนไม่ใช้เเล้วไปขายบ้างหรือไม่บางครั้งก็จําเป็นต้องลักเล็กโขมยน้อยเพื่อประทังชีวิต ทั้งสองพี่น้องใช้ชิวิตอย่างยากลําบากเเต่พวกเขาก็มีความสุข</span></p><div style=\"height:1px;background:linear-gradient(90deg,transparent 0%,#cfc4b1 12%,#cfc4b1 88%,transparent 100%);margin:10px 0;opacity:.9;\"><p></p></div><p style=\"margin: 6px 0\"><span style=\"font-family: 'Signika','Noto Sans Thai','Prompt',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\">จนกระทั้งวันนึง NemuเเละNeaถูกจับตัวไปโดยชายปริศนาเพื่อการทดลองในการสร้างมนุษย์ที่มีพลังของมอนสเตอร์ ซึ่งทําให้Nemuได้รับพลังChimeraของเธอมา ท้ายที่สุดNemuสามารถหนีจากเงื่อมมือของชายปริศนาคนนี้ได้ เเต่เธอต้องสูญเสียNeaไปเพราะพลังของเธอเกิดคุ้มคลั่งขึ้นมา</span></p><div style=\"height:1px;background:linear-gradient(90deg,transparent 0%,#cfc4b1 12%,#cfc4b1 88%,transparent 100%);margin:10px 0;opacity:.9;\"><p></p></div><p style=\"margin: 6px 0\"><span style=\"font-family: 'Signika','Noto Sans Thai','Prompt',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\">ทว่าหลังจากหนีมาได้ไม่นานNemuก็ถูกจับโดยคนจากทางโบสถ์ เพราะเเท้จริงเเล้วการทดลองของชายปริศนานี้ ก็ถูกจ้างวานโดยทางโบสถ์เอง เพื่อที่ทางศาสนจักรจะเอาคิเมร่าที่ได้จากการทดลองไปใช้เป็นอาวุธเพื่อต่อต้านจักรวรรดิวาราเคียผู้ซึ่งเทคโนโลยีก้าวหน้าขึ้นไปเรื่อยๆ เเต่ในเมื่อการทดลองล้มเหลว โดยเนมุไม่สามารถคุมพลังได้โดยสมบูรณ์ทําให้ทางศาสนจักรต้องปิดเรื่องการทดลองไว้ไม่ให้ประชาชนรู้ จึงได้หวังที่จะส่งเนมุไปยัง Tatarus เพื่อขังลืม</span></p></div>",
+      "bond_1": "Nea",
+      "bond_2": "Dr. Genotrix",
+      "bond_3": "Melvia",
+      "bond_4": "Sophie",
+      "bond_5": "Pakka",
+      "bond_6": "Petro",
+      "chanter_volume_mp_header": "MP",
+      "chanter_volume_mp_high": 30,
+      "chanter_volume_mp_low": 10,
+      "chanter_volume_mp_medium": 20,
+      "chanter_volume_target_high": "Every enemy who can hear you.",
+      "chanter_volume_target_low": "Yourself <b>or</b> another creature you can see who can hear you.",
+      "chanter_volume_target_medium": "Every ally who can hear you.",
+      "char_identity": "Alchemical Experiment",
+      "check_roller": "Roll!",
+      "chimerism": false,
+      "class_list": {
+        "0": {
+          "$deleted": false,
+          "benefit": "hp",
+          "class_name": "Mutant",
+          "level": "10"
+        },
+        "1": {
+          "$deleted": false,
+          "benefit": "hp",
+          "class_name": "Fury",
+          "level": "5"
+        },
+        "2": {
+          "$deleted": true,
+          "benefit": "hp",
+          "class_name": "Dark Blade",
+          "level": "2"
+        }
+      },
+      "clock_brainwave": "0",
+      "clock_trade": "0",
+      "cooking_roller": "🔪Cook!",
+      "current_hp": "26",
+      "current_ip": "0",
+      "current_mp": "35",
+      "damage_receiving_mod_air": "0",
+      "damage_receiving_mod_all": "0",
+      "damage_receiving_mod_bolt": "0",
+      "damage_receiving_mod_dark": "0",
+      "damage_receiving_mod_earth": "0",
+      "damage_receiving_mod_fire": "0",
+      "damage_receiving_mod_ice": "0",
+      "damage_receiving_mod_light": "0",
+      "damage_receiving_mod_melee": "0",
+      "damage_receiving_mod_physical": "0",
+      "damage_receiving_mod_poison": "0",
+      "damage_receiving_mod_range": "0",
+      "dex_base": "10",
+      "dex_current": 10,
+      "draw_card": "Draw",
+      "draw_card_copy1": "Use",
+      "elementalism": false,
+      "emotion_1_1": "2",
+      "emotion_1_2": "1",
+      "emotion_1_3": "1",
+      "emotion_2_1": "",
+      "emotion_2_2": "2",
+      "emotion_2_3": "2",
+      "emotion_3_1": "1",
+      "emotion_3_2": "1",
+      "emotion_3_3": "",
+      "emotion_4_1": "2",
+      "emotion_4_2": "",
+      "emotion_4_3": "",
+      "emotion_5_1": "2",
+      "emotion_5_2": "1",
+      "emotion_5_3": "",
+      "emotion_6_1": "",
+      "emotion_6_2": "1",
+      "emotion_6_3": "",
+      "entropism": false,
+      "experience": "0",
+      "experience_ui": "0",
+      "fp": "1",
+      "id": "ehhO581DreiWDFnB",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Portrait/Nemu_Standard.png",
+      "init_penalty": "0",
+      "ins_base": "8",
+      "ins_current": 8,
+      "inventory_label": "💼 Inventory",
+      "inventory_list": {
+        "0": {
+          "$deleted": false,
+          "item_description": "<p>An old Diary. A keepsake of Nemu's younger sister.</p>",
+          "item_name": "Nea's Diary",
+          "item_owned": "1",
+          "item_roll": ""
+        },
+        "1": {
+          "$deleted": false,
+          "item_description": "<p>When you gain [Oppertunity] (From Critical or Fumble)</p>\n<p>You can ignore the Oppertunity table and made Free Attack with this weapon instead.</p>\n<p>On-hit, the target suffer [Slow]</p>\n<p>You can't gain Fabula Point using this effect on Fumble.</p>",
+          "item_name": "Disdainful Knife",
+          "item_owned": "1",
+          "item_roll": ""
+        }
+      },
+      "isAwake": false,
+      "isClarity": false,
+      "isDazed": false,
+      "isEnergized": false,
+      "isEnraged": false,
+      "isFocus": false,
+      "isPoisoned": false,
+      "isShaken": false,
+      "isSlow": false,
+      "isStrong": false,
+      "isSwift": false,
+      "isWeak": false,
+      "is_martialarmor": false,
+      "key_list": {},
+      "level": "15",
+      "magic_defense_mod": "2",
+      "main_attrib_1": "DEX",
+      "main_attrib_2": "MIG",
+      "main_hand": "Unarmed Strike",
+      "main_hand_attack": "",
+      "max_hp": 75,
+      "max_ip": 6,
+      "max_mp": 45,
+      "memories_list": {},
+      "memory": "Memories",
+      "mig_base": "10",
+      "mig_current": 10,
+      "name": "Nemu",
+      "normal_spell_list": {},
+      "notes_text": "<div style=\"max-width:1100px;margin:0 auto;color:#2e2a28;font-family:'Signika','Noto Sans Thai','Prompt',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;line-height:1.38;letter-spacing:.2px;\"><div style=\"background:linear-gradient(180deg,#f4efe5 0%,#ebe5d9 100%);border:1px solid #cdc4b4;border-radius:10px;box-shadow:0 10px 24px rgba(0,0,0,.18),inset 0 1px 0 #ffffff88,inset 0 -1px 0 #0000000d;padding:18px 22px 20px;position:relative;overflow:hidden;\"><div style=\"margin:-18px -22px 12px;padding:12px 20px 13px;background:linear-gradient(180deg,#929dad 0%,#6c7684 35%,#4b5563 100%);border-bottom:2px solid #3a404b;color:#f3f5f7;text-shadow:0 1px 0 rgba(0,0,0,.45);letter-spacing:.4px;\"><p><span style=\"font-family: Cinzel,'Cinzel Decorative',Georgia,serif\"><strong>Nemu</strong></span></p></div><div style=\"display:inline-block;margin:0 10px 10px 0;padding:6px 10px 7px 38px;background:linear-gradient(180deg,#f9f4ea,#e9e1d3);border:1px solid #d1c4ad;border-radius:6px;box-shadow:inset 0 1px 0 #fff,0 1px 0 #00000010;color:#3b332d;font-weight:700;position:relative;\"><p><span style=\"font-family: 'Signika','Noto Sans Thai','Prompt',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\"><strong>Character Notes</strong></span></p></div><div style=\"display:grid;grid-template-columns:320px 1fr;gap:18px;align-items:start;\"><div style=\"position:relative;\"><div style=\"border:1px solid #d5cec1;border-radius:8px;background:linear-gradient(180deg,#f5f0e6,#ebe5d9);padding:10px;box-shadow:inset 0 1px 0 #fff;\"><img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Nemu/Portrait/Nemu_Standard.png\" alt=\"Nemu Portrait\" style=\"width: 100%; height: auto; display: block; filter: drop-shadow(0 6px 10px rgba(0,0,0,.18)); -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%); mask-image: linear-gradient(180deg, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)\"></div><div style=\"margin-top:8px;text-align:center;font-size:12px;color:#5a5149;opacity:.9;\"><p><span style=\"font-family: 'Signika','Noto Sans Thai','Prompt',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\">Standard Attire</span></p></div></div><div style=\"padding-left:14px;border-left:1px solid #d9d0c1;\"><div style=\"background:linear-gradient(180deg,#fbf7ee,#f3edde);border:1px solid #ddd1bd;border-radius:8px;padding:12px 14px;box-shadow:inset 0 1px 0 #ffffffcc;\"><p style=\"margin: .25rem 0 0 0; font-weight: 800\"><span style=\"font-family: 'Signika','Noto Sans Thai','Prompt',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\"><strong>【Path of Vengeance】</strong></span></p><p style=\"margin: .25rem 0 .5rem 0\"><span style=\"font-family: 'Signika','Noto Sans Thai','Prompt',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\">ตั้งเเต่ทุกสิ่งทุกอย่างที่เกิดขึ้น เเม้หลังจากถูกจับได้โดยทางศาสนจักร เธอก็มีเเค่เป้าหมายเดียวในชีวิตของเธอ: การล้างเเค้นชายปริศนาที่จับเธอไปทดลอง</span></p><div style=\"height:1px;background:linear-gradient(90deg,transparent 0%,#cfc4b1 12%,#cfc4b1 88%,transparent 100%);margin:10px 0;opacity:.9;\"><p></p></div><p style=\"margin: .25rem 0 0 0; font-weight: 800\"><span style=\"font-family: 'Signika','Noto Sans Thai','Prompt',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\"><strong>【Chained Heart】</strong></span></p><p style=\"margin: .25rem 0\"><span style=\"font-family: 'Signika','Noto Sans Thai','Prompt',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\">ในฐานะพี่สาว เนมุรู้สึกรักเเละผูกพันธุ์ต่อน้องสาวของเธอมาก ซึ่งทําให้การตายของเธอโดยเงื่อมมือของตัวเองเป็นเหตุการ์ณที่ฝังลึกลงไปในจิตใจของเนมุ เธอจึงมักจะระวังเรื่องการใช้พลังของเธออยู่เสมอ เพราะถ้าเธอหวังพึ่งพลังมากไปเธออาจจะสูญเสียการควบคุมอีกทีก็ได้</span></p><p style=\"margin: .25rem 0 .5rem 0\"><span style=\"font-family: 'Signika','Noto Sans Thai','Prompt',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\">เพราะเหตุการ์ณในอดีต เนมุจึงมีความหวาดระเเวงเมื่อเข้าหาผู้คน เธอมักจะเลี้ยงการผูกพันธุ์กับผู้อื่นมากเกินไป เธอเชื่อว่านี้คือสิ่งที่ดีที่สุดต่อทั้งสองฝ่าย</span></p><div style=\"height:1px;background:linear-gradient(90deg,transparent 0%,#cfc4b1 12%,#cfc4b1 88%,transparent 100%);margin:10px 0;opacity:.9;\"><p></p></div><p style=\"margin: .25rem 0 0 0; font-weight: 800\"><span style=\"font-family: 'Signika','Noto Sans Thai','Prompt',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\"><strong>【Not-so-well-readed】</strong></span></p><p style=\"margin: .25rem 0 .5rem 0\"><span style=\"font-family: 'Signika','Noto Sans Thai','Prompt',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\">เนื่องจากเธอกําพร้าเเม่ตั้งเเต่ยังเด็ก เนมุจึงไม่สามารถอ่านเขียนได้ดีนัก ในตอนที่เธอกับน้องสาวยังเด็ก นิอาเป็นคนที่ชอบอ่านหนังสือมาก เนมุจึงมักจะหาหนังสือเก่าๆที่เจอกลับมาฝากนิอาเสมอ เพราะว่าเธอไม่มีความสามารถในการอ่านที่ดีนัก เธอเลยชอบให้น้องสาวของเธออ่านหนังสือพวกนั้นให้ฟังอยู่เรื่อยมา</span></p><div style=\"height:1px;background:linear-gradient(90deg,transparent 0%,#cfc4b1 12%,#cfc4b1 88%,transparent 100%);margin:10px 0;opacity:.9;\"><p></p></div><p style=\"margin: .25rem 0 0 0; font-weight: 800\"><span style=\"font-family: 'Signika','Noto Sans Thai','Prompt',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\"><strong>【Nea's Diary】</strong></span></p><p style=\"margin: .25rem 0 .5rem 0\"><span style=\"font-family: 'Signika','Noto Sans Thai','Prompt',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\">เนมุได้เก็บไดอารี่ของนิอาไว้เป็นของดูต่างหน้าของน้องสาว เเต่เธอก็ไม่เคยเปิดหนังสือเล่มนั้นออกมาอ่านเลย</span></p></div><div style=\"height:10px;\"><p></p></div></div></div></div></div>",
+      "off_attrib_1": "SHI",
+      "off_attrib_2": "SHI",
+      "off_base_mod_1": "0",
+      "off_base_mod_2": "0",
+      "off_hand": "",
+      "off_hand_attack": "",
+      "off_mod_1": 0,
+      "off_mod_2": 0,
+      "origin": "Llynderyn",
+      "passive_list": {
+        "0": {
+          "$deleted": false,
+          "passive_description": "<p>You may not equip any items.  While you not wearing you gain a +2 bonus to Defense and a<br>+2 bonus to Magic Defense.</p>\n<p><em>Your attacks with unarmed strikes deal 6 extra damage. <strong>This amount increases to</strong></em><br><em><strong>10 extra damage if you are level 30 or higher.</strong></em></p>",
+          "passive_name": "Untamed Beast",
+          "passive_roll": "",
+          "passive_source": "quirk"
+        },
+        "1": {
+          "$deleted": false,
+          "passive_description": "<p>Once before the next rest, if you are about to suffer one or more status effects from<br>the same source, you may instead choose not to suffer any of those status effects.</p>",
+          "passive_name": "Training",
+          "passive_roll": "",
+          "passive_source": "camp activity"
+        },
+        "2": {
+          "$deleted": false,
+          "passive_description": "<p>Once before the next rest, when you perform an attack, you may grant that attack<br>multi (2) or increase its multi property by one point.</p>",
+          "passive_name": "Martial Practice",
+          "passive_roll": "",
+          "passive_source": "camp activity"
+        },
+        "3": {
+          "$deleted": false,
+          "passive_description": "<p>When you use the Theriomorphosis Skill on your turn during a conflict, if this did<br>not happen through the Genoclepsis Skill, you may manifest the effects of up<br>to three therioforms from those you have learned (instead of two). Then, you may<br>immediately perform an <strong>additional action</strong>. This additional action cannot be used for<br>the Theriomorphosis Skill.</p>",
+          "passive_name": "GREATER THERIOMORPHOSIS",
+          "passive_roll": "",
+          "passive_source": "heroic_skill"
+        }
+      },
+      "place_card_vanguard": "Place",
+      "populate_deck": "Populate",
+      "pronouns": "Her",
+      "reaction_list": {},
+      "relationship_1": "น้องสาว",
+      "relationship_2": "เป้าหมายของการเเก้เเค้น",
+      "relationship_3": "",
+      "relationship_4": "คล้ายน้องสาว",
+      "relationship_5": "จุ้นจ้านไม่เข้าเรื่อง",
+      "relationship_6": "",
+      "reset_cards": "Resets",
+      "resolve_set": "Resolve",
+      "resource_value_1": "0",
+      "resource_value_2": "0",
+      "resource_value_3": "0",
+      "reveal_cards": "Reveal",
+      "ritualism": false,
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "MIG",
+      "shield_type": "",
+      "shield_value": "0",
+      "shuffle_deck": "Shuffle",
+      "skill_accuracy": "0",
+      "skill_attack_damage": "0",
+      "skill_hp": "0",
+      "skill_ip": "0",
+      "skill_list": {
+        "0": {
+          "$deleted": false,
+          "class": "Mutant",
+          "description": "<p><img style=\"display: block; margin-left: auto; margin-right: auto;\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/RPR/unveiled_gibbet.png\" alt=\"\" width=\"40\" height=\"40\"></p>\n<hr>\n<p>You may use an action and spend one third of your current Hit Points (rounded down)<br>to manifest your <strong>Wolf Claw </strong>and gain the following effects<strong>:</strong></p>\n<ul>\n<li>Your attacks with <strong>unarmed strikes</strong> gain <strong><strong>multi (3)</strong></strong><hr></li>\n</ul>\n<p><em>This effect last until the end of this scene, You may end this effect at any time, but during a conflict</em><br><em>you can only do so on your turn, before or after an action. At the end of a conflict, if you are under this effect, you may</em><br><em>spend 10 Mind Points to extendthe effect to the next scene you will be a part of.</em></p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Wolfs Claw"
+        },
+        "1": {
+          "$deleted": false,
+          "class": "Mutant",
+          "description": "<p><img style=\"display: block; margin-left: auto; margin-right: auto;\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/summon_phoenix.png\" alt=\"\" width=\"40\" height=\"40\"></p>\n<hr>\n<p>You may use an action and spend one third of your current Hit Points (rounded down)<br>to manifest your <strong>Griffon Wing </strong>and gain the following effects<strong>:</strong> </p>\n<ul>\n<li style=\"text-align: center;\">your melee attacks can target flying creatures</li>\n<li style=\"text-align: center;\">you cannot be targeted by melee attacks<br>unless the attacker is flying or is somehow able to reach flying targets.</li>\n</ul>\n<p style=\"text-align: left;\">These benefits do not apply if you are unable to fly freely (such as when inside a vehicle designed for human-sized creatures, or in a narrow corridor). Additionally, when you suffer <strong>air</strong>, <strong>bolt</strong> or <strong>ice</strong> damage during a conflict scene, you lose these benefits until the start of your next turn.</p>\n<hr>\n<p><em>This effect last until the end of this scene, You may end this effect at any time, but during a conflict </em><em>you can only do so on your turn, before or after an action. At the end of a conflict, if you are under this effect, you may </em><em>spend 10 Mind Points to extendthe effect to the next scene you will be a part of.</em></p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Griffons Wing"
+        },
+        "2": {
+          "$deleted": false,
+          "class": "Mutant",
+          "description": "<p><img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/summon_garuda.png\" alt=\"\" width=\"42\" height=\"42\"></p>\n<p>You treat your Insight as if it were one die size higher (to a maximum of d12).</p>\n<p>When you deal damage to one or more creatures for the first time during your turn, if at least one of them is in Crisis, you deal 5 extra damage to each of those creatures.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Hawks Eye"
+        },
+        "3": {
+          "$deleted": false,
+          "class": "Mutant",
+          "description": "<p><img style=\"display: block; margin-left: auto; margin-right: auto;\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/flying_sardine.png\" alt=\"\" width=\"40\" height=\"40\"></p>\n<hr>\n<p>You may use an action and spend one third of your current Hit Points (rounded down)<br>to manifest your <strong>Squalus Fang </strong>and gain the following effects<strong>:</strong> </p>\n<ul>\n<li>You may breathe underwater</li>\n<li>You can see perfectly in dim light.</li>\n<li>When you recover Hit Points, you recover 5 additional Hit Points and you may immediately recover from a single status effect of your choice.</li>\n</ul>\n<hr>\n<p> </p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Squalus Fang"
+        },
+        "4": {
+          "$deleted": false,
+          "class": "Mutant",
+          "description": "<p><img style=\"display: block; margin-left: auto; margin-right: auto;\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/the_dragon%27s_voice.png\" alt=\"\" width=\"40\" height=\"40\"></p>\n<hr>\n<p style=\"text-align: center;\">When you deal damage with an attack or spell, you may have all that damage become <strong>bolt</strong>. While your unarmed strikes deal bolt damage, any enemy who <strong>loses 20 or more Hit Points</strong> due to one of your unarmed strikes also suffers <strong>slow</strong>.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Taurus Horn"
+        },
+        "5": {
+          "$deleted": false,
+          "class": "Mutant",
+          "description": "<p><img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/the_look.png\" alt=\"\" width=\"40\" height=\"40\"></p>\n<hr>\n<p>Your unarmed strikes deal <strong>【6 + (SL × 2)</strong>】 extra damage, and you gain a bonus equal to <strong>【SL】</strong> to your Accuracy Checks with them.</p>",
+          "level": "3",
+          "roll": "",
+          "skill_name": "Feral Instinct"
+        },
+        "6": {
+          "$deleted": false,
+          "class": "Mutant",
+          "description": "<p><img style=\"display: block; margin-left: auto; margin-right: auto;\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/peculiar_light.png\" alt=\"\" width=\"40\" height=\"40\"></p>\n<hr>\n<p style=\"text-align: left;\">After one of your attacks or offensive spells (r) causes one or more enemies to lose.<br>Hit Points, if you are in <strong>Crisis</strong>, you may recover <strong>【SL × 5】</strong> Hit Points.</p>",
+          "level": "2",
+          "roll": "",
+          "skill_name": "Predation"
+        },
+        "7": {
+          "$deleted": true,
+          "class": "Mutant",
+          "description": "<p><img style=\"display: block; margin-left: auto; margin-right: auto;\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/gobskin.png\" alt=\"\" width=\"40\" height=\"40\"></p>\n<hr>\n<p>After you lose Hit Points due to damage, if that damage had a type other than physical,<br>you may spend <strong>10 Hit Points</strong> to gain Resistance to that damage type until you use this<br>Skill again. You cannot use this Skill if doing so would reduce you to <strong>0 HP</strong>.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Chimera Shift"
+        },
+        "8": {
+          "$deleted": false,
+          "class": "Fury",
+          "description": "<p><img style=\"display: block; margin-left: auto; margin-right: auto;\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/02_WAR/holmgang.png\" alt=\"\" width=\"40\" height=\"40\"></p>\n<hr>\n<p>As long as you are in Crisis, you deal <strong>【SL × 2】</strong> extra damage</p>",
+          "level": "5",
+          "roll": "",
+          "skill_name": "Adrenaline"
+        },
+        "9": {
+          "$deleted": true,
+          "class": "",
+          "description": "",
+          "level": "1",
+          "roll": "",
+          "skill_name": ""
+        }
+      },
+      "skill_mp": "0",
+      "spiritism": false,
+      "theme": "Vengeance/Live",
+      "uuid": "Actor.ehhO581DreiWDFnB",
+      "weapon1_base_damage": "0",
+      "weapon1_base_mod": "0",
+      "weapon1_damage": 0,
+      "weapon1_damagetype": "physical",
+      "weapon1_mod": 0,
+      "weapon2_damagetype": "-",
+      "wlp_base": "6",
+      "wlp_current": 6,
+      "your_class_name": "Chimera",
+      "zenit": "0",
+      "zero_effect_description": "",
+      "zero_effect_label": "💬 Zero Effect",
+      "zero_label": "💥 Zero Power : ",
+      "zero_power_name": "",
+      "zero_power_value": "0",
+      "zero_trigger_description": "",
+      "zero_trigger_label": "⚔️ Zero Trigger"
+    },
+    "statusEffects": {
+      "1QPHKNWo17z0bBmX": [],
+      "1cksCQj3urJwddfg": [],
+      "1qTdxSVu2XLu0lUx": [],
+      "3YZNX2X5rHYtL4L5": [],
+      "4g2B0rdJ3SiUQvUv": [],
+      "5FFBDg2y54bpqgat": [],
+      "5jkr80zqdzaR003d": [],
+      "6YW8glLMYbwj6ZhC": [],
+      "7FLtIUvENcYDAJKC": [],
+      "7VDl6ac5Rzr2Rpya": [],
+      "8LN8tDQjON508Rqm": [],
+      "ACD2C8JLWUeIx89o": [],
+      "CVxHWmDb0gQsob1q": [],
+      "CfLPg6RDybSQhTSR": [],
+      "DCaKnV9kNn3EpqtY": [],
+      "DHsoSawNEZAxsnQ9": [],
+      "EVjmTFRDsuzR823Z": [],
+      "GJ0cbbj60lr4zaHm": [],
+      "MsbUHrgK7AhSeEJm": [],
+      "N4WfMf1nuOdUEXVS": [],
+      "N4rGBYQsH7PyMAWr": [],
+      "NogCaPvL5Y52Hjnq": [],
+      "OFk8VUuwDhWFoPxI": [],
+      "QOfrFCU2C6mx50gK": [],
+      "Qz8IC4v3wJ6UoM77": [],
+      "Rc8AvdmlHAK7pPea": [],
+      "StnYeDADYo2xX99O": [],
+      "T1kJfiKBZm1dnnBy": [],
+      "VxdXsFJ7YVEzAp3x": [],
+      "YhO7nUdawyeQKMWD": [],
+      "ZK0aTX8IH1NqwmTw": [],
+      "bspDC7hFRTYuwdhf": [],
+      "cDgbFRi9TA68TvYr": [],
+      "clE8TJ0G1gMwF735": [],
+      "fYkA57rVfoytHRjo": [],
+      "g7JIey1pEuRHyAOH": [],
+      "gX1fA3onNG7wsyap": [],
+      "hhqoSNhWfVD4KR7g": [],
+      "jKvrVpxLgX0KhB23": [],
+      "m2iUJjsEfJkpmOBw": [],
+      "qMZsEEuzAdrHb2fk": [],
+      "qePlOECBTS0Dftgc": [],
+      "t2C3LKukW6LPUImk": [],
+      "t5jyddIZDvbyuVsD": [],
+      "v22vl6cnP94wVBPu": [],
+      "v2vFlETIgMnff5o8": [],
+      "vLM7q3rdXVCgHYD4": [],
+      "vUYA9jgY9pdafj4i": [],
+      "wA1E8GxiXmzz80XQ": [],
+      "xuwAn7u126GfFweU": []
+    },
+    "template": "Dx16KeWcJzikM7dh",
+    "templateSystemUniqueVersion": 276398442
+  },
+  "type": "character"
+}

@@ -1,0 +1,54 @@
+{
+  "_id": "M3rdilv8BC3cqhvO",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1741634052406,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "consumable",
+        "fromTemplate": "xdZPhVF8AnmwQEPM",
+        "itemId": "M3rdilv8BC3cqhvO",
+        "itemName": "Aunction Trick: Dirty Talk",
+        "pickedOldProps": {
+          "consumable_cost": "0",
+          "consumable_description": "<p>Perform a【<strong>INS&nbsp;+ WIL】</strong>check against an aunction opponent's&nbsp;<strong>Difficulty Level</strong>. On success, <strong>reduces</strong> the target's <strong>willingness </strong>to bid by <strong>200 Zenit.</strong></p>",
+          "consumable_ip": "0",
+          "consumable_label": ""
+        },
+        "ts": 1769647435147
+      }
+    }
+  },
+  "folder": "HwnnjljHsr5F7AqM",
+  "img": "icons/sundries/misc/teeth-dentures.webp",
+  "name": "Aunction Trick: Dirty Talk",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "description": "<p>Perform a【<strong>INS&nbsp;+ WIL】</strong>check against an aunction opponent's&nbsp;<strong>Difficulty Level</strong>. On success, <strong>reduces</strong> the target's <strong>willingness </strong>to bid by <strong>200 Zenit.</strong></p>",
+      "ip_cost": "0",
+      "item_cost": "0",
+      "item_type": "consumable",
+      "name": "Aunction Trick: Dirty Talk"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "M3rdilv8BC3cqhvO"
+  },
+  "type": "equippableItem"
+}

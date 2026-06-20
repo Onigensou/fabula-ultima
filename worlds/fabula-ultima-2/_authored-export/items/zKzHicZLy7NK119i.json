@@ -1,0 +1,57 @@
+{
+  "_id": "zKzHicZLy7NK119i",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757285094855,
+    "duplicateSource": "Item.cdl3QkMyUXjaDjf2",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "OFXRN3P2p6Ce5ySM",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Flower/5370968906c7982348e1fefd2301c09e_6218191525249322713.webp",
+  "name": "Horned Hawthorn",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Floralist",
+      "cost": "20 MP",
+      "damage_bonus": "0",
+      "description": "<p><em>Favored by witches and surgeons alike for its purifying properties.</em></p> <table style=\"width:100%;\"> <tbody> <tr><td><strong>Growth</strong></td><td><strong>Effect</strong></td></tr> <tr> <td>0–1</td> <td>You are <strong>Resistant</strong> to <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\"><strong><u>Dark</u></strong></a> and <a class=\"content-link\" data-uuid=\"Item.tDcCWc67Ary9nVxe\"><strong><u>Poison</u></strong></a> damage. </td> </tr> <tr> <td>2–3</td> <td>You and your allies present on the scene are <strong>Resistant</strong> to <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\"><strong><u>Dark</u></strong></a> and <a class=\"content-link\" data-uuid=\"Item.tDcCWc67Ary9nVxe\"><strong><u>Poison</u></strong></a> damage. </td> </tr> </tbody> </table>",
+      "duration": "Scene",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": true,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Horned Hawthorn",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "Any",
+      "skill_target": "Special",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "zKzHicZLy7NK119i"
+  },
+  "type": "equippableItem"
+}

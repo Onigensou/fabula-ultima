@@ -1,0 +1,57 @@
+{
+  "_id": "JZSH0skLxYZ4ZACR",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757122329044,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "2OplVa9fwLYbzD8b",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/12_MCH/automaton_queen.png",
+  "name": "Dynamic Synchronization",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 7900000,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Pilot",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>At the start of your turn during a conflict, if you are driving your <em>personal vehicle</em>, you may choose one option: you synchronize with another Player Character who is present on the scene and driving their own <em>personal vehicle</em>, or you synchronize with another Player Character who is a passenger on your <em>personal vehicle</em>. Describe how the two of you join forces! You and the chosen character both receive the following benefits as long as the synchronization remains active:</p>\n<ul>\n  <li>When you perform a <strong>Check</strong>, you may use the current <strong>Attribute</strong> die sizes of the other PC in place of yours (for one or both dice).</li>\n  <li>When you deal damage, deal extra damage equal to <strong>[the strength of your Bond towards the other PC, plus the strength of their Bond towards you]</strong>.</li>\n  <li>You may use an action to perform a free 【⚔️Attack】 with one enabled or disabled <strong>weapon module</strong> present on the <em>personal vehicle</em> the other PC is currently on.</li>\n  <li>When your turn ends, if the other PC has yet to take their turn during this round, they may take their turn immediately after yours.</li>\n</ul>\n<p>This synchronization lasts until the end of the scene, or until you or the other Player Character die, fall unconscious, leave the scene, synchronize with someone else, or are no longer aboard a <em>personal vehicle</em>.</p>\n",
+      "duration": "",
+      "heroic_requirement": "You must have mastered the Pilot Class.",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Dynamic Synchronization",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "JZSH0skLxYZ4ZACR"
+  },
+  "type": "equippableItem"
+}

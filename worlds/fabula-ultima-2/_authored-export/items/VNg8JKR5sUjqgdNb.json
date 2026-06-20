@@ -1,0 +1,50 @@
+{
+  "_id": "VNg8JKR5sUjqgdNb",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1781934529731,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
+  "name": "Café au Lait",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "aITJntRz2m10Rgeo",
+    "props": {
+      "cost": "-",
+      "description": "<p><em>Café au Lait:</em> you gain Swift.</p>",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "ae_template_ref": "Swift",
+          "effect_kind": "apply_ae",
+          "effect_label": "cafeaulait_swift",
+          "target_ref": "action_targets"
+        }
+      },
+      "isCheck": false,
+      "on_activate_effect_ref": "cafeaulait_swift",
+      "skill_target": "One Ally",
+      "skill_type": "Item",
+      "type_damage": ""
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "VNg8JKR5sUjqgdNb"
+  },
+  "type": "equippableItem"
+}

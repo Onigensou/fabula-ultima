@@ -1,0 +1,122 @@
+{
+  "_id": "dMvcBdU80jaNnOYT",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1753900616952,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "7SCDF39JqJftaKej",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.331",
+        "createdTime": 1753900855514,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.6.4"
+      },
+      "changes": [
+        {
+          "key": "max_hp",
+          "mode": 2,
+          "priority": 1,
+          "value": "${level * 5}$"
+        }
+      ],
+      "description": "<p>Permanently increase your maximum Hit Points by <strong>【SL x 5】</strong>.</p>",
+      "disabled": true,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "7SCDF39JqJftaKej",
+          "originalParentId": "dMvcBdU80jaNnOYT",
+          "originalUuid": "Item.dMvcBdU80jaNnOYT.ActiveEffect.7SCDF39JqJftaKej"
+        },
+        "statuscounter": {
+          "config": {
+            "durationType": 0,
+            "modifyDuration": false,
+            "multiplyEffect": false,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/equipment/shoulder/pauldron-segmented-steel-yellow.webp",
+      "name": "Fortress",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "Class Skill",
+          "Passive",
+          "Guardian"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "r8ESgYQR9Oc0iK7D",
+  "img": "icons/equipment/shoulder/pauldron-segmented-steel-yellow.webp",
+  "name": "Fortress",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Guardian",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>Permanently increase your maximum Hit Points by <strong>【SL x 5】</strong>.</p>",
+      "duration": "",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "4",
+      "name": "Fortress",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "dMvcBdU80jaNnOYT"
+  },
+  "type": "equippableItem"
+}

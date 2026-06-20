@@ -1,0 +1,66 @@
+{
+  "_id": "gQNqXMnOYBQrQfoB",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757758810363,
+    "duplicateSource": "Item.ugffxiCSwymr95bP",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "QSU5T1V4cEJ856gJ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/DarkMagicianSkill4.png",
+  "name": "Deteriorate",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_script": "",
+      "check_bonus": "0",
+      "class": "Hexer",
+      "cost": "10 MP",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>You place a mark on the target’s soul that weakens their ability to resist afflictions and ailments. The target suffers your choice of:</p>\n<ul>\n  <li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span></span></li>\n  <li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Dazed</span></strong></a></span></span></li>\n  <li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a></span></span></li>\n  <li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span></span></li>\n</ul>\n<p>Until this spell ends, if an effect would cause the target to recover from one or more status effects, you choose one of those status effects for the target to keep. Once that happens, this spell ends. If the target becomes immune to a status effect, they still recover as normal.</p>\n",
+      "duration": "Scene",
+      "heroic_requirement": "",
+      "isCheck": true,
+      "isFacet": true,
+      "isHeroic": false,
+      "isOffensiveSpell": true,
+      "isReaction": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Deteriorate",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "INS",
+      "rolled_atr2": "WLP",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "Range",
+      "skill_target": "One creature",
+      "skill_type": "Spell",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "gQNqXMnOYBQrQfoB"
+  },
+  "type": "equippableItem"
+}

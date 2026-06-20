@@ -1,0 +1,57 @@
+{
+  "_id": "y0E31msoT18TffJT",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1756967756233,
+    "duplicateSource": "Item.TMeu4B7pd9vPmLyu",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "2OplVa9fwLYbzD8b",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/the_forbidden_chakra.png",
+  "name": "Pulverizing Strike",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 5700000,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Weaponmaster",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>After you hit a creature with 【💥<strong>Breach】</strong>, if you attacked with a <strong>melee</strong> weapon that belongs to the <strong>heavy</strong> Category, you may have the attack deal damage equal to your <strong>High Roll (HR)</strong> instead of dealing no damage. Any source of extra damage, including the extra damage from the third option of the Breach Skill itself, still applies—ignore the damage dealt by the weapon.</p>",
+      "duration": "",
+      "heroic_requirement": "you must have mastered one or more Classes among Darkblade, Fury, and Weaponmaster",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Pulverizing Strike",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "y0E31msoT18TffJT"
+  },
+  "type": "equippableItem"
+}

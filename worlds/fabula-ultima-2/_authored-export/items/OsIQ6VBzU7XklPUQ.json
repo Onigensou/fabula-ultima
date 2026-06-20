@@ -1,0 +1,66 @@
+{
+  "_id": "OsIQ6VBzU7XklPUQ",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1758202822809,
+    "duplicateSource": "Item.VXzpUvjAr9Z5wfBA",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "dhfFJlHW6EIUd4UD",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/TwinsPicaroPassive2.png",
+  "name": "Create Phantasm: Mockery",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_script": "",
+      "check_bonus": "0",
+      "class": "Illusionist",
+      "cost": "10 MP",
+      "damage_bonus": "",
+      "defense_target_type": "mdef",
+      "description": "<p>You may spend one action to create a vexing Phantasm that taunts and distracts your foe. For the next 【⚔️ Attack】, if the target rolls an even number for its Accuracy Check, the attack misses.</p>\n<p>On any subsequent turn, you can perform an action and another Magic Check to command the Phantasm to taunt again, with no MP requirements.</p>\n",
+      "duration": "Scene",
+      "heroic_requirement": "",
+      "isCheck": true,
+      "isFacet": true,
+      "isHeroic": false,
+      "isOffensiveSpell": true,
+      "isReaction": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Create Phantasm: Mockery",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "INS",
+      "rolled_atr2": "WLP",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "Range",
+      "skill_target": "One Creature",
+      "skill_type": "Spell",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "OsIQ6VBzU7XklPUQ"
+  },
+  "type": "equippableItem"
+}

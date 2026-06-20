@@ -1,0 +1,62 @@
+{
+  "_id": "AODgzRmiVIrotwW1",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1747560133465,
+    "duplicateSource": "Item.23dQXPmLWKFjpwNt",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "AODgzRmiVIrotwW1",
+        "itemName": "Anthology of Forgotten Fable",
+        "pickedOldProps": {
+          "cost": "0",
+          "martial": false
+        },
+        "ts": 1769647435111
+      }
+    }
+  },
+  "folder": "1y9u2EmZuTTt3cpv",
+  "img": "icons/sundries/books/book-symbol-triangle-silver-brown.webp",
+  "name": "Anthology of Forgotten Fable",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 450000,
+  "system": {
+    "container": null,
+    "props": {
+      "category": "Arcane",
+      "check_bonus": "0",
+      "damage_bonus": "6",
+      "description": "<p>&nbsp;No Quality.</p>",
+      "hand_slots": "Two-handed",
+      "isMartial": false,
+      "item_cost": "0",
+      "item_type": "weapon",
+      "name": "Anthology of Forgotten Fable",
+      "rolled_atr1": "WLP",
+      "rolled_atr2": "WLP",
+      "set_name": "",
+      "skill_target": "One Enemy",
+      "type_damage": "Physical",
+      "weapon_range": "Melee"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "AODgzRmiVIrotwW1"
+  },
+  "type": "equippableItem"
+}

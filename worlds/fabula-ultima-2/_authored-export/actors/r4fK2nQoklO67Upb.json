@@ -1,0 +1,1423 @@
+{
+  "_id": "r4fK2nQoklO67Upb",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1721568444562,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.5.0"
+    },
+    "theatre": {
+      "baseinsert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Gwyn/gwyntheatre_010.png",
+      "disabledefault": false,
+      "emotes": {
+        "angry": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Gwyn/gwyntheatre_029.png"
+        },
+        "annoyed": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Gwyn/gwyntheatre_025.png"
+        },
+        "awe-struck": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Gwyn/gwyntheatre_024.png"
+        },
+        "blushing": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Gwyn/gwyntheatre_01.png"
+        },
+        "carefree": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Gwyn/gwyntheatre_01.png"
+        },
+        "confused": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Gwyn/gwyntheatre_017.png"
+        },
+        "cry": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Gwyn/gwyntheatre_016.png"
+        },
+        "dissatisfied": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Gwyn/gwyntheatre_019.png"
+        },
+        "dizzy": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Gwyn/gwyntheatre_016.png"
+        },
+        "frown": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Gwyn/gwyntheatre_019.png"
+        },
+        "frustrated": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Gwyn/gwyntheatre_029.png"
+        },
+        "grin": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Gwyn/gwyntheatre_01.png"
+        },
+        "happy": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Gwyn/gwyntheatre_01.png"
+        },
+        "happytears": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Gwyn/gwyntheatre_01.png"
+        },
+        "hearts": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Gwyn/gwyntheatre_010.png"
+        },
+        "idea": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Gwyn/gwyntheatre_010.png"
+        },
+        "innocent": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Gwyn/gwyntheatre_010.png"
+        },
+        "kiss": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Gwyn/gwyntheatre_012.png"
+        },
+        "laughing": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Gwyn/gwyntheatre_01.png"
+        },
+        "laughingsquint": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Gwyn/gwyntheatre_01.png"
+        },
+        "meh": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Gwyn/gwyntheatre_08.png"
+        },
+        "mischevious": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Gwyn/gwyntheatre_026.png"
+        },
+        "panic": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Gwyn/gwyntheatre_017.png"
+        },
+        "playful": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Gwyn/gwyntheatre_026.png"
+        },
+        "rofl": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Gwyn/gwyntheatre_01.png"
+        },
+        "sad": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Gwyn/gwyntheatre_017.png"
+        },
+        "scared": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Gwyn/gwyntheatre_016.png"
+        },
+        "serious": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Gwyn/gwyntheatre_030.png"
+        },
+        "sleeping": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Gwyn/gwyntheatre_010.png"
+        },
+        "smile": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Gwyn/gwyntheatre_010.png"
+        },
+        "smug": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Gwyn/gwyntheatre_018.png"
+        },
+        "speechless": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Gwyn/gwyntheatre_025.png"
+        },
+        "surprised": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Gwyn/gwyntheatre_025.png"
+        },
+        "thinking": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Gwyn/gwyntheatre_013.png"
+        },
+        "tongue": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Gwyn/gwyntheatre_01.png"
+        },
+        "wink": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Gwyn/gwyntheatre_01.png"
+        },
+        "worried": {
+          "insert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Gwyn/gwyntheatre_016.png"
+        }
+      },
+      "name": "",
+      "optalign": "top",
+      "settings": {
+        "emote": "serious",
+        "textcolor": null,
+        "textflyin": null,
+        "textfont": null,
+        "textsize": null,
+        "textstanding": null
+      }
+    }
+  },
+  "folder": "KWnuOptf4pQKCX5g",
+  "img": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Gwyn/gwyntheatre_023.png",
+  "items": [
+    {
+      "_id": "5M9Zf7DLB0u6cUHA",
+      "_stats": {
+        "compendiumSource": "Item.C1FR55h1SsY8GEpF",
+        "coreVersion": "12.343",
+        "createdTime": 1702144891794,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.C1FR55h1SsY8GEpF"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "hIrlKsiyq3vuA7ZM",
+      "img": "icons/weapons/polearms/halberd-crescent-steel.webp",
+      "name": "Waraxe(Heavy)",
+      "ownership": {
+        "MwTL6zXFCEpVBTpI": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "1",
+          "class": "",
+          "cost": "",
+          "damage_bonus": "15",
+          "description": "",
+          "duration": "Instantaneous",
+          "name": "Waraxe(Heavy)",
+          "rolled_atr1": "MIG",
+          "rolled_atr2": "WLP",
+          "target": "",
+          "type_damage": "Physical"
+        },
+        "template": "FZmpKcQRP7hZQqbV",
+        "templateSystemUniqueVersion": 1700837225,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "5nmSSXQpSWjrpfir",
+      "_stats": {
+        "compendiumSource": "Item.C1FR55h1SsY8GEpF",
+        "coreVersion": "12.343",
+        "createdTime": 1702144891794,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.C1FR55h1SsY8GEpF"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "hIrlKsiyq3vuA7ZM",
+      "img": "icons/weapons/misc/whip-red-yellow.webp",
+      "name": "Chain Whip(Flail)",
+      "ownership": {
+        "MwTL6zXFCEpVBTpI": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "1",
+          "class": "",
+          "cost": "",
+          "damage_bonus": "9",
+          "description": "<p>(Frenzy) Critical Success on any doubles</p>",
+          "duration": "Instantaneous",
+          "name": "Chain Whip(Flail)",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "WLP",
+          "target": "",
+          "type_damage": "Physical"
+        },
+        "template": "FZmpKcQRP7hZQqbV",
+        "templateSystemUniqueVersion": 1700837225,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "9mhIk5VbHDIAQA81",
+      "_stats": {
+        "compendiumSource": "Item.C1FR55h1SsY8GEpF",
+        "coreVersion": "12.343",
+        "createdTime": 1702144891794,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.C1FR55h1SsY8GEpF"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "hIrlKsiyq3vuA7ZM",
+      "img": "icons/skills/melee/unarmed-punch-fist-yellow-red.webp",
+      "name": "Iron Knuckle(Brawling)",
+      "ownership": {
+        "MwTL6zXFCEpVBTpI": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "1",
+          "class": "",
+          "cost": "",
+          "damage_bonus": "7",
+          "description": "<p>(Frenzy) Critical Success on any doubles</p>",
+          "duration": "",
+          "name": "Iron Knuckle(Brawling)",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "WLP",
+          "target": "",
+          "type_damage": "Physical"
+        },
+        "template": "FZmpKcQRP7hZQqbV",
+        "templateSystemUniqueVersion": 1700837225,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "c9ZFBVF5hkaJoWYX",
+      "_stats": {
+        "compendiumSource": "Item.C1FR55h1SsY8GEpF",
+        "coreVersion": "12.343",
+        "createdTime": 1702144891794,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.C1FR55h1SsY8GEpF"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "hIrlKsiyq3vuA7ZM",
+      "img": "icons/weapons/crossbows/crossbow-blue.webp",
+      "name": "Crossbow(Bow)",
+      "ownership": {
+        "MwTL6zXFCEpVBTpI": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "1",
+          "class": "",
+          "cost": "",
+          "damage_bonus": "9",
+          "description": "",
+          "duration": "Instantaneous",
+          "name": "Crossbow(Bow)",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "WLP",
+          "target": "",
+          "type_damage": "Physical"
+        },
+        "template": "FZmpKcQRP7hZQqbV",
+        "templateSystemUniqueVersion": 1700837225,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "CB2CuOQZ7Q8afpRY",
+      "_stats": {
+        "compendiumSource": "Item.C1FR55h1SsY8GEpF",
+        "coreVersion": "12.343",
+        "createdTime": 1702144891794,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.C1FR55h1SsY8GEpF"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "hIrlKsiyq3vuA7ZM",
+      "img": "icons/weapons/swords/greatsword-guard-gold-worn.webp",
+      "name": "Greatsword(Sword)",
+      "ownership": {
+        "MwTL6zXFCEpVBTpI": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "2",
+          "class": "",
+          "cost": "",
+          "damage_bonus": "11",
+          "description": "",
+          "duration": "Instantaneous",
+          "name": "Greatsword(Sword)",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "WLP",
+          "target": "",
+          "type_damage": "Physical"
+        },
+        "template": "FZmpKcQRP7hZQqbV",
+        "templateSystemUniqueVersion": 1700837225,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "EUZjokJrTbFuWmHY",
+      "_stats": {
+        "compendiumSource": "Item.C1FR55h1SsY8GEpF",
+        "coreVersion": "12.343",
+        "createdTime": 1702144891794,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.C1FR55h1SsY8GEpF"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "hIrlKsiyq3vuA7ZM",
+      "img": "icons/weapons/thrown/shuriken-blue.webp",
+      "name": "Shuriken(thrown)",
+      "ownership": {
+        "MwTL6zXFCEpVBTpI": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "1",
+          "class": "",
+          "cost": "",
+          "damage_bonus": "5",
+          "description": "<p>(Frenzy) Critical Success on any doubles</p>",
+          "duration": "Instantaneous",
+          "name": "Shuriken(thrown)",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "WLP",
+          "target": "",
+          "type_damage": "Physical"
+        },
+        "template": "FZmpKcQRP7hZQqbV",
+        "templateSystemUniqueVersion": 1700837225,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "FMwCYjEtVHSmEqDt",
+      "_stats": {
+        "compendiumSource": "Item.C1FR55h1SsY8GEpF",
+        "coreVersion": "12.343",
+        "createdTime": 1702144891794,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.C1FR55h1SsY8GEpF"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "hIrlKsiyq3vuA7ZM",
+      "img": "icons/weapons/staves/staff-hooked-banded.webp",
+      "name": "Staff(Arcane)",
+      "ownership": {
+        "MwTL6zXFCEpVBTpI": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "1",
+          "class": "",
+          "cost": "",
+          "damage_bonus": "7",
+          "description": "",
+          "duration": "Instantaneous",
+          "name": "Staff(Arcane)",
+          "rolled_atr1": "WLP",
+          "rolled_atr2": "WLP",
+          "target": "",
+          "type_damage": "Physical"
+        },
+        "template": "FZmpKcQRP7hZQqbV",
+        "templateSystemUniqueVersion": 1700837225,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "KcEFS9WYPu8eTmbq",
+      "_stats": {
+        "compendiumSource": "Item.C1FR55h1SsY8GEpF",
+        "coreVersion": "12.343",
+        "createdTime": 1702144891794,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.C1FR55h1SsY8GEpF"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "hIrlKsiyq3vuA7ZM",
+      "img": "icons/weapons/daggers/dagger-black.webp",
+      "name": "Steel Dagger(Dagger)",
+      "ownership": {
+        "MwTL6zXFCEpVBTpI": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "2",
+          "class": "",
+          "cost": "",
+          "damage_bonus": "4",
+          "description": "<p>(Frenzy) Critical Success on any doubles</p>",
+          "duration": "Instantaneous",
+          "name": "Steel Dagger(Dagger)",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "WLP",
+          "target": "",
+          "type_damage": "Physical"
+        },
+        "template": "FZmpKcQRP7hZQqbV",
+        "templateSystemUniqueVersion": 1700837225,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "ScEFlq4oYqMNt5D0",
+      "_stats": {
+        "compendiumSource": "Item.C1FR55h1SsY8GEpF",
+        "coreVersion": "12.343",
+        "createdTime": 1702144891794,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.C1FR55h1SsY8GEpF"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "hIrlKsiyq3vuA7ZM",
+      "img": "icons/weapons/guns/gun-pistol-brass.webp",
+      "name": "Pistol(Firearm)",
+      "ownership": {
+        "MwTL6zXFCEpVBTpI": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "1",
+          "class": "",
+          "cost": "",
+          "damage_bonus": "9",
+          "description": "",
+          "duration": "Instantaneous",
+          "name": "Pistol(Firearm)",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "WLP",
+          "target": "",
+          "type_damage": "Physical"
+        },
+        "template": "FZmpKcQRP7hZQqbV",
+        "templateSystemUniqueVersion": 1700837225,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "vVcC97xomd3iQwdp",
+      "_stats": {
+        "compendiumSource": "Item.C1FR55h1SsY8GEpF",
+        "coreVersion": "12.343",
+        "createdTime": 1702144891794,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.C1FR55h1SsY8GEpF"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "hIrlKsiyq3vuA7ZM",
+      "img": "icons/weapons/polearms/spear-hooked-double.webp",
+      "name": "Heavy Spear(Spear)",
+      "ownership": {
+        "MwTL6zXFCEpVBTpI": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "1",
+          "class": "",
+          "cost": "",
+          "damage_bonus": "13",
+          "description": "",
+          "duration": "Instantaneous",
+          "name": "Heavy Spear(Spear)",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "WLP",
+          "target": "",
+          "type_damage": "Physical"
+        },
+        "template": "FZmpKcQRP7hZQqbV",
+        "templateSystemUniqueVersion": 1700837225,
+        "unique": false
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Gwyn",
+  "ownership": {
+    "6DmgigM5jq76r0Gd": 3,
+    "MwTL6zXFCEpVBTpI": 3,
+    "default": 0
+  },
+  "prototypeToken": {
+    "actorLink": true,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "custom"
+    },
+    "bar2": {
+      "attribute": "custom"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 30,
+    "disposition": 0,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "Sequence Point",
+            "max": 7,
+            "maxcolor": "#FF0000",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-outer",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 0
+          },
+          "bar2": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "Brainwave Clock",
+            "max": 4,
+            "maxcolor": "#80B3FF",
+            "mincolor": "#80B3FF",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "top-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 0
+          },
+          "bar3": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "max": 10,
+            "maxcolor": "#2990ff",
+            "mincolor": "#2990ff",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 30,
+            "ownerVisibility": 50,
+            "position": "right-inner",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 10
+          },
+          "bar4": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#00b33c",
+            "mincolor": "#ff0019",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 30,
+            "ownerVisibility": 50,
+            "position": "left-inner",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          }
+        }
+      },
+      "hex-size-support": {
+        "alternateOrientation": false,
+        "hideBorder": true,
+        "pivotx": null,
+        "pivoty": null
+      },
+      "token-variants": {
+        "disableHUDButton": false,
+        "randomImgDefault": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Gwyn/token/gwyntoken1.png"
+      },
+      "token-z": {
+        "zIndex": 0
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Gwyn",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": true,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1.7,
+      "scaleY": 1.7,
+      "src": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Gwyn/token/*",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 0,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "activeEffects": {},
+    "props": {
+      "arcanism": false,
+      "armor_mod": "1",
+      "armor_name": "Sage Robe",
+      "attack_accuracy_mod_all": "0",
+      "attack_accuracy_mod_melee": "0",
+      "attack_accuracy_mod_range": "0",
+      "attack_accuracy_mod_spell": "0",
+      "backpack": "",
+      "backstory": "",
+      "bond_1": "",
+      "bond_2": "",
+      "bond_3": "",
+      "bond_4": "",
+      "bond_5": "",
+      "bond_6": "",
+      "chanter_volume_mp_header": "MP",
+      "chanter_volume_mp_high": 30,
+      "chanter_volume_mp_low": 10,
+      "chanter_volume_mp_medium": 20,
+      "chanter_volume_target_high": "Every enemy who can hear you.",
+      "chanter_volume_target_low": "Yourself <b>or</b> another creature you can see who can hear you.",
+      "chanter_volume_target_medium": "Every ally who can hear you.",
+      "char_identity": "Mysterious Harmless Elf Girl ",
+      "check_roller": "Roll!",
+      "chimerism": false,
+      "class_list": {
+        "0": {
+          "$deleted": false,
+          "benefit": "mp",
+          "class_name": "Esper",
+          "level": "10"
+        },
+        "1": {
+          "$deleted": false,
+          "benefit": "hp",
+          "class_name": "Fury",
+          "level": "1"
+        },
+        "2": {
+          "$deleted": false,
+          "benefit": "ip",
+          "class_name": "Sharpshooter",
+          "level": "1"
+        },
+        "3": {
+          "$deleted": false,
+          "benefit": "hp",
+          "class_name": "Weaponmaster",
+          "level": "3"
+        }
+      },
+      "clock_brainwave": "0",
+      "clock_trade": "0",
+      "cooking_roller": "🔪Cook!",
+      "current_hp": "55",
+      "current_ip": "5",
+      "current_mp": "5",
+      "damage_receiving_mod_air": "0",
+      "damage_receiving_mod_all": "0",
+      "damage_receiving_mod_bolt": "0",
+      "damage_receiving_mod_dark": "0",
+      "damage_receiving_mod_earth": "0",
+      "damage_receiving_mod_fire": "0",
+      "damage_receiving_mod_ice": "0",
+      "damage_receiving_mod_light": "0",
+      "damage_receiving_mod_melee": "0",
+      "damage_receiving_mod_physical": "0",
+      "damage_receiving_mod_poison": "0",
+      "damage_receiving_mod_range": "0",
+      "dex_base": "8",
+      "dex_current": "8",
+      "draw_card": "Draw",
+      "draw_card_copy1": "Use",
+      "elementalism": false,
+      "emotion_1_1": "",
+      "emotion_1_2": "",
+      "emotion_1_3": "",
+      "emotion_2_1": "",
+      "emotion_2_2": "",
+      "emotion_2_3": "",
+      "emotion_3_1": "",
+      "emotion_3_2": "",
+      "emotion_3_3": "",
+      "emotion_4_1": "",
+      "emotion_4_2": "",
+      "emotion_4_3": "",
+      "emotion_5_1": "",
+      "emotion_5_2": "",
+      "emotion_5_3": "",
+      "emotion_6_1": "",
+      "emotion_6_2": "",
+      "emotion_6_3": "",
+      "entropism": false,
+      "experience": "0",
+      "experience_ui": "0",
+      "fp": "0",
+      "init_penalty": "-2",
+      "ins_base": "8",
+      "ins_current": "8",
+      "inventory_label": "💼 Inventory",
+      "inventory_list": {
+        "0": {
+          "$deleted": true,
+          "item_description": "",
+          "item_name": "",
+          "item_owned": "",
+          "item_roll": ""
+        }
+      },
+      "isDazed": false,
+      "isEnraged": false,
+      "isPoisoned": false,
+      "isShaken": false,
+      "isSlow": false,
+      "isWeak": false,
+      "is_martialarmor": false,
+      "level": "15",
+      "magic_defense_mod": "2",
+      "main_attrib_1": "DEX",
+      "main_attrib_2": "MIG",
+      "main_hand": "",
+      "main_hand_attack": "",
+      "max_hp": 55,
+      "max_ip": "ERROR",
+      "max_mp": 70,
+      "memory": "Memories",
+      "mig_base": "6",
+      "mig_current": "6",
+      "name": "Gwyn",
+      "normal_spell_list": {
+        "0": {
+          "$deleted": true,
+          "class": "Esper",
+          "cost": "0",
+          "description": "<p>At the start of your turn during a conflict, you may choose one ally who is able to hear<br>you or one enemy you can see that is suffering from dazed, enraged, and/or shaken.<br>Until the start of your next turn, the chosen creature becomes your focus.<br>You gain a bonus equal to 【<strong>5</strong>】 to Checks you perform to examine your focus, as well<br>as to your Accuracy Checks and Magic Checks for attacks and offensive spells (r) that<br>include your focus among the targets. When you cause your focus to recover Hit Points<br>and/or Mind Points, they recover 【SL &times; 2 = <strong>10</strong>】 additional HP and/or MP, respectively.</p>",
+          "duration": "",
+          "roll": "",
+          "spell_name": "Cognitive Focus",
+          "target": ""
+        },
+        "1": {
+          "$deleted": false,
+          "class": "",
+          "cost": "7",
+          "description": "<p>You may use an action and spend 7 Mind Points to perform a free attack with a weapon you have equipped.</p>\n<p>This attack must target a single creature; if the attack hits, you treat your High Roll as 0 when calculating damage and may perform the Equipment action for free after it has been resolved.</p>\n<p>Then, you may perform another free attack with a weapon you have equipped who doesn't share any Category with the weapon you used for your first attack.</p>\n<p>This attack must also target a single creature; if it hits, you treat your High Roll as 0 when calculating damage, and may perform the Equipment action for free after it has been resolved.</p>\n<p>&nbsp;</p>\n<p>When you attack with a weapon that doesn't share a Category with any weapon you previously attacked with during this scene, you gain 1 Sequence Point (if the weapon is treated as belonging to two or more Categories due to Skills or effects, you gain that many Sequence Points and are then treated as if you had already attacked with all of those Categories during this scene).</p>\n<p>&nbsp;</p>\n<p>Once per scene at the start of your turn, if you have 7 or more Sequence Points, you may spend all your Sequence Points to choose one enemy you can see: that creature loses 7 Hit Points. If you do, you may immediately repeat this process up to 6 more times, for a maximum of 49 Hit Points lost (by a single enemy or different enemies, provided it happens in 7 HP increments).</p>\n<p>You lose all Sequence Points at the end of each scene.</p>",
+          "duration": "",
+          "roll": "",
+          "spell_name": "Seven Weapons",
+          "target": ""
+        },
+        "2": {
+          "$deleted": false,
+          "class": "Esper",
+          "cost": "Brainwave clock x 5",
+          "description": "<p>That damage becomes earth or physical, and its source deals extra damage equal to<br>【2 + the number of filled sections in your Brainwave Clock】. If the source deals<br>damage to one or more flying creatures, they are forced to land immediately.</p>",
+          "duration": "",
+          "roll": "",
+          "spell_name": "Psychic Gift : Gravitokinesis",
+          "target": "When you deal damage"
+        },
+        "3": {
+          "$deleted": false,
+          "class": "Esper",
+          "cost": "Brainwave clock x 5",
+          "description": "<p>For the purposes of that Check, you may treat your Defense and Magic Defense scores as being equal to 【your current Willpower die size + (the number of filled sections in your Brainwave Clock, multiplied by 2)】. You may still use your normal scores if better.</p>",
+          "duration": "",
+          "roll": "",
+          "spell_name": "Psychic Gift : Psychic Shield",
+          "target": "After an enemy you can see performs an Accuracy Check or a Magic Check"
+        },
+        "4": {
+          "$deleted": false,
+          "class": "Esper",
+          "cost": "Brainwave clock x 5",
+          "description": "<p>Choose yourself or an ally who is your focus: if the chosen creature is in Crisis, they recover an amount of Hit Points equal to 【5 + (the number of filled sections in your Brainwave Clock, multiplied by 5)】.</p>",
+          "duration": "",
+          "roll": "",
+          "spell_name": "Psychic Gift : Life Transference",
+          "target": "When you cause one or more enemies to lose HP"
+        },
+        "5": {
+          "$deleted": false,
+          "class": "Esper",
+          "cost": "Brainwave clock x 5",
+          "description": "<p>That enemy loses an amount of Mind Points equal to 【5 + (the number of filled sections in your Brainwave Clock, multiplied by 5)】. Then, choose one option: that enemy suffers dazed, or that enemy suffers shaken.</p>",
+          "duration": "",
+          "roll": "",
+          "spell_name": "Psychic Gift : Psychic Backlash",
+          "target": "After an enemy succeeds on an Opposed Check against you or causes you to lose Hit Points"
+        },
+        "6": {
+          "$deleted": false,
+          "class": "Esper",
+          "cost": "0",
+          "description": "<p>At the start of your turn during a conflict, you may choose one ally who is able to hear you or one enemy you can see that is suffering from dazed, enraged, and/or shaken.</p>\n<p>&nbsp;</p>\n<p>Until the start of your next turn, the chosen creature becomes your focus.<br>You gain a bonus equal to 【<strong>5</strong>】 to Checks you perform to examine your focus, as well as to your Accuracy Checks and Magic Checks for attacks and offensive spells (r) that include your focus among the targets.</p>\n<p>&nbsp;</p>\n<p>When you cause your focus to recover Hit Points and/or Mind Points, they recover 【SL &times; 2 = <strong>10</strong>】 additional HP and/or MP, respectively.</p>",
+          "duration": "",
+          "roll": "",
+          "spell_name": "Cognitive Focus",
+          "target": "One ally who is able to hear you or one enemy you can see that is suffering from dazed, enraged, and/or shaken."
+        },
+        "7": {
+          "$deleted": false,
+          "class": "Weaponmaster",
+          "cost": "0",
+          "description": "",
+          "duration": "",
+          "roll": "",
+          "spell_name": "Bone Crusher",
+          "target": ""
+        },
+        "8": {
+          "$deleted": false,
+          "class": "Sharpshooter",
+          "cost": "0",
+          "description": "<p>When you hit one or more targets with a ranged attack that would deal damage, you may have the attack deal no damage.</p>\n<p>&nbsp;</p>\n<p>If you do, choose one option: inflict shaken on each target hit by the attack; or inflict slow on each target hit by the attack; or eachtarget hit by the attack loses 【SL &times; 10】 Mind Points. Describe your maneuver!</p>",
+          "duration": "",
+          "roll": "",
+          "spell_name": "Warning Shot",
+          "target": ""
+        },
+        "9": {
+          "$deleted": false,
+          "class": "Weaponmaster",
+          "cost": "0",
+          "description": "<p>After an enemy hits or misses you with a melee attack, if the Result of their Accuracy<br>Check was an even number, you may perform a free attack against that enemy (after<br>their attack has been fully resolved). This attack must be a melee attack and must have<br>that enemy as its only target; treat your High Roll (HR) as 0 when calculating damage<br>dealt by this attack.</p>",
+          "duration": "",
+          "roll": "",
+          "spell_name": "Counterattack ",
+          "target": ""
+        },
+        "10": {
+          "$deleted": false,
+          "class": "Weaponmaster",
+          "cost": "10",
+          "description": "<p>When you perform a melee attack, you may spend 10 Mind Points to choose one<br>option: the attack gains multi (2); or you increase the attack's multi property by one, up to a maximum of multi (3)</p>",
+          "duration": "",
+          "roll": "",
+          "spell_name": "Bladestorm",
+          "target": ""
+        }
+      },
+      "notes_text": "",
+      "off_attrib_1": "SHI",
+      "off_attrib_2": "SHI",
+      "off_base_mod_1": "0",
+      "off_base_mod_2": "0",
+      "off_hand": "",
+      "off_hand_attack": "",
+      "off_mod_1": 0,
+      "off_mod_2": 0,
+      "offensive_spell_list": {
+        "5M9Zf7DLB0u6cUHA": {
+          "class": "",
+          "cost": "",
+          "duration": "Instantaneous",
+          "id": "5M9Zf7DLB0u6cUHA",
+          "name": "Waraxe(Heavy)",
+          "roll": "",
+          "target": "",
+          "uuid": "Actor.r4fK2nQoklO67Upb.Item.5M9Zf7DLB0u6cUHA"
+        },
+        "5nmSSXQpSWjrpfir": {
+          "class": "",
+          "cost": "",
+          "duration": "Instantaneous",
+          "id": "5nmSSXQpSWjrpfir",
+          "name": "Chain Whip(Flail)",
+          "roll": "",
+          "target": "",
+          "uuid": "Actor.r4fK2nQoklO67Upb.Item.5nmSSXQpSWjrpfir"
+        },
+        "9mhIk5VbHDIAQA81": {
+          "class": "",
+          "cost": "",
+          "duration": "",
+          "id": "9mhIk5VbHDIAQA81",
+          "name": "Iron Knuckle(Brawling)",
+          "roll": "",
+          "target": "",
+          "uuid": "Actor.r4fK2nQoklO67Upb.Item.9mhIk5VbHDIAQA81"
+        },
+        "CB2CuOQZ7Q8afpRY": {
+          "class": "",
+          "cost": "",
+          "duration": "Instantaneous",
+          "id": "CB2CuOQZ7Q8afpRY",
+          "name": "Greatsword(Sword)",
+          "roll": "",
+          "target": "",
+          "uuid": "Actor.r4fK2nQoklO67Upb.Item.CB2CuOQZ7Q8afpRY"
+        },
+        "EUZjokJrTbFuWmHY": {
+          "class": "",
+          "cost": "",
+          "duration": "Instantaneous",
+          "id": "EUZjokJrTbFuWmHY",
+          "name": "Shuriken(thrown)",
+          "roll": "",
+          "target": "",
+          "uuid": "Actor.r4fK2nQoklO67Upb.Item.EUZjokJrTbFuWmHY"
+        },
+        "FMwCYjEtVHSmEqDt": {
+          "class": "",
+          "cost": "",
+          "duration": "Instantaneous",
+          "id": "FMwCYjEtVHSmEqDt",
+          "name": "Staff(Arcane)",
+          "roll": "",
+          "target": "",
+          "uuid": "Actor.r4fK2nQoklO67Upb.Item.FMwCYjEtVHSmEqDt"
+        },
+        "KcEFS9WYPu8eTmbq": {
+          "class": "",
+          "cost": "",
+          "duration": "Instantaneous",
+          "id": "KcEFS9WYPu8eTmbq",
+          "name": "Steel Dagger(Dagger)",
+          "roll": "",
+          "target": "",
+          "uuid": "Actor.r4fK2nQoklO67Upb.Item.KcEFS9WYPu8eTmbq"
+        },
+        "ScEFlq4oYqMNt5D0": {
+          "class": "",
+          "cost": "",
+          "duration": "Instantaneous",
+          "id": "ScEFlq4oYqMNt5D0",
+          "name": "Pistol(Firearm)",
+          "roll": "",
+          "target": "",
+          "uuid": "Actor.r4fK2nQoklO67Upb.Item.ScEFlq4oYqMNt5D0"
+        },
+        "c9ZFBVF5hkaJoWYX": {
+          "class": "",
+          "cost": "",
+          "duration": "Instantaneous",
+          "id": "c9ZFBVF5hkaJoWYX",
+          "name": "Crossbow(Bow)",
+          "roll": "",
+          "target": "",
+          "uuid": "Actor.r4fK2nQoklO67Upb.Item.c9ZFBVF5hkaJoWYX"
+        },
+        "vVcC97xomd3iQwdp": {
+          "class": "",
+          "cost": "",
+          "duration": "Instantaneous",
+          "id": "vVcC97xomd3iQwdp",
+          "name": "Heavy Spear(Spear)",
+          "roll": "",
+          "target": "",
+          "uuid": "Actor.r4fK2nQoklO67Upb.Item.vVcC97xomd3iQwdp"
+        }
+      },
+      "origin": "",
+      "passive_list": {
+        "0": {
+          "$deleted": false,
+          "passive_description": "<p>You may use an action and spend 7 Mind Points to perform a free attack with a weapon<br>you have equipped. This attack must target a single creature; if the attack hits, you<br>treat your High Roll as 0 when calculating damage and may perform the Equipment<br>action for free after it has been resolved. Then, you may perform another free attack<br>with a weapon you have equipped who doesn't share any Category with the weapon<br>you used for your first attack. This attack must also target a single creature; if it<br>hits, you treat your High Roll as 0 when calculating damage, and may perform the<br>Equipment action for free after it has been resolved.<br>When you attack with a weapon that doesn't share a Category with any weapon you<br>previously attacked with during this scene, you gain 1 Sequence Point (if the weapon<br>is treated as belonging to two or more Categories due to Skills or effects, you gain that<br>many Sequence Points and are then treated as if you had already attacked with all of<br>those Categories during this scene).<br>Once per scene at the start of your turn, if you have 7 or more Sequence Points, you<br>may spend all your Sequence Points to choose one enemy you can see: that creature<br>loses 7 Hit Points. If you do, you may immediately repeat this process up to 6 more<br>times, for a maximum of 49 Hit Points lost (by a single enemy or different enemies,<br>provided it happens in 7 HP increments).<br>You lose all Sequence Points at the end of each scene.</p>",
+          "passive_name": "Seven Weapons Style",
+          "passive_roll": "",
+          "passive_source": "heroic_style"
+        },
+        "1": {
+          "$deleted": false,
+          "passive_description": "<p>When you first acquire the Psychic Gifts Skill, you also receive a Brainwave Clock.<br></p>\n<p>Your Brainwave Clock has 4 sections, and it begins each scene empty.<br></p>\n<p>After you resolve one of your gifts, fill 1 section of your Brainwave Clock (you do so<br>after the effects of the gift have been calculated and applied).<br></p>\n<p>Your Brainwave Clock determines your gifts’ cost in Mind Points, as well as their effectiveness (see above).</p>\n<p>You can still use your gifts when the Clock is full.<br></p>\n<p>Sections of your Brainwave Clock may not be filled in any way other than described above, and they may only be erased through the Brainwave Discharge Heroic Skill<br>(see page 171) or through effects that expressly influence Brainwave Clocks.</p>",
+          "passive_name": "Brainwave Clock",
+          "passive_roll": "",
+          "passive_source": ""
+        }
+      },
+      "place_card_vanguard": "Place",
+      "populate_deck": "Populate",
+      "pronouns": "",
+      "relationship_1": "",
+      "relationship_2": "",
+      "relationship_3": "",
+      "relationship_4": "",
+      "relationship_5": "",
+      "relationship_6": "",
+      "reset_cards": "Resets",
+      "resolve_set": "Resolve",
+      "resource_value_1": "0",
+      "resource_value_2": "0",
+      "resource_value_3": "0",
+      "reveal_cards": "Reveal",
+      "ritualism": false,
+      "rolled_atr1": "MIG",
+      "rolled_atr2": "WLP",
+      "shield_value": "0",
+      "shuffle_deck": "Shuffle",
+      "skill_accuracy": "0",
+      "skill_attack_damage": "0",
+      "skill_hp": "0",
+      "skill_list": {
+        "0": {
+          "$deleted": false,
+          "class": "Fury",
+          "description": "<p>Your Accuracy Checks with brawling, dagger, flail and thrown weapons trigger a<br>critical success if both dice show the same number (and the Check is not a fumble).</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Frenzy"
+        },
+        "1": {
+          "$deleted": true,
+          "class": "Fury",
+          "description": "<p>You may use an action and spend 5 Mind Points to perform an Opposed 【MIG + WLP】<br>Check against a creature you can see &mdash; describe how you taunt them! If you succeed,<br>the target suffers enraged and is compelled to focus their attention on you (their<br>attacks and offensive spells must include you among the targets if possible). This<br>compulsion ends if you fall unconscious or leave the scene, if the creature is no longer<br>enraged, or if they are successfully provoked by someone else.<br>You gain a bonus equal to 【SL】 to your 【MIG + WLP】 Checks for this Skill.</p>",
+          "level": "3",
+          "roll": "",
+          "skill_name": "Provoke"
+        },
+        "2": {
+          "$deleted": false,
+          "class": "Sharpshooter",
+          "description": "<p>When you hit one or more targets with a ranged attack that would deal damage, you<br>may have the attack deal no damage. If you do, choose one option: inflict shaken on<br>each target hit by the attack; or inflict slow on each target hit by the attack; or each<br>target hit by the attack loses 【SL &times; 10】 Mind Points. Describe your maneuver!</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Warning Shot"
+        },
+        "3": {
+          "$deleted": false,
+          "class": "Esper",
+          "description": "<p>When you perform an Accuracy Check, you may replace one of the Attribute dice with<br>Willpower (such as 【DEX + WLP】 for a shortbow). Additionally, your melee attacks<br>with weapons belonging to the arcane or sword Categories may target flying creatures</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Psychokinesis"
+        },
+        "4": {
+          "$deleted": false,
+          "class": "Esper",
+          "description": "<p>At the start of your turn during a conflict, you may choose one ally who is able to hear you or one enemy you can see that is suffering from dazed, enraged, and/or shaken.</p>\n<p>&nbsp;</p>\n<p>Until the start of your next turn, the chosen creature becomes your focus.<br>You gain a bonus equal to 【<strong>5</strong>】 to Checks you perform to examine your focus, as well as to your Accuracy Checks and Magic Checks for attacks and offensive spells (r) that include your focus among the targets.</p>\n<p>&nbsp;</p>\n<p>When you cause your focus to recover Hit Points and/or Mind Points, they recover 【SL &times; 2 = <strong>10</strong>】 additional HP and/or MP, respectively.</p>",
+          "level": "5",
+          "roll": "",
+          "skill_name": "Cognitive Focus"
+        },
+        "5": {
+          "$deleted": false,
+          "class": "Esper",
+          "description": "",
+          "level": "4",
+          "roll": "",
+          "skill_name": "Psychic Gift"
+        },
+        "6": {
+          "$deleted": true,
+          "class": "Fury",
+          "description": "",
+          "level": "2",
+          "roll": "",
+          "skill_name": "Provoke"
+        },
+        "7": {
+          "$deleted": false,
+          "class": "Weaponmaster",
+          "description": "<p>After an enemy hits or misses you with a melee attack, if the Result of their Accuracy<br>Check was an even number, you may perform a free attack against that enemy (after<br>their attack has been fully resolved). This attack must be a melee attack and must have<br>that enemy as its only target; treat your High Roll (HR) as 0 when calculating damage<br>dealt by this attack.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Counterattack "
+        },
+        "8": {
+          "$deleted": false,
+          "class": "Weaponmaster",
+          "description": "<p>When you perform a melee attack, you may spend 10 Mind Points to choose one<br>option: the attack gains multi (2); or you increase the attack's multi property by one, up to a maximum of multi (3)</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Bladestorm"
+        },
+        "9": {
+          "$deleted": false,
+          "class": "Weaponmaster",
+          "description": "<p>When you hit one or more targets with a melee attack that would deal damage, you may have the attack deal no damage. If you do, choose one option: inflict dazed on each target hit by the attack; or inflict weak on each target hit by the attack; or each target hit by the attack loses 【SL &times; 10】 Mind Points. Describe your maneuver!</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Bone Crusher"
+        }
+      },
+      "skill_mp": "0",
+      "spiritism": false,
+      "theme": "Freedom, Enigmatic",
+      "weapon1_base_damage": "0",
+      "weapon1_base_mod": "0",
+      "weapon1_damage": 0,
+      "weapon1_damagetype": "",
+      "weapon1_mod": 0,
+      "weapon2_damagetype": "-",
+      "wlp_base": "10",
+      "wlp_current": "10",
+      "your_class_name": "",
+      "zenit": "500",
+      "zero_effect_description": "",
+      "zero_effect_label": "💬 Zero Effect",
+      "zero_label": "💥 Zero Power : ",
+      "zero_power_name": "",
+      "zero_power_value": "0",
+      "zero_trigger_description": "",
+      "zero_trigger_label": "⚔️ Zero Trigger"
+    },
+    "statusEffects": {
+      "1QPHKNWo17z0bBmX": [],
+      "1cksCQj3urJwddfg": [],
+      "1qTdxSVu2XLu0lUx": [],
+      "3YZNX2X5rHYtL4L5": [],
+      "4g2B0rdJ3SiUQvUv": [],
+      "5FFBDg2y54bpqgat": [],
+      "5jkr80zqdzaR003d": [],
+      "6YW8glLMYbwj6ZhC": [],
+      "7FLtIUvENcYDAJKC": [],
+      "7VDl6ac5Rzr2Rpya": [],
+      "8LN8tDQjON508Rqm": [],
+      "ACD2C8JLWUeIx89o": [],
+      "CVxHWmDb0gQsob1q": [],
+      "CfLPg6RDybSQhTSR": [],
+      "DCaKnV9kNn3EpqtY": [],
+      "DHsoSawNEZAxsnQ9": [],
+      "EVjmTFRDsuzR823Z": [],
+      "GJ0cbbj60lr4zaHm": [],
+      "MsbUHrgK7AhSeEJm": [],
+      "N4WfMf1nuOdUEXVS": [],
+      "N4rGBYQsH7PyMAWr": [],
+      "NogCaPvL5Y52Hjnq": [],
+      "OFk8VUuwDhWFoPxI": [],
+      "QOfrFCU2C6mx50gK": [],
+      "Qz8IC4v3wJ6UoM77": [],
+      "Rc8AvdmlHAK7pPea": [],
+      "StnYeDADYo2xX99O": [],
+      "T1kJfiKBZm1dnnBy": [],
+      "VxdXsFJ7YVEzAp3x": [],
+      "YhO7nUdawyeQKMWD": [],
+      "ZK0aTX8IH1NqwmTw": [],
+      "bspDC7hFRTYuwdhf": [],
+      "cDgbFRi9TA68TvYr": [],
+      "clE8TJ0G1gMwF735": [],
+      "fYkA57rVfoytHRjo": [],
+      "g7JIey1pEuRHyAOH": [],
+      "gX1fA3onNG7wsyap": [],
+      "hhqoSNhWfVD4KR7g": [],
+      "jKvrVpxLgX0KhB23": [],
+      "m2iUJjsEfJkpmOBw": [],
+      "qMZsEEuzAdrHb2fk": [],
+      "qePlOECBTS0Dftgc": [],
+      "t2C3LKukW6LPUImk": [],
+      "t5jyddIZDvbyuVsD": [],
+      "v22vl6cnP94wVBPu": [],
+      "v2vFlETIgMnff5o8": [],
+      "vLM7q3rdXVCgHYD4": [],
+      "vUYA9jgY9pdafj4i": [],
+      "wA1E8GxiXmzz80XQ": [],
+      "xuwAn7u126GfFweU": []
+    },
+    "template": "Dx16KeWcJzikM7dh",
+    "templateSystemUniqueVersion": 276398442
+  },
+  "type": "character"
+}

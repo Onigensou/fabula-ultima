@@ -1,0 +1,19 @@
+{
+  "_id": "vS3opxoMTNN0FaTb",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1745715348457,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.4.2"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "w25ICotLVG5cJDrQ",
+  "name": "FootstepFX",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Macro"
+}

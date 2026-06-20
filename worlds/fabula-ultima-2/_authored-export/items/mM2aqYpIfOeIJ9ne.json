@@ -1,0 +1,57 @@
+{
+  "_id": "mM2aqYpIfOeIJ9ne",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1756954880248,
+    "duplicateSource": "Item.ILpuVF9brHO6V42s",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "5UrrA7j0xrzcXLZu",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Els/ElSkill4i.png",
+  "name": "Symbol of Destiny",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Symbolist",
+      "cost": "2 IP",
+      "damage_bonus": "0",
+      "description": "<p>After the creature bearing this symbol makes a <strong>Check</strong>, if you are able to see them, you may spend 1 <strong>Fabula Point</strong> to force that creature to reroll both dice. You may only do so once per <strong>Check</strong>, and only if the Result was not a <strong>critical success</strong> or <strong>fumble</strong>.</p>\n",
+      "duration": "Special",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": true,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Symbol of Destiny",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "Range",
+      "skill_target": "One creature",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "mM2aqYpIfOeIJ9ne"
+  },
+  "type": "equippableItem"
+}

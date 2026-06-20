@@ -1,0 +1,131 @@
+{
+  "_id": "wVVluaGNDUiNVLUw",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1754248686240,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "pycH5x7okeakK2BE",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.331",
+        "createdTime": 1771064074460,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Increase the next Attack <span style=\"text-decoration:underline\"><span style=\"font-family:Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;scrollbar-color:var(--color-scrollbar) var(--color-scrollbar-track);cursor:pointer;--content-link-background:rgba(0, 0, 0, 0.1);background-image:none !important;background-position:initial !important;background-size:initial !important;background-repeat:initial !important;background-attachment:initial !important;background-origin:initial !important;background-clip:initial !important;background-color:rgb(102, 102, 102);padding:0px !important;border:none !important;border-radius:2px;white-space:nowrap;word-break:break-all;color:rgb(25, 24, 19);font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika, sans-serif;font-size:14px;font-style:normal;font-variant-ligatures:normal;font-variant-caps:normal;letter-spacing:normal;orphans:2;text-align:start;text-indent:0px;text-transform:none;widows:2;word-spacing:0px;-webkit-text-stroke-width:0px\"><strong><span style=\"text-decoration:underline\">Multi</span></strong></a></span></span> count by 1</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": 1
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "pycH5x7okeakK2BE",
+          "originalParentId": "wVVluaGNDUiNVLUw",
+          "originalUuid": "Item.wVVluaGNDUiNVLUw.ActiveEffect.pycH5x7okeakK2BE"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/11_BRD/barrage.png",
+      "name": "Barrage",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "HyB3n86bNR4UQBOv",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/11_BRD/barrage.png",
+  "name": "Barrage",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {
+        "0": {
+          "$deleted": false,
+          "active_effect_application": "add",
+          "active_effect_apply_mode": "percentage",
+          "active_effect_dice_1": "",
+          "active_effect_dice_2": "",
+          "active_effect_dl": "0",
+          "active_effect_id": "pycH5x7okeakK2BE",
+          "active_effect_percent": "100",
+          "active_effect_target": "self",
+          "active_effect_trigger": "on_attack"
+        }
+      },
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_script": "<p>// ============================================================================</p><p>// Barrage (Self-Buff) - Sequencer (Pipeline Version)</p><p>// - Uses __PAYLOAD from your Action System when available</p><p>// - Emits oni:animationStart / oni:animationEnd so your pipeline can track it</p><p>//</p><p>// Flow</p><p>// 1) Play Boon FX ABOVE the caster + SFX</p><p>// ============================================================================</p><p>(async () => {</p><p>  const TAG = \"[Barrage]\";</p><p>  try {</p><p>    if (!game.modules.get(\"sequencer\")?.active) {</p><p>      ui.notifications.error(\"Sequencer module is not active.\");</p><p>      return;</p><p>    }</p><p>    // Minimal ONI.emit helper</p><p>    globalThis.ONI = globalThis.ONI ?? {};</p><p>    if (!ONI.emit) {</p><p>      ONI.emit = function (eventName, payload = {}, options = {}) {</p><p>        const { local = true, world = false } = options;</p><p>        if (local) Hooks.callAll(eventName, payload);</p><p>        if (world) game.socket.emit(\"world\", { action: eventName, payload });</p><p>      };</p><p>    }</p><p>    // --- Payload ---</p><p>    const payload = globalThis.__PAYLOAD ?? {};</p><p>    // --- Helpers ---</p><p>    const isUuid = (v) => typeof v === \"string\" && v.includes(\".\");</p><p>    async function resolveToken(ref) {</p><p>      if (!ref) return null;</p><p>      if (ref?.document && ref?.object) return ref;</p><p>      if (ref?.id && canvas.tokens?.get(ref.id)) return canvas.tokens.get(ref.id);</p><p>      if (isUuid(ref)) {</p><p>        const doc = await fromUuid(ref);</p><p>        if (!doc) return null;</p><p>        if (doc.object) return doc.object;</p><p>        if (doc.document?.object) return doc.document.object;</p><p>        return null;</p><p>      }</p><p>      if (typeof ref === \"string\") return canvas.tokens.get(ref) ?? null;</p><p>      return null;</p><p>    }</p><p>    // --- Resolve caster from pipeline ---</p><p>    const sourceRef =</p><p>      payload.sourceTokenUuid ??</p><p>      payload.sourceTokenId ??</p><p>      payload.casterTokenUuid ??</p><p>      payload.casterTokenId ??</p><p>      payload.attackerTokenUuid ??</p><p>      payload.attackerTokenId ??</p><p>      null;</p><p>    // Fallback for testing</p><p>    const fallbackSource = canvas.tokens.controlled?.[0] ?? null;</p><p>    const sourceToken = (await resolveToken(sourceRef)) ?? fallbackSource;</p><p>    if (!sourceToken) {</p><p>      ui.notifications.warn(\"Barrage: No caster token (payload missing and nothing selected).\");</p><p>      return;</p><p>    }</p><p>    // --- Broadcast start ---</p><p>    ONI.emit(</p><p>      \"oni:animationStart\",</p><p>      {</p><p>        type: \"skillBarrage\",</p><p>        sourceTokenId: sourceToken.id,</p><p>        targetTokenIds: [sourceToken.id], // self-buff</p><p>        sceneId: canvas.scene?.id ?? null,</p><p>        timestamp: Date.now(),</p><p>      },</p><p>      { local: true, world: false }</p><p>    );</p><p>    // --- Assets ---</p><p>    const FX_BOON =</p><p>      \"modules/JB2A_DnD5e/Library/Generic/Conditions/Boon02/ConditionBoon02_001_Refraction_600x600.webm\";</p><p>    const SFX = \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/EXSkill.ogg\";</p><p>    // --- MAIN SEQUENCE ---</p><p>    const seq = new Sequence()</p><p>      .sound()</p><p>      .file(SFX)</p><p>      .volume(0.95)</p><p>      // FX above caster</p><p>      .effect()</p><p>      .file(FX_BOON)</p><p>      .atLocation(sourceToken, { offset: { x: 0, y: -80 } }) // \"above\" (tweak if needed)</p><p>      .scaleToObject(1.7)</p><p>      .opacity(1.0)</p><p>      .belowTokens(false)</p><p>      .waitUntilFinished();</p><p>    await seq.play();</p><p>    // --- Broadcast end ---</p><p>    ONI.emit(</p><p>      \"oni:animationEnd\",</p><p>      {</p><p>        type: \"skillBarrage\",</p><p>        sourceTokenId: sourceToken.id,</p><p>        targetTokenIds: [sourceToken.id],</p><p>        sceneId: canvas.scene?.id ?? null,</p><p>        timestamp: Date.now(),</p><p>      },</p><p>      { local: true, world: false }</p><p>    );</p><p>    console.log(TAG, \"END\");</p><p>  } catch (err) {</p><p>    console.error(`${TAG} Animation crashed:`, err);</p><p>    // Still emit animationEnd so pipeline won't hang</p><p>    try {</p><p>      globalThis.ONI?.emit?.(</p><p>        \"oni:animationEnd\",</p><p>        { type: \"skillBarrage\", error: true, timestamp: Date.now() },</p><p>        { local: true }</p><p>      );</p><p>    } catch (_) {}</p><p>  }</p><p>})();</p>",
+      "check_bonus": "0",
+      "class": "Sharpshooter",
+      "cost": "10 MP",
+      "damage_bonus": "",
+      "defense_target_type": "def",
+      "description": "<p>When you perform a <strong>ranged attack</strong>, you may spend <strong>10 Mind Points</strong> to choose one option: the attack gains <em>multi (2)</em>; or you increase the attack's <em>multi</em> property by one, up to a maximum of <em>multi (3)</em>.</p>",
+      "duration": "Instantaneous",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Barrage",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "custom",
+      "skill_information": "",
+      "skill_range": "",
+      "skill_target": "Self",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "wVVluaGNDUiNVLUw"
+  },
+  "type": "equippableItem"
+}

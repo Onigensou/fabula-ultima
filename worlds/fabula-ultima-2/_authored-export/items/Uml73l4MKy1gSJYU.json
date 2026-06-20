@@ -1,0 +1,119 @@
+{
+  "_id": "Uml73l4MKy1gSJYU",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1754348503619,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "2OplVa9fwLYbzD8b",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/living_shadow.png",
+  "name": "Adversity",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 1900000,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "check_bonus": "0",
+      "class": "Darkblade",
+      "cost": "",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>As long as you are suffering from one or more status effects, you gain the following effects:</p><ul><li><p>+1 bonus on all Checks for every status effect you are suffering from (up to a maximum of +3),</p></li><li><p>You deal 2 extra damage for every status effect you are suffering from <em>(be it with attacks, spells, Arcana, items or any other method; up to a maximum of 6 extra damage)</em>.</p></li></ul>",
+      "details_roller": "Show",
+      "duration": "",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "accuracy_amount": "min(STATUS_COUNT, 3)",
+          "accuracy_operation": "add",
+          "effect_kind": "adjust_accuracy",
+          "effect_label": "adv_acc"
+        },
+        "1": {
+          "$deleted": false,
+          "damage_amount": "min(STATUS_COUNT * 2, 6)",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "adv_dmg",
+          "target_ref": ""
+        }
+      },
+      "heroic_requirement": "You must have mastered the Darkblade Class.",
+      "id": "Uml73l4MKy1gSJYU",
+      "ignore_hr": false,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/living_shadow.png",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": true,
+      "isReaction": true,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Adversity",
+      "on_activate_effect_ref": "",
+      "optional_params": {},
+      "passive_check_bonus_formula": "",
+      "passive_damage_bonus_formula": "",
+      "reaction_config_table": {
+        "0": {
+          "$deleted": false,
+          "condition_formula": "STATUS_COUNT > 0",
+          "reaction_action_kind": "Attack,Spell,Skill",
+          "reaction_damage_amount": "",
+          "reaction_damage_type": "",
+          "reaction_effect_ref": "adv_acc",
+          "reaction_passive_mode": "on",
+          "reaction_passive_target": "self",
+          "reaction_source": "self",
+          "reaction_source_skill": "",
+          "reaction_trigger": "creature_performs_action"
+        },
+        "1": {
+          "$deleted": false,
+          "condition_formula": "STATUS_COUNT > 0 && DAMAGE_IS_HP == 1",
+          "reaction_action_kind": "",
+          "reaction_damage_amount": "",
+          "reaction_damage_type": "",
+          "reaction_effect_ref": "adv_dmg",
+          "reaction_passive_mode": "on",
+          "reaction_passive_target": "self",
+          "reaction_source": "self",
+          "reaction_source_skill": "",
+          "reaction_trigger": "creature_will_deal_damage"
+        }
+      },
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false,
+      "uuid": "Item.Uml73l4MKy1gSJYU"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "Uml73l4MKy1gSJYU"
+  },
+  "type": "equippableItem"
+}

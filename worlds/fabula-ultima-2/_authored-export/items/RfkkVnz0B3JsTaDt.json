@@ -1,0 +1,53 @@
+{
+  "_id": "RfkkVnz0B3JsTaDt",
+  "_stats": {
+    "compendiumSource": "Item.9vM7Xu5q3cj7EFQt",
+    "coreVersion": "12.343",
+    "createdTime": 1751459183163,
+    "duplicateSource": "Item.9vM7Xu5q3cj7EFQt",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "recipe",
+        "fromTemplate": "VJCHYWOx1mPsMSip",
+        "itemId": "RfkkVnz0B3JsTaDt",
+        "itemName": "Mega-Remedy",
+        "pickedOldProps": {
+          "recipe_description": "<ul><li><p>Target creature recovers <strong>100</strong> HP.</p></li></ul>",
+          "recipe_flavor": "",
+          "recipe_ip": "5",
+          "recipe_label": ""
+        },
+        "ts": 1769647436004
+      }
+    }
+  },
+  "folder": "MOf4y5KdI6ZvNBHg",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion3.png",
+  "name": "Mega-Remedy",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 43750,
+  "system": {
+    "container": null,
+    "props": {
+      "description": "<ul><li><p>Target creature recovers <strong>100</strong> HP.</p></li></ul>",
+      "ip_cost": "5",
+      "item_type": "recipe",
+      "name": "Mega-Remedy"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "RfkkVnz0B3JsTaDt"
+  },
+  "type": "equippableItem"
+}

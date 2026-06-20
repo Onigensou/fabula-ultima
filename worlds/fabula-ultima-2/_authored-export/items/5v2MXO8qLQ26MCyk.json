@@ -1,0 +1,66 @@
+{
+  "_id": "5v2MXO8qLQ26MCyk",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1756854347676,
+    "duplicateSource": "Item.fUx8ZjjAzjAueQvU",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "SpOeLnDXVqot9DX9",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Gatherer-Crafter/02_BSM/manipulation_ii.png",
+  "name": "Superior Infusion",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_script": "",
+      "check_bonus": "0",
+      "class": "Tinkerer",
+      "cost": "2 IP",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>When you successfully hit one or more targets with an attack, you may spend 2 Inventory Points to produce a special <strong>infusion</strong> and apply the corresponding effect to that attack <em>(if the attack had the </em><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><em><strong><span style=\"text-decoration: underline;\">Multi</span></strong></em></a></span></span><em> property, apply the effects of the infusion to each target).</em></p>\n<p>You cannot apply more than one infusion to the same attack; producing and using an infusion are both part of the action you used to attack with the weapon.</p>\n\n<details class=\"potion-foldout\">\n  <summary>Superior Infusion Table</summary>\n  <table class=\"book-table\">\n    <caption>SUPERIOR INFUSIONS</caption>\n    <thead>\n      <tr>\n        <th style=\"width:140px;\">INFUSION</th>\n        <th>EFFECT</th>\n      </tr>\n    </thead>\n    <tbody>\n      <tr class=\"section-row\">\n        <th colspan=\"2\">Superior Infusions</th>\n      </tr>\n      <tr>\n        <th scope=\"row\">Vampire</th>\n        <td>\n          <p style=\"margin:0;\">\n            Choose one option: you recover an amount of <strong>HP</strong> equal to half the HP loss suffered by the target of the attack;\n            or you recover an amount of <strong>MP</strong> equal to half the HP loss suffered by the target of the attack.\n          </p>\n          <p style=\"margin:.25rem 0 0;\">\n            This infusion can only be used if the attack targeted a <strong>single</strong> creature.\n          </p>\n        </td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Venom</th>\n        <td>\n          The attack deals 5 extra damage, its damage becomes <em><strong>poison</strong></em>,\n          and each creature hit by the attack suffers <strong>poisoned</strong>.\n        </td>\n      </tr>\n    </tbody>\n  </table>\n</details>\n",
+      "duration": "Instantaneous",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": true,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Superior Infusion",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "Any",
+      "skill_target": "Special",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "5v2MXO8qLQ26MCyk"
+  },
+  "type": "equippableItem"
+}

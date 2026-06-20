@@ -1,0 +1,4207 @@
+{
+  "_id": "XfUpjwaovj4v9AjI",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1753298360466,
+    "duplicateSource": "Item.FZmpKcQRP7hZQqbV",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "templateHistory": [
+        [
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              3,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              2,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "E",
+            "lhs": "m-large",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "size"
+            ],
+            "rhs": "full-size"
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "tableKey"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "tableKeyColumn"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "tableLabelColumn"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "formulaKeyOptions"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "formulaLabelOptions"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              1,
+              "label"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              1,
+              "defaultValue"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              1,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              0,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              0,
+              "maxLength"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              2,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              1,
+              "label"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              1,
+              "defaultValue"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              1,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              1,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              "customSize"
+            ]
+          }
+        ],
+        [
+          {
+            "index": 4,
+            "item": {
+              "kind": "N",
+              "rhs": {
+                "align": "center",
+                "collapsible": false,
+                "contents": [],
+                "cssClass": "",
+                "defaultCollapsed": false,
+                "flow": "vertical",
+                "key": "",
+                "permission": "0",
+                "role": "0",
+                "title": "",
+                "titleStyle": "default",
+                "tooltip": "",
+                "type": "panel",
+                "visibilityFormula": ""
+              }
+            },
+            "kind": "A",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              3,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              2,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "tableKey"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "tableKeyColumn"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "tableLabelColumn"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "formulaKeyOptions"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "formulaLabelOptions"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              1,
+              "label"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              1,
+              "defaultValue"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              1,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              0,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              0,
+              "maxLength"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              2,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              1,
+              "label"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              1,
+              "defaultValue"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              1,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              1,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              "customSize"
+            ]
+          }
+        ],
+        [
+          {
+            "kind": "E",
+            "lhs": "",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              4,
+              "key"
+            ],
+            "rhs": "duration"
+          },
+          {
+            "kind": "E",
+            "lhs": "panel",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              4,
+              "type"
+            ],
+            "rhs": "textField"
+          },
+          {
+            "kind": "D",
+            "lhs": [],
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              4,
+              "contents"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": "vertical",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              4,
+              "flow"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": "center",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              4,
+              "align"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": false,
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              4,
+              "collapsible"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": false,
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              4,
+              "defaultCollapsed"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": "",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              4,
+              "title"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": "default",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              4,
+              "titleStyle"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              4,
+              "label"
+            ],
+            "rhs": "Duration"
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              4,
+              "defaultValue"
+            ],
+            "rhs": ""
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              4,
+              "size"
+            ],
+            "rhs": "full-size"
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              4,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              4,
+              "charList"
+            ],
+            "rhs": ""
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              4,
+              "maxLength"
+            ],
+            "rhs": ""
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              4,
+              "autocomplete"
+            ],
+            "rhs": ""
+          },
+          {
+            "kind": "E",
+            "lhs": "duration",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              3,
+              "key"
+            ],
+            "rhs": "target"
+          },
+          {
+            "kind": "E",
+            "lhs": "Duration",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              3,
+              "label"
+            ],
+            "rhs": "Target"
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              3,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "E",
+            "lhs": "target",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              2,
+              "key"
+            ],
+            "rhs": "cost"
+          },
+          {
+            "kind": "E",
+            "lhs": "Target",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              2,
+              "label"
+            ],
+            "rhs": "Cost"
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              2,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "E",
+            "lhs": "cost",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "key"
+            ],
+            "rhs": ""
+          },
+          {
+            "kind": "E",
+            "lhs": "textField",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "type"
+            ],
+            "rhs": "panel"
+          },
+          {
+            "kind": "D",
+            "lhs": "Cost",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "label"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": "",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "defaultValue"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": "full-size",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "size"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": "",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "charList"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": "",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "maxLength"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": "",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "autocomplete"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents"
+            ],
+            "rhs": []
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "flow"
+            ],
+            "rhs": "vertical"
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "align"
+            ],
+            "rhs": "center"
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "collapsible"
+            ],
+            "rhs": false
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "defaultCollapsed"
+            ],
+            "rhs": false
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "title"
+            ],
+            "rhs": ""
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "titleStyle"
+            ],
+            "rhs": "default"
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "tableKey"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "tableKeyColumn"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "tableLabelColumn"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "formulaKeyOptions"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "formulaLabelOptions"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              1,
+              "label"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              1,
+              "defaultValue"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              1,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              0,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              0,
+              "maxLength"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              2,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              1,
+              "label"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              1,
+              "defaultValue"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              1,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              1,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              "customSize"
+            ]
+          }
+        ],
+        [
+          {
+            "index": 4,
+            "item": {
+              "kind": "D",
+              "lhs": {
+                "autocomplete": "",
+                "charList": "",
+                "cssClass": "",
+                "defaultValue": "",
+                "key": "duration",
+                "label": "Duration",
+                "maxLength": "",
+                "permission": "0",
+                "role": "0",
+                "size": "full-size",
+                "tooltip": "",
+                "type": "textField",
+                "visibilityFormula": ""
+              }
+            },
+            "kind": "A",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents"
+            ]
+          },
+          {
+            "kind": "E",
+            "lhs": "target",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              3,
+              "key"
+            ],
+            "rhs": "duration"
+          },
+          {
+            "kind": "E",
+            "lhs": "Target",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              3,
+              "label"
+            ],
+            "rhs": "Duration"
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              3,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "E",
+            "lhs": "cost",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              2,
+              "key"
+            ],
+            "rhs": "target"
+          },
+          {
+            "kind": "E",
+            "lhs": "Cost",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              2,
+              "label"
+            ],
+            "rhs": "Target"
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              2,
+              "customSize"
+            ]
+          },
+          {
+            "index": 0,
+            "item": {
+              "kind": "N",
+              "rhs": {
+                "autocomplete": "",
+                "charList": "",
+                "cssClass": "",
+                "defaultValue": "",
+                "key": "cost",
+                "label": "Cost",
+                "maxLength": "",
+                "permission": "0",
+                "role": "0",
+                "size": "full-size",
+                "tooltip": "",
+                "type": "textField",
+                "visibilityFormula": ""
+              }
+            },
+            "kind": "A",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "tableKey"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "tableKeyColumn"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "tableLabelColumn"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "formulaKeyOptions"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "formulaLabelOptions"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              1,
+              "label"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              1,
+              "defaultValue"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              1,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              0,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              0,
+              "maxLength"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              2,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              1,
+              "label"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              1,
+              "defaultValue"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              1,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              1,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              "customSize"
+            ]
+          }
+        ],
+        [
+          {
+            "index": 3,
+            "item": {
+              "kind": "D",
+              "lhs": {
+                "autocomplete": "",
+                "charList": "",
+                "cssClass": "",
+                "defaultValue": "",
+                "key": "duration",
+                "label": "Duration",
+                "maxLength": "",
+                "permission": "0",
+                "role": "0",
+                "size": "full-size",
+                "tooltip": "",
+                "type": "textField",
+                "visibilityFormula": ""
+              }
+            },
+            "kind": "A",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents"
+            ]
+          },
+          {
+            "kind": "E",
+            "lhs": "target",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              2,
+              "key"
+            ],
+            "rhs": "duration"
+          },
+          {
+            "kind": "E",
+            "lhs": "Target",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              2,
+              "label"
+            ],
+            "rhs": "Duration"
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              2,
+              "customSize"
+            ]
+          },
+          {
+            "index": 1,
+            "item": {
+              "kind": "N",
+              "rhs": {
+                "autocomplete": "",
+                "charList": "",
+                "cssClass": "",
+                "defaultValue": "",
+                "key": "target",
+                "label": "Target",
+                "maxLength": "",
+                "permission": "0",
+                "role": "0",
+                "size": "full-size",
+                "tooltip": "",
+                "type": "textField",
+                "visibilityFormula": ""
+              }
+            },
+            "kind": "A",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              0,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "tableKey"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "tableKeyColumn"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "tableLabelColumn"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "formulaKeyOptions"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "formulaLabelOptions"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              1,
+              "label"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              1,
+              "defaultValue"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              1,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              0,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              0,
+              "maxLength"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              2,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              1,
+              "label"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              1,
+              "defaultValue"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              1,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              1,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              "customSize"
+            ]
+          }
+        ],
+        [
+          {
+            "index": 2,
+            "item": {
+              "kind": "D",
+              "lhs": {
+                "autocomplete": "",
+                "charList": "",
+                "cssClass": "",
+                "defaultValue": "",
+                "key": "duration",
+                "label": "Duration",
+                "maxLength": "",
+                "permission": "0",
+                "role": "0",
+                "size": "full-size",
+                "tooltip": "",
+                "type": "textField",
+                "visibilityFormula": ""
+              }
+            },
+            "kind": "A",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents"
+            ]
+          },
+          {
+            "index": 2,
+            "item": {
+              "kind": "N",
+              "rhs": {
+                "autocomplete": "",
+                "charList": "",
+                "cssClass": "",
+                "defaultValue": "",
+                "key": "duration",
+                "label": "Duration",
+                "maxLength": "",
+                "permission": "0",
+                "role": "0",
+                "size": "full-size",
+                "tooltip": "",
+                "type": "textField",
+                "visibilityFormula": ""
+              }
+            },
+            "kind": "A",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              1,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              0,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "tableKey"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "tableKeyColumn"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "tableLabelColumn"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "formulaKeyOptions"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "formulaLabelOptions"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              1,
+              "label"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              1,
+              "defaultValue"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              1,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              0,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              0,
+              "maxLength"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              2,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              1,
+              "label"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              1,
+              "defaultValue"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              1,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              1,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              "customSize"
+            ]
+          }
+        ],
+        [
+          {
+            "index": 3,
+            "item": {
+              "kind": "N",
+              "rhs": {
+                "altRollMessage": "",
+                "altRollMessageToChat": true,
+                "cssClass": "",
+                "icon": "",
+                "key": "",
+                "permission": "0",
+                "prefix": "",
+                "role": "0",
+                "rollMessage": "",
+                "rollMessageToChat": true,
+                "size": "full-size",
+                "style": "label",
+                "suffix": "",
+                "tooltip": "",
+                "type": "label",
+                "value": "",
+                "visibilityFormula": ""
+              }
+            },
+            "kind": "A",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              2,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              1,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              0,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "tableKey"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "tableKeyColumn"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "tableLabelColumn"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "formulaKeyOptions"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "formulaLabelOptions"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              1,
+              "label"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              1,
+              "defaultValue"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              1,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              0,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              0,
+              "maxLength"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              2,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              1,
+              "label"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              1,
+              "defaultValue"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              1,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              1,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              "customSize"
+            ]
+          }
+        ],
+        [
+          {
+            "kind": "E",
+            "lhs": "",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              3,
+              "key"
+            ],
+            "rhs": "duration"
+          },
+          {
+            "kind": "E",
+            "lhs": "label",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              3,
+              "type"
+            ],
+            "rhs": "textField"
+          },
+          {
+            "kind": "D",
+            "lhs": "",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              3,
+              "icon"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": "",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              3,
+              "value"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": "",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              3,
+              "prefix"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": "",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              3,
+              "suffix"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": "",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              3,
+              "rollMessage"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": "",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              3,
+              "altRollMessage"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": true,
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              3,
+              "rollMessageToChat"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": true,
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              3,
+              "altRollMessageToChat"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": "label",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              3,
+              "style"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              3,
+              "label"
+            ],
+            "rhs": "Duration"
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              3,
+              "defaultValue"
+            ],
+            "rhs": ""
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              3,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              3,
+              "charList"
+            ],
+            "rhs": ""
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              3,
+              "maxLength"
+            ],
+            "rhs": ""
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              3,
+              "autocomplete"
+            ],
+            "rhs": ""
+          },
+          {
+            "kind": "E",
+            "lhs": "duration",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              2,
+              "key"
+            ],
+            "rhs": "target"
+          },
+          {
+            "kind": "E",
+            "lhs": "Duration",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              2,
+              "label"
+            ],
+            "rhs": "Target"
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              2,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "E",
+            "lhs": "target",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              1,
+              "key"
+            ],
+            "rhs": ""
+          },
+          {
+            "kind": "E",
+            "lhs": "textField",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              1,
+              "type"
+            ],
+            "rhs": "label"
+          },
+          {
+            "kind": "E",
+            "lhs": "Target",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              1,
+              "label"
+            ]
+          },
+          {
+            "kind": "E",
+            "lhs": "",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              1,
+              "defaultValue"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": "",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              1,
+              "charList"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": "",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              1,
+              "maxLength"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": "",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              1,
+              "autocomplete"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              1,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              1,
+              "icon"
+            ],
+            "rhs": ""
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              1,
+              "value"
+            ],
+            "rhs": ""
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              1,
+              "prefix"
+            ],
+            "rhs": ""
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              1,
+              "suffix"
+            ],
+            "rhs": ""
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              1,
+              "rollMessage"
+            ],
+            "rhs": ""
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              1,
+              "altRollMessage"
+            ],
+            "rhs": ""
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              1,
+              "rollMessageToChat"
+            ],
+            "rhs": true
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              1,
+              "altRollMessageToChat"
+            ],
+            "rhs": true
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              1,
+              "style"
+            ],
+            "rhs": "label"
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              0,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "tableKey"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "tableKeyColumn"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "tableLabelColumn"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "formulaKeyOptions"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "formulaLabelOptions"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              1,
+              "label"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              1,
+              "defaultValue"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              1,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              0,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              0,
+              "maxLength"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              2,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              1,
+              "label"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              1,
+              "defaultValue"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              1,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              1,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              "customSize"
+            ]
+          }
+        ],
+        [
+          {
+            "index": 4,
+            "item": {
+              "kind": "N",
+              "rhs": {
+                "altRollMessage": "",
+                "altRollMessageToChat": true,
+                "cssClass": "",
+                "icon": "",
+                "key": "",
+                "permission": "0",
+                "prefix": "",
+                "role": "0",
+                "rollMessage": "",
+                "rollMessageToChat": true,
+                "size": "full-size",
+                "style": "label",
+                "suffix": "",
+                "tooltip": "",
+                "type": "label",
+                "value": "",
+                "visibilityFormula": ""
+              }
+            },
+            "kind": "A",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              3,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              2,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              1,
+              "label"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              1,
+              "defaultValue"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              1,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              0,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "tableKey"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "tableKeyColumn"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "tableLabelColumn"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "formulaKeyOptions"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "formulaLabelOptions"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              1,
+              "label"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              1,
+              "defaultValue"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              1,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              0,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              0,
+              "maxLength"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              2,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              1,
+              "label"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              1,
+              "defaultValue"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              1,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              1,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              "customSize"
+            ]
+          }
+        ],
+        [
+          {
+            "kind": "E",
+            "lhs": "",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              4,
+              "key"
+            ],
+            "rhs": "duration"
+          },
+          {
+            "kind": "E",
+            "lhs": "label",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              4,
+              "type"
+            ],
+            "rhs": "textField"
+          },
+          {
+            "kind": "D",
+            "lhs": "",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              4,
+              "icon"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": "",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              4,
+              "value"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": "",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              4,
+              "prefix"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": "",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              4,
+              "suffix"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": "",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              4,
+              "rollMessage"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": "",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              4,
+              "altRollMessage"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": true,
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              4,
+              "rollMessageToChat"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": true,
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              4,
+              "altRollMessageToChat"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": "label",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              4,
+              "style"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              4,
+              "label"
+            ],
+            "rhs": "Duration"
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              4,
+              "defaultValue"
+            ],
+            "rhs": ""
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              4,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              4,
+              "charList"
+            ],
+            "rhs": ""
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              4,
+              "maxLength"
+            ],
+            "rhs": ""
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              4,
+              "autocomplete"
+            ],
+            "rhs": ""
+          },
+          {
+            "kind": "E",
+            "lhs": "duration",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              3,
+              "key"
+            ],
+            "rhs": ""
+          },
+          {
+            "kind": "E",
+            "lhs": "textField",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              3,
+              "type"
+            ],
+            "rhs": "label"
+          },
+          {
+            "kind": "E",
+            "lhs": "Duration",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              3,
+              "label"
+            ]
+          },
+          {
+            "kind": "E",
+            "lhs": "",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              3,
+              "defaultValue"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": "",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              3,
+              "charList"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": "",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              3,
+              "maxLength"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": "",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              3,
+              "autocomplete"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              3,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              3,
+              "icon"
+            ],
+            "rhs": ""
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              3,
+              "value"
+            ],
+            "rhs": ""
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              3,
+              "prefix"
+            ],
+            "rhs": ""
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              3,
+              "suffix"
+            ],
+            "rhs": ""
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              3,
+              "rollMessage"
+            ],
+            "rhs": ""
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              3,
+              "altRollMessage"
+            ],
+            "rhs": ""
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              3,
+              "rollMessageToChat"
+            ],
+            "rhs": true
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              3,
+              "altRollMessageToChat"
+            ],
+            "rhs": true
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              3,
+              "style"
+            ],
+            "rhs": "label"
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              2,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              1,
+              "label"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              1,
+              "defaultValue"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              1,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              1,
+              "contents",
+              0,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "tableKey"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "tableKeyColumn"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "tableLabelColumn"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "formulaKeyOptions"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "formulaLabelOptions"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              1,
+              "label"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              1,
+              "defaultValue"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              1,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              0,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "header",
+              "contents",
+              0,
+              "contents",
+              0,
+              "contents",
+              0,
+              "maxLength"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              2,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              1,
+              "label"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              1,
+              "defaultValue"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              1,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              1,
+              "customSize"
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              "customSize"
+            ]
+          }
+        ]
+      ],
+      "templateHistoryRedo": [],
+      "version": "3.2.4"
+    }
+  },
+  "folder": "i7fbFD8Djifdw08W",
+  "img": "icons/svg/item-bag.svg",
+  "name": "_Non Offensive Spell",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 100000,
+  "system": {
+    "templateSystemUniqueVersion": 526624865,
+    "uniqueId": "XfUpjwaovj4v9AjI"
+  },
+  "type": "_equippableItemTemplate"
+}

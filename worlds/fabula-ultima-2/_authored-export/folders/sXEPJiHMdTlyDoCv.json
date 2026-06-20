@@ -1,0 +1,19 @@
+{
+  "_id": "sXEPJiHMdTlyDoCv",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1767840952728,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "wPp7MjmyKqkuVU1J",
+  "name": "Enemies",
+  "sort": 200000,
+  "sorting": "a",
+  "type": "RollTable"
+}

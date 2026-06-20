@@ -1,0 +1,187 @@
+{
+  "_id": "3A2B1LrKT09AwCiL",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780631531486,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "Ik636jiSfL7XPWhy",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1780631532495,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><em>Hawkeye:</em> your next ranged attack this scene deals extra damage.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "Ik636jiSfL7XPWhy",
+          "originalParentId": "3A2B1LrKT09AwCiL",
+          "originalUuid": "Item.3A2B1LrKT09AwCiL.ActiveEffect.Ik636jiSfL7XPWhy"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "chargeKey": "hawkeye_aim",
+          "charges": 1,
+          "chargesMax": 1,
+          "directorPermanent": true,
+          "lifetimeMode": "on_activation",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "chain_steps": "hawkeye_add, hawkeye_consume",
+                "effect_kind": "chain",
+                "effect_label": "hawkeye_fire"
+              },
+              "1": {
+                "damage_amount": "SL * 2",
+                "damage_operation": "add",
+                "damage_stage": "outgoing",
+                "effect_kind": "adjust_damage",
+                "effect_label": "hawkeye_add"
+              },
+              "2": {
+                "charge_key": "hawkeye_aim",
+                "count": 1,
+                "effect_kind": "consume_charge",
+                "effect_label": "hawkeye_consume",
+                "on_empty": "skip",
+                "target_ref": "hawkeye_self_ae"
+              },
+              "3": {
+                "candidate_source": "self",
+                "effect_kind": "targeting",
+                "effect_label": "hawkeye_self_ae"
+              }
+            },
+            "reaction_config_table": {
+              "0": {
+                "condition_formula": "ATTACK_IS_RANGED == 1",
+                "reaction_effect_ref": "hawkeye_fire",
+                "reaction_passive_mode": "on",
+                "reaction_passive_target": "self",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_will_deal_damage"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/skills/ranged/target-eye-orange.webp",
+      "name": "Hawkeye",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-hawkeye-aim"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "4nfTLrlahxy3xTs8",
+  "img": "icons/skills/ranged/target-eye-orange.webp",
+  "name": "Hawkeye",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "cost": "",
+      "description": "<p>When you perform the <strong>Guard</strong> action, if you choose <strong>not</strong> to provide cover to another creature, you may choose one option:</p><ul><li>the next <strong>ranged attack</strong> you perform before the end of the current scene will deal <strong>【SL】× 2</strong> extra damage; or</li><li>you may immediately perform a <strong>free attack</strong> with a bow or firearm you have equipped, treating your <strong>High Roll (HR)</strong> as <strong>0</strong> when calculating damage dealt by this attack.</li></ul>",
+      "effect_table": {
+        "0": {
+          "effect_kind": "open_action_menu",
+          "effect_label": "hawkeye_choose",
+          "menu_option_refs": "hawkeye_opt_aim, hawkeye_opt_attack",
+          "menu_subtitle": "You guarded without providing cover — choose:",
+          "menu_title": "Hawkeye"
+        },
+        "1": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Hawkeye",
+          "effect_kind": "apply_ae",
+          "effect_label": "hawkeye_opt_aim",
+          "menu_description": "Lasts until you make a ranged attack, or the scene ends.",
+          "menu_label": "Take aim — your next ranged attack deals +SL×2 extra damage",
+          "target_ref": "hawkeye_self_skill"
+        },
+        "2": {
+          "allowed_types": "Attack",
+          "effect_kind": "open_action_menu",
+          "effect_label": "hawkeye_opt_attack",
+          "free_hr_as_zero": true,
+          "free_mode": true,
+          "menu_description": "Immediately perform a free bow/firearm attack.",
+          "menu_label": "Free attack — bow or firearm (High Roll treated as 0)"
+        },
+        "3": {
+          "candidate_source": "self",
+          "effect_kind": "targeting",
+          "effect_label": "hawkeye_self_skill"
+        }
+      },
+      "isCheck": false,
+      "isHeroic": false,
+      "isReaction": true,
+      "level": "1",
+      "max_level": "5",
+      "name": "Hawkeye",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "DID_COVER_ALLY == 0",
+          "reaction_effect_ref": "hawkeye_choose",
+          "reaction_passive_mode": "ask",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_guards"
+        }
+      },
+      "skill_type": "Passive"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "3A2B1LrKT09AwCiL"
+  },
+  "type": "equippableItem"
+}

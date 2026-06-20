@@ -1,0 +1,19 @@
+{
+  "_id": "nAaM8w9pKx5bbRqT",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1781943390631,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "8VOe3tvHPz0c6uSz",
+  "name": "Blanche",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

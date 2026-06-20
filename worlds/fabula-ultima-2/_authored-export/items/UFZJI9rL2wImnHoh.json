@@ -1,0 +1,63 @@
+{
+  "_id": "UFZJI9rL2wImnHoh",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757291304686,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "2OplVa9fwLYbzD8b",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/anatman.png",
+  "name": "Inner Wellspring",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 3500000,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Invoker",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>When you acquire this Heroic Skill and whenever you rest, you may choose one wellspring: <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#a8ffbb 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#d2b48c 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#ffae00 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#d7a9ff 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a></span></span>, or <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#a6e3ff 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span></span>. If you do, you gain the following benefits until your next rest:</p><ul><li>You always treat the chosen <strong>wellspring</strong> as being available during each scene, in addition to whatever wellsprings are already available.</li><li>You may perform Rituals of the <strong>Elementalism</strong> discipline, but only if those Rituals manipulate the element of the chosen <strong>wellspring</strong>.</li><li>You gain <strong>Resistance</strong> to the damage type corresponding to the chosen <strong>wellspring</strong>.</li><li>When you deal damage, you may change its type to the one corresponding to the chosen <strong>wellspring</strong>. If you do, that damage ignores Resistances.</li></ul>",
+      "duration": "",
+      "heroic_requirement": "you must have mastered the Invoker Class.",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Inner Wellspring",
+      "optional_params": {
+        "0": {
+          "$deleted": false,
+          "key": "inner_wellspring",
+          "value": ""
+        }
+      },
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": true
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "UFZJI9rL2wImnHoh"
+  },
+  "type": "equippableItem"
+}

@@ -1,0 +1,163 @@
+{
+  "_id": "1B4DL1K7xYaEdhPu",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780644549404,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "JmB6MmhhpXPSWVRF",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>If this creature would be reduced to 0 HP, they are instead left at exactly 1 HP. Consumed on first trigger; this AE auto-removes when fired.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "FM1KMP69MAOzVwVP",
+          "originalParentId": "1MKAmY4pPdhkLSRt",
+          "originalUuid": "Item.1MKAmY4pPdhkLSRt.ActiveEffect.FM1KMP69MAOzVwVP"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "crossScene": true,
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "consume_self": true,
+                "damage_amount": "CUR_HP - 1",
+                "damage_operation": "cap",
+                "damage_stage": "incoming",
+                "effect_kind": "adjust_damage",
+                "effect_label": "mercy_clamp",
+                "modify_mode": "set_hp_floor",
+                "modify_value": 1
+              }
+            },
+            "name": "Mercy",
+            "reaction_config_table": {
+              "0": {
+                "reaction_damage_outcome": "would_reduce_to_zero",
+                "reaction_effect_ref": "mercy_clamp",
+                "reaction_passive_mode": "ask",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_takes_damage"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/cure.png",
+      "name": "Mercy",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-mercy"
+      ],
+      "system": {
+        "tags": [
+          "buff",
+          "dispellable"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "w7ey5G3zPC78EXos",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/cure.png",
+  "name": "Mercy",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "check_bonus": "0",
+      "class": "Spiritist",
+      "cost": "20 MP",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>You strengthen the heart of a creature against suffering and despair. Until this spell ends, if the target would be reduced to 0 Hit Points, they are instead left at exactly 1 Hit Point. Once that happens, this spell ends.</p>",
+      "duration": "Scene",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_template_ref": "Mercy",
+          "effect_kind": "apply_ae",
+          "effect_label": "mercy_apply",
+          "menu_description": "",
+          "menu_label": "",
+          "target_ref": "action_targets"
+        }
+      },
+      "heroic_requirement": "",
+      "ignore_hr": false,
+      "isCheck": false,
+      "isFacet": true,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": true,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Mercy",
+      "on_activate_effect_ref": "mercy_apply",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "Range",
+      "skill_target": "One creature",
+      "skill_type": "Spell",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "1B4DL1K7xYaEdhPu"
+  },
+  "type": "equippableItem"
+}

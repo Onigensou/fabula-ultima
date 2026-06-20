@@ -1,0 +1,19 @@
+{
+  "_id": "CC77DCVjUHEUtN3o",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1757051152705,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "aPsLStGRkzZxIr57",
+  "name": "Therioform",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

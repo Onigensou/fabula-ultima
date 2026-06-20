@@ -1,0 +1,62 @@
+{
+  "_id": "H3VDZkAthkwWUmnN",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1738331265861,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "H3VDZkAthkwWUmnN",
+        "itemName": "Ironbuck",
+        "pickedOldProps": {
+          "cost": "900",
+          "martial": false
+        },
+        "ts": 1769647435828
+      }
+    }
+  },
+  "folder": "yqDpXcujLeO6M7Yt",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gun.png",
+  "name": "Ironbuck",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "category": "Firearm",
+      "check_bonus": "2",
+      "damage_bonus": "12",
+      "description": "<ul>\n<li>When attacking with this weapon, you may perform the attack as either&nbsp;<strong>Ranged&nbsp;</strong>or&nbsp;<strong>Melee&nbsp;</strong>Attacks,&nbsp;<strong>Ranged&nbsp;</strong>Attacks have 50% Check and Damage bonus.</li>\n</ul>",
+      "hand_slots": "Two-handed",
+      "isMartial": false,
+      "item_cost": "900",
+      "item_type": "weapon",
+      "name": "Ironbuck",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "set_name": "",
+      "skill_target": "One Enemy",
+      "type_damage": "Physical",
+      "weapon_range": "Melee"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "H3VDZkAthkwWUmnN"
+  },
+  "type": "equippableItem"
+}

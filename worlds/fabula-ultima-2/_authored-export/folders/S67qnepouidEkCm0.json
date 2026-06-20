@@ -1,0 +1,19 @@
+{
+  "_id": "S67qnepouidEkCm0",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1753298274490,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": "#000000",
+  "description": "",
+  "flags": {},
+  "folder": "Ta27JAFtAPKOOZb8",
+  "name": "Offensive Spells",
+  "sort": 200000,
+  "sorting": "a",
+  "type": "Item"
+}

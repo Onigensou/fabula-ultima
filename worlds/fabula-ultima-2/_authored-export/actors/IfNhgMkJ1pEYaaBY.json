@@ -1,0 +1,958 @@
+{
+  "_id": "IfNhgMkJ1pEYaaBY",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1757427911895,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "tmNVy5jIbM9rzx80",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/misc%20image/FabU_Aceofcards.png",
+  "items": [
+    {
+      "_id": "3lekLRbmOFGXDpSo",
+      "_stats": {
+        "compendiumSource": "Item.bak1ZvBM8KSZCD75",
+        "coreVersion": "12.343",
+        "createdTime": 1757588164745,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/Oracle.png",
+      "name": "Double or Nothing",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Ace of Cards",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>Before you perform an <strong>Accuracy Check</strong>, a <strong>Magic Check</strong> for an offensive spell, or a Check to advance or turn back a Clock, you may declare:</p><blockquote><p> 💬<strong>\"double or nothing\"</strong></p></blockquote><p>If you do and the Check triggers a <strong>critical success</strong>, double the damage dealt by that attack or spell, or the filled/erased sections of that Clock, respectively; however, any other kind of success becomes a <strong>failure</strong> instead.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Double or Nothing",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "bak1ZvBM8KSZCD75"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "6iq58238hmW64j0v",
+      "_stats": {
+        "compendiumSource": "Item.DT2crRFPtAIqeRUu",
+        "coreVersion": "12.343",
+        "createdTime": 1757432331013,
+        "duplicateSource": "Item.ToXarLKT0G2ggon1",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/royal_road.png",
+      "name": "Trap Card",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Ace of Cards",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>After an enemy you can see performs an action during a conflict, you may declare one of your deck’s <strong>suits</strong> (after the action has been resolved) and put the <strong>top card</strong> of your deck into your <strong>discard pile</strong>, face up. If that card is a <strong>joker</strong> or its suit matches the one you declared, you may immediately perform the <strong>Spell</strong> action <em>for free</em>, casting a spell with a total Mind Point cost equal to or lower than <strong>[SL × 5]</strong> (you must still pay its MP cost).</p>\n<div class=\"tableWrapper\"></div>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Trap Card",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width:100%; text-align:center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Max Spell Cost</strong></p></td></tr><tr><td><p>1</p></td><td><p>5</p></td></tr><tr><td><p>2</p></td><td><p>10</p></td></tr><tr><td><p>3</p></td><td><p>15</p></td></tr><tr><td><p>4</p></td><td><p>20</p></td></tr></tbody></table><p style=\"font-size: 12px; margin-top: 4px; text-align: center\">(Max spell MP cost = <em>5 × SL</em>.)</p>",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "DT2crRFPtAIqeRUu"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "BzDsLkDpI0DjLPpn",
+      "_stats": {
+        "compendiumSource": "Item.bzi79ApAA922A5DD",
+        "coreVersion": "12.343",
+        "createdTime": 1757460709831,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lithia/CynicalSneerSkill4.png",
+      "name": "Forbidden Monarch",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Ace of Cards",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>As long as there are <strong>one or more cards</strong> in your <strong>discard pile</strong>, you have <strong>Resistance</strong> to the damage type matching the <strong>suit</strong> of the card on top of your discard pile (if that card is a <strong>joker</strong>, you have <strong>Resistance</strong> to all four damage types: <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(168, 255, 187) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(210, 180, 140) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span>, and <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(166, 227, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span></span>).</p><p>You also add the following <strong>effect</strong> to your list of <strong>sets</strong>:</p><details open=\"\" style=\"border:2px solid #b3002d; border-radius:10px; overflow:hidden; margin-top:10px;\"><summary style=\"cursor:pointer; background:#b3002d; color:#fff; padding:8px 12px; font-weight:700; font-family:Signika, sans-serif; letter-spacing:.3px;\"><span style=\"font-family: Signika, sans-serif\"><strong>♠ ♥ ♦ ♣ Additional Set Effect (click to hide)</strong></span></summary><div class=\"tableWrapper\" style=\"background:#fff;\"><div class=\"tableWrapper\"><table style=\"min-width: 75px;\"><colgroup><col contenteditable=\"false\"><col contenteditable=\"false\"><col contenteditable=\"false\"></colgroup><tbody><tr style=\"background:#b3002d; color:#fff;\"><td style=\"padding:6px; border-right:1px solid #a00027;\"><p><strong>Effect</strong></p></td><td style=\"padding:6px; border-right:1px solid #a00027;\"><p><strong>Set Requirements</strong></p></td><td style=\"padding:6px;\"><p><strong>Resolve</strong></p></td></tr><tr><td style=\"padding:8px; border-bottom:1px solid #e9d6da;\"><p><strong>Forbidden Monarch</strong></p></td><td style=\"padding:8px; border-bottom:1px solid #e9d6da;\"><p>4 cards of the same value, none of which is a <strong>joker</strong> + 1 <strong>joker</strong></p></td><td style=\"padding:8px; border-bottom:1px solid #e9d6da;\"><p>You deal <strong>777</strong> damage to each enemy present on the scene; the type of this damage is <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(202, 189, 154) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></span> if 【<strong>the common value of the 4 cards】</strong> is <strong>even</strong>, or <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span> if that total is <strong>odd</strong>.</p><p>If there is a <strong>joker</strong> in your <strong>discard pile</strong>, the damage dealt by this effect <strong>ignores Immunities and Resistances</strong>.</p></td></tr></tbody></table></div></div></details>",
+          "duration": "",
+          "heroic_requirement": "you must have mastered one or more Classes among Ace of Cards and Arcanist, and you must have acquired 3 Skill Levels in the Magic Cards Skill.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Forbidden Monarch",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "bzi79ApAA922A5DD"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "CU6J8wunAWz9enQE",
+      "_stats": {
+        "compendiumSource": "Item.LBqkjOIfj4oMkplG",
+        "coreVersion": "12.343",
+        "createdTime": 1757433281999,
+        "duplicateSource": "Item.vRWqziomvuxZXBCr",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/minor_arcana.png",
+      "name": "Duel Master",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Ace of Cards",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you resolve the <strong>Magic Pair</strong> effect, if you attack with a weapon belonging to the <strong>arcane</strong> or <strong>thrown</strong> Category, you deal extra damage equal to <strong>[the common value of the resolved cards]</strong> and regain <strong>[twice the common value of the resolved cards]</strong> Mind Points (for instance, resolving a pair of 5s allows you to deal <strong>5</strong> extra damage and regain <strong>10</strong> Mind Points).</p>\n",
+          "duration": "",
+          "heroic_requirement": "you must have mastered one or more Classes among Ace of Cards, Fury, Rogue, Sharpshooter, and Weaponmaster, and you must have acquired the Magic Cards Skill.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Duel Master",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "LBqkjOIfj4oMkplG"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "DToDwHl6if6v98Bw",
+      "_stats": {
+        "compendiumSource": "Item.k6oFHmln1bPfvq90",
+        "coreVersion": "12.343",
+        "createdTime": 1757432297043,
+        "duplicateSource": "Item.2jmr67iRKcFu0YwU",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/play.png",
+      "name": "Magic Cards",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Ace of Cards",
+          "cost": "X MP",
+          "damage_bonus": "0",
+          "description": "<p>You gain a <strong>deck</strong>, a <strong>hand</strong> and a <strong>discard pile</strong> (see Unique Mechanic).</p>\n<p>During a conflict, you may <strong>use an action</strong> and spend up to <strong>[10 + (SL × 5)]</strong> Mind Points (minimum 10). If you do, <strong>resolve 1 card from your hand for every 5 MP</strong> spent this way (to a maximum of <strong>5</strong> cards; these cards form a <strong>set</strong>). After you resolve the effect of the set (if any), <strong>discard</strong> these cards and <strong>draw</strong> that many cards from your deck.</p>\n\n<details style=\"border:2px solid #b3002d; border-radius:10px; overflow:hidden; margin-top:10px;\">\n  <summary style=\"cursor:pointer; background:#b3002d; color:#fff; padding:8px 12px; font-weight:700; font-family:Signika, sans-serif; letter-spacing:.3px;\">\n    ♠ ♥ ♦ ♣ Card Set Effects (click to expand)\n  </summary>\n  <div class=\"tableWrapper\" style=\"background:#fff;\">\n    <table style=\"width:100%; border-collapse:separate; border-spacing:0; text-align:left;\">\n      <tbody>\n        <tr style=\"background:#b3002d; color:#fff;\">\n          <td style=\"padding:6px; border-right:1px solid #a00027;\"><strong>Effect</strong></td>\n          <td style=\"padding:6px; border-right:1px solid #a00027;\"><strong>Set Requirements</strong></td>\n          <td style=\"padding:6px;\"><strong>Resolve</strong></td>\n        </tr>\n\n        <!-- Note row -->\n        <tr>\n          <td colspan=\"3\" style=\"background:#fff5f7; border-bottom:2px solid #b3002d; padding:8px;\">\n            <p style=\"margin:0;\"><em>Note:</em> <strong>Blinding Flush</strong>, <strong>Double Trouble</strong>, and <strong>Magic Flush</strong> deal <strong>+10</strong> extra damage if you are <strong>level 20+</strong>, or <strong>+20</strong> if you are <strong>level 40+</strong>.</p>\n            <p style=\"margin:6px 0 0 0;\">If you use a classic poker deck, the recommended suit types are:\n              <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(168, 255, 187) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a></span></span> (♦),\n              <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(210, 180, 140) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span></span> (♣),\n              <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span> (♥), and\n              <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(166, 227, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span></span> (♠).\n            </p>\n          </td>\n        </tr>\n\n        <!-- Jackpot -->\n        <tr>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\"><strong>Jackpot</strong></td>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\">4 cards of the same value, none is a joker</td>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\">You and every ally present on the scene recover <strong>777</strong> Hit Points and <strong>777</strong> Mind Points; any PCs who have <strong>surrendered</strong> but are still part of the scene immediately regain consciousness (this does not cancel the effects of their Surrender).</td>\n        </tr>\n\n        <!-- Magic Flush -->\n        <tr>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\"><strong>Magic Flush</strong></td>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\">4 cards of consecutive values and of the same suit</td>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\">Deal damage equal to <strong>[25 + the total value of the resolved cards]</strong> to each enemy present on the scene; the type of this damage matches the <strong>suit</strong> of the resolved cards.</td>\n        </tr>\n\n        <!-- Blinding Flush -->\n        <tr>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\"><strong>Blinding Flush</strong></td>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\">4 cards of consecutive values</td>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\">Deal damage equal to <strong>[15 + the total value of the resolved cards]</strong> to each enemy present on the scene; the type of this damage is \n            <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(202, 189, 154) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></span> if the highest value among those cards is even, or \n            <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span> if that value is odd.</td>\n        </tr>\n\n        <!-- Full Status -->\n        <tr>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\"><strong>Full Status</strong></td>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\">3 cards of the same value + 2 cards of the same value</td>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\">Choose two status effects among \n            <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Dazed</span></strong></a></span></span>, \n            <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span></span>, \n            <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span></span>, and \n            <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a></span></span>. If the highest value among the resolved cards is even, you and every ally present on the scene recover from the chosen status effects; if odd, each enemy present on the scene suffers them.</td>\n        </tr>\n\n        <!-- Triple Support -->\n        <tr>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\"><strong>Triple Support</strong></td>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\">3 cards of the same value</td>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\">You and every ally present on the scene regain an amount of Hit Points and Mind Points equal to <strong>[the total value of the resolved cards × 3]</strong>.</td>\n        </tr>\n\n        <!-- Double Trouble -->\n        <tr>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\"><strong>Double Trouble</strong></td>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\">2 cards of the same value + 2 cards of the same value</td>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\">Deal damage equal to <strong>[10 + the highest value among resolved cards]</strong> to each of up to <strong>two</strong> different enemies you can see that are present on the scene; the type of this damage is one of your choice among those matching the <strong>suits</strong> of the resolved cards.</td>\n        </tr>\n\n        <!-- Magic Pair -->\n        <tr>\n          <td style=\"padding:8px;\"><strong>Magic Pair</strong></td>\n          <td style=\"padding:8px;\">2 cards of the same value</td>\n          <td style=\"padding:8px;\">Perform a <strong>free attack</strong> with a weapon you have equipped. If this attack deals damage, choose a <strong>suit</strong> among those of the resolved cards; all damage dealt by the attack becomes the type matching that suit.</td>\n        </tr>\n\n      </tbody>\n    </table>\n  </div>\n</details>\n",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Magic Cards",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width:100%; text-align:center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>MP Spend Cap</strong></p></td><td><p><strong>Max Cards Resolved</strong></p></td></tr><tr><td><p>1</p></td><td><p>15</p></td><td><p>3</p></td></tr><tr><td><p>2</p></td><td><p>20</p></td><td><p>4</p></td></tr><tr><td><p>3</p></td><td><p>25</p></td><td><p>5</p></td></tr></tbody></table><p style=\"font-size: 12px; margin-top: 4px; text-align: center\">(MP cap = <em>10 + 5 × SL</em>; cards resolved = <em>⌊MP spent ÷ 5⌋</em>, max 5.)</p>",
+          "skill_range": "Range",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "k6oFHmln1bPfvq90"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "HBeFbxG58UfPjN2N",
+      "_stats": {
+        "compendiumSource": "Item.vRWqziomvuxZXBCr",
+        "coreVersion": "12.343",
+        "createdTime": 1757433280353,
+        "duplicateSource": "Item.TSCAUfjpOlNl6WwV",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/CLOSERS/Harpy/Draw.webp",
+      "name": "Card Vanguard",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Ace of Cards",
+          "cost": "-",
+          "damage_bonus": "0",
+          "description": "<p>During a conflict, if you have <strong>two or fewer</strong> <em>vanguard cards</em> in play, you may <strong>use an action</strong> to choose <strong>1</strong> card from your <strong>hand</strong> and place it face down as a <em>vanguard card</em>; if you do, <strong>draw 1</strong> card from your <strong>deck</strong>.</p>\n<p>When you suffer damage, if you have <strong>one or more</strong> <em>vanguard cards</em> in play, you may reveal one of them and place it on top of your <strong>discard pile</strong>: if you do and that card is a <strong>joker</strong> or its suit matches the type of the damage you suffered, you instead suffer <strong>no damage</strong> and regain an equal amount of <strong>Mind Points</strong>.</p>\n<p>At the end of each conflict, if you have <strong>one or more</strong> <em>vanguard cards</em> in play, shuffle them back into your <strong>deck</strong>.</p>\n",
+          "duration": "Scene",
+          "heroic_requirement": "you must have mastered the Ace of Cards Class, and must have acquired the Magic Cards Skill.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Card Vanguard",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "vRWqziomvuxZXBCr"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "kuiekH9UxCOD7KHS",
+      "_stats": {
+        "compendiumSource": "Item.2jmr67iRKcFu0YwU",
+        "coreVersion": "12.343",
+        "createdTime": 1757432295920,
+        "duplicateSource": "Item.bak1ZvBM8KSZCD75",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/neutral_sect.png",
+      "name": "High or Low",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Ace of Cards",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you generate a <strong>critical success</strong> or a <strong>fumble</strong>, you may draw <strong>1</strong> card from your <strong>deck</strong>. If you do, discard <strong>1</strong> card from your <strong>hand</strong>.</p>\n",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "High or Low",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "2jmr67iRKcFu0YwU"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "npNAYMKt0p5Q0z5Q",
+      "_stats": {
+        "compendiumSource": "Item.ToXarLKT0G2ggon1",
+        "coreVersion": "12.343",
+        "createdTime": 1757432329356,
+        "duplicateSource": "Item.k6oFHmln1bPfvq90",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/spread.png",
+      "name": "Mulligan",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Ace of Cards",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>At the end of your turn during a conflict, you may discard up to <strong>[SL]</strong> cards from your <strong>hand</strong>. If you do, draw that many cards from your <strong>deck</strong>.</p>\n<div class=\"tableWrapper\"></div>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Mulligan",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width:100%; text-align:center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Discard/Draw Up To</strong></p></td></tr><tr><td><p>1</p></td><td><p>1</p></td></tr><tr><td><p>2</p></td><td><p>2</p></td></tr><tr><td><p>3</p></td><td><p>3</p></td></tr><tr><td><p>4</p></td><td><p>4</p></td></tr><tr><td><p>5</p></td><td><p>5</p></td></tr></tbody></table><p style=\"font-size: 12px; margin-top: 4px; text-align: center\">(Value equals <em>SL</em> cards.)</p>",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "ToXarLKT0G2ggon1"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "TUQRFXj91h6xiwLA",
+      "_stats": {
+        "compendiumSource": "Item.TSCAUfjpOlNl6WwV",
+        "coreVersion": "12.343",
+        "createdTime": 1757433277670,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/nocturnal_sect.png",
+      "name": "Black & White",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Ace of Cards",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you resolve the <strong>Double Trouble</strong> effect, you may have all of its damage become <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(202, 189, 154) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></span> or <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span> (instead of being a type of damage matching the suits of the resolved cards).</p><p>Additionally, as long as there is a <strong>joker</strong> in your <strong>discard pile</strong>, all damage dealt by your 【💥<strong>Blinding Flush】</strong>, 【💥<strong>Double Trouble】</strong>, and 【💥<strong>Magic Flush】</strong> effects <strong>ignores Immunities and Resistances</strong>.</p>",
+          "duration": "",
+          "heroic_requirement": "you must have mastered one or more Classes among Ace of Cards, Darkblade, Entropist, and Spiritist, and you must have acquired the Magic Cards Skill",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Black & White",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "TSCAUfjpOlNl6WwV"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Ace of Cards",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar4": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "DEF",
+            "max": 13,
+            "maxcolor": "#f26d40",
+            "mincolor": "#f26d40",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 13
+          },
+          "bar5": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar5",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MDEF",
+            "max": 10,
+            "maxcolor": "#26d6ed",
+            "mincolor": "#26d6ed",
+            "opacity": null,
+            "order": 4,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 10
+          }
+        }
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Ace of Cards",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/misc%20image/FabU_Aceofcards.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 0,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {
+      "also_text": "Deckmancer, Destiny Duelist, High Roller",
+      "benefit_dropdown": "choice_benefit",
+      "classMechanic_text": "<h1>ACE OF CARDS — MANAGING THE DECK</h1><p><em>Shuffle, draw, make a set, and unleash a flashy effect. That’s the whole trick!</em> This page explains the <strong>Magic Cards</strong> mechanic used by the Ace of Cards, written like a video game tutorial and faithful to the book, with a few beginner tips sprinkled in.</p><hr><h2>1) What you need</h2><ul><li><strong>A 30-card deck:</strong> <span style=\"text-decoration: underline;\"><span style=\"text-decoration: underline;\">2 jokers</span></span> + <span style=\"text-decoration: underline;\"><span style=\"text-decoration: underline;\">28 cards</span></span> split into <span style=\"text-decoration: underline;\"><span style=\"text-decoration: underline;\">4 suits</span></span>, each suit containing the values <strong>1–7</strong> (so 7 cards per suit).</li><li><strong>Suits = damage types:</strong> when you create your character, assign each suit to a damage type: <span style=\"text-decoration: underline;\"><a class=\"content-link\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a></span>, <span style=\"text-decoration: underline;\"><a class=\"content-link\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span>, <span style=\"text-decoration: underline;\"><a class=\"content-link\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span>, <span style=\"text-decoration: underline;\"><a class=\"content-link\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span>.</li><li><strong>Using a poker deck?</strong> Remove face cards and the 8–10s; you’ll be left with A(=1)–7 in each suit. Tarot minor arcana or CCG cards also work if the values/suits are easy to read.</li></ul><hr><h2>2) When a conflict starts</h2><ol><li>Shuffle all <strong>30</strong> cards into a <strong>face-down deck</strong>.</li><li>Draw your starting <strong>hand of 5</strong> cards.</li></ol><p><strong>Hand & Discard:</strong> Cards you draw go to your hand (only you see them, but you may show them if you want). When you discard from your hand, place cards <strong>face up</strong> into your <strong>discard pile</strong> in any order—once placed, the order in the discard pile cannot be changed.</p><p><strong>Out of cards?</strong> If you need to draw but the deck is empty: draw as many as you can, then <strong>shuffle the discard into a new deck</strong> (face down) and keep drawing.</p><p><strong>End of conflict:</strong> deck, hand, and discard only exist during conflicts. When a conflict ends, shuffle all 30 cards back together and set them aside.</p><hr><h2>3) The core move: resolve a set</h2><p>Many Ace of Cards abilities ask you to <strong>resolve a set</strong>. A set is a specific pattern of cards from your hand that you place on the table to trigger an effect.</p><ul><li><strong>Match exactly.</strong> If an effect asks for “<em>exactly 4 cards</em>,” then 5 cards won’t work—even if they also contain the pattern.</li><li><strong>Jokers are wild.</strong> When your set includes jokers, <span style=\"text-decoration: underline;\"><span style=\"text-decoration: underline;\">you choose the joker’s suit and value (1–7)</span></span> as you play the set.</li><li><strong>If a set qualifies for more than one effect, choose only one</strong> to apply.</li><li><strong>“Consecutive values”</strong> means sequences like 1-2-3-4 or 4-5-6-7 (no wrap-around).</li></ul><hr><h2>4) Set Recipes & Effects (Cheat Sheet)</h2><p><strong>Level bonus:</strong> <em>Blinding Flush</em>, <em>Double Trouble</em>, and <em>Magic Flush</em> deal +10 damage if you are level 20+, or +20 damage if you are level 40+.</p><div class=\"tableWrapper\"><table style=\"min-width: 600px; text-align:left;\"><thead><tr><th>Effect</th><th>Exact Set Required</th><th>What it does</th></tr></thead><tbody><tr><td><strong>Jackpot</strong></td><td><strong>4 cards of the same value</strong> (no jokers)</td><td><strong>You and all allies</strong> recover <strong>777 HP</strong> and <strong>777 MP</strong>. Any PCs who <em>Surrendered</em> but are still on the scene immediately regain consciousness (their Surrender’s other effects remain).</td></tr><tr><td><strong>Magic Flush</strong></td><td><strong>4 consecutive values</strong> <em>of the same suit</em></td><td>Deal damage to <strong>all enemies</strong> equal to <strong>25 + the total values</strong> of the cards. The damage type = the suit’s assigned type (<span style=\"text-decoration: underline;\"><a class=\"content-link\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a></span>, <span style=\"text-decoration: underline;\"><a class=\"content-link\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span>, <span style=\"text-decoration: underline;\"><a class=\"content-link\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span>, <span style=\"text-decoration: underline;\"><a class=\"content-link\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span>). <em>(+10 at Lv20+, +20 at Lv40+)</em></td></tr><tr><td><strong>Blinding Flush</strong></td><td><strong>4 consecutive values</strong> (any suits)</td><td>Deal damage to <strong>all enemies</strong> equal to <strong>15 + the total values</strong> of the cards. The damage type is <span style=\"text-decoration: underline;\"><a class=\"content-link\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span> if the <strong>highest value</strong> in the set is even, or <span style=\"text-decoration: underline;\"><a class=\"content-link\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span> if it’s odd. <em>(+10 at Lv20+, +20 at Lv40+)</em></td></tr><tr><td><strong>Full Status</strong></td><td><strong>3 of a kind</strong> + <strong>a pair</strong></td><td><p>Choose <strong>two</strong> among: <span style=\"text-decoration: underline;\"><a class=\"content-link\"><strong><span style=\"text-decoration: underline;\">Dazed</span></strong></a></span>, <span style=\"text-decoration: underline;\"><a class=\"content-link\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span>, <span style=\"text-decoration: underline;\"><a class=\"content-link\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span>, <span style=\"text-decoration: underline;\"><a class=\"content-link\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a></span>.<br>If the <strong>highest value</strong> in the set is <strong>even</strong> → <strong>you and all allies</strong> recover from those statuses.<br>If it’s <strong>odd</strong> → <strong>each enemy</strong> suffers those statuses.</p></td></tr><tr><td><strong>Triple Support</strong></td><td><strong>3 of a kind</strong></td><td><strong>You and all allies</strong> regain HP and MP equal to <strong>(sum of values) × 3</strong>.</td></tr><tr><td><strong>Double Trouble</strong></td><td><strong>Two pairs</strong></td><td>Deal damage equal to <strong>10 + the highest value</strong> in the set to up to <strong>two different enemies</strong> you can see. The damage type is your choice among the suits present in the set. <em>(+10 at Lv20+, +20 at Lv40+)</em></td></tr><tr><td><strong>Magic Pair</strong></td><td><strong>One pair</strong></td><td>Make a <strong>free attack</strong> with a weapon you have equipped. If it deals damage, choose a suit among the set’s suits: the attack’s damage becomes that suit’s type (e.g., becomes <span style=\"text-decoration: underline;\"><a class=\"content-link\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span> if you chose the Fire-assigned suit).</td></tr></tbody></table></div><hr><h2>5) Quick examples</h2><ul><li><strong>Magic Flush:</strong> 3♣-4♣-5♣-6♣ → values sum = 18 → damage to all enemies = <strong>25 + 18 = 43</strong>, type = the suit’s assigned type (if ♣ = <span style=\"text-decoration: underline;\"><a class=\"content-link\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a></span>, then it’s Air).</li><li><strong>Blinding Flush:</strong> 1♥-2♣-3♦-4♠ → sum = 10, highest value = 4 (even) → damage to all enemies = <strong>15 + 10 = 25</strong>, type = <span style=\"text-decoration: underline;\"><a class=\"content-link\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span>.</li><li><strong>Full Status:</strong> 3♦-3♣-3♥ + 5♠-5♦ → highest = 5 (odd) → each enemy suffers two chosen statuses (e.g., <span style=\"text-decoration: underline;\"><a class=\"content-link\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span> and <span style=\"text-decoration: underline;\"><a class=\"content-link\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a></span>).</li><li><strong>Joker use:</strong> For 1-2-3-<em>Joker</em> (any suits) as a Blinding Flush, set the Joker to “4” to complete the straight.</li><li><strong>Jackpot reminder:</strong> Needs <em>four of a kind with no jokers</em> (e.g., 6♣-6♦-6♥-6♠). Jokers cannot appear in this set.</li></ul><hr><h2>6) Beginner tips</h2><ul><li><strong>Think in patterns.</strong> Keep an eye on four-of-a-kind, three-plus-two, two pairs, a single pair, and runs (1-2-3-4 etc.). Most hands naturally lean toward one of these.</li><li><strong>Jokers save sets.</strong> Because you set their value and suit, they complete straights and pairs easily. Don’t waste them on Jackpot—Jackpot forbids jokers.</li><li><strong>Use even/odd on purpose.</strong> For <em>Blinding Flush</em> and <em>Full Status</em>, the <strong>highest value’s parity</strong> steers the outcome (<span style=\"text-decoration: underline;\"><a class=\"content-link\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span> vs <span style=\"text-decoration: underline;\"><a class=\"content-link\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span>, cleanse allies vs debuff enemies). Choose the top card wisely.</li><li><strong>Know when to go wide vs precise.</strong> <em>Magic Flush</em> and <em>Blinding Flush</em> hit <em>all enemies</em>; <em>Double Trouble</em> snipes <em>two targets</em> but lets you pick the damage type from the suits you used.</li><li><strong>Reset rhythm.</strong> Don’t fear running out of deck—the discard will reshuffle back in. Cycling is part of the plan.</li></ul><hr><h2>7) Ultra-fast reference</h2><ul><li><strong>Start:</strong> Shuffle 30 → draw 5.</li><li><strong>Play:</strong> When an ability tells you to “resolve a set,” put down the exact pattern, apply one matching effect.</li><li><strong>Jokers:</strong> Wild; choose suit & 1–7. (But <em>no jokers</em> allowed in <strong>Jackpot</strong>.)</li><li><strong>Discard:</strong> Face-up; order can’t be changed after placing.</li><li><strong>Deck empty:</strong> Shuffle discard into new deck and keep going.</li><li><strong>End of conflict:</strong> Shuffle all 30 together and put away.</li></ul><hr><h2>8) Suit–Type reminder (fill this for your character)</h2><ul><li>♣ = <span style=\"text-decoration: underline;\"><a class=\"content-link\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a></span></li><li>♦ = <span style=\"text-decoration: underline;\"><a class=\"content-link\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span></li><li>♥ = <span style=\"text-decoration: underline;\"><a class=\"content-link\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></li><li>♠ = <span style=\"text-decoration: underline;\"><a class=\"content-link\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span></li></ul><p>(You can assign them differently—pick once when you create the character and stick to it.)</p><hr><h2>That’s it!</h2><p>Shuffle up, fish for the set you need, and choose the effect that best fits the moment. If your hand looks awkward, remember: <em>jokers bend fate</em>, and the discard will come back around.</p>",
+      "class_facet": {
+        "3lekLRbmOFGXDpSo": {
+          "facet_cost": "",
+          "facet_description": "<p>Before you perform an <strong>Accuracy Check</strong>, a <strong>Magic Check</strong> for an offensive spell, or a Check to advance or turn back a Clock, you may declare:</p><blockquote><p> 💬<strong>\"double or nothing\"</strong></p></blockquote><p>If you do and the Check triggers a <strong>critical success</strong>, double the damage dealt by that attack or spell, or the filled/erased sections of that Clock, respectively; however, any other kind of success becomes a <strong>failure</strong> instead.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Double or Nothing",
+          "uuid": "Actor.IfNhgMkJ1pEYaaBY.Item.3lekLRbmOFGXDpSo"
+        },
+        "6iq58238hmW64j0v": {
+          "facet_cost": "",
+          "facet_description": "<p>After an enemy you can see performs an action during a conflict, you may declare one of your deck’s <strong>suits</strong> (after the action has been resolved) and put the <strong>top card</strong> of your deck into your <strong>discard pile</strong>, face up. If that card is a <strong>joker</strong> or its suit matches the one you declared, you may immediately perform the <strong>Spell</strong> action <em>for free</em>, casting a spell with a total Mind Point cost equal to or lower than <strong>[SL × 5]</strong> (you must still pay its MP cost).</p>\n<div class=\"tableWrapper\"></div>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Trap Card",
+          "uuid": "Actor.IfNhgMkJ1pEYaaBY.Item.6iq58238hmW64j0v"
+        },
+        "BzDsLkDpI0DjLPpn": {
+          "facet_cost": "",
+          "facet_description": "<p>As long as there are <strong>one or more cards</strong> in your <strong>discard pile</strong>, you have <strong>Resistance</strong> to the damage type matching the <strong>suit</strong> of the card on top of your discard pile (if that card is a <strong>joker</strong>, you have <strong>Resistance</strong> to all four damage types: <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(168, 255, 187) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(210, 180, 140) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span>, and <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(166, 227, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span></span>).</p><p>You also add the following <strong>effect</strong> to your list of <strong>sets</strong>:</p><details open=\"\" style=\"border:2px solid #b3002d; border-radius:10px; overflow:hidden; margin-top:10px;\"><summary style=\"cursor:pointer; background:#b3002d; color:#fff; padding:8px 12px; font-weight:700; font-family:Signika, sans-serif; letter-spacing:.3px;\"><span style=\"font-family: Signika, sans-serif\"><strong>♠ ♥ ♦ ♣ Additional Set Effect (click to hide)</strong></span></summary><div class=\"tableWrapper\" style=\"background:#fff;\"><div class=\"tableWrapper\"><table style=\"min-width: 75px;\"><colgroup><col contenteditable=\"false\"><col contenteditable=\"false\"><col contenteditable=\"false\"></colgroup><tbody><tr style=\"background:#b3002d; color:#fff;\"><td style=\"padding:6px; border-right:1px solid #a00027;\"><p><strong>Effect</strong></p></td><td style=\"padding:6px; border-right:1px solid #a00027;\"><p><strong>Set Requirements</strong></p></td><td style=\"padding:6px;\"><p><strong>Resolve</strong></p></td></tr><tr><td style=\"padding:8px; border-bottom:1px solid #e9d6da;\"><p><strong>Forbidden Monarch</strong></p></td><td style=\"padding:8px; border-bottom:1px solid #e9d6da;\"><p>4 cards of the same value, none of which is a <strong>joker</strong> + 1 <strong>joker</strong></p></td><td style=\"padding:8px; border-bottom:1px solid #e9d6da;\"><p>You deal <strong>777</strong> damage to each enemy present on the scene; the type of this damage is <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(202, 189, 154) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></span> if 【<strong>the common value of the 4 cards】</strong> is <strong>even</strong>, or <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span> if that total is <strong>odd</strong>.</p><p>If there is a <strong>joker</strong> in your <strong>discard pile</strong>, the damage dealt by this effect <strong>ignores Immunities and Resistances</strong>.</p></td></tr></tbody></table></div></div></details>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Forbidden Monarch",
+          "uuid": "Actor.IfNhgMkJ1pEYaaBY.Item.BzDsLkDpI0DjLPpn"
+        },
+        "CU6J8wunAWz9enQE": {
+          "facet_cost": "",
+          "facet_description": "<p>When you resolve the <strong>Magic Pair</strong> effect, if you attack with a weapon belonging to the <strong>arcane</strong> or <strong>thrown</strong> Category, you deal extra damage equal to <strong>[the common value of the resolved cards]</strong> and regain <strong>[twice the common value of the resolved cards]</strong> Mind Points (for instance, resolving a pair of 5s allows you to deal <strong>5</strong> extra damage and regain <strong>10</strong> Mind Points).</p>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Duel Master",
+          "uuid": "Actor.IfNhgMkJ1pEYaaBY.Item.CU6J8wunAWz9enQE"
+        },
+        "DToDwHl6if6v98Bw": {
+          "facet_cost": "X MP",
+          "facet_description": "<p>You gain a <strong>deck</strong>, a <strong>hand</strong> and a <strong>discard pile</strong> (see Unique Mechanic).</p>\n<p>During a conflict, you may <strong>use an action</strong> and spend up to <strong>[10 + (SL × 5)]</strong> Mind Points (minimum 10). If you do, <strong>resolve 1 card from your hand for every 5 MP</strong> spent this way (to a maximum of <strong>5</strong> cards; these cards form a <strong>set</strong>). After you resolve the effect of the set (if any), <strong>discard</strong> these cards and <strong>draw</strong> that many cards from your deck.</p>\n\n<details style=\"border:2px solid #b3002d; border-radius:10px; overflow:hidden; margin-top:10px;\">\n  <summary style=\"cursor:pointer; background:#b3002d; color:#fff; padding:8px 12px; font-weight:700; font-family:Signika, sans-serif; letter-spacing:.3px;\">\n    ♠ ♥ ♦ ♣ Card Set Effects (click to expand)\n  </summary>\n  <div class=\"tableWrapper\" style=\"background:#fff;\">\n    <table style=\"width:100%; border-collapse:separate; border-spacing:0; text-align:left;\">\n      <tbody>\n        <tr style=\"background:#b3002d; color:#fff;\">\n          <td style=\"padding:6px; border-right:1px solid #a00027;\"><strong>Effect</strong></td>\n          <td style=\"padding:6px; border-right:1px solid #a00027;\"><strong>Set Requirements</strong></td>\n          <td style=\"padding:6px;\"><strong>Resolve</strong></td>\n        </tr>\n\n        <!-- Note row -->\n        <tr>\n          <td colspan=\"3\" style=\"background:#fff5f7; border-bottom:2px solid #b3002d; padding:8px;\">\n            <p style=\"margin:0;\"><em>Note:</em> <strong>Blinding Flush</strong>, <strong>Double Trouble</strong>, and <strong>Magic Flush</strong> deal <strong>+10</strong> extra damage if you are <strong>level 20+</strong>, or <strong>+20</strong> if you are <strong>level 40+</strong>.</p>\n            <p style=\"margin:6px 0 0 0;\">If you use a classic poker deck, the recommended suit types are:\n              <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(168, 255, 187) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a></span></span> (♦),\n              <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(210, 180, 140) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span></span> (♣),\n              <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span> (♥), and\n              <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(166, 227, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span></span> (♠).\n            </p>\n          </td>\n        </tr>\n\n        <!-- Jackpot -->\n        <tr>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\"><strong>Jackpot</strong></td>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\">4 cards of the same value, none is a joker</td>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\">You and every ally present on the scene recover <strong>777</strong> Hit Points and <strong>777</strong> Mind Points; any PCs who have <strong>surrendered</strong> but are still part of the scene immediately regain consciousness (this does not cancel the effects of their Surrender).</td>\n        </tr>\n\n        <!-- Magic Flush -->\n        <tr>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\"><strong>Magic Flush</strong></td>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\">4 cards of consecutive values and of the same suit</td>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\">Deal damage equal to <strong>[25 + the total value of the resolved cards]</strong> to each enemy present on the scene; the type of this damage matches the <strong>suit</strong> of the resolved cards.</td>\n        </tr>\n\n        <!-- Blinding Flush -->\n        <tr>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\"><strong>Blinding Flush</strong></td>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\">4 cards of consecutive values</td>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\">Deal damage equal to <strong>[15 + the total value of the resolved cards]</strong> to each enemy present on the scene; the type of this damage is \n            <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(202, 189, 154) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></span> if the highest value among those cards is even, or \n            <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span> if that value is odd.</td>\n        </tr>\n\n        <!-- Full Status -->\n        <tr>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\"><strong>Full Status</strong></td>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\">3 cards of the same value + 2 cards of the same value</td>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\">Choose two status effects among \n            <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Dazed</span></strong></a></span></span>, \n            <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span></span>, \n            <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span></span>, and \n            <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a></span></span>. If the highest value among the resolved cards is even, you and every ally present on the scene recover from the chosen status effects; if odd, each enemy present on the scene suffers them.</td>\n        </tr>\n\n        <!-- Triple Support -->\n        <tr>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\"><strong>Triple Support</strong></td>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\">3 cards of the same value</td>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\">You and every ally present on the scene regain an amount of Hit Points and Mind Points equal to <strong>[the total value of the resolved cards × 3]</strong>.</td>\n        </tr>\n\n        <!-- Double Trouble -->\n        <tr>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\"><strong>Double Trouble</strong></td>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\">2 cards of the same value + 2 cards of the same value</td>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\">Deal damage equal to <strong>[10 + the highest value among resolved cards]</strong> to each of up to <strong>two</strong> different enemies you can see that are present on the scene; the type of this damage is one of your choice among those matching the <strong>suits</strong> of the resolved cards.</td>\n        </tr>\n\n        <!-- Magic Pair -->\n        <tr>\n          <td style=\"padding:8px;\"><strong>Magic Pair</strong></td>\n          <td style=\"padding:8px;\">2 cards of the same value</td>\n          <td style=\"padding:8px;\">Perform a <strong>free attack</strong> with a weapon you have equipped. If this attack deals damage, choose a <strong>suit</strong> among those of the resolved cards; all damage dealt by the attack becomes the type matching that suit.</td>\n        </tr>\n\n      </tbody>\n    </table>\n  </div>\n</details>\n",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Magic Cards",
+          "uuid": "Actor.IfNhgMkJ1pEYaaBY.Item.DToDwHl6if6v98Bw"
+        },
+        "HBeFbxG58UfPjN2N": {
+          "facet_cost": "-",
+          "facet_description": "<p>During a conflict, if you have <strong>two or fewer</strong> <em>vanguard cards</em> in play, you may <strong>use an action</strong> to choose <strong>1</strong> card from your <strong>hand</strong> and place it face down as a <em>vanguard card</em>; if you do, <strong>draw 1</strong> card from your <strong>deck</strong>.</p>\n<p>When you suffer damage, if you have <strong>one or more</strong> <em>vanguard cards</em> in play, you may reveal one of them and place it on top of your <strong>discard pile</strong>: if you do and that card is a <strong>joker</strong> or its suit matches the type of the damage you suffered, you instead suffer <strong>no damage</strong> and regain an equal amount of <strong>Mind Points</strong>.</p>\n<p>At the end of each conflict, if you have <strong>one or more</strong> <em>vanguard cards</em> in play, shuffle them back into your <strong>deck</strong>.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Card Vanguard",
+          "uuid": "Actor.IfNhgMkJ1pEYaaBY.Item.HBeFbxG58UfPjN2N"
+        },
+        "TUQRFXj91h6xiwLA": {
+          "facet_cost": "",
+          "facet_description": "<p>When you resolve the <strong>Double Trouble</strong> effect, you may have all of its damage become <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(202, 189, 154) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></span> or <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span> (instead of being a type of damage matching the suits of the resolved cards).</p><p>Additionally, as long as there is a <strong>joker</strong> in your <strong>discard pile</strong>, all damage dealt by your 【💥<strong>Blinding Flush】</strong>, 【💥<strong>Double Trouble】</strong>, and 【💥<strong>Magic Flush】</strong> effects <strong>ignores Immunities and Resistances</strong>.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Black & White",
+          "uuid": "Actor.IfNhgMkJ1pEYaaBY.Item.TUQRFXj91h6xiwLA"
+        },
+        "kuiekH9UxCOD7KHS": {
+          "facet_cost": "",
+          "facet_description": "<p>When you generate a <strong>critical success</strong> or a <strong>fumble</strong>, you may draw <strong>1</strong> card from your <strong>deck</strong>. If you do, discard <strong>1</strong> card from your <strong>hand</strong>.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "High or Low",
+          "uuid": "Actor.IfNhgMkJ1pEYaaBY.Item.kuiekH9UxCOD7KHS"
+        },
+        "npNAYMKt0p5Q0z5Q": {
+          "facet_cost": "",
+          "facet_description": "<p>At the end of your turn during a conflict, you may discard up to <strong>[SL]</strong> cards from your <strong>hand</strong>. If you do, draw that many cards from your <strong>deck</strong>.</p>\n<div class=\"tableWrapper\"></div>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Mulligan",
+          "uuid": "Actor.IfNhgMkJ1pEYaaBY.Item.npNAYMKt0p5Q0z5Q"
+        }
+      },
+      "class_heroicSkill": {
+        "BzDsLkDpI0DjLPpn": {
+          "id": "${item.id}",
+          "name": "Forbidden Monarch",
+          "skill_cost": "",
+          "skill_description": "<p>As long as there are <strong>one or more cards</strong> in your <strong>discard pile</strong>, you have <strong>Resistance</strong> to the damage type matching the <strong>suit</strong> of the card on top of your discard pile (if that card is a <strong>joker</strong>, you have <strong>Resistance</strong> to all four damage types: <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(168, 255, 187) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(210, 180, 140) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span>, and <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(166, 227, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span></span>).</p><p>You also add the following <strong>effect</strong> to your list of <strong>sets</strong>:</p><details open=\"\" style=\"border:2px solid #b3002d; border-radius:10px; overflow:hidden; margin-top:10px;\"><summary style=\"cursor:pointer; background:#b3002d; color:#fff; padding:8px 12px; font-weight:700; font-family:Signika, sans-serif; letter-spacing:.3px;\"><span style=\"font-family: Signika, sans-serif\"><strong>♠ ♥ ♦ ♣ Additional Set Effect (click to hide)</strong></span></summary><div class=\"tableWrapper\" style=\"background:#fff;\"><div class=\"tableWrapper\"><table style=\"min-width: 75px;\"><colgroup><col contenteditable=\"false\"><col contenteditable=\"false\"><col contenteditable=\"false\"></colgroup><tbody><tr style=\"background:#b3002d; color:#fff;\"><td style=\"padding:6px; border-right:1px solid #a00027;\"><p><strong>Effect</strong></p></td><td style=\"padding:6px; border-right:1px solid #a00027;\"><p><strong>Set Requirements</strong></p></td><td style=\"padding:6px;\"><p><strong>Resolve</strong></p></td></tr><tr><td style=\"padding:8px; border-bottom:1px solid #e9d6da;\"><p><strong>Forbidden Monarch</strong></p></td><td style=\"padding:8px; border-bottom:1px solid #e9d6da;\"><p>4 cards of the same value, none of which is a <strong>joker</strong> + 1 <strong>joker</strong></p></td><td style=\"padding:8px; border-bottom:1px solid #e9d6da;\"><p>You deal <strong>777</strong> damage to each enemy present on the scene; the type of this damage is <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(202, 189, 154) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></span> if 【<strong>the common value of the 4 cards】</strong> is <strong>even</strong>, or <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span> if that total is <strong>odd</strong>.</p><p>If there is a <strong>joker</strong> in your <strong>discard pile</strong>, the damage dealt by this effect <strong>ignores Immunities and Resistances</strong>.</p></td></tr></tbody></table></div></div></details>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.IfNhgMkJ1pEYaaBY.Item.BzDsLkDpI0DjLPpn"
+        },
+        "CU6J8wunAWz9enQE": {
+          "id": "${item.id}",
+          "name": "Duel Master",
+          "skill_cost": "",
+          "skill_description": "<p>When you resolve the <strong>Magic Pair</strong> effect, if you attack with a weapon belonging to the <strong>arcane</strong> or <strong>thrown</strong> Category, you deal extra damage equal to <strong>[the common value of the resolved cards]</strong> and regain <strong>[twice the common value of the resolved cards]</strong> Mind Points (for instance, resolving a pair of 5s allows you to deal <strong>5</strong> extra damage and regain <strong>10</strong> Mind Points).</p>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.IfNhgMkJ1pEYaaBY.Item.CU6J8wunAWz9enQE"
+        },
+        "HBeFbxG58UfPjN2N": {
+          "id": "${item.id}",
+          "name": "Card Vanguard",
+          "skill_cost": "-",
+          "skill_description": "<p>During a conflict, if you have <strong>two or fewer</strong> <em>vanguard cards</em> in play, you may <strong>use an action</strong> to choose <strong>1</strong> card from your <strong>hand</strong> and place it face down as a <em>vanguard card</em>; if you do, <strong>draw 1</strong> card from your <strong>deck</strong>.</p>\n<p>When you suffer damage, if you have <strong>one or more</strong> <em>vanguard cards</em> in play, you may reveal one of them and place it on top of your <strong>discard pile</strong>: if you do and that card is a <strong>joker</strong> or its suit matches the type of the damage you suffered, you instead suffer <strong>no damage</strong> and regain an equal amount of <strong>Mind Points</strong>.</p>\n<p>At the end of each conflict, if you have <strong>one or more</strong> <em>vanguard cards</em> in play, shuffle them back into your <strong>deck</strong>.</p>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.IfNhgMkJ1pEYaaBY.Item.HBeFbxG58UfPjN2N"
+        },
+        "TUQRFXj91h6xiwLA": {
+          "id": "${item.id}",
+          "name": "Black & White",
+          "skill_cost": "",
+          "skill_description": "<p>When you resolve the <strong>Double Trouble</strong> effect, you may have all of its damage become <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(202, 189, 154) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></span> or <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span> (instead of being a type of damage matching the suits of the resolved cards).</p><p>Additionally, as long as there is a <strong>joker</strong> in your <strong>discard pile</strong>, all damage dealt by your 【💥<strong>Blinding Flush】</strong>, 【💥<strong>Double Trouble】</strong>, and 【💥<strong>Magic Flush】</strong> effects <strong>ignores Immunities and Resistances</strong>.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.IfNhgMkJ1pEYaaBY.Item.TUQRFXj91h6xiwLA"
+        }
+      },
+      "class_lore": "<blockquote><p><strong>Aces of Cards</strong> make use of special decks to perceive the constant fluctuations of the stream of souls. Each deck is inextricably connected to its user and reflects their taste and personality: by drawing specific combinations at the right moment, an Ace of Cards manipulates magical energy to produce supernatural effects.</p><p>In some worlds, Aces of Cards duel against each other using their personal decks, in a quest for glory or in order to obtain precious artifacts.</p></blockquote>",
+      "class_skill": {
+        "3lekLRbmOFGXDpSo": {
+          "id": "${item.id}",
+          "name": "Double or Nothing",
+          "skill_cost": "",
+          "skill_description": "<p>Before you perform an <strong>Accuracy Check</strong>, a <strong>Magic Check</strong> for an offensive spell, or a Check to advance or turn back a Clock, you may declare:</p><blockquote><p> 💬<strong>\"double or nothing\"</strong></p></blockquote><p>If you do and the Check triggers a <strong>critical success</strong>, double the damage dealt by that attack or spell, or the filled/erased sections of that Clock, respectively; however, any other kind of success becomes a <strong>failure</strong> instead.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.IfNhgMkJ1pEYaaBY.Item.3lekLRbmOFGXDpSo"
+        },
+        "6iq58238hmW64j0v": {
+          "id": "${item.id}",
+          "name": "Trap Card",
+          "skill_cost": "",
+          "skill_description": "<p>After an enemy you can see performs an action during a conflict, you may declare one of your deck’s <strong>suits</strong> (after the action has been resolved) and put the <strong>top card</strong> of your deck into your <strong>discard pile</strong>, face up. If that card is a <strong>joker</strong> or its suit matches the one you declared, you may immediately perform the <strong>Spell</strong> action <em>for free</em>, casting a spell with a total Mind Point cost equal to or lower than <strong>[SL × 5]</strong> (you must still pay its MP cost).</p>\n<div class=\"tableWrapper\"></div>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.IfNhgMkJ1pEYaaBY.Item.6iq58238hmW64j0v"
+        },
+        "DToDwHl6if6v98Bw": {
+          "id": "${item.id}",
+          "name": "Magic Cards",
+          "skill_cost": "X MP",
+          "skill_description": "<p>You gain a <strong>deck</strong>, a <strong>hand</strong> and a <strong>discard pile</strong> (see Unique Mechanic).</p>\n<p>During a conflict, you may <strong>use an action</strong> and spend up to <strong>[10 + (SL × 5)]</strong> Mind Points (minimum 10). If you do, <strong>resolve 1 card from your hand for every 5 MP</strong> spent this way (to a maximum of <strong>5</strong> cards; these cards form a <strong>set</strong>). After you resolve the effect of the set (if any), <strong>discard</strong> these cards and <strong>draw</strong> that many cards from your deck.</p>\n\n<details style=\"border:2px solid #b3002d; border-radius:10px; overflow:hidden; margin-top:10px;\">\n  <summary style=\"cursor:pointer; background:#b3002d; color:#fff; padding:8px 12px; font-weight:700; font-family:Signika, sans-serif; letter-spacing:.3px;\">\n    ♠ ♥ ♦ ♣ Card Set Effects (click to expand)\n  </summary>\n  <div class=\"tableWrapper\" style=\"background:#fff;\">\n    <table style=\"width:100%; border-collapse:separate; border-spacing:0; text-align:left;\">\n      <tbody>\n        <tr style=\"background:#b3002d; color:#fff;\">\n          <td style=\"padding:6px; border-right:1px solid #a00027;\"><strong>Effect</strong></td>\n          <td style=\"padding:6px; border-right:1px solid #a00027;\"><strong>Set Requirements</strong></td>\n          <td style=\"padding:6px;\"><strong>Resolve</strong></td>\n        </tr>\n\n        <!-- Note row -->\n        <tr>\n          <td colspan=\"3\" style=\"background:#fff5f7; border-bottom:2px solid #b3002d; padding:8px;\">\n            <p style=\"margin:0;\"><em>Note:</em> <strong>Blinding Flush</strong>, <strong>Double Trouble</strong>, and <strong>Magic Flush</strong> deal <strong>+10</strong> extra damage if you are <strong>level 20+</strong>, or <strong>+20</strong> if you are <strong>level 40+</strong>.</p>\n            <p style=\"margin:6px 0 0 0;\">If you use a classic poker deck, the recommended suit types are:\n              <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(168, 255, 187) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a></span></span> (♦),\n              <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(210, 180, 140) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span></span> (♣),\n              <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span> (♥), and\n              <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(166, 227, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span></span> (♠).\n            </p>\n          </td>\n        </tr>\n\n        <!-- Jackpot -->\n        <tr>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\"><strong>Jackpot</strong></td>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\">4 cards of the same value, none is a joker</td>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\">You and every ally present on the scene recover <strong>777</strong> Hit Points and <strong>777</strong> Mind Points; any PCs who have <strong>surrendered</strong> but are still part of the scene immediately regain consciousness (this does not cancel the effects of their Surrender).</td>\n        </tr>\n\n        <!-- Magic Flush -->\n        <tr>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\"><strong>Magic Flush</strong></td>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\">4 cards of consecutive values and of the same suit</td>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\">Deal damage equal to <strong>[25 + the total value of the resolved cards]</strong> to each enemy present on the scene; the type of this damage matches the <strong>suit</strong> of the resolved cards.</td>\n        </tr>\n\n        <!-- Blinding Flush -->\n        <tr>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\"><strong>Blinding Flush</strong></td>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\">4 cards of consecutive values</td>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\">Deal damage equal to <strong>[15 + the total value of the resolved cards]</strong> to each enemy present on the scene; the type of this damage is \n            <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(202, 189, 154) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></span> if the highest value among those cards is even, or \n            <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span> if that value is odd.</td>\n        </tr>\n\n        <!-- Full Status -->\n        <tr>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\"><strong>Full Status</strong></td>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\">3 cards of the same value + 2 cards of the same value</td>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\">Choose two status effects among \n            <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Dazed</span></strong></a></span></span>, \n            <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span></span>, \n            <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span></span>, and \n            <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a></span></span>. If the highest value among the resolved cards is even, you and every ally present on the scene recover from the chosen status effects; if odd, each enemy present on the scene suffers them.</td>\n        </tr>\n\n        <!-- Triple Support -->\n        <tr>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\"><strong>Triple Support</strong></td>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\">3 cards of the same value</td>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\">You and every ally present on the scene regain an amount of Hit Points and Mind Points equal to <strong>[the total value of the resolved cards × 3]</strong>.</td>\n        </tr>\n\n        <!-- Double Trouble -->\n        <tr>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\"><strong>Double Trouble</strong></td>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\">2 cards of the same value + 2 cards of the same value</td>\n          <td style=\"padding:8px; border-bottom:1px solid #e9d6da;\">Deal damage equal to <strong>[10 + the highest value among resolved cards]</strong> to each of up to <strong>two</strong> different enemies you can see that are present on the scene; the type of this damage is one of your choice among those matching the <strong>suits</strong> of the resolved cards.</td>\n        </tr>\n\n        <!-- Magic Pair -->\n        <tr>\n          <td style=\"padding:8px;\"><strong>Magic Pair</strong></td>\n          <td style=\"padding:8px;\">2 cards of the same value</td>\n          <td style=\"padding:8px;\">Perform a <strong>free attack</strong> with a weapon you have equipped. If this attack deals damage, choose a <strong>suit</strong> among those of the resolved cards; all damage dealt by the attack becomes the type matching that suit.</td>\n        </tr>\n\n      </tbody>\n    </table>\n  </div>\n</details>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.IfNhgMkJ1pEYaaBY.Item.DToDwHl6if6v98Bw"
+        },
+        "kuiekH9UxCOD7KHS": {
+          "id": "${item.id}",
+          "name": "High or Low",
+          "skill_cost": "",
+          "skill_description": "<p>When you generate a <strong>critical success</strong> or a <strong>fumble</strong>, you may draw <strong>1</strong> card from your <strong>deck</strong>. If you do, discard <strong>1</strong> card from your <strong>hand</strong>.</p>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.IfNhgMkJ1pEYaaBY.Item.kuiekH9UxCOD7KHS"
+        },
+        "npNAYMKt0p5Q0z5Q": {
+          "id": "${item.id}",
+          "name": "Mulligan",
+          "skill_cost": "",
+          "skill_description": "<p>At the end of your turn during a conflict, you may discard up to <strong>[SL]</strong> cards from your <strong>hand</strong>. If you do, draw that many cards from your <strong>deck</strong>.</p>\n<div class=\"tableWrapper\"></div>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.IfNhgMkJ1pEYaaBY.Item.npNAYMKt0p5Q0z5Q"
+        }
+      },
+      "flavor_text": "<p style=\"text-align: center\"><span style=\"font-family: Amiri\"><em>Don't look</em></span></p><p style=\"text-align: center\"><span style=\"font-family: Amiri\"><em>away!</em></span></p>",
+      "martialArmor_equippable": false,
+      "martialMelee_equippable": false,
+      "martialRanged_equippable": false,
+      "martialShield_equippable": false,
+      "name": "Ace of Cards",
+      "project_performable": false,
+      "ritual_performable": false
+    },
+    "statusEffects": {},
+    "template": "hoxC3HFCtMYGScIo",
+    "templateSystemUniqueVersion": 504201233
+  },
+  "type": "character"
+}

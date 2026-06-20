@@ -1,0 +1,19 @@
+{
+  "_id": "ajFTGtGjaMP72bxX",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": null,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "2.4.4"
+  },
+  "color": "#3a3131",
+  "description": "",
+  "flags": {},
+  "folder": "eZWKkXNgeaFs6HSS",
+  "name": "Pika PC",
+  "sort": 1200000,
+  "sorting": "a",
+  "type": "Actor"
+}

@@ -1,0 +1,131 @@
+{
+  "_id": "oqxQr6FFruIu4tOr",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1753896335321,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "XIV4dj7FBwLSom9T",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.331",
+        "createdTime": 1753897289670,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.6.4"
+      },
+      "changes": [
+        {
+          "key": "extra_damage_mod_all",
+          "mode": 2,
+          "priority": 1,
+          "value": "${level * 2}$"
+        }
+      ],
+      "description": "<p>As long as you are in <strong>Crisis</strong>, you deal <strong>【SL × 2】</strong> extra damage (be it with attacks, spells, Arcana, items or any other method).</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "XIV4dj7FBwLSom9T",
+          "originalParentId": "oqxQr6FFruIu4tOr",
+          "originalUuid": "Item.oqxQr6FFruIu4tOr.ActiveEffect.XIV4dj7FBwLSom9T"
+        },
+        "statuscounter": {
+          "config": {
+            "durationType": 0,
+            "modifyDuration": false,
+            "multiplyEffect": false,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/life/heart-shadow-red.webp",
+      "name": "Adrenaline",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "Fury",
+          "Class Skill",
+          "Passive"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "AJgQVD7Q6DFwASCn",
+  "img": "icons/magic/life/heart-shadow-red.webp",
+  "name": "Adrenaline",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_script": "",
+      "check_bonus": "0",
+      "class": "Fury",
+      "cost": "",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>As long as you are in <strong>Crisis</strong>, you deal <strong>【SL × 2】</strong> extra damage (be it with attacks, spells, Arcana, items or any other method).</p>",
+      "duration": "",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "level": "1",
+      "max_level": "5",
+      "name": "Adrenaline",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "oqxQr6FFruIu4tOr"
+  },
+  "type": "equippableItem"
+}

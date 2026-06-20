@@ -1,0 +1,234 @@
+{
+  "_id": "TE1bEmziiGqpWXA8",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1743300372406,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "L73jmTlYNq3KpbZW",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1775334976885,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "bonus_magic_defense",
+          "mode": 2,
+          "priority": 2,
+          "value": "${isEquipped ? (item_mdef_bonus * 1) : 0}$"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "core": {
+          "overlay": false
+        },
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "L73jmTlYNq3KpbZW",
+          "originalParentId": "TE1bEmziiGqpWXA8",
+          "originalUuid": "Item.TE1bEmziiGqpWXA8.ActiveEffect.L73jmTlYNq3KpbZW"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-mdef-up",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUpStack.webp",
+      "name": "MDEF UP",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    },
+    {
+      "_id": "LoINE7vzJGyG9KH0",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1775334976821,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "bonus_defense",
+          "mode": 2,
+          "priority": 2,
+          "value": "${isEquipped ? (item_def_bonus * 1) : 0}$"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "core": {
+          "overlay": false
+        },
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "LoINE7vzJGyG9KH0",
+          "originalParentId": "TE1bEmziiGqpWXA8",
+          "originalUuid": "Item.TE1bEmziiGqpWXA8.ActiveEffect.LoINE7vzJGyG9KH0"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "def-up",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUp.webp",
+      "name": "DEF UP",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    },
+    "fabula-ultima-companion": {
+      "defUpMdefUpHelperKeyPatchBackup_v1": {
+        "createdAt": 1777708856732,
+        "effects": [
+          {
+            "changes": [
+              {
+                "key": "defense",
+                "mode": 2,
+                "priority": 2,
+                "value": "${isEquipped ? item_def_bonus : 0}$"
+              }
+            ],
+            "id": "LoINE7vzJGyG9KH0",
+            "name": "DEF UP"
+          },
+          {
+            "changes": [
+              {
+                "key": "magic_defense",
+                "mode": 2,
+                "priority": 2,
+                "value": "${isEquipped ? item_mdef_bonus : 0}$"
+              }
+            ],
+            "id": "L73jmTlYNq3KpbZW",
+            "name": "MDEF UP"
+          }
+        ],
+        "itemId": "TE1bEmziiGqpWXA8",
+        "itemName": "Kamaitachi (Shield)",
+        "itemType": "shield",
+        "itemUuid": "Item.TE1bEmziiGqpWXA8",
+        "owner": {
+          "actor": "",
+          "actorUuid": "",
+          "source": "World Item"
+        }
+      }
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "shield",
+        "fromTemplate": "tJixj9vNEQd3F0IO",
+        "itemId": "TE1bEmziiGqpWXA8",
+        "itemName": "Kamaitachi (Shield)",
+        "pickedOldProps": {
+          "cost": "1000",
+          "def_bonus": "",
+          "initiative": "0",
+          "martial": true,
+          "mdef_bonus": "2"
+        },
+        "ts": 1769647435846
+      }
+    }
+  },
+  "folder": "mQjggSVh5fVzzExw",
+  "img": "icons/weapons/thrown/shuriken-double-red.webp",
+  "name": "Kamaitachi (Shield)",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "isMartial": true,
+      "item_cost": "1000",
+      "item_mdef_bonus": "2",
+      "item_type": "shield",
+      "name": "Kamaitachi (Shield)",
+      "set_name": ""
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "TE1bEmziiGqpWXA8"
+  },
+  "type": "equippableItem"
+}

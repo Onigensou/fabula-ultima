@@ -1,0 +1,19 @@
+{
+  "_id": "vxeYSW9rmOJe2jfu",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1775859562772,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "Vg0nGevL0N3Wqh0D",
+  "name": "Gacha System",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Macro"
+}

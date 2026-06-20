@@ -1,0 +1,62 @@
+{
+  "_id": "bbEv9kibtZscX9eJ",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1758202846615,
+    "duplicateSource": "Item.WYUnQzanvuduKdSy",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "dhfFJlHW6EIUd4UD",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/RumblePumnSkill5.png",
+  "name": "Multi Shatter",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "check_bonus": "0",
+      "class": "Illusionist",
+      "cost": "10 MP",
+      "damage_bonus": "15",
+      "defense_target_type": "def",
+      "description": "<p>You command all your Phantasms to charge at your foes, shattering on impact. They all share the same Magic Check. Each affected target suffers <strong>[HR + 15]</strong> \n<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\">\n  <a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\">\n    <strong><span style=\"text-decoration: underline;\">Physical</span></strong>\n  </a>\n</span></span> damage. You can target <strong>only one foe per Phantasm</strong>. Damage dealt by this spell <strong>ignores Resistances</strong>.</p>\n",
+      "duration": "Instantaneous",
+      "heroic_requirement": "",
+      "isCheck": true,
+      "isFacet": true,
+      "isHeroic": false,
+      "isOffensiveSpell": true,
+      "isReaction": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Multi Shatter",
+      "optional_params": {},
+      "rolled_atr1": "INS",
+      "rolled_atr2": "WLP",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "Range",
+      "skill_target": "Up to three creature",
+      "skill_type": "Spell",
+      "type_damage": "Physical",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "bbEv9kibtZscX9eJ"
+  },
+  "type": "equippableItem"
+}

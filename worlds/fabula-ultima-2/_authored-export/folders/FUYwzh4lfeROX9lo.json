@@ -1,0 +1,19 @@
+{
+  "_id": "FUYwzh4lfeROX9lo",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1745618924862,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.4.2"
+  },
+  "color": "#7d160c",
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "BRT - Better RollTables",
+  "sort": 100000,
+  "sorting": "m",
+  "type": "Compendium"
+}

@@ -1,0 +1,58 @@
+{
+  "_id": "YWDErqkiLduFGt3z",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1758190536088,
+    "duplicateSource": "Item.b98EPXDiPplLAZDR",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "97p1xGjGPYztDsVo",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/RenaSkill3.png",
+  "name": "Wild Reflexes",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Hunter",
+      "cost": "-",
+      "damage_bonus": "0",
+      "description": "<p>When you perform the 【🛡️ Guard】 action, if you choose not to provide cover to another creature, your reflexes are wildly increased! Until the start of your next turn, you gain a bonus to your <strong>Defense</strong> equal to <strong>[SL]</strong>.</p><p>Additionally, if an enemy misses you with an 【⚔️ Attack】 during this time, you may perform a free 【⚔️ Attack】 against them. Treat your <strong>HR</strong> as <strong>0</strong> when calculating damage for this counterattack. Do not stack with other <strong>Counterattack </strong>effects.</p>",
+      "duration": "",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "5",
+      "name": "Wild Reflexes",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>Defense Bonus</strong></p></td></tr><tr><td><p>1</p></td><td><p>+1</p></td></tr><tr><td><p>2</p></td><td><p>+2</p></td></tr><tr><td><p>3</p></td><td><p>+3</p></td></tr><tr><td><p>4</p></td><td><p>+4</p></td></tr><tr><td><p>5</p></td><td><p>+5</p></td></tr></tbody></table>",
+      "skill_range": "",
+      "skill_target": "-",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "YWDErqkiLduFGt3z"
+  },
+  "type": "equippableItem"
+}

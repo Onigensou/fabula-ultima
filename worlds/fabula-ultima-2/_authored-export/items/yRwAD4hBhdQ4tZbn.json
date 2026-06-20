@@ -1,0 +1,55 @@
+{
+  "_id": "yRwAD4hBhdQ4tZbn",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1754169123067,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "uuBCmFnWytMuWiTe",
+  "img": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/dragupload/fabula%20class/pirate/14.jpg",
+  "name": "Daring Spendor",
+  "ownership": {
+    "default": 3,
+    "nXC7OD7u5Zw5UDDU": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Pirate",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>Increase your <strong>【📜 Boarding Action Tactic】</strong> Skill level by 1 <em>(To a maximum of 3).</em></p><p>In addition, after you use spent <strong>Piracy Clock</strong>, You may choose a target to lose <strong>【10 x Piracy Clock spent 】</strong> HP as you throw some random bullshit at them.</p>",
+      "duration": "",
+      "heroic_requirement": "You must have mastered the Pirate Class.",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "level": "1",
+      "max_level": "1",
+      "name": "Daring Spendor",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "yRwAD4hBhdQ4tZbn"
+  },
+  "type": "equippableItem"
+}

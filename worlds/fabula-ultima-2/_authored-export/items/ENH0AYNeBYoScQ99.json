@@ -1,0 +1,381 @@
+{
+  "_id": "ENH0AYNeBYoScQ99",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780667909378,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "BDqFbfgn2G7hycxI",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Target is <strong>immune to Dazed</strong> until this spell ends. The Dazed status would normally penalise INS Opposed Checks (-1 die size to INS).</p><p><em>From Reinforce.</em></p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "7sjGOB1onA4C5Cm6",
+          "originalParentId": "mMtCOqDTDWXu9ZOi",
+          "originalUuid": "Item.mMtCOqDTDWXu9ZOi.ActiveEffect.7sjGOB1onA4C5Cm6"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "reinforceImmunity": "Dazed"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/divine_benison.png",
+      "name": "Reinforce (Dazed)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "reinforced-dazed"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "hGIURZNkpJdasQDe",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Target is <strong>immune to Shaken</strong> until this spell ends. The Shaken status would normally penalise WLP Opposed Checks (-1 die size to WLP).</p><p><em>From Reinforce.</em></p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "oJKDcLtkPmffeqmc",
+          "originalParentId": "mMtCOqDTDWXu9ZOi",
+          "originalUuid": "Item.mMtCOqDTDWXu9ZOi.ActiveEffect.oJKDcLtkPmffeqmc"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "reinforceImmunity": "Shaken"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/divine_benison.png",
+      "name": "Reinforce (Shaken)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "reinforced-shaken"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "SVS42MZstY5K4lFL",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Target is <strong>immune to Weak</strong> until this spell ends. The Weak status would normally penalise MIG Opposed Checks (-1 die size to MIG).</p><p><em>From Reinforce.</em></p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "Nd1MgoUkXdv4MSxv",
+          "originalParentId": "mMtCOqDTDWXu9ZOi",
+          "originalUuid": "Item.mMtCOqDTDWXu9ZOi.ActiveEffect.Nd1MgoUkXdv4MSxv"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "reinforceImmunity": "Weak"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/divine_benison.png",
+      "name": "Reinforce (Weak)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "reinforced-weak"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "WqlHlirwe60arGr1",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Target is <strong>immune to Slow</strong> until this spell ends. The Slow status would normally penalise DEX Opposed Checks (-1 die size to DEX).</p><p><em>From Reinforce.</em></p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "jQaR8lFEmDOQrItV",
+          "originalParentId": "mMtCOqDTDWXu9ZOi",
+          "originalUuid": "Item.mMtCOqDTDWXu9ZOi.ActiveEffect.jQaR8lFEmDOQrItV"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "reinforceImmunity": "Slow"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/divine_benison.png",
+      "name": "Reinforce (Slow)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "reinforced-slow"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "w7ey5G3zPC78EXos",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/divine_benison.png",
+  "name": "Reinforce",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "check_bonus": "0",
+      "class": "Spiritist",
+      "cost": "5 x T MP",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "You protect the targets from attacks that would corrupt their body and spirit. <strong>Choose:</strong> Dazed, Shaken, Slow, or Weak. Until this spell ends, each target is <strong>immune</strong> to the chosen status.",
+      "duration": "-",
+      "effect_table": {
+        "0": {
+          "allowed_types": "",
+          "check_bonus_formula": "",
+          "damage_bonus_formula": "",
+          "effect_kind": "open_action_menu",
+          "effect_label": "reinforce_pick",
+          "free_mode": false,
+          "max_mp_cost": "",
+          "menu_option_descriptions": "Penalises INS Opposed Checks. Affects mental focus. | Penalises WLP Opposed Checks. Affects resolve. | Penalises DEX Opposed Checks. Affects agility. | Penalises MIG Opposed Checks. Affects might.",
+          "menu_option_labels": "Dazed | Shaken | Slow | Weak",
+          "menu_option_refs": "reinforce_dazed, reinforce_shaken, reinforce_slow, reinforce_weak",
+          "menu_options": {
+            "0": {
+              "ae_duplicate_mode": "replace_per_caster",
+              "ae_template_ref": "Reinforced (Dazed)",
+              "description": "Penalises INS Opposed Checks. Affects mental focus.",
+              "effect_kind": "apply_ae",
+              "label": "Dazed",
+              "target_ref": "action_targets"
+            },
+            "1": {
+              "ae_duplicate_mode": "replace_per_caster",
+              "ae_template_ref": "Reinforced (Shaken)",
+              "description": "Penalises WLP Opposed Checks. Affects resolve.",
+              "effect_kind": "apply_ae",
+              "label": "Shaken",
+              "target_ref": "action_targets"
+            },
+            "2": {
+              "ae_duplicate_mode": "replace_per_caster",
+              "ae_template_ref": "Reinforced (Slow)",
+              "description": "Penalises DEX Opposed Checks. Affects agility.",
+              "effect_kind": "apply_ae",
+              "label": "Slow",
+              "target_ref": "action_targets"
+            },
+            "3": {
+              "ae_duplicate_mode": "replace_per_caster",
+              "ae_template_ref": "Reinforced (Weak)",
+              "description": "Penalises MIG Opposed Checks. Affects might.",
+              "effect_kind": "apply_ae",
+              "label": "Weak",
+              "target_ref": "action_targets"
+            }
+          },
+          "menu_options_view": "<p>{ \"0\": { \"label\": \"Dazed\", \"description\": \"Penalises INS Opposed Checks. Affects mental focus.\", \"effect_kind\": \"apply_ae\", \"ae_template_ref\": \"Reinforced (Dazed)\", \"target_ref\": \"action_targets\", \"ae_duplicate_mode\": \"replace_per_caster\" }, \"1\": { \"label\": \"Shaken\", \"description\": \"Penalises WLP Opposed Checks. Affects resolve.\", \"effect_kind\": \"apply_ae\", \"ae_template_ref\": \"Reinforced (Shaken)\", \"target_ref\": \"action_targets\", \"ae_duplicate_mode\": \"replace_per_caster\" }, \"2\": { \"label\": \"Slow\", \"description\": \"Penalises DEX Opposed Checks. Affects agility.\", \"effect_kind\": \"apply_ae\", \"ae_template_ref\": \"Reinforced (Slow)\", \"target_ref\": \"action_targets\", \"ae_duplicate_mode\": \"replace_per_caster\" }, \"3\": { \"label\": \"Weak\", \"description\": \"Penalises MIG Opposed Checks. Affects might.\", \"effect_kind\": \"apply_ae\", \"ae_template_ref\": \"Reinforced (Weak)\", \"target_ref\": \"action_targets\", \"ae_duplicate_mode\": \"replace_per_caster\" } }</p>",
+          "menu_subtitle": "All targets gain immunity to the chosen status.",
+          "menu_title": "Reinforce: choose an immunity",
+          "target_ref": ""
+        },
+        "1": {
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_template_ref": "Reinforce (Dazed)",
+          "effect_kind": "apply_ae",
+          "effect_label": "reinforce_dazed",
+          "target_ref": "action_targets"
+        },
+        "2": {
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_template_ref": "Reinforce (Shaken)",
+          "effect_kind": "apply_ae",
+          "effect_label": "reinforce_shaken",
+          "target_ref": "action_targets"
+        },
+        "3": {
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_template_ref": "Reinforce (Slow)",
+          "effect_kind": "apply_ae",
+          "effect_label": "reinforce_slow",
+          "target_ref": "action_targets"
+        },
+        "4": {
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_template_ref": "Reinforce (Weak)",
+          "effect_kind": "apply_ae",
+          "effect_label": "reinforce_weak",
+          "target_ref": "action_targets"
+        }
+      },
+      "heroic_requirement": "",
+      "ignore_hr": false,
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Reinforce",
+      "on_activate_effect_ref": "reinforce_pick",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "Range",
+      "skill_target": "Up to three creatures",
+      "skill_type": "Spell",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": true,
+    "uniqueId": "ENH0AYNeBYoScQ99"
+  },
+  "type": "equippableItem"
+}

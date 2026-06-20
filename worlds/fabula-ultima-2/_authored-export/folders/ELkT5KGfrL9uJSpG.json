@@ -1,0 +1,19 @@
+{
+  "_id": "ELkT5KGfrL9uJSpG",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1763289752566,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "ygx8Y9DyBOnKrntt",
+  "name": "Multi Client Testing",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Macro"
+}

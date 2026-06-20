@@ -1,0 +1,104 @@
+{
+  "_id": "P6Ibj1vtT7tikM1y",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1752207314373,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "P6Ibj1vtT7tikM1y",
+        "itemName": "Automatic Portable Turret",
+        "pickedOldProps": {
+          "cost": "3000",
+          "martial": false
+        },
+        "ts": 1769647435178
+      }
+    }
+  },
+  "folder": "D1OgeGHLjJ9dSkxS",
+  "img": "https://img.altema.jp/valkyrieconnect/sobi/ico/1537.jpg",
+  "name": "Automatic Portable Turret",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3
+  },
+  "sort": 200000,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "aquatic_ef": "100",
+      "automaton_ef": "100",
+      "avian_ef": "100",
+      "beast_ef": "100",
+      "category": "Firearm",
+      "celestial_ef": "100",
+      "check_bonus": "0",
+      "construct_ef": "100",
+      "damage_bonus": "10",
+      "demiHuman_ef": "100",
+      "demon_ef": "100",
+      "description": "<p>You can use equipment action to deploy this turret. This action made you unarmed.</p><p>While deployed, create Turret companion with 50 HP 13 Def and 10 M.def</p><p>Every time the enemy take turn, The turret deal 15 fire damage to it.</p><p>Automatic Portable Turret return to your inventory at the end of scene.</p><p>If the turret is destroyed, You cannot use it's deploy feature until the next rest.</p><p>You cannot use it's deploy feature if you already has other companion.</p>",
+      "dragon_ef": "100",
+      "elemental_ef": "100",
+      "enforcer_ef": "100",
+      "fey_ef": "100",
+      "flora_ef": "100",
+      "fungus_ef": "100",
+      "golem_ef": "100",
+      "gorger_ef": "100",
+      "hand_slots": "Two-handed",
+      "human_ef": "100",
+      "humanoid_ef": "100",
+      "insect_ef": "100",
+      "ip_cost": "",
+      "isEquipped": false,
+      "isKey": false,
+      "isMartial": false,
+      "isModule": false,
+      "isRelatedItem": false,
+      "isSet": false,
+      "isUnique": false,
+      "item_baseDef": "0",
+      "item_baseMdef": "0",
+      "item_cost": "3000",
+      "item_def_bonus": "0",
+      "item_mdef_bonus": "0",
+      "item_quantity": "1",
+      "item_rarity": "Rare",
+      "item_type": "weapon",
+      "mimic_ef": "100",
+      "monster_ef": "100",
+      "name": "Automatic Portable Turret",
+      "optional_params": {},
+      "plant_ef": "100",
+      "reptilian_ef": "100",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "INS",
+      "set_name": "",
+      "skill_target": "One Enemy",
+      "soldier_ef": "100",
+      "spirit_ef": "100",
+      "type_damage": "Fire",
+      "undead_ef": "100",
+      "vehicle_ef": "100",
+      "weapon_range": "Ranged"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "P6Ibj1vtT7tikM1y"
+  },
+  "type": "equippableItem"
+}

@@ -1,0 +1,57 @@
+{
+  "_id": "XQoyMbTmHnGMUYIn",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757285084811,
+    "duplicateSource": "Item.9Sv0OEMKRJd14R81",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "OFXRN3P2p6Ce5ySM",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Flower/565f062aaa2c7fcf6e79c89f36a5101b_2486698931293520010.webp",
+  "name": "Desert Dahlia",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Floralist",
+      "cost": "20 MP",
+      "damage_bonus": "0",
+      "description": "<p><em>A tenacious plant, it doesn’t fear the dryness of dunes.</em></p><div class=\"tableWrapper\"><table style=\"min-width: 50px;\"><colgroup><col><col></colgroup><tbody><tr><td><p><strong>Growth</strong></p></td><td><p><strong>Effect</strong></p></td></tr><tr><td><p>0–1</p></td><td><p>You are <strong>Resistant</strong> to <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a> and <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a> damage.</p></td></tr><tr><td><p>2–3</p></td><td><p>You and your allies present on the scene are <strong>Resistant</strong> to <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a> and <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a> damage.</p></td></tr></tbody></table></div>",
+      "duration": "Scene",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": true,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Desert Dahlia",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "Any",
+      "skill_target": "Special",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "XQoyMbTmHnGMUYIn"
+  },
+  "type": "equippableItem"
+}

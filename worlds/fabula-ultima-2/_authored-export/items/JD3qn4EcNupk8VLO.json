@@ -1,0 +1,57 @@
+{
+  "_id": "JD3qn4EcNupk8VLO",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1756743205434,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "2OplVa9fwLYbzD8b",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/05_SCH/consolation2.png",
+  "name": "Repetition",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 1200000,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Orator",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>Once per turn during a conflict, after you use the <strong>Condemn</strong> Skill or the <strong>Encourage</strong> Skill, you may immediately perform that same Skill again (on the same target or a different one). You must still pay the Mind Point cost for the second use of the Skill</p>",
+      "duration": "",
+      "heroic_requirement": "You must have mastered the Orator Class.",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Repetition",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "JD3qn4EcNupk8VLO"
+  },
+  "type": "equippableItem"
+}

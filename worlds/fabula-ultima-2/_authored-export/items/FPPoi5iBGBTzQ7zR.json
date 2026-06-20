@@ -1,0 +1,57 @@
+{
+  "_id": "FPPoi5iBGBTzQ7zR",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1753926725013,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "2OplVa9fwLYbzD8b",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/painflare.png",
+  "name": "Arcane Echoes",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 4500000,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Arcanist",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>When you successfully perform a Check to fill or erase one or more sections of a Clock, if the <strong>domains</strong> of one or more Arcana you have bound are applicable to the Check in question, you may fill or erase an <strong>additional section</strong> of that Clock. </p><p>The Game Master has final say on whether a given domain applies or not.</p>",
+      "duration": "",
+      "heroic_requirement": "You must have mastered the Arcanist Class.",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": true,
+      "level": "0",
+      "max_level": "1",
+      "name": "Arcane Echoes",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "FPPoi5iBGBTzQ7zR"
+  },
+  "type": "equippableItem"
+}

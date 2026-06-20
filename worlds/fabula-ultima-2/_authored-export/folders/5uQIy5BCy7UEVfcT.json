@@ -1,0 +1,19 @@
+{
+  "_id": "5uQIy5BCy7UEVfcT",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": null,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "2.1.0"
+  },
+  "color": "#292929",
+  "description": "",
+  "flags": {},
+  "folder": "6mmwacB3WSm0f9bN",
+  "name": "Rare Accessories",
+  "sort": 100000,
+  "sorting": "a",
+  "type": "Item"
+}

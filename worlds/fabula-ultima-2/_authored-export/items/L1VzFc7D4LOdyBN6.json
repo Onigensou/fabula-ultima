@@ -1,0 +1,85 @@
+{
+  "_id": "L1VzFc7D4LOdyBN6",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1741655007512,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "L1VzFc7D4LOdyBN6",
+        "itemName": "Blazing Fan",
+        "pickedOldProps": {
+          "cost": "800",
+          "martial": false
+        },
+        "ts": 1769647020006
+      }
+    }
+  },
+  "folder": "AW77WJGta3x8x3dy",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Blazing%20Fan.gif",
+  "name": "Blazing Fan",
+  "ownership": {
+    "2vy7wrEUqBy0kzsU": 3,
+    "6DmgigM5jq76r0Gd": 3,
+    "7hKw8KGsimboeDif": 3,
+    "9sFgrDy4MvAgoCmQ": 3,
+    "Am7qxPOavfKeDGPd": 3,
+    "JQGNzKpDPHJmcUIW": 3,
+    "JvF9tXvr7aaiS06m": 3,
+    "KD5d0efqHETPpIux": 3,
+    "LT3Z8EnRdMVk5ncQ": 3,
+    "MwTL6zXFCEpVBTpI": 3,
+    "NozW36XIGEGx7oVH": 3,
+    "NpGkA7uxaarkPiwS": 3,
+    "ULBTZPjtza939Mvy": 3,
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3,
+    "eGu3tuw7HwJd2bpx": 3,
+    "iLeUVmwqnze8ulOI": 3,
+    "mE5aEkDlrQJIYyhG": 3,
+    "nSGZ1sz1rdKao0kz": 3,
+    "nXC7OD7u5Zw5UDDU": 3,
+    "t41knaXNbgCEygM5": 3,
+    "tz9BP9MKfNGf2P3n": 3,
+    "wNzPmItLYCKE1I8t": 3,
+    "yL2PQxh3R9ddt0te": 3,
+    "yUfwoVmEPVdFG3AY": 3
+  },
+  "sort": 400000,
+  "system": {
+    "container": null,
+    "props": {
+      "category": "Brawling",
+      "check_bonus": "1",
+      "damage_bonus": "6",
+      "description": "<ul>\n<li>Your <strong>invocations</strong> that target two or more creatures deal extra damage equal to your <strong>Skill Level</strong> in <strong>Linked Invocations</strong></li>\n</ul>",
+      "hand_slots": "One-handed",
+      "isMartial": false,
+      "item_cost": "800",
+      "item_type": "weapon",
+      "name": "Blazing Fan",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "MIG",
+      "set_name": "",
+      "skill_target": "One Enemy",
+      "type_damage": "Fire",
+      "weapon_range": "Melee"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "L1VzFc7D4LOdyBN6"
+  },
+  "type": "equippableItem"
+}

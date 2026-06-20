@@ -1,0 +1,1295 @@
+{
+  "_id": "RTx2b68mGqAXebwh",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1754411935665,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "tmNVy5jIbM9rzx80",
+  "img": "https://tiermaker.com/images/media/template_images/2024/16720717/fabula-ultima-classes-16720717/fury.png",
+  "items": [
+    {
+      "_id": "3hC6S9ONpo5q6vkM",
+      "_stats": {
+        "compendiumSource": "Item.CMlqLVtpSDNDyfvS",
+        "coreVersion": "12.343",
+        "createdTime": 1756969133984,
+        "duplicateSource": "Item.0UvQrmVE10uyR6Oa",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/09_NIN/death_blossom.png",
+      "name": "Swirling Swarm",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Dancer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you perform a <strong>ranged</strong> attack using a weapon that belongs to the <strong>thrown</strong> Category, if you have no martial armor and no shields equipped, you gain <strong>1 Momentum Point</strong>. You may never have more than <strong>5 Momentum Points</strong>.</p>\n<p>Your <strong>ranged</strong> attacks using weapons that belong to the <strong>thrown</strong> Category deal extra damage equal to your current <strong>Momentum Points</strong>.</p>\n<p>When a creature hits you with an attack targeting your <strong>Defense</strong>, you must spend all your accumulated <strong>Momentum Points</strong> and increase your <strong>Defense</strong> score by an equal amount against that attack (this may turn the hit into a miss).</p>\n<p>You also lose all <strong>Momentum Points</strong> at the end of each scene.</p>\n",
+          "duration": "",
+          "heroic_requirement": "you must have mastered one or more Classes among Dancer, Fury, and Sharpshooter.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Swirling Swarm",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "CMlqLVtpSDNDyfvS"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "4A2YevbUM19aqNSD",
+      "_stats": {
+        "compendiumSource": "Item.u4kRCa84YEtIo2Xu",
+        "coreVersion": "12.343",
+        "createdTime": 1754413240887,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Els/ElswordSkill7.png",
+      "name": "Withstand",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Fury",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you perform the <strong>Guard</strong> action, if you choose <strong>not</strong> to provide cover to another creature, you recover Hit Points equal to <strong>【SL, multiplied by the highest strength among your Bonds】</strong> and choose <strong>Might</strong> or <strong>Willpower</strong>: you treat the chosen Attribute as being one die size higher <em>(up to a maximum of <strong>d12</strong>)</em> until the end of your next turn.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "5",
+          "name": "Withstand",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p>Level</p></td><td data-colwidth=\"148\"><p>HP recovered</p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p><strong>【1 x the highest stength among your Bonds】</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p><strong>【2 x the highest stength among your Bonds】</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>3</p></td><td data-colwidth=\"148\"><p><strong>【3 x the highest stength among your Bonds】</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>4</p></td><td data-colwidth=\"148\"><p><strong>【4 x the highest stength among your Bonds】</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>5</p></td><td data-colwidth=\"148\"><p><strong>【5 x the highest stength among your Bonds】</strong></p></td></tr></tbody></table>",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "u4kRCa84YEtIo2Xu"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "9t29ZALZBRHqAQcq",
+      "_stats": {
+        "compendiumSource": "Item.Zw14b4NHt6geS7nE",
+        "coreVersion": "12.343",
+        "createdTime": 1754413239749,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/02_WAR/infuriate.png",
+      "name": "Provoke",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Fury",
+          "cost": "5 MP",
+          "damage_bonus": "0",
+          "description": "<p>You may use an <strong>action</strong> and spend 5 Mind Points to perform an Opposed <strong>【MIG + WLP】</strong> Check against a creature you can see — describe how you taunt them! If you succeed, the target suffers <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\" data-id=\"XkuOy0BFvKJTewGS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Enraged</span></strong></a></span></span> and<span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.c4sYPClmvld4TEK8\" data-id=\"c4sYPClmvld4TEK8\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Provoked</span></strong></a><strong><span style=\"text-decoration: underline;\">.</span></strong></span> This compulsion ends if you fall unconscious or leave the scene, if the creature is no longer <strong>enraged</strong>, or if they are successfully provoked by someone else.</p><p>You gain a bonus equal to <strong>【SL】</strong> to your <strong>【MIG + WLP】</strong> Checks for this Skill.</p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "5",
+          "name": "Provoke",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p>Level</p></td><td data-colwidth=\"148\"><p>HP Recover</p></td><td data-colwidth=\"148\"><p>MP Recover</p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p>5</p></td><td data-colwidth=\"148\"><p>5</p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p>10</p></td><td data-colwidth=\"148\"><p>10</p></td></tr><tr><td data-colwidth=\"79\"><p>3</p></td><td data-colwidth=\"148\"><p>15</p></td><td data-colwidth=\"148\"><p>15</p></td></tr><tr><td data-colwidth=\"79\"><p>4</p></td><td data-colwidth=\"148\"><p>20</p></td><td data-colwidth=\"148\"><p>20</p></td></tr></tbody></table>",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "Zw14b4NHt6geS7nE"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "EpHS8iIzVL2nXImv",
+      "_stats": {
+        "compendiumSource": "Item.y0E31msoT18TffJT",
+        "coreVersion": "12.343",
+        "createdTime": 1756969085124,
+        "duplicateSource": "Item.TMeu4B7pd9vPmLyu",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/the_forbidden_chakra.png",
+      "name": "Pulverizing Strike",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Weaponmaster",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>After you hit a creature with 【💥<strong>Breach】</strong>, if you attacked with a <strong>melee</strong> weapon that belongs to the <strong>heavy</strong> Category, you may have the attack deal damage equal to your <strong>High Roll (HR)</strong> instead of dealing no damage. Any source of extra damage, including the extra damage from the third option of the Breach Skill itself, still applies—ignore the damage dealt by the weapon.</p>",
+          "duration": "",
+          "heroic_requirement": "you must have mastered one or more Classes among Darkblade, Fury, and Weaponmaster",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Pulverizing Strike",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "y0E31msoT18TffJT"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "ffoi6LI55C6ITzq5",
+      "_stats": {
+        "compendiumSource": "Item.oqxQr6FFruIu4tOr",
+        "coreVersion": "12.343",
+        "createdTime": 1754413236691,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "XIV4dj7FBwLSom9T",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.331",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.6.4"
+          },
+          "changes": [
+            {
+              "key": "extra_damage_mod_all",
+              "mode": 2,
+              "priority": 1,
+              "value": "${level * 2}$"
+            }
+          ],
+          "description": "<p>As long as you are in <strong>Crisis</strong>, you deal <strong>【SL × 2】</strong> extra damage (be it with attacks, spells, Arcana, items or any other method).</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": 298800,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "XIV4dj7FBwLSom9T",
+              "originalParentId": "oqxQr6FFruIu4tOr",
+              "originalUuid": "Item.oqxQr6FFruIu4tOr.ActiveEffect.XIV4dj7FBwLSom9T"
+            },
+            "statuscounter": {
+              "config": {
+                "durationType": 0,
+                "modifyDuration": false,
+                "multiplyEffect": false,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/life/heart-shadow-red.webp",
+          "name": "Adrenaline",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "Fury",
+              "Class Skill",
+              "Passive"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "icons/magic/life/heart-shadow-red.webp",
+      "name": "Adrenaline",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Fury",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>As long as you are in <strong>Crisis</strong>, you deal <strong>【SL × 2】</strong> extra damage (be it with attacks, spells, Arcana, items or any other method).</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "5",
+          "name": "Adrenaline",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "oqxQr6FFruIu4tOr"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "PdRkDMQuaP42S8x6",
+      "_stats": {
+        "compendiumSource": "Item.n6dQfd82kDvikVPG",
+        "coreVersion": "12.343",
+        "createdTime": 1754413262363,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/10_VPR/Twinfang.png",
+      "name": "Monkey Grip",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Fury",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>You may equip two-handed weapons belonging to the <strong>flail, heavy, spear,</strong> or <strong>sword</strong> Categories in a single hand slot.</p><p> This allows you, for instance, to enjoy the benefits of <strong>two-weapon fighting</strong> while wielding a pair of two-handed weapons, <strong>or</strong> to equip a two-handed weapon in your <strong>main hand slot</strong> and a shield in your <strong>off-hand slot.</strong></p>",
+          "duration": "",
+          "heroic_requirement": "You must have mastered the Fury Class.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "level": "1",
+          "max_level": "1",
+          "name": "Monkey Grip",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "n6dQfd82kDvikVPG"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "Pn3Sh3CZADGsVvEc",
+      "_stats": {
+        "compendiumSource": "Item.XhrZl2gJnOTmOT15",
+        "coreVersion": "12.343",
+        "createdTime": 1756969098982,
+        "duplicateSource": "Item.y0E31msoT18TffJT",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/perfect_balance.png",
+      "name": "Rising Tide",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Fury",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you perform a <strong>melee</strong> attack using a weapon that belongs to the <strong>brawling</strong> Category, if you have no martial armor and no shields equipped, you gain <strong>1 Bravery Point</strong>.</p>\n<p>Your melee attacks using weapons that belong to the <strong>brawling</strong> Category deal extra damage equal to your current <strong>Bravery Points</strong>.</p>\n<p>At the end of your turn, or if you have <strong>5 or more Bravery Points</strong> at the end of your turn, you must spend all your accumulated <strong>Bravery Points</strong> and recover <strong>10 Hit Points</strong> and <strong>Mind Points</strong>.</p>\n",
+          "duration": "",
+          "heroic_requirement": "you must have mastered one or more Classes among Fury and Weaponmaster.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Rising Tide",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "XhrZl2gJnOTmOT15"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "RXPNTU6aTvZlyJxQ",
+      "_stats": {
+        "compendiumSource": "Item.LBqkjOIfj4oMkplG",
+        "coreVersion": "12.343",
+        "createdTime": 1757460873377,
+        "duplicateSource": "Item.vRWqziomvuxZXBCr",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/minor_arcana.png",
+      "name": "Duel Master",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Ace of Cards",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you resolve the <strong>Magic Pair</strong> effect, if you attack with a weapon belonging to the <strong>arcane</strong> or <strong>thrown</strong> Category, you deal extra damage equal to <strong>[the common value of the resolved cards]</strong> and regain <strong>[twice the common value of the resolved cards]</strong> Mind Points (for instance, resolving a pair of 5s allows you to deal <strong>5</strong> extra damage and regain <strong>10</strong> Mind Points).</p>\n",
+          "duration": "",
+          "heroic_requirement": "you must have mastered one or more Classes among Ace of Cards, Fury, Rogue, Sharpshooter, and Weaponmaster, and you must have acquired the Magic Cards Skill.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Duel Master",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "LBqkjOIfj4oMkplG"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "SnfXUXutfxtnJub6",
+      "_stats": {
+        "compendiumSource": "Item.0UvQrmVE10uyR6Oa",
+        "coreVersion": "12.343",
+        "createdTime": 1756969117680,
+        "duplicateSource": "Item.XhrZl2gJnOTmOT15",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/09_NIN/doton.png",
+      "name": "Spider's Web",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Weaponmaster",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you perform the 【⚔️Attack】 action with a <strong>melee</strong> weapon that belongs to the <strong>flail</strong> Category, if you have no other weapon equipped, you may perform two separate attacks instead of one (against the same target or against different targets). If you do, both attacks follow the rules for <strong>two-weapon fighting</strong>: each attack loses the <strong>multi</strong> property and cannot gain it, and you treat the <strong>High Roll</strong> of each Accuracy Check as being equal to 0 when determining damage.</p>\n<p>Note that this Heroic Skill does not stack with a custom weapon’s <em>quick</em> customization (using Spider’s Web with a quick flail doesn’t allow more than two attacks, in short).</p>\n",
+          "duration": "",
+          "heroic_requirement": "you must have mastered the Weaponmaster Class.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Spider's Web",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "0UvQrmVE10uyR6Oa"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "v7W6jwChqrebjdNM",
+      "_stats": {
+        "compendiumSource": "Item.UG71Ni3vaWJz3ADM",
+        "coreVersion": "12.343",
+        "createdTime": 1754413238732,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Els/LordKnightPassive2.png",
+      "name": "Indomitable Spirit",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Fury",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you spend one or more <strong>Fabula Points</strong>, you get an additional benefit — <strong>choose</strong> one option:</p><ul><li><p>you recover <strong>【SL × 5】</strong> Hit Points</p></li><li><p>You recover <strong>【SL × 5】</strong> Mind Points</p></li><li><p>You recover from a single status effect of your choice.</p></li></ul>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "4",
+          "name": "Indomitable Spirit",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p>Level</p></td><td data-colwidth=\"148\"><p>HP Recover</p></td><td data-colwidth=\"148\"><p>MP Recover</p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p>5</p></td><td data-colwidth=\"148\"><p>5</p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p>10</p></td><td data-colwidth=\"148\"><p>10</p></td></tr><tr><td data-colwidth=\"79\"><p>3</p></td><td data-colwidth=\"148\"><p>15</p></td><td data-colwidth=\"148\"><p>15</p></td></tr><tr><td data-colwidth=\"79\"><p>4</p></td><td data-colwidth=\"148\"><p>20</p></td><td data-colwidth=\"148\"><p>20</p></td></tr></tbody></table>",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "UG71Ni3vaWJz3ADM"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "wsf0XX5Nz2s31zyM",
+      "_stats": {
+        "compendiumSource": "Item.x4bzOjIZqfj8ybfq",
+        "coreVersion": "12.343",
+        "createdTime": 1754413259738,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Els/MagicResistanceMasteryR.png",
+      "name": "Powerful Strike",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Weaponmaster",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you hit one or more creatures with a melee attack, that attack deals <strong>5</strong> extra damage to each creature.</p><p> The amount of extra damage increases to <strong>10</strong> if you are level 40 or higher.</p>",
+          "duration": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "level": "1",
+          "max_level": "1",
+          "name": "Powerful Strike",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "x4bzOjIZqfj8ybfq"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "Y88qmHhFt7tTk1Ko",
+      "_stats": {
+        "compendiumSource": "Item.ZO5HDPKVdDkenkVR",
+        "coreVersion": "12.343",
+        "createdTime": 1754413237673,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "bUuFfC2zq5yf97sN",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.331",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.6.4"
+          },
+          "changes": [
+            {
+              "key": "minimum_critical_dice",
+              "mode": 3,
+              "priority": 1,
+              "value": "2"
+            }
+          ],
+          "description": "<p>Your Accuracy Checks with <strong>brawling</strong>, <strong>dagger</strong>, <strong>flail</strong> and <strong>thrown</strong> weapons trigger a <strong>critical success</strong> if both dice show the same number (and the Check is not a <strong>fumble</strong>).</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": 298800,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "bUuFfC2zq5yf97sN",
+              "originalParentId": "ZO5HDPKVdDkenkVR",
+              "originalUuid": "Item.ZO5HDPKVdDkenkVR.ActiveEffect.bUuFfC2zq5yf97sN"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/unholy/strike-body-explode-disintegrate.webp",
+          "name": "Frenzy",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "Class Skill",
+              "Passive",
+              "Fury"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "icons/magic/unholy/strike-body-explode-disintegrate.webp",
+      "name": "Frenzy",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Fury",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>Your Accuracy Checks with <strong>brawling</strong>, <strong>dagger</strong>, <strong>flail</strong> and <strong>thrown</strong> weapons trigger a <strong>critical success</strong> if both dice show the same number (and the Check is not a <strong>fumble</strong>).</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Frenzy",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "ZO5HDPKVdDkenkVR"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Fury",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar4": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "DEF",
+            "max": 13,
+            "maxcolor": "#f26d40",
+            "mincolor": "#f26d40",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 13
+          },
+          "bar5": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar5",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MDEF",
+            "max": 10,
+            "maxcolor": "#26d6ed",
+            "mincolor": "#26d6ed",
+            "opacity": null,
+            "order": 4,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 10
+          }
+        }
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Fury",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://tiermaker.com/images/media/template_images/2024/16720717/fabula-ultima-classes-16720717/fury.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 0,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {
+      "also_text": "Berserker, Brawler, Viking",
+      "benefit_dropdown": "hp_benefit",
+      "classMechanic_text": "",
+      "class_facet": {
+        "3hC6S9ONpo5q6vkM": {
+          "facet_cost": "",
+          "facet_description": "<p>When you perform a <strong>ranged</strong> attack using a weapon that belongs to the <strong>thrown</strong> Category, if you have no martial armor and no shields equipped, you gain <strong>1 Momentum Point</strong>. You may never have more than <strong>5 Momentum Points</strong>.</p>\n<p>Your <strong>ranged</strong> attacks using weapons that belong to the <strong>thrown</strong> Category deal extra damage equal to your current <strong>Momentum Points</strong>.</p>\n<p>When a creature hits you with an attack targeting your <strong>Defense</strong>, you must spend all your accumulated <strong>Momentum Points</strong> and increase your <strong>Defense</strong> score by an equal amount against that attack (this may turn the hit into a miss).</p>\n<p>You also lose all <strong>Momentum Points</strong> at the end of each scene.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Swirling Swarm",
+          "uuid": "Actor.RTx2b68mGqAXebwh.Item.3hC6S9ONpo5q6vkM"
+        },
+        "4A2YevbUM19aqNSD": {
+          "facet_cost": "",
+          "facet_description": "<p>When you perform the <strong>Guard</strong> action, if you choose <strong>not</strong> to provide cover to another creature, you recover Hit Points equal to <strong>【SL, multiplied by the highest strength among your Bonds】</strong> and choose <strong>Might</strong> or <strong>Willpower</strong>: you treat the chosen Attribute as being one die size higher <em>(up to a maximum of <strong>d12</strong>)</em> until the end of your next turn.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Withstand",
+          "uuid": "Actor.RTx2b68mGqAXebwh.Item.4A2YevbUM19aqNSD"
+        },
+        "9t29ZALZBRHqAQcq": {
+          "facet_cost": "5 MP",
+          "facet_description": "<p>You may use an <strong>action</strong> and spend 5 Mind Points to perform an Opposed <strong>【MIG + WLP】</strong> Check against a creature you can see — describe how you taunt them! If you succeed, the target suffers <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\" data-id=\"XkuOy0BFvKJTewGS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Enraged</span></strong></a></span></span> and<span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.c4sYPClmvld4TEK8\" data-id=\"c4sYPClmvld4TEK8\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Provoked</span></strong></a><strong><span style=\"text-decoration: underline;\">.</span></strong></span> This compulsion ends if you fall unconscious or leave the scene, if the creature is no longer <strong>enraged</strong>, or if they are successfully provoked by someone else.</p><p>You gain a bonus equal to <strong>【SL】</strong> to your <strong>【MIG + WLP】</strong> Checks for this Skill.</p>",
+          "facet_offensive": "",
+          "facet_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Provoke",
+          "uuid": "Actor.RTx2b68mGqAXebwh.Item.9t29ZALZBRHqAQcq"
+        },
+        "EpHS8iIzVL2nXImv": {
+          "facet_cost": "",
+          "facet_description": "<p>After you hit a creature with 【💥<strong>Breach】</strong>, if you attacked with a <strong>melee</strong> weapon that belongs to the <strong>heavy</strong> Category, you may have the attack deal damage equal to your <strong>High Roll (HR)</strong> instead of dealing no damage. Any source of extra damage, including the extra damage from the third option of the Breach Skill itself, still applies—ignore the damage dealt by the weapon.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Pulverizing Strike",
+          "uuid": "Actor.RTx2b68mGqAXebwh.Item.EpHS8iIzVL2nXImv"
+        },
+        "PdRkDMQuaP42S8x6": {
+          "facet_cost": "",
+          "facet_description": "<p>You may equip two-handed weapons belonging to the <strong>flail, heavy, spear,</strong> or <strong>sword</strong> Categories in a single hand slot.</p><p> This allows you, for instance, to enjoy the benefits of <strong>two-weapon fighting</strong> while wielding a pair of two-handed weapons, <strong>or</strong> to equip a two-handed weapon in your <strong>main hand slot</strong> and a shield in your <strong>off-hand slot.</strong></p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Monkey Grip",
+          "uuid": "Actor.RTx2b68mGqAXebwh.Item.PdRkDMQuaP42S8x6"
+        },
+        "Pn3Sh3CZADGsVvEc": {
+          "facet_cost": "",
+          "facet_description": "<p>When you perform a <strong>melee</strong> attack using a weapon that belongs to the <strong>brawling</strong> Category, if you have no martial armor and no shields equipped, you gain <strong>1 Bravery Point</strong>.</p>\n<p>Your melee attacks using weapons that belong to the <strong>brawling</strong> Category deal extra damage equal to your current <strong>Bravery Points</strong>.</p>\n<p>At the end of your turn, or if you have <strong>5 or more Bravery Points</strong> at the end of your turn, you must spend all your accumulated <strong>Bravery Points</strong> and recover <strong>10 Hit Points</strong> and <strong>Mind Points</strong>.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Rising Tide",
+          "uuid": "Actor.RTx2b68mGqAXebwh.Item.Pn3Sh3CZADGsVvEc"
+        },
+        "RXPNTU6aTvZlyJxQ": {
+          "facet_cost": "",
+          "facet_description": "<p>When you resolve the <strong>Magic Pair</strong> effect, if you attack with a weapon belonging to the <strong>arcane</strong> or <strong>thrown</strong> Category, you deal extra damage equal to <strong>[the common value of the resolved cards]</strong> and regain <strong>[twice the common value of the resolved cards]</strong> Mind Points (for instance, resolving a pair of 5s allows you to deal <strong>5</strong> extra damage and regain <strong>10</strong> Mind Points).</p>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Duel Master",
+          "uuid": "Actor.RTx2b68mGqAXebwh.Item.RXPNTU6aTvZlyJxQ"
+        },
+        "SnfXUXutfxtnJub6": {
+          "facet_cost": "",
+          "facet_description": "<p>When you perform the 【⚔️Attack】 action with a <strong>melee</strong> weapon that belongs to the <strong>flail</strong> Category, if you have no other weapon equipped, you may perform two separate attacks instead of one (against the same target or against different targets). If you do, both attacks follow the rules for <strong>two-weapon fighting</strong>: each attack loses the <strong>multi</strong> property and cannot gain it, and you treat the <strong>High Roll</strong> of each Accuracy Check as being equal to 0 when determining damage.</p>\n<p>Note that this Heroic Skill does not stack with a custom weapon’s <em>quick</em> customization (using Spider’s Web with a quick flail doesn’t allow more than two attacks, in short).</p>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Spider's Web",
+          "uuid": "Actor.RTx2b68mGqAXebwh.Item.SnfXUXutfxtnJub6"
+        },
+        "Y88qmHhFt7tTk1Ko": {
+          "facet_cost": "",
+          "facet_description": "<p>Your Accuracy Checks with <strong>brawling</strong>, <strong>dagger</strong>, <strong>flail</strong> and <strong>thrown</strong> weapons trigger a <strong>critical success</strong> if both dice show the same number (and the Check is not a <strong>fumble</strong>).</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Frenzy",
+          "uuid": "Actor.RTx2b68mGqAXebwh.Item.Y88qmHhFt7tTk1Ko"
+        },
+        "ffoi6LI55C6ITzq5": {
+          "facet_cost": "",
+          "facet_description": "<p>As long as you are in <strong>Crisis</strong>, you deal <strong>【SL × 2】</strong> extra damage (be it with attacks, spells, Arcana, items or any other method).</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Adrenaline",
+          "uuid": "Actor.RTx2b68mGqAXebwh.Item.ffoi6LI55C6ITzq5"
+        },
+        "v7W6jwChqrebjdNM": {
+          "facet_cost": "",
+          "facet_description": "<p>When you spend one or more <strong>Fabula Points</strong>, you get an additional benefit — <strong>choose</strong> one option:</p><ul><li><p>you recover <strong>【SL × 5】</strong> Hit Points</p></li><li><p>You recover <strong>【SL × 5】</strong> Mind Points</p></li><li><p>You recover from a single status effect of your choice.</p></li></ul>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Indomitable Spirit",
+          "uuid": "Actor.RTx2b68mGqAXebwh.Item.v7W6jwChqrebjdNM"
+        },
+        "wsf0XX5Nz2s31zyM": {
+          "facet_cost": "",
+          "facet_description": "<p>When you hit one or more creatures with a melee attack, that attack deals <strong>5</strong> extra damage to each creature.</p><p> The amount of extra damage increases to <strong>10</strong> if you are level 40 or higher.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Powerful Strike",
+          "uuid": "Actor.RTx2b68mGqAXebwh.Item.wsf0XX5Nz2s31zyM"
+        }
+      },
+      "class_heroicSkill": {
+        "3hC6S9ONpo5q6vkM": {
+          "id": "${item.id}",
+          "name": "Swirling Swarm",
+          "skill_cost": "",
+          "skill_description": "<p>When you perform a <strong>ranged</strong> attack using a weapon that belongs to the <strong>thrown</strong> Category, if you have no martial armor and no shields equipped, you gain <strong>1 Momentum Point</strong>. You may never have more than <strong>5 Momentum Points</strong>.</p>\n<p>Your <strong>ranged</strong> attacks using weapons that belong to the <strong>thrown</strong> Category deal extra damage equal to your current <strong>Momentum Points</strong>.</p>\n<p>When a creature hits you with an attack targeting your <strong>Defense</strong>, you must spend all your accumulated <strong>Momentum Points</strong> and increase your <strong>Defense</strong> score by an equal amount against that attack (this may turn the hit into a miss).</p>\n<p>You also lose all <strong>Momentum Points</strong> at the end of each scene.</p>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.RTx2b68mGqAXebwh.Item.3hC6S9ONpo5q6vkM"
+        },
+        "EpHS8iIzVL2nXImv": {
+          "id": "${item.id}",
+          "name": "Pulverizing Strike",
+          "skill_cost": "",
+          "skill_description": "<p>After you hit a creature with 【💥<strong>Breach】</strong>, if you attacked with a <strong>melee</strong> weapon that belongs to the <strong>heavy</strong> Category, you may have the attack deal damage equal to your <strong>High Roll (HR)</strong> instead of dealing no damage. Any source of extra damage, including the extra damage from the third option of the Breach Skill itself, still applies—ignore the damage dealt by the weapon.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.RTx2b68mGqAXebwh.Item.EpHS8iIzVL2nXImv"
+        },
+        "PdRkDMQuaP42S8x6": {
+          "id": "${item.id}",
+          "name": "Monkey Grip",
+          "skill_cost": "",
+          "skill_description": "<p>You may equip two-handed weapons belonging to the <strong>flail, heavy, spear,</strong> or <strong>sword</strong> Categories in a single hand slot.</p><p> This allows you, for instance, to enjoy the benefits of <strong>two-weapon fighting</strong> while wielding a pair of two-handed weapons, <strong>or</strong> to equip a two-handed weapon in your <strong>main hand slot</strong> and a shield in your <strong>off-hand slot.</strong></p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.RTx2b68mGqAXebwh.Item.PdRkDMQuaP42S8x6"
+        },
+        "Pn3Sh3CZADGsVvEc": {
+          "id": "${item.id}",
+          "name": "Rising Tide",
+          "skill_cost": "",
+          "skill_description": "<p>When you perform a <strong>melee</strong> attack using a weapon that belongs to the <strong>brawling</strong> Category, if you have no martial armor and no shields equipped, you gain <strong>1 Bravery Point</strong>.</p>\n<p>Your melee attacks using weapons that belong to the <strong>brawling</strong> Category deal extra damage equal to your current <strong>Bravery Points</strong>.</p>\n<p>At the end of your turn, or if you have <strong>5 or more Bravery Points</strong> at the end of your turn, you must spend all your accumulated <strong>Bravery Points</strong> and recover <strong>10 Hit Points</strong> and <strong>Mind Points</strong>.</p>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.RTx2b68mGqAXebwh.Item.Pn3Sh3CZADGsVvEc"
+        },
+        "RXPNTU6aTvZlyJxQ": {
+          "id": "${item.id}",
+          "name": "Duel Master",
+          "skill_cost": "",
+          "skill_description": "<p>When you resolve the <strong>Magic Pair</strong> effect, if you attack with a weapon belonging to the <strong>arcane</strong> or <strong>thrown</strong> Category, you deal extra damage equal to <strong>[the common value of the resolved cards]</strong> and regain <strong>[twice the common value of the resolved cards]</strong> Mind Points (for instance, resolving a pair of 5s allows you to deal <strong>5</strong> extra damage and regain <strong>10</strong> Mind Points).</p>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.RTx2b68mGqAXebwh.Item.RXPNTU6aTvZlyJxQ"
+        },
+        "SnfXUXutfxtnJub6": {
+          "id": "${item.id}",
+          "name": "Spider's Web",
+          "skill_cost": "",
+          "skill_description": "<p>When you perform the 【⚔️Attack】 action with a <strong>melee</strong> weapon that belongs to the <strong>flail</strong> Category, if you have no other weapon equipped, you may perform two separate attacks instead of one (against the same target or against different targets). If you do, both attacks follow the rules for <strong>two-weapon fighting</strong>: each attack loses the <strong>multi</strong> property and cannot gain it, and you treat the <strong>High Roll</strong> of each Accuracy Check as being equal to 0 when determining damage.</p>\n<p>Note that this Heroic Skill does not stack with a custom weapon’s <em>quick</em> customization (using Spider’s Web with a quick flail doesn’t allow more than two attacks, in short).</p>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.RTx2b68mGqAXebwh.Item.SnfXUXutfxtnJub6"
+        },
+        "wsf0XX5Nz2s31zyM": {
+          "id": "${item.id}",
+          "name": "Powerful Strike",
+          "skill_cost": "",
+          "skill_description": "<p>When you hit one or more creatures with a melee attack, that attack deals <strong>5</strong> extra damage to each creature.</p><p> The amount of extra damage increases to <strong>10</strong> if you are level 40 or higher.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.RTx2b68mGqAXebwh.Item.wsf0XX5Nz2s31zyM"
+        }
+      },
+      "class_lore": "<blockquote><p><strong>Furies</strong> never know when to quit. In battle and life they are energetic, determined and often restless. Whatever ideals or desires drive their actions, they will stop at nothing and risk everything in order to achieve them.</p><p> Some Furies undergo a rigid training in order to control their emotions; others simply see might as the solution to all problems and are constantly on the verge of letting rage get the best of them.</p></blockquote>",
+      "class_skill": {
+        "4A2YevbUM19aqNSD": {
+          "id": "${item.id}",
+          "name": "Withstand",
+          "skill_cost": "",
+          "skill_description": "<p>When you perform the <strong>Guard</strong> action, if you choose <strong>not</strong> to provide cover to another creature, you recover Hit Points equal to <strong>【SL, multiplied by the highest strength among your Bonds】</strong> and choose <strong>Might</strong> or <strong>Willpower</strong>: you treat the chosen Attribute as being one die size higher <em>(up to a maximum of <strong>d12</strong>)</em> until the end of your next turn.</p>",
+          "skill_maxLevel": 5,
+          "skill_type": "Passive",
+          "uuid": "Actor.RTx2b68mGqAXebwh.Item.4A2YevbUM19aqNSD"
+        },
+        "9t29ZALZBRHqAQcq": {
+          "id": "${item.id}",
+          "name": "Provoke",
+          "skill_cost": "5 MP",
+          "skill_description": "<p>You may use an <strong>action</strong> and spend 5 Mind Points to perform an Opposed <strong>【MIG + WLP】</strong> Check against a creature you can see — describe how you taunt them! If you succeed, the target suffers <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\" data-id=\"XkuOy0BFvKJTewGS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Enraged</span></strong></a></span></span> and<span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.c4sYPClmvld4TEK8\" data-id=\"c4sYPClmvld4TEK8\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Provoked</span></strong></a><strong><span style=\"text-decoration: underline;\">.</span></strong></span> This compulsion ends if you fall unconscious or leave the scene, if the creature is no longer <strong>enraged</strong>, or if they are successfully provoked by someone else.</p><p>You gain a bonus equal to <strong>【SL】</strong> to your <strong>【MIG + WLP】</strong> Checks for this Skill.</p>",
+          "skill_maxLevel": 5,
+          "skill_type": "Active",
+          "uuid": "Actor.RTx2b68mGqAXebwh.Item.9t29ZALZBRHqAQcq"
+        },
+        "Y88qmHhFt7tTk1Ko": {
+          "id": "${item.id}",
+          "name": "Frenzy",
+          "skill_cost": "",
+          "skill_description": "<p>Your Accuracy Checks with <strong>brawling</strong>, <strong>dagger</strong>, <strong>flail</strong> and <strong>thrown</strong> weapons trigger a <strong>critical success</strong> if both dice show the same number (and the Check is not a <strong>fumble</strong>).</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.RTx2b68mGqAXebwh.Item.Y88qmHhFt7tTk1Ko"
+        },
+        "ffoi6LI55C6ITzq5": {
+          "id": "${item.id}",
+          "name": "Adrenaline",
+          "skill_cost": "",
+          "skill_description": "<p>As long as you are in <strong>Crisis</strong>, you deal <strong>【SL × 2】</strong> extra damage (be it with attacks, spells, Arcana, items or any other method).</p>",
+          "skill_maxLevel": 5,
+          "skill_type": "Passive",
+          "uuid": "Actor.RTx2b68mGqAXebwh.Item.ffoi6LI55C6ITzq5"
+        },
+        "v7W6jwChqrebjdNM": {
+          "id": "${item.id}",
+          "name": "Indomitable Spirit",
+          "skill_cost": "",
+          "skill_description": "<p>When you spend one or more <strong>Fabula Points</strong>, you get an additional benefit — <strong>choose</strong> one option:</p><ul><li><p>you recover <strong>【SL × 5】</strong> Hit Points</p></li><li><p>You recover <strong>【SL × 5】</strong> Mind Points</p></li><li><p>You recover from a single status effect of your choice.</p></li></ul>",
+          "skill_maxLevel": 4,
+          "skill_type": "Passive",
+          "uuid": "Actor.RTx2b68mGqAXebwh.Item.v7W6jwChqrebjdNM"
+        }
+      },
+      "flavor_text": "<p style=\"text-align: center\"><span style=\"font-family: Amiri\"><em>I'll just have to become</em></span></p><p style=\"text-align: center\"><span style=\"font-family: Amiri\"><em>stronger than you</em></span></p>",
+      "martialArmor_equippable": true,
+      "martialMelee_equippable": true,
+      "martialRanged_equippable": false,
+      "martialShield_equippable": false,
+      "name": "Fury",
+      "project_performable": false,
+      "ritual_performable": false
+    },
+    "statusEffects": {},
+    "template": "hoxC3HFCtMYGScIo",
+    "templateSystemUniqueVersion": 504201233
+  },
+  "type": "character"
+}

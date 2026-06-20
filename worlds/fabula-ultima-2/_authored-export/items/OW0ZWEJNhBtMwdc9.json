@@ -1,0 +1,57 @@
+{
+  "_id": "OW0ZWEJNhBtMwdc9",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1758205653344,
+    "duplicateSource": "Item.Ke9AGrtliTVfttcv",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "2OplVa9fwLYbzD8b",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/masterful_blitz.png",
+  "name": "Beaded Weapon",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 7650000,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Monk",
+      "cost": "40 MP",
+      "damage_bonus": "0",
+      "description": "<p>At any moment, if you have a full set of <strong>Soul Beads</strong>, you may spend <strong>40 MP</strong> and imbue one equipped weapon with them. Until this effect ends, the weapon gains a <strong>+3 bonus</strong> to <strong>Accuracy Checks</strong>, and its damage <strong>ignores Resistances</strong>.</p>\n<p>If it’s a <em>melee</em> weapon, it also becomes a <em>ranged</em> weapon, and its attacks can be launched from afar. If you have that weapon equipped while activating this effect, you may perform a free 【⚔️ Attack】 with it as part of the same action.</p>\n<p>You lose access to the <strong>Soul Beads</strong> used, and they don’t count toward the <strong>Clarity</strong> Skill while imbued in your weapon. You can generate <strong>Soul Beads</strong> as normal from the next turn onwards. Only one weapon can benefit from this Skill at a time.</p>\n",
+      "duration": "Scene",
+      "heroic_requirement": "You must have mastered the Monk Class",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Beaded Weapon",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "Any",
+      "skill_target": "One weapon",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "OW0ZWEJNhBtMwdc9"
+  },
+  "type": "equippableItem"
+}

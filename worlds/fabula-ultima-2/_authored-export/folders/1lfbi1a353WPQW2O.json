@@ -1,0 +1,19 @@
+{
+  "_id": "1lfbi1a353WPQW2O",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1757712399891,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "Ez9xgSX6RMOw2a8b",
+  "name": "Armor Module",
+  "sort": 100000,
+  "sorting": "a",
+  "type": "Item"
+}

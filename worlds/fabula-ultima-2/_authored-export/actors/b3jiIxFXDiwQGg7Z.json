@@ -1,0 +1,1456 @@
+{
+  "_id": "b3jiIxFXDiwQGg7Z",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1756852508395,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "tmNVy5jIbM9rzx80",
+  "img": "https://tiermaker.com/images/media/template_images/2024/16720717/fabula-ultima-classes-16720717/tinkerer.png",
+  "items": [
+    {
+      "_id": "2CU1xcyUE7rFlB7r",
+      "_stats": {
+        "compendiumSource": "Item.q8RNWJEZNKsGrBgk",
+        "coreVersion": "12.343",
+        "createdTime": 1756856554439,
+        "duplicateSource": "Item.ofCKWctVhPv8vC9H",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Gatherer-Crafter/04_ALC/standard_touch.png",
+      "name": "Advance Alchemy",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Tinkerer",
+          "cost": "4 IP",
+          "damage_bonus": "0",
+          "description": "<div class=\"potion-skill\"><p>You may perform the <strong>【⚗️Inventory】</strong> action to rapidly craft a <strong>potion</strong> with powerful but somewhat unpredictable effects. Roll three <strong>d20s</strong> and assign one to <strong>target</strong> and one to <strong>effect</strong>.</p><details class=\"potion-foldout\"><summary>Potion Tables (Target &amp; Effect)</summary><table class=\"book-table\"><caption>TARGET</caption><thead><tr><th class=\"die\">Die</th><th>The potion affects…</th></tr></thead><tbody><tr><td class=\"die\">1–6</td><td>… you or one ally you can see that is present on the scene.</td></tr><tr><td class=\"die\">7–11</td><td>… one enemy you can see that is present on the scene.</td></tr><tr><td class=\"die\">12–16</td><td>… you and every ally present on the scene.</td></tr><tr><td class=\"die\">17–20</td><td>… every enemy present on the scene.</td></tr></tbody></table><table class=\"book-table\"><caption>EFFECT</caption><thead><tr><th class=\"die\">Die</th><th>Each creature affected by the potion…</th></tr></thead><tbody><tr><td class=\"die\">Any</td><td>… suffers 20 <strong>poison</strong> damage.</td></tr><tr><td class=\"die\">Any</td><td>… recovers 30 Hit Points.</td></tr><tr><td class=\"die\">1</td><td>… treats their <strong>Dexterity</strong> and <strong>Might</strong> dice as if they were one size higher (up to a maximum of d12) until the end of your next turn.</td></tr><tr><td class=\"die\">2</td><td>As effect 1, but with <strong>Insight</strong> and <strong>Willpower</strong>.</td></tr><tr><td class=\"die\">3</td><td>… suffers 20 <strong>air</strong> damage. This amount increases to 30 damage if you are level 20 or higher, or to 40 damage if you are level 40 or higher.</td></tr><tr><td class=\"die\">4</td><td>As effect 3, but with <strong>bolt</strong> damage.</td></tr><tr><td class=\"die\">5</td><td>As effect 3, but with <strong>dark</strong> damage.</td></tr><tr><td class=\"die\">6</td><td>As effect 3, but with <strong>earth</strong> damage.</td></tr><tr><td class=\"die\">7</td><td>As effect 3, but with <strong>fire</strong> damage.</td></tr><tr><td class=\"die\">8</td><td>As effect 3, but with <strong>ice</strong> damage.</td></tr><tr><td class=\"die\">9</td><td>… gains <strong>Resistance</strong> to <strong>air</strong> and <strong>fire</strong> damage until the end of the scene.</td></tr><tr><td class=\"die\">10</td><td>As effect 9, but with <strong>bolt</strong> and <strong>ice</strong> damage.</td></tr><tr><td class=\"die\">11</td><td>As effect 9, but with <strong>dark</strong> and <strong>earth</strong> damage.</td></tr><tr><td class=\"die\">12</td><td>… suffers <strong>enraged</strong>.</td></tr><tr><td class=\"die\">13</td><td>… suffers <strong>poisoned</strong>.</td></tr><tr><td class=\"die\">14</td><td>… suffers <strong>dazed</strong>, <strong>shaken</strong>, <strong>slow</strong> and <strong>weak</strong>.</td></tr><tr><td class=\"die\">15</td><td>… recovers from all status effects.</td></tr><tr><td class=\"die\">16–17</td><td>… recovers 50 Hit Points and 50 Mind Points.</td></tr><tr><td class=\"die\">18</td><td>… recovers 100 Hit Points.</td></tr><tr><td class=\"die\">19</td><td>… recovers 100 Mind Points.</td></tr><tr><td class=\"die\">20</td><td>… recovers 100 Hit Points and 100 Mind Points.</td></tr></tbody></table></details></div>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Advance Alchemy",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p><strong>Level</strong></p></td><td data-colwidth=\"148\"><p><strong>D20 roll</strong></p></td><td><p><strong>IP Cost</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>Basic</p></td><td data-colwidth=\"148\"><p>2</p></td><td><p>3</p></td></tr><tr><td data-colwidth=\"79\"><p>Advance</p></td><td data-colwidth=\"148\"><p>3</p></td><td><p>4</p></td></tr><tr><td data-colwidth=\"79\"><p>Superior</p></td><td data-colwidth=\"148\"><p>4</p></td><td><p>5</p></td></tr></tbody></table>",
+          "skill_range": "Range",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "q8RNWJEZNKsGrBgk"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "5Hv6mtYdhIdePwzg",
+      "_stats": {
+        "compendiumSource": "Item.u2tHLEanQ7gWP4BS",
+        "coreVersion": "12.343",
+        "createdTime": 1756857333569,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Chung/SI_RemodelRifle.png",
+      "name": "Upgrade",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Tinkerer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>Once per <strong>rest</strong>, you may choose one option: add a <strong>Quality</strong> to a single weapon, armor, or shield that doesn't have one; <strong>or</strong> replace the current <strong>Quality</strong> of a single weapon, armor, or shield with a different <strong>Quality</strong>.</p>\n<p>When you use this Skill, you must select a Quality from the default list for that item type as long as the cost modifier associated with that ability is <strong>+1000 zenit or lower.</strong> Then, you must spend an amount of zenit equal to twice the cost modifier of the chosen ability. The modified item will be ready at the end of the rest; you may only modify <strong>one item per rest.</strong></p>\n<details class=\"potion-foldout\">\n  <summary>Quality List (Defensive • Offensive • Enhancement)</summary>\n  <table class=\"book-table\">\n    <caption>QUALITIES</caption>\n    <thead>\n      <tr>\n        <th style=\"width:190px;\">QUALITY</th>\n        <th style=\"width:100px;\">COST</th>\n        <th>EFFECT</th>\n      </tr>\n    </thead>\n    <tbody>\n      <!-- Defensive -->\n      <tr class=\"section-row\"><th colspan=\"3\">Defensive Qualities</th></tr>\n      <tr>\n        <th scope=\"row\">Antistatus</th>\n        <td>+500 z</td>\n        <td>You are immune to a single status effect.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Resistance</th>\n        <td>+700 z</td>\n        <td>You have Resistance to a single damage type (not <strong>physical</strong> damage).</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Amulet</th>\n        <td>+800 z</td>\n        <td>You gain a +1 bonus to Magic Defense.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Bulwark</th>\n        <td>+800 z</td>\n        <td>You gain a +1 bonus to Defense.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Dual Resistance</th>\n        <td>+1000 z</td>\n        <td>You have Resistance to two damage types (not <strong>physical</strong> damage).</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Swordbreaker</th>\n        <td>+1000 z</td>\n        <td>You have Resistance to <strong>physical</strong> damage.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Immunity</th>\n        <td>+1500 z</td>\n        <td>You have Immunity to a single damage type (not <strong>physical</strong> damage).</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Omnishield</th>\n        <td>+2000 z</td>\n        <td>You gain a +1 bonus to Defense and Magic Defense.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Perfect Health</th>\n        <td>+2000 z</td>\n        <td>You are immune to all status effects.</td>\n      </tr>\n\n      <!-- Offensive -->\n      <tr class=\"section-row\"><th colspan=\"3\">Offensive Qualities</th></tr>\n      <tr>\n        <th scope=\"row\">Magical</th>\n        <td>+100 z</td>\n        <td>The weapon targets <strong>Magic Defense</strong> instead of <strong>Defense</strong>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Hunter</th>\n        <td>+300 z</td>\n        <td>The weapon deals 5 extra damage to creatures of a particular <strong>Species</strong>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Piercing</th>\n        <td>+400 z</td>\n        <td>Damage dealt by the weapon ignores <strong>Resistances</strong>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Dual Hunter</th>\n        <td>+500 z</td>\n        <td>The weapon deals 5 extra damage to creatures belonging to one of two particular <strong>Species</strong>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Multi</th>\n        <td>+1000 z</td>\n        <td>Attacks with the weapon have <strong>multi (2)</strong>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Status</th>\n        <td>+1500 z</td>\n        <td>Each target hit by the weapon suffers (choose one): <strong>dazed, shaken, slow, weak</strong>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Status Plus</th>\n        <td>+2000 z</td>\n        <td>Each target hit by the weapon suffers (choose one): <strong>enraged, poisoned</strong>.</td>\n      </tr>\n\n      <!-- Enhancement -->\n      <tr class=\"section-row\"><th colspan=\"3\">Enhancement Qualities</th></tr>\n      <tr>\n        <th scope=\"row\">Initiative Up</th>\n        <td>+500 z</td>\n        <td>You gain a +4 bonus to your Initiative modifier.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Accuracy Up</th>\n        <td>+1000 z</td>\n        <td>You gain a +1 bonus to your Accuracy Checks.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Magic Up</th>\n        <td>+1000 z</td>\n        <td>You gain a +1 bonus to your Magic Checks.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Vitality Up</th>\n        <td>+1000 z</td>\n        <td>When you recover HP, you recover 5 extra HP.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Healing Up</th>\n        <td>+1500 z</td>\n        <td>Spells you cast whose effects restore Hit Points restore 5 extra Hit Points.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Spell Up</th>\n        <td>+2000 z</td>\n        <td>Spells you cast deal 5 extra damage.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Weapon Up</th>\n        <td>+2000 z</td>\n        <td>Your attacks with (choose one: <strong>melee</strong>, <strong>ranged</strong>) weapons deal 5 extra damage.</td>\n      </tr>\n    </tbody>\n  </table>\n</details>\n",
+          "duration": "",
+          "heroic_requirement": "You must have mastered the Tinkerer Class.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Upgrade",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "u2tHLEanQ7gWP4BS"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "BFhYkwUbHR4HyBHv",
+      "_stats": {
+        "compendiumSource": "Item.fUx8ZjjAzjAueQvU",
+        "coreVersion": "12.343",
+        "createdTime": 1756856654906,
+        "duplicateSource": "Item.sfBakCzBiMuJCi03",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Gatherer-Crafter/02_BSM/master%27s_mend_ii.png",
+      "name": "Advance Infusion",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Tinkerer",
+          "cost": "2 IP",
+          "damage_bonus": "0",
+          "description": "<p>When you successfully hit one or more targets with an attack, you may spend 2 Inventory Points to produce a special <strong>infusion</strong> and apply the corresponding effect to that attack <em>(if the attack had the </em><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-size: 14px;\"><em><strong><span style=\"text-decoration: underline;\">Multi</span></strong></em></a></span></span><em> property, apply the effects of the infusion to each target).</em></p>\n\n<p>You cannot apply more than one infusion to the same attack; producing and using an infusion are both part of the action you used to attack with the weapon.</p>\n\n<details class=\"potion-foldout\">\n  <summary>Advanced Infusion Table</summary>\n  <table class=\"book-table\">\n    <caption>ADVANCED INFUSIONS</caption>\n    <thead>\n      <tr>\n        <th style=\"width:140px;\">INFUSION</th>\n        <th>EFFECT</th>\n      </tr>\n    </thead>\n    <tbody>\n      <tr>\n        <th scope=\"row\">Cyclone</th>\n        <td>The attack deals 5 extra damage, and its damage becomes <em><strong>air</strong></em>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Exorcism</th>\n        <td>The attack deals 5 extra damage, and its damage becomes <em><strong>light</strong></em>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Seismic</th>\n        <td>The attack deals 5 extra damage, and its damage becomes <em><strong>earth</strong></em>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Shadow</th>\n        <td>The attack deals 5 extra damage, and its damage becomes <em><strong>dark</strong></em>.</td>\n      </tr>\n    </tbody>\n  </table>\n</details>\n\n<style>\n/* Infusion Table Styles */\n.potion-foldout { border: 1px solid #d3d7cf; border-radius: 8px; background: #f9faf9; }\n.potion-foldout > summary {\n  cursor: pointer; padding:.6rem .8rem; font-weight:700; letter-spacing:.02em;\n  background:#254a41; color:#fff; border-radius:7px 7px 0 0; user-select:none;\n}\n.book-table { width:100%; border-collapse:collapse; margin:.6rem 0 1rem; }\n.book-table caption {\n  text-align:left; font-weight:800; letter-spacing:.06em; color:#254a41;\n  padding:.35rem .5rem; text-transform:uppercase;\n}\n.book-table thead th {\n  background:#254a41; color:#fff; font-weight:700; padding:.45rem .6rem;\n  border-top:1px solid #254a41;\n}\n.book-table tbody td, .book-table tbody th {\n  padding:.4rem .6rem; vertical-align:top; border-bottom:1px solid #e6e9e6; background:#fff;\n}\n.book-table tbody tr:nth-child(even) td { background:#f3f7f3; }\n.book-table tbody tr:nth-child(even) th[scope=\"row\"] { background:#f3f7f3; }\n</style>\n",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Advance Infusion",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "fUx8ZjjAzjAueQvU"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "c7ZmwhmWOhe7bfVS",
+      "_stats": {
+        "compendiumSource": "Item.5v2MXO8qLQ26MCyk",
+        "coreVersion": "12.343",
+        "createdTime": 1756856667906,
+        "duplicateSource": "Item.fUx8ZjjAzjAueQvU",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Gatherer-Crafter/02_BSM/manipulation_ii.png",
+      "name": "Superior Infusion",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Tinkerer",
+          "cost": "2 IP",
+          "damage_bonus": "0",
+          "description": "<p>When you successfully hit one or more targets with an attack, you may spend 2 Inventory Points to produce a special <strong>infusion</strong> and apply the corresponding effect to that attack <em>(if the attack had the </em><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><em><strong><span style=\"text-decoration: underline;\">Multi</span></strong></em></a></span></span><em> property, apply the effects of the infusion to each target).</em></p>\n<p>You cannot apply more than one infusion to the same attack; producing and using an infusion are both part of the action you used to attack with the weapon.</p>\n\n<details class=\"potion-foldout\">\n  <summary>Superior Infusion Table</summary>\n  <table class=\"book-table\">\n    <caption>SUPERIOR INFUSIONS</caption>\n    <thead>\n      <tr>\n        <th style=\"width:140px;\">INFUSION</th>\n        <th>EFFECT</th>\n      </tr>\n    </thead>\n    <tbody>\n      <tr class=\"section-row\">\n        <th colspan=\"2\">Superior Infusions</th>\n      </tr>\n      <tr>\n        <th scope=\"row\">Vampire</th>\n        <td>\n          <p style=\"margin:0;\">\n            Choose one option: you recover an amount of <strong>HP</strong> equal to half the HP loss suffered by the target of the attack;\n            or you recover an amount of <strong>MP</strong> equal to half the HP loss suffered by the target of the attack.\n          </p>\n          <p style=\"margin:.25rem 0 0;\">\n            This infusion can only be used if the attack targeted a <strong>single</strong> creature.\n          </p>\n        </td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Venom</th>\n        <td>\n          The attack deals 5 extra damage, its damage becomes <em><strong>poison</strong></em>,\n          and each creature hit by the attack suffers <strong>poisoned</strong>.\n        </td>\n      </tr>\n    </tbody>\n  </table>\n</details>\n",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Superior Infusion",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "5v2MXO8qLQ26MCyk"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "duvYk9yWI9mni9Ef",
+      "_stats": {
+        "compendiumSource": "Item.5h2gvjbvw26dQSU4",
+        "coreVersion": "12.343",
+        "createdTime": 1756857330305,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lithia/FortuneFinderPassive1.png",
+      "name": "Deep Pockets",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Tinkerer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you spend Inventory Points, you spend 1 less Inventory Point <em>(to a minimum of 1).</em></p>",
+          "duration": "",
+          "heroic_requirement": "You must have mastered the Tinkerer Class.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Deep Pockets",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "5h2gvjbvw26dQSU4"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "iMIP8m2xMHYr00OU",
+      "_stats": {
+        "compendiumSource": "Item.sfBakCzBiMuJCi03",
+        "coreVersion": "12.343",
+        "createdTime": 1756856648027,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Gatherer-Crafter/02_BSM/master%27s_mend.png",
+      "name": "Basic Infusion",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Tinkerer",
+          "cost": "2 IP",
+          "damage_bonus": "0",
+          "description": "<p>When you successfully hit one or more targets with an attack, you may spend 2 Inventory Points to produce a special <strong>infusion</strong> and apply the corresponding effect to that attack <em>(if the attack had the </em><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><em><strong><span style=\"text-decoration: underline;\">Multi</span></strong></em></a></span></span><em> property, apply the effects of the infusion to each target).</em></p>\n<p>You cannot apply more than one infusion to the same attack; producing and using an infusion are both part of the action you used to attack with the weapon.</p>\n\n<details class=\"potion-foldout\">\n  <summary>Infusion Table</summary>\n  <table class=\"book-table\">\n    <caption>INFUSIONS</caption>\n    <thead>\n      <tr>\n        <th style=\"width:140px;\">INFUSION</th>\n        <th>EFFECT</th>\n      </tr>\n    </thead>\n    <tbody>\n      <tr class=\"section-row\">\n        <th colspan=\"2\">Basic Infusions</th>\n      </tr>\n      <tr>\n        <th scope=\"row\">Cryo</th>\n        <td>The attack deals 5 extra damage, and its damage becomes <strong><em>ice</em></strong>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Pyro</th>\n        <td>The attack deals 5 extra damage, and its damage becomes <strong><em>fire</em></strong>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Volt</th>\n        <td>The attack deals 5 extra damage, and its damage becomes <strong><em>bolt</em></strong>.</td>\n      </tr>\n    </tbody>\n  </table>\n</details>\n\n<style>\n/* Reuse these if you don’t already have them */\n.potion-foldout { border: 1px solid #d3d7cf; border-radius: 8px; background: #f9faf9; }\n.potion-foldout > summary {\n  cursor: pointer; padding:.6rem .8rem; font-weight:700; letter-spacing:.02em;\n  background:#254a41; color:#fff; border-radius:7px 7px 0 0; user-select:none;\n}\n.book-table { width:100%; border-collapse:collapse; margin:.6rem 0 1rem; }\n.book-table caption {\n  text-align:left; font-weight:800; letter-spacing:.06em; color:#254a41;\n  padding:.35rem .5rem; text-transform:uppercase;\n}\n.book-table thead th {\n  background:#254a41; color:#fff; font-weight:700; padding:.45rem .6rem;\n  border-top:1px solid #254a41;\n}\n.book-table tbody td, .book-table tbody th {\n  padding:.4rem .6rem; vertical-align:top; border-bottom:1px solid #e6e9e6; background:#fff;\n}\n.book-table tbody tr:nth-child(even) td { background:#f3f7f3; }\n.book-table tbody tr:nth-child(even) th[scope=\"row\"] { background:#f3f7f3; }\n.book-table .section-row th {\n  text-align:left; background:#f8faf8; font-weight:800; border-bottom:1px solid #e6e9e6; padding:.45rem .6rem;\n}\n</style>\n",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Basic Infusion",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "sfBakCzBiMuJCi03"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "JE4lKc7P7VwOiVPf",
+      "_stats": {
+        "compendiumSource": "Item.vHU5RXkhcOoFrXtm",
+        "coreVersion": "12.343",
+        "createdTime": 1756856547330,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Gatherer-Crafter/04_ALC/careful_synthesis_iii.png",
+      "name": "Secret Formula",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Tinkerer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you create a <strong>potion</strong> or <strong>magisphere</strong> whose effects restore HP and/or MP, each restored amount is increased by <strong>【SL × 5】.</strong></p><p> When you create an <strong>elemental shard, potion</strong> or <strong>magisphere</strong> that deals damage, that item deals <strong>【SL】</strong> extra damage.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "5",
+          "name": "Secret Formula",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "vHU5RXkhcOoFrXtm"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "kpcgahs8a4rbFJTh",
+      "_stats": {
+        "compendiumSource": "Item.Tb67CmUhDOHxqYua",
+        "coreVersion": "12.343",
+        "createdTime": 1756856695353,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/12_MCH/automaton_queen.png",
+      "name": "Magitech Override",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Tinkerer",
+          "cost": "10 MP",
+          "damage_bonus": "0",
+          "description": "<p>You may use an action and spend 10 Mind Points to perform an Opposed <strong>【INS + INS】</strong> Check against a nearby <strong>soldier</strong>-rank <strong>construct</strong> you can see (the Game Master must tell you who is a valid target). If you succeed, you gain control of the creature until the end of the scene (the Game Master gives you its profile). You may only control one construct at any given time, but may set it free whenever you want; the <strong>construct</strong> is also set free as soon as it is harmed by you or by one of your allies. Once free, the <strong>construct</strong> is again in control of its actions and might turn against you.</p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Magitech Override",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p><strong>Level</strong></p></td><td data-colwidth=\"148\"><p><strong>Invention Get</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>Basic</p></td><td data-colwidth=\"148\"><p>Magictech Override</p></td></tr><tr><td data-colwidth=\"79\"><p>Advance</p></td><td data-colwidth=\"148\"><p>Magicannon</p></td></tr><tr><td data-colwidth=\"79\"><p>Superior</p></td><td data-colwidth=\"148\"><p>Magispheres</p></td></tr></tbody></table>",
+          "skill_range": "Any",
+          "skill_target": "One construct",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "Tb67CmUhDOHxqYua"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "nF28ix0bFIba8o3G",
+      "_stats": {
+        "compendiumSource": "Item.BRvcE5bjsMDqFo5d",
+        "coreVersion": "12.343",
+        "createdTime": 1756856544149,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/12_MCH/hypercharge.png",
+      "name": "Gadgets",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Tinkerer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you first acquire this Skill, choose a gadget type: <strong>alchemy, infusions </strong>or <strong>magitech</strong> (see Facet). You gain its <strong>basic benefits</strong>.</p><p>Whenever you take this Skill again, <strong>choose one option:</strong></p><ul><li><p>You gain the <strong>basic benefits</strong> of a new gadget type</p></li><li><p>You gain the <strong>advanced benefits</strong> of a gadget type whose basic benefits you already obtained</p></li><li><p>You gain the <strong>superior benefits</strong> of a gadget type whose advanced benefits you already obtained.</p></li></ul>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "5",
+          "name": "Gadgets",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Other",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "BRvcE5bjsMDqFo5d"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "P78MPRrhoE1OyHNP",
+      "_stats": {
+        "compendiumSource": "Item.1eylaLou51rfXGCy",
+        "coreVersion": "12.343",
+        "createdTime": 1756856701599,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Gatherer-Crafter/02_BSM/great_strides.png",
+      "name": "Magicsphere",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Tinkerer",
+          "cost": "2 IP",
+          "damage_bonus": "0",
+          "description": "<p>You develop three magisphere prototypes; each of them can replicate a spell chosen from the following lists: <strong>Elementalist, Entropist</strong> and <strong>Spiritist</strong>. The spells you choose may come from the same list or different lists.</p><p>You may perform the<strong>【⚗️Inventory】</strong> action and spend 2 Inventory Points to create a <strong>magisphere</strong> and immediately perform the <strong>Spell</strong> action for free, casting one of the spells you have developed a prototype for. The spell follows the normal rules (including MP costs and Magic Checks) and the magisphere is destroyed upon use.</p><hr contenteditable=\"false\"><p><strong>Skill Enhancement Lv. 20 ― </strong>You develop two more prototype</p><p><strong>Skill Enhancement Lv. 40 ― </strong>You develop two more prototype</p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Magicsphere",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p><strong>Level</strong></p></td><td data-colwidth=\"148\"><p><strong>Invention Get</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>Basic</p></td><td data-colwidth=\"148\"><p>Magictech Override</p></td></tr><tr><td data-colwidth=\"79\"><p>Advance</p></td><td data-colwidth=\"148\"><p>Magicannon</p></td></tr><tr><td data-colwidth=\"79\"><p>Superior</p></td><td data-colwidth=\"148\"><p>Magispheres</p></td></tr></tbody></table>",
+          "skill_range": "Range",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "1eylaLou51rfXGCy"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "qxQLcOyDtqH2YXXo",
+      "_stats": {
+        "compendiumSource": "Item.ofCKWctVhPv8vC9H",
+        "coreVersion": "12.343",
+        "createdTime": 1756856526836,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Gatherer-Crafter/04_ALC/basic_touch.png",
+      "name": "Basic Alchemy",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Tinkerer",
+          "cost": "3 IP",
+          "damage_bonus": "0",
+          "description": "<div class=\"potion-skill\">\n    <p>You may perform the <strong>【⚗️Inventory】</strong> action to rapidly craft a <strong>potion</strong> with powerful but somewhat unpredictable effects. Roll two <strong>d20s</strong> and assign one to <strong>target</strong> and one to <strong>effect</strong>.</p>\n    <details class=\"potion-foldout\">\n        <summary>Potion Tables (Target &amp; Effect)</summary>\n        <table class=\"book-table\">\n            <caption>TARGET</caption>\n            <thead>\n                <tr>\n                    <th class=\"die\">Die</th>\n                    <th>The potion affects…</th>\n                </tr>\n            </thead>\n            <tbody>\n                <tr>\n                    <td class=\"die\">1–6</td>\n                    <td>… you or one ally you can see that is present on the scene.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">7–11</td>\n                    <td>… one enemy you can see that is present on the scene.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">12–16</td>\n                    <td>… you and every ally present on the scene.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">17–20</td>\n                    <td>… every enemy present on the scene.</td>\n                </tr>\n            </tbody>\n        </table>\n        <table class=\"book-table\">\n            <caption>EFFECT</caption>\n            <thead>\n                <tr>\n                    <th class=\"die\">Die</th>\n                    <th>Each creature affected by the potion…</th>\n                </tr>\n            </thead>\n            <tbody>\n                <tr>\n                    <td class=\"die\">Any</td>\n                    <td>… suffers 20 <strong>poison</strong> damage.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">Any</td>\n                    <td>… recovers 30 Hit Points.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">1</td>\n                    <td>… treats their <strong>Dexterity</strong> and <strong>Might</strong> dice as if they were one size higher (up to a maximum of d12) until the end of your next turn.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">2</td>\n                    <td>As effect 1, but with <strong>Insight</strong> and <strong>Willpower</strong>.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">3</td>\n                    <td>… suffers 20 <strong>air</strong> damage. This amount increases to 30 damage if you are level 20 or higher, or to 40 damage if you are level 40 or higher.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">4</td>\n                    <td>As effect 3, but with <strong>bolt</strong> damage.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">5</td>\n                    <td>As effect 3, but with <strong>dark</strong> damage.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">6</td>\n                    <td>As effect 3, but with <strong>earth</strong> damage.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">7</td>\n                    <td>As effect 3, but with <strong>fire</strong> damage.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">8</td>\n                    <td>As effect 3, but with <strong>ice</strong> damage.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">9</td>\n                    <td>… gains <strong>Resistance</strong> to <strong>air</strong> and <strong>fire</strong> damage until the end of the scene.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">10</td>\n                    <td>As effect 9, but with <strong>bolt</strong> and <strong>ice</strong> damage.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">11</td>\n                    <td>As effect 9, but with <strong>dark</strong> and <strong>earth</strong> damage.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">12</td>\n                    <td>… suffers <strong>enraged</strong>.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">13</td>\n                    <td>… suffers <strong>poisoned</strong>.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">14</td>\n                    <td>… suffers <strong>dazed</strong>, <strong>shaken</strong>, <strong>slow</strong> and <strong>weak</strong>.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">15</td>\n                    <td>… recovers from all status effects.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">16–17</td>\n                    <td>… recovers 50 Hit Points and 50 Mind Points.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">18</td>\n                    <td>… recovers 100 Hit Points.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">19</td>\n                    <td>… recovers 100 Mind Points.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">20</td>\n                    <td>… recovers 100 Hit Points and 100 Mind Points.</td>\n                </tr>\n            </tbody>\n        </table>\n    </details>\n</div>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Basic Alchemy",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p><strong>Level</strong></p></td><td data-colwidth=\"148\"><p><strong>D20 roll</strong></p></td><td><p><strong>IP Cost</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>Basic</p></td><td data-colwidth=\"148\"><p>2</p></td><td><p>3</p></td></tr><tr><td data-colwidth=\"79\"><p>Advance</p></td><td data-colwidth=\"148\"><p>3</p></td><td><p>4</p></td></tr><tr><td data-colwidth=\"79\"><p>Superior</p></td><td data-colwidth=\"148\"><p>4</p></td><td><p>5</p></td></tr></tbody></table>",
+          "skill_range": "Range",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "ofCKWctVhPv8vC9H"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "rS0P4rGFLzpxf65c",
+      "_stats": {
+        "compendiumSource": "Item.i44MlAWhL5HQNu7m",
+        "coreVersion": "12.343",
+        "createdTime": 1756856697438,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/12_MCH/gauss_round.png",
+      "name": "Magicannon",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Tinkerer",
+          "cost": "3 IP",
+          "damage_bonus": "0",
+          "description": "<p>You may perform the<strong>【⚗️Item】</strong> action and spend <strong>3 Inventory Points</strong> to create a firearm weapon known as a <strong>@UUID[Item.3nrod81ulEj4BbOB]{Magicannon}</strong> (see below). The magicannon will crumble to pieces as soon as you use create a new magicannon. When you create a magicannon, choose the type of damage it deals (<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"background-color:#666;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"background-color:#666;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"background-color:#666;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"background-color:#666;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"background-color:#666;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span></span>, or <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"background-color:#666;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a></span></span>).</p>\n<!-- MAGICANNON ITEM CARD -->\n<table class=\"item-table\">\n  <thead>\n    <tr>\n      <th>WEAPON</th>\n      <th>ACCURACY</th>\n      <th>DAMAGE</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr class=\"item-main\">\n      <td class=\"weapon-cell\">\n        <div class=\"weapon-head\">\n          <img class=\"weapon-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/13160.gif\" alt=\"Magicannon\">\n          <strong>Magicannon</strong>\n        </div>\n      </td>\n      <td class=\"centercell\"><strong>[DEX + INS] +1</strong></td>\n      <td class=\"centercell\"><strong>[HR + 10]</strong></td>\n    </tr>\n    <tr class=\"item-sub\">\n      <td colspan=\"3\">Two-handed ◆ Ranged ◆ No Quality.</td>\n    </tr>\n  </tbody>\n</table>\n\n<style>\n/* --- Magicannon book-style item card --- */\n.item-table{ width:100%; border-collapse:collapse; margin:.6rem 0 .2rem; font-family:var(--chat-font,\"Signika\",system-ui,sans-serif); }\n.item-table thead th{ background:#254a41; color:#fff; font-weight:800; text-transform:uppercase; letter-spacing:.04em; padding:.45rem .6rem; border-top:1px solid #254a41; }\n.item-table td{ border-bottom:1px solid #e1e6e2; padding:.45rem .6rem; background:#fff; }\n.item-table .item-main td{ border-bottom:1px solid #cfd6d1; }\n.item-table .item-sub td{ background:#f8faf8; padding:.5rem .8rem; }\n.weapon-head{ display:flex; align-items:center; gap:.5rem; }\n.weapon-icon{ width:28px; height:28px; object-fit:contain; border-radius:4px; box-shadow:0 0 0 1px rgba(0,0,0,.08) inset; image-rendering: pixelated; }\n.weapon-cell{ width:60%; }\n.centercell{ text-align:center; white-space:nowrap; }\n</style>\n",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Magicannon",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p><strong>Level</strong></p></td><td data-colwidth=\"148\"><p><strong>Invention Get</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>Basic</p></td><td data-colwidth=\"148\"><p>Magictech Override</p></td></tr><tr><td data-colwidth=\"79\"><p>Advance</p></td><td data-colwidth=\"148\"><p>Magicannon</p></td></tr><tr><td data-colwidth=\"79\"><p>Superior</p></td><td data-colwidth=\"148\"><p>Magispheres</p></td></tr></tbody></table>",
+          "skill_range": "Any",
+          "skill_target": "Self",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "i44MlAWhL5HQNu7m"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "sKHATH7mdk6oPPif",
+      "_stats": {
+        "compendiumSource": "Item.psUl41nZsOWgzA0R",
+        "coreVersion": "12.343",
+        "createdTime": 1756856541894,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/12_MCH/heat_blast.png",
+      "name": "Emergency Item",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Tinkerer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>Once per conflict scene, if you are in <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span>, you may perform an additional action on your turn. This action <strong>must</strong> be the <strong>Inventory</strong> action.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Emergency Item",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "psUl41nZsOWgzA0R"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "snuG4D47MnMvAW7o",
+      "_stats": {
+        "compendiumSource": "Item.Z5KhUS5bHoRGHsAU",
+        "coreVersion": "12.343",
+        "createdTime": 1756856640539,
+        "duplicateSource": "Item.q8RNWJEZNKsGrBgk",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Gatherer-Crafter/04_ALC/advanced_touch.png",
+      "name": "Superior Alchemy",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Tinkerer",
+          "cost": "5 IP",
+          "damage_bonus": "0",
+          "description": "<div class=\"potion-skill\"><p>You may perform the <strong>【⚗️Inventory】</strong> action to rapidly craft a <strong>potion</strong> with powerful but somewhat unpredictable effects. Roll four <strong>d20s</strong> and assign one to <strong>target</strong> and one to <strong>effect</strong>.</p><details class=\"potion-foldout\"><summary>Potion Tables (Target &amp; Effect)</summary><table class=\"book-table\"><caption>TARGET</caption><thead><tr><th class=\"die\">Die</th><th>The potion affects…</th></tr></thead><tbody><tr><td class=\"die\">1–6</td><td>… you or one ally you can see that is present on the scene.</td></tr><tr><td class=\"die\">7–11</td><td>… one enemy you can see that is present on the scene.</td></tr><tr><td class=\"die\">12–16</td><td>… you and every ally present on the scene.</td></tr><tr><td class=\"die\">17–20</td><td>… every enemy present on the scene.</td></tr></tbody></table><table class=\"book-table\"><caption>EFFECT</caption><thead><tr><th class=\"die\">Die</th><th>Each creature affected by the potion…</th></tr></thead><tbody><tr><td class=\"die\">Any</td><td>… suffers 20 <strong>poison</strong> damage.</td></tr><tr><td class=\"die\">Any</td><td>… recovers 30 Hit Points.</td></tr><tr><td class=\"die\">1</td><td>… treats their <strong>Dexterity</strong> and <strong>Might</strong> dice as if they were one size higher (up to a maximum of d12) until the end of your next turn.</td></tr><tr><td class=\"die\">2</td><td>As effect 1, but with <strong>Insight</strong> and <strong>Willpower</strong>.</td></tr><tr><td class=\"die\">3</td><td>… suffers 20 <strong>air</strong> damage. This amount increases to 30 damage if you are level 20 or higher, or to 40 damage if you are level 40 or higher.</td></tr><tr><td class=\"die\">4</td><td>As effect 3, but with <strong>bolt</strong> damage.</td></tr><tr><td class=\"die\">5</td><td>As effect 3, but with <strong>dark</strong> damage.</td></tr><tr><td class=\"die\">6</td><td>As effect 3, but with <strong>earth</strong> damage.</td></tr><tr><td class=\"die\">7</td><td>As effect 3, but with <strong>fire</strong> damage.</td></tr><tr><td class=\"die\">8</td><td>As effect 3, but with <strong>ice</strong> damage.</td></tr><tr><td class=\"die\">9</td><td>… gains <strong>Resistance</strong> to <strong>air</strong> and <strong>fire</strong> damage until the end of the scene.</td></tr><tr><td class=\"die\">10</td><td>As effect 9, but with <strong>bolt</strong> and <strong>ice</strong> damage.</td></tr><tr><td class=\"die\">11</td><td>As effect 9, but with <strong>dark</strong> and <strong>earth</strong> damage.</td></tr><tr><td class=\"die\">12</td><td>… suffers <strong>enraged</strong>.</td></tr><tr><td class=\"die\">13</td><td>… suffers <strong>poisoned</strong>.</td></tr><tr><td class=\"die\">14</td><td>… suffers <strong>dazed</strong>, <strong>shaken</strong>, <strong>slow</strong> and <strong>weak</strong>.</td></tr><tr><td class=\"die\">15</td><td>… recovers from all status effects.</td></tr><tr><td class=\"die\">16–17</td><td>… recovers 50 Hit Points and 50 Mind Points.</td></tr><tr><td class=\"die\">18</td><td>… recovers 100 Hit Points.</td></tr><tr><td class=\"die\">19</td><td>… recovers 100 Mind Points.</td></tr><tr><td class=\"die\">20</td><td>… recovers 100 Hit Points and 100 Mind Points.</td></tr></tbody></table></details></div>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Superior Alchemy",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p><strong>Level</strong></p></td><td data-colwidth=\"148\"><p><strong>D20 roll</strong></p></td><td><p><strong>IP Cost</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>Basic</p></td><td data-colwidth=\"148\"><p>2</p></td><td><p>3</p></td></tr><tr><td data-colwidth=\"79\"><p>Advance</p></td><td data-colwidth=\"148\"><p>3</p></td><td><p>4</p></td></tr><tr><td data-colwidth=\"79\"><p>Superior</p></td><td data-colwidth=\"148\"><p>4</p></td><td><p>5</p></td></tr></tbody></table>",
+          "skill_range": "Range",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "Z5KhUS5bHoRGHsAU"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "TsYf1np2OrFZ0yLJ",
+      "_stats": {
+        "compendiumSource": "Item.UhJH8T9TEmsJnQVc",
+        "coreVersion": "12.343",
+        "createdTime": 1769883496088,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/SGE/prognosis.png",
+      "name": "Potion Rain",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3,
+        "iLeUVmwqnze8ulOI": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "check_bonus": "0",
+          "class": "Tinkerer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you create a <strong>potion</strong> that restores a <strong>single</strong> creature's HP and/or MP, you may have it affect up to <strong>【SL】</strong> additional creatures. If you do, the potion only restores half the normal amount of HP and MP to each creature.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "2",
+          "name": "Potion Rain",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p><strong>Level</strong></p></td><td data-colwidth=\"148\"><p><strong>Bonus Target</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p>+1</p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p>+2</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "UhJH8T9TEmsJnQVc"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "veOR5qFmqdJUUDFe",
+      "_stats": {
+        "compendiumSource": "Item.7nnfGXhexQFubQnZ",
+        "coreVersion": "12.343",
+        "createdTime": 1756856548682,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Gatherer-Crafter/04_ALC/traits/stroke_of_genius.png",
+      "name": "Visionary",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Tinkerer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you work on a Project, up to <strong>【SL × 100】</strong> zenit of material costs are automatically paid; additionally, you generate an additional <strong>【SL】progress</strong> every day. If multiple characters with this Skill work on the same Project, the effects will be cumulative.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "5",
+          "name": "Visionary",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "7nnfGXhexQFubQnZ"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "x8QMxTtjTkeEAWnc",
+      "_stats": {
+        "compendiumSource": "Item.UhJH8T9TEmsJnQVc",
+        "coreVersion": "12.343",
+        "createdTime": 1756856545658,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/SGE/prognosis.png",
+      "name": "Potion Rain",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Tinkerer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you create a <strong>potion</strong> that restores a <strong>single</strong> creature's HP and/or MP, you may have it affect up to <strong>【SL】</strong> additional creatures. If you do, the potion only restores half the normal amount of HP and MP to each creature.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "2",
+          "name": "Potion Rain",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p><strong>Level</strong></p></td><td data-colwidth=\"148\"><p><strong>Bonus Target</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p>+1</p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p>+2</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "UhJH8T9TEmsJnQVc"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Tinkerer",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar4": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "DEF",
+            "max": 13,
+            "maxcolor": "#f26d40",
+            "mincolor": "#f26d40",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 13
+          },
+          "bar5": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar5",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MDEF",
+            "max": 10,
+            "maxcolor": "#26d6ed",
+            "mincolor": "#26d6ed",
+            "opacity": null,
+            "order": 4,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 10
+          }
+        }
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Tinkerer",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://tiermaker.com/images/media/template_images/2024/16720717/fabula-ultima-classes-16720717/tinkerer.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 0,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {
+      "also_text": "Alchemist, Magitech Engineer, Mechanic",
+      "benefit_dropdown": "ip_benefit",
+      "classMechanic_text": "",
+      "class_facet": {
+        "2CU1xcyUE7rFlB7r": {
+          "facet_cost": "4 IP",
+          "facet_description": "<div class=\"potion-skill\"><p>You may perform the <strong>【⚗️Inventory】</strong> action to rapidly craft a <strong>potion</strong> with powerful but somewhat unpredictable effects. Roll three <strong>d20s</strong> and assign one to <strong>target</strong> and one to <strong>effect</strong>.</p><details class=\"potion-foldout\"><summary>Potion Tables (Target &amp; Effect)</summary><table class=\"book-table\"><caption>TARGET</caption><thead><tr><th class=\"die\">Die</th><th>The potion affects…</th></tr></thead><tbody><tr><td class=\"die\">1–6</td><td>… you or one ally you can see that is present on the scene.</td></tr><tr><td class=\"die\">7–11</td><td>… one enemy you can see that is present on the scene.</td></tr><tr><td class=\"die\">12–16</td><td>… you and every ally present on the scene.</td></tr><tr><td class=\"die\">17–20</td><td>… every enemy present on the scene.</td></tr></tbody></table><table class=\"book-table\"><caption>EFFECT</caption><thead><tr><th class=\"die\">Die</th><th>Each creature affected by the potion…</th></tr></thead><tbody><tr><td class=\"die\">Any</td><td>… suffers 20 <strong>poison</strong> damage.</td></tr><tr><td class=\"die\">Any</td><td>… recovers 30 Hit Points.</td></tr><tr><td class=\"die\">1</td><td>… treats their <strong>Dexterity</strong> and <strong>Might</strong> dice as if they were one size higher (up to a maximum of d12) until the end of your next turn.</td></tr><tr><td class=\"die\">2</td><td>As effect 1, but with <strong>Insight</strong> and <strong>Willpower</strong>.</td></tr><tr><td class=\"die\">3</td><td>… suffers 20 <strong>air</strong> damage. This amount increases to 30 damage if you are level 20 or higher, or to 40 damage if you are level 40 or higher.</td></tr><tr><td class=\"die\">4</td><td>As effect 3, but with <strong>bolt</strong> damage.</td></tr><tr><td class=\"die\">5</td><td>As effect 3, but with <strong>dark</strong> damage.</td></tr><tr><td class=\"die\">6</td><td>As effect 3, but with <strong>earth</strong> damage.</td></tr><tr><td class=\"die\">7</td><td>As effect 3, but with <strong>fire</strong> damage.</td></tr><tr><td class=\"die\">8</td><td>As effect 3, but with <strong>ice</strong> damage.</td></tr><tr><td class=\"die\">9</td><td>… gains <strong>Resistance</strong> to <strong>air</strong> and <strong>fire</strong> damage until the end of the scene.</td></tr><tr><td class=\"die\">10</td><td>As effect 9, but with <strong>bolt</strong> and <strong>ice</strong> damage.</td></tr><tr><td class=\"die\">11</td><td>As effect 9, but with <strong>dark</strong> and <strong>earth</strong> damage.</td></tr><tr><td class=\"die\">12</td><td>… suffers <strong>enraged</strong>.</td></tr><tr><td class=\"die\">13</td><td>… suffers <strong>poisoned</strong>.</td></tr><tr><td class=\"die\">14</td><td>… suffers <strong>dazed</strong>, <strong>shaken</strong>, <strong>slow</strong> and <strong>weak</strong>.</td></tr><tr><td class=\"die\">15</td><td>… recovers from all status effects.</td></tr><tr><td class=\"die\">16–17</td><td>… recovers 50 Hit Points and 50 Mind Points.</td></tr><tr><td class=\"die\">18</td><td>… recovers 100 Hit Points.</td></tr><tr><td class=\"die\">19</td><td>… recovers 100 Mind Points.</td></tr><tr><td class=\"die\">20</td><td>… recovers 100 Hit Points and 100 Mind Points.</td></tr></tbody></table></details></div>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Advance Alchemy",
+          "uuid": "Actor.b3jiIxFXDiwQGg7Z.Item.2CU1xcyUE7rFlB7r"
+        },
+        "5Hv6mtYdhIdePwzg": {
+          "facet_cost": "",
+          "facet_description": "<p>Once per <strong>rest</strong>, you may choose one option: add a <strong>Quality</strong> to a single weapon, armor, or shield that doesn't have one; <strong>or</strong> replace the current <strong>Quality</strong> of a single weapon, armor, or shield with a different <strong>Quality</strong>.</p>\n<p>When you use this Skill, you must select a Quality from the default list for that item type as long as the cost modifier associated with that ability is <strong>+1000 zenit or lower.</strong> Then, you must spend an amount of zenit equal to twice the cost modifier of the chosen ability. The modified item will be ready at the end of the rest; you may only modify <strong>one item per rest.</strong></p>\n<details class=\"potion-foldout\">\n  <summary>Quality List (Defensive • Offensive • Enhancement)</summary>\n  <table class=\"book-table\">\n    <caption>QUALITIES</caption>\n    <thead>\n      <tr>\n        <th style=\"width:190px;\">QUALITY</th>\n        <th style=\"width:100px;\">COST</th>\n        <th>EFFECT</th>\n      </tr>\n    </thead>\n    <tbody>\n      <!-- Defensive -->\n      <tr class=\"section-row\"><th colspan=\"3\">Defensive Qualities</th></tr>\n      <tr>\n        <th scope=\"row\">Antistatus</th>\n        <td>+500 z</td>\n        <td>You are immune to a single status effect.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Resistance</th>\n        <td>+700 z</td>\n        <td>You have Resistance to a single damage type (not <strong>physical</strong> damage).</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Amulet</th>\n        <td>+800 z</td>\n        <td>You gain a +1 bonus to Magic Defense.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Bulwark</th>\n        <td>+800 z</td>\n        <td>You gain a +1 bonus to Defense.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Dual Resistance</th>\n        <td>+1000 z</td>\n        <td>You have Resistance to two damage types (not <strong>physical</strong> damage).</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Swordbreaker</th>\n        <td>+1000 z</td>\n        <td>You have Resistance to <strong>physical</strong> damage.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Immunity</th>\n        <td>+1500 z</td>\n        <td>You have Immunity to a single damage type (not <strong>physical</strong> damage).</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Omnishield</th>\n        <td>+2000 z</td>\n        <td>You gain a +1 bonus to Defense and Magic Defense.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Perfect Health</th>\n        <td>+2000 z</td>\n        <td>You are immune to all status effects.</td>\n      </tr>\n\n      <!-- Offensive -->\n      <tr class=\"section-row\"><th colspan=\"3\">Offensive Qualities</th></tr>\n      <tr>\n        <th scope=\"row\">Magical</th>\n        <td>+100 z</td>\n        <td>The weapon targets <strong>Magic Defense</strong> instead of <strong>Defense</strong>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Hunter</th>\n        <td>+300 z</td>\n        <td>The weapon deals 5 extra damage to creatures of a particular <strong>Species</strong>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Piercing</th>\n        <td>+400 z</td>\n        <td>Damage dealt by the weapon ignores <strong>Resistances</strong>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Dual Hunter</th>\n        <td>+500 z</td>\n        <td>The weapon deals 5 extra damage to creatures belonging to one of two particular <strong>Species</strong>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Multi</th>\n        <td>+1000 z</td>\n        <td>Attacks with the weapon have <strong>multi (2)</strong>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Status</th>\n        <td>+1500 z</td>\n        <td>Each target hit by the weapon suffers (choose one): <strong>dazed, shaken, slow, weak</strong>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Status Plus</th>\n        <td>+2000 z</td>\n        <td>Each target hit by the weapon suffers (choose one): <strong>enraged, poisoned</strong>.</td>\n      </tr>\n\n      <!-- Enhancement -->\n      <tr class=\"section-row\"><th colspan=\"3\">Enhancement Qualities</th></tr>\n      <tr>\n        <th scope=\"row\">Initiative Up</th>\n        <td>+500 z</td>\n        <td>You gain a +4 bonus to your Initiative modifier.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Accuracy Up</th>\n        <td>+1000 z</td>\n        <td>You gain a +1 bonus to your Accuracy Checks.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Magic Up</th>\n        <td>+1000 z</td>\n        <td>You gain a +1 bonus to your Magic Checks.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Vitality Up</th>\n        <td>+1000 z</td>\n        <td>When you recover HP, you recover 5 extra HP.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Healing Up</th>\n        <td>+1500 z</td>\n        <td>Spells you cast whose effects restore Hit Points restore 5 extra Hit Points.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Spell Up</th>\n        <td>+2000 z</td>\n        <td>Spells you cast deal 5 extra damage.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Weapon Up</th>\n        <td>+2000 z</td>\n        <td>Your attacks with (choose one: <strong>melee</strong>, <strong>ranged</strong>) weapons deal 5 extra damage.</td>\n      </tr>\n    </tbody>\n  </table>\n</details>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Upgrade",
+          "uuid": "Actor.b3jiIxFXDiwQGg7Z.Item.5Hv6mtYdhIdePwzg"
+        },
+        "BFhYkwUbHR4HyBHv": {
+          "facet_cost": "2 IP",
+          "facet_description": "<p>When you successfully hit one or more targets with an attack, you may spend 2 Inventory Points to produce a special <strong>infusion</strong> and apply the corresponding effect to that attack <em>(if the attack had the </em><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-size: 14px;\"><em><strong><span style=\"text-decoration: underline;\">Multi</span></strong></em></a></span></span><em> property, apply the effects of the infusion to each target).</em></p>\n\n<p>You cannot apply more than one infusion to the same attack; producing and using an infusion are both part of the action you used to attack with the weapon.</p>\n\n<details class=\"potion-foldout\">\n  <summary>Advanced Infusion Table</summary>\n  <table class=\"book-table\">\n    <caption>ADVANCED INFUSIONS</caption>\n    <thead>\n      <tr>\n        <th style=\"width:140px;\">INFUSION</th>\n        <th>EFFECT</th>\n      </tr>\n    </thead>\n    <tbody>\n      <tr>\n        <th scope=\"row\">Cyclone</th>\n        <td>The attack deals 5 extra damage, and its damage becomes <em><strong>air</strong></em>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Exorcism</th>\n        <td>The attack deals 5 extra damage, and its damage becomes <em><strong>light</strong></em>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Seismic</th>\n        <td>The attack deals 5 extra damage, and its damage becomes <em><strong>earth</strong></em>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Shadow</th>\n        <td>The attack deals 5 extra damage, and its damage becomes <em><strong>dark</strong></em>.</td>\n      </tr>\n    </tbody>\n  </table>\n</details>\n\n<style>\n/* Infusion Table Styles */\n.potion-foldout { border: 1px solid #d3d7cf; border-radius: 8px; background: #f9faf9; }\n.potion-foldout > summary {\n  cursor: pointer; padding:.6rem .8rem; font-weight:700; letter-spacing:.02em;\n  background:#254a41; color:#fff; border-radius:7px 7px 0 0; user-select:none;\n}\n.book-table { width:100%; border-collapse:collapse; margin:.6rem 0 1rem; }\n.book-table caption {\n  text-align:left; font-weight:800; letter-spacing:.06em; color:#254a41;\n  padding:.35rem .5rem; text-transform:uppercase;\n}\n.book-table thead th {\n  background:#254a41; color:#fff; font-weight:700; padding:.45rem .6rem;\n  border-top:1px solid #254a41;\n}\n.book-table tbody td, .book-table tbody th {\n  padding:.4rem .6rem; vertical-align:top; border-bottom:1px solid #e6e9e6; background:#fff;\n}\n.book-table tbody tr:nth-child(even) td { background:#f3f7f3; }\n.book-table tbody tr:nth-child(even) th[scope=\"row\"] { background:#f3f7f3; }\n</style>\n",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Advance Infusion",
+          "uuid": "Actor.b3jiIxFXDiwQGg7Z.Item.BFhYkwUbHR4HyBHv"
+        },
+        "JE4lKc7P7VwOiVPf": {
+          "facet_cost": "",
+          "facet_description": "<p>When you create a <strong>potion</strong> or <strong>magisphere</strong> whose effects restore HP and/or MP, each restored amount is increased by <strong>【SL × 5】.</strong></p><p> When you create an <strong>elemental shard, potion</strong> or <strong>magisphere</strong> that deals damage, that item deals <strong>【SL】</strong> extra damage.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Secret Formula",
+          "uuid": "Actor.b3jiIxFXDiwQGg7Z.Item.JE4lKc7P7VwOiVPf"
+        },
+        "P78MPRrhoE1OyHNP": {
+          "facet_cost": "2 IP",
+          "facet_description": "<p>You develop three magisphere prototypes; each of them can replicate a spell chosen from the following lists: <strong>Elementalist, Entropist</strong> and <strong>Spiritist</strong>. The spells you choose may come from the same list or different lists.</p><p>You may perform the<strong>【⚗️Inventory】</strong> action and spend 2 Inventory Points to create a <strong>magisphere</strong> and immediately perform the <strong>Spell</strong> action for free, casting one of the spells you have developed a prototype for. The spell follows the normal rules (including MP costs and Magic Checks) and the magisphere is destroyed upon use.</p><hr contenteditable=\"false\"><p><strong>Skill Enhancement Lv. 20 ― </strong>You develop two more prototype</p><p><strong>Skill Enhancement Lv. 40 ― </strong>You develop two more prototype</p>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Magicsphere",
+          "uuid": "Actor.b3jiIxFXDiwQGg7Z.Item.P78MPRrhoE1OyHNP"
+        },
+        "c7ZmwhmWOhe7bfVS": {
+          "facet_cost": "2 IP",
+          "facet_description": "<p>When you successfully hit one or more targets with an attack, you may spend 2 Inventory Points to produce a special <strong>infusion</strong> and apply the corresponding effect to that attack <em>(if the attack had the </em><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><em><strong><span style=\"text-decoration: underline;\">Multi</span></strong></em></a></span></span><em> property, apply the effects of the infusion to each target).</em></p>\n<p>You cannot apply more than one infusion to the same attack; producing and using an infusion are both part of the action you used to attack with the weapon.</p>\n\n<details class=\"potion-foldout\">\n  <summary>Superior Infusion Table</summary>\n  <table class=\"book-table\">\n    <caption>SUPERIOR INFUSIONS</caption>\n    <thead>\n      <tr>\n        <th style=\"width:140px;\">INFUSION</th>\n        <th>EFFECT</th>\n      </tr>\n    </thead>\n    <tbody>\n      <tr class=\"section-row\">\n        <th colspan=\"2\">Superior Infusions</th>\n      </tr>\n      <tr>\n        <th scope=\"row\">Vampire</th>\n        <td>\n          <p style=\"margin:0;\">\n            Choose one option: you recover an amount of <strong>HP</strong> equal to half the HP loss suffered by the target of the attack;\n            or you recover an amount of <strong>MP</strong> equal to half the HP loss suffered by the target of the attack.\n          </p>\n          <p style=\"margin:.25rem 0 0;\">\n            This infusion can only be used if the attack targeted a <strong>single</strong> creature.\n          </p>\n        </td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Venom</th>\n        <td>\n          The attack deals 5 extra damage, its damage becomes <em><strong>poison</strong></em>,\n          and each creature hit by the attack suffers <strong>poisoned</strong>.\n        </td>\n      </tr>\n    </tbody>\n  </table>\n</details>\n",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Superior Infusion",
+          "uuid": "Actor.b3jiIxFXDiwQGg7Z.Item.c7ZmwhmWOhe7bfVS"
+        },
+        "duvYk9yWI9mni9Ef": {
+          "facet_cost": "",
+          "facet_description": "<p>When you spend Inventory Points, you spend 1 less Inventory Point <em>(to a minimum of 1).</em></p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Deep Pockets",
+          "uuid": "Actor.b3jiIxFXDiwQGg7Z.Item.duvYk9yWI9mni9Ef"
+        },
+        "iMIP8m2xMHYr00OU": {
+          "facet_cost": "2 IP",
+          "facet_description": "<p>When you successfully hit one or more targets with an attack, you may spend 2 Inventory Points to produce a special <strong>infusion</strong> and apply the corresponding effect to that attack <em>(if the attack had the </em><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><em><strong><span style=\"text-decoration: underline;\">Multi</span></strong></em></a></span></span><em> property, apply the effects of the infusion to each target).</em></p>\n<p>You cannot apply more than one infusion to the same attack; producing and using an infusion are both part of the action you used to attack with the weapon.</p>\n\n<details class=\"potion-foldout\">\n  <summary>Infusion Table</summary>\n  <table class=\"book-table\">\n    <caption>INFUSIONS</caption>\n    <thead>\n      <tr>\n        <th style=\"width:140px;\">INFUSION</th>\n        <th>EFFECT</th>\n      </tr>\n    </thead>\n    <tbody>\n      <tr class=\"section-row\">\n        <th colspan=\"2\">Basic Infusions</th>\n      </tr>\n      <tr>\n        <th scope=\"row\">Cryo</th>\n        <td>The attack deals 5 extra damage, and its damage becomes <strong><em>ice</em></strong>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Pyro</th>\n        <td>The attack deals 5 extra damage, and its damage becomes <strong><em>fire</em></strong>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Volt</th>\n        <td>The attack deals 5 extra damage, and its damage becomes <strong><em>bolt</em></strong>.</td>\n      </tr>\n    </tbody>\n  </table>\n</details>\n\n<style>\n/* Reuse these if you don’t already have them */\n.potion-foldout { border: 1px solid #d3d7cf; border-radius: 8px; background: #f9faf9; }\n.potion-foldout > summary {\n  cursor: pointer; padding:.6rem .8rem; font-weight:700; letter-spacing:.02em;\n  background:#254a41; color:#fff; border-radius:7px 7px 0 0; user-select:none;\n}\n.book-table { width:100%; border-collapse:collapse; margin:.6rem 0 1rem; }\n.book-table caption {\n  text-align:left; font-weight:800; letter-spacing:.06em; color:#254a41;\n  padding:.35rem .5rem; text-transform:uppercase;\n}\n.book-table thead th {\n  background:#254a41; color:#fff; font-weight:700; padding:.45rem .6rem;\n  border-top:1px solid #254a41;\n}\n.book-table tbody td, .book-table tbody th {\n  padding:.4rem .6rem; vertical-align:top; border-bottom:1px solid #e6e9e6; background:#fff;\n}\n.book-table tbody tr:nth-child(even) td { background:#f3f7f3; }\n.book-table tbody tr:nth-child(even) th[scope=\"row\"] { background:#f3f7f3; }\n.book-table .section-row th {\n  text-align:left; background:#f8faf8; font-weight:800; border-bottom:1px solid #e6e9e6; padding:.45rem .6rem;\n}\n</style>\n",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Basic Infusion",
+          "uuid": "Actor.b3jiIxFXDiwQGg7Z.Item.iMIP8m2xMHYr00OU"
+        },
+        "kpcgahs8a4rbFJTh": {
+          "facet_cost": "10 MP",
+          "facet_description": "<p>You may use an action and spend 10 Mind Points to perform an Opposed <strong>【INS + INS】</strong> Check against a nearby <strong>soldier</strong>-rank <strong>construct</strong> you can see (the Game Master must tell you who is a valid target). If you succeed, you gain control of the creature until the end of the scene (the Game Master gives you its profile). You may only control one construct at any given time, but may set it free whenever you want; the <strong>construct</strong> is also set free as soon as it is harmed by you or by one of your allies. Once free, the <strong>construct</strong> is again in control of its actions and might turn against you.</p>",
+          "facet_offensive": "",
+          "facet_target": "One construct",
+          "id": "${item.id}",
+          "name": "Magitech Override",
+          "uuid": "Actor.b3jiIxFXDiwQGg7Z.Item.kpcgahs8a4rbFJTh"
+        },
+        "nF28ix0bFIba8o3G": {
+          "facet_cost": "",
+          "facet_description": "<p>When you first acquire this Skill, choose a gadget type: <strong>alchemy, infusions </strong>or <strong>magitech</strong> (see Facet). You gain its <strong>basic benefits</strong>.</p><p>Whenever you take this Skill again, <strong>choose one option:</strong></p><ul><li><p>You gain the <strong>basic benefits</strong> of a new gadget type</p></li><li><p>You gain the <strong>advanced benefits</strong> of a gadget type whose basic benefits you already obtained</p></li><li><p>You gain the <strong>superior benefits</strong> of a gadget type whose advanced benefits you already obtained.</p></li></ul>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Gadgets",
+          "uuid": "Actor.b3jiIxFXDiwQGg7Z.Item.nF28ix0bFIba8o3G"
+        },
+        "qxQLcOyDtqH2YXXo": {
+          "facet_cost": "3 IP",
+          "facet_description": "<div class=\"potion-skill\">\n    <p>You may perform the <strong>【⚗️Inventory】</strong> action to rapidly craft a <strong>potion</strong> with powerful but somewhat unpredictable effects. Roll two <strong>d20s</strong> and assign one to <strong>target</strong> and one to <strong>effect</strong>.</p>\n    <details class=\"potion-foldout\">\n        <summary>Potion Tables (Target &amp; Effect)</summary>\n        <table class=\"book-table\">\n            <caption>TARGET</caption>\n            <thead>\n                <tr>\n                    <th class=\"die\">Die</th>\n                    <th>The potion affects…</th>\n                </tr>\n            </thead>\n            <tbody>\n                <tr>\n                    <td class=\"die\">1–6</td>\n                    <td>… you or one ally you can see that is present on the scene.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">7–11</td>\n                    <td>… one enemy you can see that is present on the scene.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">12–16</td>\n                    <td>… you and every ally present on the scene.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">17–20</td>\n                    <td>… every enemy present on the scene.</td>\n                </tr>\n            </tbody>\n        </table>\n        <table class=\"book-table\">\n            <caption>EFFECT</caption>\n            <thead>\n                <tr>\n                    <th class=\"die\">Die</th>\n                    <th>Each creature affected by the potion…</th>\n                </tr>\n            </thead>\n            <tbody>\n                <tr>\n                    <td class=\"die\">Any</td>\n                    <td>… suffers 20 <strong>poison</strong> damage.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">Any</td>\n                    <td>… recovers 30 Hit Points.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">1</td>\n                    <td>… treats their <strong>Dexterity</strong> and <strong>Might</strong> dice as if they were one size higher (up to a maximum of d12) until the end of your next turn.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">2</td>\n                    <td>As effect 1, but with <strong>Insight</strong> and <strong>Willpower</strong>.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">3</td>\n                    <td>… suffers 20 <strong>air</strong> damage. This amount increases to 30 damage if you are level 20 or higher, or to 40 damage if you are level 40 or higher.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">4</td>\n                    <td>As effect 3, but with <strong>bolt</strong> damage.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">5</td>\n                    <td>As effect 3, but with <strong>dark</strong> damage.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">6</td>\n                    <td>As effect 3, but with <strong>earth</strong> damage.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">7</td>\n                    <td>As effect 3, but with <strong>fire</strong> damage.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">8</td>\n                    <td>As effect 3, but with <strong>ice</strong> damage.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">9</td>\n                    <td>… gains <strong>Resistance</strong> to <strong>air</strong> and <strong>fire</strong> damage until the end of the scene.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">10</td>\n                    <td>As effect 9, but with <strong>bolt</strong> and <strong>ice</strong> damage.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">11</td>\n                    <td>As effect 9, but with <strong>dark</strong> and <strong>earth</strong> damage.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">12</td>\n                    <td>… suffers <strong>enraged</strong>.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">13</td>\n                    <td>… suffers <strong>poisoned</strong>.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">14</td>\n                    <td>… suffers <strong>dazed</strong>, <strong>shaken</strong>, <strong>slow</strong> and <strong>weak</strong>.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">15</td>\n                    <td>… recovers from all status effects.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">16–17</td>\n                    <td>… recovers 50 Hit Points and 50 Mind Points.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">18</td>\n                    <td>… recovers 100 Hit Points.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">19</td>\n                    <td>… recovers 100 Mind Points.</td>\n                </tr>\n                <tr>\n                    <td class=\"die\">20</td>\n                    <td>… recovers 100 Hit Points and 100 Mind Points.</td>\n                </tr>\n            </tbody>\n        </table>\n    </details>\n</div>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Basic Alchemy",
+          "uuid": "Actor.b3jiIxFXDiwQGg7Z.Item.qxQLcOyDtqH2YXXo"
+        },
+        "rS0P4rGFLzpxf65c": {
+          "facet_cost": "3 IP",
+          "facet_description": "<p>You may perform the<strong>【⚗️Item】</strong> action and spend <strong>3 Inventory Points</strong> to create a firearm weapon known as a <strong>@UUID[Item.3nrod81ulEj4BbOB]{Magicannon}</strong> (see below). The magicannon will crumble to pieces as soon as you use create a new magicannon. When you create a magicannon, choose the type of damage it deals (<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"background-color:#666;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"background-color:#666;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"background-color:#666;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"background-color:#666;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"background-color:#666;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span></span>, or <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"background-color:#666;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a></span></span>).</p>\n<!-- MAGICANNON ITEM CARD -->\n<table class=\"item-table\">\n  <thead>\n    <tr>\n      <th>WEAPON</th>\n      <th>ACCURACY</th>\n      <th>DAMAGE</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr class=\"item-main\">\n      <td class=\"weapon-cell\">\n        <div class=\"weapon-head\">\n          <img class=\"weapon-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/13160.gif\" alt=\"Magicannon\">\n          <strong>Magicannon</strong>\n        </div>\n      </td>\n      <td class=\"centercell\"><strong>[DEX + INS] +1</strong></td>\n      <td class=\"centercell\"><strong>[HR + 10]</strong></td>\n    </tr>\n    <tr class=\"item-sub\">\n      <td colspan=\"3\">Two-handed ◆ Ranged ◆ No Quality.</td>\n    </tr>\n  </tbody>\n</table>\n\n<style>\n/* --- Magicannon book-style item card --- */\n.item-table{ width:100%; border-collapse:collapse; margin:.6rem 0 .2rem; font-family:var(--chat-font,\"Signika\",system-ui,sans-serif); }\n.item-table thead th{ background:#254a41; color:#fff; font-weight:800; text-transform:uppercase; letter-spacing:.04em; padding:.45rem .6rem; border-top:1px solid #254a41; }\n.item-table td{ border-bottom:1px solid #e1e6e2; padding:.45rem .6rem; background:#fff; }\n.item-table .item-main td{ border-bottom:1px solid #cfd6d1; }\n.item-table .item-sub td{ background:#f8faf8; padding:.5rem .8rem; }\n.weapon-head{ display:flex; align-items:center; gap:.5rem; }\n.weapon-icon{ width:28px; height:28px; object-fit:contain; border-radius:4px; box-shadow:0 0 0 1px rgba(0,0,0,.08) inset; image-rendering: pixelated; }\n.weapon-cell{ width:60%; }\n.centercell{ text-align:center; white-space:nowrap; }\n</style>\n",
+          "facet_offensive": "",
+          "facet_target": "Self",
+          "id": "${item.id}",
+          "name": "Magicannon",
+          "uuid": "Actor.b3jiIxFXDiwQGg7Z.Item.rS0P4rGFLzpxf65c"
+        },
+        "sKHATH7mdk6oPPif": {
+          "facet_cost": "",
+          "facet_description": "<p>Once per conflict scene, if you are in <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span>, you may perform an additional action on your turn. This action <strong>must</strong> be the <strong>Inventory</strong> action.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Emergency Item",
+          "uuid": "Actor.b3jiIxFXDiwQGg7Z.Item.sKHATH7mdk6oPPif"
+        },
+        "snuG4D47MnMvAW7o": {
+          "facet_cost": "5 IP",
+          "facet_description": "<div class=\"potion-skill\"><p>You may perform the <strong>【⚗️Inventory】</strong> action to rapidly craft a <strong>potion</strong> with powerful but somewhat unpredictable effects. Roll four <strong>d20s</strong> and assign one to <strong>target</strong> and one to <strong>effect</strong>.</p><details class=\"potion-foldout\"><summary>Potion Tables (Target &amp; Effect)</summary><table class=\"book-table\"><caption>TARGET</caption><thead><tr><th class=\"die\">Die</th><th>The potion affects…</th></tr></thead><tbody><tr><td class=\"die\">1–6</td><td>… you or one ally you can see that is present on the scene.</td></tr><tr><td class=\"die\">7–11</td><td>… one enemy you can see that is present on the scene.</td></tr><tr><td class=\"die\">12–16</td><td>… you and every ally present on the scene.</td></tr><tr><td class=\"die\">17–20</td><td>… every enemy present on the scene.</td></tr></tbody></table><table class=\"book-table\"><caption>EFFECT</caption><thead><tr><th class=\"die\">Die</th><th>Each creature affected by the potion…</th></tr></thead><tbody><tr><td class=\"die\">Any</td><td>… suffers 20 <strong>poison</strong> damage.</td></tr><tr><td class=\"die\">Any</td><td>… recovers 30 Hit Points.</td></tr><tr><td class=\"die\">1</td><td>… treats their <strong>Dexterity</strong> and <strong>Might</strong> dice as if they were one size higher (up to a maximum of d12) until the end of your next turn.</td></tr><tr><td class=\"die\">2</td><td>As effect 1, but with <strong>Insight</strong> and <strong>Willpower</strong>.</td></tr><tr><td class=\"die\">3</td><td>… suffers 20 <strong>air</strong> damage. This amount increases to 30 damage if you are level 20 or higher, or to 40 damage if you are level 40 or higher.</td></tr><tr><td class=\"die\">4</td><td>As effect 3, but with <strong>bolt</strong> damage.</td></tr><tr><td class=\"die\">5</td><td>As effect 3, but with <strong>dark</strong> damage.</td></tr><tr><td class=\"die\">6</td><td>As effect 3, but with <strong>earth</strong> damage.</td></tr><tr><td class=\"die\">7</td><td>As effect 3, but with <strong>fire</strong> damage.</td></tr><tr><td class=\"die\">8</td><td>As effect 3, but with <strong>ice</strong> damage.</td></tr><tr><td class=\"die\">9</td><td>… gains <strong>Resistance</strong> to <strong>air</strong> and <strong>fire</strong> damage until the end of the scene.</td></tr><tr><td class=\"die\">10</td><td>As effect 9, but with <strong>bolt</strong> and <strong>ice</strong> damage.</td></tr><tr><td class=\"die\">11</td><td>As effect 9, but with <strong>dark</strong> and <strong>earth</strong> damage.</td></tr><tr><td class=\"die\">12</td><td>… suffers <strong>enraged</strong>.</td></tr><tr><td class=\"die\">13</td><td>… suffers <strong>poisoned</strong>.</td></tr><tr><td class=\"die\">14</td><td>… suffers <strong>dazed</strong>, <strong>shaken</strong>, <strong>slow</strong> and <strong>weak</strong>.</td></tr><tr><td class=\"die\">15</td><td>… recovers from all status effects.</td></tr><tr><td class=\"die\">16–17</td><td>… recovers 50 Hit Points and 50 Mind Points.</td></tr><tr><td class=\"die\">18</td><td>… recovers 100 Hit Points.</td></tr><tr><td class=\"die\">19</td><td>… recovers 100 Mind Points.</td></tr><tr><td class=\"die\">20</td><td>… recovers 100 Hit Points and 100 Mind Points.</td></tr></tbody></table></details></div>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Superior Alchemy",
+          "uuid": "Actor.b3jiIxFXDiwQGg7Z.Item.snuG4D47MnMvAW7o"
+        },
+        "veOR5qFmqdJUUDFe": {
+          "facet_cost": "",
+          "facet_description": "<p>When you work on a Project, up to <strong>【SL × 100】</strong> zenit of material costs are automatically paid; additionally, you generate an additional <strong>【SL】progress</strong> every day. If multiple characters with this Skill work on the same Project, the effects will be cumulative.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Visionary",
+          "uuid": "Actor.b3jiIxFXDiwQGg7Z.Item.veOR5qFmqdJUUDFe"
+        },
+        "x8QMxTtjTkeEAWnc": {
+          "facet_cost": "",
+          "facet_description": "<p>When you create a <strong>potion</strong> that restores a <strong>single</strong> creature's HP and/or MP, you may have it affect up to <strong>【SL】</strong> additional creatures. If you do, the potion only restores half the normal amount of HP and MP to each creature.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Potion Rain",
+          "uuid": "Actor.b3jiIxFXDiwQGg7Z.Item.x8QMxTtjTkeEAWnc"
+        }
+      },
+      "class_heroicSkill": {
+        "5Hv6mtYdhIdePwzg": {
+          "id": "${item.id}",
+          "name": "Upgrade",
+          "skill_cost": "",
+          "skill_description": "<p>Once per <strong>rest</strong>, you may choose one option: add a <strong>Quality</strong> to a single weapon, armor, or shield that doesn't have one; <strong>or</strong> replace the current <strong>Quality</strong> of a single weapon, armor, or shield with a different <strong>Quality</strong>.</p>\n<p>When you use this Skill, you must select a Quality from the default list for that item type as long as the cost modifier associated with that ability is <strong>+1000 zenit or lower.</strong> Then, you must spend an amount of zenit equal to twice the cost modifier of the chosen ability. The modified item will be ready at the end of the rest; you may only modify <strong>one item per rest.</strong></p>\n<details class=\"potion-foldout\">\n  <summary>Quality List (Defensive • Offensive • Enhancement)</summary>\n  <table class=\"book-table\">\n    <caption>QUALITIES</caption>\n    <thead>\n      <tr>\n        <th style=\"width:190px;\">QUALITY</th>\n        <th style=\"width:100px;\">COST</th>\n        <th>EFFECT</th>\n      </tr>\n    </thead>\n    <tbody>\n      <!-- Defensive -->\n      <tr class=\"section-row\"><th colspan=\"3\">Defensive Qualities</th></tr>\n      <tr>\n        <th scope=\"row\">Antistatus</th>\n        <td>+500 z</td>\n        <td>You are immune to a single status effect.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Resistance</th>\n        <td>+700 z</td>\n        <td>You have Resistance to a single damage type (not <strong>physical</strong> damage).</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Amulet</th>\n        <td>+800 z</td>\n        <td>You gain a +1 bonus to Magic Defense.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Bulwark</th>\n        <td>+800 z</td>\n        <td>You gain a +1 bonus to Defense.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Dual Resistance</th>\n        <td>+1000 z</td>\n        <td>You have Resistance to two damage types (not <strong>physical</strong> damage).</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Swordbreaker</th>\n        <td>+1000 z</td>\n        <td>You have Resistance to <strong>physical</strong> damage.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Immunity</th>\n        <td>+1500 z</td>\n        <td>You have Immunity to a single damage type (not <strong>physical</strong> damage).</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Omnishield</th>\n        <td>+2000 z</td>\n        <td>You gain a +1 bonus to Defense and Magic Defense.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Perfect Health</th>\n        <td>+2000 z</td>\n        <td>You are immune to all status effects.</td>\n      </tr>\n\n      <!-- Offensive -->\n      <tr class=\"section-row\"><th colspan=\"3\">Offensive Qualities</th></tr>\n      <tr>\n        <th scope=\"row\">Magical</th>\n        <td>+100 z</td>\n        <td>The weapon targets <strong>Magic Defense</strong> instead of <strong>Defense</strong>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Hunter</th>\n        <td>+300 z</td>\n        <td>The weapon deals 5 extra damage to creatures of a particular <strong>Species</strong>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Piercing</th>\n        <td>+400 z</td>\n        <td>Damage dealt by the weapon ignores <strong>Resistances</strong>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Dual Hunter</th>\n        <td>+500 z</td>\n        <td>The weapon deals 5 extra damage to creatures belonging to one of two particular <strong>Species</strong>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Multi</th>\n        <td>+1000 z</td>\n        <td>Attacks with the weapon have <strong>multi (2)</strong>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Status</th>\n        <td>+1500 z</td>\n        <td>Each target hit by the weapon suffers (choose one): <strong>dazed, shaken, slow, weak</strong>.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Status Plus</th>\n        <td>+2000 z</td>\n        <td>Each target hit by the weapon suffers (choose one): <strong>enraged, poisoned</strong>.</td>\n      </tr>\n\n      <!-- Enhancement -->\n      <tr class=\"section-row\"><th colspan=\"3\">Enhancement Qualities</th></tr>\n      <tr>\n        <th scope=\"row\">Initiative Up</th>\n        <td>+500 z</td>\n        <td>You gain a +4 bonus to your Initiative modifier.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Accuracy Up</th>\n        <td>+1000 z</td>\n        <td>You gain a +1 bonus to your Accuracy Checks.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Magic Up</th>\n        <td>+1000 z</td>\n        <td>You gain a +1 bonus to your Magic Checks.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Vitality Up</th>\n        <td>+1000 z</td>\n        <td>When you recover HP, you recover 5 extra HP.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Healing Up</th>\n        <td>+1500 z</td>\n        <td>Spells you cast whose effects restore Hit Points restore 5 extra Hit Points.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Spell Up</th>\n        <td>+2000 z</td>\n        <td>Spells you cast deal 5 extra damage.</td>\n      </tr>\n      <tr>\n        <th scope=\"row\">Weapon Up</th>\n        <td>+2000 z</td>\n        <td>Your attacks with (choose one: <strong>melee</strong>, <strong>ranged</strong>) weapons deal 5 extra damage.</td>\n      </tr>\n    </tbody>\n  </table>\n</details>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.b3jiIxFXDiwQGg7Z.Item.5Hv6mtYdhIdePwzg"
+        },
+        "duvYk9yWI9mni9Ef": {
+          "id": "${item.id}",
+          "name": "Deep Pockets",
+          "skill_cost": "",
+          "skill_description": "<p>When you spend Inventory Points, you spend 1 less Inventory Point <em>(to a minimum of 1).</em></p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.b3jiIxFXDiwQGg7Z.Item.duvYk9yWI9mni9Ef"
+        }
+      },
+      "class_lore": "<blockquote><p><strong>Tinkerers</strong> possess exceptional ingenuity and are known for their eccentric and marvelous inventions. They travel the world in an endless search for lost theories and ancient machinery, eyes glimmering whenever they witness the wonders of architecture and engineering.</p><p>In a way, Tinkerers could be seen as the ultimate dreamers and rebels, challenging the very rules of nature and society in their pursuit of a better future.</p></blockquote>",
+      "class_skill": {
+        "JE4lKc7P7VwOiVPf": {
+          "id": "${item.id}",
+          "name": "Secret Formula",
+          "skill_cost": "",
+          "skill_description": "<p>When you create a <strong>potion</strong> or <strong>magisphere</strong> whose effects restore HP and/or MP, each restored amount is increased by <strong>【SL × 5】.</strong></p><p> When you create an <strong>elemental shard, potion</strong> or <strong>magisphere</strong> that deals damage, that item deals <strong>【SL】</strong> extra damage.</p>",
+          "skill_maxLevel": 5,
+          "skill_type": "Passive",
+          "uuid": "Actor.b3jiIxFXDiwQGg7Z.Item.JE4lKc7P7VwOiVPf"
+        },
+        "nF28ix0bFIba8o3G": {
+          "id": "${item.id}",
+          "name": "Gadgets",
+          "skill_cost": "",
+          "skill_description": "<p>When you first acquire this Skill, choose a gadget type: <strong>alchemy, infusions </strong>or <strong>magitech</strong> (see Facet). You gain its <strong>basic benefits</strong>.</p><p>Whenever you take this Skill again, <strong>choose one option:</strong></p><ul><li><p>You gain the <strong>basic benefits</strong> of a new gadget type</p></li><li><p>You gain the <strong>advanced benefits</strong> of a gadget type whose basic benefits you already obtained</p></li><li><p>You gain the <strong>superior benefits</strong> of a gadget type whose advanced benefits you already obtained.</p></li></ul>",
+          "skill_maxLevel": 5,
+          "skill_type": "Other",
+          "uuid": "Actor.b3jiIxFXDiwQGg7Z.Item.nF28ix0bFIba8o3G"
+        },
+        "sKHATH7mdk6oPPif": {
+          "id": "${item.id}",
+          "name": "Emergency Item",
+          "skill_cost": "",
+          "skill_description": "<p>Once per conflict scene, if you are in <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span>, you may perform an additional action on your turn. This action <strong>must</strong> be the <strong>Inventory</strong> action.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.b3jiIxFXDiwQGg7Z.Item.sKHATH7mdk6oPPif"
+        },
+        "veOR5qFmqdJUUDFe": {
+          "id": "${item.id}",
+          "name": "Visionary",
+          "skill_cost": "",
+          "skill_description": "<p>When you work on a Project, up to <strong>【SL × 100】</strong> zenit of material costs are automatically paid; additionally, you generate an additional <strong>【SL】progress</strong> every day. If multiple characters with this Skill work on the same Project, the effects will be cumulative.</p>",
+          "skill_maxLevel": 5,
+          "skill_type": "Passive",
+          "uuid": "Actor.b3jiIxFXDiwQGg7Z.Item.veOR5qFmqdJUUDFe"
+        },
+        "x8QMxTtjTkeEAWnc": {
+          "id": "${item.id}",
+          "name": "Potion Rain",
+          "skill_cost": "",
+          "skill_description": "<p>When you create a <strong>potion</strong> that restores a <strong>single</strong> creature's HP and/or MP, you may have it affect up to <strong>【SL】</strong> additional creatures. If you do, the potion only restores half the normal amount of HP and MP to each creature.</p>",
+          "skill_maxLevel": 2,
+          "skill_type": "Passive",
+          "uuid": "Actor.b3jiIxFXDiwQGg7Z.Item.x8QMxTtjTkeEAWnc"
+        }
+      },
+      "flavor_text": "<p style=\"text-align: center\"><span style=\"font-family: Amiri\"><em>I like to think that what</em></span></p><p style=\"text-align: center\"><span style=\"font-family: Amiri\"><em>we have today was not</em></span></p><p style=\"text-align: center\"><span style=\"font-family: Amiri\"><em>a gift from the Gods.</em></span></p>",
+      "martialArmor_equippable": false,
+      "martialMelee_equippable": false,
+      "martialRanged_equippable": false,
+      "martialShield_equippable": false,
+      "name": "Tinkerer",
+      "project_performable": true,
+      "ritual_performable": false
+    },
+    "statusEffects": {},
+    "template": "hoxC3HFCtMYGScIo",
+    "templateSystemUniqueVersion": 504201233
+  },
+  "type": "character"
+}

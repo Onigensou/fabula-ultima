@@ -1,0 +1,104 @@
+{
+  "_id": "sLUFIsIYIAmmO0lI",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1752206567864,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "sLUFIsIYIAmmO0lI",
+        "itemName": "Aenigma of Adaptation",
+        "pickedOldProps": {
+          "cost": "0",
+          "martial": false
+        },
+        "ts": 1769647435090
+      }
+    }
+  },
+  "folder": "QGuy8DVLgrvQqs1c",
+  "img": "https://img.altema.jp/valkyrieconnect/sobi/ico/1816.jpg",
+  "name": "Aenigma of Adaptation",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3
+  },
+  "sort": 2450000,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "aquatic_ef": "100",
+      "automaton_ef": "100",
+      "avian_ef": "100",
+      "beast_ef": "100",
+      "category": "Arcane",
+      "celestial_ef": "100",
+      "check_bonus": "0",
+      "construct_ef": "100",
+      "damage_bonus": "9",
+      "demiHuman_ef": "100",
+      "demon_ef": "100",
+      "description": "<ul><li><p>When you get hit by an <strong>attack,</strong> <strong>skill</strong> or <strong>spell</strong>, if the triggering action has <strong>keywords</strong>, choose one of that keyword. This weapon gain the chosen keyword until its next attack or until you've chosen a new keyword.</p></li></ul>",
+      "dragon_ef": "100",
+      "elemental_ef": "100",
+      "enforcer_ef": "100",
+      "fey_ef": "100",
+      "flora_ef": "100",
+      "fungus_ef": "100",
+      "golem_ef": "100",
+      "gorger_ef": "100",
+      "hand_slots": "Two-handed",
+      "human_ef": "100",
+      "humanoid_ef": "100",
+      "insect_ef": "100",
+      "ip_cost": "",
+      "isEquipped": false,
+      "isKey": false,
+      "isMartial": false,
+      "isModule": false,
+      "isRelatedItem": false,
+      "isSet": false,
+      "isUnique": false,
+      "item_baseDef": "0",
+      "item_baseMdef": "0",
+      "item_cost": "3000",
+      "item_def_bonus": "0",
+      "item_mdef_bonus": "0",
+      "item_quantity": "1",
+      "item_rarity": "Rare",
+      "item_type": "weapon",
+      "mimic_ef": "100",
+      "monster_ef": "100",
+      "name": "Aenigma of Adaptation",
+      "optional_params": {},
+      "plant_ef": "100",
+      "reptilian_ef": "100",
+      "rolled_atr1": "INS",
+      "rolled_atr2": "WLP",
+      "set_name": "",
+      "skill_target": "One Enemy",
+      "soldier_ef": "100",
+      "spirit_ef": "100",
+      "type_damage": "Air",
+      "undead_ef": "100",
+      "vehicle_ef": "100",
+      "weapon_range": "Ranged"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "sLUFIsIYIAmmO0lI"
+  },
+  "type": "equippableItem"
+}

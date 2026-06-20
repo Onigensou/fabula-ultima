@@ -1,0 +1,41 @@
+{
+  "_id": "TSdb01Bxhc3vK9Bo",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1738935677904,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    }
+  },
+  "folder": "YORShE1NmdPqz17e",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/NPCs/Porco.png",
+  "name": "Porco",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "active_name": "Time to go!",
+      "dice": "Show",
+      "flavor_text": "<hr>\n<blockquote>\n<p>&nbsp;</p>\n</blockquote>",
+      "name": "Porco",
+      "passive_name": "Here, use this",
+      "support_active": "<p>Escape from the&nbsp;<strong>Conflict Scene,</strong> You do not gain any EXP or Zenit from this battle.</p>",
+      "support_passive": "<p>At the end of your turn, if you have <strong>0 IP.&nbsp;</strong> Gain <strong>3 IP.</strong></p>"
+    },
+    "template": "lUpHsEfBDEY3BeNq",
+    "templateSystemUniqueVersion": 4245463866,
+    "unique": false,
+    "uniqueId": "TSdb01Bxhc3vK9Bo"
+  },
+  "type": "equippableItem"
+}

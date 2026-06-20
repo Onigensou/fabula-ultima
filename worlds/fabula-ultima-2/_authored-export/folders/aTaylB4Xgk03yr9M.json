@@ -1,0 +1,19 @@
+{
+  "_id": "aTaylB4Xgk03yr9M",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1754274945811,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "VVjpCERIXMrOJna7",
+  "name": "Chimerist",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

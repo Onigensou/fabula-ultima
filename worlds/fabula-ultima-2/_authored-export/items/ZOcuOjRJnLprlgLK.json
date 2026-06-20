@@ -1,0 +1,44 @@
+{
+  "_id": "ZOcuOjRJnLprlgLK",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1748528680470,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.4.2"
+    }
+  },
+  "folder": "9536CjVHiIiPJrCI",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/NPCs/Spica.png",
+  "name": "Spica",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "active_name": "Heat ENHANCE",
+      "dice": "Show",
+      "flavor_text": "<hr contenteditable=\"false\"><blockquote><p>&nbsp;A Spunky girl who specialize in Fire Magic, she makes weapon as her hobby, but has a really bad naming sense</p></blockquote>",
+      "id": "ZOcuOjRJnLprlgLK",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/NPCs/Spica.png",
+      "name": "Spica",
+      "passive_name": "Heat HEART",
+      "support_active": "<p>Apply up to 1 stacks of <strong>@UUID[JournalEntry.zbanoQNAsE8pxhSu]{Superheat}</strong> to target.</p><p>If the target is an enemy, you must perform a successful 【<strong>MIG + DEX</strong>】<strong> + 3 </strong>against <strong>M.DEF </strong>of the target.</p>",
+      "support_passive": "<p>At the start of a conflict scene, you may applied up to 3 stacks of @UUID[JournalEntry.zbanoQNAsE8pxhSu]{Superheat} to yourselves.</p>",
+      "uuid": "Item.ZOcuOjRJnLprlgLK"
+    },
+    "template": "lUpHsEfBDEY3BeNq",
+    "templateSystemUniqueVersion": 4245463866,
+    "unique": false,
+    "uniqueId": "ZOcuOjRJnLprlgLK"
+  },
+  "type": "equippableItem"
+}

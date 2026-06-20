@@ -1,0 +1,19 @@
+{
+  "_id": "tp52625NWIbnzyLu",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": null,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "2.4.4"
+  },
+  "color": "#000000",
+  "description": "",
+  "flags": {},
+  "folder": "eZWKkXNgeaFs6HSS",
+  "name": "Kirin's PC",
+  "sort": 900000,
+  "sorting": "m",
+  "type": "Actor"
+}

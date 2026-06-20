@@ -1,0 +1,113 @@
+{
+  "_id": "WbVzj9XjTO71GW0b",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1752576809102,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "consumable",
+        "fromTemplate": "xdZPhVF8AnmwQEPM",
+        "itemId": "WbVzj9XjTO71GW0b",
+        "itemName": "Grape Juice",
+        "pickedOldProps": {
+          "consumable_cost": "800",
+          "consumable_description": "<ul><li>Learned how to create @UUID[Item.WeoIipMyJ8Iq9jx4] with <strong>1 IP</strong></li></ul>",
+          "consumable_ip": "",
+          "consumable_label": ""
+        },
+        "ts": 1769647435670
+      }
+    }
+  },
+  "folder": "3xHGNagIXPyzukcU",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/book.png",
+  "name": "Grape Juice Recipe",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "aquatic_ef": "100",
+      "automaton_ef": "100",
+      "avian_ef": "100",
+      "beast_ef": "100",
+      "category": "Arcane",
+      "celestial_ef": "100",
+      "check_bonus": "0",
+      "construct_ef": "100",
+      "damage_bonus": "0",
+      "demiHuman_ef": "100",
+      "demon_ef": "100",
+      "description": "<ul><li>Learned how to create&nbsp;<strong>Grape Juice</strong> with <strong>1 IP</strong></li></ul>",
+      "dragon_ef": "100",
+      "elemental_ef": "100",
+      "enforcer_ef": "100",
+      "fey_ef": "100",
+      "flora_ef": "100",
+      "fungus_ef": "100",
+      "golem_ef": "100",
+      "gorger_ef": "100",
+      "hand_slots": "One-handed",
+      "human_ef": "100",
+      "humanoid_ef": "100",
+      "insect_ef": "100",
+      "ip_cost": "",
+      "isEquipped": false,
+      "isKey": false,
+      "isMartial": false,
+      "isModule": false,
+      "isRelatedItem": true,
+      "isSet": false,
+      "isUnique": false,
+      "item_baseDef": "0",
+      "item_baseMdef": "0",
+      "item_cost": "1500",
+      "item_def_bonus": "0",
+      "item_mdef_bonus": "0",
+      "item_quantity": "1",
+      "item_rarity": "Rare",
+      "item_type": "consumable",
+      "mimic_ef": "100",
+      "monster_ef": "100",
+      "name": "Grape Juice Recipe",
+      "optional_params": {},
+      "plant_ef": "100",
+      "related_item_list": {
+        "UPrdSUli5l4FksHL": {
+          "id": "${item.id}",
+          "name": "Grape Juice",
+          "related_item_description": "<ul><li><p>Target creature recovers <strong>20</strong> MP</p></li></ul>",
+          "uuid": "Item.UPrdSUli5l4FksHL"
+        }
+      },
+      "reptilian_ef": "100",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "set_name": "<Set Name>",
+      "soldier_ef": "100",
+      "spirit_ef": "100",
+      "type_damage": "Physical",
+      "undead_ef": "100",
+      "vehicle_ef": "100",
+      "weapon_range": "Melee"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "WbVzj9XjTO71GW0b"
+  },
+  "type": "equippableItem"
+}

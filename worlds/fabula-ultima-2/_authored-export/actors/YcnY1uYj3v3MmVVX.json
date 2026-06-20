@@ -1,0 +1,738 @@
+{
+  "_id": "YcnY1uYj3v3MmVVX",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1757292031033,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "tmNVy5jIbM9rzx80",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/FabU_Merchant.png",
+  "items": [
+    {
+      "_id": "3RQeQ2ykCKkxE5ss",
+      "_stats": {
+        "compendiumSource": "Item.D1IM6XtMjHEid4zD",
+        "coreVersion": "12.343",
+        "createdTime": 1757293571031,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/MysticAlchemistPassive1.png",
+      "name": "Expiration Date",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Merchant",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When a <strong>potion </strong>or<strong> delicacy</strong> you created that<strong> does not </strong>deal damage causes one or more creatures to recover Hit Points, you may instead have it deal <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span> damage equal to <strong>[half your level + (SL × 10)]</strong> to each of those creatures. <strong>This </strong>damage’s type cannot change, and it is <strong>halved</strong> if you are dealing damage to <strong>two or more creatures</strong>.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "3",
+          "name": "Expiration Date",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Poison damage per target</strong></p></td></tr><tr><td><p>1</p></td><td><p>½ your level + 10</p></td></tr><tr><td><p>2</p></td><td><p>½ your level + 20</p></td></tr><tr><td><p>3</p></td><td><p>½ your level + 30</p></td></tr></tbody></table><p style=\"text-align: center\"><em>Note: Damage is halved if affecting two or more creatures.</em></p>",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "D1IM6XtMjHEid4zD"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "GfpLiDUhpe33vJrj",
+      "_stats": {
+        "compendiumSource": "Item.IG623agrq6TxQtb2",
+        "coreVersion": "12.343",
+        "createdTime": 1757293575554,
+        "duplicateSource": "Item.uIOWgwxvii5TNnY6",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lithia/FortuneFinderSkill8.png",
+      "name": "Winds of Trade",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Merchant",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>After you <strong>rest</strong> in an area where commerce is possible, you gain <strong>[SL + 1]</strong> Trade Points. You may never have more than <strong>[SL + 3]</strong> Trade Points; if you acquire this Skill during character creation, you begin play with <strong>2 Trade Points</strong>.</p>\n\n<p>During a <strong>non-conflict</strong> scene, you may spend <strong>2 Trade Points</strong> to <strong>Choose one option:</strong></p>\n<ul>\n  <li>create a material or rare item approved by the Game Master whose value in <strong>zenit</strong> is equal to or lower than <strong>[your level, multiplied by 30]</strong>;</li>\n  <li>create an <strong>NPC</strong> that lives nearby and explain their occupation as well as how you met them, then the Game Master tells you what they require in exchange for their services.</li>\n</ul>\n",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "3",
+          "name": "Winds of Trade",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Trade Points gained after rest</strong></p></td><td><p><strong>Max Trade Points you can hold</strong></p></td></tr><tr><td><p>1</p></td><td><p>2</p></td><td><p>4</p></td></tr><tr><td><p>2</p></td><td><p>3</p></td><td><p>5</p></td></tr><tr><td><p>3</p></td><td><p>4</p></td><td><p>6</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "IG623agrq6TxQtb2"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "PVF2NzS1ZTmUSFhc",
+      "_stats": {
+        "compendiumSource": "Item.NMHVZPLN6MsNFY4z",
+        "coreVersion": "12.343",
+        "createdTime": 1757293587692,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lithia/AvariceHyperActive.png",
+      "name": "For a Better Future",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Merchant",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you need to spend one or more <strong>Fabula Points</strong>, if you are not spending them to <strong>alter the story</strong> (see Core Rulebook, page 98), you may spend that many <strong>Trade Points</strong> instead. Describe which memories of your trades and journeys give you strength!</p>\n\n<p>Additionally, when you gain <strong>two or more Trade Points</strong> through the <strong>Real Treasure</strong> or <strong>Winds of Trade</strong> Skills, you may choose to gain exactly <strong>1 Trade Point</strong> instead. If you do, choose a <strong>settlement</strong> within <strong>1 travel day</strong> of your position and increase its <strong>prosperity</strong> by an amount equal to <strong>[your Skill Level in Winds of Trade + your Skill Level in Real Treasure]</strong>; a settlement’s prosperity starts at 0 and has no upper limit.</p>\n\n<p>The chart below indicates the effects of your donations on the settlement and on anything within <strong>1 travel day</strong> of it.</p>\n\n<table style=\"width:100%;\">\n  <tbody>\n    <tr>\n      <td style=\"width: 20%;\"><p><strong>Prosperity</strong></p></td>\n      <td><p><strong>Effects within 1 travel day of the settlement</strong></p></td>\n    </tr>\n    <tr>\n      <td><p>10 or more</p></td>\n      <td><p>When you or an ally need to pay a cost in <strong>zenit</strong>, whatever the reason, that cost is <strong>halved</strong>.</p></td>\n    </tr>\n    <tr>\n      <td><p>15 or more</p></td>\n      <td>\n        <p>People gladly accommodate you and your allies: while in this area, you can always <strong>rest</strong> freely, without spending <strong>zenit</strong>. Furthermore, any <strong>travel rolls</strong> made in this area never use a die greater than <strong>d8</strong>.</p>\n      </td>\n    </tr>\n    <tr>\n      <td><p>20 or more</p></td>\n      <td><p>When a <strong>Villain</strong> in this area spends <strong>Ultima Points</strong>, they must spend <strong>twice</strong> as many <strong>Ultima Points</strong>.</p></td>\n    </tr>\n  </tbody>\n</table>\n",
+          "duration": "",
+          "heroic_requirement": "you must have mastered the Merchant Class, and must have acquired the Real Treasure and Winds of Trade Skills",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "For a Better Future",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "NMHVZPLN6MsNFY4z"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "U6v6tkylV8u9xA1a",
+      "_stats": {
+        "compendiumSource": "Item.iFtE5IEKqQjsWaQY",
+        "coreVersion": "12.343",
+        "createdTime": 1757293572058,
+        "duplicateSource": "Item.D1IM6XtMjHEid4zD",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lithia/FortuneFinderSkill2.png",
+      "name": "I’ve Heard of It!",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Merchant",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you or an ally who is able to hear and understand you perform a <strong>Check</strong> to examine a creature, item, or location, you may spend <strong>1 Trade Point</strong> to grant a bonus equal to <strong>[SL × 2]</strong> to the <strong>Result</strong> of that Check.</p>\n",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "3",
+          "name": "I’ve Heard of It!",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Bonus to Check Result</strong></p></td></tr><tr><td><p>1</p></td><td><p>+2</p></td></tr><tr><td><p>2</p></td><td><p>+4</p></td></tr><tr><td><p>3</p></td><td><p>+6</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "iFtE5IEKqQjsWaQY"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "V1zrvAZhevaX0oiv",
+      "_stats": {
+        "compendiumSource": "Item.uIOWgwxvii5TNnY6",
+        "coreVersion": "12.343",
+        "createdTime": 1757293574318,
+        "duplicateSource": "Item.wOiDH5AooBXaKX5c",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lithia/FortuneFinderSkill7.png",
+      "name": "Real Treasure",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Merchant",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p><strong>Once per session</strong>, when you help an NPC or community <strong>defeat greed and corruption</strong>, <strong>improve their quality of life</strong>, or <strong>coexist with other creatures</strong>, if you have acquired the <strong>Winds of Trade</strong> Skill, you gain <strong>[SL + 1] Trade Points</strong>.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "3",
+          "name": "Real Treasure",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Trade Points gained (once per session)</strong></p></td></tr><tr><td><p>1</p></td><td><p>2</p></td></tr><tr><td><p>2</p></td><td><p>3</p></td></tr><tr><td><p>3</p></td><td><p>4</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "uIOWgwxvii5TNnY6"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "XYEBsNIDviIWbE9c",
+      "_stats": {
+        "compendiumSource": "Item.wOiDH5AooBXaKX5c",
+        "coreVersion": "12.343",
+        "createdTime": 1757293573263,
+        "duplicateSource": "Item.iFtE5IEKqQjsWaQY",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lithia/GreedyWonderSkill10.png",
+      "name": "Private Stock",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Merchant",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you or another Player Character spend <strong>[SL × 2]</strong> or fewer <strong>Inventory Points</strong>, you may spend <strong>1 Trade Point</strong> to <strong>ignore that cost</strong>.</p>\n",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "3",
+          "name": "Private Stock",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Max IP cost ignored</strong></p></td></tr><tr><td><p>1</p></td><td><p>2 Inventory Points</p></td></tr><tr><td><p>2</p></td><td><p>4 Inventory Points</p></td></tr><tr><td><p>3</p></td><td><p>6 Inventory Points</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "wOiDH5AooBXaKX5c"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Merchant",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar4": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "DEF",
+            "max": 13,
+            "maxcolor": "#f26d40",
+            "mincolor": "#f26d40",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 13
+          },
+          "bar5": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar5",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MDEF",
+            "max": 10,
+            "maxcolor": "#26d6ed",
+            "mincolor": "#26d6ed",
+            "opacity": null,
+            "order": 4,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 10
+          }
+        }
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Merchant",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/FabU_Merchant.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 0,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {
+      "also_text": "Antiquarian, Collector, Pharmacist",
+      "benefit_dropdown": "ip_benefit",
+      "classMechanic_text": "<h1>THE TRADE POINTS</h1><p><em>Merchant Class – Core Mechanic</em></p><p><strong>Trade Points (TP)</strong> are a Merchant’s currency of favors, contacts, and market leverage. Use them to grease wheels, open doors, and conjure goods or professionals right when the party needs them. Think of TP like a video-game resource: you <strong>earn</strong> them through specific skills and <strong>spend</strong> them to trigger powerful, commerce-flavored effects.</p><hr><h2>HOW TO TRACK (Foundry V12)</h2><ul><li>On your Actor, add a numeric Resource named <strong>Trade Points (TP)</strong> and show it on the sheet.</li><li>Increase/decrease this value as skills award or consume TP. (There’s no default reset—only the listed skills change the total.)</li></ul><hr><h2>HOW TO GAIN TP</h2><details><summary><strong>WINDS OF TRADE — Rest Gain & Cap</strong></summary><p>After you <strong>rest</strong> in an area where commerce is possible, you gain <strong>【SL + 1】 TP</strong>. You can never hold more than <strong>【SL + 3】 TP</strong>. If you start play with this Skill, begin the campaign with <strong>2 TP</strong>.</p></details><details><summary><strong>REAL TREASURE — Session Reward</strong></summary><p><em>Prerequisite: You have acquired <strong>Winds of Trade</strong>.</em><br>Once per session, when you help an NPC or a community <strong>defeat greed and corruption</strong>, <strong>improve their quality of life</strong>, or <strong>coexist with other creatures</strong>, you gain <strong>【SL + 1】 TP</strong>.</p></details><hr><h2>WHAT TO SPEND TP ON</h2><details><summary><strong>I’VE HEARD OF IT! — Quick Expertise Boost</strong> (Cost: <strong>1 TP</strong>)</summary><p>When you or an ally who can hear and understand you makes a Check to <strong>examine a creature, item, or location</strong>, spend <strong>1 TP</strong> to grant a bonus equal to <strong>【SL × 2】</strong> to the <em>Result</em> of that Check.</p></details><details><summary><strong>PRIVATE STOCK — Cover Small Purchases</strong> (Cost: <strong>1 TP</strong>)</summary><p>When you or another Player Character would spend <strong>【SL + 2】 or fewer Inventory Points</strong>, spend <strong>1 TP</strong> to <strong>ignore</strong> that IP cost entirely.</p></details><details><summary><strong>WINDS OF TRADE — Market Conjuration</strong> (Cost: <strong>2 TP</strong>, Non-Conflict Scene)</summary><p>During a <strong>non-conflict scene</strong>, spend <strong>2 TP</strong> and choose one option:</p><ul><li><p><strong>Material or Rare Item:</strong> Create a GM-approved good whose value in zenit is ≤ <strong>【your level × 30】</strong>.<br><em>(Flavor it as finding a supplier, expediting shipping, or revealing a “just-in-time” stash.)</em></p></li><li><strong>Professional Contact:</strong> An NPC living nearby appears; you explain how you know them and their trade. The GM tells you <strong>what they require</strong> in exchange for their services.</li></ul></details><hr><h2>QUICK REFERENCE</h2><div class=\"tableWrapper\"><table style=\"min-width:640px\"><thead><tr><th>Skill / Trigger</th><th>TP Cost</th><th>Effect</th><th>Limits & Scaling</th></tr></thead><tbody><tr><td><strong>Winds of Trade</strong> (after a <em>rest</em> where commerce is possible)</td><td>—</td><td>Gain TP</td><td>Gain <strong>【SL + 1】</strong> TP; max TP is <strong>【SL + 3】</strong>; start with <strong>2 TP</strong> if taken at character creation.</td></tr><tr><td><strong>Real Treasure</strong> (once per session; help a community vs greed/corruption, or promote coexistence)</td><td>—</td><td>Gain TP</td><td>Gain <strong>【SL + 1】</strong> TP; requires <strong>Winds of Trade</strong>.</td></tr><tr><td><strong>I’ve Heard of It!</strong> (ally makes an examination Check)</td><td><strong>1 TP</strong></td><td>Bonus to the Check’s Result</td><td><strong>+【SL × 2】</strong> to the Result; target must hear & understand you.</td></tr><tr><td><strong>Private Stock</strong> (you or ally spends small IP)</td><td><strong>1 TP</strong></td><td>Ignore IP cost</td><td>Ignores costs up to <strong>【SL + 2】 IP</strong>.</td></tr><tr><td><strong>Winds of Trade</strong> (non-conflict scene)</td><td><strong>2 TP</strong></td><td>Summon goods or a professional</td><td>Item value ≤ <strong>【level × 30】</strong> zenit, or nearby NPC contact with stated requirement.</td></tr></tbody></table></div><hr><h2>PLAY EXAMPLES</h2><ul><li><strong>Scouting a ruin:</strong> The Scholar examines an ancient seal. You spend <strong>1 TP</strong> with <em>I’ve Heard of It!</em> to add <strong>【SL × 2】</strong> and crack the puzzle.</li><li><strong>Supply run on a timer:</strong> Before a big dungeon push, you spend <strong>2 TP</strong> (non-conflict scene) via <em>Winds of Trade</em> to source a rare antidote worth ≤ <strong>【level × 30】</strong>.</li><li><strong>Covering costs:</strong> The Warrior needs quick supplies totaling <strong>【SL + 2】 IP</strong>. You spend <strong>1 TP</strong> with <em>Private Stock</em> so nobody pays IP.</li></ul><hr><h2>DESIGN NOTES & TIPS</h2><ul><li><strong>Theme:</strong> TP rewards <em>ethical commerce</em> and community uplift (see <em>Real Treasure</em>), not hoarding wealth.</li><li><strong>Tempo:</strong> Plan rests in towns, markets, caravans, guild halls, or any locale where “commerce is possible” to refuel TP with <em>Winds of Trade</em>.</li><li><strong>Party Support:</strong> Your boosts and freebies make everyone shine—Merchants are enablers and accelerators.</li></ul>",
+      "class_facet": {
+        "3RQeQ2ykCKkxE5ss": {
+          "facet_cost": "",
+          "facet_description": "<p>When a <strong>potion </strong>or<strong> delicacy</strong> you created that<strong> does not </strong>deal damage causes one or more creatures to recover Hit Points, you may instead have it deal <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span> damage equal to <strong>[half your level + (SL × 10)]</strong> to each of those creatures. <strong>This </strong>damage’s type cannot change, and it is <strong>halved</strong> if you are dealing damage to <strong>two or more creatures</strong>.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Expiration Date",
+          "uuid": "Actor.YcnY1uYj3v3MmVVX.Item.3RQeQ2ykCKkxE5ss"
+        },
+        "GfpLiDUhpe33vJrj": {
+          "facet_cost": "",
+          "facet_description": "<p>After you <strong>rest</strong> in an area where commerce is possible, you gain <strong>[SL + 1]</strong> Trade Points. You may never have more than <strong>[SL + 3]</strong> Trade Points; if you acquire this Skill during character creation, you begin play with <strong>2 Trade Points</strong>.</p>\n\n<p>During a <strong>non-conflict</strong> scene, you may spend <strong>2 Trade Points</strong> to <strong>Choose one option:</strong></p>\n<ul>\n  <li>create a material or rare item approved by the Game Master whose value in <strong>zenit</strong> is equal to or lower than <strong>[your level, multiplied by 30]</strong>;</li>\n  <li>create an <strong>NPC</strong> that lives nearby and explain their occupation as well as how you met them, then the Game Master tells you what they require in exchange for their services.</li>\n</ul>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Winds of Trade",
+          "uuid": "Actor.YcnY1uYj3v3MmVVX.Item.GfpLiDUhpe33vJrj"
+        },
+        "PVF2NzS1ZTmUSFhc": {
+          "facet_cost": "",
+          "facet_description": "<p>When you need to spend one or more <strong>Fabula Points</strong>, if you are not spending them to <strong>alter the story</strong> (see Core Rulebook, page 98), you may spend that many <strong>Trade Points</strong> instead. Describe which memories of your trades and journeys give you strength!</p>\n\n<p>Additionally, when you gain <strong>two or more Trade Points</strong> through the <strong>Real Treasure</strong> or <strong>Winds of Trade</strong> Skills, you may choose to gain exactly <strong>1 Trade Point</strong> instead. If you do, choose a <strong>settlement</strong> within <strong>1 travel day</strong> of your position and increase its <strong>prosperity</strong> by an amount equal to <strong>[your Skill Level in Winds of Trade + your Skill Level in Real Treasure]</strong>; a settlement’s prosperity starts at 0 and has no upper limit.</p>\n\n<p>The chart below indicates the effects of your donations on the settlement and on anything within <strong>1 travel day</strong> of it.</p>\n\n<table style=\"width:100%;\">\n  <tbody>\n    <tr>\n      <td style=\"width: 20%;\"><p><strong>Prosperity</strong></p></td>\n      <td><p><strong>Effects within 1 travel day of the settlement</strong></p></td>\n    </tr>\n    <tr>\n      <td><p>10 or more</p></td>\n      <td><p>When you or an ally need to pay a cost in <strong>zenit</strong>, whatever the reason, that cost is <strong>halved</strong>.</p></td>\n    </tr>\n    <tr>\n      <td><p>15 or more</p></td>\n      <td>\n        <p>People gladly accommodate you and your allies: while in this area, you can always <strong>rest</strong> freely, without spending <strong>zenit</strong>. Furthermore, any <strong>travel rolls</strong> made in this area never use a die greater than <strong>d8</strong>.</p>\n      </td>\n    </tr>\n    <tr>\n      <td><p>20 or more</p></td>\n      <td><p>When a <strong>Villain</strong> in this area spends <strong>Ultima Points</strong>, they must spend <strong>twice</strong> as many <strong>Ultima Points</strong>.</p></td>\n    </tr>\n  </tbody>\n</table>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "For a Better Future",
+          "uuid": "Actor.YcnY1uYj3v3MmVVX.Item.PVF2NzS1ZTmUSFhc"
+        },
+        "U6v6tkylV8u9xA1a": {
+          "facet_cost": "",
+          "facet_description": "<p>When you or an ally who is able to hear and understand you perform a <strong>Check</strong> to examine a creature, item, or location, you may spend <strong>1 Trade Point</strong> to grant a bonus equal to <strong>[SL × 2]</strong> to the <strong>Result</strong> of that Check.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "I’ve Heard of It!",
+          "uuid": "Actor.YcnY1uYj3v3MmVVX.Item.U6v6tkylV8u9xA1a"
+        },
+        "V1zrvAZhevaX0oiv": {
+          "facet_cost": "",
+          "facet_description": "<p><strong>Once per session</strong>, when you help an NPC or community <strong>defeat greed and corruption</strong>, <strong>improve their quality of life</strong>, or <strong>coexist with other creatures</strong>, if you have acquired the <strong>Winds of Trade</strong> Skill, you gain <strong>[SL + 1] Trade Points</strong>.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Real Treasure",
+          "uuid": "Actor.YcnY1uYj3v3MmVVX.Item.V1zrvAZhevaX0oiv"
+        },
+        "XYEBsNIDviIWbE9c": {
+          "facet_cost": "",
+          "facet_description": "<p>When you or another Player Character spend <strong>[SL × 2]</strong> or fewer <strong>Inventory Points</strong>, you may spend <strong>1 Trade Point</strong> to <strong>ignore that cost</strong>.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Private Stock",
+          "uuid": "Actor.YcnY1uYj3v3MmVVX.Item.XYEBsNIDviIWbE9c"
+        }
+      },
+      "class_heroicSkill": {
+        "PVF2NzS1ZTmUSFhc": {
+          "id": "${item.id}",
+          "name": "For a Better Future",
+          "skill_cost": "",
+          "skill_description": "<p>When you need to spend one or more <strong>Fabula Points</strong>, if you are not spending them to <strong>alter the story</strong> (see Core Rulebook, page 98), you may spend that many <strong>Trade Points</strong> instead. Describe which memories of your trades and journeys give you strength!</p>\n\n<p>Additionally, when you gain <strong>two or more Trade Points</strong> through the <strong>Real Treasure</strong> or <strong>Winds of Trade</strong> Skills, you may choose to gain exactly <strong>1 Trade Point</strong> instead. If you do, choose a <strong>settlement</strong> within <strong>1 travel day</strong> of your position and increase its <strong>prosperity</strong> by an amount equal to <strong>[your Skill Level in Winds of Trade + your Skill Level in Real Treasure]</strong>; a settlement’s prosperity starts at 0 and has no upper limit.</p>\n\n<p>The chart below indicates the effects of your donations on the settlement and on anything within <strong>1 travel day</strong> of it.</p>\n\n<table style=\"width:100%;\">\n  <tbody>\n    <tr>\n      <td style=\"width: 20%;\"><p><strong>Prosperity</strong></p></td>\n      <td><p><strong>Effects within 1 travel day of the settlement</strong></p></td>\n    </tr>\n    <tr>\n      <td><p>10 or more</p></td>\n      <td><p>When you or an ally need to pay a cost in <strong>zenit</strong>, whatever the reason, that cost is <strong>halved</strong>.</p></td>\n    </tr>\n    <tr>\n      <td><p>15 or more</p></td>\n      <td>\n        <p>People gladly accommodate you and your allies: while in this area, you can always <strong>rest</strong> freely, without spending <strong>zenit</strong>. Furthermore, any <strong>travel rolls</strong> made in this area never use a die greater than <strong>d8</strong>.</p>\n      </td>\n    </tr>\n    <tr>\n      <td><p>20 or more</p></td>\n      <td><p>When a <strong>Villain</strong> in this area spends <strong>Ultima Points</strong>, they must spend <strong>twice</strong> as many <strong>Ultima Points</strong>.</p></td>\n    </tr>\n  </tbody>\n</table>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.YcnY1uYj3v3MmVVX.Item.PVF2NzS1ZTmUSFhc"
+        }
+      },
+      "class_lore": "<blockquote><p>Even in worlds rife with great magic, wealth and money are very influential. Trade and commerce are one key aspect to the development of nations and kingdoms, and <strong>Merchants</strong> are quite aware of this power. </p><p>It might seem strange for a Merchant to be treated on par with a hero: and yet, those who resist the temptation of greed and rely on commerce to foster exchanges of ideas and dialogue between distant people truly are fighting their very own revolution.</p></blockquote>",
+      "class_skill": {
+        "3RQeQ2ykCKkxE5ss": {
+          "id": "${item.id}",
+          "name": "Expiration Date",
+          "skill_cost": "",
+          "skill_description": "<p>When a <strong>potion </strong>or<strong> delicacy</strong> you created that<strong> does not </strong>deal damage causes one or more creatures to recover Hit Points, you may instead have it deal <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span> damage equal to <strong>[half your level + (SL × 10)]</strong> to each of those creatures. <strong>This </strong>damage’s type cannot change, and it is <strong>halved</strong> if you are dealing damage to <strong>two or more creatures</strong>.</p>",
+          "skill_maxLevel": 3,
+          "skill_type": "Passive",
+          "uuid": "Actor.YcnY1uYj3v3MmVVX.Item.3RQeQ2ykCKkxE5ss"
+        },
+        "GfpLiDUhpe33vJrj": {
+          "id": "${item.id}",
+          "name": "Winds of Trade",
+          "skill_cost": "",
+          "skill_description": "<p>After you <strong>rest</strong> in an area where commerce is possible, you gain <strong>[SL + 1]</strong> Trade Points. You may never have more than <strong>[SL + 3]</strong> Trade Points; if you acquire this Skill during character creation, you begin play with <strong>2 Trade Points</strong>.</p>\n\n<p>During a <strong>non-conflict</strong> scene, you may spend <strong>2 Trade Points</strong> to <strong>Choose one option:</strong></p>\n<ul>\n  <li>create a material or rare item approved by the Game Master whose value in <strong>zenit</strong> is equal to or lower than <strong>[your level, multiplied by 30]</strong>;</li>\n  <li>create an <strong>NPC</strong> that lives nearby and explain their occupation as well as how you met them, then the Game Master tells you what they require in exchange for their services.</li>\n</ul>\n",
+          "skill_maxLevel": 3,
+          "skill_type": "Passive",
+          "uuid": "Actor.YcnY1uYj3v3MmVVX.Item.GfpLiDUhpe33vJrj"
+        },
+        "U6v6tkylV8u9xA1a": {
+          "id": "${item.id}",
+          "name": "I’ve Heard of It!",
+          "skill_cost": "",
+          "skill_description": "<p>When you or an ally who is able to hear and understand you perform a <strong>Check</strong> to examine a creature, item, or location, you may spend <strong>1 Trade Point</strong> to grant a bonus equal to <strong>[SL × 2]</strong> to the <strong>Result</strong> of that Check.</p>\n",
+          "skill_maxLevel": 3,
+          "skill_type": "Passive",
+          "uuid": "Actor.YcnY1uYj3v3MmVVX.Item.U6v6tkylV8u9xA1a"
+        },
+        "V1zrvAZhevaX0oiv": {
+          "id": "${item.id}",
+          "name": "Real Treasure",
+          "skill_cost": "",
+          "skill_description": "<p><strong>Once per session</strong>, when you help an NPC or community <strong>defeat greed and corruption</strong>, <strong>improve their quality of life</strong>, or <strong>coexist with other creatures</strong>, if you have acquired the <strong>Winds of Trade</strong> Skill, you gain <strong>[SL + 1] Trade Points</strong>.</p>",
+          "skill_maxLevel": 3,
+          "skill_type": "Passive",
+          "uuid": "Actor.YcnY1uYj3v3MmVVX.Item.V1zrvAZhevaX0oiv"
+        },
+        "XYEBsNIDviIWbE9c": {
+          "id": "${item.id}",
+          "name": "Private Stock",
+          "skill_cost": "",
+          "skill_description": "<p>When you or another Player Character spend <strong>[SL × 2]</strong> or fewer <strong>Inventory Points</strong>, you may spend <strong>1 Trade Point</strong> to <strong>ignore that cost</strong>.</p>\n",
+          "skill_maxLevel": 3,
+          "skill_type": "Passive",
+          "uuid": "Actor.YcnY1uYj3v3MmVVX.Item.XYEBsNIDviIWbE9c"
+        }
+      },
+      "flavor_text": "<p style=\"text-align: center\"><span style=\"font-family: Amiri\"><em>First of all, think;</em></span></p><p style=\"text-align: center\"><span style=\"font-family: Amiri\"><em>how will this help</em></span></p><p style=\"text-align: center\"><span style=\"font-family: Amiri\"><em>people in need</em></span></p>",
+      "martialArmor_equippable": false,
+      "martialMelee_equippable": false,
+      "martialRanged_equippable": false,
+      "martialShield_equippable": false,
+      "name": "Merchant",
+      "project_performable": false,
+      "ritual_performable": false
+    },
+    "statusEffects": {},
+    "template": "hoxC3HFCtMYGScIo",
+    "templateSystemUniqueVersion": 504201233
+  },
+  "type": "character"
+}

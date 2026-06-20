@@ -1,0 +1,45 @@
+{
+  "_id": "ntR1CEGlLzrnCeo6",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1716859981884,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    }
+  },
+  "folder": "8mJfXdKYmmONftVP",
+  "img": "https://i.imgur.com/bKptsWR.jpg",
+  "name": "Huma Determina",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3
+  },
+  "sort": 212500,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>Max HP +20%</p>\n<p><br>Can't reduce to 0 HP once per day</p>\n<p>&nbsp;</p>\n<p>Can't take first turn in combat (Except Quicken)</p>",
+      "duration": "",
+      "name": "Huma Determina",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "target": "",
+      "type_damage": ""
+    },
+    "template": "FZmpKcQRP7hZQqbV",
+    "templateSystemUniqueVersion": 1700837225,
+    "unique": false,
+    "uniqueId": "ntR1CEGlLzrnCeo6"
+  },
+  "type": "equippableItem"
+}

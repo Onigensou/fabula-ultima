@@ -1,0 +1,19 @@
+{
+  "_id": "7YK1JzIbrhFv1VkL",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1761714212213,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "ao7MvDYKSVhEwWj3",
+  "name": "Combat Begin Hook",
+  "sort": 400000,
+  "sorting": "a",
+  "type": "Macro"
+}

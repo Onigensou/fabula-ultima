@@ -1,0 +1,19 @@
+{
+  "_id": "KXawHdBm5geezZni",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1756248784961,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": "#c8a219",
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "Rinri Quest Folder",
+  "sort": 1250000,
+  "sorting": "a",
+  "type": "Actor"
+}

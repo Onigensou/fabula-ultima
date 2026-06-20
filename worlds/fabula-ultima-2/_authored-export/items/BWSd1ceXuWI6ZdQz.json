@@ -1,0 +1,167 @@
+{
+  "_id": "BWSd1ceXuWI6ZdQz",
+  "_stats": {
+    "compendiumSource": "Item.Eu1eyJbBaHK06cfq",
+    "coreVersion": "12.343",
+    "createdTime": 1776610245575,
+    "duplicateSource": "Item.P2ZlEmmK2DUhao0y",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "bQrTkFg5bn8vEcym",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1776610596107,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Decrease <strong>【MIG】</strong> and<strong> 【WLP】 </strong>by one stage</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "core": {
+          "overlay": false
+        },
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "u6SHYfoeExl1etSf",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.u6SHYfoeExl1etSf"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-poisoned",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "effectmacro": {
+          "onCreate": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isPoisoned\n(async () => {\n  const PATH = \"system.props.isPoisoned\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+          },
+          "onDelete": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isPoisoned\n(async () => {\n  const PATH = \"system.props.isPoisoned\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+          },
+          "onDisable": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isPoisoned\n(async () => {\n  const PATH = \"system.props.isPoisoned\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+          },
+          "onEnable": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isPoisoned\n(async () => {\n  const PATH = \"system.props.isPoisoned\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+          },
+          "onToggle": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isPoisoned\n(async () => {\n  const PATH = \"system.props.isPoisoned\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/ATK%20DOUBLE%20DOWN.png",
+      "name": "Poisoned",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "DHsoSawNEZAxsnQ9"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.4"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Common_Potion_4_from_Final_Fantasy_XIV_icon.webp",
+  "name": "Acid Flask",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 100000,
+  "system": {
+    "container": "BrvcVy625CHzhxzn",
+    "props": {
+      "active_effect_config_table": {
+        "0": {
+          "$deleted": false,
+          "active_effect_application": "add",
+          "active_effect_apply_mode": "percentage",
+          "active_effect_dice_1": "",
+          "active_effect_dice_2": "",
+          "active_effect_dl": "0",
+          "active_effect_id": "bQrTkFg5bn8vEcym",
+          "active_effect_percent": "50",
+          "active_effect_target": "enemy",
+          "active_effect_trigger": "on_hit"
+        }
+      },
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_script": "",
+      "check_bonus": "0",
+      "class": "",
+      "cost": "-",
+      "custom_logic_action": "<p>const TAG = \"[CL-ACTION][Thrown Weapon]\";</p><p>const p = __PAYLOAD;</p><p>if (!p) {</p><p>  console.warn(TAG, \"Missing __PAYLOAD\");</p><p>  return;</p><p>}</p><p>// --------------------------------------------------</p><p>// Resolve attacker</p><p>// --------------------------------------------------</p><p>const attackerDoc = await fromUuid(</p><p>  p?.meta?.attackerUuid ??</p><p>  p?.attackerActorUuid ??</p><p>  p?.attackerUuid ??</p><p>  \"\"</p><p>);</p><p>const attackerActor = attackerDoc?.actor ?? attackerDoc;</p><p>if (!attackerActor) {</p><p>  console.warn(TAG, \"Could not resolve attacker actor.\");</p><p>  return;</p><p>}</p><p>// --------------------------------------------------</p><p>// Read DEX die size</p><p>// User note: dex die size is at .dex_current</p><p>// I included a few safe fallbacks just in case.</p><p>// --------------------------------------------------</p><p>const dexDieRaw =</p><p>  foundry.utils.getProperty(attackerActor, \"system.props.dex_current\") ??</p><p>  foundry.utils.getProperty(attackerActor, \"system.actor.props.dex_current\") ??</p><p>  foundry.utils.getProperty(attackerActor, \"system.dex_current\") ??</p><p>  foundry.utils.getProperty(attackerActor, \"dex_current\") ??</p><p>  0;</p><p>const dexDie = Math.floor(Number(dexDieRaw) || 0);</p><p>if (!Number.isFinite(dexDie) || dexDie &lt;= 0) {</p><p>  console.warn(TAG, \"Invalid dex_current. No thrown-weapon bonus applied.\", {</p><p>    attacker: attackerActor?.name ?? null,</p><p>    dexDieRaw</p><p>  });</p><p>  p.meta = p.meta || {};</p><p>  p.meta.thrownWeapon = {</p><p>    applied: false,</p><p>    reason: \"invalid-dex-die\",</p><p>    dexDieRaw</p><p>  };</p><p>  return;</p><p>}</p><p>// --------------------------------------------------</p><p>// Roll 1d(DEX die size)</p><p>// Example: dex_current = 8 -&gt; roll 1d8</p><p>// --------------------------------------------------</p><p>const roll = await (new Roll(`1d${dexDie}`)).evaluate({ async: true });</p><p>const rolledBonus = Number(roll.total ?? 0) || 0;</p><p>// --------------------------------------------------</p><p>// Add rolled result to existing damage bonus</p><p>// Base damage is already on the item, so we only touch bonus.</p><p>// --------------------------------------------------</p><p>p.advPayload = p.advPayload || {};</p><p>const bonusBefore = Number(p.advPayload.bonus ?? 0) || 0;</p><p>p.advPayload.bonus = bonusBefore + rolledBonus;</p><p>// --------------------------------------------------</p><p>// Debug stamp</p><p>// --------------------------------------------------</p><p>p.meta = p.meta || {};</p><p>p.meta.thrownWeapon = {</p><p>  applied: true,</p><p>  dexDie,</p><p>  rollFormula: roll.formula,</p><p>  rollResult: roll.result ?? \"\",</p><p>  rolledBonus,</p><p>  bonusBefore,</p><p>  bonusAfter: p.advPayload.bonus</p><p>};</p><p>console.log(TAG, \"APPLIED\", {</p><p>  attacker: attackerActor?.name ?? null,</p><p>  dexDie,</p><p>  rollFormula: roll.formula,</p><p>  rollResult: roll.result ?? \"\",</p><p>  rolledBonus,</p><p>  bonusBefore,</p><p>  bonusAfter: p.advPayload.bonus</p><p>});</p>",
+      "damage_bonus": "15",
+      "defense_target_type": "def",
+      "description": "<ul><li><p>Deal 15 base<strong> </strong><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(46, 139, 87) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span>&nbsp;damage to the target, with bonus damage base on the user <strong>DEX </strong>die</p></li></ul>",
+      "duration": "-",
+      "heroic_requirement": "",
+      "ignore_hr": false,
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Acid Flask",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "Any",
+      "skill_target": "-",
+      "skill_type": "Item",
+      "type_damage": "Poison",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "BWSd1ceXuWI6ZdQz"
+  },
+  "type": "equippableItem"
+}

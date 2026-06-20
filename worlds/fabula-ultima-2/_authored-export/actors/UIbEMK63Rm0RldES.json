@@ -1,0 +1,2118 @@
+{
+  "_id": "UIbEMK63Rm0RldES",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1757283460705,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "tmNVy5jIbM9rzx80",
+  "img": "https://ulisses-spiele.de/wp-content/uploads/2025/06/floralist-CMYK-354x500.jpg",
+  "items": [
+    {
+      "_id": "0k9ZLmoAUqrEnY7a",
+      "_stats": {
+        "compendiumSource": "Item.d3mGE5fJKYuOv2Iz",
+        "coreVersion": "12.343",
+        "createdTime": 1757288062610,
+        "duplicateSource": "Item.XQoyMbTmHnGMUYIn",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Flower/5423221def7f2e46fd29854645a09d9d_4403647154095096408.webp",
+      "name": "Golden Ginkgo",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Floralist",
+          "cost": "20 MP",
+          "damage_bonus": "0",
+          "description": "<p><em>Its vibrantly colored leaves represent tenacity.</em></p> <table style=\"width:100%;\"> <tbody> <tr><td><strong>Growth</strong></td><td><strong>Effect</strong></td></tr> <tr> <td>1</td> <td>At the <strong>end of your turn</strong>, you and every ally you can see recover from <a class=\"content-link\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\"><strong><u>Dazed</u></strong></a>, <a class=\"content-link\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\"><strong><u>Enraged</u></strong></a>, and <a class=\"content-link\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\"><strong><u>Shaken</u></strong></a>. </td> </tr> <tr> <td>2–3</td> <td>At the <strong>end of your turn</strong>, you and every ally you can see recover an amount of <strong>Mind Points</strong> equal to <strong>[5 + your Skill Level in Chloromancy]</strong>.</td> </tr> </tbody> </table>",
+          "duration": "Scene",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Golden Ginkgo",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Chloromancy SL</strong></p></td><td><p><strong>MP Recovered</strong></p></td></tr><tr><td><p>1</p></td><td><p>6</p></td></tr><tr><td><p>2</p></td><td><p>7</p></td></tr><tr><td><p>3</p></td><td><p>8</p></td></tr><tr><td><p>4</p></td><td><p>9</p></td></tr><tr><td><p>5</p></td><td><p>10</p></td></tr><tr><td><p>6</p></td><td><p>11</p></td></tr><tr><td><p>7</p></td><td><p>12</p></td></tr><tr><td><p>8</p></td><td><p>13</p></td></tr><tr><td><p>9</p></td><td><p>14</p></td></tr><tr><td><p>10</p></td><td><p>15</p></td></tr></tbody></table>",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "d3mGE5fJKYuOv2Iz"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "1G2vrn3EjVx1qHhr",
+      "_stats": {
+        "compendiumSource": "Item.DJWKNQ0INInWtARn",
+        "coreVersion": "12.343",
+        "createdTime": 1757288109389,
+        "duplicateSource": "Item.iMDdxVp9jixglM5i",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Flower/65ac1223301e9acf4ef879f7b790a410_5976978420575626944.webp",
+      "name": "Wardwattle",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Floralist",
+          "cost": "20 MP",
+          "damage_bonus": "0",
+          "description": "<p><em>A tangle of robust branches, whose thorns spread powerful poison.</em></p> <table style=\"width:100%;\"> <tbody> <tr><td><strong>Growth</strong></td><td><strong>Effect</strong></td></tr> <tr> <td>0–1</td> <td>You are <strong>Resistant</strong> to <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\"><strong><u>Physical</u></strong></a> damage. </td> </tr> <tr> <td>2</td> <td>You are <strong>Resistant</strong> to <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\"><strong><u>Physical</u></strong></a> damage. Additionally, after a creature <strong>hits you with a melee attack</strong>, you deal an amount of <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\"><strong><u>Physical</u></strong></a> damage to that creature equal to <strong>[5 + your Skill Level in Chloromancy]</strong> (after their attack was resolved). </td> </tr> <tr> <td>3</td> <td>You are <strong>Resistant</strong> to <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\"><strong><u>Physical</u></strong></a> damage. Additionally, after a creature hits you with a <strong>melee</strong> attack, you deal an amount of <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\"><strong><u>Physical</u></strong></a> damage to that creature equal to <strong>[5 + your Skill Level in Chloromancy]</strong>, <strong>and then</strong> deal an amount of <a class=\"content-link\" data-uuid=\"Item.tDcCWc67Ary9nVxe\"><strong><u>Poison</u></strong></a> damage to that creature equal to <strong>[5 + your Skill Level in Chloromancy]</strong> (both damage instances happen after that creature’s attack was resolved). </td> </tr> </tbody> </table>",
+          "duration": "Scene",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Wardwattle",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Chloromancy SL</strong></p></td><td data-colwidth=\"200\"><p><strong>Growth 2 Physical</strong></p></td><td><p><strong>Growth 3 Physical</strong></p></td><td><p><strong>Growth 3 Poison</strong></p></td></tr><tr><td><p>1</p></td><td data-colwidth=\"200\"><p>6</p></td><td><p>6</p></td><td><p>6</p></td></tr><tr><td><p>2</p></td><td data-colwidth=\"200\"><p>7</p></td><td><p>7</p></td><td><p>7</p></td></tr><tr><td><p>3</p></td><td data-colwidth=\"200\"><p>8</p></td><td><p>8</p></td><td><p>8</p></td></tr><tr><td><p>4</p></td><td data-colwidth=\"200\"><p>9</p></td><td><p>9</p></td><td><p>9</p></td></tr><tr><td><p>5</p></td><td data-colwidth=\"200\"><p>10</p></td><td><p>10</p></td><td><p>10</p></td></tr><tr><td><p>6</p></td><td data-colwidth=\"200\"><p>11</p></td><td><p>11</p></td><td><p>11</p></td></tr><tr><td><p>7</p></td><td data-colwidth=\"200\"><p>12</p></td><td><p>12</p></td><td><p>12</p></td></tr><tr><td><p>8</p></td><td data-colwidth=\"200\"><p>13</p></td><td><p>13</p></td><td><p>13</p></td></tr><tr><td><p>9</p></td><td data-colwidth=\"200\"><p>14</p></td><td><p>14</p></td><td><p>14</p></td></tr><tr><td><p>10</p></td><td data-colwidth=\"200\"><p>15</p></td><td><p>15</p></td><td><p>15</p></td></tr></tbody></table>",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "DJWKNQ0INInWtARn"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "2ijStwemZ8ZJW2F5",
+      "_stats": {
+        "compendiumSource": "Item.iskSPzjrcZHPH7XS",
+        "coreVersion": "12.343",
+        "createdTime": 1757288047428,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/cactguard.png",
+      "name": "Verdant Sway",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Floralist",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>You gain the ability to perform <strong>Rituals</strong> of the <strong>Ritualism</strong> discipline</p><p>Additionally, you may use <strong>Ritualism</strong> to create, animate, and/or control vegetation, pollen, spores, and toxins (but you cannot create nor control plant-Species NPCs this way).</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Verdant Sway",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "iskSPzjrcZHPH7XS"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "9jVZKTD95VMftL1l",
+      "_stats": {
+        "compendiumSource": "Item.f0C1lEOtdqKUuN7z",
+        "coreVersion": "12.343",
+        "createdTime": 1757288068751,
+        "duplicateSource": "Item.alP375VEUmGK1S2u",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Flower/a0f64cb3fc2791a5f8772d6d5bd1929f_7384711411759648588.webp",
+      "name": "Hermit Iris",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Floralist",
+          "cost": "20 MP",
+          "damage_bonus": "0",
+          "description": "<p><em>Its leaves carry whispers of ancient knowledge.</em></p> <table style=\"width:100%;\"> <tbody> <tr><td><strong>Growth</strong></td><td><strong>Effect</strong></td></tr> <tr> <td>1</td> <td>At the <strong>end of your turn</strong>, choose an enemy you can see. The Game Master reveals its <strong>Level</strong>, <strong>Rank</strong>, <strong>Species</strong>, <strong>maximum Hit Points</strong>, <strong>maximum Mind Points</strong>, <strong>Traits</strong>, <strong>Attributes</strong>, <strong>Defense</strong>, and <strong>Magic Defense</strong>.</td> </tr> <tr> <td>2–3</td> <td>At the <strong>end of your turn</strong>, choose an enemy you can see. The Game Master reveals its <strong>Level</strong>, <strong>Rank</strong>, <strong>Species</strong>, <strong>maximum Hit Points</strong>, <strong>maximum Mind Points</strong>, <strong>Traits</strong>, <strong>Attributes</strong>, <strong>Defense</strong>, <strong>Magic Defense</strong>, and <strong>Affinities</strong>.</td> </tr> </tbody> </table>",
+          "duration": "Scene",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Hermit Iris",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "f0C1lEOtdqKUuN7z"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "aHHxOuvMdRXtzGM7",
+      "_stats": {
+        "compendiumSource": "Item.tw0RAtSvucvUC4VG",
+        "coreVersion": "12.343",
+        "createdTime": 1757288043745,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/Huntersability.png",
+      "name": "Chrolomancy",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Floralist",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>Each time you acquire this Skill, you discover a new type of <strong>magiseed</strong> from the list found in the next pages.</p><p>During a conflict, if there are no <strong>magiseeds</strong> in your <strong>garden</strong>, you may use an action and spend <strong>20 Mind Points</strong> to <strong>plant</strong> a magiseed of a type you have discovered. The rules for the garden and for <strong>magiseed growth</strong> can be found on the Unique Mechanic page.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "10",
+          "name": "Chrolomancy",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Total Magiseeds Discovered</strong></p></td></tr><tr><td><p>1</p></td><td><p>1</p></td></tr><tr><td><p>2</p></td><td><p>2</p></td></tr><tr><td><p>3</p></td><td><p>3</p></td></tr><tr><td><p>4</p></td><td><p>4</p></td></tr><tr><td><p>5</p></td><td><p>5</p></td></tr><tr><td><p>6</p></td><td><p>6</p></td></tr><tr><td><p>7</p></td><td><p>7</p></td></tr><tr><td><p>8</p></td><td><p>8</p></td></tr><tr><td><p>9</p></td><td><p>9</p></td></tr><tr><td><p>10</p></td><td><p>10</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Other",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "tw0RAtSvucvUC4VG"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "BCzLsyyCbCoJ2gKq",
+      "_stats": {
+        "compendiumSource": "Item.bLDsPMvsYMlv5hJA",
+        "coreVersion": "12.343",
+        "createdTime": 1757288103901,
+        "duplicateSource": "Item.ResPsPC83HdZBnxq",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Flower/9b6b98afacbace0eb0b738192d108994_7392085286272590644.webp",
+      "name": "Remedy Lily",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Floralist",
+          "cost": "20 MP",
+          "damage_bonus": "0",
+          "description": "<p><em>Its elegant flowers filter and purify spiritual energy.</em></p> <table style=\"width:100%;\"> <tbody> <tr><td><strong>Growth</strong></td><td><strong>Effect</strong></td></tr> <tr> <td>1</td> <td>At the <strong>end of your turn</strong>, you and every ally you can see recover from <a class=\"content-link\" data-uuid=\"JournalEntry.JltwIqzHbBKhkD45\"><strong><u>Poisoned</u></strong></a>, <a class=\"content-link\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\"><strong><u>Slow</u></strong></a>, and <a class=\"content-link\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\"><strong><u>Weak</u></strong></a>. </td> </tr> <tr> <td>2–3</td> <td>At the <strong>end of your turn</strong>, you and every ally you can see recover an amount of <strong>Hit Points</strong> equal to <strong>[15 + your Skill Level in Chloromancy]</strong>.</td> </tr> </tbody> </table>",
+          "duration": "Scene",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Remedy Lily",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Chloromancy SL</strong></p></td><td><p><strong>HP Recovered</strong></p></td></tr><tr><td><p>1</p></td><td><p>16</p></td></tr><tr><td><p>2</p></td><td><p>17</p></td></tr><tr><td><p>3</p></td><td><p>18</p></td></tr><tr><td><p>4</p></td><td><p>19</p></td></tr><tr><td><p>5</p></td><td><p>20</p></td></tr><tr><td><p>6</p></td><td><p>21</p></td></tr><tr><td><p>7</p></td><td><p>22</p></td></tr><tr><td><p>8</p></td><td><p>23</p></td></tr><tr><td><p>9</p></td><td><p>24</p></td></tr><tr><td><p>10</p></td><td><p>25</p></td></tr></tbody></table>",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "bLDsPMvsYMlv5hJA"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "biJh9ryRECTlLtcY",
+      "_stats": {
+        "compendiumSource": "Item.aXEKl2F1e8qfY46Y",
+        "coreVersion": "12.343",
+        "createdTime": 1757288052442,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/AnemosPassive1.png",
+      "name": "Green Thumb",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Floralist",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you <strong>fill</strong> <strong>1 or more</strong> sections of your <strong>Growth Clock</strong>, you may choose one option:</p>\n<ul>\n  <li>you <strong>fill 1 additional section</strong> of your <strong>Growth Clock</strong>;</li>\n  <li>or you <strong>fill 1 fewer section</strong> of your <strong>Growth Clock</strong> (to a minimum of 0 sections filled).</li>\n</ul>\n<p>If you do, you cannot use this effect again until after your <strong>Growth Clock</strong> has become completely empty.</p>\n<p>Additionally, damage dealt by your <strong>magiseeds</strong> ignores <strong>Resistances</strong>.</p>\n",
+          "duration": "",
+          "heroic_requirement": "You must have mastered the Floralist Class.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Green Thumb",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "aXEKl2F1e8qfY46Y"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "BTofC47AhFYlULKG",
+      "_stats": {
+        "compendiumSource": "Item.VqD9I7o5OvWsUwMt",
+        "coreVersion": "12.343",
+        "createdTime": 1757288074534,
+        "duplicateSource": "Item.2YiUymRL6Uxakssg",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Flower/7bede847a7eed7ff31e7bd0f471ccdf6_8985173788365028111.webp",
+      "name": "Pilgrim Gazalia",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Floralist",
+          "cost": "20 MP",
+          "damage_bonus": "0",
+          "description": "<p><em>Its flamboyant corolla is synonymous with abundance.</em></p> <table style=\"width:100%;\"> <tbody> <tr><td><strong>Growth</strong></td><td><strong>Effect</strong></td></tr> <tr><td>1–2</td><td>At the <strong>end of your turn</strong>, choose yourself or another Player Character you can see. The chosen character regains <strong>2 Inventory Points</strong>.</td></tr> <tr><td>3</td><td>At the <strong>end of your turn</strong>, you and every other Player Character you can see regain <strong>1 Inventory Point</strong>.</td></tr> </tbody> </table>",
+          "duration": "Scene",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Pilgrim Gazalia",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "VqD9I7o5OvWsUwMt"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "FMl0JYiimMBBA8rk",
+      "_stats": {
+        "compendiumSource": "Item.Sk4xXVociZ8ZJNa2",
+        "coreVersion": "12.343",
+        "createdTime": 1757288110568,
+        "duplicateSource": "Item.DJWKNQ0INInWtARn",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Flower/4cf9a65cd38218340be2753675d98da5_1405866062245277046.webp",
+      "name": "Wrathful Carnation",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Floralist",
+          "cost": "20 MP",
+          "damage_bonus": "0",
+          "description": "<p><em>Despite their beauty, its yellow flowers emit an irritatingly pungent smell.</em></p> <table style=\"width:100%;\"> <tbody> <tr><td><strong>Growth</strong></td><td><strong>Effect</strong></td></tr> <tr> <td>1–4</td> <td> When this magiseed <strong>leaves your garden</strong>, choose up to one enemy you can see. Until the end of your next turn, when the chosen enemy performs an 【⚔️Attack】 or casts an 【⚡Offensive Spell】, they must include you among the targets of that attack or spell (if able).<br> At the <strong>end of your turn</strong>, you may remove this magiseed from your garden; if you do, erase <strong>all sections</strong> of your <strong>Growth Clock</strong>. </td> </tr> </tbody> </table>",
+          "duration": "Scene",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Wrathful Carnation",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "Sk4xXVociZ8ZJNa2"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "hfeQMnoo7JuJ7tT4",
+      "_stats": {
+        "compendiumSource": "Item.xoTEbUTLldx63w85",
+        "coreVersion": "12.343",
+        "createdTime": 1757288042469,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/NWTrans4.png",
+      "name": "Battle Gardening",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Floralist",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>After you <strong>plant a magiseed</strong> through the <strong>Chloromancy</strong> Skill (not when using 【📜<strong>Graft】</strong>), you may <strong>choose one option</strong>:</p><ul><li>Perform a free 【⚔️Attack】 with an equipped weapon</li><li>Perform the 【📕Spell】 action for free, casting a spell with a total <strong>Mind Point</strong> cost equal to or lower than <strong>[5 + (SL × 5)]</strong> (you must still pay its MP cost).</li></ul><p>Treat the <strong>High Roll (HR)</strong> of your <strong>Accuracy Check</strong> or <strong>Magic Check</strong> as being equal to 0 when determining damage dealt by this attack or spell.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "3",
+          "name": "Battle Gardening",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Free Spell MP Cap</strong></p></td></tr><tr><td><p>1</p></td><td><p>10</p></td></tr><tr><td><p>2</p></td><td><p>15</p></td></tr><tr><td><p>3</p></td><td><p>20</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "xoTEbUTLldx63w85"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "hFLV7cq3zawxHLjt",
+      "_stats": {
+        "compendiumSource": "Item.m4akX4dvBn3NElng",
+        "coreVersion": "12.343",
+        "createdTime": 1757288104985,
+        "duplicateSource": "Item.bLDsPMvsYMlv5hJA",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Flower/282675ae43f08200572013be92c692c9_1652894437625395503.webp",
+      "name": "Serrated Rose",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Floralist",
+          "cost": "20 MP",
+          "damage_bonus": "0",
+          "description": "<p><em>Its thorns form a tangle equally breathtaking and dangerous.</em></p> <table style=\"width:100%;\"> <tbody> <tr><td><strong>Growth</strong></td><td><strong>Effect</strong></td></tr> <tr> <td>1</td> <td>At the <strong>end of your turn</strong>, you may choose an enemy you can see. If you do, that enemy suffers <a class=\"content-link\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\"><strong><u>Slow</u></strong></a>. </td> </tr> <tr> <td>2</td> <td>At the <strong>end of your turn</strong>, every enemy you can see suffers <a class=\"content-link\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\"><strong><u>Slow</u></strong></a>. </td> </tr> <tr> <td>3</td> <td>At the <strong>end of your turn</strong>, you deal an amount of <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\"><strong><u>Physical</u></strong></a> damage equal to <strong>[15 + your Skill Level in Chloromancy]</strong> to each enemy you can see who is suffering from <a class=\"content-link\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\"><strong><u>Slow</u></strong></a>. </td> </tr> </tbody> </table>",
+          "duration": "Scene",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Serrated Rose",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Chloromancy SL</strong></p></td><td><p><strong>Damage</strong></p></td></tr><tr><td><p>1</p></td><td><p>16</p></td></tr><tr><td><p>2</p></td><td><p>17</p></td></tr><tr><td><p>3</p></td><td><p>18</p></td></tr><tr><td><p>4</p></td><td><p>19</p></td></tr><tr><td><p>5</p></td><td><p>20</p></td></tr><tr><td><p>6</p></td><td><p>21</p></td></tr><tr><td><p>7</p></td><td><p>22</p></td></tr><tr><td><p>8</p></td><td><p>23</p></td></tr><tr><td><p>9</p></td><td><p>24</p></td></tr><tr><td><p>10</p></td><td><p>25</p></td></tr></tbody></table>",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "m4akX4dvBn3NElng"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "hv1Wtm2cCCitoHZK",
+      "_stats": {
+        "compendiumSource": "Item.XQoyMbTmHnGMUYIn",
+        "coreVersion": "12.343",
+        "createdTime": 1757288060931,
+        "duplicateSource": "Item.9Sv0OEMKRJd14R81",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Flower/565f062aaa2c7fcf6e79c89f36a5101b_2486698931293520010.webp",
+      "name": "Desert Dahlia",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Floralist",
+          "cost": "20 MP",
+          "damage_bonus": "0",
+          "description": "<p><em>A tenacious plant, it doesn’t fear the dryness of dunes.</em></p><div class=\"tableWrapper\"><table style=\"min-width: 50px;\"><colgroup><col><col></colgroup><tbody><tr><td><p><strong>Growth</strong></p></td><td><p><strong>Effect</strong></p></td></tr><tr><td><p>0–1</p></td><td><p>You are <strong>Resistant</strong> to <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a> and <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a> damage.</p></td></tr><tr><td><p>2–3</p></td><td><p>You and your allies present on the scene are <strong>Resistant</strong> to <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a> and <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a> damage.</p></td></tr></tbody></table></div>",
+          "duration": "Scene",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Desert Dahlia",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "XQoyMbTmHnGMUYIn"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "JpPE14pXwlBKSgpY",
+      "_stats": {
+        "compendiumSource": "Item.JlK4V1yKLDi6cAqh",
+        "coreVersion": "12.343",
+        "createdTime": 1757288076894,
+        "duplicateSource": "Item.VqD9I7o5OvWsUwMt",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Flower/d6f3239a0bceb8ddb6eef3784e7f562d_7429523957636897100.webp",
+      "name": "Prancing Dandelion",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Floralist",
+          "cost": "20 MP",
+          "damage_bonus": "0",
+          "description": "<p><em>A symbol of energy and vivacity, it spreads seeds through stormy winds.</em></p> <table style=\"width:100%;\"> <tbody> <tr><td><strong>Growth</strong></td><td><strong>Effect</strong></td></tr> <tr> <td>1–3</td> <td>At the <strong>end of your turn</strong>, choose <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\"><strong><u>Air</u></strong></a> or <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\"><strong><u>Bolt</u></strong></a>. Until you use this effect again or this magiseed is no longer in your garden, all damage dealt by you and every ally present on the scene becomes the chosen type, its type cannot change, and it <strong>ignores Resistances</strong>. </td> </tr> </tbody> </table>",
+          "duration": "Scene",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Prancing Dandelion",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "JlK4V1yKLDi6cAqh"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "Jv331Bm85aiJybek",
+      "_stats": {
+        "compendiumSource": "Item.iMDdxVp9jixglM5i",
+        "coreVersion": "12.343",
+        "createdTime": 1757288107908,
+        "duplicateSource": "Item.bDxQAzs3j495XLy0",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Flower/d2ea819cf0300354b9cc128d8799442c_3782063987482386562.webp",
+      "name": "Striped Orchid",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Floralist",
+          "cost": "20 MP",
+          "damage_bonus": "0",
+          "description": "<p><em>Each segment of this plant is covered in toxins.</em></p> <table style=\"width:100%;\"> <tbody> <tr><td><strong>Growth</strong></td><td><strong>Effect</strong></td></tr> <tr> <td>1</td> <td>At the <strong>end of your turn</strong>, you may choose an enemy you can see. If you do, that enemy suffers <a class=\"content-link\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\"><strong><u>Weak</u></strong></a>. </td> </tr> <tr> <td>2</td> <td>At the <strong>end of your turn</strong>, every enemy you can see suffers <a class=\"content-link\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\"><strong><u>Weak</u></strong></a>. </td> </tr> <tr> <td>3</td> <td>At the <strong>end of your turn</strong>, you deal an amount of <a class=\"content-link\" data-uuid=\"Item.tDcCWc67Ary9nVxe\"><strong><u>Poison</u></strong></a> damage equal to <strong>[15 + your Skill Level in Chloromancy]</strong> to each enemy you can see who is suffering from <a class=\"content-link\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\"><strong><u>Weak</u></strong></a>. </td> </tr> </tbody> </table>",
+          "duration": "Scene",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Striped Orchid",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Chloromancy SL</strong></p></td><td><p><strong>Damage</strong></p></td></tr><tr><td><p>1</p></td><td><p>16</p></td></tr><tr><td><p>2</p></td><td><p>17</p></td></tr><tr><td><p>3</p></td><td><p>18</p></td></tr><tr><td><p>4</p></td><td><p>19</p></td></tr><tr><td><p>5</p></td><td><p>20</p></td></tr><tr><td><p>6</p></td><td><p>21</p></td></tr><tr><td><p>7</p></td><td><p>22</p></td></tr><tr><td><p>8</p></td><td><p>23</p></td></tr><tr><td><p>9</p></td><td><p>24</p></td></tr><tr><td><p>10</p></td><td><p>25</p></td></tr></tbody></table>",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "iMDdxVp9jixglM5i"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "kLhCyCMsjDflJ7D7",
+      "_stats": {
+        "compendiumSource": "Item.ResPsPC83HdZBnxq",
+        "coreVersion": "12.343",
+        "createdTime": 1757288100889,
+        "duplicateSource": "Item.JlK4V1yKLDi6cAqh",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Flower/fb43c30e197b2ea83861aefbd4926566_4313677943224157869.webp",
+      "name": "Regal Protea",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Floralist",
+          "cost": "20 MP",
+          "damage_bonus": "0",
+          "description": "<p><em>A colorful and tenacious flower, favored by an ancient dynasty.</em></p> <table style=\"width:100%;\"> <tbody> <tr><td><strong>Growth</strong></td><td><strong>Effect</strong></td></tr> <tr> <td>0–1</td> <td>You are <strong>immune</strong> to <a class=\"content-link\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\"><strong><u>Shaken</u></strong></a> and <a class=\"content-link\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\"><strong><u>Weak</u></strong></a>. </td> </tr> <tr><td>2</td><td>You treat your <strong>Might</strong> and <strong>Willpower</strong> as being one die size higher (up to a maximum of <strong>d12</strong>).</td></tr> <tr><td>3</td><td>You and every ally you can see treat your <strong>Might</strong> and <strong>Willpower</strong> as being one die size higher (up to a maximum of <strong>d12</strong>).</td></tr> </tbody> </table>",
+          "duration": "Scene",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Regal Protea",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "ResPsPC83HdZBnxq"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "loZn19cHfJrzzBjN",
+      "_stats": {
+        "compendiumSource": "Item.I44gazsj0lrkq9ab",
+        "coreVersion": "12.343",
+        "createdTime": 1757288072522,
+        "duplicateSource": "Item.zKzHicZLy7NK119i",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Flower/f464ceb38705b0d39c93ef8089294474_7758389642025479009.webp",
+      "name": "Lunar Magnolia",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Floralist",
+          "cost": "20 MP",
+          "damage_bonus": "0",
+          "description": "<p><em>It blooms in the darkest hours of the night.</em></p> <table style=\"width:100%;\"> <tbody> <tr><td><strong>Growth</strong></td><td><strong>Effect</strong></td></tr> <tr> <td>1–3</td> <td>At the <strong>end of your turn</strong>, choose <a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\"><strong><u>Ice</u></strong></a> or <a class=\"content-link\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\"><strong><u>Light</u></strong></a>. Until you use this effect again or this magiseed is no longer in your garden, all damage dealt by you and every ally present on the scene becomes the chosen type, its type cannot change, and it <strong>ignores Resistances</strong>. </td> </tr> </tbody> </table>",
+          "duration": "Scene",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Lunar Magnolia",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "I44gazsj0lrkq9ab"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "lZcbm143vy4GjysZ",
+      "_stats": {
+        "compendiumSource": "Item.zKzHicZLy7NK119i",
+        "coreVersion": "12.343",
+        "createdTime": 1757288071370,
+        "duplicateSource": "Item.cdl3QkMyUXjaDjf2",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Flower/5370968906c7982348e1fefd2301c09e_6218191525249322713.webp",
+      "name": "Horned Hawthorn",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Floralist",
+          "cost": "20 MP",
+          "damage_bonus": "0",
+          "description": "<p><em>Favored by witches and surgeons alike for its purifying properties.</em></p> <table style=\"width:100%;\"> <tbody> <tr><td><strong>Growth</strong></td><td><strong>Effect</strong></td></tr> <tr> <td>0–1</td> <td>You are <strong>Resistant</strong> to <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\"><strong><u>Dark</u></strong></a> and <a class=\"content-link\" data-uuid=\"Item.tDcCWc67Ary9nVxe\"><strong><u>Poison</u></strong></a> damage. </td> </tr> <tr> <td>2–3</td> <td>You and your allies present on the scene are <strong>Resistant</strong> to <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\"><strong><u>Dark</u></strong></a> and <a class=\"content-link\" data-uuid=\"Item.tDcCWc67Ary9nVxe\"><strong><u>Poison</u></strong></a> damage. </td> </tr> </tbody> </table>",
+          "duration": "Scene",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Horned Hawthorn",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "zKzHicZLy7NK119i"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "N12meUPT7Ai2QD4H",
+      "_stats": {
+        "compendiumSource": "Item.ooiKT3HARqUBOuZr",
+        "coreVersion": "12.343",
+        "createdTime": 1757288105951,
+        "duplicateSource": "Item.m4akX4dvBn3NElng",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Flower/26dcdc380318ebf2062295f9100d852e_932041768001254811.webp",
+      "name": "Silver Strelitzia",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Floralist",
+          "cost": "20 MP",
+          "damage_bonus": "0",
+          "description": "<p><em>Its silvery blossoms are easily mistaken for jewels.</em></p> <table style=\"width:100%;\"> <tbody> <tr><td><strong>Growth</strong></td><td><strong>Effect</strong></td></tr> <tr> <td>0–1</td> <td>You are <strong>Resistant</strong> to <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\"><strong><u>Bolt</u></strong></a> and <a class=\"content-link\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\"><strong><u>Light</u></strong></a> damage. </td> </tr> <tr> <td>2–3</td> <td>You and your allies present on the scene are <strong>Resistant</strong> to <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\"><strong><u>Bolt</u></strong></a> and <a class=\"content-link\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\"><strong><u>Light</u></strong></a> damage. </td> </tr> </tbody> </table>",
+          "duration": "Scene",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Silver Strelitzia",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "ooiKT3HARqUBOuZr"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "NBf9gb8FdYzx6N28",
+      "_stats": {
+        "compendiumSource": "Item.RvWe0HFzLjUahCkr",
+        "coreVersion": "12.343",
+        "createdTime": 1757288050926,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/TaleSpinnerSkill5.png",
+      "name": "Greater Chloromancy",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Floralist",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>Once per turn when a <strong>magiseed</strong> leaves your <strong>garden</strong>, if that magiseed has one or more “<strong>at the end of your turn</strong>” effects, you may spend <strong>20 Mind Points</strong>. If you do, reproduce <strong>one</strong> of those effects (you may also choose an effect that doesn’t match the current sections of your <strong>Growth Clock</strong>).</p><p>Additionally, if you have acquired the 【📜<strong>Verdant Sway】</strong> Skill, your <strong>Rituals</strong> can now also influence and control <strong>soldier-Rank</strong> creatures belonging to the <strong>plant</strong> Species (but you are still unable to create them).</p>",
+          "duration": "",
+          "heroic_requirement": "You must have mastered the Floralist Class.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Greater Chloromancy",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "RvWe0HFzLjUahCkr"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "nIG6TtYw0uoEOs3C",
+      "_stats": {
+        "compendiumSource": "Item.HHjkKyYg1cujZ5nP",
+        "coreVersion": "12.343",
+        "createdTime": 1757288057000,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Flower/f464ceb38705b0d39c93ef8089294474_7758389642025479009.webp",
+      "name": "Arctic Narcissus",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Floralist",
+          "cost": "20 MP",
+          "damage_bonus": "0",
+          "description": "<p><em>It stubbornly survives in frozen territories.</em></p><div class=\"tableWrapper\"><table style=\"min-width: 50px;\"><colgroup><col><col></colgroup><tbody><tr><td><p><strong>Growth</strong></p></td><td><p><strong>Effect</strong></p></td></tr><tr><td><p>0–1</p></td><td><p>You are <strong>Resistant</strong> to <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(210, 180, 140) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span> and <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(166, 227, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span> damage.</p></td></tr><tr><td><p>2–3</p></td><td><p>You and your allies present on the scene are <strong>Resistant</strong> to <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(210, 180, 140) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span> and <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(166, 227, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span> damage.</p></td></tr></tbody></table></div>",
+          "duration": "Scene",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Arctic Narcissus",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "HHjkKyYg1cujZ5nP"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "OSr1RDmp26sR5Fbk",
+      "_stats": {
+        "compendiumSource": "Item.9Sv0OEMKRJd14R81",
+        "coreVersion": "12.343",
+        "createdTime": 1757288059938,
+        "duplicateSource": "Item.HHjkKyYg1cujZ5nP",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Flower/ebd9ad15e1861492d4bedd9820ebd519_7762501215072489283.webp",
+      "name": "Blazing Chrysanthemum",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Floralist",
+          "cost": "20 MP",
+          "damage_bonus": "0",
+          "description": "<p><em>Its thick petals resemble an erupting volcano.</em></p><div class=\"tableWrapper\"><table style=\"min-width: 50px;\"><colgroup><col contenteditable=\"false\"><col contenteditable=\"false\"></colgroup><tbody><tr><td><p><strong>Growth</strong></p></td><td><p><strong>Effect</strong></p></td></tr><tr><td><p>1–3</p></td><td><p>At the <strong>end of your turn</strong>, <strong>choose</strong>:</p><ul><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(210, 180, 140) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span></span></li><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span></li></ul><p>Until you use this effect again or this magiseed is no longer in your garden, all damage dealt by you and every ally present on the scene becomes the chosen type, its type cannot change, and it <strong>ignores Resistances</strong>.</p></td></tr></tbody></table></div>",
+          "duration": "Scene",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Blazing Chrysanthemum",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "9Sv0OEMKRJd14R81"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "OtQiLcDZehAIvdw5",
+      "_stats": {
+        "compendiumSource": "Item.alP375VEUmGK1S2u",
+        "coreVersion": "12.343",
+        "createdTime": 1757288065994,
+        "duplicateSource": "Item.d3mGE5fJKYuOv2Iz",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Flower/c6bbcd5921831614fdca7a90b10b1798_4526148601942756468.webp",
+      "name": "Grave Asphodel",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Floralist",
+          "cost": "20 MP",
+          "damage_bonus": "0",
+          "description": "<p><em>Solemn and elegant, it embodies death’s ineluctability.</em></p><div class=\"tableWrapper\"><table style=\"min-width: 50px;\"><colgroup><col><col></colgroup><tbody><tr><td><p><strong>Growth</strong></p></td><td><p><strong>Effect</strong></p></td></tr><tr><td><p>1</p></td><td><p>At the <strong>end of your turn</strong>, you may choose an enemy you can see. If you do, that enemy suffers <a class=\"content-link\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a>.</p></td></tr><tr><td><p>2</p></td><td><p>At the <strong>end of your turn</strong>, every enemy you can see suffers <a class=\"content-link\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a>.</p></td></tr><tr><td><p>3</p></td><td><p>At the <strong>end of your turn</strong>, you deal an amount of <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a> damage equal to <strong>[15 + your Skill Level in Chloromancy]</strong> to each enemy you can see who is suffering from <a class=\"content-link\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a>.</p></td></tr></tbody></table></div>",
+          "duration": "Scene",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Grave Asphodel",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Chloromancy SL</strong></p></td><td><p><strong>Damage</strong></p></td></tr><tr><td><p>1</p></td><td><p>16</p></td></tr><tr><td><p>2</p></td><td><p>17</p></td></tr><tr><td><p>3</p></td><td><p>18</p></td></tr><tr><td><p>4</p></td><td><p>19</p></td></tr><tr><td><p>5</p></td><td><p>20</p></td></tr><tr><td><p>6</p></td><td><p>21</p></td></tr><tr><td><p>7</p></td><td><p>22</p></td></tr><tr><td><p>8</p></td><td><p>23</p></td></tr><tr><td><p>9</p></td><td><p>24</p></td></tr><tr><td><p>10</p></td><td><p>25</p></td></tr></tbody></table>",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "alP375VEUmGK1S2u"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "P2JQbBjtZo2tFxcZ",
+      "_stats": {
+        "compendiumSource": "Item.VdMuakD5h5sf8pcI",
+        "coreVersion": "12.343",
+        "createdTime": 1757288045077,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/acorn_bomb.png",
+      "name": "Graft",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Floralist",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>As long as there is a <strong>magiseed</strong> in your <strong>garden</strong> and <strong>1 or more sections</strong> of your <strong>Growth Clock</strong> are filled, you may use an action to remove that magiseed from your garden: if you do, plant a different magiseed among those you have discovered (keep the current filled sections of your Growth Clock unchanged).</p>\n",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Graft",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "VdMuakD5h5sf8pcI"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "SGhc6KJN47rVZJri",
+      "_stats": {
+        "compendiumSource": "Item.ht0RBahqlen1HjrS",
+        "coreVersion": "12.343",
+        "createdTime": 1757288046332,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/Twilight_-_Passive_1.png",
+      "name": "Tree of Life",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Floralist",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you remove a <strong>magiseed</strong> from your <strong>garden</strong>, you may choose one creature you can see: if that creature is in <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span>, they recover <strong>[5 + (SL × 5)] Hit Points</strong>.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "5",
+          "name": "Tree of Life",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>HP Recovered</strong></p></td></tr><tr><td><p>1</p></td><td><p>10</p></td></tr><tr><td><p>2</p></td><td><p>15</p></td></tr><tr><td><p>3</p></td><td><p>20</p></td></tr><tr><td><p>4</p></td><td><p>25</p></td></tr><tr><td><p>5</p></td><td><p>30</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "ht0RBahqlen1HjrS"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "UCq2xvOjC4QGt1N8",
+      "_stats": {
+        "compendiumSource": "Item.cdl3QkMyUXjaDjf2",
+        "coreVersion": "12.343",
+        "createdTime": 1757288070133,
+        "duplicateSource": "Item.f0C1lEOtdqKUuN7z",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Flower/41637e198890bc1dcf99440d9b213e1d_5450934023619344092.webp",
+      "name": "Hookleaf Nightshade",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Floralist",
+          "cost": "20 MP",
+          "damage_bonus": "0",
+          "description": "<p><em>Its purplish berries contain a deadly magical venom.</em></p> <table style=\"width:100%;\"> <tbody> <tr><td><strong>Growth</strong></td><td><strong>Effect</strong></td></tr> <tr> <td>0–1</td> <td>All damage you deal becomes <a class=\"content-link\" data-uuid=\"Item.tDcCWc67Ary9nVxe\"><strong><u>Poison</u></strong></a>, its type cannot change, and it <strong>ignores Immunities and Resistances</strong>. </td> </tr> <tr> <td>2–3</td> <td>All damage you deal becomes <a class=\"content-link\" data-uuid=\"Item.tDcCWc67Ary9nVxe\"><strong><u>Poison</u></strong></a>, its type cannot change, and it ignores Immunities and Resistances. Additionally, when you deal <a class=\"content-link\" data-uuid=\"Item.tDcCWc67Ary9nVxe\"><strong><u>Poison</u></strong></a> damage for the first time during your turn, you deal extra damage equal to <strong>[your Skill Level in Chloromancy]</strong> and each creature that lost <strong>Hit Points</strong> this way suffers <a class=\"content-link\" data-uuid=\"JournalEntry.JltwIqzHbBKhkD45\"><strong><u>Poisoned</u></strong></a>. </td> </tr> </tbody> </table>",
+          "duration": "Scene",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Hookleaf Nightshade",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Chloromancy SL</strong></p></td><td><p><strong>Extra Damage</strong></p></td></tr><tr><td><p>1</p></td><td><p>1</p></td></tr><tr><td><p>2</p></td><td><p>2</p></td></tr><tr><td><p>3</p></td><td><p>3</p></td></tr><tr><td><p>4</p></td><td><p>4</p></td></tr><tr><td><p>5</p></td><td><p>5</p></td></tr><tr><td><p>6</p></td><td><p>6</p></td></tr><tr><td><p>7</p></td><td><p>7</p></td></tr><tr><td><p>8</p></td><td><p>8</p></td></tr><tr><td><p>9</p></td><td><p>9</p></td></tr><tr><td><p>10</p></td><td><p>10</p></td></tr></tbody></table>",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "cdl3QkMyUXjaDjf2"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "WJ6dYfS6hzOIuUq3",
+      "_stats": {
+        "compendiumSource": "Item.2YiUymRL6Uxakssg",
+        "coreVersion": "12.343",
+        "createdTime": 1757288073423,
+        "duplicateSource": "Item.I44gazsj0lrkq9ab",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Flower/52302681910dbee567238dec24ecf3a7_6183452992702886377.webp",
+      "name": "Ocean Lotus",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Floralist",
+          "cost": "20 MP",
+          "damage_bonus": "0",
+          "description": "<p><em>A graceful symbol of serenity and wisdom.</em></p> <table style=\"width:100%;\"> <tbody> <tr><td><strong>Growth</strong></td><td><strong>Effect</strong></td></tr> <tr> <td>0–1</td> <td>You are <strong>immune</strong> to <a class=\"content-link\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\"><strong><u>Dazed</u></strong></a> and <a class=\"content-link\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\"><strong><u>Slow</u></strong></a>. </td> </tr> <tr> <td>2</td> <td>You treat your <strong>Dexterity</strong> and <strong>Insight</strong> as being one die size higher (up to a maximum of <strong>d12</strong>).</td> </tr> <tr> <td>3</td> <td>You and every ally you can see treat your <strong>Dexterity</strong> and <strong>Insight</strong> as being one die size higher (up to a maximum of <strong>d12</strong>).</td> </tr> </tbody> </table>",
+          "duration": "Scene",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Ocean Lotus",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "2YiUymRL6Uxakssg"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "Z2E6KcNRSJPXXIV1",
+      "_stats": {
+        "compendiumSource": "Item.bDxQAzs3j495XLy0",
+        "coreVersion": "12.343",
+        "createdTime": 1757288106937,
+        "duplicateSource": "Item.ooiKT3HARqUBOuZr",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Flower/9580e679219637f5e3723adc2d178fe6_6728775985976334536.webp",
+      "name": "Star Peony",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Floralist",
+          "cost": "20 MP",
+          "damage_bonus": "0",
+          "description": "<p><em>It silently gazes into celestial depths.</em></p> <table style=\"width:100%;\"> <tbody> <tr><td><strong>Growth</strong></td><td><strong>Effect</strong></td></tr> <tr> <td>1</td> <td>At the <strong>end of your turn</strong>, you may choose an enemy you can see. If you do, that enemy suffers <a class=\"content-link\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\"><strong><u>Dazed</u></strong></a>. </td> </tr> <tr> <td>2</td> <td>At the <strong>end of your turn</strong>, every enemy you can see suffers <a class=\"content-link\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\"><strong><u>Dazed</u></strong></a>. </td> </tr> <tr> <td>3</td> <td>At the <strong>end of your turn</strong>, you deal an amount of <a class=\"content-link\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\"><strong><u>Light</u></strong></a> damage equal to <strong>[15 + your Skill Level in Chloromancy]</strong> to each enemy you can see who is suffering from <a class=\"content-link\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\"><strong><u>Dazed</u></strong></a>. </td> </tr> </tbody> </table>",
+          "duration": "Scene",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Star Peony",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Chloromancy SL</strong></p></td><td><p><strong>Damage</strong></p></td></tr><tr><td><p>1</p></td><td><p>16</p></td></tr><tr><td><p>2</p></td><td><p>17</p></td></tr><tr><td><p>3</p></td><td><p>18</p></td></tr><tr><td><p>4</p></td><td><p>19</p></td></tr><tr><td><p>5</p></td><td><p>20</p></td></tr><tr><td><p>6</p></td><td><p>21</p></td></tr><tr><td><p>7</p></td><td><p>22</p></td></tr><tr><td><p>8</p></td><td><p>23</p></td></tr><tr><td><p>9</p></td><td><p>24</p></td></tr><tr><td><p>10</p></td><td><p>25</p></td></tr></tbody></table>",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "bDxQAzs3j495XLy0"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Floralist",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar4": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "DEF",
+            "max": 13,
+            "maxcolor": "#f26d40",
+            "mincolor": "#f26d40",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 13
+          },
+          "bar5": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar5",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MDEF",
+            "max": 10,
+            "maxcolor": "#26d6ed",
+            "mincolor": "#26d6ed",
+            "opacity": null,
+            "order": 4,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 10
+          }
+        }
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Floralist",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://modiphius.net/cdn/shop/files/fabula-ultima-atlas-natural-fantasy-fabula-ultima-need-games-271873_800x.jpg?v=1754945397",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 0,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {
+      "also_text": "Bloomblade, Gardener, Herbalist",
+      "benefit_dropdown": "choice_benefit",
+      "classMechanic_text": "<h1>MAGISEEDS – FLORALIST CLASS MECHANIC</h1><p></p><h2>WHAT IS A MAGISEED?</h2><p>Floralist fight by <strong>planting a magiseed</strong> that grows in a personal <strong>garden</strong>—an abstract space that can look like a pot on your back, a glowing bud on your blade, or roots under your feet. Your garden can hold <strong>only one</strong> magiseed at a time, and any magiseed in your garden is <strong>automatically removed</strong> when the scene ends.</p><h2>CHLOROMANCY (PLANTING)</h2><ul><li>Each time you acquire <strong>Chloromancy</strong>, you discover a <strong>new magiseed type</strong> from the list below.</li><li>During a conflict, if your garden is empty, you may use an <strong>action</strong> and spend <strong>20 Mind Points</strong> to <strong>plant</strong> a magiseed you’ve discovered.</li></ul><h2>THE GROWTH CLOCK</h2><ul><li>Your Growth Clock has <strong>4 sections</strong> and exists only during conflict scenes. It begins each scene <strong>empty</strong>.</li><li><strong>End of your turn:</strong> if a magiseed is in your garden, <strong>fill 1 section</strong> of the Growth Clock, then resolve that magiseed’s <em>“end of your turn”</em> effect (if any).</li><li>When you fill the <strong>fourth</strong> section, remove the magiseed from your garden, then <strong>erase all sections</strong> of the Growth Clock.</li><li>Sections may not be filled or erased in any other way except by effects that <strong>explicitly</strong> modify Growth Clocks (e.g., specific Floralist skills like Brambleheart/Green Thumb).</li></ul><h2>USING MAGISEEDS</h2><ul><li>Magiseeds can grant passive benefits or effects that trigger at the <strong>end of your turn</strong>.</li><li>Their power depends on how many sections are currently filled in your Growth Clock. Apply <strong>only</strong> the effect that matches the <strong>exact</strong> number of filled sections—never above or below.</li><li>Effects end immediately if the magiseed leaves your garden.</li></ul><blockquote><p><strong>Power Scaling:</strong> If a magiseed deals damage, it deals <strong>+5</strong> extra damage if you are <strong>level 30+</strong>.<br>If a magiseed causes Hit Point and/or Mind Point loss or recovery, increase that value by <strong>+10</strong> if you are <strong>level 30+</strong>.</p></blockquote><p></p><hr><details class=\"seed-ref\"><summary>🌿 <span class=\"seed-summary\">Magiseeds – Quick Reference (click to expand)</span></summary><table class=\"magiseed-qref\"><tbody><tr><th style=\"width:16%\"><p>Magiseed</p></th><th style=\"width:14%\"><p>Range</p></th><th style=\"width:18%\"><p>Role</p></th><th><p>Short Effect (overview)</p></th></tr><tr><td><p><strong>Arctic Narcissus</strong></p></td><td><p>0–1 / 2–3</p></td><td><p><span class=\"badge b-protect\">Resist</span></p></td><td><p>Grants <em>earth & ice</em> resistance to you, then to the whole party at higher growth.</p></td></tr><tr><td><p><strong>Blazing Chrysanthemum</strong></p></td><td><p>1–3</p></td><td><p><span class=\"badge b-convert\">Convert</span></p></td><td><p>At turn end choose <em>earth or fire</em>: all allied damage becomes that type and <span class=\"hint\">ignores Resistances</span>.</p></td></tr><tr><td><p><strong>Desert Dahlia</strong></p></td><td><p>0–1 / 2–3</p></td><td><p><span class=\"badge b-protect\">Resist</span></p></td><td><p>Gives <em>air & fire</em> resistance to you → then to all allies.</p></td></tr><tr><td><p><strong>Golden Ginkgo</strong></p></td><td><p>1 / 2–3</p></td><td><p><span class=\"badge b-cleanse\">Cleanse</span></p></td><td><p>End of turn: cure <em>dazed, enraged, shaken</em>, then add party <em>MP recovery</em> at higher growth.</p></td></tr><tr><td><p><strong>Grave Asphodel</strong></p></td><td><p>1 / 2 / 3</p></td><td><p><span class=\"badge b-debuff\">Debuff</span></p></td><td><p>Inflict <em>shaken</em> (single → all). At max growth, blast all <em>shaken</em> enemies with <em>dark</em> damage.</p></td></tr><tr><td><p><strong>Hermit Iris</strong></p></td><td><p>1 / 2–3</p></td><td><p><span class=\"badge b-info\">Reveal</span></p></td><td><p>Choose an enemy: learn their <em>stats</em>; at higher growth also reveal <em>affinities</em>.</p></td></tr><tr><td><p><strong>Hookleaf Nightshade</strong></p></td><td><p>0–1 / 2–3</p></td><td><p><span class=\"badge b-convert\">Convert</span> <span class=\"badge b-debuff\">Debuff</span></p></td><td><p>Your damage becomes <em>poison</em> and <span class=\"hint\">ignores Immunities/Resistances</span>; later add bonus poison and inflict <em>poisoned</em>.</p></td></tr><tr><td><p><strong>Horned Hawthorn</strong></p></td><td><p>0–1 / 2–3</p></td><td><p><span class=\"badge b-protect\">Resist</span></p></td><td><p>Gives <em>dark & poison</em> resistance to you → then to the whole party.</p></td></tr><tr><td><p><strong>Lunar Magnolia</strong></p></td><td><p>1–3</p></td><td><p><span class=\"badge b-convert\">Convert</span></p></td><td><p>Choose <em>ice or light</em>: all allied damage becomes that type; <span class=\"hint\">ignores Resistances</span>.</p></td></tr><tr><td><p><strong>Ocean Lotus</strong></p></td><td><p>0–1 / 2 / 3</p></td><td><p><span class=\"badge b-protect\">Boost</span></p></td><td><p>Immune to <em>dazed & slow</em>; then raise <em>DEX/INS</em> die size for you → then for allies (max d12).</p></td></tr><tr><td><p><strong>Pilgrim Gazalia</strong></p></td><td><p>1–2 / 3</p></td><td><p><span class=\"badge b-info\">Supply</span></p></td><td><p>Restore <em>Inventory Points</em> to one PC; at max growth, everyone regains some.</p></td></tr><tr><td><p><strong>Prancing Dandelion</strong></p></td><td><p>1–3</p></td><td><p><span class=\"badge b-convert\">Convert</span></p></td><td><p>Choose <em>air or bolt</em>: all allied damage becomes that type; <span class=\"hint\">ignores Resistances</span>.</p></td></tr><tr><td><p><strong>Regal Protea</strong></p></td><td><p>0–1 / 2 / 3</p></td><td><p><span class=\"badge b-protect\">Boost</span></p></td><td><p>Immune to <em>shaken & weak</em>; then raise <em>MIG/WLP</em> die size for you → then for allies (max d12).</p></td></tr><tr><td><p><strong>Remedy Lily</strong></p></td><td><p>1 / 2–3</p></td><td><p><span class=\"badge b-cleanse\">Cleanse</span></p></td><td><p>Cure <em>poisoned, slow, weak</em>; at higher growth add <em>party HP recovery</em>.</p></td></tr><tr><td><p><strong>Serrated Rose</strong></p></td><td><p>1 / 2 / 3</p></td><td><p><span class=\"badge b-debuff\">Debuff</span></p></td><td><p>Inflict <em>slow</em> (single → all). At max growth, strike all <em>slowed</em> enemies with <em>physical</em> damage.</p></td></tr><tr><td><p><strong>Silver Strelitzia</strong></p></td><td><p>0–1 / 2–3</p></td><td><p><span class=\"badge b-protect\">Resist</span></p></td><td><p>Gives <em>bolt & light</em> resistance to you → then to all allies.</p></td></tr><tr><td><p><strong>Star Peony</strong></p></td><td><p>1 / 2 / 3</p></td><td><p><span class=\"badge b-debuff\">Debuff</span></p></td><td><p>Inflict <em>dazed</em> (single → all). At max growth, blast all <em>dazed</em> enemies with <em>light</em> damage.</p></td></tr><tr><td><p><strong>Striped Orchid</strong></p></td><td><p>1 / 2 / 3</p></td><td><p><span class=\"badge b-debuff\">Debuff</span></p></td><td><p>Inflict <em>weak</em> (single → all). At max growth, poison-blast all <em>weak</em> enemies.</p></td></tr><tr><td><p><strong>Wardwattle</strong></p></td><td><p>0–1 / 2 / 3</p></td><td><p><span class=\"badge b-protect\">Guard</span></p></td><td><p><em>Physical</em> resistance; at higher growth, retaliate vs melee hits with damage (then add <em>poison</em> rider).</p></td></tr><tr><td><p><strong>Wrathful Carnation</strong></p></td><td><p>1–4</p></td><td><p><span class=\"badge b-taunt\">Provoke</span></p></td><td><p>When this seed leaves your garden, <em>mark</em> one enemy: until end of your next turn they must include you among their targets if able. You may purposely remove the seed at turn end to trigger this and reset the Growth Clock.</p></td></tr></tbody></table></details><p></p><hr><h2>TURN FLOW</h2><ol><li><strong>Plant</strong> (action, 20 MP) if your garden is empty.</li><li><strong>End of Turn:</strong> fill 1 Growth section → resolve the magiseed effect matching the current total.</li><li><strong>Bloom!</strong> On the 4th section, the seed withers: remove it and clear your Growth Clock (some seeds want this!).</li></ol><h2>REMINDERS</h2><ul><li>Only one magiseed can grow in your garden at a time.</li><li>Effects stop immediately if the magiseed is removed.</li><li>Scene ends = garden clears.</li><li>Some effects reference allies you can see or enemies you can see—line of sight matters.</li></ul>",
+      "class_facet": {
+        "0k9ZLmoAUqrEnY7a": {
+          "facet_cost": "20 MP",
+          "facet_description": "<p><em>Its vibrantly colored leaves represent tenacity.</em></p> <table style=\"width:100%;\"> <tbody> <tr><td><strong>Growth</strong></td><td><strong>Effect</strong></td></tr> <tr> <td>1</td> <td>At the <strong>end of your turn</strong>, you and every ally you can see recover from <a class=\"content-link\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\"><strong><u>Dazed</u></strong></a>, <a class=\"content-link\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\"><strong><u>Enraged</u></strong></a>, and <a class=\"content-link\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\"><strong><u>Shaken</u></strong></a>. </td> </tr> <tr> <td>2–3</td> <td>At the <strong>end of your turn</strong>, you and every ally you can see recover an amount of <strong>Mind Points</strong> equal to <strong>[5 + your Skill Level in Chloromancy]</strong>.</td> </tr> </tbody> </table>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Golden Ginkgo",
+          "uuid": "Actor.UIbEMK63Rm0RldES.Item.0k9ZLmoAUqrEnY7a"
+        },
+        "1G2vrn3EjVx1qHhr": {
+          "facet_cost": "20 MP",
+          "facet_description": "<p><em>A tangle of robust branches, whose thorns spread powerful poison.</em></p> <table style=\"width:100%;\"> <tbody> <tr><td><strong>Growth</strong></td><td><strong>Effect</strong></td></tr> <tr> <td>0–1</td> <td>You are <strong>Resistant</strong> to <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\"><strong><u>Physical</u></strong></a> damage. </td> </tr> <tr> <td>2</td> <td>You are <strong>Resistant</strong> to <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\"><strong><u>Physical</u></strong></a> damage. Additionally, after a creature <strong>hits you with a melee attack</strong>, you deal an amount of <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\"><strong><u>Physical</u></strong></a> damage to that creature equal to <strong>[5 + your Skill Level in Chloromancy]</strong> (after their attack was resolved). </td> </tr> <tr> <td>3</td> <td>You are <strong>Resistant</strong> to <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\"><strong><u>Physical</u></strong></a> damage. Additionally, after a creature hits you with a <strong>melee</strong> attack, you deal an amount of <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\"><strong><u>Physical</u></strong></a> damage to that creature equal to <strong>[5 + your Skill Level in Chloromancy]</strong>, <strong>and then</strong> deal an amount of <a class=\"content-link\" data-uuid=\"Item.tDcCWc67Ary9nVxe\"><strong><u>Poison</u></strong></a> damage to that creature equal to <strong>[5 + your Skill Level in Chloromancy]</strong> (both damage instances happen after that creature’s attack was resolved). </td> </tr> </tbody> </table>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Wardwattle",
+          "uuid": "Actor.UIbEMK63Rm0RldES.Item.1G2vrn3EjVx1qHhr"
+        },
+        "2ijStwemZ8ZJW2F5": {
+          "facet_cost": "",
+          "facet_description": "<p>You gain the ability to perform <strong>Rituals</strong> of the <strong>Ritualism</strong> discipline</p><p>Additionally, you may use <strong>Ritualism</strong> to create, animate, and/or control vegetation, pollen, spores, and toxins (but you cannot create nor control plant-Species NPCs this way).</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Verdant Sway",
+          "uuid": "Actor.UIbEMK63Rm0RldES.Item.2ijStwemZ8ZJW2F5"
+        },
+        "9jVZKTD95VMftL1l": {
+          "facet_cost": "20 MP",
+          "facet_description": "<p><em>Its leaves carry whispers of ancient knowledge.</em></p> <table style=\"width:100%;\"> <tbody> <tr><td><strong>Growth</strong></td><td><strong>Effect</strong></td></tr> <tr> <td>1</td> <td>At the <strong>end of your turn</strong>, choose an enemy you can see. The Game Master reveals its <strong>Level</strong>, <strong>Rank</strong>, <strong>Species</strong>, <strong>maximum Hit Points</strong>, <strong>maximum Mind Points</strong>, <strong>Traits</strong>, <strong>Attributes</strong>, <strong>Defense</strong>, and <strong>Magic Defense</strong>.</td> </tr> <tr> <td>2–3</td> <td>At the <strong>end of your turn</strong>, choose an enemy you can see. The Game Master reveals its <strong>Level</strong>, <strong>Rank</strong>, <strong>Species</strong>, <strong>maximum Hit Points</strong>, <strong>maximum Mind Points</strong>, <strong>Traits</strong>, <strong>Attributes</strong>, <strong>Defense</strong>, <strong>Magic Defense</strong>, and <strong>Affinities</strong>.</td> </tr> </tbody> </table>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Hermit Iris",
+          "uuid": "Actor.UIbEMK63Rm0RldES.Item.9jVZKTD95VMftL1l"
+        },
+        "BCzLsyyCbCoJ2gKq": {
+          "facet_cost": "20 MP",
+          "facet_description": "<p><em>Its elegant flowers filter and purify spiritual energy.</em></p> <table style=\"width:100%;\"> <tbody> <tr><td><strong>Growth</strong></td><td><strong>Effect</strong></td></tr> <tr> <td>1</td> <td>At the <strong>end of your turn</strong>, you and every ally you can see recover from <a class=\"content-link\" data-uuid=\"JournalEntry.JltwIqzHbBKhkD45\"><strong><u>Poisoned</u></strong></a>, <a class=\"content-link\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\"><strong><u>Slow</u></strong></a>, and <a class=\"content-link\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\"><strong><u>Weak</u></strong></a>. </td> </tr> <tr> <td>2–3</td> <td>At the <strong>end of your turn</strong>, you and every ally you can see recover an amount of <strong>Hit Points</strong> equal to <strong>[15 + your Skill Level in Chloromancy]</strong>.</td> </tr> </tbody> </table>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Remedy Lily",
+          "uuid": "Actor.UIbEMK63Rm0RldES.Item.BCzLsyyCbCoJ2gKq"
+        },
+        "BTofC47AhFYlULKG": {
+          "facet_cost": "20 MP",
+          "facet_description": "<p><em>Its flamboyant corolla is synonymous with abundance.</em></p> <table style=\"width:100%;\"> <tbody> <tr><td><strong>Growth</strong></td><td><strong>Effect</strong></td></tr> <tr><td>1–2</td><td>At the <strong>end of your turn</strong>, choose yourself or another Player Character you can see. The chosen character regains <strong>2 Inventory Points</strong>.</td></tr> <tr><td>3</td><td>At the <strong>end of your turn</strong>, you and every other Player Character you can see regain <strong>1 Inventory Point</strong>.</td></tr> </tbody> </table>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Pilgrim Gazalia",
+          "uuid": "Actor.UIbEMK63Rm0RldES.Item.BTofC47AhFYlULKG"
+        },
+        "FMl0JYiimMBBA8rk": {
+          "facet_cost": "20 MP",
+          "facet_description": "<p><em>Despite their beauty, its yellow flowers emit an irritatingly pungent smell.</em></p> <table style=\"width:100%;\"> <tbody> <tr><td><strong>Growth</strong></td><td><strong>Effect</strong></td></tr> <tr> <td>1–4</td> <td> When this magiseed <strong>leaves your garden</strong>, choose up to one enemy you can see. Until the end of your next turn, when the chosen enemy performs an 【⚔️Attack】 or casts an 【⚡Offensive Spell】, they must include you among the targets of that attack or spell (if able).<br> At the <strong>end of your turn</strong>, you may remove this magiseed from your garden; if you do, erase <strong>all sections</strong> of your <strong>Growth Clock</strong>. </td> </tr> </tbody> </table>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Wrathful Carnation",
+          "uuid": "Actor.UIbEMK63Rm0RldES.Item.FMl0JYiimMBBA8rk"
+        },
+        "JpPE14pXwlBKSgpY": {
+          "facet_cost": "20 MP",
+          "facet_description": "<p><em>A symbol of energy and vivacity, it spreads seeds through stormy winds.</em></p> <table style=\"width:100%;\"> <tbody> <tr><td><strong>Growth</strong></td><td><strong>Effect</strong></td></tr> <tr> <td>1–3</td> <td>At the <strong>end of your turn</strong>, choose <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\"><strong><u>Air</u></strong></a> or <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\"><strong><u>Bolt</u></strong></a>. Until you use this effect again or this magiseed is no longer in your garden, all damage dealt by you and every ally present on the scene becomes the chosen type, its type cannot change, and it <strong>ignores Resistances</strong>. </td> </tr> </tbody> </table>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Prancing Dandelion",
+          "uuid": "Actor.UIbEMK63Rm0RldES.Item.JpPE14pXwlBKSgpY"
+        },
+        "Jv331Bm85aiJybek": {
+          "facet_cost": "20 MP",
+          "facet_description": "<p><em>Each segment of this plant is covered in toxins.</em></p> <table style=\"width:100%;\"> <tbody> <tr><td><strong>Growth</strong></td><td><strong>Effect</strong></td></tr> <tr> <td>1</td> <td>At the <strong>end of your turn</strong>, you may choose an enemy you can see. If you do, that enemy suffers <a class=\"content-link\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\"><strong><u>Weak</u></strong></a>. </td> </tr> <tr> <td>2</td> <td>At the <strong>end of your turn</strong>, every enemy you can see suffers <a class=\"content-link\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\"><strong><u>Weak</u></strong></a>. </td> </tr> <tr> <td>3</td> <td>At the <strong>end of your turn</strong>, you deal an amount of <a class=\"content-link\" data-uuid=\"Item.tDcCWc67Ary9nVxe\"><strong><u>Poison</u></strong></a> damage equal to <strong>[15 + your Skill Level in Chloromancy]</strong> to each enemy you can see who is suffering from <a class=\"content-link\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\"><strong><u>Weak</u></strong></a>. </td> </tr> </tbody> </table>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Striped Orchid",
+          "uuid": "Actor.UIbEMK63Rm0RldES.Item.Jv331Bm85aiJybek"
+        },
+        "N12meUPT7Ai2QD4H": {
+          "facet_cost": "20 MP",
+          "facet_description": "<p><em>Its silvery blossoms are easily mistaken for jewels.</em></p> <table style=\"width:100%;\"> <tbody> <tr><td><strong>Growth</strong></td><td><strong>Effect</strong></td></tr> <tr> <td>0–1</td> <td>You are <strong>Resistant</strong> to <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\"><strong><u>Bolt</u></strong></a> and <a class=\"content-link\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\"><strong><u>Light</u></strong></a> damage. </td> </tr> <tr> <td>2–3</td> <td>You and your allies present on the scene are <strong>Resistant</strong> to <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\"><strong><u>Bolt</u></strong></a> and <a class=\"content-link\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\"><strong><u>Light</u></strong></a> damage. </td> </tr> </tbody> </table>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Silver Strelitzia",
+          "uuid": "Actor.UIbEMK63Rm0RldES.Item.N12meUPT7Ai2QD4H"
+        },
+        "NBf9gb8FdYzx6N28": {
+          "facet_cost": "",
+          "facet_description": "<p>Once per turn when a <strong>magiseed</strong> leaves your <strong>garden</strong>, if that magiseed has one or more “<strong>at the end of your turn</strong>” effects, you may spend <strong>20 Mind Points</strong>. If you do, reproduce <strong>one</strong> of those effects (you may also choose an effect that doesn’t match the current sections of your <strong>Growth Clock</strong>).</p><p>Additionally, if you have acquired the 【📜<strong>Verdant Sway】</strong> Skill, your <strong>Rituals</strong> can now also influence and control <strong>soldier-Rank</strong> creatures belonging to the <strong>plant</strong> Species (but you are still unable to create them).</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Greater Chloromancy",
+          "uuid": "Actor.UIbEMK63Rm0RldES.Item.NBf9gb8FdYzx6N28"
+        },
+        "OSr1RDmp26sR5Fbk": {
+          "facet_cost": "20 MP",
+          "facet_description": "<p><em>Its thick petals resemble an erupting volcano.</em></p><div class=\"tableWrapper\"><table style=\"min-width: 50px;\"><colgroup><col contenteditable=\"false\"><col contenteditable=\"false\"></colgroup><tbody><tr><td><p><strong>Growth</strong></p></td><td><p><strong>Effect</strong></p></td></tr><tr><td><p>1–3</p></td><td><p>At the <strong>end of your turn</strong>, <strong>choose</strong>:</p><ul><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(210, 180, 140) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span></span></li><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span></li></ul><p>Until you use this effect again or this magiseed is no longer in your garden, all damage dealt by you and every ally present on the scene becomes the chosen type, its type cannot change, and it <strong>ignores Resistances</strong>.</p></td></tr></tbody></table></div>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Blazing Chrysanthemum",
+          "uuid": "Actor.UIbEMK63Rm0RldES.Item.OSr1RDmp26sR5Fbk"
+        },
+        "OtQiLcDZehAIvdw5": {
+          "facet_cost": "20 MP",
+          "facet_description": "<p><em>Solemn and elegant, it embodies death’s ineluctability.</em></p><div class=\"tableWrapper\"><table style=\"min-width: 50px;\"><colgroup><col><col></colgroup><tbody><tr><td><p><strong>Growth</strong></p></td><td><p><strong>Effect</strong></p></td></tr><tr><td><p>1</p></td><td><p>At the <strong>end of your turn</strong>, you may choose an enemy you can see. If you do, that enemy suffers <a class=\"content-link\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a>.</p></td></tr><tr><td><p>2</p></td><td><p>At the <strong>end of your turn</strong>, every enemy you can see suffers <a class=\"content-link\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a>.</p></td></tr><tr><td><p>3</p></td><td><p>At the <strong>end of your turn</strong>, you deal an amount of <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a> damage equal to <strong>[15 + your Skill Level in Chloromancy]</strong> to each enemy you can see who is suffering from <a class=\"content-link\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a>.</p></td></tr></tbody></table></div>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Grave Asphodel",
+          "uuid": "Actor.UIbEMK63Rm0RldES.Item.OtQiLcDZehAIvdw5"
+        },
+        "P2JQbBjtZo2tFxcZ": {
+          "facet_cost": "",
+          "facet_description": "<p>As long as there is a <strong>magiseed</strong> in your <strong>garden</strong> and <strong>1 or more sections</strong> of your <strong>Growth Clock</strong> are filled, you may use an action to remove that magiseed from your garden: if you do, plant a different magiseed among those you have discovered (keep the current filled sections of your Growth Clock unchanged).</p>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Graft",
+          "uuid": "Actor.UIbEMK63Rm0RldES.Item.P2JQbBjtZo2tFxcZ"
+        },
+        "SGhc6KJN47rVZJri": {
+          "facet_cost": "",
+          "facet_description": "<p>When you remove a <strong>magiseed</strong> from your <strong>garden</strong>, you may choose one creature you can see: if that creature is in <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span>, they recover <strong>[5 + (SL × 5)] Hit Points</strong>.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Tree of Life",
+          "uuid": "Actor.UIbEMK63Rm0RldES.Item.SGhc6KJN47rVZJri"
+        },
+        "UCq2xvOjC4QGt1N8": {
+          "facet_cost": "20 MP",
+          "facet_description": "<p><em>Its purplish berries contain a deadly magical venom.</em></p> <table style=\"width:100%;\"> <tbody> <tr><td><strong>Growth</strong></td><td><strong>Effect</strong></td></tr> <tr> <td>0–1</td> <td>All damage you deal becomes <a class=\"content-link\" data-uuid=\"Item.tDcCWc67Ary9nVxe\"><strong><u>Poison</u></strong></a>, its type cannot change, and it <strong>ignores Immunities and Resistances</strong>. </td> </tr> <tr> <td>2–3</td> <td>All damage you deal becomes <a class=\"content-link\" data-uuid=\"Item.tDcCWc67Ary9nVxe\"><strong><u>Poison</u></strong></a>, its type cannot change, and it ignores Immunities and Resistances. Additionally, when you deal <a class=\"content-link\" data-uuid=\"Item.tDcCWc67Ary9nVxe\"><strong><u>Poison</u></strong></a> damage for the first time during your turn, you deal extra damage equal to <strong>[your Skill Level in Chloromancy]</strong> and each creature that lost <strong>Hit Points</strong> this way suffers <a class=\"content-link\" data-uuid=\"JournalEntry.JltwIqzHbBKhkD45\"><strong><u>Poisoned</u></strong></a>. </td> </tr> </tbody> </table>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Hookleaf Nightshade",
+          "uuid": "Actor.UIbEMK63Rm0RldES.Item.UCq2xvOjC4QGt1N8"
+        },
+        "WJ6dYfS6hzOIuUq3": {
+          "facet_cost": "20 MP",
+          "facet_description": "<p><em>A graceful symbol of serenity and wisdom.</em></p> <table style=\"width:100%;\"> <tbody> <tr><td><strong>Growth</strong></td><td><strong>Effect</strong></td></tr> <tr> <td>0–1</td> <td>You are <strong>immune</strong> to <a class=\"content-link\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\"><strong><u>Dazed</u></strong></a> and <a class=\"content-link\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\"><strong><u>Slow</u></strong></a>. </td> </tr> <tr> <td>2</td> <td>You treat your <strong>Dexterity</strong> and <strong>Insight</strong> as being one die size higher (up to a maximum of <strong>d12</strong>).</td> </tr> <tr> <td>3</td> <td>You and every ally you can see treat your <strong>Dexterity</strong> and <strong>Insight</strong> as being one die size higher (up to a maximum of <strong>d12</strong>).</td> </tr> </tbody> </table>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Ocean Lotus",
+          "uuid": "Actor.UIbEMK63Rm0RldES.Item.WJ6dYfS6hzOIuUq3"
+        },
+        "Z2E6KcNRSJPXXIV1": {
+          "facet_cost": "20 MP",
+          "facet_description": "<p><em>It silently gazes into celestial depths.</em></p> <table style=\"width:100%;\"> <tbody> <tr><td><strong>Growth</strong></td><td><strong>Effect</strong></td></tr> <tr> <td>1</td> <td>At the <strong>end of your turn</strong>, you may choose an enemy you can see. If you do, that enemy suffers <a class=\"content-link\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\"><strong><u>Dazed</u></strong></a>. </td> </tr> <tr> <td>2</td> <td>At the <strong>end of your turn</strong>, every enemy you can see suffers <a class=\"content-link\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\"><strong><u>Dazed</u></strong></a>. </td> </tr> <tr> <td>3</td> <td>At the <strong>end of your turn</strong>, you deal an amount of <a class=\"content-link\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\"><strong><u>Light</u></strong></a> damage equal to <strong>[15 + your Skill Level in Chloromancy]</strong> to each enemy you can see who is suffering from <a class=\"content-link\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\"><strong><u>Dazed</u></strong></a>. </td> </tr> </tbody> </table>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Star Peony",
+          "uuid": "Actor.UIbEMK63Rm0RldES.Item.Z2E6KcNRSJPXXIV1"
+        },
+        "aHHxOuvMdRXtzGM7": {
+          "facet_cost": "",
+          "facet_description": "<p>Each time you acquire this Skill, you discover a new type of <strong>magiseed</strong> from the list found in the next pages.</p><p>During a conflict, if there are no <strong>magiseeds</strong> in your <strong>garden</strong>, you may use an action and spend <strong>20 Mind Points</strong> to <strong>plant</strong> a magiseed of a type you have discovered. The rules for the garden and for <strong>magiseed growth</strong> can be found on the Unique Mechanic page.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Chrolomancy",
+          "uuid": "Actor.UIbEMK63Rm0RldES.Item.aHHxOuvMdRXtzGM7"
+        },
+        "biJh9ryRECTlLtcY": {
+          "facet_cost": "",
+          "facet_description": "<p>When you <strong>fill</strong> <strong>1 or more</strong> sections of your <strong>Growth Clock</strong>, you may choose one option:</p>\n<ul>\n  <li>you <strong>fill 1 additional section</strong> of your <strong>Growth Clock</strong>;</li>\n  <li>or you <strong>fill 1 fewer section</strong> of your <strong>Growth Clock</strong> (to a minimum of 0 sections filled).</li>\n</ul>\n<p>If you do, you cannot use this effect again until after your <strong>Growth Clock</strong> has become completely empty.</p>\n<p>Additionally, damage dealt by your <strong>magiseeds</strong> ignores <strong>Resistances</strong>.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Green Thumb",
+          "uuid": "Actor.UIbEMK63Rm0RldES.Item.biJh9ryRECTlLtcY"
+        },
+        "hFLV7cq3zawxHLjt": {
+          "facet_cost": "20 MP",
+          "facet_description": "<p><em>Its thorns form a tangle equally breathtaking and dangerous.</em></p> <table style=\"width:100%;\"> <tbody> <tr><td><strong>Growth</strong></td><td><strong>Effect</strong></td></tr> <tr> <td>1</td> <td>At the <strong>end of your turn</strong>, you may choose an enemy you can see. If you do, that enemy suffers <a class=\"content-link\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\"><strong><u>Slow</u></strong></a>. </td> </tr> <tr> <td>2</td> <td>At the <strong>end of your turn</strong>, every enemy you can see suffers <a class=\"content-link\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\"><strong><u>Slow</u></strong></a>. </td> </tr> <tr> <td>3</td> <td>At the <strong>end of your turn</strong>, you deal an amount of <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\"><strong><u>Physical</u></strong></a> damage equal to <strong>[15 + your Skill Level in Chloromancy]</strong> to each enemy you can see who is suffering from <a class=\"content-link\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\"><strong><u>Slow</u></strong></a>. </td> </tr> </tbody> </table>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Serrated Rose",
+          "uuid": "Actor.UIbEMK63Rm0RldES.Item.hFLV7cq3zawxHLjt"
+        },
+        "hfeQMnoo7JuJ7tT4": {
+          "facet_cost": "",
+          "facet_description": "<p>After you <strong>plant a magiseed</strong> through the <strong>Chloromancy</strong> Skill (not when using 【📜<strong>Graft】</strong>), you may <strong>choose one option</strong>:</p><ul><li>Perform a free 【⚔️Attack】 with an equipped weapon</li><li>Perform the 【📕Spell】 action for free, casting a spell with a total <strong>Mind Point</strong> cost equal to or lower than <strong>[5 + (SL × 5)]</strong> (you must still pay its MP cost).</li></ul><p>Treat the <strong>High Roll (HR)</strong> of your <strong>Accuracy Check</strong> or <strong>Magic Check</strong> as being equal to 0 when determining damage dealt by this attack or spell.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Battle Gardening",
+          "uuid": "Actor.UIbEMK63Rm0RldES.Item.hfeQMnoo7JuJ7tT4"
+        },
+        "hv1Wtm2cCCitoHZK": {
+          "facet_cost": "20 MP",
+          "facet_description": "<p><em>A tenacious plant, it doesn’t fear the dryness of dunes.</em></p><div class=\"tableWrapper\"><table style=\"min-width: 50px;\"><colgroup><col><col></colgroup><tbody><tr><td><p><strong>Growth</strong></p></td><td><p><strong>Effect</strong></p></td></tr><tr><td><p>0–1</p></td><td><p>You are <strong>Resistant</strong> to <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a> and <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a> damage.</p></td></tr><tr><td><p>2–3</p></td><td><p>You and your allies present on the scene are <strong>Resistant</strong> to <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a> and <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a> damage.</p></td></tr></tbody></table></div>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Desert Dahlia",
+          "uuid": "Actor.UIbEMK63Rm0RldES.Item.hv1Wtm2cCCitoHZK"
+        },
+        "kLhCyCMsjDflJ7D7": {
+          "facet_cost": "20 MP",
+          "facet_description": "<p><em>A colorful and tenacious flower, favored by an ancient dynasty.</em></p> <table style=\"width:100%;\"> <tbody> <tr><td><strong>Growth</strong></td><td><strong>Effect</strong></td></tr> <tr> <td>0–1</td> <td>You are <strong>immune</strong> to <a class=\"content-link\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\"><strong><u>Shaken</u></strong></a> and <a class=\"content-link\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\"><strong><u>Weak</u></strong></a>. </td> </tr> <tr><td>2</td><td>You treat your <strong>Might</strong> and <strong>Willpower</strong> as being one die size higher (up to a maximum of <strong>d12</strong>).</td></tr> <tr><td>3</td><td>You and every ally you can see treat your <strong>Might</strong> and <strong>Willpower</strong> as being one die size higher (up to a maximum of <strong>d12</strong>).</td></tr> </tbody> </table>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Regal Protea",
+          "uuid": "Actor.UIbEMK63Rm0RldES.Item.kLhCyCMsjDflJ7D7"
+        },
+        "lZcbm143vy4GjysZ": {
+          "facet_cost": "20 MP",
+          "facet_description": "<p><em>Favored by witches and surgeons alike for its purifying properties.</em></p> <table style=\"width:100%;\"> <tbody> <tr><td><strong>Growth</strong></td><td><strong>Effect</strong></td></tr> <tr> <td>0–1</td> <td>You are <strong>Resistant</strong> to <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\"><strong><u>Dark</u></strong></a> and <a class=\"content-link\" data-uuid=\"Item.tDcCWc67Ary9nVxe\"><strong><u>Poison</u></strong></a> damage. </td> </tr> <tr> <td>2–3</td> <td>You and your allies present on the scene are <strong>Resistant</strong> to <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\"><strong><u>Dark</u></strong></a> and <a class=\"content-link\" data-uuid=\"Item.tDcCWc67Ary9nVxe\"><strong><u>Poison</u></strong></a> damage. </td> </tr> </tbody> </table>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Horned Hawthorn",
+          "uuid": "Actor.UIbEMK63Rm0RldES.Item.lZcbm143vy4GjysZ"
+        },
+        "loZn19cHfJrzzBjN": {
+          "facet_cost": "20 MP",
+          "facet_description": "<p><em>It blooms in the darkest hours of the night.</em></p> <table style=\"width:100%;\"> <tbody> <tr><td><strong>Growth</strong></td><td><strong>Effect</strong></td></tr> <tr> <td>1–3</td> <td>At the <strong>end of your turn</strong>, choose <a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\"><strong><u>Ice</u></strong></a> or <a class=\"content-link\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\"><strong><u>Light</u></strong></a>. Until you use this effect again or this magiseed is no longer in your garden, all damage dealt by you and every ally present on the scene becomes the chosen type, its type cannot change, and it <strong>ignores Resistances</strong>. </td> </tr> </tbody> </table>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Lunar Magnolia",
+          "uuid": "Actor.UIbEMK63Rm0RldES.Item.loZn19cHfJrzzBjN"
+        },
+        "nIG6TtYw0uoEOs3C": {
+          "facet_cost": "20 MP",
+          "facet_description": "<p><em>It stubbornly survives in frozen territories.</em></p><div class=\"tableWrapper\"><table style=\"min-width: 50px;\"><colgroup><col><col></colgroup><tbody><tr><td><p><strong>Growth</strong></p></td><td><p><strong>Effect</strong></p></td></tr><tr><td><p>0–1</p></td><td><p>You are <strong>Resistant</strong> to <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(210, 180, 140) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span> and <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(166, 227, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span> damage.</p></td></tr><tr><td><p>2–3</p></td><td><p>You and your allies present on the scene are <strong>Resistant</strong> to <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(210, 180, 140) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span> and <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(166, 227, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span> damage.</p></td></tr></tbody></table></div>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Arctic Narcissus",
+          "uuid": "Actor.UIbEMK63Rm0RldES.Item.nIG6TtYw0uoEOs3C"
+        }
+      },
+      "class_heroicSkill": {
+        "NBf9gb8FdYzx6N28": {
+          "id": "${item.id}",
+          "name": "Greater Chloromancy",
+          "skill_cost": "",
+          "skill_description": "<p>Once per turn when a <strong>magiseed</strong> leaves your <strong>garden</strong>, if that magiseed has one or more “<strong>at the end of your turn</strong>” effects, you may spend <strong>20 Mind Points</strong>. If you do, reproduce <strong>one</strong> of those effects (you may also choose an effect that doesn’t match the current sections of your <strong>Growth Clock</strong>).</p><p>Additionally, if you have acquired the 【📜<strong>Verdant Sway】</strong> Skill, your <strong>Rituals</strong> can now also influence and control <strong>soldier-Rank</strong> creatures belonging to the <strong>plant</strong> Species (but you are still unable to create them).</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.UIbEMK63Rm0RldES.Item.NBf9gb8FdYzx6N28"
+        },
+        "biJh9ryRECTlLtcY": {
+          "id": "${item.id}",
+          "name": "Green Thumb",
+          "skill_cost": "",
+          "skill_description": "<p>When you <strong>fill</strong> <strong>1 or more</strong> sections of your <strong>Growth Clock</strong>, you may choose one option:</p>\n<ul>\n  <li>you <strong>fill 1 additional section</strong> of your <strong>Growth Clock</strong>;</li>\n  <li>or you <strong>fill 1 fewer section</strong> of your <strong>Growth Clock</strong> (to a minimum of 0 sections filled).</li>\n</ul>\n<p>If you do, you cannot use this effect again until after your <strong>Growth Clock</strong> has become completely empty.</p>\n<p>Additionally, damage dealt by your <strong>magiseeds</strong> ignores <strong>Resistances</strong>.</p>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.UIbEMK63Rm0RldES.Item.biJh9ryRECTlLtcY"
+        }
+      },
+      "class_lore": "<blockquote><p>Spiritual energy flows strongly within plants, thanks to their direct connection to our earth. Growing from this encounter are <strong>magiseeds</strong>, gifted with the unique ability to thrive on spiritual energy and blossom into a majestic yet ephemeral triumph of magic.</p><p><strong>Floralists</strong> can identify and cultivate these strange seeds, which grant a large variety of benefits and can be combined with all sorts of disciplines, martial and magical.</p></blockquote>",
+      "class_skill": {
+        "2ijStwemZ8ZJW2F5": {
+          "id": "${item.id}",
+          "name": "Verdant Sway",
+          "skill_cost": "",
+          "skill_description": "<p>You gain the ability to perform <strong>Rituals</strong> of the <strong>Ritualism</strong> discipline</p><p>Additionally, you may use <strong>Ritualism</strong> to create, animate, and/or control vegetation, pollen, spores, and toxins (but you cannot create nor control plant-Species NPCs this way).</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.UIbEMK63Rm0RldES.Item.2ijStwemZ8ZJW2F5"
+        },
+        "P2JQbBjtZo2tFxcZ": {
+          "id": "${item.id}",
+          "name": "Graft",
+          "skill_cost": "",
+          "skill_description": "<p>As long as there is a <strong>magiseed</strong> in your <strong>garden</strong> and <strong>1 or more sections</strong> of your <strong>Growth Clock</strong> are filled, you may use an action to remove that magiseed from your garden: if you do, plant a different magiseed among those you have discovered (keep the current filled sections of your Growth Clock unchanged).</p>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.UIbEMK63Rm0RldES.Item.P2JQbBjtZo2tFxcZ"
+        },
+        "SGhc6KJN47rVZJri": {
+          "id": "${item.id}",
+          "name": "Tree of Life",
+          "skill_cost": "",
+          "skill_description": "<p>When you remove a <strong>magiseed</strong> from your <strong>garden</strong>, you may choose one creature you can see: if that creature is in <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span>, they recover <strong>[5 + (SL × 5)] Hit Points</strong>.</p>",
+          "skill_maxLevel": 5,
+          "skill_type": "Passive",
+          "uuid": "Actor.UIbEMK63Rm0RldES.Item.SGhc6KJN47rVZJri"
+        },
+        "aHHxOuvMdRXtzGM7": {
+          "id": "${item.id}",
+          "name": "Chrolomancy",
+          "skill_cost": "",
+          "skill_description": "<p>Each time you acquire this Skill, you discover a new type of <strong>magiseed</strong> from the list found in the next pages.</p><p>During a conflict, if there are no <strong>magiseeds</strong> in your <strong>garden</strong>, you may use an action and spend <strong>20 Mind Points</strong> to <strong>plant</strong> a magiseed of a type you have discovered. The rules for the garden and for <strong>magiseed growth</strong> can be found on the Unique Mechanic page.</p>",
+          "skill_maxLevel": 10,
+          "skill_type": "Other",
+          "uuid": "Actor.UIbEMK63Rm0RldES.Item.aHHxOuvMdRXtzGM7"
+        },
+        "hfeQMnoo7JuJ7tT4": {
+          "id": "${item.id}",
+          "name": "Battle Gardening",
+          "skill_cost": "",
+          "skill_description": "<p>After you <strong>plant a magiseed</strong> through the <strong>Chloromancy</strong> Skill (not when using 【📜<strong>Graft】</strong>), you may <strong>choose one option</strong>:</p><ul><li>Perform a free 【⚔️Attack】 with an equipped weapon</li><li>Perform the 【📕Spell】 action for free, casting a spell with a total <strong>Mind Point</strong> cost equal to or lower than <strong>[5 + (SL × 5)]</strong> (you must still pay its MP cost).</li></ul><p>Treat the <strong>High Roll (HR)</strong> of your <strong>Accuracy Check</strong> or <strong>Magic Check</strong> as being equal to 0 when determining damage dealt by this attack or spell.</p>",
+          "skill_maxLevel": 3,
+          "skill_type": "Passive",
+          "uuid": "Actor.UIbEMK63Rm0RldES.Item.hfeQMnoo7JuJ7tT4"
+        }
+      },
+      "flavor_text": "<p style=\"text-align: center\"><span style=\"font-family: Amiri\"><em>There is no rose</em></span></p><p style=\"text-align: center\"><span style=\"font-family: Amiri\"><em>without thorns.</em></span></p>",
+      "martialArmor_equippable": false,
+      "martialMelee_equippable": false,
+      "martialRanged_equippable": false,
+      "martialShield_equippable": false,
+      "name": "Floralist",
+      "project_performable": false,
+      "ritual_performable": false
+    },
+    "statusEffects": {},
+    "template": "hoxC3HFCtMYGScIo",
+    "templateSystemUniqueVersion": 504201233
+  },
+  "type": "character"
+}

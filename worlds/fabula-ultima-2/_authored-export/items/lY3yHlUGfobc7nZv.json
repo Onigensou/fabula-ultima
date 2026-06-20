@@ -1,0 +1,122 @@
+{
+  "_id": "lY3yHlUGfobc7nZv",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1753898430232,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "tz6REmaNrStU0v3d",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.331",
+        "createdTime": 1753898541454,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.6.4"
+      },
+      "changes": [
+        {
+          "key": "damage_receiving_mod_physical",
+          "mode": 2,
+          "priority": 1,
+          "value": "${level}$"
+        }
+      ],
+      "description": "<p>After you sing a verse with <strong>medium</strong> or <strong>high</strong> volume, all <strong>physical</strong> damage you suffer until the start of your next turn is reduced by <strong>【SL】</strong> (applied <strong>before</strong> Affinities).</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "tz6REmaNrStU0v3d",
+          "originalParentId": "lY3yHlUGfobc7nZv",
+          "originalUuid": "Item.lY3yHlUGfobc7nZv.ActiveEffect.tz6REmaNrStU0v3d"
+        },
+        "statuscounter": {
+          "config": {
+            "durationType": 0,
+            "modifyDuration": false,
+            "multiplyEffect": false,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/sonic/explosion-shock-sound-wave.webp",
+      "name": "Sound Barrier",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "Class Skill",
+          "Passive",
+          "Chanter"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "wfhbB1TfqBSosGCC",
+  "img": "icons/magic/sonic/explosion-shock-sound-wave.webp",
+  "name": "Sound Barrier",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Chanter",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>After you sing a verse with <strong>medium</strong> or <strong>high</strong> volume, all <strong>physical</strong> damage you suffer until the start of your next turn is reduced by <strong>【SL】</strong> (applied <strong>before</strong> Affinities).</p>",
+      "duration": "",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": true,
+      "level": "1",
+      "max_level": "5",
+      "name": "Sound Barrier",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "lY3yHlUGfobc7nZv"
+  },
+  "type": "equippableItem"
+}

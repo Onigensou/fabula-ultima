@@ -1,0 +1,57 @@
+{
+  "_id": "g7dtmVcWPY4gSm4M",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1758248964658,
+    "duplicateSource": "Item.1E5VZDlvY8JY8eJ3",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "2OplVa9fwLYbzD8b",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Granblue%20Fantasy/50px-Ability_m_2045_3.png",
+  "name": "Extra Spindle",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 2100000,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Tailor",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>Before or after performing an action during your turn, you may spend up to <strong>X Mind Points</strong>. For every <strong>10 Mind Points</strong> spent this way, you may have one <strong>Spell</strong> effect that is affecting you also affect your <strong>Model</strong> (the effects applied this way expire together with yours).</p>",
+      "duration": "",
+      "heroic_requirement": "You must have mastered the Tailor Class",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Extra Spindle",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "",
+      "skill_target": "X Creatur",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "g7dtmVcWPY4gSm4M"
+  },
+  "type": "equippableItem"
+}

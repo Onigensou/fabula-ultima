@@ -1,0 +1,66 @@
+{
+  "_id": "wh14ZZz56LQHyrvF",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1767899856782,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.4"
+    }
+  },
+  "folder": "HxH8pRIAy3tVzGFP",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/thunderclap.png",
+  "name": "Zero Power: Teleport Slash",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 700000,
+  "system": {
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_script": "",
+      "check_bonus": "5",
+      "class": "NPC",
+      "cost": "6 Zero Power",
+      "damage_bonus": "20",
+      "defense_target_type": "def",
+      "description": "<ul><li><p><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.YojfVwJv8ABa45c6\" data-id=\"YojfVwJv8ABa45c6\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Exploit</span></strong></a></span></p></li></ul>",
+      "duration": "Instantaneous",
+      "heroic_requirement": "",
+      "isCheck": true,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": true,
+      "isReaction": false,
+      "isZeroPower": true,
+      "level": "1",
+      "max_level": "1",
+      "name": "Zero Power: Teleport Slash",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "MIG",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "Any",
+      "skill_target": "One Creature",
+      "skill_type": "Spell",
+      "type_damage": "Physical",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "wh14ZZz56LQHyrvF"
+  },
+  "type": "equippableItem"
+}

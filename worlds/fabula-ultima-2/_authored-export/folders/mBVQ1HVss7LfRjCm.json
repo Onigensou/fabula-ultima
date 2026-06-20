@@ -1,0 +1,19 @@
+{
+  "_id": "mBVQ1HVss7LfRjCm",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1769663982047,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "wPp7MjmyKqkuVU1J",
+  "name": "Event",
+  "sort": 0,
+  "sorting": "a",
+  "type": "RollTable"
+}

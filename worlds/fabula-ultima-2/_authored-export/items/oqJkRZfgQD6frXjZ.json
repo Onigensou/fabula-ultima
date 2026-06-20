@@ -1,0 +1,63 @@
+{
+  "_id": "oqJkRZfgQD6frXjZ",
+  "_stats": {
+    "compendiumSource": "Item.i7XP3i8a8GM70yCF",
+    "coreVersion": "12.343",
+    "createdTime": 1781924501338,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "uXLyEGDLqxK2laMF",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/enhanced_sharpcast_II.png",
+  "name": "Elemental Magic",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3,
+    "yL2PQxh3R9ddt0te": 3
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "active_effect_config_table": {},
+      "check_bonus": "0",
+      "class": "Elementalist",
+      "cost": "",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>Each time you acquire this Skill, learn one Elementalist spell <em>(see Facet)</em>. </p><p><strong>【⚡Offensive Elementalist spells】</strong> use <strong>【INS + WLP】</strong> for the Magic Check.</p>",
+      "duration": "",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "level": "3",
+      "max_level": "10",
+      "name": "Elemental Magic",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Other",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "oqJkRZfgQD6frXjZ"
+  },
+  "type": "equippableItem"
+}

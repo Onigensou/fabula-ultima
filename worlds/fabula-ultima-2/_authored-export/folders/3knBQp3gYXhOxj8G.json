@@ -1,0 +1,19 @@
+{
+  "_id": "3knBQp3gYXhOxj8G",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": null,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "2.4.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "Dungeon",
+  "sort": 1400000,
+  "sorting": "a",
+  "type": "Macro"
+}

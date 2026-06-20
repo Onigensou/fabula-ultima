@@ -1,0 +1,19 @@
+{
+  "_id": "uXQngTfcrk1nV1yo",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1769519118105,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "eZWKkXNgeaFs6HSS",
+  "name": "Kamin's PC",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Actor"
+}

@@ -1,0 +1,1601 @@
+{
+  "_id": "twJIPhORKNZvbaxK",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1754246987039,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "tmNVy5jIbM9rzx80",
+  "img": "https://tiermaker.com/images/media/template_images/2024/16720717/fabula-ultima-classes-16720717/weaponmaster.png",
+  "items": [
+    {
+      "_id": "2vCQK6ygic7bMj3m",
+      "_stats": {
+        "compendiumSource": "Item.VWe1aZLTjGQanHrQ",
+        "coreVersion": "12.343",
+        "createdTime": 1754275119250,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "t7zqjF8WFh19XCK7",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.331",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.6.4"
+          },
+          "changes": [
+            {
+              "key": "attack_accuracy_mod_melee",
+              "mode": 2,
+              "priority": 1,
+              "value": "${level}$"
+            }
+          ],
+          "description": "<p>You gain a bonus equal to <strong>【SL】</strong> to all Accuracy Checks with <strong>melee</strong> weapons.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": 298800,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "t7zqjF8WFh19XCK7",
+              "originalParentId": "VWe1aZLTjGQanHrQ",
+              "originalUuid": "Item.VWe1aZLTjGQanHrQ.ActiveEffect.t7zqjF8WFh19XCK7"
+            },
+            "statuscounter": {
+              "config": {
+                "durationType": 0,
+                "modifyDuration": false,
+                "multiplyEffect": false,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/skills/melee/maneuver-sword-katana-yellow.webp",
+          "name": "Melee Weapon Mastery",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "Class Skill",
+              "Passive",
+              "Weaponmaster"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "icons/skills/melee/maneuver-sword-katana-yellow.webp",
+      "name": "Melee Weapon Mastery",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Weaponmaster",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>You gain a bonus equal to <strong>【SL】</strong> to all Accuracy Checks with <strong>melee</strong> weapons.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "4",
+          "name": "Melee Weapon Mastery",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": true,
+        "uniqueId": "VWe1aZLTjGQanHrQ"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "6Dma8QYIFcIEtHAc",
+      "_stats": {
+        "compendiumSource": "Item.LBqkjOIfj4oMkplG",
+        "coreVersion": "12.343",
+        "createdTime": 1757460881983,
+        "duplicateSource": "Item.vRWqziomvuxZXBCr",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/minor_arcana.png",
+      "name": "Duel Master",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Ace of Cards",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you resolve the <strong>Magic Pair</strong> effect, if you attack with a weapon belonging to the <strong>arcane</strong> or <strong>thrown</strong> Category, you deal extra damage equal to <strong>[the common value of the resolved cards]</strong> and regain <strong>[twice the common value of the resolved cards]</strong> Mind Points (for instance, resolving a pair of 5s allows you to deal <strong>5</strong> extra damage and regain <strong>10</strong> Mind Points).</p>\n",
+          "duration": "",
+          "heroic_requirement": "you must have mastered one or more Classes among Ace of Cards, Fury, Rogue, Sharpshooter, and Weaponmaster, and you must have acquired the Magic Cards Skill.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Duel Master",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "LBqkjOIfj4oMkplG"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "7Ptjd72rgwWiKfBA",
+      "_stats": {
+        "compendiumSource": "Item.NpW7TDPCJRMVhH2K",
+        "coreVersion": "12.343",
+        "createdTime": 1754275114931,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Els/LordKnightSkill4.png",
+      "name": "Bladestorm",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Weaponmaster",
+          "cost": "10 MP",
+          "damage_bonus": "0",
+          "description": "<p>When you perform a melee attack, you may spend <strong>10 Mind Points</strong> to choose one option:</p><ul><li><p>the attack gains <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Multi</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;2</span></strong></span></span></p></li><li><p>Increase the attack's multi property by one, up to a maximum of <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Multi</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;3</span></strong></span></span></p></li></ul>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Bladestorm",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "Self",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "NpW7TDPCJRMVhH2K"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "89WTasPdppa5hded",
+      "_stats": {
+        "compendiumSource": "Item.OM63d9oT3OOOtRdr",
+        "coreVersion": "12.343",
+        "createdTime": 1756968764912,
+        "duplicateSource": "Item.ooo1vmilBi2YWAiH",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/flash.png",
+      "name": "Blade Adept",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Weaponmaster",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>While you have one or more <strong>melee dagger</strong> weapons equipped, you gain a +1 bonus to <strong>Defense</strong> and <strong>Magic Defense</strong>, and you treat those weapons as also belonging to the <strong>brawling</strong>, <strong>sword</strong>, and <strong>thrown</strong> Categories for the purpose of Skills and effects.</p>\n<p>Additionally, your attacks with weapons that belong to the <strong>dagger</strong> Category may target creatures that cannot normally be targeted by melee attacks.</p>\n",
+          "duration": "",
+          "heroic_requirement": "you must have mastered one or more Classes among Rogue and Weaponmaster",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Blade Adept",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "OM63d9oT3OOOtRdr"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "8IioHtDRxlddrwZJ",
+      "_stats": {
+        "compendiumSource": "Item.4JB73i77JIWq3tVe",
+        "coreVersion": "12.343",
+        "createdTime": 1754275115992,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Els/LordKnightSkill2.png",
+      "name": "Bone Crusher",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Weaponmaster",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you hit one or more targets with a melee attack that would deal damage, you may have the attack deal no damage. If you do, choose one option:</p><ul><li><p>Inflict <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dazed</span></strong></a></span></span> on each target hit by the attack</p></li><li><p>Inflict <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a></span></span> on each target hit by the attack</p></li><li><p>Each target hit by the attack loses <strong>【SL × 10】</strong> Mind Points. Describe your maneuver!</p></li></ul>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "4",
+          "name": "Bone Crusher",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "Self",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "4JB73i77JIWq3tVe"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "Bpc46d9YV4R9I5jl",
+      "_stats": {
+        "compendiumSource": "Item.0UvQrmVE10uyR6Oa",
+        "coreVersion": "12.343",
+        "createdTime": 1756969115575,
+        "duplicateSource": "Item.XhrZl2gJnOTmOT15",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/09_NIN/doton.png",
+      "name": "Spider's Web",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Weaponmaster",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you perform the 【⚔️Attack】 action with a <strong>melee</strong> weapon that belongs to the <strong>flail</strong> Category, if you have no other weapon equipped, you may perform two separate attacks instead of one (against the same target or against different targets). If you do, both attacks follow the rules for <strong>two-weapon fighting</strong>: each attack loses the <strong>multi</strong> property and cannot gain it, and you treat the <strong>High Roll</strong> of each Accuracy Check as being equal to 0 when determining damage.</p>\n<p>Note that this Heroic Skill does not stack with a custom weapon’s <em>quick</em> customization (using Spider’s Web with a quick flail doesn’t allow more than two attacks, in short).</p>\n",
+          "duration": "",
+          "heroic_requirement": "you must have mastered the Weaponmaster Class.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Spider's Web",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "0UvQrmVE10uyR6Oa"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "CHDX5rQLGA5CDkyZ",
+      "_stats": {
+        "compendiumSource": "Item.h6WLw95EerjpSAzk",
+        "coreVersion": "12.343",
+        "createdTime": 1754248218811,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Els/MaelstromRage.png",
+      "name": "Tempest Strike",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Weaponmaster",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you perform a melee attack with the <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Multi</span></strong></a></span> property, if you choose to target only <strong>one creature</strong>, the attack deals <strong>5</strong> extra damage if the attack had <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Multi</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;2</span></strong></span>, or <strong>10</strong> extra damage if the attack had <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Multi</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;3</span></strong></span> or higher.</p>",
+          "duration": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "level": "1",
+          "max_level": "1",
+          "name": "Tempest Strike",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "h6WLw95EerjpSAzk"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "dXPOv2ebj1wZA1GU",
+      "_stats": {
+        "compendiumSource": "Item.2bE1L41MlCogVPB0",
+        "coreVersion": "12.343",
+        "createdTime": 1756968886252,
+        "duplicateSource": "Item.qAW9i3EkrRUTNE0o",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/10_SAM/fuko.png",
+      "name": "Fleeting Moment",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Weaponmaster",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you perform a <strong>Counterattack</strong> using a <strong>melee</strong> weapon that belongs to the <strong>sword</strong> Category, you may add your <strong>High Roll (HR)</strong> to the damage dealt by the attack (you do not have to treat it as 0).</p>\n",
+          "duration": "",
+          "heroic_requirement": "you must have mastered the Weaponmaster Class, and must have acquired the Counterattack Skill.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Fleeting Moment",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "2bE1L41MlCogVPB0"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "edGUCsuQwqAF5Dhm",
+      "_stats": {
+        "compendiumSource": "Item.XpSvvPKiAzoY4nqp",
+        "coreVersion": "12.343",
+        "createdTime": 1756968991351,
+        "duplicateSource": "Item.P3iAf8dGAQLg8tLS",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/Blade_of_Honor.png",
+      "name": "Iron Forest",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Commander",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>After you hit one or more creatures with a <strong>melee</strong> attack using a weapon that belongs to the <strong>spear</strong> Category, if you have no other weapon equipped, you may spend <strong>20 Mind Points</strong> and choose one of those creatures. If you do, the attack deals <strong>half</strong> the normal amount of damage to each of its targets, and you <strong>choose one type of action</strong> from the following:</p><ul><li><p>【⚔️Attack】</p></li><li><p>【🛡️Guard】</p></li><li><p>【❗️Objective】</p></li><li><p>【📕Spell】</p></li><li><p>【💥Skill】</p></li></ul><p>From now on, the chosen creature must spend <strong>10 Mind Points</strong> whenever they wish to perform that type of action. If they can’t, they must perform a different type of action. This effect lasts until the start of your next turn, or until you use this Skill again.</p>",
+          "duration": "",
+          "heroic_requirement": "you must have mastered one or more Classes among Commander and Weaponmaster.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Iron Forest",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "XpSvvPKiAzoY4nqp"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "HCiKZORipi7OzzbH",
+      "_stats": {
+        "compendiumSource": "Item.x4bzOjIZqfj8ybfq",
+        "coreVersion": "12.343",
+        "createdTime": 1754248434188,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Els/MagicResistanceMasteryR.png",
+      "name": "Powerful Strike",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Weaponmaster",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you hit one or more creatures with a melee attack, that attack deals <strong>5</strong> extra damage to each creature.</p><p> The amount of extra damage increases to <strong>10</strong> if you are level 40 or higher.</p>",
+          "duration": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "level": "1",
+          "max_level": "1",
+          "name": "Powerful Strike",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "x4bzOjIZqfj8ybfq"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "i3d0y0lDGRTnDEef",
+      "_stats": {
+        "compendiumSource": "Item.8u1xJ1G1CrJNf6Cp",
+        "coreVersion": "12.343",
+        "createdTime": 1754275116996,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Els/SwordKnightSkill5.png",
+      "name": "Breach",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Weaponmaster",
+          "cost": "5 MP",
+          "damage_bonus": "0",
+          "description": "<p>You may use an action and spend <strong>5 Mind Points</strong> to perform a <strong>free attack</strong> with a melee weapon you have equipped. This attack must target a <strong>single creature</strong>. If the attack is successful, it deals no damage and you choose one option:</p><ul><li><p>You destroy one <strong>shield</strong> equipped by the target</p></li><li><p>You destroy the target's equipped <strong>armor</strong></p></li><li><p>Whenever the target suffers damage from a source before the start of your next turn, that source deals <strong>【SL × 2】</strong> extra damage to them.</p></li></ul>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "3",
+          "name": "Breach",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "8u1xJ1G1CrJNf6Cp"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "kh3zJKFIzDtSyYqH",
+      "_stats": {
+        "compendiumSource": "Item.XhrZl2gJnOTmOT15",
+        "coreVersion": "12.343",
+        "createdTime": 1756969100957,
+        "duplicateSource": "Item.y0E31msoT18TffJT",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/perfect_balance.png",
+      "name": "Rising Tide",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Fury",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you perform a <strong>melee</strong> attack using a weapon that belongs to the <strong>brawling</strong> Category, if you have no martial armor and no shields equipped, you gain <strong>1 Bravery Point</strong>.</p>\n<p>Your melee attacks using weapons that belong to the <strong>brawling</strong> Category deal extra damage equal to your current <strong>Bravery Points</strong>.</p>\n<p>At the end of your turn, or if you have <strong>5 or more Bravery Points</strong> at the end of your turn, you must spend all your accumulated <strong>Bravery Points</strong> and recover <strong>10 Hit Points</strong> and <strong>Mind Points</strong>.</p>\n",
+          "duration": "",
+          "heroic_requirement": "you must have mastered one or more Classes among Fury and Weaponmaster.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Rising Tide",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "XhrZl2gJnOTmOT15"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "rQHMtagyJMlv4RtD",
+      "_stats": {
+        "compendiumSource": "Item.8u1xJ1G1CrJNf6Cp",
+        "coreVersion": "12.343",
+        "createdTime": 1756402963624,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Els/SwordKnightSkill5.png",
+      "name": "Breach",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Weaponmaster",
+          "cost": "5 MP",
+          "damage_bonus": "0",
+          "description": "<p>You may use an action and spend <strong>5 Mind Points</strong> to perform a <strong>free attack</strong> with a melee weapon you have equipped. This attack must target a <strong>single creature</strong>. If the attack is successful, it deals no damage and you choose one option:</p><ul><li><p>You destroy one <strong>shield</strong> equipped by the target</p></li><li><p>You destroy the target's equipped <strong>armor</strong></p></li><li><p>Whenever the target suffers damage from a source before the start of your next turn, that source deals <strong>【SL × 2】</strong> extra damage to them.</p></li></ul>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "3",
+          "name": "Breach",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "8u1xJ1G1CrJNf6Cp"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "STmcCo15uk3L0kuf",
+      "_stats": {
+        "compendiumSource": "Item.mMdpiA1IzeE9HWUk",
+        "coreVersion": "12.343",
+        "createdTime": 1756969165346,
+        "duplicateSource": "Item.CMlqLVtpSDNDyfvS",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/GNB/keen_edge.png",
+      "name": "Triple Slash",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Weaponmaster",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>As long as you have a one-handed <strong>melee</strong> weapon that belongs to the <strong>dagger</strong> or <strong>sword</strong> Categories equipped in each of your normal hand slots, you may treat your armor slot as if it were a second off-hand slot. You may only use this special slot to equip a one-handed melee weapon that belongs to the <strong>dagger</strong> or <strong>sword</strong> Categories—note that the <em>Monkey Grip</em> Skill does not turn two-handed weapons into one-handed weapons, and thus cannot be used in combination with Triple Slash.</p>\n<p>When you perform the 【⚔️Attack】 action while you have three <strong>daggers</strong> and/or <strong>swords</strong> equipped, you may attack once with each weapon. This follows the normal rules for <strong>two-weapon fighting</strong>: each of the three attacks loses the <strong>multi</strong> property and cannot gain it, and you treat the <strong>High Roll (HR)</strong> of each Accuracy Check as being equal to 0 when determining damage.</p>\n",
+          "duration": "",
+          "heroic_requirement": "you must have mastered one or more Classes among Dancer and Weaponmaster.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Triple Slash",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "mMdpiA1IzeE9HWUk"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "TdcU7auHPxJ7eQWK",
+      "_stats": {
+        "compendiumSource": "Item.IEFFYKz9pycXYl7G",
+        "coreVersion": "12.343",
+        "createdTime": 1754275118219,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Els/LordKnightSkill6.png",
+      "name": "Counterattack",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Weaponmaster",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>After an enemy hits or misses you with a <strong>melee attack</strong>, if the Result of their Accuracy Check was an <strong>even number</strong>, you may perform a free attack against that enemy (after their attack has been fully resolved). This attack must be a <strong>melee attack</strong> and must have <strong>that enemy as its only target</strong>; treat your <strong>High Roll (HR)</strong> as 0 when calculating damage dealt by this attack</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Counterattack",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "IEFFYKz9pycXYl7G"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "uPohGKzOSRhvoBE2",
+      "_stats": {
+        "compendiumSource": "Item.y0E31msoT18TffJT",
+        "coreVersion": "12.343",
+        "createdTime": 1756969083350,
+        "duplicateSource": "Item.TMeu4B7pd9vPmLyu",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/the_forbidden_chakra.png",
+      "name": "Pulverizing Strike",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Weaponmaster",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>After you hit a creature with 【💥<strong>Breach】</strong>, if you attacked with a <strong>melee</strong> weapon that belongs to the <strong>heavy</strong> Category, you may have the attack deal damage equal to your <strong>High Roll (HR)</strong> instead of dealing no damage. Any source of extra damage, including the extra damage from the third option of the Breach Skill itself, still applies—ignore the damage dealt by the weapon.</p>",
+          "duration": "",
+          "heroic_requirement": "you must have mastered one or more Classes among Darkblade, Fury, and Weaponmaster",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Pulverizing Strike",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "y0E31msoT18TffJT"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "VJkOM4ZdTaZnvbY1",
+      "_stats": {
+        "compendiumSource": "Item.IhVYx6OZYAUtd9s7",
+        "coreVersion": "12.343",
+        "createdTime": 1756968692529,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/time_dilation.png",
+      "name": "Arcane Mark",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Symbolist",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you hit one or more creatures with an 【⚔️Attack】 using a weapon that belongs to the arcane Category, the attack deals 5 extra damage and you may choose one of those creatures. If the next 【⚡Offensive Spell】 you cast during this scene only targets the chosen creature, its <strong>Magic Check</strong> will trigger a <strong>critical success</strong> if both dice show the same number (and the Check is not a <strong>fumble</strong>).</p>\n",
+          "duration": "",
+          "heroic_requirement": "you must have mastered one or more Classes among Sharpshooter, Symbolist, and Weaponmaster",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Arcane Mark",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "IhVYx6OZYAUtd9s7"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Weaponmaster",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar4": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "DEF",
+            "max": 13,
+            "maxcolor": "#f26d40",
+            "mincolor": "#f26d40",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 13
+          },
+          "bar5": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar5",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MDEF",
+            "max": 10,
+            "maxcolor": "#26d6ed",
+            "mincolor": "#26d6ed",
+            "opacity": null,
+            "order": 4,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 10
+          }
+        }
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Weaponmaster",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://tiermaker.com/images/media/template_images/2024/16720717/fabula-ultima-classes-16720717/weaponmaster.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 0,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {
+      "also_text": "Fighter, Ronin, Warrior",
+      "benefit_dropdown": "hp_benefit",
+      "classMechanic_text": "",
+      "class_facet": {
+        "2vCQK6ygic7bMj3m": {
+          "facet_cost": "",
+          "facet_description": "<p>You gain a bonus equal to <strong>【SL】</strong> to all Accuracy Checks with <strong>melee</strong> weapons.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Melee Weapon Mastery",
+          "uuid": "Actor.twJIPhORKNZvbaxK.Item.2vCQK6ygic7bMj3m"
+        },
+        "6Dma8QYIFcIEtHAc": {
+          "facet_cost": "",
+          "facet_description": "<p>When you resolve the <strong>Magic Pair</strong> effect, if you attack with a weapon belonging to the <strong>arcane</strong> or <strong>thrown</strong> Category, you deal extra damage equal to <strong>[the common value of the resolved cards]</strong> and regain <strong>[twice the common value of the resolved cards]</strong> Mind Points (for instance, resolving a pair of 5s allows you to deal <strong>5</strong> extra damage and regain <strong>10</strong> Mind Points).</p>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Duel Master",
+          "uuid": "Actor.twJIPhORKNZvbaxK.Item.6Dma8QYIFcIEtHAc"
+        },
+        "7Ptjd72rgwWiKfBA": {
+          "facet_cost": "10 MP",
+          "facet_description": "<p>When you perform a melee attack, you may spend <strong>10 Mind Points</strong> to choose one option:</p><ul><li><p>the attack gains <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Multi</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;2</span></strong></span></span></p></li><li><p>Increase the attack's multi property by one, up to a maximum of <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Multi</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;3</span></strong></span></span></p></li></ul>",
+          "facet_offensive": "",
+          "facet_target": "Self",
+          "id": "${item.id}",
+          "name": "Bladestorm",
+          "uuid": "Actor.twJIPhORKNZvbaxK.Item.7Ptjd72rgwWiKfBA"
+        },
+        "89WTasPdppa5hded": {
+          "facet_cost": "",
+          "facet_description": "<p>While you have one or more <strong>melee dagger</strong> weapons equipped, you gain a +1 bonus to <strong>Defense</strong> and <strong>Magic Defense</strong>, and you treat those weapons as also belonging to the <strong>brawling</strong>, <strong>sword</strong>, and <strong>thrown</strong> Categories for the purpose of Skills and effects.</p>\n<p>Additionally, your attacks with weapons that belong to the <strong>dagger</strong> Category may target creatures that cannot normally be targeted by melee attacks.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Blade Adept",
+          "uuid": "Actor.twJIPhORKNZvbaxK.Item.89WTasPdppa5hded"
+        },
+        "8IioHtDRxlddrwZJ": {
+          "facet_cost": "",
+          "facet_description": "<p>When you hit one or more targets with a melee attack that would deal damage, you may have the attack deal no damage. If you do, choose one option:</p><ul><li><p>Inflict <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dazed</span></strong></a></span></span> on each target hit by the attack</p></li><li><p>Inflict <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a></span></span> on each target hit by the attack</p></li><li><p>Each target hit by the attack loses <strong>【SL × 10】</strong> Mind Points. Describe your maneuver!</p></li></ul>",
+          "facet_offensive": "",
+          "facet_target": "Self",
+          "id": "${item.id}",
+          "name": "Bone Crusher",
+          "uuid": "Actor.twJIPhORKNZvbaxK.Item.8IioHtDRxlddrwZJ"
+        },
+        "Bpc46d9YV4R9I5jl": {
+          "facet_cost": "",
+          "facet_description": "<p>When you perform the 【⚔️Attack】 action with a <strong>melee</strong> weapon that belongs to the <strong>flail</strong> Category, if you have no other weapon equipped, you may perform two separate attacks instead of one (against the same target or against different targets). If you do, both attacks follow the rules for <strong>two-weapon fighting</strong>: each attack loses the <strong>multi</strong> property and cannot gain it, and you treat the <strong>High Roll</strong> of each Accuracy Check as being equal to 0 when determining damage.</p>\n<p>Note that this Heroic Skill does not stack with a custom weapon’s <em>quick</em> customization (using Spider’s Web with a quick flail doesn’t allow more than two attacks, in short).</p>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Spider's Web",
+          "uuid": "Actor.twJIPhORKNZvbaxK.Item.Bpc46d9YV4R9I5jl"
+        },
+        "CHDX5rQLGA5CDkyZ": {
+          "facet_cost": "",
+          "facet_description": "<p>When you perform a melee attack with the <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Multi</span></strong></a></span> property, if you choose to target only <strong>one creature</strong>, the attack deals <strong>5</strong> extra damage if the attack had <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Multi</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;2</span></strong></span>, or <strong>10</strong> extra damage if the attack had <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Multi</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;3</span></strong></span> or higher.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Tempest Strike",
+          "uuid": "Actor.twJIPhORKNZvbaxK.Item.CHDX5rQLGA5CDkyZ"
+        },
+        "HCiKZORipi7OzzbH": {
+          "facet_cost": "",
+          "facet_description": "<p>When you hit one or more creatures with a melee attack, that attack deals <strong>5</strong> extra damage to each creature.</p><p> The amount of extra damage increases to <strong>10</strong> if you are level 40 or higher.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Powerful Strike",
+          "uuid": "Actor.twJIPhORKNZvbaxK.Item.HCiKZORipi7OzzbH"
+        },
+        "STmcCo15uk3L0kuf": {
+          "facet_cost": "",
+          "facet_description": "<p>As long as you have a one-handed <strong>melee</strong> weapon that belongs to the <strong>dagger</strong> or <strong>sword</strong> Categories equipped in each of your normal hand slots, you may treat your armor slot as if it were a second off-hand slot. You may only use this special slot to equip a one-handed melee weapon that belongs to the <strong>dagger</strong> or <strong>sword</strong> Categories—note that the <em>Monkey Grip</em> Skill does not turn two-handed weapons into one-handed weapons, and thus cannot be used in combination with Triple Slash.</p>\n<p>When you perform the 【⚔️Attack】 action while you have three <strong>daggers</strong> and/or <strong>swords</strong> equipped, you may attack once with each weapon. This follows the normal rules for <strong>two-weapon fighting</strong>: each of the three attacks loses the <strong>multi</strong> property and cannot gain it, and you treat the <strong>High Roll (HR)</strong> of each Accuracy Check as being equal to 0 when determining damage.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Triple Slash",
+          "uuid": "Actor.twJIPhORKNZvbaxK.Item.STmcCo15uk3L0kuf"
+        },
+        "TdcU7auHPxJ7eQWK": {
+          "facet_cost": "",
+          "facet_description": "<p>After an enemy hits or misses you with a <strong>melee attack</strong>, if the Result of their Accuracy Check was an <strong>even number</strong>, you may perform a free attack against that enemy (after their attack has been fully resolved). This attack must be a <strong>melee attack</strong> and must have <strong>that enemy as its only target</strong>; treat your <strong>High Roll (HR)</strong> as 0 when calculating damage dealt by this attack</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Counterattack",
+          "uuid": "Actor.twJIPhORKNZvbaxK.Item.TdcU7auHPxJ7eQWK"
+        },
+        "VJkOM4ZdTaZnvbY1": {
+          "facet_cost": "",
+          "facet_description": "<p>When you hit one or more creatures with an 【⚔️Attack】 using a weapon that belongs to the arcane Category, the attack deals 5 extra damage and you may choose one of those creatures. If the next 【⚡Offensive Spell】 you cast during this scene only targets the chosen creature, its <strong>Magic Check</strong> will trigger a <strong>critical success</strong> if both dice show the same number (and the Check is not a <strong>fumble</strong>).</p>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Arcane Mark",
+          "uuid": "Actor.twJIPhORKNZvbaxK.Item.VJkOM4ZdTaZnvbY1"
+        },
+        "dXPOv2ebj1wZA1GU": {
+          "facet_cost": "",
+          "facet_description": "<p>When you perform a <strong>Counterattack</strong> using a <strong>melee</strong> weapon that belongs to the <strong>sword</strong> Category, you may add your <strong>High Roll (HR)</strong> to the damage dealt by the attack (you do not have to treat it as 0).</p>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Fleeting Moment",
+          "uuid": "Actor.twJIPhORKNZvbaxK.Item.dXPOv2ebj1wZA1GU"
+        },
+        "edGUCsuQwqAF5Dhm": {
+          "facet_cost": "",
+          "facet_description": "<p>After you hit one or more creatures with a <strong>melee</strong> attack using a weapon that belongs to the <strong>spear</strong> Category, if you have no other weapon equipped, you may spend <strong>20 Mind Points</strong> and choose one of those creatures. If you do, the attack deals <strong>half</strong> the normal amount of damage to each of its targets, and you <strong>choose one type of action</strong> from the following:</p><ul><li><p>【⚔️Attack】</p></li><li><p>【🛡️Guard】</p></li><li><p>【❗️Objective】</p></li><li><p>【📕Spell】</p></li><li><p>【💥Skill】</p></li></ul><p>From now on, the chosen creature must spend <strong>10 Mind Points</strong> whenever they wish to perform that type of action. If they can’t, they must perform a different type of action. This effect lasts until the start of your next turn, or until you use this Skill again.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Iron Forest",
+          "uuid": "Actor.twJIPhORKNZvbaxK.Item.edGUCsuQwqAF5Dhm"
+        },
+        "i3d0y0lDGRTnDEef": {
+          "facet_cost": "5 MP",
+          "facet_description": "<p>You may use an action and spend <strong>5 Mind Points</strong> to perform a <strong>free attack</strong> with a melee weapon you have equipped. This attack must target a <strong>single creature</strong>. If the attack is successful, it deals no damage and you choose one option:</p><ul><li><p>You destroy one <strong>shield</strong> equipped by the target</p></li><li><p>You destroy the target's equipped <strong>armor</strong></p></li><li><p>Whenever the target suffers damage from a source before the start of your next turn, that source deals <strong>【SL × 2】</strong> extra damage to them.</p></li></ul>",
+          "facet_offensive": "",
+          "facet_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Breach",
+          "uuid": "Actor.twJIPhORKNZvbaxK.Item.i3d0y0lDGRTnDEef"
+        },
+        "kh3zJKFIzDtSyYqH": {
+          "facet_cost": "",
+          "facet_description": "<p>When you perform a <strong>melee</strong> attack using a weapon that belongs to the <strong>brawling</strong> Category, if you have no martial armor and no shields equipped, you gain <strong>1 Bravery Point</strong>.</p>\n<p>Your melee attacks using weapons that belong to the <strong>brawling</strong> Category deal extra damage equal to your current <strong>Bravery Points</strong>.</p>\n<p>At the end of your turn, or if you have <strong>5 or more Bravery Points</strong> at the end of your turn, you must spend all your accumulated <strong>Bravery Points</strong> and recover <strong>10 Hit Points</strong> and <strong>Mind Points</strong>.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Rising Tide",
+          "uuid": "Actor.twJIPhORKNZvbaxK.Item.kh3zJKFIzDtSyYqH"
+        },
+        "rQHMtagyJMlv4RtD": {
+          "facet_cost": "5 MP",
+          "facet_description": "<p>You may use an action and spend <strong>5 Mind Points</strong> to perform a <strong>free attack</strong> with a melee weapon you have equipped. This attack must target a <strong>single creature</strong>. If the attack is successful, it deals no damage and you choose one option:</p><ul><li><p>You destroy one <strong>shield</strong> equipped by the target</p></li><li><p>You destroy the target's equipped <strong>armor</strong></p></li><li><p>Whenever the target suffers damage from a source before the start of your next turn, that source deals <strong>【SL × 2】</strong> extra damage to them.</p></li></ul>",
+          "facet_offensive": "",
+          "facet_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Breach",
+          "uuid": "Actor.twJIPhORKNZvbaxK.Item.rQHMtagyJMlv4RtD"
+        },
+        "uPohGKzOSRhvoBE2": {
+          "facet_cost": "",
+          "facet_description": "<p>After you hit a creature with 【💥<strong>Breach】</strong>, if you attacked with a <strong>melee</strong> weapon that belongs to the <strong>heavy</strong> Category, you may have the attack deal damage equal to your <strong>High Roll (HR)</strong> instead of dealing no damage. Any source of extra damage, including the extra damage from the third option of the Breach Skill itself, still applies—ignore the damage dealt by the weapon.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Pulverizing Strike",
+          "uuid": "Actor.twJIPhORKNZvbaxK.Item.uPohGKzOSRhvoBE2"
+        }
+      },
+      "class_heroicSkill": {
+        "6Dma8QYIFcIEtHAc": {
+          "id": "${item.id}",
+          "name": "Duel Master",
+          "skill_cost": "",
+          "skill_description": "<p>When you resolve the <strong>Magic Pair</strong> effect, if you attack with a weapon belonging to the <strong>arcane</strong> or <strong>thrown</strong> Category, you deal extra damage equal to <strong>[the common value of the resolved cards]</strong> and regain <strong>[twice the common value of the resolved cards]</strong> Mind Points (for instance, resolving a pair of 5s allows you to deal <strong>5</strong> extra damage and regain <strong>10</strong> Mind Points).</p>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.twJIPhORKNZvbaxK.Item.6Dma8QYIFcIEtHAc"
+        },
+        "89WTasPdppa5hded": {
+          "id": "${item.id}",
+          "name": "Blade Adept",
+          "skill_cost": "",
+          "skill_description": "<p>While you have one or more <strong>melee dagger</strong> weapons equipped, you gain a +1 bonus to <strong>Defense</strong> and <strong>Magic Defense</strong>, and you treat those weapons as also belonging to the <strong>brawling</strong>, <strong>sword</strong>, and <strong>thrown</strong> Categories for the purpose of Skills and effects.</p>\n<p>Additionally, your attacks with weapons that belong to the <strong>dagger</strong> Category may target creatures that cannot normally be targeted by melee attacks.</p>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.twJIPhORKNZvbaxK.Item.89WTasPdppa5hded"
+        },
+        "Bpc46d9YV4R9I5jl": {
+          "id": "${item.id}",
+          "name": "Spider's Web",
+          "skill_cost": "",
+          "skill_description": "<p>When you perform the 【⚔️Attack】 action with a <strong>melee</strong> weapon that belongs to the <strong>flail</strong> Category, if you have no other weapon equipped, you may perform two separate attacks instead of one (against the same target or against different targets). If you do, both attacks follow the rules for <strong>two-weapon fighting</strong>: each attack loses the <strong>multi</strong> property and cannot gain it, and you treat the <strong>High Roll</strong> of each Accuracy Check as being equal to 0 when determining damage.</p>\n<p>Note that this Heroic Skill does not stack with a custom weapon’s <em>quick</em> customization (using Spider’s Web with a quick flail doesn’t allow more than two attacks, in short).</p>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.twJIPhORKNZvbaxK.Item.Bpc46d9YV4R9I5jl"
+        },
+        "CHDX5rQLGA5CDkyZ": {
+          "id": "${item.id}",
+          "name": "Tempest Strike",
+          "skill_cost": "",
+          "skill_description": "<p>When you perform a melee attack with the <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Multi</span></strong></a></span> property, if you choose to target only <strong>one creature</strong>, the attack deals <strong>5</strong> extra damage if the attack had <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Multi</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;2</span></strong></span>, or <strong>10</strong> extra damage if the attack had <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Multi</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;3</span></strong></span> or higher.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.twJIPhORKNZvbaxK.Item.CHDX5rQLGA5CDkyZ"
+        },
+        "HCiKZORipi7OzzbH": {
+          "id": "${item.id}",
+          "name": "Powerful Strike",
+          "skill_cost": "",
+          "skill_description": "<p>When you hit one or more creatures with a melee attack, that attack deals <strong>5</strong> extra damage to each creature.</p><p> The amount of extra damage increases to <strong>10</strong> if you are level 40 or higher.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.twJIPhORKNZvbaxK.Item.HCiKZORipi7OzzbH"
+        },
+        "STmcCo15uk3L0kuf": {
+          "id": "${item.id}",
+          "name": "Triple Slash",
+          "skill_cost": "",
+          "skill_description": "<p>As long as you have a one-handed <strong>melee</strong> weapon that belongs to the <strong>dagger</strong> or <strong>sword</strong> Categories equipped in each of your normal hand slots, you may treat your armor slot as if it were a second off-hand slot. You may only use this special slot to equip a one-handed melee weapon that belongs to the <strong>dagger</strong> or <strong>sword</strong> Categories—note that the <em>Monkey Grip</em> Skill does not turn two-handed weapons into one-handed weapons, and thus cannot be used in combination with Triple Slash.</p>\n<p>When you perform the 【⚔️Attack】 action while you have three <strong>daggers</strong> and/or <strong>swords</strong> equipped, you may attack once with each weapon. This follows the normal rules for <strong>two-weapon fighting</strong>: each of the three attacks loses the <strong>multi</strong> property and cannot gain it, and you treat the <strong>High Roll (HR)</strong> of each Accuracy Check as being equal to 0 when determining damage.</p>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.twJIPhORKNZvbaxK.Item.STmcCo15uk3L0kuf"
+        },
+        "VJkOM4ZdTaZnvbY1": {
+          "id": "${item.id}",
+          "name": "Arcane Mark",
+          "skill_cost": "",
+          "skill_description": "<p>When you hit one or more creatures with an 【⚔️Attack】 using a weapon that belongs to the arcane Category, the attack deals 5 extra damage and you may choose one of those creatures. If the next 【⚡Offensive Spell】 you cast during this scene only targets the chosen creature, its <strong>Magic Check</strong> will trigger a <strong>critical success</strong> if both dice show the same number (and the Check is not a <strong>fumble</strong>).</p>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.twJIPhORKNZvbaxK.Item.VJkOM4ZdTaZnvbY1"
+        },
+        "dXPOv2ebj1wZA1GU": {
+          "id": "${item.id}",
+          "name": "Fleeting Moment",
+          "skill_cost": "",
+          "skill_description": "<p>When you perform a <strong>Counterattack</strong> using a <strong>melee</strong> weapon that belongs to the <strong>sword</strong> Category, you may add your <strong>High Roll (HR)</strong> to the damage dealt by the attack (you do not have to treat it as 0).</p>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.twJIPhORKNZvbaxK.Item.dXPOv2ebj1wZA1GU"
+        },
+        "edGUCsuQwqAF5Dhm": {
+          "id": "${item.id}",
+          "name": "Iron Forest",
+          "skill_cost": "",
+          "skill_description": "<p>After you hit one or more creatures with a <strong>melee</strong> attack using a weapon that belongs to the <strong>spear</strong> Category, if you have no other weapon equipped, you may spend <strong>20 Mind Points</strong> and choose one of those creatures. If you do, the attack deals <strong>half</strong> the normal amount of damage to each of its targets, and you <strong>choose one type of action</strong> from the following:</p><ul><li><p>【⚔️Attack】</p></li><li><p>【🛡️Guard】</p></li><li><p>【❗️Objective】</p></li><li><p>【📕Spell】</p></li><li><p>【💥Skill】</p></li></ul><p>From now on, the chosen creature must spend <strong>10 Mind Points</strong> whenever they wish to perform that type of action. If they can’t, they must perform a different type of action. This effect lasts until the start of your next turn, or until you use this Skill again.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.twJIPhORKNZvbaxK.Item.edGUCsuQwqAF5Dhm"
+        },
+        "kh3zJKFIzDtSyYqH": {
+          "id": "${item.id}",
+          "name": "Rising Tide",
+          "skill_cost": "",
+          "skill_description": "<p>When you perform a <strong>melee</strong> attack using a weapon that belongs to the <strong>brawling</strong> Category, if you have no martial armor and no shields equipped, you gain <strong>1 Bravery Point</strong>.</p>\n<p>Your melee attacks using weapons that belong to the <strong>brawling</strong> Category deal extra damage equal to your current <strong>Bravery Points</strong>.</p>\n<p>At the end of your turn, or if you have <strong>5 or more Bravery Points</strong> at the end of your turn, you must spend all your accumulated <strong>Bravery Points</strong> and recover <strong>10 Hit Points</strong> and <strong>Mind Points</strong>.</p>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.twJIPhORKNZvbaxK.Item.kh3zJKFIzDtSyYqH"
+        },
+        "uPohGKzOSRhvoBE2": {
+          "id": "${item.id}",
+          "name": "Pulverizing Strike",
+          "skill_cost": "",
+          "skill_description": "<p>After you hit a creature with 【💥<strong>Breach】</strong>, if you attacked with a <strong>melee</strong> weapon that belongs to the <strong>heavy</strong> Category, you may have the attack deal damage equal to your <strong>High Roll (HR)</strong> instead of dealing no damage. Any source of extra damage, including the extra damage from the third option of the Breach Skill itself, still applies—ignore the damage dealt by the weapon.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.twJIPhORKNZvbaxK.Item.uPohGKzOSRhvoBE2"
+        }
+      },
+      "class_lore": "<blockquote><p><strong>Weaponmasters</strong> spend years upon years honing their close combat arts. Most of them display remarkable skill with a variety of weapons; others have trained to become one with a specific armament. Many Weaponmasters follow and protect someone out of love or loyalty, but there are also those who tirelessly wander the world seeking worthy opponents, legendary magical weapons, or capable teachers.</p></blockquote>",
+      "class_skill": {
+        "2vCQK6ygic7bMj3m": {
+          "id": "${item.id}",
+          "name": "Melee Weapon Mastery",
+          "skill_cost": "",
+          "skill_description": "<p>You gain a bonus equal to <strong>【SL】</strong> to all Accuracy Checks with <strong>melee</strong> weapons.</p>",
+          "skill_maxLevel": 4,
+          "skill_type": "Passive",
+          "uuid": "Actor.twJIPhORKNZvbaxK.Item.2vCQK6ygic7bMj3m"
+        },
+        "7Ptjd72rgwWiKfBA": {
+          "id": "${item.id}",
+          "name": "Bladestorm",
+          "skill_cost": "10 MP",
+          "skill_description": "<p>When you perform a melee attack, you may spend <strong>10 Mind Points</strong> to choose one option:</p><ul><li><p>the attack gains <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Multi</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;2</span></strong></span></span></p></li><li><p>Increase the attack's multi property by one, up to a maximum of <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Multi</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;3</span></strong></span></span></p></li></ul>",
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.twJIPhORKNZvbaxK.Item.7Ptjd72rgwWiKfBA"
+        },
+        "8IioHtDRxlddrwZJ": {
+          "id": "${item.id}",
+          "name": "Bone Crusher",
+          "skill_cost": "",
+          "skill_description": "<p>When you hit one or more targets with a melee attack that would deal damage, you may have the attack deal no damage. If you do, choose one option:</p><ul><li><p>Inflict <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dazed</span></strong></a></span></span> on each target hit by the attack</p></li><li><p>Inflict <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a></span></span> on each target hit by the attack</p></li><li><p>Each target hit by the attack loses <strong>【SL × 10】</strong> Mind Points. Describe your maneuver!</p></li></ul>",
+          "skill_maxLevel": 4,
+          "skill_type": "Active",
+          "uuid": "Actor.twJIPhORKNZvbaxK.Item.8IioHtDRxlddrwZJ"
+        },
+        "TdcU7auHPxJ7eQWK": {
+          "id": "${item.id}",
+          "name": "Counterattack",
+          "skill_cost": "",
+          "skill_description": "<p>After an enemy hits or misses you with a <strong>melee attack</strong>, if the Result of their Accuracy Check was an <strong>even number</strong>, you may perform a free attack against that enemy (after their attack has been fully resolved). This attack must be a <strong>melee attack</strong> and must have <strong>that enemy as its only target</strong>; treat your <strong>High Roll (HR)</strong> as 0 when calculating damage dealt by this attack</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.twJIPhORKNZvbaxK.Item.TdcU7auHPxJ7eQWK"
+        },
+        "i3d0y0lDGRTnDEef": {
+          "id": "${item.id}",
+          "name": "Breach",
+          "skill_cost": "5 MP",
+          "skill_description": "<p>You may use an action and spend <strong>5 Mind Points</strong> to perform a <strong>free attack</strong> with a melee weapon you have equipped. This attack must target a <strong>single creature</strong>. If the attack is successful, it deals no damage and you choose one option:</p><ul><li><p>You destroy one <strong>shield</strong> equipped by the target</p></li><li><p>You destroy the target's equipped <strong>armor</strong></p></li><li><p>Whenever the target suffers damage from a source before the start of your next turn, that source deals <strong>【SL × 2】</strong> extra damage to them.</p></li></ul>",
+          "skill_maxLevel": 3,
+          "skill_type": "Active",
+          "uuid": "Actor.twJIPhORKNZvbaxK.Item.i3d0y0lDGRTnDEef"
+        },
+        "rQHMtagyJMlv4RtD": {
+          "id": "${item.id}",
+          "name": "Breach",
+          "skill_cost": "5 MP",
+          "skill_description": "<p>You may use an action and spend <strong>5 Mind Points</strong> to perform a <strong>free attack</strong> with a melee weapon you have equipped. This attack must target a <strong>single creature</strong>. If the attack is successful, it deals no damage and you choose one option:</p><ul><li><p>You destroy one <strong>shield</strong> equipped by the target</p></li><li><p>You destroy the target's equipped <strong>armor</strong></p></li><li><p>Whenever the target suffers damage from a source before the start of your next turn, that source deals <strong>【SL × 2】</strong> extra damage to them.</p></li></ul>",
+          "skill_maxLevel": 3,
+          "skill_type": "Active",
+          "uuid": "Actor.twJIPhORKNZvbaxK.Item.rQHMtagyJMlv4RtD"
+        }
+      },
+      "flavor_text": "<p style=\"text-align: center\"><span style=\"font-family: Amiri\"><em>\"The wiser blades</em></span></p><p style=\"text-align: center\"><span style=\"font-family: Amiri\"><em>remain unsheathed.\"</em></span></p>",
+      "martialArmor_equippable": false,
+      "martialMelee_equippable": true,
+      "martialRanged_equippable": false,
+      "martialShield_equippable": true,
+      "name": "Weaponmaster",
+      "project_performable": false,
+      "ritual_performable": false
+    },
+    "statusEffects": {},
+    "template": "hoxC3HFCtMYGScIo",
+    "templateSystemUniqueVersion": 504201233
+  },
+  "type": "character"
+}

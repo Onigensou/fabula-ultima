@@ -1,0 +1,57 @@
+{
+  "_id": "DP1wXzT66WXAe4sO",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1758248716678,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "2OplVa9fwLYbzD8b",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Wizard/icon_wizar_darktheurge.png",
+  "name": "Dance of the Marionette",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 2650000,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Tailor",
+      "cost": "X IP",
+      "damage_bonus": "0",
+      "description": "<p>Together with your Group, create your <strong>Marionette</strong>, a soldier-rank NPC of <strong>construct</strong> type, under your control. It counts as an ally and has its own turn during conflicts. If you surrender, fall unconscious, build a new Marionette, or your Marionette is reduced to 0 Hit Points, it is immediately <strong>destroyed</strong>. You may also willingly dismiss your Marionette before or after an action.</p>\n<p>You may perform the <strong>Inventory</strong> action and spend 2 to 6 Inventory Points to build your Marionette and make it join the current scene — if you use this Skill during a conflict, the Marionette joins the scene at the <strong>end</strong> of the current round. The Marionette has the following features:</p>\n<ul>\n  <li><strong>Level 10</strong> (gains the bonuses to Checks and Damage as per Step 8 of the Core Rulebook; it doesn’t gain EXP nor Level Up).</li>\n  <li><strong>Maximum Hit Points</strong> equal to 【(the Marionette’s base Might die size × Inventory Points spent to build the Marionette) + half your level】.</li>\n  <li><strong>No Mind Points</strong> — any MP cost incurred by the Marionette is taken from your MP.</li>\n  <li><strong>Mindless (Special Rule)</strong>: the Marionette is immune to the \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span></span> and confused status effects (doesn’t cost NPC Skill Points).</li>\n  <li><strong>Construct-type</strong> NPC bonuses: <strong>Resistance</strong> to \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span></span> damage; <strong>immunity</strong> to \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span> damage and the \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.JltwIqzHbBKhkD45\" data-id=\"JltwIqzHbBKhkD45\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\"><strong><span style=\"text-decoration: underline;\">Poisoned</span></strong></a></span></span> status; +2 Skill Points for customization.</li>\n  <li><strong>One vulnerability</strong> of your choice.</li>\n</ul>\n",
+      "duration": "Special",
+      "heroic_requirement": "You must have mastered the Tailor Class",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Dance of the Marionette",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "Any",
+      "skill_target": "Self",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "DP1wXzT66WXAe4sO"
+  },
+  "type": "equippableItem"
+}

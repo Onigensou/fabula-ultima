@@ -1,0 +1,74 @@
+{
+  "_id": "YAMrjKy6d6hgGP1F",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1754347887067,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "ecsWCKqCXnSE0HO7",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/flood_of_darkness.png",
+  "name": "Shadow Strike",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_script": "",
+      "check_bonus": "0",
+      "class": "Darkblade",
+      "cost": "X HP",
+      "damage_bonus": "",
+      "defense_target_type": "def",
+      "description": "<p>You have learned to channel your vital force into your attacks. You may use an action to perform a <strong>Shadow Strike</strong>: roll your current <strong>Might</strong> die and lose an amount of Hit Points equal to <strong>【the number rolled on your Might die】</strong>. If this didn't reduce your Hit Points to 0, you may perform a <strong>free attack</strong> with a weapon you have equipped: if this attack hits one or more targets, it deals extra damage equal to <strong>【SL + the number rolled on your Might die】</strong>. However, all damage dealt by this attack becomes <strong>dark</strong> and its damage type cannot be changed.</p>",
+      "details_roller": "Show",
+      "duration": "Instantaneous",
+      "effect_table": {},
+      "heroic_requirement": "",
+      "id": "YAMrjKy6d6hgGP1F",
+      "ignore_hr": false,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/flood_of_darkness.png",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": true,
+      "isReaction": false,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "5",
+      "name": "Shadow Strike",
+      "on_activate_effect_ref": "",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p>Level</p></td><td data-colwidth=\"148\"><p>Damage</p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p><strong>【1 + the number rolled on your Might die】</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p><strong>【2 + the number rolled on your Might die】</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>3</p></td><td data-colwidth=\"148\"><p><strong>【3 + the number rolled on your Might die】</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>4</p></td><td data-colwidth=\"148\"><p><strong>【4 + the number rolled on your Might die】</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>5</p></td><td data-colwidth=\"148\"><p><strong>【5 + the number rolled on your Might die】</strong></p></td></tr></tbody></table>",
+      "skill_range": "Any",
+      "skill_target": "Self",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false,
+      "uuid": "Item.YAMrjKy6d6hgGP1F"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "YAMrjKy6d6hgGP1F"
+  },
+  "type": "equippableItem"
+}

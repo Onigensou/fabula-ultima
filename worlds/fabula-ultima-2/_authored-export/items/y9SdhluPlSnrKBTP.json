@@ -1,0 +1,54 @@
+{
+  "_id": "y9SdhluPlSnrKBTP",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1738331930605,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "consumable",
+        "fromTemplate": "xdZPhVF8AnmwQEPM",
+        "itemId": "y9SdhluPlSnrKBTP",
+        "itemName": "Café au Lait Recipe",
+        "pickedOldProps": {
+          "consumable_cost": "450",
+          "consumable_description": "<ul>\n<li>Learned how to create <strong>Caf&eacute; au Lait</strong> with <strong>2 IP</strong></li>\n</ul>",
+          "consumable_ip": "0",
+          "consumable_label": ""
+        },
+        "ts": 1769647435381
+      }
+    }
+  },
+  "folder": "3xHGNagIXPyzukcU",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/book.png",
+  "name": "Café au Lait Recipe",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 200000,
+  "system": {
+    "container": null,
+    "props": {
+      "description": "<ul>\n<li>Learned how to create <strong>Caf&eacute; au Lait</strong> with <strong>2 IP</strong></li>\n</ul>",
+      "ip_cost": "0",
+      "item_cost": "450",
+      "item_type": "consumable",
+      "name": "Café au Lait Recipe"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "y9SdhluPlSnrKBTP"
+  },
+  "type": "equippableItem"
+}

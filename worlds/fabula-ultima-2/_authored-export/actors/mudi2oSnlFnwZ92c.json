@@ -1,0 +1,451 @@
+{
+  "_id": "mudi2oSnlFnwZ92c",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1676043820569,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "gURInf3qoeC0amcu",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.331",
+        "createdTime": 1769830001314,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>This creature has less than 50% HP</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "4ldx00srGNv5AJBr",
+          "originalParentId": "0gIBYzSpjdXS6f25",
+          "originalUuid": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-crisis",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": false
+        },
+        "fabula-ultima-companion": {
+          "autoCrisis": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/08_DRG/blood_for_blood.png",
+      "name": "Crisis",
+      "origin": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr",
+      "sort": 0,
+      "statuses": [
+        "5jkr80zqdzaR003d"
+      ],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.5.0"
+    }
+  },
+  "folder": "ajFTGtGjaMP72bxX",
+  "img": "https://assets.forge-vtt.com/5faea531ddd99c47f144e576/Alonzo/Alonzo%20token.png",
+  "name": "Alonzo",
+  "ownership": {
+    "LT3Z8EnRdMVk5ncQ": 3,
+    "default": 0
+  },
+  "prototypeToken": {
+    "actorLink": true,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 30,
+    "displayName": 30,
+    "disposition": 1,
+    "flags": {},
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Alonzo",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://assets.forge-vtt.com/5faea531ddd99c47f144e576/Alonzo/Alonzo%20token.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 0,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "activeEffects": {},
+    "props": {
+      "arcanism": false,
+      "armor_mod": "1",
+      "armor_name": "Sage Robe ",
+      "attack_accuracy_mod_all": "0",
+      "attack_accuracy_mod_melee": "0",
+      "attack_accuracy_mod_range": "0",
+      "attack_accuracy_mod_spell": "0",
+      "backpack": "",
+      "backstory": "",
+      "bond_1": "MJ",
+      "bond_2": "Guy",
+      "bond_3": "Anon, the Moving Island",
+      "bond_4": "",
+      "bond_5": "",
+      "bond_6": "",
+      "chanter_volume_mp_header": "MP",
+      "chanter_volume_mp_high": 30,
+      "chanter_volume_mp_low": 10,
+      "chanter_volume_mp_medium": 20,
+      "chanter_volume_target_high": "Every enemy who can hear you.",
+      "chanter_volume_target_low": "Yourself <b>or</b> another creature you can see who can hear you.",
+      "chanter_volume_target_medium": "Every ally who can hear you.",
+      "char_identity": "Educational tourism , rich , hard-working , family man",
+      "check_roller": "Roll!",
+      "chimerism": false,
+      "class_list": {
+        "0": {
+          "$deleted": false,
+          "benefit": "mp",
+          "class_name": "Elementalist",
+          "level": "3"
+        },
+        "1": {
+          "$deleted": false,
+          "benefit": "ip",
+          "class_name": "Wayfarers",
+          "level": "2"
+        }
+      },
+      "clock_brainwave": "0",
+      "clock_trade": "0",
+      "cooking_roller": "🔪Cook!",
+      "current_hp": "14",
+      "current_ip": "8",
+      "current_mp": "30",
+      "damage_receiving_mod_air": "0",
+      "damage_receiving_mod_all": "0",
+      "damage_receiving_mod_bolt": "0",
+      "damage_receiving_mod_dark": "0",
+      "damage_receiving_mod_earth": "0",
+      "damage_receiving_mod_fire": "0",
+      "damage_receiving_mod_ice": "0",
+      "damage_receiving_mod_light": "0",
+      "damage_receiving_mod_melee": "0",
+      "damage_receiving_mod_physical": "0",
+      "damage_receiving_mod_poison": "0",
+      "damage_receiving_mod_range": "0",
+      "dex_base": "6",
+      "dex_current": "6",
+      "draw_card": "Draw",
+      "draw_card_copy1": "Use",
+      "elementalism": false,
+      "emotion_1_1": "1",
+      "emotion_1_2": "",
+      "emotion_1_3": "",
+      "emotion_2_1": "1",
+      "emotion_2_2": "",
+      "emotion_2_3": "",
+      "emotion_3_1": "",
+      "emotion_3_2": "",
+      "emotion_3_3": "1",
+      "emotion_4_1": "",
+      "emotion_4_2": "",
+      "emotion_4_3": "",
+      "emotion_5_1": "",
+      "emotion_5_2": "",
+      "emotion_5_3": "",
+      "emotion_6_1": "",
+      "emotion_6_2": "",
+      "emotion_6_3": "",
+      "entropism": false,
+      "experience": "0",
+      "experience_ui": "0",
+      "fp": "4",
+      "init_penalty": "-2",
+      "ins_base": "10",
+      "ins_current": "10",
+      "inventory_label": "💼 Inventory",
+      "isDazed": false,
+      "isEnraged": false,
+      "isPoisoned": false,
+      "isShaken": false,
+      "isSlow": true,
+      "isWeak": false,
+      "is_martialarmor": false,
+      "level": "5",
+      "magic_defense_mod": "2",
+      "main_attrib_1": "WLP",
+      "main_attrib_2": "WLP",
+      "main_hand": "Staff",
+      "main_hand_attack": "",
+      "max_hp": 35,
+      "max_ip": "ERROR",
+      "max_mp": 60,
+      "memory": "Memories",
+      "mig_base": "6",
+      "mig_current": "6",
+      "name": "Alonzo",
+      "normal_spell_list": {
+        "0": {
+          "$deleted": false,
+          "class": "Elementalist",
+          "cost": "10",
+          "description": "<p><span dir=\"ltr\" role=\"presentation\">You imbue a weapon with elemental energy. Choose a damage type:</span> <span dir=\"ltr\" role=\"presentation\">air</span><span dir=\"ltr\" role=\"presentation\">,</span> <span dir=\"ltr\" role=\"presentation\">bolt</span><span dir=\"ltr\" role=\"presentation\">,</span> <span dir=\"ltr\" role=\"presentation\">earth</span><span dir=\"ltr\" role=\"presentation\">,</span><br role=\"presentation\"><span dir=\"ltr\" role=\"presentation\">fire</span><span dir=\"ltr\" role=\"presentation\">, or</span> <span dir=\"ltr\" role=\"presentation\">ice</span><span dir=\"ltr\" role=\"presentation\">. Until this spell ends, all damage dealt by the weapon becomes of the</span><br role=\"presentation\"><span dir=\"ltr\" role=\"presentation\">chosen damage type. If you have that weapon equipped while you cast this spell, you</span><br role=\"presentation\"><span dir=\"ltr\" role=\"presentation\">may perform a</span> <span dir=\"ltr\" role=\"presentation\">free attack</span> <span dir=\"ltr\" role=\"presentation\">with it as part of the same action.</span><br role=\"presentation\"><span dir=\"ltr\" role=\"presentation\">This spell can only be cast on a weapon equipped by a willing creature.</span></p>",
+          "duration": "Scene",
+          "roll": "",
+          "spell_name": "Elemental Weapon ",
+          "target": "One weapon "
+        },
+        "1": {
+          "$deleted": false,
+          "class": "Elementalist",
+          "cost": "10",
+          "description": "<p><span dir=\"ltr\" role=\"presentation\">The wind carries your strikes across the battlefield. You may immediately perform a</span><br role=\"presentation\"><span dir=\"ltr\" role=\"presentation\">free attack</span> <span dir=\"ltr\" role=\"presentation\">with a</span> <span dir=\"ltr\" role=\"presentation\">melee</span> <span dir=\"ltr\" role=\"presentation\">weapon you have equipped. This attack may target creatures</span><br role=\"presentation\"><span dir=\"ltr\" role=\"presentation\">that can only be targeted by</span> <span dir=\"ltr\" role=\"presentation\">ranged</span> <span dir=\"ltr\" role=\"presentation\">attacks.</span><br role=\"presentation\"><span dir=\"ltr\" role=\"presentation\">If you used a weapon belonging to the</span> <span dir=\"ltr\" role=\"presentation\">brawling</span> <span dir=\"ltr\" role=\"presentation\">or</span> <span dir=\"ltr\" role=\"presentation\">spear</span> <span dir=\"ltr\" role=\"presentation\">Category for this attack, it</span><br role=\"presentation\"><span dir=\"ltr\" role=\"presentation\">deals 5 extra damage.</span><br role=\"presentation\"><span dir=\"ltr\" role=\"presentation\">If you hit a flying target with this attack, you may force them to land immediatel</span></p>",
+          "duration": "Instantaneous",
+          "roll": "",
+          "spell_name": "Soaring Strike",
+          "target": "Self"
+        },
+        "2": {
+          "$deleted": false,
+          "class": "Elementalist",
+          "cost": "10",
+          "description": "<p><span dir=\"ltr\" role=\"presentation\">You unleash a searing barrage against your foes, conjuring flames out of thin air. Each</span><br role=\"presentation\"><span dir=\"ltr\" role=\"presentation\">target hit by this spell suffers</span><span dir=\"ltr\" role=\"presentation\">【</span><span dir=\"ltr\" role=\"presentation\">HR + 15</span><span dir=\"ltr\" role=\"presentation\">】</span><span dir=\"ltr\" role=\"presentation\">fire</span> <span dir=\"ltr\" role=\"presentation\">damage.</span><br role=\"presentation\"><span dir=\"ltr\" role=\"presentation\">Opportunity:</span> <span dir=\"ltr\" role=\"presentation\">Each target hit by this spell suffers</span> <span dir=\"ltr\" role=\"presentation\">shaken</span><span dir=\"ltr\" role=\"presentation\">.</span></p>",
+          "duration": "Instantaneous",
+          "roll": "",
+          "spell_name": "Ignis",
+          "target": "Up to three creatures"
+        }
+      },
+      "notes_text": "",
+      "off_attrib_1": "SHI",
+      "off_attrib_2": "SHI",
+      "off_base_mod_1": "0",
+      "off_base_mod_2": "0",
+      "off_hand": "",
+      "off_hand_attack": "",
+      "off_mod_1": 0,
+      "off_mod_2": 0,
+      "origin": "Skycity",
+      "passive_list": {
+        "0": {
+          "$deleted": true,
+          "passive_description": null,
+          "passive_name": null,
+          "passive_roll": "",
+          "passive_source": ""
+        }
+      },
+      "place_card_vanguard": "Place",
+      "populate_deck": "Populate",
+      "pronouns": "He",
+      "reset_cards": "Resets",
+      "resolve_set": "Resolve",
+      "resource_value_1": "0",
+      "resource_value_2": "0",
+      "resource_value_3": "0",
+      "reveal_cards": "Reveal",
+      "ritualism": false,
+      "rolled_atr1": "INS",
+      "rolled_atr2": "DEX",
+      "shield_value": "0",
+      "shuffle_deck": "Shuffle",
+      "skill_accuracy": "0",
+      "skill_attack_damage": "0",
+      "skill_hp": "0",
+      "skill_list": {
+        "0": {
+          "$deleted": false,
+          "class": "Elementalist",
+          "description": "<p><span dir=\"ltr\" role=\"presentation\">Each time you acquire this Skill, learn one Elementalist spell (see next two pages).</span><br role=\"presentation\"><span dir=\"ltr\" role=\"presentation\">Offensive (</span><span dir=\"ltr\" role=\"presentation\">r</span><span dir=\"ltr\" role=\"presentation\">r</span><span dir=\"ltr\" role=\"presentation\">) Elementalist spells use</span><span dir=\"ltr\" role=\"presentation\">【</span><span dir=\"ltr\" role=\"presentation\">INS + WLP</span><span dir=\"ltr\" role=\"presentation\">】</span><span dir=\"ltr\" role=\"presentation\">for the Magic Check.</span></p>",
+          "level": "3",
+          "roll": "",
+          "skill_name": "ELEMENTAL MAGIC "
+        },
+        "1": {
+          "$deleted": false,
+          "class": "Wayfarers",
+          "description": "<p><span dir=\"ltr\" role=\"presentation\">Together with the rest of your group, design a</span> <span dir=\"ltr\" role=\"presentation\">level 5</span> <span dir=\"ltr\" role=\"presentation\">beast</span><span dir=\"ltr\" role=\"presentation\">,</span> <span dir=\"ltr\" role=\"presentation\">construct</span><span dir=\"ltr\" role=\"presentation\">,</span> <span dir=\"ltr\" role=\"presentation\">elemental</span> <span dir=\"ltr\" role=\"presentation\">or</span><br role=\"presentation\"><span dir=\"ltr\" role=\"presentation\">plant</span> <span dir=\"ltr\" role=\"presentation\">creature (see page</span> <span dir=\"ltr\" aria-owns=\"pdfjs_internal_id_483R\">302</span><span dir=\"ltr\" role=\"presentation\">) that becomes your</span> <span dir=\"ltr\" role=\"presentation\">companion</span><span dir=\"ltr\" role=\"presentation\">. This creature has</span> <span dir=\"ltr\" role=\"presentation\">no</span><br role=\"presentation\"><span dir=\"ltr\" role=\"presentation\">Initiative score</span> <span dir=\"ltr\" role=\"presentation\">and</span> <span dir=\"ltr\" role=\"presentation\">does not level up</span><span dir=\"ltr\" role=\"presentation\">, can have</span> <span dir=\"ltr\" role=\"presentation\">up to two basic attacks</span><span dir=\"ltr\" role=\"presentation\">, gains a bonus</span><br role=\"presentation\"><span dir=\"ltr\" role=\"presentation\">equal to</span><span dir=\"ltr\" role=\"presentation\">【</span><span dir=\"ltr\" role=\"presentation\">SL</span><span dir=\"ltr\" role=\"presentation\">】</span><span dir=\"ltr\" role=\"presentation\">to Accuracy Checks and Magic Checks, and their maximum Hit Points are</span><br role=\"presentation\"><span dir=\"ltr\" role=\"presentation\">equal to</span><span dir=\"ltr\" role=\"presentation\">【</span><span dir=\"ltr\" role=\"presentation\">(SL multiplied by the companion's base Might die size) + half your level</span><span dir=\"ltr\" role=\"presentation\">】</span><span dir=\"ltr\" role=\"presentation\">.</span><br role=\"presentation\"><span dir=\"ltr\" role=\"presentation\">Your companion doesn't get a turn during conflicts, but on your turn you can use an</span><br role=\"presentation\"><span dir=\"ltr\" role=\"presentation\">action to have the companion perform an action (only once per turn). If you leave a</span><br role=\"presentation\"><span dir=\"ltr\" role=\"presentation\">scene, your companion leaves with you.</span><br role=\"presentation\"><span dir=\"ltr\" role=\"presentation\">If your companion falls to 0 Hit Points, they flee and rejoin you at the start of the next</span><br role=\"presentation\"><span dir=\"ltr\" role=\"presentation\">scene in which you are present, with HP equal to their</span> <span dir=\"ltr\" role=\"presentation\">Crisis</span> <span dir=\"ltr\" role=\"presentation\">score.</span><br role=\"presentation\"><span dir=\"ltr\" role=\"presentation\">When you</span> <span dir=\"ltr\" role=\"presentation\">rest</span><span dir=\"ltr\" role=\"presentation\">, your companion also gains the full benefits of resting.</span></p>",
+          "level": "2",
+          "roll": "",
+          "skill_name": "FAITHFUL COMPANION "
+        }
+      },
+      "skill_mp": "0",
+      "spiritism": false,
+      "theme": "Self Development",
+      "weapon1_base_damage": "0",
+      "weapon1_base_mod": "0",
+      "weapon1_damage": 0,
+      "weapon1_damagetype": "physical",
+      "weapon1_mod": 0,
+      "weapon2_damagetype": "-",
+      "wlp_base": "10",
+      "wlp_current": "10",
+      "zenit": "270",
+      "zero_effect_description": "",
+      "zero_effect_label": "💬 Zero Effect",
+      "zero_label": "💥 Zero Power : ",
+      "zero_power_name": "",
+      "zero_power_value": "0",
+      "zero_trigger_label": "⚔️ Zero Trigger"
+    },
+    "statusEffects": {
+      "1QPHKNWo17z0bBmX": [],
+      "1cksCQj3urJwddfg": [],
+      "1qTdxSVu2XLu0lUx": [],
+      "3YZNX2X5rHYtL4L5": [],
+      "4g2B0rdJ3SiUQvUv": [],
+      "5FFBDg2y54bpqgat": [],
+      "5jkr80zqdzaR003d": [],
+      "6YW8glLMYbwj6ZhC": [],
+      "7FLtIUvENcYDAJKC": [],
+      "7VDl6ac5Rzr2Rpya": [],
+      "8LN8tDQjON508Rqm": [],
+      "ACD2C8JLWUeIx89o": [],
+      "CVxHWmDb0gQsob1q": [],
+      "CfLPg6RDybSQhTSR": [],
+      "DCaKnV9kNn3EpqtY": [],
+      "DHsoSawNEZAxsnQ9": [],
+      "EVjmTFRDsuzR823Z": [],
+      "GJ0cbbj60lr4zaHm": [],
+      "MsbUHrgK7AhSeEJm": [],
+      "N4WfMf1nuOdUEXVS": [],
+      "N4rGBYQsH7PyMAWr": [],
+      "NogCaPvL5Y52Hjnq": [],
+      "OFk8VUuwDhWFoPxI": [],
+      "QOfrFCU2C6mx50gK": [],
+      "Qz8IC4v3wJ6UoM77": [],
+      "Rc8AvdmlHAK7pPea": [],
+      "StnYeDADYo2xX99O": [],
+      "T1kJfiKBZm1dnnBy": [],
+      "VxdXsFJ7YVEzAp3x": [],
+      "YhO7nUdawyeQKMWD": [],
+      "ZK0aTX8IH1NqwmTw": [],
+      "bspDC7hFRTYuwdhf": [],
+      "cDgbFRi9TA68TvYr": [],
+      "clE8TJ0G1gMwF735": [],
+      "fYkA57rVfoytHRjo": [],
+      "g7JIey1pEuRHyAOH": [],
+      "gX1fA3onNG7wsyap": [],
+      "hhqoSNhWfVD4KR7g": [],
+      "jKvrVpxLgX0KhB23": [],
+      "m2iUJjsEfJkpmOBw": [],
+      "qMZsEEuzAdrHb2fk": [],
+      "qePlOECBTS0Dftgc": [],
+      "t2C3LKukW6LPUImk": [],
+      "t5jyddIZDvbyuVsD": [],
+      "v22vl6cnP94wVBPu": [],
+      "v2vFlETIgMnff5o8": [],
+      "vLM7q3rdXVCgHYD4": [],
+      "vUYA9jgY9pdafj4i": [],
+      "wA1E8GxiXmzz80XQ": [],
+      "xuwAn7u126GfFweU": []
+    },
+    "template": "Dx16KeWcJzikM7dh",
+    "templateSystemUniqueVersion": 276398442
+  },
+  "type": "character"
+}

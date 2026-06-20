@@ -1,0 +1,19 @@
+{
+  "_id": "Y2fiyeU6qz5fXasm",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1777373724109,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "ao7MvDYKSVhEwWj3",
+  "name": "Dungeon Pathcfinder",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Macro"
+}

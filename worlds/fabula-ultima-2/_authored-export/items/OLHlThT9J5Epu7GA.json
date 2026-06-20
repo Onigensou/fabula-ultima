@@ -1,0 +1,54 @@
+{
+  "_id": "OLHlThT9J5Epu7GA",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1751638917689,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "recipe",
+        "fromTemplate": "VJCHYWOx1mPsMSip",
+        "itemId": "OLHlThT9J5Epu7GA",
+        "itemName": "Mixed Juice",
+        "pickedOldProps": {
+          "recipe_description": "<ul><li><p>Target creature recovers <strong>50</strong> Hit Points and <strong>50</strong> Mind Points.</p></li></ul>",
+          "recipe_flavor": "<p><em>A blend of various fruits turned into juice — refreshing, but best enjoyed in moderation due to its high sugar content</em></p>",
+          "recipe_ip": "5",
+          "recipe_label": ""
+        },
+        "ts": 1769647436042
+      }
+    }
+  },
+  "folder": "MOf4y5KdI6ZvNBHg",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/12067.gif",
+  "name": "Mixed Juice",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "description": "<ul><li><p>Target creature recovers <strong>50</strong> Hit Points and <strong>50</strong> Mind Points.</p></li></ul>",
+      "flavor_text": "<p><em>A blend of various fruits turned into juice — refreshing, but best enjoyed in moderation due to its high sugar content</em></p>",
+      "ip_cost": "5",
+      "item_type": "recipe",
+      "name": "Mixed Juice"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "OLHlThT9J5Epu7GA"
+  },
+  "type": "equippableItem"
+}

@@ -1,0 +1,19 @@
+{
+  "_id": "uuBCmFnWytMuWiTe",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1754157979845,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "VVjpCERIXMrOJna7",
+  "name": "Pirate",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

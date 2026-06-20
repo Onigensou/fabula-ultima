@@ -1,0 +1,19 @@
+{
+  "_id": "vW7HEk4iKmByb7fr",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1765681942470,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "oVRjRmlshSvb68gK",
+  "name": "Object",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Actor"
+}

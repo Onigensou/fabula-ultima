@@ -1,0 +1,62 @@
+{
+  "_id": "BRvcE5bjsMDqFo5d",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1756852649550,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "Va6LrDwkj9QwdX0k",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/12_MCH/hypercharge.png",
+  "name": "Gadgets",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "check_bonus": "0",
+      "class": "Tinkerer",
+      "cost": "",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>When you first acquire this Skill, choose a gadget type: <strong>alchemy, infusions </strong>or <strong>magitech</strong> (see Facet). You gain its <strong>basic benefits</strong>.</p><p>Whenever you take this Skill again, <strong>choose one option:</strong></p><ul><li><p>You gain the <strong>basic benefits</strong> of a new gadget type</p></li><li><p>You gain the <strong>advanced benefits</strong> of a gadget type whose basic benefits you already obtained</p></li><li><p>You gain the <strong>superior benefits</strong> of a gadget type whose advanced benefits you already obtained.</p></li></ul>",
+      "duration": "",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "level": "1",
+      "max_level": "5",
+      "name": "Gadgets",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Other",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "BRvcE5bjsMDqFo5d"
+  },
+  "type": "equippableItem"
+}

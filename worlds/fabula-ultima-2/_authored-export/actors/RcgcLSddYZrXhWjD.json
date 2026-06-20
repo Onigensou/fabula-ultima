@@ -1,0 +1,382 @@
+{
+  "_id": "RcgcLSddYZrXhWjD",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1674794470966,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.5.0"
+    }
+  },
+  "folder": "Cj3PsdCco0e7gpZF",
+  "img": "icons/svg/mystery-man.svg",
+  "items": [
+    {
+      "_id": "XW3aitvnVbzJ0EIY",
+      "_stats": {
+        "compendiumSource": "Item.icLx7hZv5F15anwS",
+        "coreVersion": "12.343",
+        "createdTime": 1674794972455,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.icLx7hZv5F15anwS"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": null,
+      "img": "icons/svg/acid.svg",
+      "name": "Test Spell",
+      "ownership": {
+        "Am7qxPOavfKeDGPd": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "2",
+          "class": "Arc",
+          "cost": "3",
+          "damage_bonus": "2",
+          "description": "<p>test</p>",
+          "duration": "Instantanous",
+          "name": "Test Spell",
+          "rolled_atr1": "WLP",
+          "rolled_atr2": "INS",
+          "target": "Self",
+          "type_damage": "Fire"
+        },
+        "template": "FZmpKcQRP7hZQqbV",
+        "templateSystemUniqueVersion": 1700837225,
+        "unique": false
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Lady Ivory",
+  "ownership": {
+    "9sFgrDy4MvAgoCmQ": 3,
+    "Am7qxPOavfKeDGPd": 3,
+    "default": 0
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": null
+    },
+    "bar2": {
+      "attribute": null
+    },
+    "detectionModes": [],
+    "displayBars": 0,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {},
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Test",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "icons/svg/mystery-man.svg",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 300000,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "activeEffects": {},
+    "props": {
+      "accesory_name": "",
+      "arcanism": false,
+      "armor_mod": "10",
+      "armor_name": "Brigandine",
+      "backstory": "<h1>Lady Ivory&nbsp;</h1>\n<p>หญิงสาวชนชั้นสูงผู้ค้นพบเวทย์มนตร์โบราณที่ใช้ดึงเอาอสูรแห่งอดีตกาลขึ้นมาโดยใช้ของเหลวสีดำแห่งโบราณกาลเป็นสื่อกลาง เธอใช้มันเพื่อสร้างความหวาดกลัวให้ผู้คนยอมสยบ แต่เมื่อใช้มันมากเข้า สติของเธอก็เริ่มถดถอยลง</p>\n<p>&nbsp;</p>\n<p>&nbsp;</p>",
+      "bond_1": "",
+      "bond_2": "",
+      "bond_3": "",
+      "bond_4": "",
+      "bond_5": "",
+      "bond_6": "",
+      "char_identity": "",
+      "check_roller": "Roll!",
+      "chimerism": false,
+      "class_list": {
+        "0": {
+          "$deleted": false,
+          "benefit": "mp",
+          "class_name": "Arcanist",
+          "level": "1"
+        },
+        "1": {
+          "$deleted": false,
+          "benefit": "hp",
+          "class_name": "Guardian",
+          "level": "3"
+        },
+        "2": {
+          "$deleted": false,
+          "benefit": "hp",
+          "class_name": "Necromancer",
+          "level": "1"
+        }
+      },
+      "crisis_hp": "ERROR",
+      "current_hp": "78",
+      "current_ip": "6",
+      "current_mp": "40",
+      "dex_base": "6",
+      "dex_current": "6",
+      "elementalism": false,
+      "emotion_1_1": "",
+      "emotion_1_2": "",
+      "emotion_1_3": "",
+      "emotion_2_1": "",
+      "emotion_2_2": "",
+      "emotion_2_3": "",
+      "emotion_3_1": "",
+      "emotion_3_2": "",
+      "emotion_3_3": "",
+      "emotion_4_1": "",
+      "emotion_4_2": "",
+      "emotion_4_3": "",
+      "emotion_5_1": "",
+      "emotion_5_2": "",
+      "emotion_5_3": "",
+      "emotion_6_1": "",
+      "emotion_6_2": "",
+      "emotion_6_3": "",
+      "entropism": false,
+      "experience": "0",
+      "fp": "3",
+      "init_penalty": "-3",
+      "ins_base": "8",
+      "ins_current": "8",
+      "inventory_label": "💼 Inventory",
+      "isDazed": false,
+      "isEnraged": false,
+      "isPoisoned": false,
+      "isShaken": false,
+      "isSlow": false,
+      "isWeak": false,
+      "is_martialarmor": true,
+      "level": "5",
+      "magic_defense_mod": "8",
+      "main_attrib_1": "MIG",
+      "main_attrib_2": "MIG",
+      "main_hand": "Iron Hammer",
+      "main_hand_attack": "",
+      "max_hp": "ERROR",
+      "max_ip": "ERROR",
+      "max_mp": "ERROR",
+      "mig_base": "12",
+      "mig_current": "12",
+      "name": "Lady Ivory",
+      "normal_spell_list": {
+        "0": {
+          "$deleted": false,
+          "class": "",
+          "cost": "0",
+          "description": "",
+          "duration": "",
+          "roll": "",
+          "spell_name": "",
+          "target": ""
+        },
+        "1": {
+          "$deleted": false,
+          "class": "",
+          "cost": "0",
+          "description": "",
+          "duration": "",
+          "roll": "",
+          "spell_name": "",
+          "target": ""
+        }
+      },
+      "notes_text": "<h3><span dir=\"ltr\" role=\"presentation\">BIND AND SUMMON</span></h3>\n<p><span dir=\"ltr\" role=\"presentation\">You may bind Arcana to your soul and summon them later. The Game Master will<br role=\"presentation\">tell you the details of each binding process when you first encounter the Arcanum in<br role=\"presentation\">question.<br role=\"presentation\">You may use an action and spend 40 Mind Points to summon an Arcanum you have<br role=\"presentation\">bound: the details of this process are explained on the next page.<br role=\"presentation\">If you take this Skill at character creation, you begin play with one Arcanum of your<br role=\"presentation\">choice already bound to you, chosen from the list on the next pages. Other than that,<br role=\"presentation\">you may only obtain new Arcana through exploration and story progression.</span></p>\n<p><span dir=\"ltr\" role=\"presentation\">-----------------------------------------------</span></p>\n<p><strong><span dir=\"ltr\" role=\"presentation\">ARCANUM OF THE TOWER</span></strong></p>\n<p><span dir=\"ltr\" role=\"presentation\">Domains: judgment, protection, sacrifice.</span></p>\n<p><span dir=\"ltr\" role=\"presentation\"><strong>Merge : </strong>When you summon this Arcanum, choose a damage type: air, bolt, dark, earth, fire,<br role=\"presentation\">or ice. Until this Arcanum is dismissed, each of your allies present on the scene has<br role=\"presentation\">Resistance to the chosen damage type (you do not gain this Resistance</span></p>\n<p><span dir=\"ltr\" role=\"presentation\"><strong>Dismiss : </strong>Judgment. Choose any number of creatures you can see: each of them suffers 30<br role=\"presentation\">light damage. This damage ignores Resistances</span></p>\n<p>&nbsp;</p>\n<hr>\n<h3><span dir=\"ltr\" role=\"presentation\">BODYGUARD</span></h3>\n<p><span dir=\"ltr\" role=\"presentation\">If you perform the Guard action and choose to provide cover to another creature, that<br role=\"presentation\">creature gains Resistance to all damage types until the start of your next turn.</span></p>\n<p>&nbsp;</p>\n<hr>\n<h3><span dir=\"ltr\" role=\"presentation\">PROTECT</span></h3>\n<p><span dir=\"ltr\" role=\"presentation\">When another creature is threatened by an</span> <span dir=\"ltr\" role=\"presentation\">attack</span><span dir=\"ltr\" role=\"presentation\">,</span> <span dir=\"ltr\" role=\"presentation\">spell</span> <span dir=\"ltr\" role=\"presentation\">or other</span> <span dir=\"ltr\" role=\"presentation\">danger</span><span dir=\"ltr\" role=\"presentation\">, you may take</span><br role=\"presentation\"><span dir=\"ltr\" role=\"presentation\">their place (any Checks that are part of the danger will be performed against you; you</span><br role=\"presentation\"><span dir=\"ltr\" role=\"presentation\">may declare the use of this Skill</span> <span dir=\"ltr\" role=\"presentation\">before or after</span> <span dir=\"ltr\" role=\"presentation\">the Checks have been made). If the</span><br role=\"presentation\"><span dir=\"ltr\" role=\"presentation\">danger already affected you, it affects you</span> <span dir=\"ltr\" role=\"presentation\">twice</span> <span dir=\"ltr\" role=\"presentation\">(resolve both instances separately);</span><br role=\"presentation\"><span dir=\"ltr\" role=\"presentation\">you also cannot protect multiple creatures from the same danger. If you use this Skill</span><br role=\"presentation\"><span dir=\"ltr\" role=\"presentation\">during a conflict, you cannot use it again until the start of your next turn.</span></p>\n<p>&nbsp;</p>\n<hr>\n<h3><span dir=\"ltr\" role=\"presentation\">FORTRESS</span></h3>\n<p><span dir=\"ltr\" role=\"presentation\">Permanently increase your maximum Hit Points by【SL &times; 3】</span></p>\n<p>&nbsp;</p>\n<hr>\n<h3><span dir=\"ltr\" role=\"presentation\">BEYOND THE REALMS OF DEATH</span></h3>\n<p><span dir=\"ltr\" role=\"presentation\">When another creature you can see loses Hit Points while in Crisis, if they are not<br role=\"presentation\">undead, you gain 1 Grave Point. You may never have more than【SL + 1】Grave Points.<br role=\"presentation\">When you are reduced to 0 Hit Points, you lose all Grave Points; then, if you lost at<br role=\"presentation\">least 1 Grave Point this way and this is the first time you are reduced to 0 HP during<br role=\"presentation\">this scene, you do not Surrender nor Sacrifice yourself: instead, you recover an amount<br role=\"presentation\">of HP equal to【SL, multiplied by the amount of Grave Points you lost this way】</span></p>\n<p>&nbsp;</p>\n<hr>\n<p>&nbsp;</p>\n<p>&nbsp;</p>",
+      "off_attrib_1": "SHI",
+      "off_attrib_2": "SHI",
+      "off_hand": "Shield",
+      "off_hand_attack": "",
+      "off_mod_1": "2",
+      "off_mod_2": "2",
+      "offensive_spell_list": {
+        "XW3aitvnVbzJ0EIY": {
+          "class": "ERROR",
+          "cost": "ERROR",
+          "duration": "ERROR",
+          "id": "XW3aitvnVbzJ0EIY",
+          "name": "Test Spell",
+          "roll": "",
+          "target": "ERROR",
+          "uuid": "Actor.RcgcLSddYZrXhWjD.Item.XW3aitvnVbzJ0EIY"
+        }
+      },
+      "origin": "",
+      "pronouns": "She / Her",
+      "re_experience": "0",
+      "relationship_1": "",
+      "relationship_2": "",
+      "relationship_3": "",
+      "relationship_4": "",
+      "relationship_5": "",
+      "relationship_6": "",
+      "resource_value_1": "0",
+      "resource_value_2": "0",
+      "resource_value_3": "0",
+      "ritualism": false,
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "shield_type": "PHYSICAL",
+      "shield_value": "0",
+      "skill_hp": "3",
+      "skill_list": {
+        "0": {
+          "$deleted": false,
+          "class": "Arcanist",
+          "description": "<p><span dir=\"ltr\" role=\"presentation\">You may bind Arcana to your soul and summon them later. The Game Master will<br role=\"presentation\">tell you the details of each binding process when you first encounter the Arcanum in<br role=\"presentation\">question.<br role=\"presentation\">You may use an action and spend 40 Mind Points to summon an Arcanum you have<br role=\"presentation\">bound: the details of this process are explained on the next page.<br role=\"presentation\">If you take this Skill at character creation, you begin play with one Arcanum of your<br role=\"presentation\">choice already bound to you, chosen from the list on the next pages. Other than that,<br role=\"presentation\">you may only obtain new Arcana through exploration and story progression.</span></p>\n<p><span dir=\"ltr\" role=\"presentation\">-----------------------------------------------</span></p>\n<p><strong><span dir=\"ltr\" role=\"presentation\">ARCANUM OF THE TOWER</span></strong></p>\n<p><span dir=\"ltr\" role=\"presentation\">Domains: judgment, protection, sacrifice.</span></p>\n<p><span dir=\"ltr\" role=\"presentation\"><strong>Merge : </strong>When you summon this Arcanum, choose a damage type: air, bolt, dark, earth, fire,<br role=\"presentation\">or ice. Until this Arcanum is dismissed, each of your allies present on the scene has<br role=\"presentation\">Resistance to the chosen damage type (you do not gain this Resistance</span></p>\n<p><span dir=\"ltr\" role=\"presentation\"><strong>Dismiss : </strong>Judgment. Choose any number of creatures you can see: each of them suffers 30<br role=\"presentation\">light damage. This damage ignores Resistances</span></p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Bind and Summon"
+        },
+        "1": {
+          "$deleted": false,
+          "class": "Guardian",
+          "description": "<p><span dir=\"ltr\" role=\"presentation\">If you perform the Guard action and choose to provide cover to another creature, that<br role=\"presentation\">creature gains Resistance to all damage types until the start of your next turn.</span></p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Bodyguard"
+        },
+        "2": {
+          "$deleted": false,
+          "class": "Necromancer",
+          "description": "<p><span dir=\"ltr\" role=\"presentation\">When another creature you can see loses Hit Points while in Crisis, if they are not<br role=\"presentation\">undead, you gain 1 Grave Point. You may never have more than【SL + 1】Grave Points.<br role=\"presentation\">When you are reduced to 0 Hit Points, you lose all Grave Points; then, if you lost at<br role=\"presentation\">least 1 Grave Point this way and this is the first time you are reduced to 0 HP during<br role=\"presentation\">this scene, you do not Surrender nor Sacrifice yourself: instead, you recover an amount<br role=\"presentation\">of HP equal to【SL, multiplied by the amount of Grave Points you lost this way】</span></p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Beyond the Realms of Death"
+        },
+        "3": {
+          "$deleted": false,
+          "class": "Guardian",
+          "description": "<p><span dir=\"ltr\" role=\"presentation\">Permanently increase your maximum Hit Points by【SL &times; 3】</span></p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Fortress"
+        },
+        "4": {
+          "$deleted": false,
+          "class": "Guardian",
+          "description": "<p><span dir=\"ltr\" role=\"presentation\">When another creature is threatened by an</span> <span dir=\"ltr\" role=\"presentation\">attack</span><span dir=\"ltr\" role=\"presentation\">,</span> <span dir=\"ltr\" role=\"presentation\">spell</span> <span dir=\"ltr\" role=\"presentation\">or other</span> <span dir=\"ltr\" role=\"presentation\">danger</span><span dir=\"ltr\" role=\"presentation\">, you may take</span><br role=\"presentation\"><span dir=\"ltr\" role=\"presentation\">their place (any Checks that are part of the danger will be performed against you; you</span><br role=\"presentation\"><span dir=\"ltr\" role=\"presentation\">may declare the use of this Skill</span> <span dir=\"ltr\" role=\"presentation\">before or after</span> <span dir=\"ltr\" role=\"presentation\">the Checks have been made). If the</span><br role=\"presentation\"><span dir=\"ltr\" role=\"presentation\">danger already affected you, it affects you</span> <span dir=\"ltr\" role=\"presentation\">twice</span> <span dir=\"ltr\" role=\"presentation\">(resolve both instances separately);</span><br role=\"presentation\"><span dir=\"ltr\" role=\"presentation\">you also cannot protect multiple creatures from the same danger. If you use this Skill</span><br role=\"presentation\"><span dir=\"ltr\" role=\"presentation\">during a conflict, you cannot use it again until the start of your next turn.</span></p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Protect"
+        },
+        "5": {
+          "$deleted": true,
+          "class": "Arcanist",
+          "description": "<p><span dir=\"ltr\" role=\"presentation\"><strong>Dismiss : </strong>Judgment. Choose any number of creatures you can see: each of them suffers 30<br role=\"presentation\">light damage. This damage ignores Resistances</span></p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "ARCANUM OF TOWER (dsm)"
+        }
+      },
+      "skill_mp": "0",
+      "spiritism": false,
+      "theme": "",
+      "weapon1_damage": "6",
+      "weapon1_damagetype": "Physical",
+      "weapon1_mod": "0",
+      "weapon2_damagetype": "-",
+      "wlp_base": "6",
+      "wlp_current": "6",
+      "your_class_name": "",
+      "zenit": "0",
+      "zero_effect_label": "💬 Zero Effect",
+      "zero_label": "💥 Zero Power : ",
+      "zero_power_name": "",
+      "zero_power_value": "0",
+      "zero_trigger_label": "⚔️ Zero Trigger"
+    },
+    "statusEffects": {},
+    "template": "gN4AtNuVF4Tc5LxK",
+    "templateSystemUniqueVersion": 93170772
+  },
+  "type": "character"
+}

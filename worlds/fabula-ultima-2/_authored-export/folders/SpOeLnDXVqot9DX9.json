@@ -1,0 +1,19 @@
+{
+  "_id": "SpOeLnDXVqot9DX9",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1756853167267,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "Va6LrDwkj9QwdX0k",
+  "name": "Tinkerer Gadgets",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

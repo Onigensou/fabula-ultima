@@ -1,0 +1,62 @@
+{
+  "_id": "bK4keBgVr3e1R4c2",
+  "_stats": {
+    "compendiumSource": "Item.JXTatbLpfQkBEZQT",
+    "coreVersion": "12.343",
+    "createdTime": 1747554119026,
+    "duplicateSource": "Item.JXTatbLpfQkBEZQT",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "bK4keBgVr3e1R4c2",
+        "itemName": "IW-Blow Dart",
+        "pickedOldProps": {
+          "cost": "0",
+          "martial": false
+        },
+        "ts": 1769647435777
+      }
+    }
+  },
+  "folder": "wmlIaJ2PQ3nwb7mM",
+  "img": "icons/equipment/hand/gauntlet-simple-leather-brown-gold.webp",
+  "name": "IW-Blow Dart",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 100000,
+  "system": {
+    "container": null,
+    "props": {
+      "category": "Bow",
+      "check_bonus": "1",
+      "damage_bonus": "8",
+      "description": "<p>Automatically equipped in each empty hand slot.</p><hr contenteditable=\"false\"><p>[AKROMORPHOSIS]</p><p>At the start of your turn during a conflict, you may choose a weapon Category other than brawling. These changes last until the start of your next turn.</p>",
+      "hand_slots": "One-handed",
+      "isMartial": false,
+      "item_cost": "0",
+      "item_type": "weapon",
+      "name": "IW-Blow Dart",
+      "rolled_atr1": "WLP",
+      "rolled_atr2": "MIG",
+      "set_name": "",
+      "skill_target": "One Enemy",
+      "type_damage": "Physical",
+      "weapon_range": "Ranged"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "bK4keBgVr3e1R4c2"
+  },
+  "type": "equippableItem"
+}

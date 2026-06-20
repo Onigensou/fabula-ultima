@@ -1,0 +1,142 @@
+{
+  "_id": "hQDYZDND3Tnmjdc6",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780593574856,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "dqPz7nlG4hobVxR0",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1780593575733,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><em>Quaking Titan:</em> Cannot perform free attacks until start of next turn.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "dqPz7nlG4hobVxR0",
+          "originalParentId": "hQDYZDND3Tnmjdc6",
+          "originalUuid": "Item.hQDYZDND3Tnmjdc6.ActiveEffect.dqPz7nlG4hobVxR0"
+        },
+        "fabula-ultima-companion": {
+          "category": "debuff",
+          "lifetimeMode": "round_end",
+          "preventFreeAttack": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/skills/melee/strike-hammer-fire-orange.webp",
+      "name": "No Free Attack",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-no-free-attack"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "dwzaQarGIGnKc3j4",
+  "img": "icons/skills/melee/strike-hammer-fire-orange.webp",
+  "name": "Quaking Titan",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "cost": "30 MP",
+      "damage_bonus": "20 + (EQUIPPED_SHIELD_COUNT >= 2) * 10 + (CHAR_LEVEL >= 30) * 10",
+      "description": "<p>As long as your personal vehicle has a steed frame, it may have up to 2 active weapon modules (instead of 1).</p><p>During a conflict, if you have a <strong>martial armor</strong> or <strong>martial armor module</strong> equipped, you may use an action and spend <strong>30 Mind Points</strong> to choose earth or physical. If you do, you deal <strong>20 damage</strong> of the chosen type to every enemy you can see, and enemies that lose Hit Points this way cannot perform <strong>free attacks</strong> until the start of their next turn.</p><p>This effect deals <strong>+10 damage</strong> if you are driving a personal vehicle with a mech frame and/or have <strong>two shields equipped</strong>, and also deals <strong>+10 damage</strong> if you are <strong>level 30 or higher</strong>.</p>",
+      "effect_table": {
+        "0": {
+          "chain_steps": "qt_gate,qt_apply_status",
+          "condition_formula": "HAS_MARTIAL_ARMOR == 1",
+          "effect_kind": "chain",
+          "effect_label": "qt_activate"
+        },
+        "1": {
+          "chain_steps": "",
+          "effect_kind": "chain",
+          "effect_label": "qt_gate"
+        },
+        "2": {
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_template_ref": "No Free Attack",
+          "effect_kind": "apply_ae",
+          "effect_label": "qt_apply_status",
+          "target_ref": "qt_visible_enemies"
+        },
+        "3": {
+          "auto_confirm_when_obvious": true,
+          "candidate_source": "combat",
+          "category": "enemy",
+          "count": 1,
+          "effect_kind": "targeting",
+          "effect_label": "qt_visible_enemies",
+          "exclude_self": true,
+          "iteration_mode": "together",
+          "mode": "all",
+          "skip_when_passive": false
+        }
+      },
+      "heroic_requirement": "You must have mastered one or more Classes among Guardian and Pilot.",
+      "isCheck": false,
+      "isHeroic": true,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "level": 1,
+      "max_level": "1",
+      "name": "Quaking Titan",
+      "on_activate_effect_ref": "qt_activate",
+      "skill_range": "Scene",
+      "skill_target": "Each enemy you can see",
+      "skill_type": "Active",
+      "type_damage": "physical"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "hQDYZDND3Tnmjdc6"
+  },
+  "type": "equippableItem"
+}

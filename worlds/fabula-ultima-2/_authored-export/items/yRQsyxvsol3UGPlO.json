@@ -1,0 +1,57 @@
+{
+  "_id": "yRQsyxvsol3UGPlO",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1758079289364,
+    "duplicateSource": "Item.msqh4FjpgblLItfH",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "VIOEoJCJMxZPFOxA",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lu/LuCielSkill22.png",
+  "name": "Negotiate",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Tamer",
+      "cost": "-",
+      "damage_bonus": "0",
+      "description": "<p>You may use the <strong>【❗️Objective】</strong> action to attempt to recruit a soldier-rank creature of the demon, elemental, monster, or undead Species to join you as an ally. The full rules for negotiation and recruitment can be found on the next page. If you take this Skill at character creation, you begin play with one level 5 creature already recruited.</p>",
+      "duration": "Special",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "4",
+      "name": "Negotiate",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "Range",
+      "skill_target": "One soldier-rank creature",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "yRQsyxvsol3UGPlO"
+  },
+  "type": "equippableItem"
+}

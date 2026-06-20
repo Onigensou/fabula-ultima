@@ -1,0 +1,19 @@
+{
+  "_id": "07iaQrGOTVkJNHgk",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1747699217449,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.4.2"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "Nqmn1vpH6bXEYRPT",
+  "name": "Playing cards",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Actor"
+}

@@ -1,0 +1,661 @@
+{
+  "_id": "9ktKjNRo6lksdn0Z",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1732426616677,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "tRINa9WAcmLOFJcl",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.331",
+        "createdTime": 1769830001525,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>This creature has less than 50% HP</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "4ldx00srGNv5AJBr",
+          "originalParentId": "0gIBYzSpjdXS6f25",
+          "originalUuid": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-crisis",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": false
+        },
+        "fabula-ultima-companion": {
+          "autoCrisis": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/08_DRG/blood_for_blood.png",
+      "name": "Crisis",
+      "origin": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr",
+      "sort": 0,
+      "statuses": [
+        "5jkr80zqdzaR003d"
+      ],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.5.0"
+    }
+  },
+  "folder": "kWJqZHPj06vaaOR3",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Carrion%20Lord.png",
+  "name": "⭐️ Carrion Lord",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "prototypeToken": {
+    "actorLink": true,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 50,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "max": null,
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "max": null,
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.zero_power_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#ff6600",
+            "mincolor": "#feaf06",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "none",
+            "subdivisions": 6,
+            "subdivisionsOwner": true
+          }
+        }
+      },
+      "hex-size-support": {
+        "alternateOrientation": false,
+        "hideBorder": false,
+        "pivotx": null,
+        "pivoty": null
+      },
+      "token-variants": {
+        "disableHUDButton": false,
+        "randomImgDefault": ""
+      },
+      "token-z": {
+        "zIndex": 0
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "⭐️ Carrion Lord",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 3.25,
+      "scaleY": 3.25,
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Carrion%20Lord.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 4400000,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "activeEffects": {},
+    "props": {
+      "affinity_1": "NA",
+      "affinity_2": "NA",
+      "affinity_3": "NA",
+      "affinity_4": "RS",
+      "affinity_5": "NA",
+      "affinity_6": "NA",
+      "affinity_7": "NA",
+      "affinity_8": "VU",
+      "affinity_9": "IM",
+      "arcane_ef": "100",
+      "arcane_vu": "NA",
+      "attribute": "",
+      "basic_attacks": {
+        "0": {
+          "$deleted": false,
+          "ailments": "@UUID[JournalEntry.RZIAnKw95vY6yh2W]{Zombie}",
+          "ailments_chance": "100",
+          "attrib_1": "MIG",
+          "attrib_2": "MIG",
+          "basic_name": "⚔️ Zombie Stomp",
+          "check_bonus": "-3",
+          "defense_type": "DEF",
+          "detail": "<p>On hit, inflicts <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Zombie.png\" alt=\"\" width=\"21\" height=\"21\"><strong>@UUID[JournalEntry.RZIAnKw95vY6yh2W]{Zombie}&nbsp;</strong>for <strong>3</strong> round, if the target is already afflicted with <strong>Zombie</strong>, increase the duration by <strong>3</strong> round.</p>\n<p>Increase the Accuracy of this attack by <strong>【Duration of <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Zombie.png\" alt=\"\" width=\"21\" height=\"21\">@UUID[JournalEntry.RZIAnKw95vY6yh2W]{Zombie}】</strong>on target.</p>",
+          "dmg_bonus": "35",
+          "icon": "<i class=\"fa-solid fa-swords\"></i>",
+          "macro_name": "",
+          "roll": "",
+          "type": "dark"
+        },
+        "1": {
+          "$deleted": false,
+          "ailments": "",
+          "ailments_chance": "0",
+          "attrib_1": "DEX",
+          "attrib_2": "MIG",
+          "basic_name": "🏹 Zombie Chuck",
+          "check_bonus": "3",
+          "defense_type": "DEF",
+          "detail": "<p>This attack can only be used if at least <strong>1 Zombie</strong> on the battlefield.</p>\n<p>On hit, if the target is <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/summon_garuda_II.png\" alt=\"\" width=\"21\" height=\"21\"><strong>@UUID[JournalEntry.q6keqwDWUsEgSWDw]{Flying}</strong> it immediately landed until the start of next round, then, the <strong>Zombie</strong> can perform a <strong>Free Attack</strong> on the target.</p>",
+          "dmg_bonus": "5",
+          "icon": "<i class=\"fa-solid fa-bow-arrow\"></i>",
+          "macro_name": "",
+          "roll": "",
+          "type": "dark"
+        }
+      },
+      "bow_ef": "100",
+      "bow_vu": "NA",
+      "brawling_ef": "100",
+      "brawling_vu": "NA",
+      "condition_1": "NA",
+      "condition_10": "NA",
+      "condition_11": "NA",
+      "condition_12": "NA",
+      "condition_13": "NA",
+      "condition_14": "NA",
+      "condition_15": "NA",
+      "condition_16": "NA",
+      "condition_17": "NA",
+      "condition_18": "NA",
+      "condition_19": "NA",
+      "condition_2": "IM",
+      "condition_20": "NA",
+      "condition_21": "NA",
+      "condition_22": "NA",
+      "condition_23": "NA",
+      "condition_24": "NA",
+      "condition_25": "NA",
+      "condition_26": "NA",
+      "condition_27": "NA",
+      "condition_28": "NA",
+      "condition_29": "NA",
+      "condition_3": "NA",
+      "condition_30": "NA",
+      "condition_31": "NA",
+      "condition_32": "NA",
+      "condition_33": "NA",
+      "condition_34": "NA",
+      "condition_35": "NA",
+      "condition_36": "NA",
+      "condition_4": "IM",
+      "condition_5": "NA",
+      "condition_6": "IM",
+      "condition_7": "NA",
+      "condition_8": "NA",
+      "condition_9": "NA",
+      "current_def": "<b><i class=\"fa-solid fa-shield\"></i> DEF: </b>\n9",
+      "current_hp": "0",
+      "current_ip": "0",
+      "current_mdef": "<b><i class=\"fa-solid fa-shield-halved\"></i> MDEF: </b>\n8",
+      "current_mp": "20",
+      "dagger_ef": "100",
+      "dagger_vu": "NA",
+      "def_mod": "+3",
+      "desc": "<p>Description</p>",
+      "dex_base": "6",
+      "dex_current": 6,
+      "firearm_ef": "100",
+      "firearm_vu": "NA",
+      "flail_ef": "100",
+      "flail_vu": "NA",
+      "fp": "3",
+      "gorger": false,
+      "heavy_ef": "100",
+      "heavy_vu": "NA",
+      "id": "9ktKjNRo6lksdn0Z",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Carrion%20Lord.png",
+      "init": "6",
+      "ins_base": "6",
+      "ins_current": 6,
+      "isAlmighty": false,
+      "isAwake": false,
+      "isClarity": false,
+      "isDazed": false,
+      "isEnergized": false,
+      "isEnlighten": false,
+      "isEnraged": false,
+      "isFocus": false,
+      "isMasterful": false,
+      "isPoisoned": false,
+      "isShaken": false,
+      "isSlow": false,
+      "isStrong": false,
+      "isSwift": false,
+      "isUnyielding": false,
+      "isWeak": true,
+      "level": "30",
+      "max_hp": "280",
+      "max_ip": "0",
+      "max_mp": "100",
+      "max_zero": "6",
+      "mdef_mod": "+2",
+      "mig_base": "12",
+      "mig_current": 10,
+      "mimic": false,
+      "name": "⭐️ Carrion Lord",
+      "npc_rank": "cha",
+      "other_list": {
+        "0": {
+          "$deleted": false,
+          "details": "<p>Summon <strong>1 Zombie</strong> to the battlefield.</p>\n<p>There may be up to 3 Zombies on the battlefield at the same time.</p>\n<p>If the Carrion Lord is in <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/08_DRG/blood_for_blood.png\" alt=\"\" width=\"21\" height=\"21\"><strong>@UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis},&nbsp;</strong>Summon <strong>2 Zombie</strong> instead.</p>",
+          "icon": "",
+          "other_name": "Raise Dead",
+          "roll": ""
+        },
+        "1": {
+          "$deleted": false,
+          "details": "<p>Reduce a Zombie to <strong>0 HP,&nbsp;</strong>then gain its remaining HP as MP.</p>",
+          "icon": "",
+          "other_name": "Feast",
+          "roll": ""
+        },
+        "2": {
+          "$deleted": false,
+          "details": "<p>All Zombies becomes <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/summon_carbuncle.png\" alt=\"\" width=\"21\" height=\"21\"><strong>@UUID[JournalEntry.0RscV9vkJNM9dVKQ]{Delayed}</strong> for 1 round and their attacks gain <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/gouge.png\" alt=\"\" width=\"21\" height=\"21\"><strong>@UUID[JournalEntry.noUOPxPoZq65yYxV]{Chain (2)}</strong></p>",
+          "icon": "",
+          "other_name": "Marching Orders",
+          "roll": ""
+        },
+        "3": {
+          "$deleted": false,
+          "details": "<p>All Zombies on the field immediately perform a <strong>Free Attack</strong> on a target.</p>",
+          "icon": "",
+          "other_name": "Attack Orders",
+          "roll": ""
+        },
+        "4": {
+          "$deleted": false,
+          "details": "<p>All Zombies on the field immediately perform the <strong>【Guard】</strong>actions and <strong>【Cover】</strong>the Carrion Lord.</p>",
+          "icon": "",
+          "other_name": "Defense Orders",
+          "roll": ""
+        },
+        "5": {
+          "$deleted": false,
+          "details": "<p>Deals <strong>【10 x the numbers of creatures afflicted with <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Zombie.png\" alt=\"\" width=\"21\" height=\"21\">@UUID[JournalEntry.RZIAnKw95vY6yh2W]{Zombie} 】</strong>Dark damage to target creature.</p>",
+          "icon": "",
+          "other_name": "💥 Biohazard",
+          "roll": ""
+        }
+      },
+      "rare": false,
+      "resource_value_1": "0",
+      "resource_value_2": "0",
+      "resource_value_3": "0",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "shield_type": "PHYSICAL",
+      "shield_value": "0",
+      "spear_ef": "100",
+      "spear_vu": "NA",
+      "special_list": {
+        "0": {
+          "$deleted": false,
+          "details": "<p>This creature is inflicts with <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Zombie.png\" alt=\"\" width=\"15\" height=\"15\"> <strong>Zombie.</strong></p>",
+          "icon": "",
+          "macro_name": "",
+          "roll": "",
+          "special_name": "Undead"
+        },
+        "1": {
+          "$deleted": false,
+          "details": "<p>The Carrion Lord is immune to <strong>dazed</strong>, <strong>enraged</strong>, and <strong>shaken</strong>.</p>",
+          "icon": "",
+          "macro_name": "",
+          "roll": "",
+          "special_name": "Empty Mind"
+        },
+        "2": {
+          "$deleted": true,
+          "details": "",
+          "icon": "",
+          "roll": "",
+          "special_name": "Cannibalize"
+        },
+        "3": {
+          "$deleted": false,
+          "details": "<p>&nbsp;<strong>@UUID[JournalEntry.UqXGUQM31kWc7BTc]{Unleash}</strong><img class=\" centered\" style=\"float: left;\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/02_WAR/inner_release.png\" width=\"21\" height=\"21\" data-pm-slice=\"0 0 []\"></p>\n<p>Summon <strong>2 Zombie.</strong></p>",
+          "icon": "",
+          "macro_name": "",
+          "roll": "",
+          "special_name": "March out the Zombies"
+        },
+        "4": {
+          "$deleted": false,
+          "details": "<p>When the Carrion Lord reduce a creature to <strong>0</strong> HP, it gains <strong>2</strong><strong>0 MP</strong></p>\n<p>&nbsp;</p>",
+          "icon": "",
+          "macro_name": "",
+          "roll": "",
+          "special_name": "Carrion Feeder"
+        },
+        "5": {
+          "$deleted": false,
+          "details": "<p>The Carrion Lord is always inflicts with <strong>@UUID[JournalEntry.0RscV9vkJNM9dVKQ]</strong></p>\n<p>&nbsp;</p>\n<p>The Carrion Lord may only perform the <strong>【Attack】</strong>or <strong>【Spell】</strong>action once per round.</p>",
+          "icon": "",
+          "macro_name": "",
+          "roll": "",
+          "special_name": "Sluggish"
+        },
+        "6": {
+          "$deleted": false,
+          "details": "<p>When a Zombie hits a creature with a attack or spell, Gain <strong>1 Zero Power</strong></p>",
+          "icon": "",
+          "macro_name": "",
+          "roll": "",
+          "special_name": "⚔️Zero Trigger"
+        }
+      },
+      "species": "UNDEAD",
+      "spell_list": {
+        "0": {
+          "$deleted": false,
+          "ailments": "",
+          "ailments_chance": "0",
+          "attrib_1": "MIG",
+          "attrib_2": "MIG",
+          "check_bonus": "3",
+          "cost": "50 MP",
+          "defense_type": "MDEF",
+          "details": "<p>This spell deals damage to all enemies and allies.</p>",
+          "dmg_bonus": "15",
+          "has_damage": "YES",
+          "icon": "<i class=\"fa-solid fa-star\"></i>",
+          "macro_name": "",
+          "roll": "",
+          "spell_name": "Tantrum",
+          "type": "earth"
+        },
+        "1": {
+          "$deleted": false,
+          "ailments": "",
+          "ailments_chance": "0",
+          "attrib_1": "INS",
+          "attrib_2": "WLP",
+          "check_bonus": "1",
+          "cost": "30 MP",
+          "defense_type": "MDEF",
+          "details": "",
+          "dmg_bonus": "30",
+          "has_damage": "YES",
+          "icon": "<i class=\"fa-solid fa-star\"></i>",
+          "macro_name": "",
+          "roll": "",
+          "spell_name": "Necro Finis",
+          "type": "dark"
+        },
+        "2": {
+          "$deleted": true,
+          "ailments": "",
+          "ailments_chance": "0",
+          "attrib_1": "DEX",
+          "attrib_2": "DEX",
+          "check_bonus": "0",
+          "cost": "0",
+          "details": "",
+          "dmg_bonus": "0",
+          "has_damage": "YES",
+          "icon": "<i class=\"fa-solid fa-star\"></i>",
+          "macro_name": "",
+          "roll": "",
+          "spell_name": "Marching Order",
+          "type": "physical"
+        },
+        "3": {
+          "$deleted": false,
+          "ailments": "@UUID[JournalEntry.Do0VLf6wW9uCSLwD]{Doom}",
+          "ailments_chance": "100",
+          "attrib_1": "INS",
+          "attrib_2": "WLP",
+          "check_bonus": "5",
+          "cost": "30 MP",
+          "defense_type": "MDEF",
+          "details": "<p>90% chance to inflicts</p>",
+          "dmg_bonus": "0",
+          "has_damage": "NO",
+          "icon": "<i class=\"fa-solid fa-star\"></i>",
+          "macro_name": "",
+          "roll": "",
+          "spell_name": "Doom",
+          "type": "dark"
+        },
+        "4": {
+          "$deleted": true,
+          "ailments": "",
+          "ailments_chance": "0",
+          "attrib_1": "INS",
+          "attrib_2": "WLP",
+          "check_bonus": "0",
+          "cost": "30 MP",
+          "details": "",
+          "dmg_bonus": "0",
+          "has_damage": "YES",
+          "icon": "<i class=\"fa-solid fa-star\"></i>",
+          "macro_name": "",
+          "roll": "",
+          "spell_name": "Biohazard",
+          "type": "physical"
+        },
+        "5": {
+          "$deleted": false,
+          "ailments": "",
+          "ailments_chance": "0",
+          "attrib_1": "INS",
+          "attrib_2": "WLP",
+          "check_bonus": "0",
+          "cost": "30 MP",
+          "defense_type": "MDEF",
+          "details": "<p>On hit, the target roll a <strong>【MIG】+【WLP】</strong>check, on a failure, they are afflicted with <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Zombie.png\" alt=\"\" width=\"21\" height=\"21\"><strong>@UUID[JournalEntry.RZIAnKw95vY6yh2W]{Zombie}</strong></p>",
+          "dmg_bonus": "0",
+          "has_damage": "NO",
+          "icon": "<i class=\"fa-solid fa-star\"></i>",
+          "macro_name": "",
+          "roll": "",
+          "spell_name": "Zombie Mist",
+          "type": "dark"
+        }
+      },
+      "stolen_check": false,
+      "study_text": "",
+      "subtype": "Sub-Type",
+      "subtype_list": "",
+      "sword_ef": "100",
+      "sword_vu": "NA",
+      "tactic_notes": "",
+      "thrown_ef": "100",
+      "thrown_vu": "NA",
+      "traits": "",
+      "unique": false,
+      "uuid": "Actor.9ktKjNRo6lksdn0Z",
+      "wlp_base": "6",
+      "wlp_current": 6,
+      "zero_power_value": "2"
+    },
+    "statusEffects": {},
+    "template": "yibwK7D0bMmrmXhL",
+    "templateSystemUniqueVersion": 3152673362
+  },
+  "type": "character"
+}

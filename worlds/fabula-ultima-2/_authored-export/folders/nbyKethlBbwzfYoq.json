@@ -1,0 +1,19 @@
+{
+  "_id": "nbyKethlBbwzfYoq",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1766738961169,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "Vg0nGevL0N3Wqh0D",
+  "name": "Battle Initialization",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Macro"
+}

@@ -1,0 +1,334 @@
+{
+  "_id": "HlSNO4jVVSMkSCT7",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1741421958397,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "waB9SjfYXhHsCy2j",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1775334456277,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "base_defense",
+          "mode": 4,
+          "priority": 1,
+          "value": "${isEquipped ? (isMartial ? (item_baseDef * 1) : 0) : 0}$"
+        },
+        {
+          "key": "bonus_defense",
+          "mode": 2,
+          "priority": 2,
+          "value": "${isEquipped ? (isMartial ? 0 : (item_def_bonus * 1)) : 0}$"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "core": {
+          "overlay": false
+        },
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "waB9SjfYXhHsCy2j",
+          "originalParentId": "HlSNO4jVVSMkSCT7",
+          "originalUuid": "Item.HlSNO4jVVSMkSCT7.ActiveEffect.waB9SjfYXhHsCy2j"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-def-up",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUp.webp",
+      "name": "Armor DEF",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    },
+    {
+      "_id": "z7JP7qkuiGqcZYic",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1775334456315,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "base_magic_defense",
+          "mode": 4,
+          "priority": 1,
+          "value": "${isEquipped ? (isMartial ? (item_baseMdef * 1) : 0) : 0}$"
+        },
+        {
+          "key": "bonus_magic_defense",
+          "mode": 2,
+          "priority": 2,
+          "value": "${isEquipped ? (isMartial ? 0 : (item_mdef_bonus * 1)) : 0}$"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "core": {
+          "overlay": false
+        },
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "z7JP7qkuiGqcZYic",
+          "originalParentId": "HlSNO4jVVSMkSCT7",
+          "originalUuid": "Item.HlSNO4jVVSMkSCT7.ActiveEffect.z7JP7qkuiGqcZYic"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-mdef-up",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUpStack.webp",
+      "name": "Armor MDEF",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    },
+    "fabula-ultima-companion": {
+      "armorDefMdefAeMassPatchBackup_v1": {
+        "createdAt": 1777705754976,
+        "effects": [
+          {
+            "changes": [
+              {
+                "key": "defense",
+                "mode": 2,
+                "priority": 1,
+                "value": "${isEquipped ? (isMartial ? 0 : item_def_bonus) : 0}$"
+              },
+              {
+                "key": "defense",
+                "mode": 4,
+                "priority": 2,
+                "value": "${isEquipped ? (isMartial ? item_baseDef : 0) : 0}$"
+              }
+            ],
+            "id": "waB9SjfYXhHsCy2j",
+            "name": "Armor DEF"
+          },
+          {
+            "changes": [
+              {
+                "key": "magic_defense",
+                "mode": 2,
+                "priority": 1,
+                "value": "${isEquipped ? (isMartial ? 0 : item_mdef_bonus) : 0}$"
+              },
+              {
+                "key": "magic_defense",
+                "mode": 4,
+                "priority": 2,
+                "value": "${isEquipped ? (isMartial ? item_baseMdef : 0) : 0}$"
+              }
+            ],
+            "id": "z7JP7qkuiGqcZYic",
+            "name": "Armor MDEF"
+          }
+        ],
+        "itemName": "Biker Suit",
+        "itemUuid": "Item.HlSNO4jVVSMkSCT7",
+        "parentName": "",
+        "parentType": "World"
+      },
+      "defMdefHelperKeyPatchBackup_v1": {
+        "createdAt": 1777708464966,
+        "effects": [
+          {
+            "changes": [
+              {
+                "key": "defense",
+                "mode": 2,
+                "priority": 1,
+                "value": "${isEquipped ? (isMartial ? 0 : item_def_bonus) : 0}$"
+              },
+              {
+                "key": "defense",
+                "mode": 4,
+                "priority": 2,
+                "value": "${isEquipped ? (isMartial ? item_baseDef : 0) : 0}$"
+              }
+            ],
+            "id": "waB9SjfYXhHsCy2j",
+            "name": "Armor DEF"
+          },
+          {
+            "changes": [
+              {
+                "key": "magic_defense",
+                "mode": 2,
+                "priority": 1,
+                "value": "${isEquipped ? (isMartial ? 0 : item_mdef_bonus) : 0}$"
+              },
+              {
+                "key": "magic_defense",
+                "mode": 4,
+                "priority": 2,
+                "value": "${isEquipped ? (isMartial ? item_baseMdef : 0) : 0}$"
+              }
+            ],
+            "id": "z7JP7qkuiGqcZYic",
+            "name": "Armor MDEF"
+          }
+        ],
+        "itemId": "HlSNO4jVVSMkSCT7",
+        "itemName": "Biker Suit",
+        "itemType": "armor",
+        "itemUuid": "Item.HlSNO4jVVSMkSCT7",
+        "owner": {
+          "actor": "",
+          "actorUuid": "",
+          "source": "World Item"
+        }
+      }
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "armor",
+        "fromTemplate": "5Z0gKtN5R51ebJOa",
+        "itemId": "HlSNO4jVVSMkSCT7",
+        "itemName": "Biker Suit",
+        "pickedOldProps": {
+          "cost": "2500",
+          "def_bonus": "",
+          "defense": "0",
+          "defense_include_dex": true,
+          "initiative": "0",
+          "magic_defense": "0",
+          "magic_defense_include_ins": true,
+          "martial": false,
+          "mdef_bonus": "",
+          "shield": false
+        },
+        "ts": 1769647435279
+      }
+    }
+  },
+  "folder": "cSLVeZ3TavIe40F1",
+  "img": "icons/equipment/waist/belt-armored-buckle-steel.webp",
+  "name": "Biker Suit",
+  "ownership": {
+    "2vy7wrEUqBy0kzsU": 3,
+    "6DmgigM5jq76r0Gd": 3,
+    "7hKw8KGsimboeDif": 3,
+    "9sFgrDy4MvAgoCmQ": 3,
+    "Am7qxPOavfKeDGPd": 3,
+    "JQGNzKpDPHJmcUIW": 3,
+    "JvF9tXvr7aaiS06m": 3,
+    "KD5d0efqHETPpIux": 3,
+    "LT3Z8EnRdMVk5ncQ": 3,
+    "MwTL6zXFCEpVBTpI": 3,
+    "NozW36XIGEGx7oVH": 3,
+    "NpGkA7uxaarkPiwS": 3,
+    "ULBTZPjtza939Mvy": 3,
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3,
+    "eGu3tuw7HwJd2bpx": 3,
+    "iLeUVmwqnze8ulOI": 3,
+    "mE5aEkDlrQJIYyhG": 3,
+    "nSGZ1sz1rdKao0kz": 3,
+    "nXC7OD7u5Zw5UDDU": 3,
+    "t41knaXNbgCEygM5": 3,
+    "tz9BP9MKfNGf2P3n": 3,
+    "wNzPmItLYCKE1I8t": 3,
+    "yL2PQxh3R9ddt0te": 3,
+    "yUfwoVmEPVdFG3AY": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "description": "<p>When you perform an <strong>Equipment </strong>action<strong>,&nbsp;</strong>you may <strong>transform</strong> into any of following armor.</p>\n<table style=\"width: 100%; height: 102px;\" border=\"1\"><colgroup><col style=\"width: 37.1069%;\"><col style=\"width: 33.3333%;\"><col style=\"width: 29.5597%;\"></colgroup>\n<tbody>\n<tr style=\"height: 17px;\">\n<td style=\"height: 17px;\"><strong>ARMOR</strong></td>\n<td style=\"height: 17px;\"><strong>DEFENSE</strong></td>\n<td style=\"height: 17px;\"><strong>M.DEFENSE</strong></td>\n</tr>\n<tr>\n<td><strong>Formless</strong></td>\n<td><strong>DEX size</strong></td>\n<td><strong>INS size</strong></td>\n</tr>\n<tr style=\"height: 17px;\">\n<td style=\"height: 17px;\" colspan=\"3\">At the start of your turn, you may <strong>transform</strong> into&nbsp;<strong>Steel Form&nbsp;</strong>or&nbsp;<strong>Mana Form&nbsp;</strong>for free.</td>\n</tr>\n<tr style=\"height: 17px;\">\n<td style=\"height: 17px;\"><strong>Steel Form</strong></td>\n<td style=\"height: 17px;\"><strong>16</strong></td>\n<td style=\"height: 17px;\"><strong>INS size</strong></td>\n</tr>\n<tr style=\"height: 17px;\">\n<td style=\"height: 17px;\" colspan=\"3\">Receives 10 extra damage when hit by <strong>Spell</strong>.</td>\n</tr>\n<tr style=\"height: 17px;\">\n<td style=\"height: 17px;\"><strong>Mana Form</strong></td>\n<td style=\"height: 17px;\"><strong>DEX size</strong></td>\n<td style=\"height: 17px;\"><strong>16</strong></td>\n</tr>\n<tr style=\"height: 17px;\">\n<td style=\"height: 17px;\" colspan=\"3\">Receives 10 extra damage when hit by&nbsp;<strong>Attack</strong>.</td>\n</tr>\n</tbody>\n</table>",
+      "flavor_text": "<p><em>Me?, I am just a passing by biker, remember that.</em></p>",
+      "isMartial": false,
+      "item_baseDef": "0",
+      "item_baseMdef": "0",
+      "item_cost": "2500",
+      "item_type": "armor",
+      "name": "Biker Suit",
+      "set_name": ""
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "HlSNO4jVVSMkSCT7"
+  },
+  "type": "equippableItem"
+}

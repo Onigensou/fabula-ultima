@@ -1,0 +1,79 @@
+{
+  "_id": "9yYY5TBMMVlHo28q",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1781820019459,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "FIHoW0EB0vU7gMAa",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/RustyChildSkill4.png",
+  "name": "Create Phantasm: Numen",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "availability_formula": "OWN_NUMEN_COUNT == 0",
+      "availability_reason": "Numen already active",
+      "cost": "50 MP",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "chain_steps": "numen_summon, numen_act_next",
+          "effect_kind": "chain",
+          "effect_label": "numen_do",
+          "summon_actor": "ZPPCxB0eOJPulEHv",
+          "summon_count": 1
+        },
+        "1": {
+          "$deleted": false,
+          "effect_kind": "summon",
+          "effect_label": "numen_summon",
+          "summon_actor": "ZPPCxB0eOJPulEHv",
+          "summon_count": 1
+        },
+        "2": {
+          "$deleted": false,
+          "effect_kind": "take_turn_next",
+          "effect_label": "numen_act_next",
+          "target_ref": "numen_summon"
+        },
+        "3": {
+          "$deleted": false,
+          "effect_kind": "take_turn_next",
+          "effect_label": "numen_after_owner",
+          "target_ref": "own_numen"
+        }
+      },
+      "isCheck": false,
+      "on_activate_effect_ref": "numen_do",
+      "reaction_config_table": {
+        "0": {
+          "$deleted": false,
+          "condition_formula": "OWN_NUMEN_COUNT >= 1",
+          "reaction_effect_ref": "numen_after_owner",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_trigger": "turn_start"
+        }
+      },
+      "skill_target": "Self",
+      "skill_type": "Spell"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "9yYY5TBMMVlHo28q"
+  },
+  "type": "equippableItem"
+}

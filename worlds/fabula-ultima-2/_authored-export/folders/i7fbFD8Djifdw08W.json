@@ -1,0 +1,19 @@
+{
+  "_id": "i7fbFD8Djifdw08W",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": null,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "2.1.0"
+  },
+  "color": "#858585",
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "Template",
+  "sort": 1500000,
+  "sorting": "a",
+  "type": "Item"
+}

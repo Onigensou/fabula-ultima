@@ -1,0 +1,54 @@
+{
+  "_id": "qscJsRiMVxxot7sJ",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1751456760183,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "consumable",
+        "fromTemplate": "xdZPhVF8AnmwQEPM",
+        "itemId": "qscJsRiMVxxot7sJ",
+        "itemName": "Golem Fragment Recipe",
+        "pickedOldProps": {
+          "consumable_cost": "450",
+          "consumable_description": "<ul><li>Learned how to create <strong>Golem Fragment</strong> with <strong>1 IP</strong></li></ul>",
+          "consumable_ip": "0",
+          "consumable_label": ""
+        },
+        "ts": 1769647435648
+      }
+    }
+  },
+  "folder": "3xHGNagIXPyzukcU",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/book.png",
+  "name": "Golem Fragment Recipe",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 400000,
+  "system": {
+    "container": null,
+    "props": {
+      "description": "<ul><li>Learned how to create <strong>Golem Fragment</strong> with <strong>1 IP</strong></li></ul>",
+      "ip_cost": "0",
+      "item_cost": "450",
+      "item_type": "consumable",
+      "name": "Golem Fragment Recipe"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "qscJsRiMVxxot7sJ"
+  },
+  "type": "equippableItem"
+}

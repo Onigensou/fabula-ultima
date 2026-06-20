@@ -1,0 +1,19 @@
+{
+  "_id": "QGWhvmRAHt4ibvnG",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1748648161344,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.4.2"
+  },
+  "color": "#c15e33",
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "Wonderous Gachapon",
+  "sort": 100000,
+  "sorting": "a",
+  "type": "RollTable"
+}

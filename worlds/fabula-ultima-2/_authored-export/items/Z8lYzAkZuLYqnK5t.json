@@ -1,0 +1,92 @@
+{
+  "_id": "Z8lYzAkZuLYqnK5t",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1753473892128,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "category": "skill",
+        "detectedType": "spellcard_v1",
+        "fromTemplate": "XfUpjwaovj4v9AjI",
+        "itemId": "Z8lYzAkZuLYqnK5t",
+        "itemName": "Death",
+        "pickedOldProps": {
+          "class": "Necromancer",
+          "cost": "30 MP",
+          "damage": "0",
+          "description": "<p>You invoke death on the target, Reduce target <strong>Non-Undead, Non-Champion </strong>creature to 0 HP, have 20% chance to success</p>",
+          "discipline": "spiritism",
+          "duration": "Instantaneous",
+          "id": "Z8lYzAkZuLYqnK5t",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213202.763.png",
+          "name": "Death",
+          "target": "One Creature",
+          "type_damage": "",
+          "uuid": "Item.Z8lYzAkZuLYqnK5t"
+        },
+        "ts": 1770021428490
+      }
+    }
+  },
+  "folder": "LNN6QSv7NRWdXUkf",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213202.763.png",
+  "name": "Death",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 300000,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_script": "",
+      "check_bonus": "0",
+      "class": "Necromancer",
+      "cost": "30 MP",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>You invoke death on the target, Reduce target <strong>Non-Undead, Non-Champion </strong>creature to 0 HP, have 20% chance to success</p>",
+      "duration": "Instantaneous",
+      "heroic_requirement": "",
+      "ignore_hr": false,
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Death",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "",
+      "skill_target": "One Creature",
+      "skill_type": "Spell",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "Z8lYzAkZuLYqnK5t"
+  },
+  "type": "equippableItem"
+}

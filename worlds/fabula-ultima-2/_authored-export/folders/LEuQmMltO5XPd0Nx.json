@@ -1,0 +1,19 @@
+{
+  "_id": "LEuQmMltO5XPd0Nx",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1764635708484,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "ao7MvDYKSVhEwWj3",
+  "name": "Server side computation",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Macro"
+}

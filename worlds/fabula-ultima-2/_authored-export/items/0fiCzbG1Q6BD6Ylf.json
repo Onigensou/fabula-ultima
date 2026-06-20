@@ -1,0 +1,61 @@
+{
+  "_id": "0fiCzbG1Q6BD6Ylf",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1716296824229,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "0fiCzbG1Q6BD6Ylf",
+        "itemName": "Disdainful Knife b",
+        "pickedOldProps": {
+          "cost": "3000",
+          "martial": false
+        },
+        "ts": 1769647435495
+      }
+    }
+  },
+  "folder": "uVoBlDGLfc42N4Vu",
+  "img": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Item%20Icon/kukri2_01.jpg",
+  "name": "Disdainful Knife b",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "category": "Dagger",
+      "check_bonus": "1",
+      "damage_bonus": "1",
+      "description": "<p>When you gain [Oppertunity] (From Critical or Fumble)</p>\n<p>You can ignore the Oppertunity table and made Free Attack with this weapon instead.</p>\n<p>On-hit, the target suffer [Slow]</p>\n<p>You can't gain Fabula Point using this effect on Fumble.</p>",
+      "hand_slots": "One-handed",
+      "isMartial": false,
+      "item_cost": "3000",
+      "item_type": "weapon",
+      "name": "Disdainful Knife b",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "skill_target": "One Enemy",
+      "type_damage": "Dark",
+      "weapon_range": "Melee"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "0fiCzbG1Q6BD6Ylf"
+  },
+  "type": "equippableItem"
+}

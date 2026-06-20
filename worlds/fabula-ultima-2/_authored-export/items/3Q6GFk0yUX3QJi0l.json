@@ -1,0 +1,55 @@
+{
+  "_id": "3Q6GFk0yUX3QJi0l",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1755254048321,
+    "duplicateSource": "Item.wTVhkpDfiM0BKfe2",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "2OplVa9fwLYbzD8b",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/MysticAlchemistTSkill1.png",
+  "name": "Predictable!",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 7100000,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Loremaster",
+      "cost": "20 MP",
+      "damage_bonus": "0",
+      "description": "<p>During a conflict, you may use an action and spend 20 Mind Points to anticipate the upcoming moves of a creature you can see, as long as you know <strong>two or more</strong> of that creature's <strong>Traits</strong>. If you do so, <strong>choose one</strong> type of action among the following: </p><ul><li><p><strong>Attack</strong></p></li><li><p><strong>Guard</strong></p></li><li><p><strong>Objective</strong></p></li><li><p><strong>Spell</strong></p></li><li><p><strong>Skill</strong></p></li></ul><p>Until the start of your next turn, the creature must spend 20 Mind Points whenever they wish to perform that action. If they can't, they must perform a different action.</p>",
+      "duration": "Until the start of your next turn",
+      "heroic_requirement": "You must have mastered the Loremaster Class.",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "level": "1",
+      "max_level": "1",
+      "name": "Predictable!",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_target": "One Creature",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "3Q6GFk0yUX3QJi0l"
+  },
+  "type": "equippableItem"
+}

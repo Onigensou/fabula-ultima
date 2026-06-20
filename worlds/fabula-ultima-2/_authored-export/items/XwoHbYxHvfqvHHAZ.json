@@ -1,0 +1,53 @@
+{
+  "_id": "XwoHbYxHvfqvHHAZ",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1753927597382,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "nNKbXiI5DqqWmDy0",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/15_RDM/riposte.png",
+  "name": "Mystic Infusion",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Spell Fencer",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>When you cast an <strong>Offensive Spell, </strong>you may have the next <strong>Weapon Attack </strong>you perform deals the damage type of the spell you've cast instead the weapon's normal type</p>",
+      "duration": "",
+      "isCheck": false,
+      "isHeroic": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Mystic Infusion",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "XwoHbYxHvfqvHHAZ"
+  },
+  "type": "equippableItem"
+}

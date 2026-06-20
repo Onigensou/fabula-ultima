@@ -1,0 +1,123 @@
+{
+  "_id": "zKJP8tR2S8Gg1rRZ",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1752048258311,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "zKJP8tR2S8Gg1rRZ",
+        "itemName": "Save the Queen",
+        "pickedOldProps": {
+          "cost": "3000",
+          "martial": true
+        },
+        "ts": 1769647436318
+      }
+    }
+  },
+  "folder": "lU1fGjiR2mTgyPzI",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1137.gif",
+  "name": "Save the Queen",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 200000,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "aquatic_ef": "100",
+      "automaton_ef": "100",
+      "avian_ef": "100",
+      "beast_ef": "100",
+      "category": "Sword",
+      "celestial_ef": "100",
+      "check_bonus": "0",
+      "construct_ef": "100",
+      "damage_bonus": "15",
+      "demiHuman_ef": "100",
+      "demon_ef": "100",
+      "description": "<ul><li><p><strong>+5</strong> bonus damage to<strong> Dark-Attribute </strong>creature</p></li><li><p>You may cast the Spell <strong>【✨ Heal 】</strong></p><hr></li></ul><details><summary>✨ <strong>Heal</strong></summary><p><strong>Cost: -</strong></p><p><strong>Target: One Creature</strong></p><p><strong>Duration: Instantaneous</strong></p><p>You invigorate your companions, soothing their pain and healing their fatigue. Each target recovers 40 Hit Points. This amount increases to 50 Hit Points if you are level 20 or higher, or to 60 Hit Points if you are level 40 or higher.</p><p></p></details>",
+      "dragon_ef": "100",
+      "elemental_ef": "100",
+      "enforcer_ef": "100",
+      "fey_ef": "100",
+      "flora_ef": "100",
+      "fungus_ef": "100",
+      "golem_ef": "100",
+      "gorger_ef": "100",
+      "hand_slots": "One-handed",
+      "human_ef": "100",
+      "humanoid_ef": "100",
+      "insect_ef": "100",
+      "ip_cost": "",
+      "isEquipped": false,
+      "isKey": false,
+      "isMartial": true,
+      "isModule": false,
+      "isRelatedItem": true,
+      "isSet": true,
+      "isUnique": false,
+      "item_baseDef": "0",
+      "item_baseMdef": "0",
+      "item_cost": "3000",
+      "item_def_bonus": "0",
+      "item_mdef_bonus": "0",
+      "item_quantity": "1",
+      "item_rarity": "Rare",
+      "item_skill_active": {
+        "TD3i1fdSE7qGwApx": {
+          "id": "${item.id}",
+          "name": "Heal",
+          "skill_cost": "10 x T MP",
+          "skill_description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points.</strong></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>The amount of Hit Points recovers increase to <strong>50</strong></p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>The amount of Hit Points recovers increase to <strong>60</strong></p>",
+          "skill_maxLevel": 1,
+          "uuid": "Item.TD3i1fdSE7qGwApx"
+        }
+      },
+      "item_type": "weapon",
+      "mimic_ef": "100",
+      "monster_ef": "100",
+      "name": "Save the Queen",
+      "optional_params": {},
+      "plant_ef": "100",
+      "related_item_list": {
+        "TD3i1fdSE7qGwApx": {
+          "id": "${item.id}",
+          "name": "Heal",
+          "related_item_description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points.</strong></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>The amount of Hit Points recovers increase to <strong>50</strong></p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>The amount of Hit Points recovers increase to <strong>60</strong></p>",
+          "uuid": "Item.TD3i1fdSE7qGwApx"
+        }
+      },
+      "reptilian_ef": "100",
+      "rolled_atr1": "MIG",
+      "rolled_atr2": "WLP",
+      "set_description": "<p><strong>【Set Bonus】</strong></p><ul><li><p><strong>2-Piece</strong></p><ul><li><p>You can perform the skill 💥<strong>Protect </strong>one additional time per round</p></li></ul><hr><p><strong>3-Piece</strong></p><ul><li><p>You can spend <strong>1 Fabula Point </strong>to perform the skill 💥<strong>Protect </strong>when you are <strong>KO </strong><em>(other rules for KO still apply to you)</em></p></li></ul></li></ul>",
+      "set_name": "Oathsworn Paladin",
+      "skill_target": "One Enemy",
+      "soldier_ef": "100",
+      "spirit_ef": "100",
+      "type_damage": "Light",
+      "undead_ef": "100",
+      "vehicle_ef": "100",
+      "weapon_range": "Melee"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "zKJP8tR2S8Gg1rRZ"
+  },
+  "type": "equippableItem"
+}

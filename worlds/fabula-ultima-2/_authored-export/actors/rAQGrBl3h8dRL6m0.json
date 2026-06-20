@@ -1,0 +1,765 @@
+{
+  "_id": "rAQGrBl3h8dRL6m0",
+  "_stats": {
+    "compendiumSource": "Actor.BqBoJEye80GAm9fX",
+    "coreVersion": "12.343",
+    "createdTime": 1751112053735,
+    "duplicateSource": "Actor.gMTSRm5d80yeCxys",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "core": {
+      "sourceId": "Actor.BqBoJEye80GAm9fX"
+    },
+    "custom-system-builder": {
+      "version": "4.5.0"
+    },
+    "theatre": {
+      "baseinsert": "",
+      "disabledefault": false,
+      "emotes": {
+        "angry": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/Reefesia/fallen/rer3.png"
+        },
+        "annoyed": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/Reefesia/fallen/rer2.png"
+        },
+        "awe-struck": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/Reefesia/fallen/rer3.png"
+        },
+        "blushing": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/Reefesia/fallen/rer1.png"
+        },
+        "carefree": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/Reefesia/fallen/rer1.png"
+        },
+        "confused": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/Reefesia/fallen/rer1.png"
+        },
+        "cry": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/Reefesia/fallen/rer1.png"
+        },
+        "custom1": {
+          "custom": true,
+          "image": "modules/theatre/assets/graphics/emotes/explosion.png",
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/Reefesia/fallen/rer1.png",
+          "label": "Custom Name\n                                        \n                                    \n                                        \n                                    \n                                        \n                                    ",
+          "name": "custom1"
+        },
+        "dissatisfied": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/Reefesia/fallen/rer2.png"
+        },
+        "dizzy": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/Reefesia/fallen/rer1.png"
+        },
+        "frown": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/Reefesia/fallen/rer2.png"
+        },
+        "frustrated": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/Reefesia/fallen/rer2.png"
+        },
+        "grin": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/Reefesia/fallen/rer2.png"
+        },
+        "happy": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/Reefesia/fallen/rer3.png"
+        },
+        "happytears": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/Reefesia/fallen/rer3.png"
+        },
+        "hearts": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/Reefesia/fallen/rer2.png"
+        },
+        "idea": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/Reefesia/fallen/rer1.png"
+        },
+        "innocent": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/Reefesia/fallen/rer1.png"
+        },
+        "kiss": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/Reefesia/fallen/rer1.png"
+        },
+        "laughing": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/Reefesia/fallen/rer3.png"
+        },
+        "laughingsquint": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/Reefesia/fallen/rer3.png"
+        },
+        "meh": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/Reefesia/fallen/rer1.png"
+        },
+        "mischevious": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/Reefesia/fallen/rer3.png"
+        },
+        "panic": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/Reefesia/fallen/rer1.png"
+        },
+        "playful": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/Reefesia/fallen/rer3.png"
+        },
+        "rofl": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/Reefesia/fallen/rer3.png"
+        },
+        "sad": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/Reefesia/fallen/rer1.png"
+        },
+        "scared": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/Reefesia/fallen/rer1.png"
+        },
+        "serious": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/Reefesia/fallen/rer2.png"
+        },
+        "sleeping": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/Reefesia/fallen/rer1.png"
+        },
+        "smile": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/Reefesia/fallen/rer1.png"
+        },
+        "smug": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/Reefesia/fallen/rer2.png"
+        },
+        "speechless": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/Reefesia/fallen/rer2.png"
+        },
+        "surprised": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/Reefesia/fallen/rer2.png"
+        },
+        "thinking": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/Reefesia/fallen/rer1.png"
+        },
+        "tongue": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/Reefesia/fallen/rer2.png"
+        },
+        "wink": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/Reefesia/fallen/rer1.png"
+        },
+        "worried": {
+          "insert": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/Reefesia/fallen/rer1.png"
+        }
+      },
+      "name": "",
+      "optalign": "top",
+      "settings": {
+        "emote": "grin",
+        "textcolor": null,
+        "textflyin": "typewriter",
+        "textfont": null,
+        "textsize": null,
+        "textstanding": "none"
+      }
+    }
+  },
+  "folder": "g9NW436C4Pmwr25d",
+  "img": "https://cdn.imgchest.com/files/46acqz6xzg7.png",
+  "items": [
+    {
+      "_id": "Bdc52a5BZmjFN5Pp",
+      "_stats": {
+        "compendiumSource": "Item.9mf0ak73ocEfdbFU",
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/shield.png",
+      "name": "Ventus Shield",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 2
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "cost": "800",
+          "def_bonus": "+2",
+          "description": "<ul>\n<li>You have Resistance to<strong> Air</strong>&nbsp;damage.</li>\n</ul>",
+          "initiative": "0",
+          "martial": false,
+          "mdef_bonus": "0",
+          "name": "Ventus Shield",
+          "set_name": "",
+          "shield": true
+        },
+        "template": "tJixj9vNEQd3F0IO",
+        "templateSystemUniqueVersion": 4280252019,
+        "unique": false,
+        "uniqueId": "9mf0ak73ocEfdbFU"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "US6hRg7vUwGngKPw",
+      "_stats": {
+        "compendiumSource": "Item.oj6qaRTPR0nZ6YNu",
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/shield.png",
+      "name": "Gelum Shield",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 2
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "cost": "800",
+          "def_bonus": "+2",
+          "description": "<ul>\n<li>You have Resistance to<strong> ice</strong> damage.</li>\n</ul>",
+          "initiative": "0",
+          "martial": false,
+          "mdef_bonus": "",
+          "name": "Gelum Shield",
+          "set_name": "",
+          "shield": true
+        },
+        "template": "tJixj9vNEQd3F0IO",
+        "templateSystemUniqueVersion": 4280252019,
+        "unique": false,
+        "uniqueId": "oj6qaRTPR0nZ6YNu"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Reefesia Fallen",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0,
+    "yL2PQxh3R9ddt0te": 3
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 30,
+    "disposition": 1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 30,
+            "ownerVisibility": 30,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 30,
+            "ownerVisibility": 30,
+            "position": "top-inner",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          }
+        }
+      },
+      "hex-size-support": {
+        "alternateOrientation": false,
+        "hideBorder": false,
+        "hideFill": false,
+        "pivotx": null,
+        "pivoty": null
+      },
+      "token-variants": {
+        "disableHUDButton": false,
+        "randomImgDefault": ""
+      },
+      "token-z": {
+        "zIndex": 0
+      },
+      "wall-height": {
+        "tokenHeight": 0
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Reefesia",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 0,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": true,
+      "range": 999,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://cdn.imgchest.com/files/46acqz6xzg7.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 800000,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "activeEffects": {},
+    "props": {
+      "accesory_details": "<p>Immune to [Weak]</p>",
+      "accesory_name": "Rough Gloves",
+      "arcanism": false,
+      "armor_mod": "12",
+      "armor_name": "Steel Plate",
+      "backpack": "<p>Loranthaceae Seed</p>",
+      "backstory": "",
+      "bond_1": "Freyr",
+      "bond_2": "Fjord",
+      "bond_3": "Mikahle",
+      "bond_4": "Juno",
+      "bond_5": "",
+      "bond_6": "",
+      "char_identity": "Plant love, Blind Faith, Fanatic",
+      "check_roller": "Roll!",
+      "chimerism": false,
+      "class_list": {
+        "0": {
+          "$deleted": false,
+          "benefit": "hp",
+          "class_name": "Floralist",
+          "level": "10"
+        },
+        "1": {
+          "$deleted": false,
+          "benefit": "hp",
+          "class_name": "Commander",
+          "level": "10"
+        }
+      },
+      "crisis_hp": "ERROR",
+      "current_hp": "80",
+      "current_ip": "6",
+      "current_mp": "70",
+      "dex_base": "6",
+      "dex_current": 6,
+      "elementalism": false,
+      "emotion_1_1": "1",
+      "emotion_1_2": "",
+      "emotion_1_3": "1",
+      "emotion_2_1": "2",
+      "emotion_2_2": "2",
+      "emotion_2_3": "1",
+      "emotion_3_1": "",
+      "emotion_3_2": "",
+      "emotion_3_3": "1",
+      "emotion_4_1": "1",
+      "emotion_4_2": "",
+      "emotion_4_3": "",
+      "emotion_5_1": "",
+      "emotion_5_2": "",
+      "emotion_5_3": "",
+      "emotion_6_1": "",
+      "emotion_6_2": "",
+      "emotion_6_3": "",
+      "entropism": false,
+      "experience": "7",
+      "fp": "13",
+      "id": "rAQGrBl3h8dRL6m0",
+      "img": "https://cdn.imgchest.com/files/46acqz6xzg7.png",
+      "init_penalty": "-4",
+      "ins_base": "6",
+      "ins_current": 6,
+      "inventory_label": "💼 Inventory",
+      "inventory_list": {
+        "0": {
+          "$deleted": false,
+          "item_description": "<p><strong>Juniperus, Arctic Willow, Iris sibirica, Frost Sage, Perovskia, Lingonberry, Chrysanthemum, Heathera, Alpine Aster, Hellebore, Scilla</strong></p>",
+          "item_name": "Winterland Seed",
+          "item_owned": "999",
+          "item_roll": ""
+        },
+        "1": {
+          "$deleted": false,
+          "item_description": "",
+          "item_name": "Bread",
+          "item_owned": "10",
+          "item_roll": ""
+        }
+      },
+      "isAwake": false,
+      "isClarity": false,
+      "isDazed": false,
+      "isEnergized": false,
+      "isEnraged": false,
+      "isFocus": false,
+      "isPoisoned": false,
+      "isShaken": false,
+      "isSlow": false,
+      "isStrong": false,
+      "isSwift": false,
+      "isWeak": false,
+      "is_martialarmor": true,
+      "itemContainer8": {
+        "Bdc52a5BZmjFN5Pp": {
+          "id": "Bdc52a5BZmjFN5Pp",
+          "name": "Ventus Shield",
+          "roll": "",
+          "shield_description": "<p>ERROR</p>",
+          "shield_martial": "Yes",
+          "uuid": "Actor.rAQGrBl3h8dRL6m0.Item.Bdc52a5BZmjFN5Pp"
+        },
+        "US6hRg7vUwGngKPw": {
+          "id": "US6hRg7vUwGngKPw",
+          "name": "Gelum Shield",
+          "roll": "",
+          "shield_description": "<p>ERROR</p>",
+          "shield_martial": "Yes",
+          "uuid": "Actor.rAQGrBl3h8dRL6m0.Item.US6hRg7vUwGngKPw"
+        }
+      },
+      "key_list": {},
+      "level": "20",
+      "magic_defense_mod": "0",
+      "main_attrib_1": "MIG",
+      "main_attrib_2": "MIG",
+      "main_hand": "Shovel",
+      "main_hand_attack": "",
+      "max_hp": "ERROR",
+      "max_ip": "ERROR",
+      "max_mp": "ERROR",
+      "memories_list": {},
+      "mig_base": "12",
+      "mig_current": 12,
+      "name": "Reefesia Fallen",
+      "normal_spell_list": {},
+      "notes_text": "<table class=\"NormalTable\">\n<tbody>\n<tr>\n<td width=\"550\">\n<p><span class=\"fontstyle0\">THE GARDEN<br></span><span class=\"fontstyle2\">When you plant a </span><span class=\"fontstyle3\">magiseed</span><span class=\"fontstyle2\">, it takes root in your </span><span class=\"fontstyle3\">garden </span><span class=\"fontstyle2\">until removed. Your </span><span class=\"fontstyle3\">garden<br></span><span class=\"fontstyle2\">is an </span><span class=\"fontstyle3\">abstract </span><span class=\"fontstyle2\">space whose appearance varies depending on your character's look: it<br>might be a pot on their back, a gap along their blade, or even the ground under their<br>feet. Your </span><span class=\"fontstyle3\">garden </span><span class=\"fontstyle2\">can only contain </span><span class=\"fontstyle3\">one magiseed at a time</span><span class=\"fontstyle2\">, and any </span><span class=\"fontstyle3\">magiseeds </span><span class=\"fontstyle2\">in your<br></span><span class=\"fontstyle3\">garden </span><span class=\"fontstyle2\">are </span><span class=\"fontstyle3\">automatically removed </span><span class=\"fontstyle2\">at the end of each scene.</span></p>\n<p><span class=\"fontstyle2\"><br></span><span class=\"fontstyle0\">THE GROWTH CLOCK<br></span><span class=\"fontstyle2\">When you acquire the </span><span class=\"fontstyle3\">Chloromancy </span><span class=\"fontstyle2\">Skill, you also receive a </span><span class=\"fontstyle3\">Growth Clock </span><span class=\"fontstyle2\">which is<br>present </span><span class=\"fontstyle3\">only </span><span class=\"fontstyle2\">during conflict scenes and represents the cycle of life in your </span><span class=\"fontstyle3\">garden</span><span class=\"fontstyle2\">.<br></span><span class=\"fontstyle4\">w </span><span class=\"fontstyle2\">Your Growth Clock has </span><span class=\"fontstyle3\">4 sections</span><span class=\"fontstyle2\">, and it begins each scene </span><span class=\"fontstyle3\">empty</span><span class=\"fontstyle2\">.<br></span><span class=\"fontstyle4\">w </span><span class=\"fontstyle2\">At the end of your turn, if a </span><span class=\"fontstyle3\">magiseed </span><span class=\"fontstyle2\">is present in your </span><span class=\"fontstyle3\">garden</span><span class=\"fontstyle2\">, </span><span class=\"fontstyle3\">fill 1 section </span><span class=\"fontstyle2\">of your<br>Growth Clock; </span><span class=\"fontstyle3\">then</span><span class=\"fontstyle2\">, if there is still a </span><span class=\"fontstyle3\">magiseed </span><span class=\"fontstyle2\">in your </span><span class=\"fontstyle3\">garden </span><span class=\"fontstyle2\">and that </span><span class=\"fontstyle3\">magiseed </span><span class=\"fontstyle2\">has<br>an \"at the end of your turn\" effect (see below), apply that effect.<br></span><span class=\"fontstyle4\">w </span><span class=\"fontstyle2\">When you fill the </span><span class=\"fontstyle3\">fourth section </span><span class=\"fontstyle2\">of your Growth Clock, </span><span class=\"fontstyle3\">remove </span><span class=\"fontstyle2\">the </span><span class=\"fontstyle3\">magiseed </span><span class=\"fontstyle2\">in your<br></span><span class=\"fontstyle3\">garden</span><span class=\"fontstyle2\">, then </span><span class=\"fontstyle3\">erase all sections </span><span class=\"fontstyle2\">of your Growth Clock.<br></span><span class=\"fontstyle4\">w </span><span class=\"fontstyle2\">Sections of your Growth Clock </span><span class=\"fontstyle3\">may not be filled nor erased </span><span class=\"fontstyle2\">in any way other than<br>described above, through </span><span class=\"fontstyle3\">Brambleheart </span><span class=\"fontstyle2\">and </span><span class=\"fontstyle3\">Green Thumb </span><span class=\"fontstyle2\">(pages </span><span class=\"fontstyle3\">XXX </span><span class=\"fontstyle2\">and </span><span class=\"fontstyle3\">XXX</span><span class=\"fontstyle2\">), or<br>through effects that </span><span class=\"fontstyle3\">explicitly affect Growth Clocks</span><span class=\"fontstyle2\">.</span></p>\n<p><span class=\"fontstyle2\"><br></span><span class=\"fontstyle0\">MAGISEED EFFECTS<br></span><span class=\"fontstyle3\">Magiseeds </span><span class=\"fontstyle2\">can have passive effects, or have effects that trigger at the </span><span class=\"fontstyle3\">end </span><span class=\"fontstyle2\">of your<br>turn, </span><span class=\"fontstyle3\">after </span><span class=\"fontstyle2\">your Growth Clock has increased.<br></span><span class=\"fontstyle4\">w </span><span class=\"fontstyle2\">The effects of a </span><span class=\"fontstyle3\">magiseed </span><span class=\"fontstyle2\">apply only while it is present in your </span><span class=\"fontstyle3\">garden</span><span class=\"fontstyle2\">, and they vary<br>depending on the current number of filled sections in your </span><span class=\"fontstyle3\">Growth Clock </span><span class=\"fontstyle2\">(</span><span class=\"fontstyle5\">T</span><span class=\"fontstyle2\">).<br></span><span class=\"fontstyle4\">w </span><span class=\"fontstyle2\">You </span><span class=\"fontstyle3\">only </span><span class=\"fontstyle2\">apply the effect corresponding to the </span><span class=\"fontstyle3\">exact number </span><span class=\"fontstyle2\">of currently filled<br>sections in your </span><span class=\"fontstyle3\">Growth Clock</span><span class=\"fontstyle2\">, not any effect above or below it.<br></span><span class=\"fontstyle4\">w </span><span class=\"fontstyle2\">If a magiseed's effect deals damage, it deals 5 extra damage if you are </span><span class=\"fontstyle3\">level 30 or<br>higher</span><span class=\"fontstyle2\">. If a magiseed's effect causes Hit Point and/or Mind Point loss and/or recovery,<br>the amount increases by 10 if you are </span><span class=\"fontstyle3\">level 30 or higher</span></p>\n</td>\n</tr>\n</tbody>\n</table>\n<p>&nbsp;</p>",
+      "off_attrib_1": "SHI",
+      "off_attrib_2": "SHI",
+      "off_hand": "",
+      "off_hand_attack": "",
+      "off_mod_1": "0",
+      "off_mod_2": "0",
+      "origin": "Sol",
+      "passive_list": {
+        "0": {
+          "$deleted": false,
+          "passive_description": "<p><span class=\"fontstyle0\">When </span><span class=\"fontstyle2\">you fill 1 or more sections of your Growth Clock</span><span class=\"fontstyle0\">, you may choose one option:<br>you fill </span><span class=\"fontstyle2\">1 additional section </span><span class=\"fontstyle0\">of your Growth Clock; </span><span class=\"fontstyle2\">or </span><span class=\"fontstyle0\">you fill </span><span class=\"fontstyle2\">1 fewer section </span><span class=\"fontstyle0\">of your<br>Growth Clock (to a minimum of 0 sections filled). </span></p>\n<p>&nbsp;</p>\n<p><span class=\"fontstyle0\">If you do, you cannot use this effect again until after your </span><span class=\"fontstyle2\">Growth Clock </span><span class=\"fontstyle0\">has become completely empty.</span></p>\n<p><span class=\"fontstyle0\"><br>Additionally, damage dealt by your </span><span class=\"fontstyle2\">magiseeds </span><span class=\"fontstyle0\">ignores Resistances.</span></p>",
+          "passive_name": "GREEN THUMB",
+          "passive_roll": "",
+          "passive_source": "heroic_skill"
+        },
+        "1": {
+          "$deleted": false,
+          "passive_description": "<p><span class=\"fontstyle0\">After you use </span><span class=\"fontstyle2\">Bishop’s Edict </span><span class=\"fontstyle0\">or </span><span class=\"fontstyle2\">King’s Castle </span><span class=\"fontstyle0\">Skills, if you are in </span><span class=\"fontstyle2\">Crisis</span><span class=\"fontstyle0\">, you may have every<br>enemy creature present on the scene lose [20] Hit Points.</span></p>",
+          "passive_name": "TABULA RASA",
+          "passive_roll": "",
+          "passive_source": "heroic_skill"
+        },
+        "2": {
+          "$deleted": false,
+          "passive_description": "<p><span class=\"fontstyle0\">When you acquire this Quirk, write down the <span class=\"fontstyle2\">prophecy</span>, and what it foretold. Do this with the collaboration of everyone else in the group, tie it to a known <span class=\"fontstyle2\">threat or emergency </span>in your world, and describe what <span class=\"fontstyle2\">sign or omen </span>marks you as the person supposedly destined to fulfill that <span class=\"fontstyle2\">prophecy</span>.</span></p>\n<p>&nbsp;</p>\n<p><span class=\"fontstyle0\">At the end of each session (approximately <span class=\"fontstyle2\">four hours of play</span>), before assigning XP, think <span class=\"fontstyle2\">carefully </span>and <span class=\"fontstyle2\">honestly </span>about what happened during the session and choose <span class=\"fontstyle2\">one </span>of the five options below. The choice is yours to make, but it’s often a good idea to talk about what happened with the rest of the group.</span></p>\n<p><span class=\"fontstyle0\"><br><span class=\"fontstyle3\">1. </span><span class=\"fontstyle2\">The prophecy was fulfilled: </span>lose this Quirk, fully restore your Hit Points and Mind Points, recover from all status effects, and gain a Heroic Skill from those available for your Classes (you may even choose a Heroic Skill whose requirements you <span class=\"fontstyle2\">do not </span>satisfy, unless they include a Skill you don’t have).</span></p>\n<p><span class=\"fontstyle0\"><br><span class=\"fontstyle3\">2. </span><span class=\"fontstyle2\">You acted in accordance to the prophecy: </span>fully restore your Hit Points and Mind Points, and recover from all status effects.</span></p>\n<p><span class=\"fontstyle0\"><br><span class=\"fontstyle3\">3. </span><span class=\"fontstyle2\">You acted neither in accordance to nor against the prophecy: </span>nothing happens.</span></p>\n<p>&nbsp;</p>\n<p><span class=\"fontstyle0\"><span class=\"fontstyle2\">4.You acted against the prophecy: </span>gain 1 Fabula Point.</span></p>\n<p><span class=\"fontstyle0\"><br><span class=\"fontstyle3\">5. </span><span class=\"fontstyle2\">The prophecy can never be fulfilled: </span>lose this Quirk, gain 6 Fabula Points, and gain a Heroic Skill from those available for your Classes (you may even choose a Heroic Skill whose requirements you <span class=\"fontstyle2\">do not </span>satisfy, unless they include a Skill you don’t have).<br></span></p>\n<p><span class=\"fontstyle0\">Once the first or last option is chosen, the role of the <span class=\"fontstyle2\">prophecy </span>in your world comes to an end. Even if later on in the campaign it appears that a situation might match the words of the <span class=\"fontstyle2\">prophecy</span>, the effects of this Quirk will no longer be in place: you are free to shape your destiny and act based on your inner moral compass. Or perhaps you always were?</span></p>\n<p>&nbsp;</p>\n<p>&nbsp;</p>",
+          "passive_name": "GLORIOUS FATE",
+          "passive_roll": "",
+          "passive_source": "quirk"
+        },
+        "3": {
+          "$deleted": false,
+          "passive_description": "<p><span class=\"fontstyle0\">Once before the next rest, after your group makes a </span><span class=\"fontstyle2\">travel roll</span><span class=\"fontstyle0\">, you may </span><span class=\"fontstyle2\">reroll the die </span><span class=\"fontstyle0\">and keep the new result.</span></p>",
+          "passive_name": "Catrography",
+          "passive_roll": "",
+          "passive_source": "camp_activity"
+        },
+        "4": {
+          "$deleted": false,
+          "passive_description": "<p><span class=\"fontstyle2\">Once before the next rest, when you lose Hit Points for whatever reason, you may choose to </span><span class=\"fontstyle0\">halve <span class=\"fontstyle2\">that HP loss.</span></span></p>",
+          "passive_name": "Daydream",
+          "passive_roll": "",
+          "passive_source": "camp_activity"
+        }
+      },
+      "pronouns": "She",
+      "re_experience": "0",
+      "reaction_list": {},
+      "relationship_1": "",
+      "relationship_2": "",
+      "relationship_3": "",
+      "relationship_4": "",
+      "relationship_5": "",
+      "relationship_6": "",
+      "resource_value_1": "0",
+      "resource_value_2": "0",
+      "resource_value_3": "0",
+      "ritualism": false,
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "shield_type": "PHYSICAL",
+      "shield_value": "0",
+      "skill_hp": "0",
+      "skill_ip": "0",
+      "skill_list": {
+        "0": {
+          "$deleted": false,
+          "class": "Floralist",
+          "description": "<p><span class=\"fontstyle0\">After you <span class=\"fontstyle2\">plant a magiseed </span>through the <span class=\"fontstyle2\">Chloromancy </span>Skill (not when using <span class=\"fontstyle2\">Graft</span>), you may choose one option: </span></p>\n<p><span class=\"fontstyle0\">1.you perform a <span class=\"fontstyle2\">free attack </span>with an equipped weapon<span class=\"fontstyle2\"><br></span>2.you immediately perform the <span class=\"fontstyle2\">Spell </span>action for free, casting a spell with a <span class=\"fontstyle2\">total Mind Point cost equal to or lower than</span><span class=\"fontstyle3\">【</span><span class=\"fontstyle2\">5 + (SL &times; 5)</span><span class=\"fontstyle3\">】 </span>(you must still pay its MP cost). </span></p>\n<p><span class=\"fontstyle0\">Treat the <span class=\"fontstyle2\">High Roll (HR) </span>of your Accuracy Check or Magic Check as being equal to 0 when determining damage dealt by this attack or spell <br></span></p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "BATTLE GARDENING"
+        },
+        "1": {
+          "$deleted": false,
+          "class": "Floralist",
+          "description": "<p><span class=\"fontstyle0\">Each time you acquire this Skill, you discover </span><span class=\"fontstyle2\">a new type of magiseed</span><span class=\"fontstyle0\">. The rules for </span><span class=\"fontstyle2\">discovering magiseeds </span><span class=\"fontstyle0\">can be found in the next pages.</span></p>\n<p><span class=\"fontstyle0\"><br>During a conflict, if there are </span><span class=\"fontstyle2\">no magiseeds </span><span class=\"fontstyle0\">in your </span><span class=\"fontstyle2\">garden</span><span class=\"fontstyle0\">, you may use an action and spend 20 Mind Points to </span><span class=\"fontstyle2\">plant a magiseed </span><span class=\"fontstyle0\">among those you have discovered.&nbsp;</span></p>",
+          "level": "8",
+          "roll": "",
+          "skill_name": "CHLOROMANCY"
+        },
+        "2": {
+          "$deleted": false,
+          "class": "Floralist",
+          "description": "<p>1&nbsp; <span class=\"fontstyle0\">At the end of your turn, you and every ally you can see recover from </span><span class=\"fontstyle2\">dazed</span><span class=\"fontstyle0\">, </span><span class=\"fontstyle2\">enraged</span><span class=\"fontstyle0\">, and </span><span class=\"fontstyle2\">shaken</span><span class=\"fontstyle0\">.</span> </p>\n<p><span class=\"fontstyle0\">2-3 At the end of your turn, you and every ally you can see recover an amount of<br>Mind Points equal to<span class=\"fontstyle2\">【</span><span class=\"fontstyle3\">5 + your Skill Level in Chloromancy</span><span class=\"fontstyle2\">】(13)</span><br></span></p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Seed : GOLDEN GINKGO"
+        },
+        "3": {
+          "$deleted": false,
+          "class": "Floralist",
+          "description": "<table class=\"NormalTable\">\n<tbody>\n<tr>\n<td width=\"550\">\n<p><span class=\"fontstyle0\">1 </span><span class=\"fontstyle2\">At the end of your turn, you and every ally you can see recover from </span><span class=\"fontstyle0\">poisoned</span><span class=\"fontstyle2\">,<br></span><span class=\"fontstyle0\">slow</span><span class=\"fontstyle2\">, and </span><span class=\"fontstyle0\">weak</span><span class=\"fontstyle2\">.</span></p>\n<p><span class=\"fontstyle2\"><br></span><span class=\"fontstyle0\">2-3 </span><span class=\"fontstyle2\">At the end of your turn, you and every ally you can see recover an amount of Hit Points equal to</span><span class=\"fontstyle3\">【</span><span class=\"fontstyle0\">15 + your Skill Level in Chloromancy</span><span class=\"fontstyle3\">】(23)</span></p>\n</td>\n</tr>\n</tbody>\n</table>\n<p>&nbsp;</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Seed : REMEDY LILY"
+        },
+        "4": {
+          "$deleted": false,
+          "class": "Floralist",
+          "description": "<p><span class=\"fontstyle0\">0-1 </span><span class=\"fontstyle2\">You are Resistant to </span><span class=\"fontstyle0\">earth </span><span class=\"fontstyle2\">and </span><span class=\"fontstyle0\">ice </span><span class=\"fontstyle2\">damage.<br></span></p>\n<table class=\"NormalTable\">\n<tbody>\n<tr>\n<td width=\"550\"><span class=\"fontstyle0\">2-3 </span><span class=\"fontstyle2\">You and your allies present on the scene are Resistant to </span><span class=\"fontstyle0\">earth </span><span class=\"fontstyle2\">and </span><span class=\"fontstyle0\">ice </span><span class=\"fontstyle2\">damage</span></td>\n</tr>\n</tbody>\n</table>\n<p>&nbsp;</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Seed : ARCTIC NARCISSUS"
+        },
+        "5": {
+          "$deleted": false,
+          "class": "Floralist",
+          "description": "<table class=\"NormalTable\">\n<tbody>\n<tr>\n<td width=\"430\">\n<p><span class=\"fontstyle0\">0-1 </span><span class=\"fontstyle2\">All damage you deal becomes </span><span class=\"fontstyle0\">poison</span><span class=\"fontstyle2\">, its type cannot change, and it ignores<br>Immunities and Resistances.</span></p>\n<p><span class=\"fontstyle2\"><br></span><span class=\"fontstyle0\">2-3 </span><span class=\"fontstyle2\">All damage you deal becomes </span><span class=\"fontstyle0\">poison</span><span class=\"fontstyle2\">, its type cannot change, and it ignores<br>Immunities and Resistances. Additionally, when you deal </span><span class=\"fontstyle0\">poison </span><span class=\"fontstyle2\">damage for the<br>first time during your turn, you deal extra damage equal to</span><span class=\"fontstyle3\">【</span><span class=\"fontstyle0\">your Skill Level in<br>Chloromancy</span><span class=\"fontstyle3\">】(8 ) </span><span class=\"fontstyle2\">and each creature that lost Hit Points this way suffers [</span><span class=\"fontstyle0\">poisoned]</span></p>\n</td>\n</tr>\n</tbody>\n</table>\n<p>&nbsp;</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Seed : HOOKLEAF NIGHTSHADE"
+        },
+        "6": {
+          "$deleted": false,
+          "class": "Floralist",
+          "description": "<p><span class=\"fontstyle0\">1-2 </span><span class=\"fontstyle2\">At the end of your turn, choose yourself </span><span class=\"fontstyle0\">or </span><span class=\"fontstyle2\">another Player Character you can see. The chosen character regains 2 Inventory Point.<br></span></p>\n<p>&nbsp;</p>\n<table class=\"NormalTable\" style=\"width: 100%; height: 34px;\">\n<tbody>\n<tr style=\"height: 34px;\">\n<td style=\"width: 115.063%; height: 34px;\" width=\"550\"><span class=\"fontstyle0\">3 </span><span class=\"fontstyle2\">At the end of your turn, you </span><span class=\"fontstyle0\">and </span><span class=\"fontstyle2\">every other Player Character you can see regain 1 Inventory Point</span></td>\n</tr>\n</tbody>\n</table>\n<p>&nbsp;</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Seed : PILGRIM GAZALIA"
+        },
+        "7": {
+          "$deleted": false,
+          "class": "Floralist",
+          "description": "",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Seed : BLAZING CHRYSANTHEMUM"
+        },
+        "8": {
+          "$deleted": false,
+          "class": "Floralist",
+          "description": "<table class=\"NormalTable\">\n<tbody>\n<tr>\n<td width=\"550\">\n<p><span class=\"fontstyle0\">1 </span><span class=\"fontstyle2\">At the end of your turn, you may choose an enemy you can see. If you do, that<br>enemy suffers </span><span class=\"fontstyle0\">slow</span><span class=\"fontstyle2\">.</span></p>\n<p><span class=\"fontstyle2\"><br></span><span class=\"fontstyle0\">2 </span><span class=\"fontstyle2\">At the end of your turn, every enemy you can see suffers </span><span class=\"fontstyle0\">slow</span><span class=\"fontstyle2\">.</span></p>\n<p><span class=\"fontstyle2\"><br></span><span class=\"fontstyle0\">3 </span><span class=\"fontstyle2\">At the end of your turn, you deal an amount of </span><span class=\"fontstyle0\">physical </span><span class=\"fontstyle2\">damage equal to</span><span class=\"fontstyle3\">【</span><span class=\"fontstyle0\">15 + your Skill Level in Chloromancy</span><span class=\"fontstyle3\">】(23) </span><span class=\"fontstyle2\">to each enemy you can see who is suffering from </span><span class=\"fontstyle0\">slow</span></p>\n</td>\n</tr>\n</tbody>\n</table>\n<p>&nbsp;</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Seed : SERRATED ROSE"
+        },
+        "9": {
+          "$deleted": false,
+          "class": "Floralist",
+          "description": "<p><span class=\"fontstyle0\">0-1 </span><span class=\"fontstyle2\">You are Resistant to </span><span class=\"fontstyle0\">physical </span><span class=\"fontstyle2\">damage.<br></span></p>\n<p>&nbsp;</p>\n<table class=\"NormalTable\">\n<tbody>\n<tr>\n<td width=\"430\">\n<p><span class=\"fontstyle0\">2 </span><span class=\"fontstyle2\">You are Resistant to </span><span class=\"fontstyle0\">physical </span><span class=\"fontstyle2\">damage. Additionally, after a creature </span><span class=\"fontstyle0\">hits </span><span class=\"fontstyle2\">you with a </span><span class=\"fontstyle0\">melee </span><span class=\"fontstyle2\">attack, you deal an amount of </span><span class=\"fontstyle0\">physical </span><span class=\"fontstyle2\">damage to that creature equal to</span><span class=\"fontstyle3\">【</span><span class=\"fontstyle0\">5 + your Skill Level in Chloromancy</span><span class=\"fontstyle3\">】(13) </span><span class=\"fontstyle2\">(after their attack was resolved).</span></p>\n<p><span class=\"fontstyle2\"><br></span><span class=\"fontstyle0\">3 </span><span class=\"fontstyle2\">You are Resistant to </span><span class=\"fontstyle0\">physical </span><span class=\"fontstyle2\">damage. Additionally, after a creature </span><span class=\"fontstyle0\">hits </span><span class=\"fontstyle2\">you with a </span><span class=\"fontstyle0\">melee </span><span class=\"fontstyle2\">attack, you deal an amount of </span><span class=\"fontstyle0\">physical </span><span class=\"fontstyle2\">damage to that creature equal to</span><span class=\"fontstyle3\">【</span><span class=\"fontstyle0\">5 + your Skill Level in Chloromancy</span><span class=\"fontstyle3\">】(13)</span><span class=\"fontstyle2\">, and then deal an amount of </span><span class=\"fontstyle0\">poison </span><span class=\"fontstyle2\">damage to that creature equal to</span><span class=\"fontstyle3\">【</span><span class=\"fontstyle0\">5 + your Skill Level in Chloromancy</span><span class=\"fontstyle3\">】(13) </span><span class=\"fontstyle2\">(both these damage instances happen after that creature's attack was resolved)</span></p>\n</td>\n</tr>\n</tbody>\n</table>\n<p>&nbsp;</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Seed : WARDWATTLE"
+        },
+        "10": {
+          "$deleted": false,
+          "class": "Floralist",
+          "description": "<p><span class=\"fontstyle0\">As long as there is a </span><span class=\"fontstyle2\">magiseed </span><span class=\"fontstyle0\">in your </span><span class=\"fontstyle2\">garden </span><span class=\"fontstyle0\">and </span><span class=\"fontstyle2\">1 or more sections </span><span class=\"fontstyle0\">of your </span><span class=\"fontstyle2\">Growth Clock </span><span class=\"fontstyle0\">are </span><span class=\"fontstyle2\">filled</span><span class=\"fontstyle0\">, you may use an action to </span><span class=\"fontstyle2\">remove </span><span class=\"fontstyle0\">that </span><span class=\"fontstyle2\">magiseed </span><span class=\"fontstyle0\">from your </span><span class=\"fontstyle2\">garden</span><span class=\"fontstyle0\">: if you do, you immediately </span><span class=\"fontstyle2\">plant a different magiseed </span><span class=\"fontstyle0\">among those you have discovered (keep the current filled sections of your Growth Clock unchanged).</span> </p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "GRAFT"
+        },
+        "11": {
+          "$deleted": false,
+          "class": "Commander",
+          "description": "<p><span class=\"fontstyle0\">During a conflict, you may use an action to perform a </span><span class=\"fontstyle2\">free attack </span><span class=\"fontstyle0\">with a weapon you have equipped, treating your </span><span class=\"fontstyle2\">High Roll (HR) </span><span class=\"fontstyle0\">as 0 when calculating damage. </span></p>\n<p>&nbsp;</p>\n<p><span class=\"fontstyle0\">After the attack is resolved, choose one option</span></p>\n<ol>\n<li><span class=\"fontstyle0\">one ally who is able to hear you recovers</span><span class=\"fontstyle3\">【</span><span class=\"fontstyle2\">5 +(SL &times; 5)=10</span><span class=\"fontstyle3\">】 </span><span class=\"fontstyle0\">Hit Points</span></li>\n<li><span class=\"fontstyle2\">&nbsp;</span><span class=\"fontstyle0\">you may immediately use</span><span class=\"fontstyle0\"> Skill you acquired among [<span class=\"fontstyle2\">Bishop&rsquo;s<br>Edict]</span>, [<span class=\"fontstyle2\">Charging Cavalry] </span>or [<span class=\"fontstyle2\">King&rsquo;s Castle] </span>for free</span></li>\n</ol>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "QUEEN’S GAMBIT"
+        },
+        "12": {
+          "$deleted": false,
+          "class": "Commander",
+          "description": "<p><span class=\"fontstyle0\">During a conflict, you may use an action and spend 10 Mind Points to choose one option: </span></p>\n<p>&nbsp;</p>\n<ol>\n<li><span class=\"fontstyle0\">no creature can recover Hit Points or Mind Points; </span></li>\n<li><span class=\"fontstyle0\">all effects that restore Mind Points restore</span><span class=\"fontstyle3\">【</span><span class=\"fontstyle2\">SL(4) &times; 5=20</span><span class=\"fontstyle3\">】 </span><span class=\"fontstyle0\">additional Mind Points. </span></li>\n</ol>\n<p><span class=\"fontstyle0\">The chosen effect lasts until the start of your next turn</span></p>",
+          "level": "4",
+          "roll": "",
+          "skill_name": "KING’S CASTLE"
+        },
+        "13": {
+          "$deleted": false,
+          "class": "Commander",
+          "description": "<p><span class=\"fontstyle0\">During a conflict, you may use an action and spend 10 MP to choose one ally that can hear you. </span></p>\n<p><span class=\"fontstyle0\">That ally may immediately perform a </span><span class=\"fontstyle2\">free attack </span><span class=\"fontstyle0\">with a weapon they have equipped (or with a </span><span class=\"fontstyle2\">basic attack </span><span class=\"fontstyle0\">if they are an NPC).</span></p>\n<p><span class=\"fontstyle0\">They gain a bonus equal to ([SL+3] = 5) </span><span class=\"fontstyle0\">to the Accuracy Check, but treat their </span><span class=\"fontstyle2\">High Roll (HR) </span><span class=\"fontstyle0\">as 0 when calculating damage.</span></p>",
+          "level": "2",
+          "roll": "",
+          "skill_name": "CHARGING CAVALRY"
+        },
+        "14": {
+          "$deleted": false,
+          "class": "Commander",
+          "description": "<p><span class=\"fontstyle0\">After you use [BISHOP&rsquo;S EDICT] [</span><span class=\"fontstyle2\">King&rsquo;s Castle] or [<span class=\"fontstyle0\">Charging Cavalry</span>]</span><span class=\"fontstyle0\">&nbsp;you may choose another Player Character that can hear you who has yet to take a turn during this round. </span></p>\n<p><span class=\"fontstyle0\">That character may take their turn immediately after yours during this round.</span></p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "CRUSHING CHARIOT"
+        },
+        "15": {
+          "$deleted": false,
+          "class": "Commander",
+          "description": "<p><span class=\"fontstyle0\">During a conflict, you may use an action and spend 10 Mind Points to choose one option</span></p>\n<p><span class=\"fontstyle0\">1.all MP costs are doubled; </span></p>\n<p><span class=\"fontstyle0\">2.all sources of damage deal </span><span class=\"fontstyle3\">【6</span><span class=\"fontstyle3\">】 </span><span class=\"fontstyle0\">extra damage.</span></p>\n<p><span class=\"fontstyle0\"><br>The chosen effect lasts until the start of your next turn</span></p>",
+          "level": "2",
+          "roll": "",
+          "skill_name": "BISHOP’S EDICT"
+        }
+      },
+      "skill_mp": "0",
+      "spiritism": false,
+      "theme": "Martyr",
+      "uuid": "Actor.rAQGrBl3h8dRL6m0",
+      "weapon1_damage": "14",
+      "weapon1_damagetype": "Physical",
+      "weapon1_mod": "1",
+      "weapon2_damagetype": "-",
+      "wlp_base": "10",
+      "wlp_current": 10,
+      "your_class_name": "Lunatic Gardener",
+      "zenit": "1600",
+      "zero_effect_description": "<p><span class=\"fontstyle0\">You and any number of allies you can see recover from all status effects and recover<br>an amount of Hit Points equal to</span><span class=\"fontstyle2\">【</span><span class=\"fontstyle3\">40 + half your level</span><span class=\"fontstyle2\">】</span><span class=\"fontstyle0\">.</span></p>",
+      "zero_effect_label": "💬 Zero Effect",
+      "zero_label": "💥 Zero Power : ",
+      "zero_power_name": "Tree of Life",
+      "zero_power_value": "0",
+      "zero_trigger_description": "<p><span class=\"fontstyle0\">Compassion : This trigger activates when <span class=\"fontstyle2\">you restore the Hit Points and/or Mind Points of one or more allies </span>(this <span class=\"fontstyle2\">only </span>triggers with effects that <span class=\"fontstyle2\">autonomously </span>restore Hit Points or Mind Points, not those that increase recovery caused by a different effect) <br></span></p>",
+      "zero_trigger_label": "⚔️ Zero Trigger"
+    },
+    "statusEffects": {},
+    "template": "gN4AtNuVF4Tc5LxK",
+    "templateSystemUniqueVersion": 93170772
+  },
+  "type": "character"
+}

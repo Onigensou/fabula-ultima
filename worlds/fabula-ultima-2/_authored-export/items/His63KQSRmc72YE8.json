@@ -1,0 +1,146 @@
+{
+  "_id": "His63KQSRmc72YE8",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1751908342050,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "His63KQSRmc72YE8",
+        "itemName": "Golden Mace",
+        "pickedOldProps": {
+          "cost": "2000",
+          "martial": false
+        },
+        "ts": 1769647435641
+      }
+    }
+  },
+  "folder": "sGENJ29RJrSAViWk",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/GoldenMace.gif",
+  "name": "Golden Mace",
+  "ownership": {
+    "2vy7wrEUqBy0kzsU": 3,
+    "6DmgigM5jq76r0Gd": 3,
+    "7hKw8KGsimboeDif": 3,
+    "9sFgrDy4MvAgoCmQ": 3,
+    "Am7qxPOavfKeDGPd": 3,
+    "JQGNzKpDPHJmcUIW": 3,
+    "JvF9tXvr7aaiS06m": 3,
+    "KD5d0efqHETPpIux": 3,
+    "LT3Z8EnRdMVk5ncQ": 3,
+    "MwTL6zXFCEpVBTpI": 3,
+    "NozW36XIGEGx7oVH": 3,
+    "NpGkA7uxaarkPiwS": 3,
+    "ULBTZPjtza939Mvy": 3,
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3,
+    "eGu3tuw7HwJd2bpx": 3,
+    "iLeUVmwqnze8ulOI": 3,
+    "mE5aEkDlrQJIYyhG": 3,
+    "nSGZ1sz1rdKao0kz": 3,
+    "nXC7OD7u5Zw5UDDU": 3,
+    "t41knaXNbgCEygM5": 3,
+    "tz9BP9MKfNGf2P3n": 3,
+    "wNzPmItLYCKE1I8t": 3,
+    "yL2PQxh3R9ddt0te": 3,
+    "yUfwoVmEPVdFG3AY": 3
+  },
+  "sort": 300000,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "aquatic_ef": "100",
+      "automaton_ef": "100",
+      "avian_ef": "100",
+      "beast_ef": "100",
+      "category": "Flail",
+      "celestial_ef": "100",
+      "check_bonus": "0",
+      "construct_ef": "100",
+      "damage_bonus": "8",
+      "demiHuman_ef": "100",
+      "demon_ef": "100",
+      "description": "<ul><li><p>You may perform the skill 【💥<strong> Mammonite </strong>】</p></li></ul>",
+      "dragon_ef": "100",
+      "elemental_ef": "100",
+      "enforcer_ef": "100",
+      "fey_ef": "100",
+      "flora_ef": "100",
+      "fungus_ef": "100",
+      "golem_ef": "100",
+      "gorger_ef": "100",
+      "hand_slots": "One-handed",
+      "human_ef": "100",
+      "humanoid_ef": "100",
+      "insect_ef": "100",
+      "ip_cost": "",
+      "isEquipped": false,
+      "isKey": false,
+      "isMartial": false,
+      "isModule": false,
+      "isRelatedItem": true,
+      "isSet": true,
+      "isUnique": false,
+      "item_baseDef": "0",
+      "item_baseMdef": "0",
+      "item_cost": "2000",
+      "item_def_bonus": "0",
+      "item_mdef_bonus": "0",
+      "item_quantity": "1",
+      "item_rarity": "Rare",
+      "item_skill_active": {
+        "HYAg91mAJ6ntunOB": {
+          "id": "${item.id}",
+          "name": "Mammonite",
+          "skill_cost": "X Zenit",
+          "skill_description": "<p>Perform a <strong>Free Attack </strong>with a weapon you have equipped, you may spend up to <strong>250 Zenit, </strong>this attack deals <strong>X bonus damage, </strong>X is equal to the Zenit Spent to perform this skill divided by 10 <em>(Round Up)</em></p>",
+          "skill_maxLevel": 1,
+          "uuid": ""
+        }
+      },
+      "item_type": "weapon",
+      "mimic_ef": "100",
+      "monster_ef": "100",
+      "name": "Golden Mace",
+      "optional_params": {},
+      "plant_ef": "100",
+      "related_item_list": {
+        "HYAg91mAJ6ntunOB": {
+          "id": "${item.id}",
+          "name": "Mammonite",
+          "related_item_description": "<p>Perform a <strong>Free Attack </strong>with a weapon you have equipped, you may spend up to <strong>250 Zenit, </strong>this attack deals <strong>X bonus damage, </strong>X is equal to the Zenit Spent to perform this skill divided by 10 <em>(Round Up)</em></p>",
+          "uuid": ""
+        }
+      },
+      "reptilian_ef": "100",
+      "rolled_atr1": "MIG",
+      "rolled_atr2": "DEX",
+      "set_description": "<p><strong>【Set Bonus】</strong></p><ul><li><p><strong>2-Piece</strong></p><ul><li><p>You can sell item at 80% of their original price</p></li></ul><hr><p><strong>3-Piece</strong></p><ul><li><p><strong>+100% Zenit Gain </strong>after conflict</p></li></ul></li></ul>",
+      "set_name": "Master Merchant",
+      "skill_target": "One Enemy",
+      "soldier_ef": "100",
+      "spirit_ef": "100",
+      "type_damage": "Physical",
+      "undead_ef": "100",
+      "vehicle_ef": "100",
+      "weapon_range": "Melee"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "His63KQSRmc72YE8"
+  },
+  "type": "equippableItem"
+}

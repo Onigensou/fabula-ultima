@@ -1,0 +1,57 @@
+{
+  "_id": "zNDftXNAZ5IkXC4g",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1756965340398,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "2OplVa9fwLYbzD8b",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/17_PCT/Landscape_Motif.png",
+  "name": "Clean Slate",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 300000,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Symbolist",
+      "cost": "30 MP",
+      "damage_bonus": "0",
+      "description": "<p>You may use an action and spend up to <strong>30 Mind Points</strong> to choose one creature you can see for every <strong>5 MP</strong> spent this way. Each creature chosen this way recovers from all status effects and is no longer affected by any spells with a <strong>duration</strong> of “Scene” that were affecting them.</p>\n",
+      "duration": "Instantaneous",
+      "heroic_requirement": "you must have mastered the Symbolist Class",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Clean Slate",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "Any",
+      "skill_target": "Special",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "zNDftXNAZ5IkXC4g"
+  },
+  "type": "equippableItem"
+}

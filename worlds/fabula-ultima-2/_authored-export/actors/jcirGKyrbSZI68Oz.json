@@ -1,0 +1,810 @@
+{
+  "_id": "jcirGKyrbSZI68Oz",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1757294501239,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "tmNVy5jIbM9rzx80",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/FabU_Gourmet.png",
+  "items": [
+    {
+      "_id": "5jJcAwngaynrUj09",
+      "_stats": {
+        "compendiumSource": "Item.Ou5w7XHSNGb02T9y",
+        "coreVersion": "12.343",
+        "createdTime": 1757296615275,
+        "duplicateSource": "Item.0Vih9E0FXoykGEf7",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/triple_trident.png",
+      "name": "Knife and Fork",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Gourmet",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you perform the <strong>free attack</strong> granted by the 【💥<strong>Cooking】</strong> Skill, if you combined <strong>no more than 2 ingredients</strong>, you may have the attack deal damage as normal. If you do, you treat your <strong>High Roll (HR)</strong> as <strong>0</strong> when calculating damage dealt by this attack.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Knife and Fork",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "Ou5w7XHSNGb02T9y"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "kETNmjrVFy8MrV7G",
+      "_stats": {
+        "compendiumSource": "Item.oPABGC6FtBfRoCDv",
+        "coreVersion": "12.343",
+        "createdTime": 1757296620619,
+        "duplicateSource": "Item.l4mQGvabnC03jGqX",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/CLOSERS/Tina/I_Want_to_Be_Alone.webp",
+      "name": "Traveling Cook",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Gourmet",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>After each <strong>travel roll</strong>, if you acquired the 【💥<strong>Cooking】 Skill</strong>, you gain <strong>[SL × 2] ingredients</strong>.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "3",
+          "name": "Traveling Cook",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Ingredients gained after each travel roll</strong></p></td></tr><tr><td><p>1</p></td><td><p>2</p></td></tr><tr><td><p>2</p></td><td><p>4</p></td></tr><tr><td><p>3</p></td><td><p>6</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "oPABGC6FtBfRoCDv"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "mOTt54EhZlD7YUnV",
+      "_stats": {
+        "compendiumSource": "Item.ptthimAjvjpNdtEP",
+        "coreVersion": "12.343",
+        "createdTime": 1757296616607,
+        "duplicateSource": "Item.Ou5w7XHSNGb02T9y",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/angel_whisper.png",
+      "name": "Made with Love",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Gourmet",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you <strong>use the </strong>【💥<strong>Cooking】 Skill</strong> and choose to apply the effects of the <strong>delicacy</strong> to yourself or an ally you can see, you may spend up to <strong>[SL × 10] MP</strong>. For every <strong>10 MP</strong> you spend this way, apply the <strong>delicacy’s</strong> effects to an <strong>additional ally</strong> you can see.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "3",
+          "name": "Made with Love",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Max MP you can spend</strong></p></td><td><p><strong>Max extra allies affected</strong></p></td></tr><tr><td><p>1</p></td><td><p>10</p></td><td><p>1</p></td></tr><tr><td><p>2</p></td><td><p>20</p></td><td><p>2</p></td></tr><tr><td><p>3</p></td><td><p>30</p></td><td><p>3</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "ptthimAjvjpNdtEP"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "OmvNzJFSS1mdUwKh",
+      "_stats": {
+        "compendiumSource": "Item.rtzMGURmtMcXp0OE",
+        "coreVersion": "12.343",
+        "createdTime": 1757296627728,
+        "duplicateSource": "Item.eHGyYCDreZJfZvkP",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/RoughChildSkill3.png",
+      "name": "Specialty of the House",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Gourmet",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you acquire this Heroic Skill, choose <strong>three different tastes</strong> among <em>bitter, salty, sour, sweet,</em> and <em>umami</em>. Then, <strong>choose three different effects among the following:</strong></p>\n\n<ul>\n  <li>You deal <strong>20</strong> \n    (<strong>choose one:</strong> \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#b666d2 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span> ,\n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#cabd9a 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></span>)\n    damage to each of this delicacy’s targets. <strong>Choose the type</strong> of this effect when you acquire this Heroic Skill.</li>\n</ul>\n<p><strong>Skill Enhancement Lv. 30 ―</strong> The damage increases to <strong>30</strong>.</p>\n\n<ul>\n  <li>During the next turn of each of this delicacy’s targets, <strong>all damage they deal becomes</strong> \n    (<strong>choose one:</strong> \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#b666d2 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span> ,\n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#cabd9a 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></span>) and its type <strong>cannot change</strong>. <strong>Choose the type</strong> of this effect when you acquire this Heroic Skill.</li>\n\n  <li>For each of this delicacy’s targets, if they are affected by one or more spells with a duration of <strong>“Scene”</strong>, instead they are <strong>no longer affected by any of those spells</strong>.</li>\n\n  <li>Choose yourself or an ally you can see. For each of this delicacy’s targets, the next time that target performs an <strong>【⚔️Attack】</strong> or casts an <strong>【⚡Offensive Spell】</strong> before the end of this scene, that attack or spell must include the chosen creature among its targets (if able).</li>\n\n  <li>Each of this delicacy’s targets suffers \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\" data-id=\"XkuOy0BFvKJTewGS\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Enraged</span></strong></a></span></span>.\n  </li>\n\n  <li>Each of this delicacy’s targets suffers \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.JltwIqzHbBKhkD45\" data-id=\"JltwIqzHbBKhkD45\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Poisoned</span></strong></a></span></span>.\n  </li>\n\n  <li>Each of this delicacy’s targets <strong>recovers 30 Hit Points and 30 Mind Points</strong>.</li>\n</ul>\n<p><strong>Skill Enhancement Lv. 30 ―</strong> The amounts increase to <strong>40 Hit Points</strong> and <strong>40 Mind Points</strong>.</p>\n\n<ul>\n  <li>Each of this delicacy’s targets <strong>recovers from a single status</strong> of their choice.</li>\n\n  <li>Each of this delicacy’s targets recovers from \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Dazed</span></strong></a></span></span>,\n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\" data-id=\"XkuOy0BFvKJTewGS\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Enraged</span></strong></a></span></span>, and\n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span></span>.\n  </li>\n\n  <li>Each of this delicacy’s targets recovers from \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.JltwIqzHbBKhkD45\" data-id=\"JltwIqzHbBKhkD45\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Poisoned</span></strong></a></span></span>,\n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span></span>, and\n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a></span></span>.\n  </li>\n</ul>\n\n<p>When you <strong>create a delicacy using exactly 3 ingredients</strong> during a conflict, if each ingredient matches a different taste among those chosen when you acquired this Heroic Skill, you may <strong>ignore all of that delicacy’s normal effects</strong>. If you do, you may instead apply <strong>one, two, or all</strong> of the effects you chose when you acquired this Heroic Skill.</p>\n",
+          "duration": "",
+          "heroic_requirement": "You must have mastered the Gourmet Class.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Specialty of the House",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "rtzMGURmtMcXp0OE"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "qZjThOgzrncZ49Di",
+      "_stats": {
+        "compendiumSource": "Item.0Vih9E0FXoykGEf7",
+        "coreVersion": "12.343",
+        "createdTime": 1757296613846,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rose/RoseSkill2.png",
+      "name": "Cooking",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Gourmet",
+          "cost": "Up to 3 Ingredients",
+          "damage_bonus": "0",
+          "description": "<p>When you <strong>rest</strong> inside a <strong>settlement</strong>, you gain <strong>[SL]</strong> <strong>ingredients</strong> (see Unique Mechanic).</p><p>You may <strong>use an action</strong> and <strong>combine 2 or 3 ingredients</strong> to prepare a <strong>delicacy</strong> (see Unique Mechanic). and <strong>Choose one option:</strong></p><ul><li><strong>you apply its effects</strong> to yourself or an ally you can see;</li><li>or you perform a <strong>free attack</strong> with a weapon you have equipped. This attack deals no damage, but you apply the <strong>delicacy’s</strong> effects to each enemy hit by the attack.</li></ul><p>You may carry up to <strong>10 + [SL × 5]</strong> ingredients, and they will <strong>never spoil</strong> until you use them; if you take this Skill during <strong>character creation</strong>, you begin play with <strong>ten ingredients</strong> with random tastes.</p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "5",
+          "name": "Cooking",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Ingredients gained on rest</strong></p></td><td><p><strong>Max ingredients carried</strong></p></td></tr><tr><td><p>1</p></td><td><p>1</p></td><td><p>15</p></td></tr><tr><td><p>2</p></td><td><p>2</p></td><td><p>20</p></td></tr><tr><td><p>3</p></td><td><p>3</p></td><td><p>25</p></td></tr><tr><td><p>4</p></td><td><p>4</p></td><td><p>30</p></td></tr><tr><td><p>5</p></td><td><p>5</p></td><td><p>35</p></td></tr></tbody></table>",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "0Vih9E0FXoykGEf7"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "Wf3ej12iJXpLILg4",
+      "_stats": {
+        "compendiumSource": "Item.eHGyYCDreZJfZvkP",
+        "coreVersion": "12.343",
+        "createdTime": 1757296626383,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/Candy_Cane.png",
+      "name": "All You Can Eat",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Gourmet",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p><strong>Once per scene</strong> when you use the 【💥<strong>Cooking】 Skill</strong>, you may combine <strong>four ingredients</strong> into a delicacy (thus ignoring the normal limit of three ingredients). Other than that, the delicacy follows the normal rules.</p>",
+          "duration": "",
+          "heroic_requirement": "You must have mastered the Gourmet Class.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "All You Can Eat",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "eHGyYCDreZJfZvkP"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "Zn0LrX8M42O8qFgk",
+      "_stats": {
+        "compendiumSource": "Item.l4mQGvabnC03jGqX",
+        "coreVersion": "12.343",
+        "createdTime": 1757296618926,
+        "duplicateSource": "Item.ptthimAjvjpNdtEP",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rose/GrenadeEnhancement.png",
+      "name": "Salt and Pepper",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Gourmet",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you <strong>prepare a delicacy</strong>, you may spend <strong>2 Inventory Points</strong>: if you do, change the <strong>taste</strong> of one ingredient to a different <strong>taste</strong> of your choice.</p>\n",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Salt and Pepper",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "l4mQGvabnC03jGqX"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Gourmet",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar4": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "DEF",
+            "max": 13,
+            "maxcolor": "#f26d40",
+            "mincolor": "#f26d40",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 13
+          },
+          "bar5": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar5",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MDEF",
+            "max": 10,
+            "maxcolor": "#26d6ed",
+            "mincolor": "#26d6ed",
+            "opacity": null,
+            "order": 4,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 10
+          }
+        }
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Gourmet",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/FabU_Gourmet.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 0,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {
+      "also_text": "",
+      "benefit_dropdown": "",
+      "classMechanic_text": "<h1 style=\"font-family: Signika, sans-serif; letter-spacing: .5px; color:#6b3e1e; text-align:center; border-bottom: 3px solid #cfa57b; padding-bottom:.25rem;\"><span style=\"font-family: Signika, sans-serif\">GOURMET MECHANIC — </span><span style=\"color:#c5622b;\"><span style=\"font-family: Signika, sans-serif\">COOKING</span></span></h1><p style=\"font-style: italic; color: #6b3e1e; text-align: center\"><em>“A true chef respects the nature of that which they transform.”</em></p><div style=\"display:grid; gap:.75rem; grid-template-columns: 1fr;\"><section style=\"border:1px solid #e6d7c6; background:#fff9f2; padding: .75rem; border-radius:.5rem;\"><h2 style=\"margin:.25rem 0; color:#8a4b22;\">What Cooking Does (Beginner-Friendly)</h2><ul style=\"margin:.25rem 0 .5rem 1rem;\"><li><strong>Collect Ingredients</strong> with tastes: Bitter, Salty, Sour, Sweet, Umami (or sometimes your choice).</li><li><strong>Spend 1 action</strong> to combine <strong>2 or 3 ingredients</strong> → you create a <strong>Delicacy</strong>.</li><li><p>Choose one way to deliver it:</p><ul><li><strong>Serve</strong>: Apply the effects to yourself or an ally you can see.</li><li><strong>Strike</strong>: Make a <strong>free attack</strong> with a weapon you have equipped; the <em>effects</em> are applied to each enemy hit (the attack itself deals no damage unless a Skill says otherwise).</li></ul></li><li>Each <em>new pair of tastes</em> you discover gains a permanent, fixed effect in your <strong>Cookbook</strong>. From then on, that pair always produces that effect.</li></ul><div style=\"display:grid; grid-template-columns: 1fr 1fr; gap:.5rem;\"><div style=\"border:1px dashed #d8b793; border-radius:.5rem; padding:.5rem;\"><p style=\"margin: 0; color: #8a4b22\"><strong>Ingredient Capacity</strong></p><p style=\"margin: .25rem 0 0 0\">You can carry up to <strong>10 + (SL × 5)</strong> ingredients. They <em>never spoil</em> until used.</p></div><div style=\"border:1px dashed #d8b793; border-radius:.5rem; padding:.5rem;\"><p style=\"margin: 0; color: #8a4b22\"><strong>How Many Effects?</strong></p><p style=\"margin: .25rem 0 0 0\">A delicacy has <strong>2 effects</strong> if it includes <em>2 tastes</em>; it has <strong>3 effects</strong> if you used <em>3 tastes</em> (see Special Rules).</p></div></div></section><section style=\"border:1px solid #e6d7c6; background:#fffefb; padding:.75rem; border-radius:.5rem;\"><h2 style=\"margin:.25rem 0; color:#8a4b22;\">Cooking — Step-by-Step</h2><ol style=\"margin:.25rem 0 .5rem 1.25rem;\"><li><strong>Choose 2 or 3 ingredients.</strong> Note their tastes (e.g., Bitter + Sweet).</li><li><strong>If this taste pair is new</strong> to your Cookbook, roll a <strong>d12</strong> on the <em>Delicacy Effect</em> table (below). Make any choices the result asks for and <strong>record</strong> it on your Cookbook. From now on, this pair always produces <em>that exact effect</em>.</li><li><strong>Create the delicacy</strong> (spend your action). Immediately pick one delivery option: <em>Serve</em> or <em>Strike</em> (free attack).</li><li><strong>Apply all effects</strong> of the delicacy to every valid target. Then the delicacy is consumed (destroyed).</li></ol><div style=\"border-left:4px solid #cfa57b; background:#fff7ea; padding:.5rem; border-radius:.25rem;\"><p style=\"margin: .25rem 0\"><strong>Knife & Fork synergy (Skill):</strong> If you used <em>no more than 2 ingredients</em> and chose the <em>Strike</em> option, the attack may deal its normal damage. Treat your <strong>HR</strong> (High Roll) as <strong>0</strong> when calculating that damage.</p></div></section><section style=\"border:1px solid #e6d7c6; background:#fdf9f4; padding:.75rem; border-radius:.5rem;\"><h2 style=\"margin:.25rem 0; color:#8a4b22;\">Ingredients & Tastes — Gaining Ingredients (Expanded)</h2><div style=\"display:grid; gap:.5rem; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); margin:.25rem 0 .75rem 0;\"><div style=\"border:1px dashed #d8b793; border-radius:.5rem; padding:.5rem; background:#fff9f2;\"><p style=\"margin: .25rem 0 0 0\"><strong>Rest in a Settlement</strong> (from <em>Cooking</em>)</p><p style=\"margin: .25rem 0 0 0\">Gain <strong>[SL]</strong> ingredients each time you <em>rest inside a settlement</em>.</p></div><div style=\"border:1px dashed #d8b793; border-radius:.5rem; padding:.5rem; background:#fff9f2;\"><p style=\"margin: .25rem 0 0 0\"><strong>Traveling Cook</strong> (Skill)</p><p style=\"margin: .25rem 0 0 0\">After each <em>travel roll</em>, gain <strong>[SL × 2]</strong> ingredients.</p></div><div style=\"border:1px dashed #d8b793; border-radius:.5rem; padding:.5rem; background:#fff9f2;\"><p style=\"margin: .25rem 0 0 0\"><strong>Rewards During Play</strong></p><p style=\"margin: .25rem 0 0 0\">Found as loot, quest rewards, or scene boons at the GM’s discretion.</p></div><div style=\"border:1px dashed #d8b793; border-radius:.5rem; padding:.5rem; background:#fff9f2;\"><p style=\"margin: .25rem 0 0 0\"><strong>Buying from Shops/Stalls</strong></p><ul style=\"margin:.25rem 0 0 1rem;\"><li><strong>10 zenit</strong>: 1 ingredient with a <em>random</em> taste.</li><li><strong>20 zenit</strong>: 1 ingredient with a taste of <strong>your choice</strong>.</li></ul></div></div><h3 style=\"margin:.5rem 0 .25rem 0; color:#8a4b22;\">Determining the Taste</h3><p style=\"margin: .25rem 0\">Whenever you obtain an ingredient and its taste isn’t specified, roll a <strong>d6</strong> and record the result on your <em>cookbook sheet</em>. Then describe its appearance and give it a name.</p><div class=\"tableWrapper\" style=\"margin:.5rem 0;\"><table style=\"width:100%; border-collapse:collapse; text-align:center;\"><thead><tr style=\"background:#f2e3d5;\"><th>d6</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th></tr></thead><tbody><tr><td style=\"background:#fff9f2;\"><strong>Taste</strong></td><td><strong>Bitter</strong></td><td><strong>Salty</strong></td><td><strong>Sour</strong></td><td><strong>Sweet</strong></td><td><strong>Umami</strong></td><td><strong>Your choice</strong> (pick any taste)</td></tr></tbody></table></div><div style=\"display:grid; gap:.5rem; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); margin:.75rem 0;\"><div style=\"border-left:4px solid #cfa57b; background:#fff7ea; padding:.55rem; border-radius:.25rem;\"><p style=\"margin: .25rem 0\"><strong>Carry Limit:</strong> You can carry <strong>10 + (SL × 5)</strong> ingredients. Ingredients <em>never spoil</em> until used.</p><p style=\"margin: .25rem 0\"><strong>Starting Stock:</strong> If you took <em>Cooking</em> at character creation, begin with <strong>10 ingredients</strong> with <em>random</em> tastes.</p></div><div style=\"border-left:4px solid #cfa57b; background:#fff7ea; padding:.55rem; border-radius:.25rem;\"><p style=\"margin: .25rem 0\"><strong>Changing a Taste (Salt & Pepper):</strong> While <em>preparing a delicacy</em>, spend <strong>2 Inventory Points</strong> to change the taste of <em>one</em> ingredient to any other taste. (This matters only for the delicacy you’re cooking; the ingredient is consumed.)</p></div></div><h3 style=\"margin:.5rem 0 .25rem 0; color:#8a4b22;\">Mini-Procedure: Adding Ingredients to Your Sheet</h3><ol style=\"margin:.25rem 0 .5rem 1.25rem;\"><li><strong>Source?</strong> Mark where it came from (Rest / Travel / Reward / Shop 10z / Shop 20z).</li><li><strong>Taste?</strong> If random, roll <strong>d6</strong> using the table above (6 = choose). If 20z, pick a taste directly.</li><li><strong>Name & Look:</strong> Jot a short name and appearance tag (e.g., “Fossil Honey,” “Stonebark Shroom”).</li><li><strong>Update Inventory:</strong> Check your carry limit. Ingredients don’t use <em>Inventory Points</em>—your limit is tracked by count.</li><li><strong>Cookbook:</strong> Only <em>taste pairs</em> belong here. Single ingredients go in your inventory list; pairs & their effects are recorded on the cookbook when discovered.</li></ol><details style=\"margin:.25rem 0;\"><summary style=\"cursor:pointer; font-weight:700; color:#8a4b22;\"><strong>Examples</strong></summary><div style=\"border:1px solid #e6d7c6; border-radius:.5rem; padding:.6rem; background:#ffffff; margin-top:.5rem;\"><p style=\"margin: .25rem 0\"><strong>Example A — Resting at SL 3:</strong> You rest in town and gain <strong>3</strong> ingredients. You roll d6 three times and get 1 (Bitter), 5 (Umami), 6 (Your choice → you pick Sweet). You add “Fossil Honey” (Bitter), “Stonebark Shroom” (Umami), and “Candied Fern” (Sweet) to your inventory.</p><p style=\"margin: .25rem 0\"><strong>Example B — Traveling Cook at SL 3:</strong> After a travel roll, gain <strong>6</strong> ingredients. Roll six d6, record tastes, and name each. These are great for experimenting with new pairs next scene.</p><p style=\"margin: .25rem 0\"><strong>Example C — Buying:</strong> You spend <em>40 z</em> on two chosen-taste ingredients (Sweet and Umami) to chase a combo you’re missing, and <em>20 z</em> on two random ones (roll twice on the d6 table).</p></div></details><details><summary style=\"cursor:pointer; font-weight:700; color:#8a4b22;\"><strong>Optional: Quick Stall Stock (GM Helper)</strong></summary><div class=\"tableWrapper\" style=\"margin-top:.5rem;\"><table style=\"width:100%; border-collapse:collapse; text-align:center;\"><thead><tr style=\"background:#e6f0fb;\"><th>d6</th><th>What’s on Offer</th></tr></thead><tbody><tr><td>1–2</td><td>1d3 ingredients (random taste, 10 z each)</td></tr><tr><td>3–4</td><td>1d4+1 ingredients (random taste, 10 z each)</td></tr><tr><td>5</td><td>1 chosen-taste slot available (20 z)</td></tr><tr><td>6</td><td>2 chosen-taste slots available (20 z each)</td></tr></tbody></table></div><p style=\"margin: .5rem 0 0 0; font-size: .95em; color: #555\">This helper is optional and keeps availability swingy but fair; adjust to taste for your campaign’s economy.</p></details><div style=\"border-top:1px solid #e6d7c6; margin-top:.75rem; padding-top:.5rem; display:grid; gap:.5rem; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));\"><div style=\"background:#f7fff5; border:1px solid #cfe7ca; border-radius:.5rem; padding:.5rem;\"><p style=\"margin: .25rem 0\"><strong>You keep</strong> single-ingredient entries in your inventory list.</p><p style=\"margin: .25rem 0\"><strong>You record</strong> new <em>taste pairs</em> (first time only) on the <em>Cookbook</em> after you roll the <strong>d12</strong> effect during <em>Cooking</em>.</p></div><div style=\"background:#fff5f5; border:1px solid #e8c9c9; border-radius:.5rem; padding:.5rem;\"><p style=\"margin: .25rem 0\"><strong>Don’t pre-assign</strong> effects to ingredients. Only <em>pairs</em> get effects, and only when discovered via Cooking.</p><p style=\"margin: .25rem 0\"><strong>Salt & Pepper</strong> doesn’t permanently change stored items—it just changes <em>one ingredient’s taste</em> as you cook (and that item is consumed).</p></div></div></section><section style=\"border:1px solid #e6d7c6; background:#fff; padding:.75rem; border-radius:.5rem;\"><details open=\"\"><summary style=\"cursor:pointer; font-weight:700; color:#8a4b22;\"><strong>Delicacy Effect Table (d12) — simplified text</strong></summary><p style=\"margin: .25rem 0 .5rem 0; color: #6b3e1e\">Each newly discovered <em>pair of tastes</em> gets one of these results permanently in your Cookbook. Effects marked with numbers <strong>5–12</strong> only apply during <em>conflict scenes</em>.</p><div class=\"tableWrapper\"><table style=\"width:100%; border-collapse:collapse;\"><colgroup><col style=\"width:52px;\"><col></colgroup><thead><tr style=\"background:#f2e3d5;\"><th style=\"text-align:center;\">d12</th><th>Combination Effect</th></tr></thead><tbody><tr><td style=\"text-align:center;\"><strong>1</strong></td><td>Each target <strong>recovers</strong> from one status (choose: <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Dazed</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\" data-type=\"JournalEntry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Enraged</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.JltwIqzHbBKhkD45\" data-type=\"JournalEntry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Poisoned</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a></span></span>).</td></tr><tr><td style=\"text-align:center;\"><strong>2</strong></td><td>Each target <strong>suffers</strong> one status (choose: <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Dazed</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a></span></span>).</td></tr><tr><td style=\"text-align:center;\"><strong>3</strong></td><td>Each target recovers <strong>40 HP</strong> (50 if you are level 30+).</td></tr><tr><td style=\"text-align:center;\"><strong>4</strong></td><td>Each target recovers <strong>40 MP</strong> (50 if you are level 30+).</td></tr><tr><td style=\"text-align:center;\"><strong>5</strong></td><td>Deal <strong>20</strong> (30 if level 30+) damage of one type to each target: <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-type=\"Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(168, 255, 187) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-type=\"Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(215, 169, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-type=\"Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(210, 180, 140) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-type=\"Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-type=\"Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(166, 227, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-type=\"Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span>.</td></tr><tr><td style=\"text-align:center;\"><strong>6</strong></td><td>Until the end of your next turn, sources that deal the chosen damage type ( <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-type=\"Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(168, 255, 187) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a></span></span>/<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-type=\"Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(215, 169, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a></span></span>/<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-type=\"Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(210, 180, 140) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span></span>/<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-type=\"Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span>/<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-type=\"Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(166, 227, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span></span>/<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-type=\"Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span>) deal <strong>+5</strong> extra damage to each target.</td></tr><tr><td style=\"text-align:center;\"><strong>7</strong></td><td>Targets cannot perform <strong>Guard</strong> during their next turn.</td></tr><tr><td style=\"text-align:center;\"><strong>8</strong></td><td>Targets cannot perform a <strong>Spell</strong> during their next turn.</td></tr><tr><td style=\"text-align:center;\"><strong>9</strong></td><td>Targets cannot perform a <strong>Skill</strong> during their next turn.</td></tr><tr><td style=\"text-align:center;\"><strong>10</strong></td><td>Targets gain <strong>Resistance</strong> to one damage type until end of your next turn (choose: <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-type=\"Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(168, 255, 187) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-type=\"Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(215, 169, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-type=\"Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(210, 180, 140) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-type=\"Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0 0 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-type=\"Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(166, 227, 255) 0 0 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-type=\"Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0 0 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span>).</td></tr><tr><td style=\"text-align:center;\"><strong>11</strong></td><td>Each target treats one Attribute as <strong>one die size higher</strong> (max d12) until the end of your next turn: <strong>Dexterity</strong>, <strong>Insight</strong>, <strong>Might</strong>, or <strong>Willpower</strong>.</td></tr><tr><td style=\"text-align:center;\"><strong>12</strong></td><td>During their next turn, <strong>all</strong> damage each target deals becomes one chosen type and its type cannot change: <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-type=\"Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(168, 255, 187) 0 0 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a></span></span>/<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-type=\"Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(215, 169, 255) 0 0 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a></span></span>/<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-type=\"Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(210, 180, 140) 0 0 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span></span>/<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-type=\"Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0 0 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span>/<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-type=\"Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(166, 227, 255) 0 0 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span></span>/<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-type=\"Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-color: rgb(102, 102, 102); border-radius: 2px; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0 0 4px; font-family: Signika, sans-serif; font-size: 14px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span>.</td></tr></tbody></table></div></details></section><section style=\"border:1px solid #e6d7c6; background:#fffef9; padding:.75rem; border-radius:.5rem;\"><h2 style=\"margin:.25rem 0; color:#8a4b22;\">Special Rules (Keep It Straight)</h2><ul style=\"margin:.25rem 0 .5rem 1rem;\"><li><strong>Different tastes = more effects.</strong> Each <em>distinct</em> pair of tastes (even using the same taste twice, e.g., <em>Sweet + Sweet</em>) adds an effect.</li><li><strong>New pair?</strong> Roll d12 & record it. <em>No two Cookbook pairs can have identical effects.</em> If a new roll would duplicate an existing effect, make choices to avoid it; if still impossible, reroll.</li><li><strong>2 tastes → 2 effects.</strong> <strong>3 tastes → 3 effects.</strong></li><li><strong>Only one type-5 effect</strong> (damage-dealing) per delicacy. If multiple results would add type-5, choose one and ignore the rest.</li><li><strong>Only one type-12 effect</strong> (damage-type change) per delicacy. If you’d get more than one, choose one and ignore the others.</li><li><strong>Effects 5–12</strong> can only be applied during <em>conflict scenes</em>.</li><li>When complete, your Cookbook will list <strong>15 total effects</strong> (one for each possible pair of tastes).</li><li>Delicacies take effect immediately and are then destroyed. To store food with unique effects and <em>use later</em>, craft them as <strong>Projects</strong>.</li></ul></section><section style=\"border:1px solid #e6d7c6; background:#f9fbff; padding:.75rem; border-radius:.5rem;\"><h2 style=\"margin:.25rem 0; color:#295b8a;\">Free Benefits & Helpful Synergies</h2><ul style=\"margin:.25rem 0 .5rem 1rem;\"><li><strong>+2 Inventory Points (permanent).</strong></li><li><strong>Projects</strong> to create <em>unique foods & drinks</em>; always <strong>consumable</strong> and sized for the number of targets you need to feed.</li><li><strong>Traveling Cook (Skill):</strong> After each <em>travel roll</em>, gain <strong>(SL × 2)</strong> ingredients.</li><li><strong>Made With Love (Skill):</strong> When you <em>Serve</em> a delicacy to yourself or an ally, you may spend up to <strong>(SL × 10) MP</strong>. For every <strong>10 MP</strong> spent, apply the delicacy to one additional ally you can see.</li></ul><div class=\"tableWrapper\"><table style=\"width:100%; border-collapse:collapse; text-align:center;\"><thead><tr style=\"background:#e6f0fb;\"><th>SL</th><th>Carry Limit</th><th>Made With Love: Max MP you can spend</th><th>Traveling Cook: Ingredients per Travel</th></tr></thead><tbody><tr><td>1</td><td>15</td><td>10</td><td>2</td></tr><tr><td>2</td><td>20</td><td>20</td><td>4</td></tr><tr><td>3</td><td>25</td><td>30</td><td>6</td></tr><tr><td>4</td><td>30</td><td>40</td><td>8</td></tr><tr><td>5</td><td>35</td><td>50</td><td>10</td></tr></tbody></table></div></section><section style=\"border:2px dashed #cfa57b; background:linear-gradient(180deg,#fffaf3,#ffffff); padding:.75rem; border-radius:.75rem;\"><h2 style=\"margin:.25rem 0; color:#8a4b22;\">Quick Cooking Card (hand to players)</h2><ol style=\"margin:.25rem 0 .5rem 1.25rem;\"><li>Pick <strong>2–3 ingredients</strong> you carry.</li><li><strong>New pair?</strong> Roll <strong>d12</strong> on the Delicacy table and write it in your Cookbook.</li><li><strong>Cook (1 action)</strong> → choose <em>Serve</em> (ally buff / heal) or <em>Strike</em> (free attack; effects on enemies).</li><li>Apply all effects to each target. Delicacy is consumed.</li><li><em>Knife & Fork:</em> If 2 ingredients, your free attack may deal damage (HR counts as 0).</li></ol></section><section style=\"border:1px solid #e6d7c6; background:#fefefe; padding:.75rem; border-radius:.5rem;\"><details><summary style=\"cursor:pointer; font-weight:700; color:#8a4b22;\"><strong>Cookbook Pair Tracker (print or copy)</strong></summary><div class=\"tableWrapper\"><table style=\"width:100%; border-collapse:collapse; text-align:center;\"><thead><tr style=\"background:#f2e3d5;\"><th>Taste Pair</th><th>Effect #</th><th>Notes / Choices (status, element, attribute...)</th></tr></thead><tbody><tr><td>Bitter + Bitter</td><td>—</td><td></td></tr><tr><td>Bitter + Salty</td><td>—</td><td></td></tr><tr><td>Bitter + Sour</td><td>—</td><td></td></tr><tr><td>Bitter + Sweet</td><td>—</td><td></td></tr><tr><td>Bitter + Umami</td><td>—</td><td></td></tr><tr><td>Salty + Salty</td><td>—</td><td></td></tr><tr><td>Salty + Sour</td><td>—</td><td></td></tr><tr><td>Salty + Sweet</td><td>—</td><td></td></tr><tr><td>Salty + Umami</td><td>—</td><td></td></tr><tr><td>Sour + Sour</td><td>—</td><td></td></tr><tr><td>Sour + Sweet</td><td>—</td><td></td></tr><tr><td>Sour + Umami</td><td>—</td><td></td></tr><tr><td>Sweet + Sweet</td><td>—</td><td></td></tr><tr><td>Sweet + Umami</td><td>—</td><td></td></tr><tr><td>Umami + Umami</td><td>—</td><td></td></tr></tbody></table></div></details></section><section style=\"border:1px solid #e6d7c6; background:#fff9f2; padding:.75rem; border-radius:.5rem;\"><h2 style=\"margin:.25rem 0; color:#8a4b22;\">Play Tips</h2><ul style=\"margin:.25rem 0 .5rem 1rem;\"><li><strong>Scout outside combat.</strong> You may prepare delicacies out of conflict to learn & record effects without pressure.</li><li><strong>Synergy watch:</strong> Healing (3–4) + Resist (10) + Attribute boost (11) can set up a safe push; Damage (5–6) pairs great with disabling (7–9).</li><li><strong>Share the love:</strong> Use <em>Made With Love</em> MP to spread big buffs to the whole team.</li></ul></section></div>",
+      "class_facet": {
+        "5jJcAwngaynrUj09": {
+          "facet_cost": "",
+          "facet_description": "<p>When you perform the <strong>free attack</strong> granted by the 【💥<strong>Cooking】</strong> Skill, if you combined <strong>no more than 2 ingredients</strong>, you may have the attack deal damage as normal. If you do, you treat your <strong>High Roll (HR)</strong> as <strong>0</strong> when calculating damage dealt by this attack.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Knife and Fork",
+          "uuid": "Actor.jcirGKyrbSZI68Oz.Item.5jJcAwngaynrUj09"
+        },
+        "OmvNzJFSS1mdUwKh": {
+          "facet_cost": "",
+          "facet_description": "<p>When you acquire this Heroic Skill, choose <strong>three different tastes</strong> among <em>bitter, salty, sour, sweet,</em> and <em>umami</em>. Then, <strong>choose three different effects among the following:</strong></p>\n\n<ul>\n  <li>You deal <strong>20</strong> \n    (<strong>choose one:</strong> \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#b666d2 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span> ,\n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#cabd9a 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></span>)\n    damage to each of this delicacy’s targets. <strong>Choose the type</strong> of this effect when you acquire this Heroic Skill.</li>\n</ul>\n<p><strong>Skill Enhancement Lv. 30 ―</strong> The damage increases to <strong>30</strong>.</p>\n\n<ul>\n  <li>During the next turn of each of this delicacy’s targets, <strong>all damage they deal becomes</strong> \n    (<strong>choose one:</strong> \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#b666d2 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span> ,\n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#cabd9a 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></span>) and its type <strong>cannot change</strong>. <strong>Choose the type</strong> of this effect when you acquire this Heroic Skill.</li>\n\n  <li>For each of this delicacy’s targets, if they are affected by one or more spells with a duration of <strong>“Scene”</strong>, instead they are <strong>no longer affected by any of those spells</strong>.</li>\n\n  <li>Choose yourself or an ally you can see. For each of this delicacy’s targets, the next time that target performs an <strong>【⚔️Attack】</strong> or casts an <strong>【⚡Offensive Spell】</strong> before the end of this scene, that attack or spell must include the chosen creature among its targets (if able).</li>\n\n  <li>Each of this delicacy’s targets suffers \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\" data-id=\"XkuOy0BFvKJTewGS\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Enraged</span></strong></a></span></span>.\n  </li>\n\n  <li>Each of this delicacy’s targets suffers \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.JltwIqzHbBKhkD45\" data-id=\"JltwIqzHbBKhkD45\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Poisoned</span></strong></a></span></span>.\n  </li>\n\n  <li>Each of this delicacy’s targets <strong>recovers 30 Hit Points and 30 Mind Points</strong>.</li>\n</ul>\n<p><strong>Skill Enhancement Lv. 30 ―</strong> The amounts increase to <strong>40 Hit Points</strong> and <strong>40 Mind Points</strong>.</p>\n\n<ul>\n  <li>Each of this delicacy’s targets <strong>recovers from a single status</strong> of their choice.</li>\n\n  <li>Each of this delicacy’s targets recovers from \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Dazed</span></strong></a></span></span>,\n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\" data-id=\"XkuOy0BFvKJTewGS\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Enraged</span></strong></a></span></span>, and\n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span></span>.\n  </li>\n\n  <li>Each of this delicacy’s targets recovers from \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.JltwIqzHbBKhkD45\" data-id=\"JltwIqzHbBKhkD45\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Poisoned</span></strong></a></span></span>,\n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span></span>, and\n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a></span></span>.\n  </li>\n</ul>\n\n<p>When you <strong>create a delicacy using exactly 3 ingredients</strong> during a conflict, if each ingredient matches a different taste among those chosen when you acquired this Heroic Skill, you may <strong>ignore all of that delicacy’s normal effects</strong>. If you do, you may instead apply <strong>one, two, or all</strong> of the effects you chose when you acquired this Heroic Skill.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Specialty of the House",
+          "uuid": "Actor.jcirGKyrbSZI68Oz.Item.OmvNzJFSS1mdUwKh"
+        },
+        "Wf3ej12iJXpLILg4": {
+          "facet_cost": "",
+          "facet_description": "<p><strong>Once per scene</strong> when you use the 【💥<strong>Cooking】 Skill</strong>, you may combine <strong>four ingredients</strong> into a delicacy (thus ignoring the normal limit of three ingredients). Other than that, the delicacy follows the normal rules.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "All You Can Eat",
+          "uuid": "Actor.jcirGKyrbSZI68Oz.Item.Wf3ej12iJXpLILg4"
+        },
+        "Zn0LrX8M42O8qFgk": {
+          "facet_cost": "",
+          "facet_description": "<p>When you <strong>prepare a delicacy</strong>, you may spend <strong>2 Inventory Points</strong>: if you do, change the <strong>taste</strong> of one ingredient to a different <strong>taste</strong> of your choice.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Salt and Pepper",
+          "uuid": "Actor.jcirGKyrbSZI68Oz.Item.Zn0LrX8M42O8qFgk"
+        },
+        "kETNmjrVFy8MrV7G": {
+          "facet_cost": "",
+          "facet_description": "<p>After each <strong>travel roll</strong>, if you acquired the 【💥<strong>Cooking】 Skill</strong>, you gain <strong>[SL × 2] ingredients</strong>.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Traveling Cook",
+          "uuid": "Actor.jcirGKyrbSZI68Oz.Item.kETNmjrVFy8MrV7G"
+        },
+        "mOTt54EhZlD7YUnV": {
+          "facet_cost": "",
+          "facet_description": "<p>When you <strong>use the </strong>【💥<strong>Cooking】 Skill</strong> and choose to apply the effects of the <strong>delicacy</strong> to yourself or an ally you can see, you may spend up to <strong>[SL × 10] MP</strong>. For every <strong>10 MP</strong> you spend this way, apply the <strong>delicacy’s</strong> effects to an <strong>additional ally</strong> you can see.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Made with Love",
+          "uuid": "Actor.jcirGKyrbSZI68Oz.Item.mOTt54EhZlD7YUnV"
+        },
+        "qZjThOgzrncZ49Di": {
+          "facet_cost": "Up to 3 Ingredients",
+          "facet_description": "<p>When you <strong>rest</strong> inside a <strong>settlement</strong>, you gain <strong>[SL]</strong> <strong>ingredients</strong> (see Unique Mechanic).</p><p>You may <strong>use an action</strong> and <strong>combine 2 or 3 ingredients</strong> to prepare a <strong>delicacy</strong> (see Unique Mechanic). and <strong>Choose one option:</strong></p><ul><li><strong>you apply its effects</strong> to yourself or an ally you can see;</li><li>or you perform a <strong>free attack</strong> with a weapon you have equipped. This attack deals no damage, but you apply the <strong>delicacy’s</strong> effects to each enemy hit by the attack.</li></ul><p>You may carry up to <strong>10 + [SL × 5]</strong> ingredients, and they will <strong>never spoil</strong> until you use them; if you take this Skill during <strong>character creation</strong>, you begin play with <strong>ten ingredients</strong> with random tastes.</p>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Cooking",
+          "uuid": "Actor.jcirGKyrbSZI68Oz.Item.qZjThOgzrncZ49Di"
+        }
+      },
+      "class_heroicSkill": {
+        "OmvNzJFSS1mdUwKh": {
+          "id": "${item.id}",
+          "name": "Specialty of the House",
+          "skill_cost": "",
+          "skill_description": "<p>When you acquire this Heroic Skill, choose <strong>three different tastes</strong> among <em>bitter, salty, sour, sweet,</em> and <em>umami</em>. Then, <strong>choose three different effects among the following:</strong></p>\n\n<ul>\n  <li>You deal <strong>20</strong> \n    (<strong>choose one:</strong> \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#b666d2 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span> ,\n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#cabd9a 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></span>)\n    damage to each of this delicacy’s targets. <strong>Choose the type</strong> of this effect when you acquire this Heroic Skill.</li>\n</ul>\n<p><strong>Skill Enhancement Lv. 30 ―</strong> The damage increases to <strong>30</strong>.</p>\n\n<ul>\n  <li>During the next turn of each of this delicacy’s targets, <strong>all damage they deal becomes</strong> \n    (<strong>choose one:</strong> \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#b666d2 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span> ,\n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#cabd9a 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></span>) and its type <strong>cannot change</strong>. <strong>Choose the type</strong> of this effect when you acquire this Heroic Skill.</li>\n\n  <li>For each of this delicacy’s targets, if they are affected by one or more spells with a duration of <strong>“Scene”</strong>, instead they are <strong>no longer affected by any of those spells</strong>.</li>\n\n  <li>Choose yourself or an ally you can see. For each of this delicacy’s targets, the next time that target performs an <strong>【⚔️Attack】</strong> or casts an <strong>【⚡Offensive Spell】</strong> before the end of this scene, that attack or spell must include the chosen creature among its targets (if able).</li>\n\n  <li>Each of this delicacy’s targets suffers \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\" data-id=\"XkuOy0BFvKJTewGS\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Enraged</span></strong></a></span></span>.\n  </li>\n\n  <li>Each of this delicacy’s targets suffers \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.JltwIqzHbBKhkD45\" data-id=\"JltwIqzHbBKhkD45\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Poisoned</span></strong></a></span></span>.\n  </li>\n\n  <li>Each of this delicacy’s targets <strong>recovers 30 Hit Points and 30 Mind Points</strong>.</li>\n</ul>\n<p><strong>Skill Enhancement Lv. 30 ―</strong> The amounts increase to <strong>40 Hit Points</strong> and <strong>40 Mind Points</strong>.</p>\n\n<ul>\n  <li>Each of this delicacy’s targets <strong>recovers from a single status</strong> of their choice.</li>\n\n  <li>Each of this delicacy’s targets recovers from \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Dazed</span></strong></a></span></span>,\n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\" data-id=\"XkuOy0BFvKJTewGS\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Enraged</span></strong></a></span></span>, and\n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span></span>.\n  </li>\n\n  <li>Each of this delicacy’s targets recovers from \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.JltwIqzHbBKhkD45\" data-id=\"JltwIqzHbBKhkD45\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Poisoned</span></strong></a></span></span>,\n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span></span>, and\n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a></span></span>.\n  </li>\n</ul>\n\n<p>When you <strong>create a delicacy using exactly 3 ingredients</strong> during a conflict, if each ingredient matches a different taste among those chosen when you acquired this Heroic Skill, you may <strong>ignore all of that delicacy’s normal effects</strong>. If you do, you may instead apply <strong>one, two, or all</strong> of the effects you chose when you acquired this Heroic Skill.</p>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.jcirGKyrbSZI68Oz.Item.OmvNzJFSS1mdUwKh"
+        },
+        "Wf3ej12iJXpLILg4": {
+          "id": "${item.id}",
+          "name": "All You Can Eat",
+          "skill_cost": "",
+          "skill_description": "<p><strong>Once per scene</strong> when you use the 【💥<strong>Cooking】 Skill</strong>, you may combine <strong>four ingredients</strong> into a delicacy (thus ignoring the normal limit of three ingredients). Other than that, the delicacy follows the normal rules.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.jcirGKyrbSZI68Oz.Item.Wf3ej12iJXpLILg4"
+        }
+      },
+      "class_lore": "",
+      "class_skill": {
+        "5jJcAwngaynrUj09": {
+          "id": "${item.id}",
+          "name": "Knife and Fork",
+          "skill_cost": "",
+          "skill_description": "<p>When you perform the <strong>free attack</strong> granted by the 【💥<strong>Cooking】</strong> Skill, if you combined <strong>no more than 2 ingredients</strong>, you may have the attack deal damage as normal. If you do, you treat your <strong>High Roll (HR)</strong> as <strong>0</strong> when calculating damage dealt by this attack.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.jcirGKyrbSZI68Oz.Item.5jJcAwngaynrUj09"
+        },
+        "Zn0LrX8M42O8qFgk": {
+          "id": "${item.id}",
+          "name": "Salt and Pepper",
+          "skill_cost": "",
+          "skill_description": "<p>When you <strong>prepare a delicacy</strong>, you may spend <strong>2 Inventory Points</strong>: if you do, change the <strong>taste</strong> of one ingredient to a different <strong>taste</strong> of your choice.</p>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.jcirGKyrbSZI68Oz.Item.Zn0LrX8M42O8qFgk"
+        },
+        "kETNmjrVFy8MrV7G": {
+          "id": "${item.id}",
+          "name": "Traveling Cook",
+          "skill_cost": "",
+          "skill_description": "<p>After each <strong>travel roll</strong>, if you acquired the 【💥<strong>Cooking】 Skill</strong>, you gain <strong>[SL × 2] ingredients</strong>.</p>",
+          "skill_maxLevel": 3,
+          "skill_type": "Passive",
+          "uuid": "Actor.jcirGKyrbSZI68Oz.Item.kETNmjrVFy8MrV7G"
+        },
+        "mOTt54EhZlD7YUnV": {
+          "id": "${item.id}",
+          "name": "Made with Love",
+          "skill_cost": "",
+          "skill_description": "<p>When you <strong>use the </strong>【💥<strong>Cooking】 Skill</strong> and choose to apply the effects of the <strong>delicacy</strong> to yourself or an ally you can see, you may spend up to <strong>[SL × 10] MP</strong>. For every <strong>10 MP</strong> you spend this way, apply the <strong>delicacy’s</strong> effects to an <strong>additional ally</strong> you can see.</p>",
+          "skill_maxLevel": 3,
+          "skill_type": "Passive",
+          "uuid": "Actor.jcirGKyrbSZI68Oz.Item.mOTt54EhZlD7YUnV"
+        },
+        "qZjThOgzrncZ49Di": {
+          "id": "${item.id}",
+          "name": "Cooking",
+          "skill_cost": "Up to 3 Ingredients",
+          "skill_description": "<p>When you <strong>rest</strong> inside a <strong>settlement</strong>, you gain <strong>[SL]</strong> <strong>ingredients</strong> (see Unique Mechanic).</p><p>You may <strong>use an action</strong> and <strong>combine 2 or 3 ingredients</strong> to prepare a <strong>delicacy</strong> (see Unique Mechanic). and <strong>Choose one option:</strong></p><ul><li><strong>you apply its effects</strong> to yourself or an ally you can see;</li><li>or you perform a <strong>free attack</strong> with a weapon you have equipped. This attack deals no damage, but you apply the <strong>delicacy’s</strong> effects to each enemy hit by the attack.</li></ul><p>You may carry up to <strong>10 + [SL × 5]</strong> ingredients, and they will <strong>never spoil</strong> until you use them; if you take this Skill during <strong>character creation</strong>, you begin play with <strong>ten ingredients</strong> with random tastes.</p>",
+          "skill_maxLevel": 5,
+          "skill_type": "Active",
+          "uuid": "Actor.jcirGKyrbSZI68Oz.Item.qZjThOgzrncZ49Di"
+        }
+      },
+      "flavor_text": "",
+      "martialArmor_equippable": false,
+      "martialMelee_equippable": false,
+      "martialRanged_equippable": false,
+      "martialShield_equippable": false,
+      "name": "Gourmet",
+      "project_performable": false,
+      "ritual_performable": false
+    },
+    "statusEffects": {},
+    "template": "hoxC3HFCtMYGScIo",
+    "templateSystemUniqueVersion": 504201233
+  },
+  "type": "character"
+}

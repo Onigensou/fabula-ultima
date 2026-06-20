@@ -1,0 +1,57 @@
+{
+  "_id": "NMHVZPLN6MsNFY4z",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757293314427,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "2OplVa9fwLYbzD8b",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lithia/AvariceHyperActive.png",
+  "name": "For a Better Future",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 3300000,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Merchant",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>When you need to spend one or more <strong>Fabula Points</strong>, if you are not spending them to <strong>alter the story</strong> (see Core Rulebook, page 98), you may spend that many <strong>Trade Points</strong> instead. Describe which memories of your trades and journeys give you strength!</p>\n\n<p>Additionally, when you gain <strong>two or more Trade Points</strong> through the <strong>Real Treasure</strong> or <strong>Winds of Trade</strong> Skills, you may choose to gain exactly <strong>1 Trade Point</strong> instead. If you do, choose a <strong>settlement</strong> within <strong>1 travel day</strong> of your position and increase its <strong>prosperity</strong> by an amount equal to <strong>[your Skill Level in Winds of Trade + your Skill Level in Real Treasure]</strong>; a settlement’s prosperity starts at 0 and has no upper limit.</p>\n\n<p>The chart below indicates the effects of your donations on the settlement and on anything within <strong>1 travel day</strong> of it.</p>\n\n<table style=\"width:100%;\">\n  <tbody>\n    <tr>\n      <td style=\"width: 20%;\"><p><strong>Prosperity</strong></p></td>\n      <td><p><strong>Effects within 1 travel day of the settlement</strong></p></td>\n    </tr>\n    <tr>\n      <td><p>10 or more</p></td>\n      <td><p>When you or an ally need to pay a cost in <strong>zenit</strong>, whatever the reason, that cost is <strong>halved</strong>.</p></td>\n    </tr>\n    <tr>\n      <td><p>15 or more</p></td>\n      <td>\n        <p>People gladly accommodate you and your allies: while in this area, you can always <strong>rest</strong> freely, without spending <strong>zenit</strong>. Furthermore, any <strong>travel rolls</strong> made in this area never use a die greater than <strong>d8</strong>.</p>\n      </td>\n    </tr>\n    <tr>\n      <td><p>20 or more</p></td>\n      <td><p>When a <strong>Villain</strong> in this area spends <strong>Ultima Points</strong>, they must spend <strong>twice</strong> as many <strong>Ultima Points</strong>.</p></td>\n    </tr>\n  </tbody>\n</table>\n",
+      "duration": "",
+      "heroic_requirement": "you must have mastered the Merchant Class, and must have acquired the Real Treasure and Winds of Trade Skills",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "For a Better Future",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "NMHVZPLN6MsNFY4z"
+  },
+  "type": "equippableItem"
+}

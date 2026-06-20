@@ -1,0 +1,19 @@
+{
+  "_id": "OeC0hsLCW5zTWD6w",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1767840888462,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "color": "#7d934d",
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "The Legend of Dragonslayer",
+  "sort": 0,
+  "sorting": "a",
+  "type": "RollTable"
+}

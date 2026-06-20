@@ -1,0 +1,2256 @@
+{
+  "_id": "V9geXDcQmBrjsnfF",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1756409231216,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "tmNVy5jIbM9rzx80",
+  "img": "https://tiermaker.com/images/media/template_images/2024/17489267/fabula-ultima-all-classes-tierlist-17489267/invoker.png",
+  "items": [
+    {
+      "_id": "09kYYAWi6juygeA5",
+      "_stats": {
+        "compendiumSource": "Item.8ULdiwfdgDOgtRex",
+        "coreVersion": "12.343",
+        "createdTime": 1757291950930,
+        "duplicateSource": "Item.UFZJI9rL2wImnHoh",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/EM.png",
+      "name": "Strength of the Five Wellspring",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Invoker",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>After you perform an <strong>invocation</strong> during a conflict, you and up to one ally you can see increase one of your Attributes’ die sizes by one (up to a maximum of d12). This increase lasts until the end of the scene or until you use this Skill again. The Attribute is based on the <strong>wellspring</strong> you invoked:</p>\n\n<ul>\n  <li>\n    <a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#a8ffbb 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\">\n      <strong><span style=\"text-decoration: underline;\">Air</span></strong>\n    </a> — Insight\n  </li>\n  <li>\n    <a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#d2b48c 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\">\n      <strong><span style=\"text-decoration: underline;\">Earth</span></strong>\n    </a> — one Attribute of your choice\n  </li>\n  <li>\n    <a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#ffae00 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\">\n      <strong><span style=\"text-decoration: underline;\">Fire</span></strong>\n    </a> — Dexterity\n  </li>\n  <li>\n    <a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#d7a9ff 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\">\n      <strong><span style=\"text-decoration: underline;\">Bolt</span></strong>\n    </a> — Might\n  </li>\n  <li>\n    <a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#a6e3ff 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\">\n      <strong><span style=\"text-decoration: underline;\">Ice</span></strong>\n    </a> — Willpower\n  </li>\n</ul>\n",
+          "duration": "",
+          "heroic_requirement": "you must have mastered the Invoker Class.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Strength of the Five Wellspring",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "8ULdiwfdgDOgtRex"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "3ePNUc037EXEp8Lc",
+      "_stats": {
+        "compendiumSource": "Item.onWV1WgJlvg1iRTG",
+        "coreVersion": "12.343",
+        "createdTime": 1757291912667,
+        "duplicateSource": "Item.CcblPDSXzgYOsfug",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/Sea_Shanty.png",
+      "name": "Hydro Hex",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Invoker",
+          "cost": "5 MP",
+          "damage_bonus": "0",
+          "description": "<p>Until the start of your next turn, the target suffers 5 extra damage from all sources that deal \n<a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#a8ffbb 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a> and \n<a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#d7a9ff 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a> damage. <em>Only usable if a Water wellspring is present on the scene.</em></p>\n",
+          "duration": "Instantanious",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Hydro Hex",
+          "optional_params": {
+            "0": {
+              "$deleted": false,
+              "key": "wellspring_type",
+              "value": "water"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Range",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": true
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "onWV1WgJlvg1iRTG"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "5FONI33vTHnXvZjo",
+      "_stats": {
+        "compendiumSource": "Item.OOm3qlGap8BnZSR0",
+        "coreVersion": "12.343",
+        "createdTime": 1757291767464,
+        "duplicateSource": "Item.jKwWU5PzuZt0tOyx",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/aero_iii.png",
+      "name": "Aero Hex",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Invoker",
+          "cost": "5 MP",
+          "damage_bonus": "0",
+          "description": "<p>Until the start of your next turn, the target suffers 5 extra damage from all sources that deal \n<a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#d7a9ff 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a> and \n<a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#ffae00 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a> damage. <em>Only usable if an Air wellspring is present on the scene.</em></p>\n",
+          "duration": "Instantanious",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Aero Hex",
+          "optional_params": {
+            "0": {
+              "$deleted": false,
+              "key": "wellspring_type",
+              "value": "air"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Range",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": true
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "OOm3qlGap8BnZSR0"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "8jSz2jFDjdmZ8lbD",
+      "_stats": {
+        "compendiumSource": "Item.QBGZo7hMYwqqGpLu",
+        "coreVersion": "12.343",
+        "createdTime": 1757291864195,
+        "duplicateSource": "Item.OwXuatF93BE6JQSE",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/level_5_petrify.png",
+      "name": "Invoke: Smoke",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Invoker",
+          "cost": "5 MP",
+          "damage_bonus": "0",
+          "description": "<p>The target loses 20 Mind Points and also suffers \n<a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a>. <em>Only usable if a Fire wellspring is present on the scene.</em></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>MP loss becomes <strong>30</strong>.</p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>MP loss becomes <strong>40</strong>.</p>\n",
+          "duration": "Instantanious",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Invoke: Smoke",
+          "optional_params": {
+            "0": {
+              "$deleted": false,
+              "key": "wellspring_type",
+              "value": "fire"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Range",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": true
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "QBGZo7hMYwqqGpLu"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "8K3L3TTaUKTg4hhR",
+      "_stats": {
+        "compendiumSource": "Item.wheHn5atsqRq8v6e",
+        "coreVersion": "12.343",
+        "createdTime": 1757291844954,
+        "duplicateSource": "Item.mNv9WayU5l6mEkY6",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/stone_ii.png",
+      "name": "Geo Hex",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Invoker",
+          "cost": "5 MP",
+          "damage_bonus": "0",
+          "description": "<p>Until the start of your next turn, the target suffers 5 extra damage from all sources that deal \n<a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#a8ffbb 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a> and \n<a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#a6e3ff 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a> damage. <em>Only usable if an Earth wellspring is present on the scene.</em></p>\n",
+          "duration": "Instantanious",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Geo Hex",
+          "optional_params": {
+            "0": {
+              "$deleted": false,
+              "key": "wellspring_type",
+              "value": "earth"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Range",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": true
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "wheHn5atsqRq8v6e"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "BrHUllBVZLTepIVD",
+      "_stats": {
+        "compendiumSource": "Item.NaNRVXthIlP4iXtL",
+        "coreVersion": "12.343",
+        "createdTime": 1757291854960,
+        "duplicateSource": "Item.mNv9WayU5l6mEkY6",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/fire_III.png",
+      "name": "Pyro Blast",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Invoker",
+          "cost": "5 MP",
+          "damage_bonus": "0",
+          "description": "<p>You deal 20 <a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#ffae00 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a> damage to the target. <em>Only usable if a Fire wellspring is present on the scene.</em></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>Damage becomes <strong>25</strong>.</p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>Damage becomes <strong>30</strong>.</p>\n",
+          "duration": "Instantanious",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Pyro Blast",
+          "optional_params": {
+            "0": {
+              "$deleted": false,
+              "key": "wellspring_type",
+              "value": "fire"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Range",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": true
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "NaNRVXthIlP4iXtL"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "CUQwMQAj2cU6DTrD",
+      "_stats": {
+        "compendiumSource": "Item.UFZJI9rL2wImnHoh",
+        "coreVersion": "12.343",
+        "createdTime": 1757291949623,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/anatman.png",
+      "name": "Inner Wellspring",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Invoker",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you acquire this Heroic Skill and whenever you rest, you may choose one wellspring: <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#a8ffbb 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#d2b48c 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#ffae00 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#d7a9ff 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a></span></span>, or <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#a6e3ff 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span></span>. If you do, you gain the following benefits until your next rest:</p><ul><li>You always treat the chosen <strong>wellspring</strong> as being available during each scene, in addition to whatever wellsprings are already available.</li><li>You may perform Rituals of the <strong>Elementalism</strong> discipline, but only if those Rituals manipulate the element of the chosen <strong>wellspring</strong>.</li><li>You gain <strong>Resistance</strong> to the damage type corresponding to the chosen <strong>wellspring</strong>.</li><li>When you deal damage, you may change its type to the one corresponding to the chosen <strong>wellspring</strong>. If you do, that damage ignores Resistances.</li></ul>",
+          "duration": "",
+          "heroic_requirement": "you must have mastered the Invoker Class.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Inner Wellspring",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "UFZJI9rL2wImnHoh"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "egWGfpB6yF3tPTvs",
+      "_stats": {
+        "compendiumSource": "Item.jKwWU5PzuZt0tOyx",
+        "coreVersion": "12.343",
+        "createdTime": 1757291747812,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/aero_ii.png",
+      "name": "Aero Blast",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Invoker",
+          "cost": "5 MP",
+          "damage_bonus": "0",
+          "description": "<p>You deal 20 <a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#a8ffbb 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a> damage to the target. <em>Only usable if an Air wellspring is present on the scene.</em></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>Damage becomes <strong>25</strong>.</p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>Damage becomes <strong>30</strong>.</p>\n",
+          "duration": "Instantanious",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Aero Blast",
+          "optional_params": {
+            "0": {
+              "$deleted": false,
+              "key": "wellspring_type",
+              "value": "air"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Range",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": true
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "jKwWU5PzuZt0tOyx"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "eKI1ozDDSSH3c4s7",
+      "_stats": {
+        "compendiumSource": "Item.9MkxxTnQjRcFQ2IN",
+        "coreVersion": "12.343",
+        "createdTime": 1757291923366,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/phantom_rush.png",
+      "name": "Invocation",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Invoker",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>You may use an action and spend 5 Mind Points to perform an <strong>invocation</strong>, drawing energy from one of the <strong>wellsprings</strong> present on the scene (see <strong>Invoker's</strong> <strong>Unique Mechanic</strong>). Your <strong>【SL】</strong> in this Skill determines which invocations you have access to.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "3",
+          "name": "Invocation",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Other",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "9MkxxTnQjRcFQ2IN"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "fJCUpylZfiB5GbhU",
+      "_stats": {
+        "compendiumSource": "Item.GQlYVXMoRdjE59jz",
+        "coreVersion": "12.343",
+        "createdTime": 1757291792444,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/white_wind.png",
+      "name": "Invoke: Breeze",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Invoker",
+          "cost": "5 MP",
+          "damage_bonus": "0",
+          "description": "<p>The target recovers 30 Hit Points. <em>Only usable if an Air wellspring is present on the scene.</em></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>Recovery becomes <strong>40</strong>.</p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>Recovery becomes <strong>50</strong>.</p>\n",
+          "duration": "Instantanious",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Invoke: Breeze",
+          "optional_params": {
+            "0": {
+              "$deleted": false,
+              "key": "wellspring_type",
+              "value": "air"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Range",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": true
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "GQlYVXMoRdjE59jz"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "GQWdXx8sDnmAV7VY",
+      "_stats": {
+        "compendiumSource": "Item.XvdWBu9CCW25NRXg",
+        "coreVersion": "12.343",
+        "createdTime": 1757291924420,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/15_RDM/embolden.png",
+      "name": "Linked Invocation",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Invoker",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you perform an <strong>invocation</strong>, you may spend up to <strong>[SL × 10]</strong> additional Mind Points. For every <strong>10 Mind Points</strong> you spend this way, the invocation may target an additional creature you can see.</p>\n",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "3",
+          "name": "Linked Invocation",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>Max Extra MP</strong></p></td><td><p><strong>Max Extra Targets</strong></p></td></tr><tr><td><p>1</p></td><td><p>10</p></td><td><p>1</p></td></tr><tr><td><p>2</p></td><td><p>20</p></td><td><p>2</p></td></tr><tr><td><p>3</p></td><td><p>30</p></td><td><p>3</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "XvdWBu9CCW25NRXg"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "H805Gcr4nAylb44N",
+      "_stats": {
+        "compendiumSource": "Item.OwXuatF93BE6JQSE",
+        "coreVersion": "12.343",
+        "createdTime": 1757291862192,
+        "duplicateSource": "Item.1mYF67hr4omDnChH",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/flame_thrower.png",
+      "name": "Invoke: Burst",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Invoker",
+          "cost": "5 MP",
+          "damage_bonus": "0",
+          "description": "<p>You deal 10 <a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#ffae00 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a> damage to the target, and they suffer \n<a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a>. <em>Only usable if a Fire wellspring is present on the scene.</em></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>Damage becomes <strong>15</strong>.</p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>Damage becomes <strong>20</strong>.</p>\n",
+          "duration": "Instantanious",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Invoke: Burst",
+          "optional_params": {
+            "0": {
+              "$deleted": false,
+              "key": "wellspring_type",
+              "value": "fire"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Range",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": true
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "OwXuatF93BE6JQSE"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "HWGgKM2gCuHpLO5Q",
+      "_stats": {
+        "compendiumSource": "Item.kJgaJARM2x0cLk1F",
+        "coreVersion": "12.343",
+        "createdTime": 1757291856183,
+        "duplicateSource": "Item.NaNRVXthIlP4iXtL",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/fire_II.png",
+      "name": "Pyro Hex",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Invoker",
+          "cost": "5 MP",
+          "damage_bonus": "0",
+          "description": "<p>Until the start of your next turn, the target suffers 5 extra damage from all sources that deal \n<a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#d2b48c 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a> and \n<a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#a6e3ff 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a> damage. <em>Only usable if a Fire wellspring is present on the scene.</em></p>\n",
+          "duration": "Instantanious",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Pyro Hex",
+          "optional_params": {
+            "0": {
+              "$deleted": false,
+              "key": "wellspring_type",
+              "value": "fire"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Range",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": true
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "kJgaJARM2x0cLk1F"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "iTw1EuMa2ZoVYw5p",
+      "_stats": {
+        "compendiumSource": "Item.NphrjKFklmNrvHhA",
+        "coreVersion": "12.343",
+        "createdTime": 1757291796366,
+        "duplicateSource": "Item.GQlYVXMoRdjE59jz",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/Deep_Clean.png",
+      "name": "Invoke: Twister",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Invoker",
+          "cost": "5 MP",
+          "damage_bonus": "0",
+          "description": "<p>You deal 10 <a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#a8ffbb 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a> damage to the target, and they suffer \n<a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Dazed</span></strong></a>. <em>Only usable if an Air wellspring is present on the scene.</em></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>Damage becomes <strong>15</strong>.</p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>Damage becomes <strong>20</strong>.</p>\n",
+          "duration": "Instantanious",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Invoke: Twister",
+          "optional_params": {
+            "0": {
+              "$deleted": false,
+              "key": "wellspring_type",
+              "value": "air"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Range",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": true
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "NphrjKFklmNrvHhA"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "IY4zRsS9aIq5thOt",
+      "_stats": {
+        "compendiumSource": "Item.CcblPDSXzgYOsfug",
+        "coreVersion": "12.343",
+        "createdTime": 1757291911580,
+        "duplicateSource": "Item.NaNRVXthIlP4iXtL",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/09_NIN/suiton.png",
+      "name": "Hydro Blast",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Invoker",
+          "cost": "5 MP",
+          "damage_bonus": "0",
+          "description": "<p>You deal 20 <a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#a6e3ff 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a> damage to the target. <em>Only usable if a Water wellspring is present on the scene.</em></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>Damage becomes <strong>25</strong>.</p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>Damage becomes <strong>30</strong>.</p>\n",
+          "duration": "Instantanious",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Hydro Blast",
+          "optional_params": {
+            "0": {
+              "$deleted": false,
+              "key": "wellspring_type",
+              "value": "water"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Range",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": true
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "CcblPDSXzgYOsfug"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "llFmmaXaVDTempZc",
+      "_stats": {
+        "compendiumSource": "Item.1mYF67hr4omDnChH",
+        "coreVersion": "12.343",
+        "createdTime": 1757291847197,
+        "duplicateSource": "Item.NphrjKFklmNrvHhA",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/summon_titan_II.png",
+      "name": "Invoke: Growth",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Invoker",
+          "cost": "5 MP",
+          "damage_bonus": "0",
+          "description": "<p>The target recovers 30 Hit Points. <em>Only usable if an Earth wellspring is present on the scene.</em></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>Recovery becomes <strong>40</strong>.</p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>Recovery becomes <strong>50</strong>.</p>\n",
+          "duration": "Instantanious",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Invoke: Growth",
+          "optional_params": {
+            "0": {
+              "$deleted": false,
+              "key": "wellspring_type",
+              "value": "earth"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Range",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": true
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "1mYF67hr4omDnChH"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "mDsvZS0gCN66rlJI",
+      "_stats": {
+        "compendiumSource": "Item.10CEXugA1A2LgzID",
+        "coreVersion": "12.343",
+        "createdTime": 1757291907197,
+        "duplicateSource": "Item.jd6pZ0Thdltq7Ydb",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/high_voltage.png",
+      "name": "Invoke: Static",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Invoker",
+          "cost": "5 MP",
+          "damage_bonus": "0",
+          "description": "<p>You deal 10 <a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#d7a9ff 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a> damage to the target, and they suffer \n<a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a>. <em>Only usable if a Lightning wellspring is present on the scene.</em></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>Damage becomes <strong>15</strong>.</p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>Damage becomes <strong>20</strong>.</p>\n",
+          "duration": "Instantanious",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Invoke: Static",
+          "optional_params": {
+            "0": {
+              "$deleted": false,
+              "key": "wellspring_type",
+              "value": "lightning"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Range",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": true
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "10CEXugA1A2LgzID"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "NAZGLylHVyw6ilvu",
+      "_stats": {
+        "compendiumSource": "Item.U00uRNakcccMKObQ",
+        "coreVersion": "12.343",
+        "createdTime": 1757291895146,
+        "duplicateSource": "Item.NaNRVXthIlP4iXtL",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/thunder_ii.png",
+      "name": "Electro Blast",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Invoker",
+          "cost": "5 MP",
+          "damage_bonus": "0",
+          "description": "<p>You deal 20 <a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#d7a9ff 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a> damage to the target. <em>Only usable if a Lightning wellspring is present on the scene.</em></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>Damage becomes <strong>25</strong>.</p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>Damage becomes <strong>30</strong>.</p>\n",
+          "duration": "Instantanious",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Electro Blast",
+          "optional_params": {
+            "0": {
+              "$deleted": false,
+              "key": "wellspring_type",
+              "value": "lightning"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Range",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": true
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "U00uRNakcccMKObQ"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "NJKraqTpbeYaXgg8",
+      "_stats": {
+        "compendiumSource": "Item.sG4f7ayg2gYKbaHz",
+        "coreVersion": "12.343",
+        "createdTime": 1757291915865,
+        "duplicateSource": "Item.onWV1WgJlvg1iRTG",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/blizzard_III.png",
+      "name": "Invoke: Chill",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Invoker",
+          "cost": "5 MP",
+          "damage_bonus": "0",
+          "description": "<p>The target loses 20 Mind Points and also suffers \n<a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a>. <em>Only usable if a Water wellspring is present on the scene.</em></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>MP loss becomes <strong>30</strong>.</p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>MP loss becomes <strong>40</strong>.</p>\n",
+          "duration": "Instantanious",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Invoke: Chill",
+          "optional_params": {
+            "0": {
+              "$deleted": false,
+              "key": "wellspring_type",
+              "value": "water"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Range",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": true
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "sG4f7ayg2gYKbaHz"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "R2ly0TlWVo8V0BDW",
+      "_stats": {
+        "compendiumSource": "Item.rP4W9nBLhZDkbv8O",
+        "coreVersion": "12.343",
+        "createdTime": 1757291848376,
+        "duplicateSource": "Item.1mYF67hr4omDnChH",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/Peat_Pelt.png",
+      "name": "Invoke: Quicksand",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Invoker",
+          "cost": "5 MP",
+          "damage_bonus": "0",
+          "description": "<p>You deal 10 <a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#d2b48c 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a> damage to the target, and they suffer \n<a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a>. <em>Only usable if an Earth wellspring is present on the scene.</em></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>Damage becomes <strong>15</strong>.</p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>Damage becomes <strong>20</strong>.</p>\n",
+          "duration": "Instantanious",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Invoke: Quicksand",
+          "optional_params": {
+            "0": {
+              "$deleted": false,
+              "key": "wellspring_type",
+              "value": "earth"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Range",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": true
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "rP4W9nBLhZDkbv8O"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "ROzv7AiGgUlduqEG",
+      "_stats": {
+        "compendiumSource": "Item.OFaq1NASo4uD8huP",
+        "coreVersion": "12.343",
+        "createdTime": 1757291925640,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/dragon_kick.png",
+      "name": "Ripples",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Invoker",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>After an enemy you can see loses Hit Points due to damage dealt by one of your allies, if that damage was increased by one or more of your <strong>“hex” invocations</strong>, you may perform a <strong>free attack</strong> with a weapon you have equipped. This attack may only target that enemy, and receives a bonus equal to <strong>[SL]</strong> to its Accuracy Check; if it is successful, all its damage becomes of the same type dealt by your ally, and all <strong>“hex” invocations</strong> present on its target end immediately after the attack has been resolved.</p>\n<p>If two or more enemies trigger this Skill at the same time, you can perform a <strong>free attack</strong> against each of them, in whatever order you prefer.</p>\n",
+          "duration": "Instantanious",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "5",
+          "name": "Ripples",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>Accuracy Bonus</strong></p></td></tr><tr><td><p>1</p></td><td><p>+1</p></td></tr><tr><td><p>2</p></td><td><p>+2</p></td></tr><tr><td><p>3</p></td><td><p>+3</p></td></tr><tr><td><p>4</p></td><td><p>+4</p></td></tr><tr><td><p>5</p></td><td><p>+5</p></td></tr></tbody></table>",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "OFaq1NASo4uD8huP"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "sPTX2h7JM3JAO8l6",
+      "_stats": {
+        "compendiumSource": "Item.XsODbvZry66Fs6xS",
+        "coreVersion": "12.343",
+        "createdTime": 1757291921771,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/EMTrans1.png",
+      "name": "Elemental Harmony",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Invoker",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>You may verbally communicate with creatures of the <strong>elemental</strong> Species.</p>\n<p>When you restore a creature’s Hit Points with an <strong>invocation</strong> or spell, if an <strong>elemental</strong> is present on the scene, the restored amount is increased by <strong>[SL × 5]</strong>.</p>\n",
+          "duration": "",
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Elemental Harmony",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>Bonus HP Restored</strong></p></td></tr><tr><td><p>1</p></td><td><p>5</p></td></tr><tr><td><p>2</p></td><td><p>10</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "XsODbvZry66Fs6xS"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "uOi6QrWFZrM2CxXt",
+      "_stats": {
+        "compendiumSource": "Item.B2ge8uZNOHPomxGT",
+        "coreVersion": "12.343",
+        "createdTime": 1757291908401,
+        "duplicateSource": "Item.10CEXugA1A2LgzID",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/tingle.png",
+      "name": "Invoke: Thunder",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Invoker",
+          "cost": "5 MP",
+          "damage_bonus": "0",
+          "description": "<p>The target loses 20 Mind Points and also suffers \n<a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Dazed</span></strong></a>. <em>Only usable if a Lightning wellspring is present on the scene.</em></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>MP loss becomes <strong>30</strong>.</p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>MP loss becomes <strong>40</strong>.</p>\n",
+          "duration": "Instantanious",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Invoke: Thunder",
+          "optional_params": {
+            "0": {
+              "$deleted": false,
+              "key": "wellspring_type",
+              "value": "lightning"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Range",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": true
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "B2ge8uZNOHPomxGT"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "WiSsEgXRa09xbolQ",
+      "_stats": {
+        "compendiumSource": "Item.mNv9WayU5l6mEkY6",
+        "coreVersion": "12.343",
+        "createdTime": 1757291843850,
+        "duplicateSource": "Item.jKwWU5PzuZt0tOyx",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/stone.png",
+      "name": "Geo Blast",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Invoker",
+          "cost": "5 MP",
+          "damage_bonus": "0",
+          "description": "<p>You deal 20 <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#d2b48c 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span></span> damage to the target. <em>Only usable if an Earth wellspring is present on the scene.</em></p><hr contenteditable=\"false\"><p><strong>Skill Enhancement Lv. 20 ― </strong>Damage becomes <strong>25</strong>.</p><p><strong>Skill Enhancement Lv. 40 ― </strong>Damage becomes <strong>30</strong>.</p>",
+          "duration": "Instantanious",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Geo Blast",
+          "optional_params": {
+            "0": {
+              "$deleted": false,
+              "key": "wellspring_type",
+              "value": "earth"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Range",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": true
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "mNv9WayU5l6mEkY6"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "xV9lETQZFLpxDMJk",
+      "_stats": {
+        "compendiumSource": "Item.Egjnx64eSWqaMWwa",
+        "coreVersion": "12.343",
+        "createdTime": 1757291916957,
+        "duplicateSource": "Item.sG4f7ayg2gYKbaHz",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/northerlies.png",
+      "name": "Invoke: Frostbite",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Invoker",
+          "cost": "5 MP",
+          "damage_bonus": "0",
+          "description": "<p>You deal 10 <a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#a6e3ff 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a> damage to the target, and they suffer \n<a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a>. <em>Only usable if a Water wellspring is present on the scene.</em></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>Damage becomes <strong>15</strong>.</p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>Damage becomes <strong>20</strong>.</p>\n",
+          "duration": "Instantanious",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Invoke: Frostbite",
+          "optional_params": {
+            "0": {
+              "$deleted": false,
+              "key": "wellspring_type",
+              "value": "water"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Range",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": true
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "Egjnx64eSWqaMWwa"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "yTxonuyFpBvvUfSp",
+      "_stats": {
+        "compendiumSource": "Item.wu4aRlZqeD8G32Ch",
+        "coreVersion": "12.343",
+        "createdTime": 1757291926736,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/masterful_blitz.png",
+      "name": "Wellspring Expansion",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Invoker",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>As long as you have a weapon belonging to the <strong>arcane</strong>, <strong>bow</strong>, <strong>brawling</strong>, <strong>flail</strong>, <strong>sword</strong>, or <strong>thrown</strong> Category equipped, your <strong>“blast” invocations</strong> deal <strong>[SL]</strong> extra damage, and the extra damage granted by your <strong>“hex” invocations</strong> is increased by <strong>[SL]</strong>.</p>\n",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "5",
+          "name": "Wellspring Expansion",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>“Blast” Extra Damage</strong></p></td><td><p><strong>“Hex” Extra Damage Increase</strong></p></td></tr><tr><td><p>1</p></td><td><p>+1</p></td><td><p>+1</p></td></tr><tr><td><p>2</p></td><td><p>+2</p></td><td><p>+2</p></td></tr><tr><td><p>3</p></td><td><p>+3</p></td><td><p>+3</p></td></tr><tr><td><p>4</p></td><td><p>+4</p></td><td><p>+4</p></td></tr><tr><td><p>5</p></td><td><p>+5</p></td><td><p>+5</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "wu4aRlZqeD8G32Ch"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "zvxgg9MX7CGkQ7Pt",
+      "_stats": {
+        "compendiumSource": "Item.jd6pZ0Thdltq7Ydb",
+        "coreVersion": "12.343",
+        "createdTime": 1757291896232,
+        "duplicateSource": "Item.U00uRNakcccMKObQ",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/thunder_iii.png",
+      "name": "Electro Hex",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Invoker",
+          "cost": "5 MP",
+          "damage_bonus": "0",
+          "description": "<p>Until the start of your next turn, the target suffers 5 extra damage from all sources that deal \n<a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#d2b48c 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a> and \n<a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#ffae00 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a> damage. <em>Only usable if a Lightning wellspring is present on the scene.</em></p>\n",
+          "duration": "Instantanious",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Electro Hex",
+          "optional_params": {
+            "0": {
+              "$deleted": false,
+              "key": "wellspring_type",
+              "value": "lightning"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Range",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": true
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "jd6pZ0Thdltq7Ydb"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Invoker",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar4": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "DEF",
+            "max": 13,
+            "maxcolor": "#f26d40",
+            "mincolor": "#f26d40",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 13
+          },
+          "bar5": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar5",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MDEF",
+            "max": 10,
+            "maxcolor": "#26d6ed",
+            "mincolor": "#26d6ed",
+            "opacity": null,
+            "order": 4,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 10
+          }
+        }
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Invoker",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://tiermaker.com/images/media/template_images/2024/17489267/fabula-ultima-all-classes-tierlist-17489267/invoker.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 0,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {
+      "also_text": "Ascetic, Channeler, Five-Soul Master",
+      "benefit_dropdown": "choice_benefit",
+      "classMechanic_text": "<h1>INVOCATIONS</h1><p></p><h2>DETERMINING AVAILABLE WELLSPRINGS</h2><p>During each scene, your surroundings grant you <strong>two different wellsprings</strong>: the Game Master tells you what they are. Remember to describe how wellsprings manifest in the scene; they may be natural features, objects, or even creatures.</p><blockquote><p><strong>Example</strong>: during a battle taking place on a steam-powered airship amidst stormy clouds, any two of <strong>air</strong>, <strong>fire</strong>, <strong>lightning</strong> and <strong>water</strong> would make sense.</p></blockquote><p></p><h2>PERFORMING AN INVOCATION</h2><p>When you perform an <strong>invocation</strong>, choose one option you have access to among those in the table below (provided the corresponding wellspring is available in the scene); then, apply its effects to <strong>one</strong> creature you can see.</p><p>Your Skill Level in the <strong>Invocation</strong> Skill determines which invocations you have access to: <strong>【SL 1】</strong> enables <strong>“blast”</strong> invocations, <strong>【SL 2】</strong> enables <strong>“blast”</strong> and <strong>“hex”</strong> invocations, and <strong>【SL 3】</strong> gives you access to all invocations.</p><blockquote><p><strong>Example</strong>: if <strong>air</strong> and <strong>earth</strong> wellsprings are available and your Skill Level is 2, you have access to <strong>Aero Blast</strong>, <strong>Aero Hex</strong>, <strong>Geo Blast</strong>, and <strong>Geo Hex</strong>.</p></blockquote><p>If an invocation deals damage, it will deal 5 extra damage if you are <strong>level 20 or higher</strong>, or 10 extra damage if you are <strong>level 40 or higher</strong>.</p><p>Similarly, if an invocation causes the target to recover Hit Points or lose Mind Points, the amount will increase by 10 if you are <strong>level 20 or higher</strong>, or by 20 if you are <strong>level 40 or higher</strong>.</p>",
+      "class_facet": {
+        "09kYYAWi6juygeA5": {
+          "facet_cost": "",
+          "facet_description": "<p>After you perform an <strong>invocation</strong> during a conflict, you and up to one ally you can see increase one of your Attributes’ die sizes by one (up to a maximum of d12). This increase lasts until the end of the scene or until you use this Skill again. The Attribute is based on the <strong>wellspring</strong> you invoked:</p>\n\n<ul>\n  <li>\n    <a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#a8ffbb 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\">\n      <strong><span style=\"text-decoration: underline;\">Air</span></strong>\n    </a> — Insight\n  </li>\n  <li>\n    <a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#d2b48c 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\">\n      <strong><span style=\"text-decoration: underline;\">Earth</span></strong>\n    </a> — one Attribute of your choice\n  </li>\n  <li>\n    <a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#ffae00 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\">\n      <strong><span style=\"text-decoration: underline;\">Fire</span></strong>\n    </a> — Dexterity\n  </li>\n  <li>\n    <a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#d7a9ff 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\">\n      <strong><span style=\"text-decoration: underline;\">Bolt</span></strong>\n    </a> — Might\n  </li>\n  <li>\n    <a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#a6e3ff 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\">\n      <strong><span style=\"text-decoration: underline;\">Ice</span></strong>\n    </a> — Willpower\n  </li>\n</ul>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Strength of the Five Wellspring",
+          "uuid": "Actor.V9geXDcQmBrjsnfF.Item.09kYYAWi6juygeA5"
+        },
+        "3ePNUc037EXEp8Lc": {
+          "facet_cost": "5 MP",
+          "facet_description": "<p>Until the start of your next turn, the target suffers 5 extra damage from all sources that deal \n<a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#a8ffbb 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a> and \n<a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#d7a9ff 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a> damage. <em>Only usable if a Water wellspring is present on the scene.</em></p>\n",
+          "facet_offensive": "",
+          "facet_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Hydro Hex",
+          "uuid": "Actor.V9geXDcQmBrjsnfF.Item.3ePNUc037EXEp8Lc"
+        },
+        "5FONI33vTHnXvZjo": {
+          "facet_cost": "5 MP",
+          "facet_description": "<p>Until the start of your next turn, the target suffers 5 extra damage from all sources that deal \n<a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#d7a9ff 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a> and \n<a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#ffae00 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a> damage. <em>Only usable if an Air wellspring is present on the scene.</em></p>\n",
+          "facet_offensive": "",
+          "facet_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Aero Hex",
+          "uuid": "Actor.V9geXDcQmBrjsnfF.Item.5FONI33vTHnXvZjo"
+        },
+        "8K3L3TTaUKTg4hhR": {
+          "facet_cost": "5 MP",
+          "facet_description": "<p>Until the start of your next turn, the target suffers 5 extra damage from all sources that deal \n<a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#a8ffbb 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a> and \n<a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#a6e3ff 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a> damage. <em>Only usable if an Earth wellspring is present on the scene.</em></p>\n",
+          "facet_offensive": "",
+          "facet_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Geo Hex",
+          "uuid": "Actor.V9geXDcQmBrjsnfF.Item.8K3L3TTaUKTg4hhR"
+        },
+        "8jSz2jFDjdmZ8lbD": {
+          "facet_cost": "5 MP",
+          "facet_description": "<p>The target loses 20 Mind Points and also suffers \n<a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a>. <em>Only usable if a Fire wellspring is present on the scene.</em></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>MP loss becomes <strong>30</strong>.</p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>MP loss becomes <strong>40</strong>.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Invoke: Smoke",
+          "uuid": "Actor.V9geXDcQmBrjsnfF.Item.8jSz2jFDjdmZ8lbD"
+        },
+        "BrHUllBVZLTepIVD": {
+          "facet_cost": "5 MP",
+          "facet_description": "<p>You deal 20 <a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#ffae00 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a> damage to the target. <em>Only usable if a Fire wellspring is present on the scene.</em></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>Damage becomes <strong>25</strong>.</p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>Damage becomes <strong>30</strong>.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Pyro Blast",
+          "uuid": "Actor.V9geXDcQmBrjsnfF.Item.BrHUllBVZLTepIVD"
+        },
+        "CUQwMQAj2cU6DTrD": {
+          "facet_cost": "",
+          "facet_description": "<p>When you acquire this Heroic Skill and whenever you rest, you may choose one wellspring: <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#a8ffbb 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#d2b48c 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#ffae00 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#d7a9ff 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a></span></span>, or <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#a6e3ff 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span></span>. If you do, you gain the following benefits until your next rest:</p><ul><li>You always treat the chosen <strong>wellspring</strong> as being available during each scene, in addition to whatever wellsprings are already available.</li><li>You may perform Rituals of the <strong>Elementalism</strong> discipline, but only if those Rituals manipulate the element of the chosen <strong>wellspring</strong>.</li><li>You gain <strong>Resistance</strong> to the damage type corresponding to the chosen <strong>wellspring</strong>.</li><li>When you deal damage, you may change its type to the one corresponding to the chosen <strong>wellspring</strong>. If you do, that damage ignores Resistances.</li></ul>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Inner Wellspring",
+          "uuid": "Actor.V9geXDcQmBrjsnfF.Item.CUQwMQAj2cU6DTrD"
+        },
+        "GQWdXx8sDnmAV7VY": {
+          "facet_cost": "",
+          "facet_description": "<p>When you perform an <strong>invocation</strong>, you may spend up to <strong>[SL × 10]</strong> additional Mind Points. For every <strong>10 Mind Points</strong> you spend this way, the invocation may target an additional creature you can see.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Linked Invocation",
+          "uuid": "Actor.V9geXDcQmBrjsnfF.Item.GQWdXx8sDnmAV7VY"
+        },
+        "H805Gcr4nAylb44N": {
+          "facet_cost": "5 MP",
+          "facet_description": "<p>You deal 10 <a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#ffae00 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a> damage to the target, and they suffer \n<a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a>. <em>Only usable if a Fire wellspring is present on the scene.</em></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>Damage becomes <strong>15</strong>.</p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>Damage becomes <strong>20</strong>.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Invoke: Burst",
+          "uuid": "Actor.V9geXDcQmBrjsnfF.Item.H805Gcr4nAylb44N"
+        },
+        "HWGgKM2gCuHpLO5Q": {
+          "facet_cost": "5 MP",
+          "facet_description": "<p>Until the start of your next turn, the target suffers 5 extra damage from all sources that deal \n<a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#d2b48c 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a> and \n<a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#a6e3ff 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a> damage. <em>Only usable if a Fire wellspring is present on the scene.</em></p>\n",
+          "facet_offensive": "",
+          "facet_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Pyro Hex",
+          "uuid": "Actor.V9geXDcQmBrjsnfF.Item.HWGgKM2gCuHpLO5Q"
+        },
+        "IY4zRsS9aIq5thOt": {
+          "facet_cost": "5 MP",
+          "facet_description": "<p>You deal 20 <a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#a6e3ff 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a> damage to the target. <em>Only usable if a Water wellspring is present on the scene.</em></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>Damage becomes <strong>25</strong>.</p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>Damage becomes <strong>30</strong>.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Hydro Blast",
+          "uuid": "Actor.V9geXDcQmBrjsnfF.Item.IY4zRsS9aIq5thOt"
+        },
+        "NAZGLylHVyw6ilvu": {
+          "facet_cost": "5 MP",
+          "facet_description": "<p>You deal 20 <a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#d7a9ff 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a> damage to the target. <em>Only usable if a Lightning wellspring is present on the scene.</em></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>Damage becomes <strong>25</strong>.</p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>Damage becomes <strong>30</strong>.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Electro Blast",
+          "uuid": "Actor.V9geXDcQmBrjsnfF.Item.NAZGLylHVyw6ilvu"
+        },
+        "NJKraqTpbeYaXgg8": {
+          "facet_cost": "5 MP",
+          "facet_description": "<p>The target loses 20 Mind Points and also suffers \n<a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a>. <em>Only usable if a Water wellspring is present on the scene.</em></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>MP loss becomes <strong>30</strong>.</p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>MP loss becomes <strong>40</strong>.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Invoke: Chill",
+          "uuid": "Actor.V9geXDcQmBrjsnfF.Item.NJKraqTpbeYaXgg8"
+        },
+        "R2ly0TlWVo8V0BDW": {
+          "facet_cost": "5 MP",
+          "facet_description": "<p>You deal 10 <a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#d2b48c 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a> damage to the target, and they suffer \n<a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a>. <em>Only usable if an Earth wellspring is present on the scene.</em></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>Damage becomes <strong>15</strong>.</p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>Damage becomes <strong>20</strong>.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Invoke: Quicksand",
+          "uuid": "Actor.V9geXDcQmBrjsnfF.Item.R2ly0TlWVo8V0BDW"
+        },
+        "ROzv7AiGgUlduqEG": {
+          "facet_cost": "",
+          "facet_description": "<p>After an enemy you can see loses Hit Points due to damage dealt by one of your allies, if that damage was increased by one or more of your <strong>“hex” invocations</strong>, you may perform a <strong>free attack</strong> with a weapon you have equipped. This attack may only target that enemy, and receives a bonus equal to <strong>[SL]</strong> to its Accuracy Check; if it is successful, all its damage becomes of the same type dealt by your ally, and all <strong>“hex” invocations</strong> present on its target end immediately after the attack has been resolved.</p>\n<p>If two or more enemies trigger this Skill at the same time, you can perform a <strong>free attack</strong> against each of them, in whatever order you prefer.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Ripples",
+          "uuid": "Actor.V9geXDcQmBrjsnfF.Item.ROzv7AiGgUlduqEG"
+        },
+        "WiSsEgXRa09xbolQ": {
+          "facet_cost": "5 MP",
+          "facet_description": "<p>You deal 20 <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#d2b48c 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span></span> damage to the target. <em>Only usable if an Earth wellspring is present on the scene.</em></p><hr contenteditable=\"false\"><p><strong>Skill Enhancement Lv. 20 ― </strong>Damage becomes <strong>25</strong>.</p><p><strong>Skill Enhancement Lv. 40 ― </strong>Damage becomes <strong>30</strong>.</p>",
+          "facet_offensive": "",
+          "facet_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Geo Blast",
+          "uuid": "Actor.V9geXDcQmBrjsnfF.Item.WiSsEgXRa09xbolQ"
+        },
+        "eKI1ozDDSSH3c4s7": {
+          "facet_cost": "",
+          "facet_description": "<p>You may use an action and spend 5 Mind Points to perform an <strong>invocation</strong>, drawing energy from one of the <strong>wellsprings</strong> present on the scene (see <strong>Invoker's</strong> <strong>Unique Mechanic</strong>). Your <strong>【SL】</strong> in this Skill determines which invocations you have access to.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Invocation",
+          "uuid": "Actor.V9geXDcQmBrjsnfF.Item.eKI1ozDDSSH3c4s7"
+        },
+        "egWGfpB6yF3tPTvs": {
+          "facet_cost": "5 MP",
+          "facet_description": "<p>You deal 20 <a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#a8ffbb 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a> damage to the target. <em>Only usable if an Air wellspring is present on the scene.</em></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>Damage becomes <strong>25</strong>.</p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>Damage becomes <strong>30</strong>.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Aero Blast",
+          "uuid": "Actor.V9geXDcQmBrjsnfF.Item.egWGfpB6yF3tPTvs"
+        },
+        "fJCUpylZfiB5GbhU": {
+          "facet_cost": "5 MP",
+          "facet_description": "<p>The target recovers 30 Hit Points. <em>Only usable if an Air wellspring is present on the scene.</em></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>Recovery becomes <strong>40</strong>.</p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>Recovery becomes <strong>50</strong>.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Invoke: Breeze",
+          "uuid": "Actor.V9geXDcQmBrjsnfF.Item.fJCUpylZfiB5GbhU"
+        },
+        "iTw1EuMa2ZoVYw5p": {
+          "facet_cost": "5 MP",
+          "facet_description": "<p>You deal 10 <a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#a8ffbb 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a> damage to the target, and they suffer \n<a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Dazed</span></strong></a>. <em>Only usable if an Air wellspring is present on the scene.</em></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>Damage becomes <strong>15</strong>.</p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>Damage becomes <strong>20</strong>.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Invoke: Twister",
+          "uuid": "Actor.V9geXDcQmBrjsnfF.Item.iTw1EuMa2ZoVYw5p"
+        },
+        "llFmmaXaVDTempZc": {
+          "facet_cost": "5 MP",
+          "facet_description": "<p>The target recovers 30 Hit Points. <em>Only usable if an Earth wellspring is present on the scene.</em></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>Recovery becomes <strong>40</strong>.</p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>Recovery becomes <strong>50</strong>.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Invoke: Growth",
+          "uuid": "Actor.V9geXDcQmBrjsnfF.Item.llFmmaXaVDTempZc"
+        },
+        "mDsvZS0gCN66rlJI": {
+          "facet_cost": "5 MP",
+          "facet_description": "<p>You deal 10 <a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#d7a9ff 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a> damage to the target, and they suffer \n<a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a>. <em>Only usable if a Lightning wellspring is present on the scene.</em></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>Damage becomes <strong>15</strong>.</p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>Damage becomes <strong>20</strong>.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Invoke: Static",
+          "uuid": "Actor.V9geXDcQmBrjsnfF.Item.mDsvZS0gCN66rlJI"
+        },
+        "sPTX2h7JM3JAO8l6": {
+          "facet_cost": "",
+          "facet_description": "<p>You may verbally communicate with creatures of the <strong>elemental</strong> Species.</p>\n<p>When you restore a creature’s Hit Points with an <strong>invocation</strong> or spell, if an <strong>elemental</strong> is present on the scene, the restored amount is increased by <strong>[SL × 5]</strong>.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Elemental Harmony",
+          "uuid": "Actor.V9geXDcQmBrjsnfF.Item.sPTX2h7JM3JAO8l6"
+        },
+        "uOi6QrWFZrM2CxXt": {
+          "facet_cost": "5 MP",
+          "facet_description": "<p>The target loses 20 Mind Points and also suffers \n<a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Dazed</span></strong></a>. <em>Only usable if a Lightning wellspring is present on the scene.</em></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>MP loss becomes <strong>30</strong>.</p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>MP loss becomes <strong>40</strong>.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Invoke: Thunder",
+          "uuid": "Actor.V9geXDcQmBrjsnfF.Item.uOi6QrWFZrM2CxXt"
+        },
+        "xV9lETQZFLpxDMJk": {
+          "facet_cost": "5 MP",
+          "facet_description": "<p>You deal 10 <a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#a6e3ff 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a> damage to the target, and they suffer \n<a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a>. <em>Only usable if a Water wellspring is present on the scene.</em></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>Damage becomes <strong>15</strong>.</p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>Damage becomes <strong>20</strong>.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Invoke: Frostbite",
+          "uuid": "Actor.V9geXDcQmBrjsnfF.Item.xV9lETQZFLpxDMJk"
+        },
+        "yTxonuyFpBvvUfSp": {
+          "facet_cost": "",
+          "facet_description": "<p>As long as you have a weapon belonging to the <strong>arcane</strong>, <strong>bow</strong>, <strong>brawling</strong>, <strong>flail</strong>, <strong>sword</strong>, or <strong>thrown</strong> Category equipped, your <strong>“blast” invocations</strong> deal <strong>[SL]</strong> extra damage, and the extra damage granted by your <strong>“hex” invocations</strong> is increased by <strong>[SL]</strong>.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Wellspring Expansion",
+          "uuid": "Actor.V9geXDcQmBrjsnfF.Item.yTxonuyFpBvvUfSp"
+        },
+        "zvxgg9MX7CGkQ7Pt": {
+          "facet_cost": "5 MP",
+          "facet_description": "<p>Until the start of your next turn, the target suffers 5 extra damage from all sources that deal \n<a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#d2b48c 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a> and \n<a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#ffae00 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a> damage. <em>Only usable if a Lightning wellspring is present on the scene.</em></p>\n",
+          "facet_offensive": "",
+          "facet_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Electro Hex",
+          "uuid": "Actor.V9geXDcQmBrjsnfF.Item.zvxgg9MX7CGkQ7Pt"
+        }
+      },
+      "class_heroicSkill": {
+        "09kYYAWi6juygeA5": {
+          "id": "${item.id}",
+          "name": "Strength of the Five Wellspring",
+          "skill_cost": "",
+          "skill_description": "<p>After you perform an <strong>invocation</strong> during a conflict, you and up to one ally you can see increase one of your Attributes’ die sizes by one (up to a maximum of d12). This increase lasts until the end of the scene or until you use this Skill again. The Attribute is based on the <strong>wellspring</strong> you invoked:</p>\n\n<ul>\n  <li>\n    <a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#a8ffbb 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\">\n      <strong><span style=\"text-decoration: underline;\">Air</span></strong>\n    </a> — Insight\n  </li>\n  <li>\n    <a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#d2b48c 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\">\n      <strong><span style=\"text-decoration: underline;\">Earth</span></strong>\n    </a> — one Attribute of your choice\n  </li>\n  <li>\n    <a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#ffae00 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\">\n      <strong><span style=\"text-decoration: underline;\">Fire</span></strong>\n    </a> — Dexterity\n  </li>\n  <li>\n    <a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#d7a9ff 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\">\n      <strong><span style=\"text-decoration: underline;\">Bolt</span></strong>\n    </a> — Might\n  </li>\n  <li>\n    <a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#a6e3ff 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\">\n      <strong><span style=\"text-decoration: underline;\">Ice</span></strong>\n    </a> — Willpower\n  </li>\n</ul>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.V9geXDcQmBrjsnfF.Item.09kYYAWi6juygeA5"
+        },
+        "CUQwMQAj2cU6DTrD": {
+          "id": "${item.id}",
+          "name": "Inner Wellspring",
+          "skill_cost": "",
+          "skill_description": "<p>When you acquire this Heroic Skill and whenever you rest, you may choose one wellspring: <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#a8ffbb 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#d2b48c 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#ffae00 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#d7a9ff 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a></span></span>, or <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#a6e3ff 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span></span>. If you do, you gain the following benefits until your next rest:</p><ul><li>You always treat the chosen <strong>wellspring</strong> as being available during each scene, in addition to whatever wellsprings are already available.</li><li>You may perform Rituals of the <strong>Elementalism</strong> discipline, but only if those Rituals manipulate the element of the chosen <strong>wellspring</strong>.</li><li>You gain <strong>Resistance</strong> to the damage type corresponding to the chosen <strong>wellspring</strong>.</li><li>When you deal damage, you may change its type to the one corresponding to the chosen <strong>wellspring</strong>. If you do, that damage ignores Resistances.</li></ul>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.V9geXDcQmBrjsnfF.Item.CUQwMQAj2cU6DTrD"
+        }
+      },
+      "class_lore": "<p><strong>Invokers</strong> research the innate energy of souls and the way it spontaneously flows and manifests throughout their surroundings. Even if their art relies on calling upon the power of the elements, they adapt to the existing power sources rather than force an unnatural outcome and upset the flow of spirits.</p><p>That said, Invokers remain formidable adventurers: they boast great flexibility and a unique affinity for elemental creatures.</p>",
+      "class_skill": {
+        "GQWdXx8sDnmAV7VY": {
+          "id": "${item.id}",
+          "name": "Linked Invocation",
+          "skill_cost": "",
+          "skill_description": "<p>When you perform an <strong>invocation</strong>, you may spend up to <strong>[SL × 10]</strong> additional Mind Points. For every <strong>10 Mind Points</strong> you spend this way, the invocation may target an additional creature you can see.</p>\n",
+          "skill_maxLevel": 3,
+          "skill_type": "Passive",
+          "uuid": "Actor.V9geXDcQmBrjsnfF.Item.GQWdXx8sDnmAV7VY"
+        },
+        "ROzv7AiGgUlduqEG": {
+          "id": "${item.id}",
+          "name": "Ripples",
+          "skill_cost": "",
+          "skill_description": "<p>After an enemy you can see loses Hit Points due to damage dealt by one of your allies, if that damage was increased by one or more of your <strong>“hex” invocations</strong>, you may perform a <strong>free attack</strong> with a weapon you have equipped. This attack may only target that enemy, and receives a bonus equal to <strong>[SL]</strong> to its Accuracy Check; if it is successful, all its damage becomes of the same type dealt by your ally, and all <strong>“hex” invocations</strong> present on its target end immediately after the attack has been resolved.</p>\n<p>If two or more enemies trigger this Skill at the same time, you can perform a <strong>free attack</strong> against each of them, in whatever order you prefer.</p>\n",
+          "skill_maxLevel": 5,
+          "skill_type": "Active",
+          "uuid": "Actor.V9geXDcQmBrjsnfF.Item.ROzv7AiGgUlduqEG"
+        },
+        "eKI1ozDDSSH3c4s7": {
+          "id": "${item.id}",
+          "name": "Invocation",
+          "skill_cost": "",
+          "skill_description": "<p>You may use an action and spend 5 Mind Points to perform an <strong>invocation</strong>, drawing energy from one of the <strong>wellsprings</strong> present on the scene (see <strong>Invoker's</strong> <strong>Unique Mechanic</strong>). Your <strong>【SL】</strong> in this Skill determines which invocations you have access to.</p>",
+          "skill_maxLevel": 3,
+          "skill_type": "Other",
+          "uuid": "Actor.V9geXDcQmBrjsnfF.Item.eKI1ozDDSSH3c4s7"
+        },
+        "sPTX2h7JM3JAO8l6": {
+          "id": "${item.id}",
+          "name": "Elemental Harmony",
+          "skill_cost": "",
+          "skill_description": "<p>You may verbally communicate with creatures of the <strong>elemental</strong> Species.</p>\n<p>When you restore a creature’s Hit Points with an <strong>invocation</strong> or spell, if an <strong>elemental</strong> is present on the scene, the restored amount is increased by <strong>[SL × 5]</strong>.</p>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.V9geXDcQmBrjsnfF.Item.sPTX2h7JM3JAO8l6"
+        },
+        "yTxonuyFpBvvUfSp": {
+          "id": "${item.id}",
+          "name": "Wellspring Expansion",
+          "skill_cost": "",
+          "skill_description": "<p>As long as you have a weapon belonging to the <strong>arcane</strong>, <strong>bow</strong>, <strong>brawling</strong>, <strong>flail</strong>, <strong>sword</strong>, or <strong>thrown</strong> Category equipped, your <strong>“blast” invocations</strong> deal <strong>[SL]</strong> extra damage, and the extra damage granted by your <strong>“hex” invocations</strong> is increased by <strong>[SL]</strong>.</p>\n",
+          "skill_maxLevel": 5,
+          "skill_type": "Passive",
+          "uuid": "Actor.V9geXDcQmBrjsnfF.Item.yTxonuyFpBvvUfSp"
+        }
+      },
+      "flavor_text": "",
+      "martialArmor_equippable": false,
+      "martialMelee_equippable": false,
+      "martialRanged_equippable": false,
+      "martialShield_equippable": false,
+      "name": "Invoker",
+      "project_performable": false,
+      "ritual_performable": false
+    },
+    "statusEffects": {},
+    "template": "hoxC3HFCtMYGScIo",
+    "templateSystemUniqueVersion": 504201233
+  },
+  "type": "character"
+}

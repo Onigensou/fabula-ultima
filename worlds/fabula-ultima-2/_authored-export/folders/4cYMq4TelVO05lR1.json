@@ -1,0 +1,19 @@
+{
+  "_id": "4cYMq4TelVO05lR1",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1767440189558,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "Vg0nGevL0N3Wqh0D",
+  "name": "Tile System",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Macro"
+}

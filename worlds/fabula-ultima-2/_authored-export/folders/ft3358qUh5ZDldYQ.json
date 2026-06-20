@@ -1,0 +1,19 @@
+{
+  "_id": "ft3358qUh5ZDldYQ",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1745620239495,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.4.2"
+  },
+  "color": "#211a1b",
+  "description": "This folder contains all items embedded in game level items (items not embedded in an actor)",
+  "flags": {},
+  "folder": null,
+  "name": "CSB - Embedded Items Folder - DO NOT RENAME OR REMOVE",
+  "sort": 400000,
+  "sorting": "a",
+  "type": "Item"
+}

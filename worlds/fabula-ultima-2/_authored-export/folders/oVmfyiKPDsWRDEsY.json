@@ -1,0 +1,19 @@
+{
+  "_id": "oVmfyiKPDsWRDEsY",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": null,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "2.4.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "padrkH3YboI8X5kX",
+  "name": "The Frozen Waste",
+  "sort": 500000,
+  "sorting": "a",
+  "type": "RollTable"
+}

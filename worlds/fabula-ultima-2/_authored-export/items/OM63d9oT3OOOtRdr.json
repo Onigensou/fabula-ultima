@@ -1,0 +1,57 @@
+{
+  "_id": "OM63d9oT3OOOtRdr",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1756967394627,
+    "duplicateSource": "Item.ooo1vmilBi2YWAiH",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "2OplVa9fwLYbzD8b",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/flash.png",
+  "name": "Blade Adept",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 4800000,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Weaponmaster",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>While you have one or more <strong>melee dagger</strong> weapons equipped, you gain a +1 bonus to <strong>Defense</strong> and <strong>Magic Defense</strong>, and you treat those weapons as also belonging to the <strong>brawling</strong>, <strong>sword</strong>, and <strong>thrown</strong> Categories for the purpose of Skills and effects.</p>\n<p>Additionally, your attacks with weapons that belong to the <strong>dagger</strong> Category may target creatures that cannot normally be targeted by melee attacks.</p>\n",
+      "duration": "",
+      "heroic_requirement": "you must have mastered one or more Classes among Rogue and Weaponmaster",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Blade Adept",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "OM63d9oT3OOOtRdr"
+  },
+  "type": "equippableItem"
+}

@@ -1,0 +1,62 @@
+{
+  "_id": "VVQL9FRLhqbZt9zh",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757328804168,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "pRgb4VluJKFbbA0a",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Swordsman/icon_warri_ole.png",
+  "name": "Ole!",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 100000,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "check_bonus": "0",
+      "class": "Matador",
+      "cost": "-",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>As an action, Choose target creature who is able to see you, the target must perform a <strong>Free Attack </strong>with you as its <strong>single target</strong>, Reduce your <strong>Defense</strong> score by <strong>【SL x 2】</strong> for this attack, if the attack <strong>miss, </strong>you gain <strong>【SL】Adoration</strong>.</p>",
+      "duration": "Instantaneous",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "level": "1",
+      "max_level": "2",
+      "name": "Ole!",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "Range",
+      "skill_target": "One Creature",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "VVQL9FRLhqbZt9zh"
+  },
+  "type": "equippableItem"
+}

@@ -1,0 +1,725 @@
+{
+  "_id": "8XdohFASv0voFz4E",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1753926252524,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "lrk2jhOW5Ok9sgH1",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Zwei%20OfficialArt.png",
+  "items": [
+    {
+      "_id": "11oIbATAKKdeqBBA",
+      "_stats": {
+        "compendiumSource": "Item.dDT8OrIPHFQuyfQp",
+        "coreVersion": "12.343",
+        "createdTime": 1753928926141,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/15_RDM/acceleration.png",
+      "name": "Spellweave",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Spell Fencer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you cast<strong> </strong>an <strong>Offensive Spell, </strong>if you perform the 【Attack】action <em>(excluding Free Attack)  </em>during your previous turn, Gain 1 <strong>Resonance.</strong></p><p>When you cast an <strong>Offensive Spell, </strong>you may spend up to <strong>【SL】Resonance, </strong>For each Resonance you spent this way, increase the spell's <strong>Magic Check </strong>by 1 .</p><p>You may have up to <strong>【SL + 1】</strong>Resonance and you lose all Resonance at the end of each scene</p>",
+          "duration": "",
+          "isCheck": false,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Spellweave",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "dDT8OrIPHFQuyfQp"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "Cg58V0c4eEnUxDH5",
+      "_stats": {
+        "compendiumSource": "Item.GqVU8ps3IJp0KQ3Y",
+        "coreVersion": "12.343",
+        "createdTime": 1753928920110,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/15_RDM/moulinet.png",
+      "name": "Bladework",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Spell Fencer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you <strong>hit </strong>a creature with a weapon attack <em>(excluding Free Attack) </em> you regains <strong>【SL x 2】</strong>MP if you cast an <strong>offensive spell </strong>during your previous turn.</p>",
+          "duration": "",
+          "isCheck": false,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "5",
+          "name": "Bladework",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "GqVU8ps3IJp0KQ3Y"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "qpwpbA1tKsOxJbGv",
+      "_stats": {
+        "compendiumSource": "Item.4qw6XEVHQmERzZ8y",
+        "coreVersion": "12.343",
+        "createdTime": 1753928924688,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/15_RDM/fleche.png",
+      "name": "Spellblade Rhapsody",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Spell Fencer",
+          "cost": "2 Resonance",
+          "damage_bonus": "0",
+          "description": "<p>Spend <strong>2 Resonance, </strong>During this turn, you may perform both the <strong>【Attack】</strong>action and <strong>【Spell】</strong>action, the spell you cast this way must be an <strong>Offensive Spell </strong>and must have the mind point cost of equal to or less than <strong>【SL x 10】</strong></p>",
+          "duration": "Turn",
+          "isCheck": false,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "3",
+          "name": "Spellblade Rhapsody",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "self",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "4qw6XEVHQmERzZ8y"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "r9FPZrEB2v4Nbn4R",
+      "_stats": {
+        "compendiumSource": "Item.XwoHbYxHvfqvHHAZ",
+        "coreVersion": "12.343",
+        "createdTime": 1753928923647,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/15_RDM/riposte.png",
+      "name": "Mystic Infusion",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Spell Fencer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you cast an <strong>Offensive Spell, </strong>you may have the next <strong>Weapon Attack </strong>you perform deals the damage type of the spell you've cast instead the weapon's normal type</p>",
+          "duration": "",
+          "isCheck": false,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Mystic Infusion",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "XwoHbYxHvfqvHHAZ"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "Rk7U5oKGepTDAz9X",
+      "_stats": {
+        "compendiumSource": "Item.bmXjtAU8XKmnVQ0D",
+        "coreVersion": "12.343",
+        "createdTime": 1753928922673,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/15_RDM/scorch.png",
+      "name": "Master of Duality",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Spell Fencer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>The Spells use to trigger the effects of 【<strong>Bladework】 </strong>and 【<strong>Spellweave】</strong> no longer needs to be an <strong>Offensive Spell, </strong>additionally, you may also cast <strong>Non-Offensive Spells </strong>when you use <strong>【Spellblade Rhapsody】</strong> as well</p>",
+          "duration": "",
+          "isCheck": false,
+          "isHeroic": true,
+          "level": "1",
+          "max_level": "1",
+          "name": "Master of Duality",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "bmXjtAU8XKmnVQ0D"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "wx5wTGlFPa49QzmU",
+      "_stats": {
+        "compendiumSource": "Item.grSkhZspOgRbAgCJ",
+        "coreVersion": "12.343",
+        "createdTime": 1753928921412,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/ruin_II.png",
+      "name": "Book and Blade",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Spell Fencer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>You may equipped a <strong>Two-handed Arcane weapon</strong> with one hand</p>",
+          "duration": "",
+          "isCheck": false,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Book and Blade",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "grSkhZspOgRbAgCJ"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Spell Fencer",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar4": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "DEF",
+            "max": 13,
+            "maxcolor": "#f26d40",
+            "mincolor": "#f26d40",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 13
+          },
+          "bar5": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar5",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MDEF",
+            "max": 10,
+            "maxcolor": "#26d6ed",
+            "mincolor": "#26d6ed",
+            "opacity": null,
+            "order": 4,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 10
+          }
+        }
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Spell Fencer",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Zwei%20OfficialArt.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 600000,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {
+      "also_text": "Arcane Duelist, Magic Knight, Blade Mage",
+      "benefit_dropdown": "choice_benefit",
+      "classMechanic_text": "<h1>Resonance</h1><p></p><h2>SYMPHONY OF MAGIC AND STEEL</h2><p><strong>Resonance</strong> represents the harmony between your blade and spellcraft—an energy that builds as you weave martial strikes with arcane precision. As your control over both disciplines grows, so too does your ability to blend them into a seamless rhythm of offense.</p><p></p><h2>GAINING RESONANCE</h2><p>You begin generating Resonance once you acquire the <strong>【Spellweave】</strong> skill. Each time you cast an <strong>Offensive Spell</strong> and follow up with an <strong>【Attack】</strong> action (excluding Free Attacks), you gain 1 Resonance at the end of your turn.</p><p>The maximum amount of Resonance you can store is equal to your <strong>【Spellweave】</strong> level +1. All Resonance is lost when the scene ends.</p><p></p><h2>SPENDING RESONANCE</h2><p>Resonance can be expended in various ways, such as enhancing spell potency through <strong>【Spellweave】</strong>—increasing your <strong>Magic Check</strong> by 1 for each point spent—or unlocking advanced techniques like <strong>【Spellblade Rhapsody】</strong>, which allows you to cast an <strong>Offensive Spell</strong> and strike in the same turn.</p><p>Other skills, like <strong>【Bladework】</strong>, synergize with your spellcasting by refunding MP if you attacked after casting. This creates a tempo-based playstyle where alternating between spells and attacks keeps your momentum flowing.</p><p>Mastering Resonance means playing both parts of the symphony—ensuring neither blade nor spell stands alone.</p>",
+      "class_facet": {
+        "11oIbATAKKdeqBBA": {
+          "facet_cost": "",
+          "facet_description": "<p>When you cast<strong> </strong>an <strong>Offensive Spell, </strong>if you perform the 【Attack】action <em>(excluding Free Attack)  </em>during your previous turn, Gain 1 <strong>Resonance.</strong></p><p>When you cast an <strong>Offensive Spell, </strong>you may spend up to <strong>【SL】Resonance, </strong>For each Resonance you spent this way, increase the spell's <strong>Magic Check </strong>by 1 .</p><p>You may have up to <strong>【SL + 1】</strong>Resonance and you lose all Resonance at the end of each scene</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Spellweave",
+          "uuid": "Actor.8XdohFASv0voFz4E.Item.11oIbATAKKdeqBBA"
+        },
+        "Cg58V0c4eEnUxDH5": {
+          "facet_cost": "",
+          "facet_description": "<p>When you <strong>hit </strong>a creature with a weapon attack <em>(excluding Free Attack) </em> you regains <strong>【SL x 2】</strong>MP if you cast an <strong>offensive spell </strong>during your previous turn.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Bladework",
+          "uuid": "Actor.8XdohFASv0voFz4E.Item.Cg58V0c4eEnUxDH5"
+        },
+        "Rk7U5oKGepTDAz9X": {
+          "facet_cost": "",
+          "facet_description": "<p>The Spells use to trigger the effects of 【<strong>Bladework】 </strong>and 【<strong>Spellweave】</strong> no longer needs to be an <strong>Offensive Spell, </strong>additionally, you may also cast <strong>Non-Offensive Spells </strong>when you use <strong>【Spellblade Rhapsody】</strong> as well</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Master of Duality",
+          "uuid": "Actor.8XdohFASv0voFz4E.Item.Rk7U5oKGepTDAz9X"
+        },
+        "qpwpbA1tKsOxJbGv": {
+          "facet_cost": "2 Resonance",
+          "facet_description": "<p>Spend <strong>2 Resonance, </strong>During this turn, you may perform both the <strong>【Attack】</strong>action and <strong>【Spell】</strong>action, the spell you cast this way must be an <strong>Offensive Spell </strong>and must have the mind point cost of equal to or less than <strong>【SL x 10】</strong></p>",
+          "facet_offensive": "",
+          "facet_target": "self",
+          "id": "${item.id}",
+          "name": "Spellblade Rhapsody",
+          "uuid": "Actor.8XdohFASv0voFz4E.Item.qpwpbA1tKsOxJbGv"
+        },
+        "r9FPZrEB2v4Nbn4R": {
+          "facet_cost": "",
+          "facet_description": "<p>When you cast an <strong>Offensive Spell, </strong>you may have the next <strong>Weapon Attack </strong>you perform deals the damage type of the spell you've cast instead the weapon's normal type</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Mystic Infusion",
+          "uuid": "Actor.8XdohFASv0voFz4E.Item.r9FPZrEB2v4Nbn4R"
+        },
+        "wx5wTGlFPa49QzmU": {
+          "facet_cost": "",
+          "facet_description": "<p>You may equipped a <strong>Two-handed Arcane weapon</strong> with one hand</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Book and Blade",
+          "uuid": "Actor.8XdohFASv0voFz4E.Item.wx5wTGlFPa49QzmU"
+        }
+      },
+      "class_heroicSkill": {
+        "Rk7U5oKGepTDAz9X": {
+          "id": "${item.id}",
+          "name": "Master of Duality",
+          "skill_cost": "",
+          "skill_description": "<p>The Spells use to trigger the effects of 【<strong>Bladework】 </strong>and 【<strong>Spellweave】</strong> no longer needs to be an <strong>Offensive Spell, </strong>additionally, you may also cast <strong>Non-Offensive Spells </strong>when you use <strong>【Spellblade Rhapsody】</strong> as well</p>",
+          "skill_isHeroic": true,
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.8XdohFASv0voFz4E.Item.Rk7U5oKGepTDAz9X"
+        }
+      },
+      "class_lore": "<blockquote><p>The Spell Fencer<strong> </strong>is a master of both swordmanship and arcane arts, seemlessly blending the elegance of blade technique with the mystic power of spells. They are versatile combatants, wielding their enchanted rapiers to channel and manipulate elemental energies</p></blockquote>",
+      "class_skill": {
+        "11oIbATAKKdeqBBA": {
+          "id": "${item.id}",
+          "name": "Spellweave",
+          "skill_cost": "",
+          "skill_description": "<p>When you cast<strong> </strong>an <strong>Offensive Spell, </strong>if you perform the 【Attack】action <em>(excluding Free Attack)  </em>during your previous turn, Gain 1 <strong>Resonance.</strong></p><p>When you cast an <strong>Offensive Spell, </strong>you may spend up to <strong>【SL】Resonance, </strong>For each Resonance you spent this way, increase the spell's <strong>Magic Check </strong>by 1 .</p><p>You may have up to <strong>【SL + 1】</strong>Resonance and you lose all Resonance at the end of each scene</p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.8XdohFASv0voFz4E.Item.11oIbATAKKdeqBBA"
+        },
+        "Cg58V0c4eEnUxDH5": {
+          "id": "${item.id}",
+          "name": "Bladework",
+          "skill_cost": "",
+          "skill_description": "<p>When you <strong>hit </strong>a creature with a weapon attack <em>(excluding Free Attack) </em> you regains <strong>【SL x 2】</strong>MP if you cast an <strong>offensive spell </strong>during your previous turn.</p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 5,
+          "skill_type": "Passive",
+          "uuid": "Actor.8XdohFASv0voFz4E.Item.Cg58V0c4eEnUxDH5"
+        },
+        "Rk7U5oKGepTDAz9X": {
+          "id": "${item.id}",
+          "name": "Master of Duality",
+          "skill_cost": "",
+          "skill_description": "<p>The Spells use to trigger the effects of 【<strong>Bladework】 </strong>and 【<strong>Spellweave】</strong> no longer needs to be an <strong>Offensive Spell, </strong>additionally, you may also cast <strong>Non-Offensive Spells </strong>when you use <strong>【Spellblade Rhapsody】</strong> as well</p>",
+          "skill_isHeroic": true,
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.8XdohFASv0voFz4E.Item.Rk7U5oKGepTDAz9X"
+        },
+        "qpwpbA1tKsOxJbGv": {
+          "id": "${item.id}",
+          "name": "Spellblade Rhapsody",
+          "skill_cost": "2 Resonance",
+          "skill_description": "<p>Spend <strong>2 Resonance, </strong>During this turn, you may perform both the <strong>【Attack】</strong>action and <strong>【Spell】</strong>action, the spell you cast this way must be an <strong>Offensive Spell </strong>and must have the mind point cost of equal to or less than <strong>【SL x 10】</strong></p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 3,
+          "skill_type": "Active",
+          "uuid": "Actor.8XdohFASv0voFz4E.Item.qpwpbA1tKsOxJbGv"
+        },
+        "r9FPZrEB2v4Nbn4R": {
+          "id": "${item.id}",
+          "name": "Mystic Infusion",
+          "skill_cost": "",
+          "skill_description": "<p>When you cast an <strong>Offensive Spell, </strong>you may have the next <strong>Weapon Attack </strong>you perform deals the damage type of the spell you've cast instead the weapon's normal type</p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.8XdohFASv0voFz4E.Item.r9FPZrEB2v4Nbn4R"
+        },
+        "wx5wTGlFPa49QzmU": {
+          "id": "${item.id}",
+          "name": "Book and Blade",
+          "skill_cost": "",
+          "skill_description": "<p>You may equipped a <strong>Two-handed Arcane weapon</strong> with one hand</p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.8XdohFASv0voFz4E.Item.wx5wTGlFPa49QzmU"
+        }
+      },
+      "flavor_text": "<p style=\"text-align: center\"><span style=\"font-family: Amiri\"><em>Enchantments weave within every swing</em></span></p><p style=\"text-align: center\"><span style=\"font-family: Amiri\"><em>a symphony of magic and steel</em></span></p>",
+      "martialArmor_equippable": false,
+      "martialMelee_equippable": true,
+      "martialRanged_equippable": false,
+      "martialShield_equippable": false,
+      "name": "Spell Fencer",
+      "project_performable": false,
+      "ritual_performable": false
+    },
+    "statusEffects": {},
+    "template": "hoxC3HFCtMYGScIo",
+    "templateSystemUniqueVersion": 504201233
+  },
+  "type": "character"
+}

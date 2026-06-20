@@ -1,0 +1,54 @@
+{
+  "_id": "VPlsMKanVezV4M6E",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1741633596184,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "consumable",
+        "fromTemplate": "xdZPhVF8AnmwQEPM",
+        "itemId": "VPlsMKanVezV4M6E",
+        "itemName": "Aunction Trick: Power Bid",
+        "pickedOldProps": {
+          "consumable_cost": "0",
+          "consumable_description": "<p>Perform a【<strong>MIG + WIL】</strong>check against an aunction opponent's <strong>Difficulty Level</strong>. On success, prevents the target form <strong>Bidding </strong>for 1 turn.</p>",
+          "consumable_ip": "0",
+          "consumable_label": ""
+        },
+        "ts": 1769647435158
+      }
+    }
+  },
+  "folder": "HwnnjljHsr5F7AqM",
+  "img": "icons/skills/social/diplomacy-handshake-gray.webp",
+  "name": "Aunction Trick: Power Bid",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "description": "<p>Perform a【<strong>MIG + WIL】</strong>check against an aunction opponent's <strong>Difficulty Level</strong>. On success, prevents the target form <strong>Bidding </strong>for 1 turn.</p>",
+      "ip_cost": "0",
+      "item_cost": "0",
+      "item_type": "consumable",
+      "name": "Aunction Trick: Power Bid"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "VPlsMKanVezV4M6E"
+  },
+  "type": "equippableItem"
+}

@@ -1,0 +1,19 @@
+{
+  "_id": "VIOEoJCJMxZPFOxA",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1758079221908,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "VVjpCERIXMrOJna7",
+  "name": "Tamer",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

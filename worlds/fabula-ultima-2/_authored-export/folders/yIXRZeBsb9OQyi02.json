@@ -1,0 +1,19 @@
+{
+  "_id": "yIXRZeBsb9OQyi02",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1767664548626,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "color": "#b93737",
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "⚔️ Equipments",
+  "sort": 100000,
+  "sorting": "m",
+  "type": "Item"
+}

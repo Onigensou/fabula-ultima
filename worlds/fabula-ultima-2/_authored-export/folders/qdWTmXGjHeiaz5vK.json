@@ -1,0 +1,19 @@
+{
+  "_id": "qdWTmXGjHeiaz5vK",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1747378518793,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.4.2"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "faDXweVXMG6e5TcA",
+  "name": "Supports",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

@@ -1,0 +1,45 @@
+{
+  "_id": "O60Tor2oOync88qa",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1699201035207,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    }
+  },
+  "folder": "bLF9ovW1xUTIR9kP",
+  "img": "https://assets.forge-vtt.com/610e14108b6b6f68086799f0/Chara/Fabu/Skill_Icon/image_2025-02-07_185457243.png",
+  "name": "Ship-mounted machine gun",
+  "ownership": {
+    "default": 0,
+    "t41knaXNbgCEygM5": 3
+  },
+  "sort": 100000,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Pilot",
+      "cost": "-",
+      "damage_bonus": "10",
+      "description": "<p>Ranged <br><br>Can select 2 separate targets to take 10 damage instead of rolling damage.<br>Both use same ToHit dice.</p>",
+      "duration": "Instant",
+      "name": "Ship-mounted machine gun",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "INS",
+      "target": "Single, ranged (special)",
+      "type_damage": "Piercing"
+    },
+    "template": "FZmpKcQRP7hZQqbV",
+    "templateSystemUniqueVersion": 1700837225,
+    "unique": true,
+    "uniqueId": "O60Tor2oOync88qa"
+  },
+  "type": "equippableItem"
+}

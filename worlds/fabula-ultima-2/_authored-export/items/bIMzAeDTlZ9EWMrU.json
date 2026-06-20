@@ -1,0 +1,55 @@
+{
+  "_id": "bIMzAeDTlZ9EWMrU",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1738331857657,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "consumable",
+        "fromTemplate": "xdZPhVF8AnmwQEPM",
+        "itemId": "bIMzAeDTlZ9EWMrU",
+        "itemName": "Blue Bovine Recipe",
+        "pickedOldProps": {
+          "consumable_cost": "450",
+          "consumable_description": "<ul><li>Learned how to create <strong>Blue Bovine</strong> with <strong>2 IP</strong></li></ul>",
+          "consumable_flavor": "",
+          "consumable_ip": "0",
+          "consumable_label": ""
+        },
+        "ts": 1769647435337
+      }
+    }
+  },
+  "folder": "3xHGNagIXPyzukcU",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/book.png",
+  "name": "Blue Bovine Recipe",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 100000,
+  "system": {
+    "container": null,
+    "props": {
+      "description": "<ul><li>Learned how to create <strong>Blue Bovine</strong> with <strong>2 IP</strong></li></ul>",
+      "ip_cost": "0",
+      "item_cost": "450",
+      "item_type": "consumable",
+      "name": "Blue Bovine Recipe"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "bIMzAeDTlZ9EWMrU"
+  },
+  "type": "equippableItem"
+}

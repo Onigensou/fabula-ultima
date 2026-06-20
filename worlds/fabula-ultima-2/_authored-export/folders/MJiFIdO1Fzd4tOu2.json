@@ -1,0 +1,19 @@
+{
+  "_id": "MJiFIdO1Fzd4tOu2",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1773639413312,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "yrt0v9PKovSRpKQJ",
+  "name": "Current NPC",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Actor"
+}

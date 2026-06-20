@@ -1,0 +1,1287 @@
+{
+  "_id": "HwieecMz3RnlzqlI",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1747075758042,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.5.0"
+    },
+    "theatre": {
+      "baseinsert": "https://iili.io/36poEZJ.png",
+      "disabledefault": false,
+      "emotes": {
+        "angry": {
+          "insert": ""
+        },
+        "annoyed": {
+          "insert": ""
+        },
+        "awe-struck": {
+          "insert": ""
+        },
+        "blushing": {
+          "insert": ""
+        },
+        "carefree": {
+          "insert": ""
+        },
+        "confused": {
+          "insert": ""
+        },
+        "cry": {
+          "insert": ""
+        },
+        "dissatisfied": {
+          "insert": ""
+        },
+        "dizzy": {
+          "insert": ""
+        },
+        "frown": {
+          "insert": ""
+        },
+        "frustrated": {
+          "insert": ""
+        },
+        "grin": {
+          "insert": ""
+        },
+        "happy": {
+          "insert": ""
+        },
+        "happytears": {
+          "insert": ""
+        },
+        "hearts": {
+          "insert": ""
+        },
+        "idea": {
+          "insert": ""
+        },
+        "innocent": {
+          "insert": ""
+        },
+        "kiss": {
+          "insert": ""
+        },
+        "laughing": {
+          "insert": ""
+        },
+        "laughingsquint": {
+          "insert": ""
+        },
+        "meh": {
+          "insert": ""
+        },
+        "mischevious": {
+          "insert": ""
+        },
+        "panic": {
+          "insert": ""
+        },
+        "playful": {
+          "insert": ""
+        },
+        "rofl": {
+          "insert": ""
+        },
+        "sad": {
+          "insert": ""
+        },
+        "scared": {
+          "insert": ""
+        },
+        "serious": {
+          "insert": ""
+        },
+        "sleeping": {
+          "insert": ""
+        },
+        "smile": {
+          "insert": ""
+        },
+        "smug": {
+          "insert": ""
+        },
+        "speechless": {
+          "insert": ""
+        },
+        "surprised": {
+          "insert": ""
+        },
+        "thinking": {
+          "insert": ""
+        },
+        "tongue": {
+          "insert": ""
+        },
+        "wink": {
+          "insert": ""
+        },
+        "worried": {
+          "insert": ""
+        }
+      },
+      "name": "",
+      "optalign": "top",
+      "settings": {
+        "emote": null,
+        "textcolor": null,
+        "textflyin": "typewriter",
+        "textfont": null,
+        "textsize": null,
+        "textstanding": "none"
+      }
+    }
+  },
+  "folder": "i6egGaJbyenxOAFD",
+  "img": "https://iili.io/36pIAGf.png",
+  "items": [
+    {
+      "_id": "Fd2qk7mODDALtHZS",
+      "_stats": {
+        "compendiumSource": "Item.jWg0UIBsRZp9IxAr",
+        "coreVersion": "12.343",
+        "createdTime": 1747572501112,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.4.2"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://i.imgur.com/go7OJpQ.png",
+      "name": "MARI",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "acess": true,
+          "cost": "0",
+          "def_bonus": "",
+          "defense": "1",
+          "defense_include_dex": false,
+          "description": "<p><span style=\"font-family: Roboto, Arial, sans-serif\"><strong>Passive ability: Cursed object</strong><br style=\"color: rgb(232, 234, 237); font-family: Roboto, Arial, sans-serif; font-size: 16px; font-style: normal; font-variant-ligatures: none; font-variant-caps: normal; font-weight: 400; letter-spacing: 0.1px; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: pre-wrap; background-color: rgb(32, 33, 36); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">+1 DEF<br style=\"color: rgb(232, 234, 237); font-family: Roboto, Arial, sans-serif; font-size: 16px; font-style: normal; font-variant-ligatures: none; font-variant-caps: normal; font-weight: 400; letter-spacing: 0.1px; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: pre-wrap; background-color: rgb(32, 33, 36); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">This item is cannot be removed.<br style=\"color: rgb(232, 234, 237); font-family: Roboto, Arial, sans-serif; font-size: 16px; font-style: normal; font-variant-ligatures: none; font-variant-caps: normal; font-weight: 400; letter-spacing: 0.1px; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: pre-wrap; background-color: rgb(32, 33, 36); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\"><br style=\"color: rgb(232, 234, 237); font-family: Roboto, Arial, sans-serif; font-size: 16px; font-style: normal; font-variant-ligatures: none; font-variant-caps: normal; font-weight: 400; letter-spacing: 0.1px; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: pre-wrap; background-color: rgb(32, 33, 36); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\"><strong>Active ability: Forced Duck (Reaction)</strong><br style=\"color: rgb(232, 234, 237); font-family: Roboto, Arial, sans-serif; font-size: 16px; font-style: normal; font-variant-ligatures: none; font-variant-caps: normal; font-weight: 400; letter-spacing: 0.1px; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: pre-wrap; background-color: rgb(32, 33, 36); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">1/round <br style=\"color: rgb(232, 234, 237); font-family: Roboto, Arial, sans-serif; font-size: 16px; font-style: normal; font-variant-ligatures: none; font-variant-caps: normal; font-weight: 400; letter-spacing: 0.1px; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: pre-wrap; background-color: rgb(32, 33, 36); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">+2 DEF until the end of this turn.</span></p>",
+          "details_roller": "Show",
+          "flavor_text": "<p><em>Mysterious pendant that can speaks to Carla.</em></p>",
+          "initiative": "0",
+          "magic_defense": "0",
+          "magic_defense_include_ins": false,
+          "mdef_bonus": "",
+          "name": "MARI",
+          "set_name": ""
+        },
+        "template": "r0yZpLPAK9VXhM2p",
+        "templateSystemUniqueVersion": 1853581118,
+        "unique": true,
+        "uniqueId": "jWg0UIBsRZp9IxAr"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "Gdd0BJlSyoVKF7ct",
+      "_stats": {
+        "compendiumSource": "Item.wj3d3T5zY4hd7xqH",
+        "coreVersion": "12.343",
+        "createdTime": 1747282793769,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.4.2"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "systems/pf2e/icons/equipment/staves/staff-of-impossible-visions.webp",
+      "name": "Hookah",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "category": "Arcane",
+          "check": "Check",
+          "check_bonus": "2",
+          "cost": "300",
+          "damage_bonus": "7",
+          "description": "<p><strong>Accurate</strong></p><p>Adds a +2 bonus to the weapon’s Accuracy Check formula.</p><p><strong>Defense Boost</strong></p><p>You gain a +2 bonus to Defense, and you are treated as having a shield equipped for the sake of your Skills (for instance, Defensive Mastery or Dodge; see Core Rulebook, page 197 and 203)</p><p><strong>Elemental</strong></p><p>Choose air, bolt, dark, earth, fire, ice, light or <strong>poison</strong>. The weapon now deals damage of the chosen type instead of physical, and also deals 2 extra damage.</p><hr contenteditable=\"false\"><p>Carla's bong</p><p></p>",
+          "hand_slots": "Two-handed",
+          "martial": false,
+          "name": "Hookah",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "INS",
+          "set_name": "",
+          "type_damage": "Poison",
+          "weapon_range": "Ranged"
+        },
+        "template": "gIRU9XGqYeMBwBN9",
+        "templateSystemUniqueVersion": 2814471460,
+        "unique": false,
+        "uniqueId": "wj3d3T5zY4hd7xqH"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "NqPhZPv5WpH5Ma80",
+      "_stats": {
+        "compendiumSource": "Item.YdYhFx1vrvod4P2Y",
+        "coreVersion": "12.343",
+        "createdTime": 1747559729086,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/item%20icon.pnghood.png",
+      "name": "Sage Robe",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "acess": false,
+          "cost": "0",
+          "def_bonus": "+1",
+          "defense": "0",
+          "defense_include_dex": true,
+          "initiative": "-2",
+          "magic_defense": "0",
+          "magic_defense_include_ins": true,
+          "martial": false,
+          "mdef_bonus": "+2",
+          "name": "Sage Robe",
+          "set_name": "",
+          "shield": false
+        },
+        "template": "5Z0gKtN5R51ebJOa",
+        "templateSystemUniqueVersion": 2929120018,
+        "unique": false,
+        "uniqueId": "YdYhFx1vrvod4P2Y"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "SMdMPPyUuBM3vvIb",
+      "_stats": {
+        "compendiumSource": "Item.ODQqacixTzDhX9DP",
+        "coreVersion": "12.343",
+        "createdTime": 1748022892747,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.4.2"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "systems/pf2e/icons/equipment/weapons/slide-pistol.webp",
+      "name": "Antipathy Round",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "category": "Firearm",
+          "check": "Check",
+          "check_bonus": "5",
+          "cost": "2000",
+          "damage_bonus": "10",
+          "description": "<p><span style=\"font-family: Roboto, Arial, sans-serif\">5 charges <br style=\"color: rgb(232, 234, 237); font-family: Roboto, Arial, sans-serif; font-size: 16px; font-style: normal; font-variant-ligatures: none; font-variant-caps: normal; font-weight: 400; letter-spacing: 0.1px; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: pre-wrap; background-color: rgb(32, 33, 36); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">This weapon damage automatically change to any type that is target vulnerability (If there is more than one, It can change to damage type of your choice)</span></p><hr contenteditable=\"false\" class=\"\"><p><span style=\"font-family: Roboto, Arial, sans-serif\"><em>Un-fired powerful bullets from incompetent gunslinger</em></span></p>",
+          "flavor_text": "",
+          "hand_slots": "Two-handed",
+          "martial": false,
+          "name": "Antipathy Round",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "INS",
+          "set_name": "",
+          "type_damage": "Physical",
+          "weapon_range": "Ranged"
+        },
+        "template": "gIRU9XGqYeMBwBN9",
+        "templateSystemUniqueVersion": 2814471460,
+        "unique": false,
+        "uniqueId": "ODQqacixTzDhX9DP"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "VWh2A5uf2KBY1Le0",
+      "_stats": {
+        "compendiumSource": "Item.I3pJvA7mt6xWqWyQ",
+        "coreVersion": "12.343",
+        "createdTime": 1747580410389,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "icons/magic/death/hand-undead-skeleton-fire-green.webp",
+      "name": "Drain Vigor",
+      "ownership": {
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 100000,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Entropist",
+          "cost": "10",
+          "damage_bonus": "15",
+          "description": "<p>You consume a creature's psyche. The target loses <strong>【HR + 15】</strong> Mind Points. Then, you recover an amount of Mind Points equal to half the Mind Points loss they suffered (if the loss was reduced to 0 in some way, you recover none).</p>",
+          "duration": "Instantaneous",
+          "name": "Drain Vigor",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "target": "One Creature",
+          "type_damage": "Dark"
+        },
+        "template": "FZmpKcQRP7hZQqbV",
+        "templateSystemUniqueVersion": 1700837225,
+        "unique": false,
+        "uniqueId": "I3pJvA7mt6xWqWyQ"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "Z0Y1lratFO1ukAU3",
+      "_stats": {
+        "compendiumSource": "Item.1mSrlp9MkENXV8jr",
+        "coreVersion": "12.343",
+        "createdTime": 1748029593488,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.4.2"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "systems/pf2e/icons/equipment/alchemical-items/alchemical-elixirs/antiplague.webp",
+      "name": "Strong Spirit",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "consumable_cost": "200",
+          "consumable_description": "<p><span style=\"font-family: Roboto, Arial, sans-serif\"><strong>+1 Willpower die size</strong><br style=\"color: rgb(232, 234, 237); font-family: Roboto, Arial, sans-serif; font-size: 16px; font-style: normal; font-variant-ligatures: none; font-variant-caps: normal; font-weight: 400; letter-spacing: 0.1px; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: pre-wrap; background-color: rgb(32, 33, 36); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">Until rest.</span></p><hr><p><em>Bottled Courage for every occasion.</em></p>",
+          "consumable_label": "",
+          "name": "Strong Spirit"
+        },
+        "template": "xdZPhVF8AnmwQEPM",
+        "templateSystemUniqueVersion": 3725551061,
+        "unique": false,
+        "uniqueId": "1mSrlp9MkENXV8jr"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "zFG6vDIFwzTECSZt",
+      "_stats": {
+        "compendiumSource": "Item.OemPdYeOs5FkUj1M",
+        "coreVersion": "12.343",
+        "createdTime": 1747580415336,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "icons/magic/death/hand-undead-skeleton-fire-pink.webp",
+      "name": "Drain Spirit",
+      "ownership": {
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 200000,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Entropist",
+          "cost": "5",
+          "damage_bonus": "20",
+          "description": "<p>You consume a creature's psyche. The target loses <strong>【HR + 20】</strong> Mind Points. Then, you recover an amount of Mind Points equal to half the Mind Points loss they suffered (if the loss was reduced to 0 in some way, you recover none).</p>",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "effect_kind": "grant",
+              "effect_label": "drain_recover",
+              "grant_amount": "MP_DEALT / 2",
+              "grant_resource": "mp",
+              "target_ref": "ds_self"
+            },
+            "1": {
+              "$deleted": false,
+              "auto_confirm_when_obvious": true,
+              "candidate_source": "self",
+              "category": "",
+              "count": 1,
+              "effect_kind": "targeting",
+              "effect_label": "ds_self",
+              "iteration_mode": "together",
+              "mode": "exact",
+              "skip_when_passive": true
+            }
+          },
+          "name": "Drain Spirit",
+          "post_damage_effect_ref": "drain_recover",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "target": "One creature",
+          "type_damage": "Mind Points"
+        },
+        "template": "FZmpKcQRP7hZQqbV",
+        "templateSystemUniqueVersion": 1700837225,
+        "unique": false,
+        "uniqueId": "OemPdYeOs5FkUj1M"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Carla Piller",
+  "ownership": {
+    "7hKw8KGsimboeDif": 3,
+    "NpGkA7uxaarkPiwS": 3,
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0,
+    "wNzPmItLYCKE1I8t": 3,
+    "yL2PQxh3R9ddt0te": 3
+  },
+  "prototypeToken": {
+    "actorLink": true,
+    "alpha": 0.95,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": 1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar4": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "DEF",
+            "max": 13,
+            "maxcolor": "#f26d40",
+            "mincolor": "#f26d40",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 0,
+            "ownerVisibility": 0,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 13
+          },
+          "bar5": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar5",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MDEF",
+            "max": 10,
+            "maxcolor": "#26d6ed",
+            "mincolor": "#26d6ed",
+            "opacity": null,
+            "order": 4,
+            "otherVisibility": 0,
+            "ownerVisibility": 0,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 10
+          },
+          "bar6": {
+            "attribute": "attributeBar.zero_power_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar6",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#ff5900",
+            "mincolor": "#ffdd00",
+            "opacity": null,
+            "order": 6,
+            "otherVisibility": 30,
+            "ownerVisibility": 35,
+            "position": "bottom-outer",
+            "shareHeight": false,
+            "style": "none",
+            "subdivisions": 6,
+            "subdivisionsOwner": true
+          },
+          "bar7": {
+            "attribute": "attributeBar.clock_brainwave",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar7",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#981aff",
+            "mincolor": "#dc62fe",
+            "opacity": null,
+            "order": 5,
+            "otherVisibility": 30,
+            "ownerVisibility": 35,
+            "position": "bottom-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": 4,
+            "subdivisionsOwner": true
+          }
+        }
+      },
+      "hex-size-support": {
+        "hideBorder": true,
+        "hideFill": false
+      },
+      "token-variants": {
+        "disableHUDButton": false,
+        "randomImgDefault": "https://assets.forge-vtt.com/5fb02919b573a96aaf33938c/https%3A/i.imgur.com/avatary0.png"
+      },
+      "token-z": {
+        "zIndex": 0
+      },
+      "wall-height": {
+        "tokenHeight": 0
+      }
+    },
+    "height": 2,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Carla Piller",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": true,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 0,
+      "enabled": false,
+      "subject": {
+        "scale": 0.98,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.58,
+      "fit": "cover",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1.2,
+      "scaleY": 1.2,
+      "src": "https://assets.forge-vtt.com/5fb02919b573a96aaf33938c/https%3A/i.imgur.com/avatary*.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 0,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "activeEffects": {},
+    "props": {
+      "accessory2_name": "",
+      "accessory_details": "<p><span style=\"font-family: Roboto, Arial, sans-serif\"><strong>Passive ability: Cursed object</strong><br style=\"color: rgb(232, 234, 237); font-family: Roboto, Arial, sans-serif; font-size: 16px; font-style: normal; font-variant-ligatures: none; font-variant-caps: normal; font-weight: 400; letter-spacing: 0.1px; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: pre-wrap; background-color: rgb(32, 33, 36); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">+1 DEF<br style=\"color: rgb(232, 234, 237); font-family: Roboto, Arial, sans-serif; font-size: 16px; font-style: normal; font-variant-ligatures: none; font-variant-caps: normal; font-weight: 400; letter-spacing: 0.1px; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: pre-wrap; background-color: rgb(32, 33, 36); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">This item is cannot be removed.<br style=\"color: rgb(232, 234, 237); font-family: Roboto, Arial, sans-serif; font-size: 16px; font-style: normal; font-variant-ligatures: none; font-variant-caps: normal; font-weight: 400; letter-spacing: 0.1px; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: pre-wrap; background-color: rgb(32, 33, 36); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\"><br style=\"color: rgb(232, 234, 237); font-family: Roboto, Arial, sans-serif; font-size: 16px; font-style: normal; font-variant-ligatures: none; font-variant-caps: normal; font-weight: 400; letter-spacing: 0.1px; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: pre-wrap; background-color: rgb(32, 33, 36); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\"><strong>Active ability: Forced Duck (Reaction)</strong><br style=\"color: rgb(232, 234, 237); font-family: Roboto, Arial, sans-serif; font-size: 16px; font-style: normal; font-variant-ligatures: none; font-variant-caps: normal; font-weight: 400; letter-spacing: 0.1px; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: pre-wrap; background-color: rgb(32, 33, 36); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">1/round <br style=\"color: rgb(232, 234, 237); font-family: Roboto, Arial, sans-serif; font-size: 16px; font-style: normal; font-variant-ligatures: none; font-variant-caps: normal; font-weight: 400; letter-spacing: 0.1px; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: pre-wrap; background-color: rgb(32, 33, 36); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">+2 DEF until the end of this turn.</span></p><hr class=\"\" contenteditable=\"false\"><p><em>Mysterious pendant that can speaks to Carla.</em></p>",
+      "accessory_name": "MARI",
+      "arcanism": false,
+      "armor_mod": "2",
+      "armor_name": "Sage robe",
+      "attack_accuracy_mod_all": "0",
+      "attack_accuracy_mod_melee": "0",
+      "attack_accuracy_mod_range": "0",
+      "attack_accuracy_mod_spell": "0",
+      "bond_1": "",
+      "bond_2": "",
+      "bond_3": "",
+      "bond_4": "",
+      "bond_5": "",
+      "bond_6": "",
+      "chanter_volume_mp_header": "MP",
+      "chanter_volume_mp_high": 30,
+      "chanter_volume_mp_low": 10,
+      "chanter_volume_mp_medium": 20,
+      "chanter_volume_target_high": "Every enemy who can hear you.",
+      "chanter_volume_target_low": "Yourself <b>or</b> another creature you can see who can hear you.",
+      "chanter_volume_target_medium": "Every ally who can hear you.",
+      "char_identity": "Girl from famous medic family that can hear voices from other side. ",
+      "check_roller": "Roll!",
+      "chimerism": false,
+      "class_list": {
+        "0": {
+          "$deleted": false,
+          "benefit": "mp",
+          "class_name": "Entropist",
+          "level": "8"
+        },
+        "1": {
+          "$deleted": false,
+          "benefit": "mp",
+          "class_name": "Hexer",
+          "level": "6"
+        },
+        "2": {
+          "$deleted": false,
+          "benefit": "mp",
+          "class_name": "Arcanist",
+          "level": "1"
+        }
+      },
+      "clock_brainwave": "2",
+      "clock_trade": "0",
+      "consumable_list": {
+        "Z0Y1lratFO1ukAU3": {
+          "consume_description": "<p><span style=\"font-family: Roboto, Arial, sans-serif\"><strong>+1 Willpower die size</strong><br style=\"color: rgb(232, 234, 237); font-family: Roboto, Arial, sans-serif; font-size: 16px; font-style: normal; font-variant-ligatures: none; font-variant-caps: normal; font-weight: 400; letter-spacing: 0.1px; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: pre-wrap; background-color: rgb(32, 33, 36); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">Until rest.</span></p><hr><p><em>Bottled Courage for every occasion.</em></p>",
+          "id": "Z0Y1lratFO1ukAU3",
+          "name": "Strong Spirit",
+          "roll": "",
+          "uuid": "Actor.HwieecMz3RnlzqlI.Item.Z0Y1lratFO1ukAU3"
+        }
+      },
+      "cooking_roller": "🔪Cook!",
+      "current_hp": "45",
+      "current_ip": "6",
+      "current_mp": "65",
+      "damage_receiving_mod_air": "0",
+      "damage_receiving_mod_all": "0",
+      "damage_receiving_mod_bolt": "0",
+      "damage_receiving_mod_dark": "0",
+      "damage_receiving_mod_earth": "0",
+      "damage_receiving_mod_fire": "0",
+      "damage_receiving_mod_ice": "0",
+      "damage_receiving_mod_light": "0",
+      "damage_receiving_mod_melee": "0",
+      "damage_receiving_mod_physical": "0",
+      "damage_receiving_mod_poison": "0",
+      "damage_receiving_mod_range": "0",
+      "dex_base": "6",
+      "dex_current": 6,
+      "draw_card": "Draw",
+      "draw_card_copy1": "Use",
+      "elementalism": false,
+      "emotion_1_1": "",
+      "emotion_1_2": "",
+      "emotion_1_3": "",
+      "emotion_2_1": "",
+      "emotion_2_2": "",
+      "emotion_2_3": "",
+      "emotion_3_1": "",
+      "emotion_3_2": "",
+      "emotion_3_3": "",
+      "emotion_4_1": "",
+      "emotion_4_2": "",
+      "emotion_4_3": "",
+      "emotion_5_1": "",
+      "emotion_5_2": "",
+      "emotion_5_3": "",
+      "emotion_6_1": "",
+      "emotion_6_2": "",
+      "emotion_6_3": "",
+      "entropism": false,
+      "experience": "0",
+      "experience_ui": "0",
+      "fp": "4",
+      "init_penalty": "0",
+      "ins_base": "10",
+      "ins_current": 10,
+      "inventory_label": "💼 Inventory",
+      "inventory_list": {},
+      "isAwake": false,
+      "isClarity": false,
+      "isDazed": false,
+      "isEnergized": false,
+      "isEnraged": false,
+      "isFocus": false,
+      "isPoisoned": false,
+      "isShaken": false,
+      "isSlow": true,
+      "isStrong": false,
+      "isSwift": false,
+      "isWeak": false,
+      "is_martialarmor": false,
+      "itemContainer2": {
+        "NqPhZPv5WpH5Ma80": {
+          "armor_description": "<p>ERROR</p>",
+          "armor_martial": false,
+          "id": "NqPhZPv5WpH5Ma80",
+          "name": "Sage Robe",
+          "roll": "",
+          "uuid": "Actor.HwieecMz3RnlzqlI.Item.NqPhZPv5WpH5Ma80"
+        }
+      },
+      "itemContainer4": {
+        "Fd2qk7mODDALtHZS": {
+          "acess_description": "<p><span style=\"font-family: Roboto, Arial, sans-serif\"><strong>Passive ability: Cursed object</strong><br style=\"color: rgb(232, 234, 237); font-family: Roboto, Arial, sans-serif; font-size: 16px; font-style: normal; font-variant-ligatures: none; font-variant-caps: normal; font-weight: 400; letter-spacing: 0.1px; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: pre-wrap; background-color: rgb(32, 33, 36); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">+1 DEF<br style=\"color: rgb(232, 234, 237); font-family: Roboto, Arial, sans-serif; font-size: 16px; font-style: normal; font-variant-ligatures: none; font-variant-caps: normal; font-weight: 400; letter-spacing: 0.1px; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: pre-wrap; background-color: rgb(32, 33, 36); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">This item is cannot be removed.<br style=\"color: rgb(232, 234, 237); font-family: Roboto, Arial, sans-serif; font-size: 16px; font-style: normal; font-variant-ligatures: none; font-variant-caps: normal; font-weight: 400; letter-spacing: 0.1px; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: pre-wrap; background-color: rgb(32, 33, 36); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\"><br style=\"color: rgb(232, 234, 237); font-family: Roboto, Arial, sans-serif; font-size: 16px; font-style: normal; font-variant-ligatures: none; font-variant-caps: normal; font-weight: 400; letter-spacing: 0.1px; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: pre-wrap; background-color: rgb(32, 33, 36); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\"><strong>Active ability: Forced Duck (Reaction)</strong><br style=\"color: rgb(232, 234, 237); font-family: Roboto, Arial, sans-serif; font-size: 16px; font-style: normal; font-variant-ligatures: none; font-variant-caps: normal; font-weight: 400; letter-spacing: 0.1px; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: pre-wrap; background-color: rgb(32, 33, 36); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">1/round <br style=\"color: rgb(232, 234, 237); font-family: Roboto, Arial, sans-serif; font-size: 16px; font-style: normal; font-variant-ligatures: none; font-variant-caps: normal; font-weight: 400; letter-spacing: 0.1px; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: pre-wrap; background-color: rgb(32, 33, 36); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">+2 DEF until the end of this turn.</span></p>",
+          "id": "Fd2qk7mODDALtHZS",
+          "name": "MARI",
+          "roll": "",
+          "uuid": "Actor.HwieecMz3RnlzqlI.Item.Fd2qk7mODDALtHZS"
+        },
+        "Pw2qC5hDoEcTBUxC": {
+          "acess_description": "<p>-Unremovable</p><p>+3 Defense</p><hr class=\"\" contenteditable=\"false\"><p><em>Mysterious pendant that can speaks to Carla.</em></p>",
+          "id": "Pw2qC5hDoEcTBUxC",
+          "name": "MARI",
+          "roll": "",
+          "uuid": "Actor.HwieecMz3RnlzqlI.Item.Pw2qC5hDoEcTBUxC"
+        },
+        "ZOrwe5wufCODdOAD": {
+          "acess_description": "<p>-Unremovable</p><p>+3 Defense</p><hr class=\"\" contenteditable=\"false\"><p>Mysterious necklace that can speaks to Carla.</p>",
+          "id": "ZOrwe5wufCODdOAD",
+          "name": "MARI",
+          "roll": "",
+          "uuid": "Actor.HwieecMz3RnlzqlI.Item.ZOrwe5wufCODdOAD"
+        },
+        "uZsmRfXloQiCz8Co": {
+          "acess_description": "<p>-Unremovable</p><p>+3 Defense</p><hr class=\"\" contenteditable=\"false\"><p>Mysterious pendant that can speaks to Carla.</p>",
+          "id": "uZsmRfXloQiCz8Co",
+          "name": "MARI",
+          "roll": "",
+          "uuid": "Actor.HwieecMz3RnlzqlI.Item.uZsmRfXloQiCz8Co"
+        },
+        "uzId6iFtUQT8f2mU": {
+          "acess_description": "<p>-Unremovable</p><p>+1 Defense</p><hr class=\"\" contenteditable=\"false\"><p><em>Mysterious pendant that can speaks to Carla.</em></p>",
+          "id": "uzId6iFtUQT8f2mU",
+          "name": "MARI",
+          "roll": "",
+          "uuid": "Actor.HwieecMz3RnlzqlI.Item.uzId6iFtUQT8f2mU"
+        }
+      },
+      "key_list": {},
+      "level": "15",
+      "magic_defense_mod": "2",
+      "main_attrib_1": "DEX",
+      "main_attrib_2": "INS",
+      "main_hand": "Hookah",
+      "main_hand_attack": "",
+      "max_hp": 45,
+      "max_ip": 6,
+      "max_mp": 80,
+      "memories_list": {},
+      "memory": "Memories",
+      "mig_base": "6",
+      "mig_current": 6,
+      "name": "Carla Piller",
+      "normal_spell_list": {
+        "2": {
+          "$deleted": false,
+          "class": "Entropist",
+          "cost": " up to 20",
+          "description": "<p>You summon a vortex of chaotic energy. Roll your current Willpower die once for every 10 Mind Points spent while casting this spell, then keep the single die you prefer: the number on that die determines the effects of this spell.</p><p></p><p></p><p>1 You lose half of your current Hit Points and half of your current Mind Points.</p><p></p><p>2-3 Each creature present on the scene, including yourself, suffers poisoned.</p><p></p><p>4-6 Each creature present on the scene, including yourself, suffers slow.</p><p></p><p>7-8 Choose up to three creatures you can see: each of them recovers 50 Hit Points and also recovers from all status effects.</p><p></p><p>9+ Choose any number of creatures you can see: each of them suffers 30 damage.</p><p>The damage type is determined randomly by rolling a <strong>d6:</strong></p><p><strong>1. air 2. bolt 3. dark 4. earth 5. fire 6. poison</strong></p>",
+          "duration": " Instantaneous",
+          "roll": "",
+          "spell_name": " Gamble",
+          "target": " Special"
+        }
+      },
+      "off_attrib_1": "SHI",
+      "off_attrib_2": "SHI",
+      "off_base_mod_1": "2",
+      "off_base_mod_2": "0",
+      "off_hand": "Hookah",
+      "off_hand_attack": "",
+      "off_mod_1": 2,
+      "off_mod_2": 0,
+      "offensive_spell_list": {
+        "VWh2A5uf2KBY1Le0": {
+          "class": "Entropist",
+          "cost": 10,
+          "duration": "Instantaneous",
+          "id": "VWh2A5uf2KBY1Le0",
+          "name": "Drain Vigor",
+          "roll": "",
+          "target": "One Creature",
+          "uuid": "Actor.HwieecMz3RnlzqlI.Item.VWh2A5uf2KBY1Le0"
+        },
+        "zFG6vDIFwzTECSZt": {
+          "class": "Entropist",
+          "cost": 5,
+          "duration": "Instantaneous",
+          "id": "zFG6vDIFwzTECSZt",
+          "name": "Drain Spirit",
+          "roll": "",
+          "target": "One creature",
+          "uuid": "Actor.HwieecMz3RnlzqlI.Item.zFG6vDIFwzTECSZt"
+        }
+      },
+      "origin": "Varachia",
+      "passive_list": {
+        "0": {
+          "$deleted": false,
+          "passive_description": "<p>As long as you have this Quirk, your pendant is an indestructible artifact that cannot be</p><p>lost or stolen unless as a consequence of Surrender.</p><p></p><p>When your group stumbles upon a danger or discovery after a travel roll, you may</p><p>ask the Game Master a single question concerning that danger or discovery (you</p><p>may ask it immediately or save it for later); the Game Master answers truthfully and</p><p>describes how the answer appears on your pendant.</p><p></p><p>Once your pendant has answered 10 questions, it almost shared all of its knowledge</p><p>with you: choose one of the following options.</p><p></p><p><strong>Awakened Consciousness:</strong> you lose this Quirk and the pendant turns into a Non-</p><p>Player Character; create this NPC together with the rest of your group, giving them a</p><p>name and describing their appearance. They do not have an NPC profile and do not</p><p>take part in Checks or conflicts, but they learn two spells of your choice among those</p><p>found in the Elementalist, Entropist, and Spiritist lists (see Core Rulebook, pages</p><p>188, 192 and 208 respectively). Once per conflict, if requested, the NPC will cast</p><p>one of these spells. Spells cast this way will be cast at the end of the current round,</p><p>require no Mind Points, and use 2d10 for the Magic Check (if needed).</p><p></p><p><strong>Hidden Magic:</strong> you lose this Quirk, but your pendant will still share a final and most</p><p>powerful secret. You acquire a Heroic Skill of your choice among Comet, Extra Spells,</p><p>Hope, and Volcano (see Core Rulebook from page 232 onwards; you may choose a</p><p>Skill whose requirements you do not fulfill).</p><p></p><p>You could also use this Quirk to introduce a new Player Character (and Player) in your</p><p>group; if you do, the character who had taken this Quirk should receive the benefits</p><p>listed by Hidden Magic instead of those in Awakened Conscience. Suggested Quirks</p><p>for a Player Character brought into a campaign this way are Arboreal, Robot, The</p><p>Beast Who Spoke, and The Long Dream.</p><p></p><p>Whatever your choice, the pendant goes back to being a completely normal book</p><p>and the Game Master chooses one option: the grimoire provides a key clue regarding</p><p>a threat that is present in your world; or the grimoire reveals the existence of a new</p><p>threat and provides a key clue about it.</p>",
+          "passive_name": "MYSTERIOUS PENDANT(MARI)",
+          "passive_roll": "",
+          "passive_source": "quirk"
+        },
+        "1": {
+          "$deleted": false,
+          "passive_description": "<p><strong>Target:</strong> <strong>Yourself or one ally.</strong></p><p>Once before the next rest, when you lose Hit Points for whatever reason, you may</p><p>choose to halve that HP loss.</p><hr><p><em>After taking some drugs, You hear less voices from the other side.</em></p>",
+          "passive_name": "Vaping",
+          "passive_roll": "",
+          "passive_source": "camp activity"
+        },
+        "2": {
+          "$deleted": false,
+          "passive_description": "<p><strong>Target: Yourself.</strong></p><p>Once before the next rest, if you are about to suffer one status effect, you may instead choose not to suffer it.</p><p>Additionally increase your MP= [your level+5]</p><hr><p><em>Whenever you try to break the habit, Those damn voices are coming back.</em></p>",
+          "passive_name": "Rehab",
+          "passive_roll": "",
+          "passive_source": "camp activity"
+        }
+      },
+      "place_card_vanguard": "Place",
+      "populate_deck": "Populate",
+      "pronouns": "She, Her",
+      "reaction_list": {},
+      "relationship_1": "",
+      "relationship_2": "",
+      "relationship_3": "",
+      "relationship_4": "",
+      "relationship_5": "",
+      "relationship_6": "",
+      "reset_cards": "Resets",
+      "resolve_set": "Resolve",
+      "resource_value_1": "0",
+      "resource_value_2": "0",
+      "resource_value_3": "0",
+      "reveal_cards": "Reveal",
+      "ritualism": false,
+      "rolled_atr1": "WLP",
+      "rolled_atr2": "WLP",
+      "shield_type": "",
+      "shield_value": "0",
+      "shuffle_deck": "Shuffle",
+      "skill_accuracy": "0",
+      "skill_attack_damage": "0",
+      "skill_hp": "0",
+      "skill_ip": "",
+      "skill_list": {
+        "0": {
+          "$deleted": false,
+          "class": "Hexer",
+          "description": "<p>You may perform rituals whose effects fall within the Spiritism discipline. Spiritism rituals</p><p>use 【INS + WLP】 for the Magic Check. Additionally, you may use Spiritism to locate the</p><p>sources of illnesses and curses.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "CURSE RITUALISM"
+        },
+        "1": {
+          "$deleted": false,
+          "class": "Hexer",
+          "description": "<p>When you first take this Skill, you gain a Hex Clock with 4 sections. The Clock starts</p><p>each scene empty. When you perform an attack with an arcane weapon or cast an</p><p>offensive ( ) spell, you may spend 10 Hit Points to fill one section of your Hex Clock.</p><p>At the start of your turn, you may spend up to 【5 × the number of filled sections of</p><p>your Hex Clock】 Mind Points. For every 5 Mind Points spent this way, deal 【SL+2】 dark</p><p>or poison damage to a creature you can see. You may choose a different creature for</p><p>each instance of damage.</p>",
+          "level": "5",
+          "roll": "",
+          "skill_name": "ENCROACHING HEX"
+        },
+        "2": {
+          "$deleted": false,
+          "class": "Entropist",
+          "description": "<p>After you suffer damage, you may immediately recover 【SL × 2】 Mind Points.</p>",
+          "level": "5",
+          "roll": "",
+          "skill_name": "ABSORB MP"
+        },
+        "3": {
+          "$deleted": false,
+          "class": "Entropist",
+          "description": "<p>Each time you acquire this Skill, learn one Entropist spell (see next two pages). Offensive Entropist spells use 【INS + WLP】 for the Magic Check.</p>",
+          "level": "3",
+          "roll": "",
+          "skill_name": " ENTROPIC MAGIC"
+        },
+        "4": {
+          "$deleted": false,
+          "class": "Arcanist",
+          "description": "<p>You may bind Arcana to your soul and summon them later. The Game Master will tell you the details of each binding process when you first encounter the Arcanum in question. </p><p></p><p>You may use an action and spend 40 Mind Points to summon an Arcanum you have bound: the details of this process are explained on the next page.</p><p></p><p> If you take this Skill at character creation, you begin play with one Arcanum of your choice already bound to you, chosen from the list on the next pages. Other than that, you may only obtain new Arcana through exploration and story progression.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "BIND AND SUMMON"
+        },
+        "5": {
+          "$deleted": false,
+          "class": "Arcanist",
+          "description": "<p>Arcanum of Mystery Sentient Trinket</p><p>Domain: Mystery, Mindfulness, Ambition</p><p></p><p>MERGE: Telekinesis</p><p>When you deal damage, you deal 5 extra damage; all damage you deal loses its type and cannot gain a type (thus being unaffected by damage Affinities).</p><p></p><p>PULSE: Aetheric Strike</p><p>You perform a free attack with a weapon you have equipped. This attack targets Magic Defense instead of Defense.</p><p></p><p>DISMISS: Psychic Slam</p><p>One creature you can see loses 30 Hit Points, or 40 Hit Points if you are level 30 or higher. Then, if that creature is not a Villain and their current Hit Points are equal to or lower than your Crisis score, you reduce that creature to 0 Hit Points.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "SUMMON: MARI "
+        }
+      },
+      "skill_mp": "0",
+      "spiritism": false,
+      "theme": "Mystery",
+      "weapon1_base_damage": "7",
+      "weapon1_base_mod": "2",
+      "weapon1_damage": 7,
+      "weapon1_damagetype": "poison",
+      "weapon1_mod": 2,
+      "weapon2_damagetype": "-",
+      "weapon_list": {
+        "44UDh815fk6lP8Dg": {
+          "id": "44UDh815fk6lP8Dg",
+          "name": "Hookah",
+          "roll": "",
+          "type": "Arcane",
+          "uuid": "Actor.HwieecMz3RnlzqlI.Item.44UDh815fk6lP8Dg",
+          "weapon_description": "<p>ERROR</p>",
+          "weapon_hand": "Two-handed",
+          "weapon_martial": "false",
+          "weapon_range": "Melee"
+        },
+        "Gdd0BJlSyoVKF7ct": {
+          "id": "Gdd0BJlSyoVKF7ct",
+          "name": "Hookah",
+          "roll": "",
+          "type": "Arcane",
+          "uuid": "Actor.HwieecMz3RnlzqlI.Item.Gdd0BJlSyoVKF7ct",
+          "weapon_description": "<p><p><strong>Accurate</strong></p><p>Adds a +2 bonus to the weapon’s Accuracy Check formula.</p><p><strong>Defense Boost</strong></p><p>You gain a +2 bonus to Defense, and you are treated as having a shield equipped for the sake of your Skills (for instance, Defensive Mastery or Dodge; see Core Rulebook, page 197 and 203)</p><p><strong>Elemental</strong></p><p>Choose air, bolt, dark, earth, fire, ice, light or <strong>poison</strong>. The weapon now deals damage of the chosen type instead of physical, and also deals 2 extra damage.</p><hr contenteditable=\"false\"><p>Carla's bong</p><p></p></p>",
+          "weapon_hand": "Two-handed",
+          "weapon_martial": false,
+          "weapon_range": "Ranged"
+        },
+        "JWAnVzInHOzTy3ke": {
+          "id": "JWAnVzInHOzTy3ke",
+          "name": "Hookah",
+          "roll": "",
+          "type": "Arcane",
+          "uuid": "Actor.HwieecMz3RnlzqlI.Item.JWAnVzInHOzTy3ke",
+          "weapon_description": "<p><p>Carla's bong</p></p>",
+          "weapon_hand": "Two-handed",
+          "weapon_martial": "false",
+          "weapon_range": "Melee"
+        },
+        "O6y1U7IMbj0HVGs9": {
+          "id": "O6y1U7IMbj0HVGs9",
+          "name": "Hookah",
+          "roll": "",
+          "type": "Arcane",
+          "uuid": "Actor.HwieecMz3RnlzqlI.Item.O6y1U7IMbj0HVGs9",
+          "weapon_description": "<p><p><strong>Accurate</strong></p><p>Adds a +2 bonus to the weapon’s Accuracy Check formula.</p><p><strong>Defense Boost</strong></p><p>You gain a +2 bonus to Defense, and you are treated as having a shield equipped for the sake of your Skills (for instance, Defensive Mastery or Dodge; see Core Rulebook, page 197 and 203)</p><p><strong>Elemental</strong></p><p>Choose air, bolt, dark, earth, fire, ice, light or <strong>poison</strong>. The weapon now deals damage of the chosen type instead of physical, and also deals 2 extra damage.</p><hr contenteditable=\"false\"><p>Carla's bong</p><p></p></p>",
+          "weapon_hand": "Two-handed",
+          "weapon_martial": "false",
+          "weapon_range": "Ranged"
+        },
+        "SMdMPPyUuBM3vvIb": {
+          "id": "SMdMPPyUuBM3vvIb",
+          "name": "Antipathy Round",
+          "roll": "",
+          "type": "Firearm",
+          "uuid": "Actor.HwieecMz3RnlzqlI.Item.SMdMPPyUuBM3vvIb",
+          "weapon_description": "<p><p><span style=\"font-family: Roboto, Arial, sans-serif\">5 charges <br style=\"color: rgb(232, 234, 237); font-family: Roboto, Arial, sans-serif; font-size: 16px; font-style: normal; font-variant-ligatures: none; font-variant-caps: normal; font-weight: 400; letter-spacing: 0.1px; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: pre-wrap; background-color: rgb(32, 33, 36); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">This weapon damage automatically change to any type that is target vulnerability (If there is more than one, It can change to damage type of your choice)</span></p><hr contenteditable=\"false\" class=\"\"><p><span style=\"font-family: Roboto, Arial, sans-serif\"><em>Un-fired powerful bullets from incompetent gunslinger</em></span></p></p>",
+          "weapon_hand": "Two-handed",
+          "weapon_martial": false,
+          "weapon_range": "Ranged"
+        },
+        "eQmZcKrzXbpy5bdb": {
+          "id": "eQmZcKrzXbpy5bdb",
+          "name": "Hookah",
+          "roll": "",
+          "type": "Arcane",
+          "uuid": "Actor.HwieecMz3RnlzqlI.Item.eQmZcKrzXbpy5bdb",
+          "weapon_description": "<p><p><strong>Accurate</strong></p><p>Adds a +2 bonus to the weapon’s Accuracy Check formula.</p><p><strong>Defense Boost</strong></p><p>You gain a +2 bonus to Defense, and you are treated as having a shield equipped for the sake of your Skills (for instance, Defensive Mastery or Dodge; see Core Rulebook, page 197 and 203)</p><p><strong>Elemental</strong></p><p>Choose air, bolt, dark, earth, fire, ice, light or <strong>poison</strong>. The weapon now deals damage of the chosen type instead of physical, and also deals 2 extra damage.</p><hr contenteditable=\"false\"><p>Carla's bong</p><p></p></p>",
+          "weapon_hand": "Two-handed",
+          "weapon_martial": "false",
+          "weapon_range": "Melee"
+        }
+      },
+      "wlp_base": "10",
+      "wlp_current": 10,
+      "your_class_name": "",
+      "zenit": "250",
+      "zero_effect_description": "<img src=\"https://iili.io/3i0j4ja.jpg\" width=\"300\"><p>Choose <strong>odd</strong> or <strong>even</strong>, then roll <span style=\"font-family: monospace\">[[/roll 3d6]] </span>and see how many dice match your prediction.</p><p>Then, apply the corresponding effect or the effect immediately above it, your choice.</p><p></p><p style=\"text-align: center\"><strong>No dice:</strong> Fill 3 sections of your Zero Clock, and fill 1 section of the Zero Clock of every other</p><p style=\"text-align: center\">Player Character you can see. Then, perform an additional action.</p><p></p><p><strong>One die:</strong> You perform a free attack with one weapon you have equipped.</p><p>This attack deals extra damage equal to the total rolled on the 3d6.</p><p></p><p><strong>Two dice:</strong> You deal damage equal to 【30 + half your level + the total rolled on the 3d6】</p><p>to one creature you can see. This damage has no type (ignore Affinities).</p><p></p><p><strong>Three dice:</strong> You and every ally you can see recover from all status effects and recover an amount of HP and MP equal to 【your Crisis score + the total rolled on the 3d6】.</p><p></p><p>Finally, if <strong>all three dice show the same number</strong>, you may perform an additional action during this turn (this is in addition to the action granted by “<strong>no dice</strong>”)</p>",
+      "zero_effect_label": "💬 Zero Effect",
+      "zero_label": "💥 Zero Power : ",
+      "zero_power_name": "Alternate Medicine",
+      "zero_power_value": "2",
+      "zero_trigger_description": "<p><strong>Sequence</strong> II 2 per trigger</p><hr><p>This trigger activates when an ally you can see unleashes their zero effect</p>",
+      "zero_trigger_label": "⚔️ Zero Trigger"
+    },
+    "statusEffects": {
+      "1QPHKNWo17z0bBmX": [],
+      "1cksCQj3urJwddfg": [],
+      "1qTdxSVu2XLu0lUx": [],
+      "3YZNX2X5rHYtL4L5": [],
+      "4g2B0rdJ3SiUQvUv": [],
+      "5FFBDg2y54bpqgat": [],
+      "5jkr80zqdzaR003d": [],
+      "6YW8glLMYbwj6ZhC": [],
+      "7FLtIUvENcYDAJKC": [],
+      "7VDl6ac5Rzr2Rpya": [],
+      "8LN8tDQjON508Rqm": [],
+      "ACD2C8JLWUeIx89o": [],
+      "CVxHWmDb0gQsob1q": [],
+      "CfLPg6RDybSQhTSR": [],
+      "DCaKnV9kNn3EpqtY": [],
+      "DHsoSawNEZAxsnQ9": [],
+      "EVjmTFRDsuzR823Z": [],
+      "GJ0cbbj60lr4zaHm": [],
+      "MsbUHrgK7AhSeEJm": [],
+      "N4WfMf1nuOdUEXVS": [],
+      "N4rGBYQsH7PyMAWr": [],
+      "NogCaPvL5Y52Hjnq": [],
+      "OFk8VUuwDhWFoPxI": [],
+      "QOfrFCU2C6mx50gK": [],
+      "Qz8IC4v3wJ6UoM77": [],
+      "Rc8AvdmlHAK7pPea": [],
+      "StnYeDADYo2xX99O": [],
+      "T1kJfiKBZm1dnnBy": [],
+      "VxdXsFJ7YVEzAp3x": [],
+      "YhO7nUdawyeQKMWD": [],
+      "ZK0aTX8IH1NqwmTw": [],
+      "bspDC7hFRTYuwdhf": [],
+      "cDgbFRi9TA68TvYr": [],
+      "clE8TJ0G1gMwF735": [],
+      "fYkA57rVfoytHRjo": [],
+      "g7JIey1pEuRHyAOH": [],
+      "gX1fA3onNG7wsyap": [],
+      "hhqoSNhWfVD4KR7g": [],
+      "jKvrVpxLgX0KhB23": [],
+      "m2iUJjsEfJkpmOBw": [],
+      "qMZsEEuzAdrHb2fk": [],
+      "qePlOECBTS0Dftgc": [],
+      "t2C3LKukW6LPUImk": [],
+      "t5jyddIZDvbyuVsD": [],
+      "v22vl6cnP94wVBPu": [],
+      "v2vFlETIgMnff5o8": [],
+      "vLM7q3rdXVCgHYD4": [],
+      "vUYA9jgY9pdafj4i": [],
+      "wA1E8GxiXmzz80XQ": [],
+      "xuwAn7u126GfFweU": []
+    },
+    "template": "Dx16KeWcJzikM7dh",
+    "templateSystemUniqueVersion": 276398442
+  },
+  "type": "character"
+}

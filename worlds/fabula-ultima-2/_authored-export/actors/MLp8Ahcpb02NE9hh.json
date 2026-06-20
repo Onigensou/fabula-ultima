@@ -1,0 +1,1597 @@
+{
+  "_id": "MLp8Ahcpb02NE9hh",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1699203134653,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.5.0"
+    },
+    "theatre": {
+      "baseinsert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Masked/Fortune_Standard_Mask.png",
+      "disabledefault": false,
+      "emotes": {
+        "angry": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Masked/Fortune_Angry_Mask.png"
+        },
+        "annoyed": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Masked/Fortune_Angry_Mask.png"
+        },
+        "awe-struck": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Masked/Fortune_Shock_Mask.png"
+        },
+        "blushing": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Masked/Fortune_Shock_Mask.png"
+        },
+        "carefree": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Masked/Fortune_Happy_Mask.png"
+        },
+        "confused": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Masked/Fortune_Shock_Mask.png"
+        },
+        "cry": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Masked/Fortune_Sad_Mask.png"
+        },
+        "custom1": {
+          "custom": true,
+          "image": "modules/theatre/assets/graphics/emotes/blank.png",
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Fortune_Standard.png",
+          "label": "Custom Name\n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    ",
+          "name": "custom1"
+        },
+        "custom2": {
+          "custom": true,
+          "image": "modules/theatre/assets/graphics/emotes/blank.png",
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Fortune_Surprised.png",
+          "label": "Custom Name\n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    ",
+          "name": "custom2"
+        },
+        "custom3": {
+          "custom": true,
+          "image": "modules/theatre/assets/graphics/emotes/blank.png",
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Fortune_Meh.png",
+          "label": "Custom Name\n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    ",
+          "name": "custom3"
+        },
+        "custom4": {
+          "custom": true,
+          "image": "modules/theatre/assets/graphics/emotes/blank.png",
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Fortune_Angry.png",
+          "label": "Custom Name\n                                        \n                                    \n                                        \n                                    \n                                        \n                                    ",
+          "name": "custom4"
+        },
+        "custom5": {
+          "custom": true,
+          "image": "modules/theatre/assets/graphics/emotes/blank.png",
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Fortune_Happy.png",
+          "label": "Custom Name\n                                        \n                                    \n                                        \n                                    ",
+          "name": "custom5"
+        },
+        "custom6": {
+          "custom": true,
+          "image": "modules/theatre/assets/graphics/emotes/blank.png",
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Fortune_Serious.png",
+          "label": "Custom Name\n                                        \n                                    ",
+          "name": "custom6"
+        },
+        "custom7": {
+          "custom": true,
+          "image": "modules/theatre/assets/graphics/emotes/blank.png",
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Fortune_Shock.png",
+          "label": "Custom Name",
+          "name": "custom7"
+        },
+        "custom8": {
+          "custom": true,
+          "image": "modules/theatre/assets/graphics/emotes/blank.png",
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Fortune_Surprised.png",
+          "label": "Custom Name",
+          "name": "custom8"
+        },
+        "dissatisfied": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Masked/Fortune_Meh_Mask.png"
+        },
+        "dizzy": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Masked/Fortune_Shock_Mask.png"
+        },
+        "frown": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Masked/Fortune_Angry_Mask.png"
+        },
+        "frustrated": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Masked/Fortune_Angry_Mask.png"
+        },
+        "grin": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Masked/Fortune_Standard_Mask.png"
+        },
+        "happy": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Masked/Fortune_Standard_Mask.png"
+        },
+        "happytears": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Masked/Fortune_Standard_Mask.png"
+        },
+        "hearts": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Masked/Fortune_Happy_Mask.png"
+        },
+        "idea": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Masked/Fortune_Meh_Mask.png"
+        },
+        "innocent": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Masked/Fortune_Happy_Mask.png"
+        },
+        "kiss": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Masked/Fortune_Happy_Mask.png"
+        },
+        "laughing": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Masked/Fortune_Happy_Mask.png"
+        },
+        "laughingsquint": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Masked/Fortune_Happy_Mask.png"
+        },
+        "meh": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Masked/Fortune_Meh_Mask.png"
+        },
+        "mischevious": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Masked/Fortune_Happy_Mask.png"
+        },
+        "panic": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Masked/Fortune_Shock_Mask.png"
+        },
+        "playful": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Masked/Fortune_Happy_Mask.png"
+        },
+        "rofl": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Masked/Fortune_Happy_Mask.png"
+        },
+        "sad": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Masked/Fortune_Sad_Mask.png"
+        },
+        "scared": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Masked/Fortune_Sad_Mask.png"
+        },
+        "serious": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Masked/Fortune_Serious_Mask.png"
+        },
+        "sleeping": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Masked/Fortune_Surprised_Mask.png"
+        },
+        "smile": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Masked/Fortune_Standard_Mask.png"
+        },
+        "smug": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Masked/Fortune_Happy_Mask.png"
+        },
+        "speechless": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Masked/Fortune_Shock_Mask.png"
+        },
+        "surprised": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Masked/Fortune_Surprised_Mask.png"
+        },
+        "thinking": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Masked/Fortune_Meh_Mask.png"
+        },
+        "tongue": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Masked/Fortune_Happy_Mask.png"
+        },
+        "wink": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Masked/Fortune_Happy_Mask.png"
+        },
+        "worried": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Masked/Fortune_Sad_Mask.png"
+        }
+      },
+      "name": "Fortune",
+      "optalign": "top",
+      "settings": {
+        "emote": "custom7",
+        "textcolor": null,
+        "textflyin": "typewriter",
+        "textfont": null,
+        "textsize": null,
+        "textstanding": "none"
+      }
+    }
+  },
+  "folder": "8iGPdATKULX2y28n",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Masked/Fortune_Standard_Mask.png",
+  "items": [
+    {
+      "_id": "50G0AG050PXxmcxo",
+      "_stats": {
+        "compendiumSource": "Item.9aAx6ZemtdxpTxUr",
+        "coreVersion": "12.343",
+        "createdTime": 1732259922186,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.9aAx6ZemtdxpTxUr"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "SytaFVloXb4Fnryp",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Rope.gif",
+      "name": "Salamander",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 2
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "category": "Flail",
+          "check": "Check",
+          "check_bonus": "0",
+          "cost": "1000",
+          "damage_bonus": "8",
+          "description": "<ul>\n<li>&nbsp;You have<strong> Resistance</strong> to<strong> Fire </strong>damage.</li>\n</ul>",
+          "hand_slots": "One-handed",
+          "martial": false,
+          "name": "Salamander",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "MIG",
+          "set_name": "",
+          "type_damage": "Physical",
+          "weapon_range": "Melee"
+        },
+        "template": "gIRU9XGqYeMBwBN9",
+        "templateSystemUniqueVersion": 2814471460,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "90Pg1SJIJAuwS10R",
+      "_stats": {
+        "compendiumSource": "Item.E3pWg5IWc9mGcGOx",
+        "coreVersion": "12.343",
+        "createdTime": 1741397301979,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.E3pWg5IWc9mGcGOx"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "cSLVeZ3TavIe40F1",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bra.png",
+      "name": "BDSM Garment",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 2
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "acess": false,
+          "cost": "2500",
+          "def_bonus": "+1",
+          "defense": "0",
+          "defense_include_dex": true,
+          "description": "<ul>\n<li>Your&nbsp;attack with&nbsp;<strong>Flail</strong>&nbsp;deals 5 bonus damage and inflicts <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEFENSE%20DOUBLE%20DOWN.png\" width=\"21\" height=\"21\">@UUID[JournalEntry.XkuOy0BFvKJTewGS]{Enraged} to the target.</li>\n</ul>\n<hr>\n<p><strong>【Set Bonus】</strong></p>\n<p><strong>2 Piece</strong></p>\n<ul>\n<li>When you <strong>hit&nbsp;</strong>an ally with a&nbsp;<strong>Flail&nbsp;</strong>weapon, after the damage is dealt, you may <strong>heal&nbsp;</strong>the target by 200% of the damage.<br><hr></li>\n</ul>\n<p><strong>3 Piece</strong></p>\n<ul>\n<li>As an&nbsp;<strong>Skill Action,&nbsp;</strong>remove <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEFENSE%20DOUBLE%20DOWN.png\" width=\"21\" height=\"21\">@UUID[JournalEntry.XkuOy0BFvKJTewGS]{Enraged} from all ally, then for all <strong>Enraged&nbsp;</strong>removed this way, replace it with <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEFENSE%20DOUBLE%20UP.png\" alt=\"\" width=\"21\" height=\"21\"><strong>Clarity </strong>instead<hr></li>\n</ul>\n<p>&nbsp;</p>",
+          "initiative": "0",
+          "magic_defense": "0",
+          "magic_defense_include_ins": true,
+          "martial": false,
+          "mdef_bonus": "",
+          "name": "BDSM Garment",
+          "set_name": "Midnight Mistress",
+          "shield": false
+        },
+        "template": "5Z0gKtN5R51ebJOa",
+        "templateSystemUniqueVersion": 2929120018,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "9QXRpvxKD6H3774V",
+      "_stats": {
+        "compendiumSource": "Item.D282JzB3hSxuIxGz",
+        "coreVersion": "12.343",
+        "createdTime": 1743847040346,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.D282JzB3hSxuIxGz"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "wkrvldDZ113CaPX8",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Hitman%20Suitcase.gif",
+      "name": "Magitech Briefcase",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "category": "Brawling",
+          "check": "Check",
+          "check_bonus": "0",
+          "cost": "3000",
+          "damage_bonus": "5",
+          "description": "<ul>\n<li>When you&nbsp;<strong>Equip</strong> this weapon, Gain&nbsp;<strong>10</strong> <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/SGE/taurochole.png\" alt=\"\" width=\"21\" height=\"21\">@UUID[JournalEntry.wrw2ENSwzCBjztvt]{Shield}, when you&nbsp;<strong>unequip&nbsp;</strong>this weapon, lose all <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/SGE/taurochole.png\" alt=\"\" width=\"21\" height=\"21\">@UUID[JournalEntry.wrw2ENSwzCBjztvt]{Shield} points granted by this weapon</li>\n<li>You gain a <strong>+2</strong> bonus to Defense, and you are treated as having a <strong>shield</strong> equipped for the sake of your Skills</li>\n<li>Transform into <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gun.png\" alt=\"\" width=\"21\" height=\"21\"><strong>@UUID[Item.9tAsz176ZSt1HVuS]{Sidewinder Rev-II}</strong></li>\n</ul>",
+          "hand_slots": "One-handed",
+          "martial": false,
+          "name": "Magitech Briefcase",
+          "rolled_atr1": "MIG",
+          "rolled_atr2": "MIG",
+          "set_name": "",
+          "type_damage": "Physical",
+          "weapon_range": "Melee"
+        },
+        "template": "gIRU9XGqYeMBwBN9",
+        "templateSystemUniqueVersion": 2814471460,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "bYP2Qhv9fwmxC0jF",
+      "_stats": {
+        "compendiumSource": "Item.uSB7oY06VmB18qEo",
+        "coreVersion": "12.343",
+        "createdTime": 1739158742369,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.uSB7oY06VmB18qEo"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "YORShE1NmdPqz17e",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/NPCs/Django.png",
+      "name": "Django",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "active_name": "Assassinate",
+          "dice": "Show",
+          "flavor_text": "<hr>\n<blockquote>\n<p>&nbsp;</p>\n</blockquote>",
+          "name": "Django",
+          "passive_name": "Hitman for Hire",
+          "support_active": "<p>Deal&nbsp;<strong>10 p</strong><strong>hysical&nbsp;</strong>damage to target creature, if the passive ability&nbsp;<strong>Hitman for Hire&nbsp;</strong>has already trigger once this scene, Deal&nbsp;<strong>30</strong>&nbsp;<strong>physical&nbsp;</strong>damage instead, treat this as a range basic attack.</p>",
+          "support_passive": "<p>At&nbsp;<strong>Round 3 </strong>of the battle, deals&nbsp;<strong>60 Physical&nbsp;</strong>damage to target creature.</p>"
+        },
+        "template": "lUpHsEfBDEY3BeNq",
+        "templateSystemUniqueVersion": 4245463866,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "cSFv6CbxfM8WsHV2",
+      "_stats": {
+        "compendiumSource": "Item.M3rdilv8BC3cqhvO",
+        "coreVersion": "12.343",
+        "createdTime": 1741634052406,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.M3rdilv8BC3cqhvO"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "HwnnjljHsr5F7AqM",
+      "img": "icons/sundries/misc/teeth-dentures.webp",
+      "name": "Aunction Trick: Dirty Talk",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 2
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "consumable_cost": "0",
+          "consumable_description": "<p>Perform a【<strong>INS&nbsp;+ WIL】</strong>check against an aunction opponent's&nbsp;<strong>Difficulty Level</strong>. On success, <strong>reduces</strong> the target's <strong>willingness </strong>to bid by <strong>200 Zenit.</strong></p>",
+          "consumable_label": "",
+          "name": "Aunction Trick: Dirty Talk"
+        },
+        "template": "xdZPhVF8AnmwQEPM",
+        "templateSystemUniqueVersion": 3725551061,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "CykJvmoCMovcTJxh",
+      "_stats": {
+        "compendiumSource": "Item.VPlsMKanVezV4M6E",
+        "coreVersion": "12.343",
+        "createdTime": 1741633596184,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.VPlsMKanVezV4M6E"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "HwnnjljHsr5F7AqM",
+      "img": "icons/skills/social/diplomacy-handshake-gray.webp",
+      "name": "Aunction Trick: Power Bid",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 2
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "consumable_cost": "0",
+          "consumable_description": "<p>Perform a【<strong>MIG + WIL】</strong>check against an aunction opponent's <strong>Difficulty Level</strong>. On success, prevents the target form <strong>Bidding </strong>for 1 turn.</p>",
+          "consumable_label": "",
+          "name": "Aunction Trick: Power Bid"
+        },
+        "template": "xdZPhVF8AnmwQEPM",
+        "templateSystemUniqueVersion": 3725551061,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "CZyMCM1Pr2l7OHRX",
+      "_stats": {
+        "compendiumSource": "Item.9tAsz176ZSt1HVuS",
+        "coreVersion": "12.343",
+        "createdTime": 1743846781316,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.9tAsz176ZSt1HVuS"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "kxuacCVdg0PZwTDV",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gun.png",
+      "name": "Sidewinder Rev-II",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "category": "Firearm",
+          "check": "Check",
+          "check_bonus": "0",
+          "cost": "3000",
+          "damage_bonus": "16",
+          "description": "<ul>\n<li>When you apply an <strong>infusion</strong> to an attack made with this weapon, that attack deals extra damage equal to your Skill Level in <strong>Gadgets</strong></li>\n<li>Transform into <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Hitman%20Suitcase.gif\" alt=\"\" width=\"21\" height=\"21\"><strong>@UUID[Item.9tAsz176ZSt1HVuS]{Magitech Briefcase}</strong></li>\n</ul>",
+          "hand_slots": "Two-handed",
+          "martial": false,
+          "name": "Sidewinder Rev-II",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "INS",
+          "set_name": "",
+          "type_damage": "Physical",
+          "weapon_range": "Ranged"
+        },
+        "template": "gIRU9XGqYeMBwBN9",
+        "templateSystemUniqueVersion": 2814471460,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "gsqCBOF2lUMbpnc5",
+      "_stats": {
+        "compendiumSource": "Item.TVhBQQMu37z9mkkb",
+        "coreVersion": "12.343",
+        "createdTime": 1743847432556,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.TVhBQQMu37z9mkkb"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "1y9u2EmZuTTt3cpv",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wingd.png",
+      "name": "Magitech Armament",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "category": "Arcane",
+          "check": "Check",
+          "check_bonus": "1",
+          "cost": "0",
+          "damage_bonus": "12",
+          "description": "<ul>\n<li>This weapon type can be either <strong>Melee&nbsp;</strong>or&nbsp;<strong>Range</strong></li>\n<li>This weapon&nbsp;<strong>Category</strong> can be <strong>a</strong><strong>rcane, brawling, firearm, heavy, spear&nbsp;</strong>or sword</li>\n<li>This weapon type can be&nbsp;<strong>Physical, Air, Bolt, Fire&nbsp;</strong>or&nbsp;<strong>Ice</strong></li>\n<li><strong>This&nbsp;</strong>weapon formula can either be <strong>【DEX】+【INS】+1</strong> or <strong>【INS】+【MIG】+1</strong></li>\n<li>This weapon always occupy both hand slots</li>\n</ul>",
+          "hand_slots": "One-handed",
+          "martial": false,
+          "name": "Magitech Armament",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "INS",
+          "set_name": "",
+          "type_damage": "Physical",
+          "weapon_range": "Melee"
+        },
+        "template": "gIRU9XGqYeMBwBN9",
+        "templateSystemUniqueVersion": 2814471460,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "Him4jC7CwtRJ7PLE",
+      "_stats": {
+        "compendiumSource": "Item.N5dILQ5sdcVrvoty",
+        "coreVersion": "12.343",
+        "createdTime": 1741567835910,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.N5dILQ5sdcVrvoty"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "5uQIy5BCy7UEVfcT",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/borb.png",
+      "name": "Flashbang Grenade",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 2
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "acess": true,
+          "cost": "800",
+          "def_bonus": "",
+          "defense": "0",
+          "defense_include_dex": false,
+          "description": "<ul>\n<li>When you deal damage to a creature using an <strong>elemental shard</strong>, that creature also suffers the <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/MAGICDEFENSE%20DOWN.png\" width=\"21\" height=\"21\">@UUID[JournalEntry.3nmUvPei3zrOJkEt]{Dazed}&nbsp;status effect.</li>\n</ul>",
+          "details_roller": "Show",
+          "initiative": "0",
+          "magic_defense": "0",
+          "magic_defense_include_ins": false,
+          "mdef_bonus": "",
+          "name": "Flashbang Grenade",
+          "set_name": ""
+        },
+        "template": "r0yZpLPAK9VXhM2p",
+        "templateSystemUniqueVersion": 1853581118,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "ixR3WD82ddBUPEu9",
+      "_stats": {
+        "compendiumSource": "Item.m3bKoqIMUa0ITv3m",
+        "coreVersion": "12.343",
+        "createdTime": 1741633825036,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.m3bKoqIMUa0ITv3m"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "HwnnjljHsr5F7AqM",
+      "img": "icons/skills/targeting/crosshair-bars-yellow.webp",
+      "name": "Aunction Trick: Study",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 2
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "consumable_cost": "0",
+          "consumable_description": "<p>Perform a【<strong>INS + INS】</strong>check against an aunction opponent's <strong>Difficulty Level</strong>. On success, you learn following information:</p>\n<ul>\n<li>Opponent's information regarding their <strong>Difficulty Level</strong>.</li>\n<li>Opponent's <strong>willingness </strong>to bid the <strong>item </strong>of <strong>current round </strong>as a cryptic description.</li>\n</ul>",
+          "consumable_flavor": "",
+          "consumable_label": "",
+          "name": "Aunction Trick: Study"
+        },
+        "template": "xdZPhVF8AnmwQEPM",
+        "templateSystemUniqueVersion": 3725551061,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "juoIYqBkgCM2mzqV",
+      "_stats": {
+        "compendiumSource": "Item.bUSzzJWSTpDdpf6S",
+        "coreVersion": "12.343",
+        "createdTime": 1738099890704,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.bUSzzJWSTpDdpf6S"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "5uQIy5BCy7UEVfcT",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/vizor.png",
+      "name": "Scounter",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 2
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "acess": true,
+          "cost": "800",
+          "def_bonus": "",
+          "defense": "0",
+          "defense_include_dex": false,
+          "description": "<ul>\n<li>Once at the start of a<strong>&nbsp;</strong><strong>Conflict</strong> scene, you may perform the <strong>【Study】</strong>action as a&nbsp;<strong>Free Action</strong></li>\n<li>Gain +1 to your <strong>【Study】</strong>check</li>\n</ul>",
+          "details_roller": "Show",
+          "flavor_text": "<blockquote>\n<p>\"It's over 9000....!!!!\"</p>\n</blockquote>",
+          "initiative": "0",
+          "magic_defense": "0",
+          "magic_defense_include_ins": false,
+          "mdef_bonus": "",
+          "name": "Scounter",
+          "set_name": ""
+        },
+        "template": "r0yZpLPAK9VXhM2p",
+        "templateSystemUniqueVersion": 1853581118,
+        "unique": false
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Fortune",
+  "ownership": {
+    "7hKw8KGsimboeDif": 3,
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "prototypeToken": {
+    "actorLink": true,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": 1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "max": null,
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "max": null,
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "max": null,
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar4": {
+            "attribute": "attributeBar.zero_power_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#ff5900",
+            "mincolor": "#ffdd00",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 30,
+            "ownerVisibility": 35,
+            "position": "bottom-outer",
+            "shareHeight": false,
+            "style": "none",
+            "subdivisions": 6,
+            "subdivisionsOwner": true
+          },
+          "bar5": {
+            "attribute": "attributeBar.current_ip",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar5",
+            "indentLeft": 35,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": true,
+            "label": "IP",
+            "maxcolor": "#e59c1f",
+            "mincolor": "#e59c1f",
+            "opacity": 50,
+            "order": 4,
+            "otherVisibility": 30,
+            "ownerVisibility": 35,
+            "position": "right-outer",
+            "shareHeight": false,
+            "style": "none",
+            "subdivisions": 20,
+            "subdivisionsOwner": true
+          }
+        }
+      },
+      "hex-size-support": {
+        "alternateOrientation": false,
+        "hideBorder": true,
+        "pivotx": null,
+        "pivoty": 200
+      },
+      "token-variants": {
+        "disableHUDButton": false,
+        "randomImgDefault": ""
+      },
+      "token-z": {
+        "zIndex": 0
+      }
+    },
+    "height": 2,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Fortune",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "height",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1.2,
+      "scaleY": 1.2,
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/UI/Battle%20Portrait/Fortune/Fortune_Portrait_1.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 450000,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "activeEffects": {},
+    "props": {
+      "accessory2_name": "",
+      "accessory_name": "",
+      "arcanism": false,
+      "armor_details": "",
+      "armor_mod": "1",
+      "armor_name": "BDSM Garment",
+      "attack_accuracy_mod_all": "0",
+      "attack_accuracy_mod_melee": "0",
+      "attack_accuracy_mod_range": "0",
+      "attack_accuracy_mod_spell": "0",
+      "backpack": "",
+      "backstory": "<p>【<strong>Fortune/Lucrétia D'Argento</strong>】<strong>(27)</strong></p>\n<p style=\"text-align: center;\">The heiress to the prestigious D'Argento family, known for their sophisticated arms manufacturing business within the Wiarachia Empire. Keenly aware of the limitations imposed by their trade agreement, which restricts their dealings within the empire, Lucretia operates under the codename <strong>\"Fortune\"</strong> to clandestinely sell arms to other nations.</p>",
+      "bond_1": "Yuri Kerenzikov",
+      "bond_2": "Fjord",
+      "bond_3": "Freyr",
+      "bond_4": "",
+      "bond_5": "",
+      "bond_6": "",
+      "chanter_volume_mp_header": "MP",
+      "chanter_volume_mp_high": 30,
+      "chanter_volume_mp_low": 10,
+      "chanter_volume_mp_medium": 20,
+      "chanter_volume_target_high": "Every enemy who can hear you.",
+      "chanter_volume_target_low": "Yourself <b>or</b> another creature you can see who can hear you.",
+      "chanter_volume_target_medium": "Every ally who can hear you.",
+      "char_identity": "Arms Merchant, Shady Merchant, Heiress of the D'Argento company",
+      "check_roller": "Roll!",
+      "chimerism": false,
+      "class_list": {
+        "0": {
+          "$deleted": false,
+          "benefit": "ip",
+          "class_name": "Merchant",
+          "level": "10"
+        },
+        "1": {
+          "$deleted": false,
+          "benefit": "ip",
+          "class_name": "Tinkerer",
+          "level": "10"
+        },
+        "2": {
+          "$deleted": false,
+          "benefit": "hp",
+          "class_name": "Sharpshooter",
+          "level": "7"
+        },
+        "3": {
+          "$deleted": true,
+          "benefit": "ip",
+          "class_name": "Survivor",
+          "level": "1"
+        },
+        "4": {
+          "$deleted": true,
+          "benefit": "",
+          "class_name": "",
+          "level": "1"
+        },
+        "5": {
+          "$deleted": true,
+          "benefit": "mp",
+          "class_name": "Survivor",
+          "level": "1"
+        },
+        "6": {
+          "$deleted": false,
+          "benefit": "ip",
+          "class_name": "Wayfarer",
+          "level": "4"
+        },
+        "7": {
+          "$deleted": false,
+          "benefit": "ip",
+          "class_name": "Rogue",
+          "level": "1"
+        }
+      },
+      "clock_brainwave": "0",
+      "clock_trade": "2",
+      "consumable_list": {
+        "CykJvmoCMovcTJxh": {
+          "consume_description": "<p>Perform a【<strong>MIG + WIL】</strong>check against an aunction opponent's <strong>Difficulty Level</strong>. On success, prevents the target form <strong>Bidding </strong>for 1 turn.</p>",
+          "id": "${item.id}",
+          "name": "Aunction Trick: Power Bid",
+          "roll": "",
+          "uuid": "Actor.MLp8Ahcpb02NE9hh.Item.CykJvmoCMovcTJxh"
+        },
+        "cSFv6CbxfM8WsHV2": {
+          "consume_description": "<p>Perform a【<strong>INS&nbsp;+ WIL】</strong>check against an aunction opponent's&nbsp;<strong>Difficulty Level</strong>. On success, <strong>reduces</strong> the target's <strong>willingness </strong>to bid by <strong>200 Zenit.</strong></p>",
+          "id": "${item.id}",
+          "name": "Aunction Trick: Dirty Talk",
+          "roll": "",
+          "uuid": "Actor.MLp8Ahcpb02NE9hh.Item.cSFv6CbxfM8WsHV2"
+        },
+        "ixR3WD82ddBUPEu9": {
+          "consume_description": "<p>Perform a【<strong>INS + INS】</strong>check against an aunction opponent's <strong>Difficulty Level</strong>. On success, you learn following information:</p>\n<ul>\n<li>Opponent's information regarding their <strong>Difficulty Level</strong>.</li>\n<li>Opponent's <strong>willingness </strong>to bid the <strong>item </strong>of <strong>current round </strong>as a cryptic description.</li>\n</ul>",
+          "id": "${item.id}",
+          "name": "Aunction Trick: Study",
+          "roll": "",
+          "uuid": "Actor.MLp8Ahcpb02NE9hh.Item.ixR3WD82ddBUPEu9"
+        }
+      },
+      "cooking_ingredient_1": "",
+      "cooking_ingredient_2": "",
+      "cooking_ingredient_3": "",
+      "cooking_ingredient_table": {},
+      "cooking_roller": "🔪Cook!",
+      "current_hp": 72,
+      "current_ip": "9",
+      "current_mp": 77,
+      "damage_receiving_mod_air": "0",
+      "damage_receiving_mod_all": "0",
+      "damage_receiving_mod_bolt": "0",
+      "damage_receiving_mod_dark": "0",
+      "damage_receiving_mod_earth": "0",
+      "damage_receiving_mod_fire": "0",
+      "damage_receiving_mod_ice": "0",
+      "damage_receiving_mod_light": "0",
+      "damage_receiving_mod_melee": "0",
+      "damage_receiving_mod_physical": "0",
+      "damage_receiving_mod_poison": "0",
+      "damage_receiving_mod_range": "0",
+      "delicacy_10_effect": "",
+      "delicacy_10_ingredient_1": "",
+      "delicacy_10_ingredient_2": "",
+      "delicacy_11_effect": "",
+      "delicacy_11_ingredient_1": "",
+      "delicacy_11_ingredient_2": "",
+      "delicacy_12_effect": "",
+      "delicacy_12_ingredient_1": "",
+      "delicacy_12_ingredient_2": "",
+      "delicacy_13_effect": "",
+      "delicacy_13_ingredient_1": "",
+      "delicacy_13_ingredient_2": "",
+      "delicacy_14_effect": "",
+      "delicacy_14_ingredient_1": "",
+      "delicacy_14_ingredient_2": "",
+      "delicacy_15_effect": "",
+      "delicacy_15_ingredient_1": "",
+      "delicacy_15_ingredient_2": "",
+      "delicacy_1_effect": "",
+      "delicacy_1_ingredient_1": "",
+      "delicacy_1_ingredient_2": "",
+      "delicacy_2_effect": "",
+      "delicacy_2_ingredient_1": "",
+      "delicacy_2_ingredient_2": "",
+      "delicacy_3_effect": "",
+      "delicacy_3_ingredient_1": "",
+      "delicacy_3_ingredient_2": "",
+      "delicacy_4_effect": "",
+      "delicacy_4_ingredient_1": "",
+      "delicacy_4_ingredient_2": "",
+      "delicacy_5_effect": "",
+      "delicacy_5_ingredient_1": "",
+      "delicacy_5_ingredient_2": "",
+      "delicacy_6_effect": "",
+      "delicacy_6_ingredient_1": "",
+      "delicacy_6_ingredient_2": "",
+      "delicacy_7_effect": "",
+      "delicacy_7_ingredient_1": "",
+      "delicacy_7_ingredient_2": "",
+      "delicacy_8_effect": "",
+      "delicacy_8_ingredient_1": "",
+      "delicacy_8_ingredient_2": "",
+      "delicacy_9_effect": "",
+      "delicacy_9_ingredient_1": "",
+      "delicacy_9_ingredient_2": "",
+      "dex_base": "12",
+      "dex_current": 12,
+      "draw_card": "Draw",
+      "draw_card_copy1": "Use",
+      "elementalism": false,
+      "emotion_1_1": "1",
+      "emotion_1_2": "2",
+      "emotion_1_3": "",
+      "emotion_2_1": "",
+      "emotion_2_2": "",
+      "emotion_2_3": "1",
+      "emotion_3_1": "",
+      "emotion_3_2": "1",
+      "emotion_3_3": "",
+      "emotion_4_1": "",
+      "emotion_4_2": "",
+      "emotion_4_3": "",
+      "emotion_5_1": "",
+      "emotion_5_2": "",
+      "emotion_5_3": "",
+      "emotion_6_1": "",
+      "emotion_6_2": "",
+      "emotion_6_3": "",
+      "entropism": false,
+      "experience": "0",
+      "experience_ui": "0",
+      "fp": "2250",
+      "id": "MLp8Ahcpb02NE9hh",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/New%20Art/Masked/Fortune_Standard_Mask.png",
+      "init_penalty": "-1",
+      "ins_base": "8",
+      "ins_current": 8,
+      "inventory_label": "💼 Inventory",
+      "inventory_list": {
+        "0": {
+          "$deleted": false,
+          "item_description": "<p>A Sharp Scale obtained from the mysterious whale creature.</p>",
+          "item_name": "Huge Sharp Scale",
+          "item_owned": "1",
+          "item_roll": ""
+        },
+        "1": {
+          "$deleted": false,
+          "item_description": "",
+          "item_name": "Trade Point",
+          "item_owned": "6",
+          "item_roll": ""
+        },
+        "2": {
+          "$deleted": false,
+          "item_description": "<p>A Landscape painting showing the hunting of whales by the villagers of Krushgapoon, the hunter are naked despite the harsh climates. The Painting symbolize Krushgapoon strength to endure despite all odds.</p>",
+          "item_name": "Winter Whale Hunt",
+          "item_owned": "1",
+          "item_roll": ""
+        },
+        "3": {
+          "$deleted": false,
+          "item_description": "<p>Discarded Scale of Diving Steam.</p>",
+          "item_name": "Discarded Scale",
+          "item_owned": "10",
+          "item_roll": ""
+        },
+        "4": {
+          "$deleted": false,
+          "item_description": "<p>Bullet infused with Cryo property</p>",
+          "item_name": "Cryo Bullet",
+          "item_owned": "3",
+          "item_roll": ""
+        }
+      },
+      "isAwake": false,
+      "isClarity": false,
+      "isDazed": false,
+      "isEnergized": false,
+      "isEnraged": false,
+      "isFocus": false,
+      "isPoisoned": false,
+      "isShaken": false,
+      "isSlow": false,
+      "isStrong": false,
+      "isSwift": false,
+      "isWeak": true,
+      "is_martialarmor": false,
+      "itemContainer1": {
+        "bYP2Qhv9fwmxC0jF": {
+          "active_description": "<p>Deal&nbsp;<strong>10 p</strong><strong>hysical&nbsp;</strong>damage to target creature, if the passive ability&nbsp;<strong>Hitman for Hire&nbsp;</strong>has already trigger once this scene, Deal&nbsp;<strong>30</strong>&nbsp;<strong>physical&nbsp;</strong>damage instead, treat this as a range basic attack.</p>",
+          "id": "${item.id}",
+          "name": "Django",
+          "passive_description": "<p>At&nbsp;<strong>Round 3 </strong>of the battle, deals&nbsp;<strong>60 Physical&nbsp;</strong>damage to target creature.</p>",
+          "uuid": "Actor.MLp8Ahcpb02NE9hh.Item.bYP2Qhv9fwmxC0jF"
+        }
+      },
+      "itemContainer2": {
+        "90Pg1SJIJAuwS10R": {
+          "armor_description": "<p><ul>\n<li>Your&nbsp;attack with&nbsp;<strong>Flail</strong>&nbsp;deals 5 bonus damage and inflicts <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEFENSE%20DOUBLE%20DOWN.png\" width=\"21\" height=\"21\">@UUID[JournalEntry.XkuOy0BFvKJTewGS]{Enraged} to the target.</li>\n</ul>\n<hr>\n<p><strong>【Set Bonus】</strong></p>\n<p><strong>2 Piece</strong></p>\n<ul>\n<li>When you <strong>hit&nbsp;</strong>an ally with a&nbsp;<strong>Flail&nbsp;</strong>weapon, after the damage is dealt, you may <strong>heal&nbsp;</strong>the target by 200% of the damage.<br><hr></li>\n</ul>\n<p><strong>3 Piece</strong></p>\n<ul>\n<li>As an&nbsp;<strong>Skill Action,&nbsp;</strong>remove <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEFENSE%20DOUBLE%20DOWN.png\" width=\"21\" height=\"21\">@UUID[JournalEntry.XkuOy0BFvKJTewGS]{Enraged} from all ally, then for all <strong>Enraged&nbsp;</strong>removed this way, replace it with <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEFENSE%20DOUBLE%20UP.png\" alt=\"\" width=\"21\" height=\"21\"><strong>Clarity </strong>instead<hr></li>\n</ul>\n<p>&nbsp;</p></p>",
+          "armor_martial": false,
+          "id": "${item.id}",
+          "name": "BDSM Garment",
+          "roll": "",
+          "uuid": "Actor.MLp8Ahcpb02NE9hh.Item.90Pg1SJIJAuwS10R"
+        }
+      },
+      "itemContainer4": {
+        "Him4jC7CwtRJ7PLE": {
+          "acess_description": "<ul>\n<li>When you deal damage to a creature using an <strong>elemental shard</strong>, that creature also suffers the <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/MAGICDEFENSE%20DOWN.png\" width=\"21\" height=\"21\">@UUID[JournalEntry.3nmUvPei3zrOJkEt]{Dazed}&nbsp;status effect.</li>\n</ul>",
+          "id": "${item.id}",
+          "name": "Flashbang Grenade",
+          "roll": "",
+          "uuid": "Actor.MLp8Ahcpb02NE9hh.Item.Him4jC7CwtRJ7PLE"
+        },
+        "juoIYqBkgCM2mzqV": {
+          "acess_description": "<ul>\n<li>Once at the start of a<strong>&nbsp;</strong><strong>Conflict</strong> scene, you may perform the <strong>【Study】</strong>action as a&nbsp;<strong>Free Action</strong></li>\n<li>Gain +1 to your <strong>【Study】</strong>check</li>\n</ul>",
+          "id": "${item.id}",
+          "name": "Scounter",
+          "roll": "",
+          "uuid": "Actor.MLp8Ahcpb02NE9hh.Item.juoIYqBkgCM2mzqV"
+        }
+      },
+      "key_list": {},
+      "level": "32",
+      "magic_defense_mod": "0",
+      "main_attrib_1": "DEX",
+      "main_attrib_2": "INS",
+      "main_details": "<ul>\n<li>When you apply an <strong>infusion</strong> to an attack made with this weapon, that attack deals extra damage equal to your Skill Level in <strong>Gadgets</strong></li>\n<li>Transform into <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Hitman%20Suitcase.gif\" alt=\"\" width=\"21\" height=\"21\"><strong>@UUID[Item.9tAsz176ZSt1HVuS]{Magitech Briefcase}</strong></li>\n</ul>",
+      "main_hand": "Sidewinder Rev-II",
+      "main_hand_attack": "",
+      "max_hp": 72,
+      "max_ip": 20,
+      "max_mp": 77,
+      "memories_list": {},
+      "memory": "Memories",
+      "mig_base": "6",
+      "mig_current": 6,
+      "name": "Fortune",
+      "normal_spell_list": {},
+      "notes_text": "<p style=\"text-align: center\"> </p><hr><ul><li style=\"text-align: left;\"><strong>Calm yet calculated</strong></li></ul><p style=\"\">Despite her calm and gentle demeanor, she is without a doubt, a strict businesswoman. She Navigate the world of business under a facade of kindness and occasional playfulness, while maintaining a cold and efficient demeanor when it comes to her dealing.</p><hr><ul><li style=\"text-align: left;\"><strong>Life of Luxuries</strong></li></ul><p style=\"\">Beyond her business dealing, Lucrétia lives a life of opulence and sophistication. She do enjoys indulging herself in the pleasure of a good foods or accomodations. She likes collecting Fine Arts and would also loan them to museums.</p><hr><ul><li style=\"text-align: left;\"><strong>Appreciation of Arts</strong></li></ul><p style=\"\">Lucrétia is an avid enjoyers of fine arts, Like most refined lady, she enjoys the beauty of arts, but even more beyond its beauty,  Lucrétia is more captivated by the message and personality of the artist bleeding through each masterpiece, these thoughts are what keeping her mind pondering, a sentiments which she enjoys</p><hr><ul><li style=\"text-align: left;\"><strong>Fame, the crow</strong></li></ul><p style=\"\">Fame is a crow that Lucrétia trained to act as her messenger.</p><hr><p style=\"\"> </p>",
+      "off_attrib_1": "MIG",
+      "off_attrib_2": "MIG",
+      "off_base_mod_1": "0",
+      "off_base_mod_2": "5",
+      "off_details": "<ul>\n<li>When you&nbsp;<strong>Equip</strong> this weapon, Gain&nbsp;<strong>10</strong> <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/SGE/taurochole.png\" alt=\"\" width=\"21\" height=\"21\">@UUID[JournalEntry.wrw2ENSwzCBjztvt]{Shield}, when you&nbsp;<strong>unequip&nbsp;</strong>this weapon, lose all <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/SGE/taurochole.png\" alt=\"\" width=\"21\" height=\"21\">@UUID[JournalEntry.wrw2ENSwzCBjztvt]{Shield} points granted by this weapon</li>\n<li>You gain a <strong>+2</strong> bonus to Defense, and you are treated as having a <strong>shield</strong> equipped for the sake of your Skills</li>\n<li>Transform into <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gun.png\" alt=\"\" width=\"21\" height=\"21\"><strong>@UUID[Item.9tAsz176ZSt1HVuS]{Sidewinder Rev-II}</strong></li>\n</ul>",
+      "off_hand": "Magitech Briefcase",
+      "off_hand_attack": "",
+      "off_mod_1": 4,
+      "off_mod_2": 5,
+      "origin": "Wiarachia Empire",
+      "passive_list": {
+        "0": {
+          "$deleted": false,
+          "passive_description": "<p>Permanently increase your maximum Hit Points and maximum Mind Points by 5 and your maximum inventory by 2</p>\n<section class=\"secret\">\n<h5>Base Quirk: Survivor</h5>\n</section>\n<p> </p>",
+          "passive_name": "Business Saavy",
+          "passive_roll": "",
+          "passive_source": "quirk"
+        },
+        "1": {
+          "$deleted": false,
+          "passive_description": "<p>Once before the next rest, you may perform an additional action on your turn during a conflict scene. This action must be used to perform the Equipment, Hinder, or Inventory action.</p>",
+          "passive_name": "Sleep Soundly",
+          "passive_roll": "",
+          "passive_source": "camp activity"
+        },
+        "2": {
+          "$deleted": false,
+          "passive_description": "<p>Once before the next rest, after making an initiative Check as leader or a Check to examine someone or something, the target may add a bonus of +4 to the result of the Check.</p>",
+          "passive_name": "Planning",
+          "passive_roll": "",
+          "passive_source": "camp activity"
+        },
+        "3": {
+          "$deleted": false,
+          "passive_description": "<p>When you spend <strong>Inventory Points</strong>, you spend 1 less Inventory Point <em>(minimum 1)</em>.</p>",
+          "passive_name": "Deep Pocket",
+          "passive_roll": "",
+          "passive_source": "heroic_skill"
+        },
+        "4": {
+          "$deleted": false,
+          "passive_description": "<p>Permanently increase your maximum <strong>Inventory Points</strong> by <strong>4</strong>.</p>",
+          "passive_name": "Extra IP",
+          "passive_roll": "",
+          "passive_source": "heroic_skill"
+        }
+      },
+      "place_card_vanguard": "Place",
+      "populate_deck": "Populate",
+      "pronouns": "Her / Madam",
+      "reaction_list": {},
+      "relationship_1": "Crazy",
+      "relationship_2": "Naive",
+      "relationship_3": "Wary",
+      "relationship_4": "",
+      "relationship_5": "",
+      "relationship_6": "",
+      "reset_cards": "Resets",
+      "resolve_set": "Resolve",
+      "resource_value_1": "0",
+      "resource_value_2": "0",
+      "resource_value_3": "0",
+      "reveal_cards": "Reveal",
+      "ritualism": false,
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "INS",
+      "shield_type": "",
+      "shield_value": "0",
+      "shuffle_deck": "Shuffle",
+      "skill_accuracy": "4",
+      "skill_attack_damage": "0",
+      "skill_hp": "5",
+      "skill_ip": "6",
+      "skill_list": {
+        "0": {
+          "$deleted": false,
+          "class": "Merchant",
+          "description": "<p><img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Gatherer-Crafter/00_Specialist/innovative_touch.png\" alt=\"\" width=\"40\" height=\"40\"></p>\n<hr>\n<p>After you rest in an area where commerce is possible, you gain <strong>【SL + 1】</strong> Trade Points.<br>You may never have more than <strong>【SL + 3】</strong> Trade Points</p>\n<p><br>During a non-conflict scene, you may spend <strong>2 Trade Points</strong> to <strong>choose one option</strong>:</p>\n<ul>\n<li>\n<blockquote><em>You create a material or rare item approved by the Game Master whose value is equal toor lower than <strong>【your level, multiplied by 40】</strong></em> </blockquote>\n</li>\n<li>\n<blockquote><em>You create an <strong>NPC</strong> that lives nearby and explain their occupation as well as how you met them, then the Game Master tells you what they require in exchange for their services.</em></blockquote>\n</li>\n</ul>",
+          "level": "3",
+          "roll": "",
+          "skill_name": "Wind of Trade"
+        },
+        "1": {
+          "$deleted": false,
+          "class": "Merchant",
+          "description": "<p><img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Gatherer-Crafter/12_BTN/collector%27s_glove.png\" alt=\"\" width=\"40\" height=\"40\"></p>\n<hr>\n<p>When you or another Player Character spend <strong>【SL + 2】</strong> or fewer Inventory Points, you may spend <strong>1 Trade Point</strong> to ignore that cost.</p>",
+          "level": "3",
+          "roll": "",
+          "skill_name": "Private Stock"
+        },
+        "2": {
+          "$deleted": false,
+          "class": "Merchant",
+          "description": "<p>When you or an ally who is able to hear and understand you perform a Check to examine a creature, item, or location, you may spend <strong>1 Trade Point</strong> to grant a bonus equal to <strong>6</strong> to the Result of that Check.</p>",
+          "level": "3",
+          "roll": "",
+          "skill_name": "I've heard of it!"
+        },
+        "3": {
+          "$deleted": false,
+          "class": "Merchant",
+          "description": "<p>Once per session, when you help an <strong>NPC</strong> or community defeat greed and corruption, improve their quality of life, or coexist with other creatures, if you have acquired the <strong>Winds of Trade</strong> Skill, you gain <strong>1</strong> Trade Points.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Real Treasure"
+        },
+        "4": {
+          "$deleted": true,
+          "class": "",
+          "description": "<p><img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/12_MCH/heat_blast.png\" alt=\"\" width=\"40\" height=\"40\"></p>\n<hr>\n<p>Choose any number of creatures you can see: each of them suffers <strong>【30 + half your level】</strong>dark damage of then and suffers weak.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "RESTOCK"
+        },
+        "5": {
+          "$deleted": false,
+          "class": "Sharpshooter",
+          "description": "<p>You gain a bonus equal to <strong>4</strong> to all Accuracy Checks with <strong>ranged weapons.</strong></p>",
+          "level": "4",
+          "roll": "",
+          "skill_name": "Range Weapon Mastery"
+        },
+        "6": {
+          "$deleted": true,
+          "class": "Tinkerer",
+          "description": "<p>When you create a potion that restores a single creature's HP and/or MP, you may have it affect up to <strong>2</strong> additional creatures.</p>\n<p>If you do, the potion only restores half the normal amount of HP and MP to each creature.</p>",
+          "level": "2",
+          "roll": "",
+          "skill_name": "Potion Rain"
+        },
+        "7": {
+          "$deleted": false,
+          "class": "Sharpshooter",
+          "description": "<p>When you perform the Guard action, if you choose not to provide cover to another<br>creature, you may choose one option: the next ranged attack you perform before the<br>end of the current scene will deal 【SL × 2】 extra damage; or you may immediately<br>perform a free attack with a bow or firearm you have equipped, treating your High Roll<br>(HR) as 0 when calculating damage dealt by this attack.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Hawkeye"
+        },
+        "8": {
+          "$deleted": false,
+          "class": "Sharpshooter",
+          "description": "<p><img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/12_MCH/heated_slug_shot.png\" alt=\"\" width=\"40\" height=\"40\"></p>\n<hr>\n<p>When you perform a ranged attack, you may spend<strong> 10 Mind Points</strong> to <strong>choose one</strong>:</p>\n<ul>\n<li>\n<blockquote>The attack gains <strong>multi (2)</strong></blockquote>\n</li>\n<li>\n<blockquote> Increase the attack's multi property by one, up to a maximum of <strong>multi (3</strong>).</blockquote>\n</li>\n</ul>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Barrage"
+        },
+        "9": {
+          "$deleted": false,
+          "class": "Sharpshooter",
+          "description": "<p>When you hit one or more targets with a ranged attack that would deal damage, you may have the attack deal no damage. If you do, <strong>choose one</strong> option:</p>\n<ul>\n<li>\n<blockquote><em>Inflict <strong>shaken</strong> on each target hit by the attack</em></blockquote>\n</li>\n<li>\n<blockquote><em>Inflict<strong> slow</strong> on each target hit by the attack</em></blockquote>\n</li>\n<li>\n<blockquote><em>Each target hit by the attack loses <strong>10</strong> Mind Points.</em></blockquote>\n</li>\n</ul>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Warning Shot"
+        },
+        "10": {
+          "$deleted": false,
+          "class": "Tinkerer",
+          "description": "<p>When you create a potion or magisphere whose effects restore HP and/or MP, each restored amount is increased by <strong>25.</strong></p>\n<p>When you create an elemental shard, potion or magisphere that deals damage, that item deals <strong>5</strong> extra damage.</p>",
+          "level": "5",
+          "roll": "",
+          "skill_name": "Secret Formula"
+        },
+        "11": {
+          "$deleted": false,
+          "class": "Tinkerer",
+          "description": "<p><img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/12_MCH/hot_shot.png\" alt=\"\" width=\"40\" height=\"40\"></p>\n<hr>\n<p>When you successfully hit one or more targets with an attack, you may spend <strong>2</strong><br><strong>Inventory Points</strong> to produce a special infusion and apply the corresponding effect to<br>that attack (if the attack had the multi property, apply the effects of the infusion to<br>each target).</p>\n<p><br><em>You cannot apply more than one infusion to the same attack; producing and using an</em><br><em>infusion are both part of the action you used to attack with the weapon.</em></p>\n<p> </p>\n<hr>",
+          "level": "3",
+          "roll": "",
+          "skill_name": "Bullet Infusion"
+        },
+        "12": {
+          "$deleted": false,
+          "class": "Tinkerer",
+          "description": "<p>You may perform the Inventory action and spend <strong>2 Inventory Points</strong> to create a <strong>magitech armament</strong> and destroy any magitech armament you previously created. Whenever you create a magitech armament:</p>\n<ul>\n<li>\n<blockquote><em>it's damage is <strong>【HR+12】Physical</strong></em></blockquote>\n</li>\n<li>\n<blockquote><em>Choose a <strong>Category</strong> for it among <strong>arcane</strong>, <strong>brawling</strong>,<strong> firearm</strong>, <strong>heavy</strong>, <strong>spear</strong>, or <strong>sword</strong></em></blockquote>\n</li>\n<li>\n<blockquote><em>Choose a damage type: <strong>Air, Bolt, Fire </strong>or<strong> Ice</strong></em></blockquote>\n</li>\n<li>\n<blockquote><em>Choose whether it is a <strong>melee</strong> or <strong>ranged</strong> weapon</em></blockquote>\n</li>\n<li>\n<blockquote><em>Choose an Accuracy formula between<strong>【DEX + INS】+1 </strong>and <strong>【INS + MIG】+1</strong> for it.</em></blockquote>\n</li>\n<li>\n<blockquote><em>The armament will always occupy both hand slots.</em></blockquote>\n</li>\n</ul>\n<hr>\n<p>Additionally, whenever you create a magitech armament, you may immediately equip it and perform a <strong>free attack</strong> with it.</p>",
+          "level": "2",
+          "roll": "",
+          "skill_name": "Magitech Armament"
+        },
+        "13": {
+          "$deleted": false,
+          "class": "Wayfarer",
+          "description": "<p>You recover <strong>4 Inventory Points</strong> after each <strong>travel roll</strong> .</p>",
+          "level": "4",
+          "roll": "",
+          "skill_name": "Resourceful"
+        },
+        "14": {
+          "$deleted": false,
+          "class": "Rogue",
+          "description": "<p>As long as you have no shields and no martial armor equipped, your Defense score is increased by <strong>1</strong>.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Dodge"
+        }
+      },
+      "skill_mp": "5",
+      "spiritism": false,
+      "theme": "Ambition",
+      "uuid": "Actor.MLp8Ahcpb02NE9hh",
+      "weapon1_base_damage": "16",
+      "weapon1_base_mod": "0",
+      "weapon1_damage": 16,
+      "weapon1_damagetype": "Physical",
+      "weapon1_mod": 4,
+      "weapon2_damagetype": "Physical",
+      "weapon_list": {
+        "50G0AG050PXxmcxo": {
+          "id": "${item.id}",
+          "name": "Salamander",
+          "roll": "",
+          "type": "Flail",
+          "uuid": "Actor.MLp8Ahcpb02NE9hh.Item.50G0AG050PXxmcxo",
+          "weapon_description": "<p><ul>\n<li>&nbsp;You have<strong> Resistance</strong> to<strong> Fire </strong>damage.</li>\n</ul></p>",
+          "weapon_hand": "One-handed",
+          "weapon_martial": false,
+          "weapon_range": "Melee"
+        },
+        "9QXRpvxKD6H3774V": {
+          "id": "${item.id}",
+          "name": "Magitech Briefcase",
+          "roll": "",
+          "type": "Brawling",
+          "uuid": "Actor.MLp8Ahcpb02NE9hh.Item.9QXRpvxKD6H3774V",
+          "weapon_description": "<p><ul>\n<li>When you&nbsp;<strong>Equip</strong> this weapon, Gain&nbsp;<strong>10</strong> <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/SGE/taurochole.png\" alt=\"\" width=\"21\" height=\"21\">@UUID[JournalEntry.wrw2ENSwzCBjztvt]{Shield}, when you&nbsp;<strong>unequip&nbsp;</strong>this weapon, lose all <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/SGE/taurochole.png\" alt=\"\" width=\"21\" height=\"21\">@UUID[JournalEntry.wrw2ENSwzCBjztvt]{Shield} points granted by this weapon</li>\n<li>You gain a <strong>+2</strong> bonus to Defense, and you are treated as having a <strong>shield</strong> equipped for the sake of your Skills</li>\n<li>Transform into <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gun.png\" alt=\"\" width=\"21\" height=\"21\"><strong>@UUID[Item.9tAsz176ZSt1HVuS]{Sidewinder Rev-II}</strong></li>\n</ul></p>",
+          "weapon_hand": "One-handed",
+          "weapon_martial": false,
+          "weapon_range": "Melee"
+        },
+        "CZyMCM1Pr2l7OHRX": {
+          "id": "${item.id}",
+          "name": "Sidewinder Rev-II",
+          "roll": "",
+          "type": "Firearm",
+          "uuid": "Actor.MLp8Ahcpb02NE9hh.Item.CZyMCM1Pr2l7OHRX",
+          "weapon_description": "<p><ul>\n<li>When you apply an <strong>infusion</strong> to an attack made with this weapon, that attack deals extra damage equal to your Skill Level in <strong>Gadgets</strong></li>\n<li>Transform into <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Hitman%20Suitcase.gif\" alt=\"\" width=\"21\" height=\"21\"><strong>@UUID[Item.9tAsz176ZSt1HVuS]{Magitech Briefcase}</strong></li>\n</ul></p>",
+          "weapon_hand": "Two-handed",
+          "weapon_martial": false,
+          "weapon_range": "Ranged"
+        },
+        "gsqCBOF2lUMbpnc5": {
+          "id": "${item.id}",
+          "name": "Magitech Armament",
+          "roll": "",
+          "type": "Arcane",
+          "uuid": "Actor.MLp8Ahcpb02NE9hh.Item.gsqCBOF2lUMbpnc5",
+          "weapon_description": "<p><ul>\n<li>This weapon type can be either <strong>Melee&nbsp;</strong>or&nbsp;<strong>Range</strong></li>\n<li>This weapon&nbsp;<strong>Category</strong> can be <strong>a</strong><strong>rcane, brawling, firearm, heavy, spear&nbsp;</strong>or sword</li>\n<li>This weapon type can be&nbsp;<strong>Physical, Air, Bolt, Fire&nbsp;</strong>or&nbsp;<strong>Ice</strong></li>\n<li><strong>This&nbsp;</strong>weapon formula can either be <strong>【DEX】+【INS】+1</strong> or <strong>【INS】+【MIG】+1</strong></li>\n<li>This weapon always occupy both hand slots</li>\n</ul></p>",
+          "weapon_hand": "One-handed",
+          "weapon_martial": false,
+          "weapon_range": "Melee"
+        }
+      },
+      "wlp_base": "8",
+      "wlp_current": 8,
+      "your_class_name": "Dark Merchant",
+      "zenit": "620",
+      "zero_effect_description": "<p><img style=\"display: block; margin-left: auto; margin-right: auto;\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Fortune/Zero_Cutin.png\" alt=\"\" width=\"299\" height=\"50\"></p>\n<hr>\n<p>Until the end of this round, all ally attacks with <strong>weapons</strong> that is not an <strong>Unarmed Strike </strong>gains the following benefits:</p>\n<ul>\n<li style=\"text-align: left;\">+3 Accuracy</li>\n<li style=\"text-align: left;\">+50% Efficiency</li>\n<li style=\"text-align: left;\">Ignore Resistances</li>\n</ul>\n<p>Then, Fortune perform a <strong>Free Attack</strong> with a weapon she have equipped</p>",
+      "zero_effect_label": "💬 Zero Effect",
+      "zero_label": "💥 Zero Power : ",
+      "zero_power_name": "FULLMETAL REARMAMENT",
+      "zero_power_value": "0",
+      "zero_trigger_description": "<h4>This trigger activates when you deal damage to one or more creatures, filling 1<br>section for each creature that was Vulnerable to the type of damage dealt.</h4>",
+      "zero_trigger_label": "⚔️ Zero Trigger"
+    },
+    "statusEffects": {
+      "1QPHKNWo17z0bBmX": [],
+      "1cksCQj3urJwddfg": [],
+      "1qTdxSVu2XLu0lUx": [],
+      "3YZNX2X5rHYtL4L5": [],
+      "4g2B0rdJ3SiUQvUv": [],
+      "5FFBDg2y54bpqgat": [],
+      "5jkr80zqdzaR003d": [],
+      "6YW8glLMYbwj6ZhC": [],
+      "7FLtIUvENcYDAJKC": [],
+      "7VDl6ac5Rzr2Rpya": [],
+      "8LN8tDQjON508Rqm": [],
+      "ACD2C8JLWUeIx89o": [],
+      "CVxHWmDb0gQsob1q": [],
+      "CfLPg6RDybSQhTSR": [],
+      "DCaKnV9kNn3EpqtY": [],
+      "DHsoSawNEZAxsnQ9": [],
+      "EVjmTFRDsuzR823Z": [],
+      "GJ0cbbj60lr4zaHm": [],
+      "MsbUHrgK7AhSeEJm": [],
+      "N4WfMf1nuOdUEXVS": [],
+      "N4rGBYQsH7PyMAWr": [],
+      "NogCaPvL5Y52Hjnq": [],
+      "OFk8VUuwDhWFoPxI": [],
+      "QOfrFCU2C6mx50gK": [],
+      "Qz8IC4v3wJ6UoM77": [],
+      "Rc8AvdmlHAK7pPea": [],
+      "StnYeDADYo2xX99O": [],
+      "T1kJfiKBZm1dnnBy": [],
+      "VxdXsFJ7YVEzAp3x": [],
+      "YhO7nUdawyeQKMWD": [],
+      "ZK0aTX8IH1NqwmTw": [],
+      "bspDC7hFRTYuwdhf": [],
+      "cDgbFRi9TA68TvYr": [],
+      "clE8TJ0G1gMwF735": [],
+      "fYkA57rVfoytHRjo": [],
+      "g7JIey1pEuRHyAOH": [],
+      "gX1fA3onNG7wsyap": [],
+      "hhqoSNhWfVD4KR7g": [],
+      "jKvrVpxLgX0KhB23": [],
+      "m2iUJjsEfJkpmOBw": [],
+      "qMZsEEuzAdrHb2fk": [],
+      "qePlOECBTS0Dftgc": [],
+      "t2C3LKukW6LPUImk": [],
+      "t5jyddIZDvbyuVsD": [],
+      "v22vl6cnP94wVBPu": [],
+      "v2vFlETIgMnff5o8": [],
+      "vLM7q3rdXVCgHYD4": [],
+      "vUYA9jgY9pdafj4i": [],
+      "wA1E8GxiXmzz80XQ": [],
+      "xuwAn7u126GfFweU": []
+    },
+    "template": "Dx16KeWcJzikM7dh",
+    "templateSystemUniqueVersion": 276398442
+  },
+  "type": "character"
+}

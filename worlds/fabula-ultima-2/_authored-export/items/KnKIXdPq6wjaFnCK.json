@@ -1,0 +1,51 @@
+{
+  "_id": "KnKIXdPq6wjaFnCK",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1781943658553,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Pokemon/poke-doll.png",
+  "name": "Decoy Doll",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "S71vgGdSVCmEGWN0",
+    "props": {
+      "cost": "-",
+      "description": "<p><em>Decoy Doll:</em> summon a Decoy Doll companion until the end of the scene.</p>",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "effect_kind": "summon",
+          "effect_label": "decoy_summon",
+          "summon_act_this_round": false,
+          "summon_actor": "Actor.DMHfh4ChYzXNkMGe",
+          "summon_count": "1"
+        }
+      },
+      "isCheck": false,
+      "on_activate_effect_ref": "decoy_summon",
+      "skill_target": "Self",
+      "skill_type": "Item",
+      "type_damage": ""
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "KnKIXdPq6wjaFnCK"
+  },
+  "type": "equippableItem"
+}

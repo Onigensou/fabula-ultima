@@ -1,0 +1,192 @@
+{
+  "_id": "AInzRVEGX9zB0G3L",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1781957052625,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "ZwcLnmb51QSWDXLu",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1781957053344,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "must_target_applier",
+          "mode": 5,
+          "priority": null,
+          "value": "Attack,Spell"
+        }
+      ],
+      "description": "<p><em>Thread the Horns:</em> must target the provoker (until its next action).</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "ZwcLnmb51QSWDXLu",
+          "originalParentId": "AInzRVEGX9zB0G3L",
+          "originalUuid": "Item.AInzRVEGX9zB0G3L.ActiveEffect.ZwcLnmb51QSWDXLu"
+        },
+        "fabula-ultima-companion": {
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "candidate_source": "self",
+                "count": 1,
+                "effect_kind": "targeting",
+                "effect_label": "prov_expire",
+                "mode": "exact",
+                "skip_when_passive": true
+              }
+            },
+            "reaction_config_table": {
+              "0": {
+                "consume_self": true,
+                "reaction_effect_ref": "prov_expire",
+                "reaction_passive_mode": "force",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_performs_action"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/svg/target.svg",
+      "name": "Provoked",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "ZK0aTX8IH1NqwmTw"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "7XPRzEprVTXCugxm",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/Last_Dance.png",
+  "name": "Thread the Horns",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "check_bonus": "0",
+      "class": "Matador",
+      "cost": "",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>When a creature targeted you for an <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.10LjF01NAYNKpRvn\" data-id=\"10LjF01NAYNKpRvn\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Melee</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span><strong>attack </strong>and <strong>missed, </strong>You may spend <strong>10 MP</strong>, if you do, inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.c4sYPClmvld4TEK8\" data-id=\"c4sYPClmvld4TEK8\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Provoked</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>on the creature.</p><p>This condition last until the end of the creature next action.</p>",
+      "details_roller": "Show",
+      "duration": "",
+      "effect_table": {
+        "0": {
+          "chain_steps": "tth_cost,tth_prov",
+          "effect_kind": "chain",
+          "effect_label": "tth_do"
+        },
+        "1": {
+          "consume_amount": "10",
+          "consume_resource": "mp",
+          "effect_kind": "consume_resource",
+          "effect_label": "tth_cost",
+          "on_empty": "abort",
+          "target_ref": "self"
+        },
+        "2": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Provoked",
+          "effect_kind": "apply_ae",
+          "effect_label": "tth_prov",
+          "target_ref": "trigger_subject"
+        }
+      },
+      "heroic_requirement": "",
+      "id": "TE0t2PzHnrOZOfHJ",
+      "ignore_hr": false,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/Last_Dance.png",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": true,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Thread the Horns",
+      "optional_params": {},
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "ATTACK_IS_MELEE == 1",
+          "reaction_action_intent": "harmful",
+          "reaction_action_kind": "",
+          "reaction_cause_filter": "",
+          "reaction_damage_source": "",
+          "reaction_effect_ref": "tth_do",
+          "reaction_passive_mode": "ask",
+          "reaction_passive_target": "self",
+          "reaction_resource_filter": "",
+          "reaction_responder": "",
+          "reaction_source": "enemy",
+          "reaction_source_skill": "",
+          "reaction_status_filter": "",
+          "reaction_trigger": "creature_miss_action",
+          "requires_skill": ""
+        }
+      },
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false,
+      "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.TE0t2PzHnrOZOfHJ"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163372,
+    "unique": false,
+    "uniqueId": "AInzRVEGX9zB0G3L"
+  },
+  "type": "equippableItem"
+}

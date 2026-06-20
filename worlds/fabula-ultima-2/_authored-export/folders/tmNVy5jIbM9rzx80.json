@@ -1,0 +1,19 @@
+{
+  "_id": "tmNVy5jIbM9rzx80",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1753921328056,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": "#000000",
+  "description": "",
+  "flags": {},
+  "folder": "PaPzgCs9Rd0kzMSB",
+  "name": "Classic Classes",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Actor"
+}

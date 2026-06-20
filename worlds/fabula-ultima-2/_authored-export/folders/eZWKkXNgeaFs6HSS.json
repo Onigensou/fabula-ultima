@@ -1,0 +1,19 @@
+{
+  "_id": "eZWKkXNgeaFs6HSS",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": null,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "2.4.4"
+  },
+  "color": "#1b9d9b",
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "Player Character",
+  "sort": 400000,
+  "sorting": "a",
+  "type": "Actor"
+}

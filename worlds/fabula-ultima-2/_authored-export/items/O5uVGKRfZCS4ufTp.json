@@ -1,0 +1,69 @@
+{
+  "_id": "O5uVGKRfZCS4ufTp",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1756474255379,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "5fNY7tdWgnptcTJL",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/enochian.png",
+  "name": "Magical Artillery",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_script": "",
+      "check_bonus": "0",
+      "class": "Elementalist",
+      "cost": "",
+      "damage_bonus": "",
+      "defense_target_type": "def",
+      "description": "<p>When you cast an <strong>【⚡Offensive Spell】</strong>, if you have an <strong>arcane</strong> weapon equipped, you gain a bonus to your Magic Check equal to <strong>【SL × 2】</strong></p>",
+      "duration": "",
+      "heroic_requirement": "",
+      "ignore_hr": false,
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "3",
+      "name": "Magical Artillery",
+      "optional_params": {},
+      "passive_logic_action": "<p>const TAG = \"[PASSIVE][MagicalArtillery][Action]\";</p><p>const norm = (v) =&gt; String(v ?? \"\").trim().toLowerCase();</p><p>const isAutoPassiveExecution =</p><p>__PAYLOAD?.meta?.isPassiveExecution === true ||</p><p>__PAYLOAD?.isPassiveExecution === true ||</p><p>norm(__PAYLOAD?.meta?.executionMode) === \"autopassive\" ||</p><p>norm(__PAYLOAD?.executionMode) === \"autopassive\";</p><p>const skipHidden = (reason = \"\") =&gt; {</p><p>__PAYLOAD.meta = __PAYLOAD.meta || {};</p><p>__PAYLOAD.meta.hidePassiveCard = true;</p><p>return context.skipPassive(reason, { notify: false });</p><p>};</p><p>// Important:</p><p>// This passive should modify the ORIGINAL spell action payload,</p><p>// not the later standalone auto-passive self execution.</p><p>if (isAutoPassiveExecution) {</p><p>return skipHidden(\"\");</p><p>}</p><p>const passiveOwner =</p><p>__PASSIVE_ACTOR ??</p><p>context.passiveOwner ??</p><p>null;</p><p>const passiveItem =</p><p>__PASSIVE_ITEM ??</p><p>context.passiveItem ??</p><p>null;</p><p>if (!passiveOwner || !passiveItem) {</p><p>return skipHidden(\"\");</p><p>}</p><p>// --------------------------------------------------</p><p>// 1) Check action type = Offensive Spell</p><p>// --------------------------------------------------</p><p>const listType = norm(</p><p>__PAYLOAD?.meta?.listType ??</p><p>__PAYLOAD?.listType ??</p><p>\"\"</p><p>);</p><p>const detectedActionType = norm(</p><p>context.helpers?.getDetectedActionType?.() ?? \"\"</p><p>);</p><p>const actionTypeDebug =</p><p>context.helpers?.getActionTypeDebug?.() ?? {};</p><p>const isSpellish =</p><p>detectedActionType === \"spell\" ||</p><p>actionTypeDebug?.isSpell === true ||</p><p>__PAYLOAD?.meta?.isSpellish === true ||</p><p>__PAYLOAD?.dataCore?.isSpell === true;</p><p>const isOffensiveSpell = listType === \"offensive spell\";</p><p>if (!isSpellish || !isOffensiveSpell) {</p><p>return skipHidden(\"\");</p><p>}</p><p>// --------------------------------------------------</p><p>// 2) Manual equipped Arcane weapon check</p><p>// Avoid the missing helper on your current runtime build.</p><p>// --------------------------------------------------</p><p>const toBool = (v) =&gt;</p><p>v === true || v === \"true\" || v === 1 || v === \"1\";</p><p>const getProps = (item) =&gt;</p><p>item?.system?.props ?? item?.system ?? {};</p><p>const normCategory = (v) =&gt; {</p><p>const s = norm(v);</p><p>const aliases = {</p><p>arcana: \"arcane\",</p><p>arcane: \"arcane\",</p><p>wand: \"arcane\",</p><p>staff: \"arcane\",</p><p>tome: \"arcane\"</p><p>};</p><p>return aliases[s] ?? s;</p><p>};</p><p>const equippedWeapons = Array.from(passiveOwner?.items ?? []).filter((item) =&gt; {</p><p>const p = getProps(item);</p><p>const isEquipped = [</p><p>p?.isEquipped,</p><p>p?.equipped,</p><p>item?.system?.equipped,</p><p>item?.equipped,</p><p>item?.isEquipped</p><p>].some(toBool);</p><p>const itemType = norm(</p><p>p?.item_type ??</p><p>item?.system?.item_type ??</p><p>item?.type ??</p><p>\"\"</p><p>);</p><p>return isEquipped &amp;&amp; itemType === \"weapon\";</p><p>});</p><p>const hasArcaneWeapon = equippedWeapons.some((item) =&gt; {</p><p>const p = getProps(item);</p><p>const cat = normCategory(</p><p>p?.category ??</p><p>item?.system?.category ??</p><p>item?.category ??</p><p>\"\"</p><p>);</p><p>return cat === \"arcane\";</p><p>});</p><p>if (!hasArcaneWeapon) {</p><p>return skipHidden(\"\");</p><p>}</p><p>// --------------------------------------------------</p><p>// 3) Skill level</p><p>// --------------------------------------------------</p><p>const skillLevel = Math.max(</p><p>0,</p><p>Number(</p><p>passiveItem?.level ??</p><p>passiveItem?.system?.props?.level ??</p><p>passiveItem?.system?.level ??</p><p>passiveItem?.system?.props?.active_level ??</p><p>passiveItem?.system?.props?.passive_level ??</p><p>0</p><p>) || 0</p><p>);</p><p>const bonusToAdd = skillLevel * 2;</p><p>if (bonusToAdd &lt;= 0) {</p><p>return skipHidden(\"\");</p><p>}</p><p>// --------------------------------------------------</p><p>// 4) Apply bonus to Magic Check</p><p>// Update BOTH checkBonus and total.</p><p>// --------------------------------------------------</p><p>__PAYLOAD.accuracy = __PAYLOAD.accuracy || {};</p><p>const beforeCheckBonus = Number(__PAYLOAD?.accuracy?.checkBonus ?? 0) || 0;</p><p>const beforeBonusField = Number(__PAYLOAD?.accuracy?.bonus ?? 0) || 0;</p><p>const beforeTotalRaw = Number(__PAYLOAD?.accuracy?.total ?? NaN);</p><p>const beforeTotal = Number.isFinite(beforeTotalRaw) ? beforeTotalRaw : null;</p><p>// If this spell somehow has no accuracy object, quietly do nothing.</p><p>if (beforeTotal === null) {</p><p>return skipHidden(\"\");</p><p>}</p><p>__PAYLOAD.accuracy.checkBonus = beforeCheckBonus + bonusToAdd;</p><p>__PAYLOAD.accuracy.bonus = beforeBonusField + bonusToAdd;</p><p>__PAYLOAD.accuracy.total = beforeTotal + bonusToAdd;</p><p>// --------------------------------------------------</p><p>// 5) Debug</p><p>// --------------------------------------------------</p><p>__PAYLOAD.meta = __PAYLOAD.meta || {};</p><p>__PAYLOAD.meta.magicalArtilleryDebug = {</p><p>passiveOwner: passiveOwner?.name ?? null,</p><p>passiveItem: passiveItem?.name ?? null,</p><p>listType,</p><p>detectedActionType,</p><p>isSpellish,</p><p>isOffensiveSpell,</p><p>hasArcaneWeapon,</p><p>equippedWeapons: equippedWeapons.map((w) =&gt; ({</p><p>name: w?.name ?? null,</p><p>category: normCategory(</p><p>getProps(w)?.category ??</p><p>w?.system?.category ??</p><p>w?.category ??</p><p>\"\"</p><p>)</p><p>})),</p><p>skillLevel,</p><p>bonusAdded: bonusToAdd,</p><p>checkBonusBefore: beforeCheckBonus,</p><p>checkBonusAfter: __PAYLOAD.accuracy.checkBonus,</p><p>totalBefore: beforeTotal,</p><p>totalAfter: __PAYLOAD.accuracy.total</p><p>};</p><p>console.log(TAG, \"APPLIED\", __PAYLOAD.meta.magicalArtilleryDebug);</p><p>context.log(\"Magical Artillery applied\", __PAYLOAD.meta.magicalArtilleryDebug);</p>",
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "O5uVGKRfZCS4ufTp"
+  },
+  "type": "equippableItem"
+}

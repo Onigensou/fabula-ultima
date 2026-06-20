@@ -1,0 +1,811 @@
+{
+  "_id": "jMfWQJznfTBPUATv",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1758204189696,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "lrk2jhOW5Ok9sgH1",
+  "img": "https://i.pinimg.com/736x/98/ce/13/98ce1398a50c83a8b17d19bd58a0163e.jpg",
+  "items": [
+    {
+      "_id": "D4fE1Z1xE0SWlWuG",
+      "_stats": {
+        "compendiumSource": "Item.Ke9AGrtliTVfttcv",
+        "coreVersion": "12.343",
+        "createdTime": 1758206026012,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/riddle_of_wind.png",
+      "name": "Crystal Clear",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Monk",
+          "cost": "-",
+          "damage_bonus": "0",
+          "description": "<p>Whenever you have a full set of <strong>Resolve Soul Beads</strong>, you also receive a <strong>+2 bonus</strong> to your <strong>Defense</strong>, <strong>Magical Defense</strong>, and <strong>Accuracy Checks</strong>.</p>\n<p>For the purposes of the <strong>Resonant Clarity</strong> Skill, these benefits are shared as a <strong>+1 bonus</strong> to your allies’ <strong>Defense</strong>, <strong>Magical Defense</strong>, and <strong>Accuracy Checks</strong>.</p>\n",
+          "duration": "-",
+          "heroic_requirement": "You must have mastered the Monk Class, and must have acquired the Lv. 3 Clarity Skill",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Crystal Clear",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "Ke9AGrtliTVfttcv"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "DbxJECHhTAKZA5P2",
+      "_stats": {
+        "compendiumSource": "Item.D2OvRm2WM87MEOW6",
+        "coreVersion": "12.343",
+        "createdTime": 1758206064786,
+        "duplicateSource": "Item.2DXxFBhlmKJp8awe",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/fists_of_wind.png",
+      "name": "Soul Renewal",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Monk",
+          "cost": "2 MP per Bead",
+          "damage_bonus": "0",
+          "description": "<p>Choose up to three creatures. As an action, release your <strong>Soul Beads</strong> towards them, spending <strong>2 MP per Bead</strong>. Each delivered Bead restores <strong>10 HP or MP</strong>, at your discretion. Each Bead released in this way is destroyed.</p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20</strong> ― <em>Regeneration per Bead</em> increases to <strong>12 HP/MP</strong>.</p>\n<p><strong>Skill Enhancement Lv. 40</strong> ― <em>Regeneration per Bead</em> increases to <strong>15 HP/MP</strong>.</p>\n",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Soul Renewal",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Range",
+          "skill_target": "Up to three creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "D2OvRm2WM87MEOW6"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "JhyL6sE4yVSotUrH",
+      "_stats": {
+        "compendiumSource": "Item.GOm88TYWSrnpYENb",
+        "coreVersion": "12.343",
+        "createdTime": 1758206066220,
+        "duplicateSource": "Item.D2OvRm2WM87MEOW6",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/the_forbidden_chakra.png",
+      "name": "Spirit Shot",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Monk",
+          "cost": "2 MP per Bead",
+          "damage_bonus": "0",
+          "description": "<p>As an action, choose any number of <strong>Soul Beads</strong> to release in a <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Fcq1HgCEh3jxxELa\" data-id=\"Fcq1HgCEh3jxxELa\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Range</span></strong></a></span> 【⚔️ Attack】 against enemies, spending <strong>2 MP per Bead</strong>. Perform a <strong>[ DEX + WLP ]</strong> Check. On a hit, each target loses <strong>[SL × 4]</strong> HP or MP <em>per Bead</em>, based on your choice. This damage <strong>ignores Resistances</strong>.</p><p>Beads targeting HP affect the target’s <strong>Defense</strong>, while those targeting MP affect their <strong>Magic Defense</strong>. Each Bead is destroyed after release, whether it hits or not.</p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "2",
+          "name": "Spirit Shot",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width:100%; text-align:center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>HP/MP Lost per Bead (on hit)</strong></p></td></tr><tr><td><p>1</p></td><td><p>4</p></td></tr><tr><td><p>2</p></td><td><p>8</p></td></tr></tbody></table>",
+          "skill_range": "Range",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "GOm88TYWSrnpYENb"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "Kf8iCCB27CIANW4N",
+      "_stats": {
+        "compendiumSource": "Item.z2JKIODDjbJa4bLH",
+        "coreVersion": "12.343",
+        "createdTime": 1758206070863,
+        "duplicateSource": "Item.GOm88TYWSrnpYENb",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/Elixir_Burst.png",
+      "name": "Spiritual Fortress",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Monk",
+          "cost": "2 MP per Bead",
+          "damage_bonus": "0",
+          "description": "<p>As a reaction, release any number of <strong>Soul Beads</strong> to reduce incoming damage to you or up to three creatures by <strong>[SL × 2]</strong>, before applying any damage Affinities. Each Bead destroyed this way costs <strong>2 MP</strong>.</p>\n",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "3",
+          "name": "Spiritual Fortress",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width:100%; text-align:center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>Damage Reduced</strong></p></td></tr><tr><td><p>1</p></td><td><p>2</p></td></tr><tr><td><p>2</p></td><td><p>4</p></td></tr><tr><td><p>3</p></td><td><p>6</p></td></tr></tbody></table>",
+          "skill_range": "Range",
+          "skill_target": "Up to three creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "z2JKIODDjbJa4bLH"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "KpdUXBDyg9nYnh1Y",
+      "_stats": {
+        "compendiumSource": "Item.lCSU2g4YsA0m9fWO",
+        "coreVersion": "12.343",
+        "createdTime": 1758206061762,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/anatman.png",
+      "name": "Clarity",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Monk",
+          "cost": "-",
+          "damage_bonus": "0",
+          "description": "<p>For each pair of active <strong>Resolve Soul Beads</strong> you possess, choose one of these cumulative benefits:</p>\n<ul>\n  <li><strong>Immunity</strong> to a chosen status effect.</li>\n  <li>Your attacks or spells of a chosen damage type <strong>ignore Resistances</strong>.</li>\n  <li>You gain <strong>Resistance</strong> to a chosen damage type.</li>\n</ul>\n<p>The number of bonuses you can have active at any given moment is equal to <strong>[SL]</strong>. You cannot select the same benefit more than once.</p>\n",
+          "duration": "-",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "3",
+          "name": "Clarity",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width:100%; text-align:center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>Active Bonuses from Clarity</strong></p></td></tr><tr><td><p>1</p></td><td><p>1 bonus</p></td></tr><tr><td><p>2</p></td><td><p>2 bonuses</p></td></tr><tr><td><p>3</p></td><td><p>3 bonuses</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "lCSU2g4YsA0m9fWO"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "sBv11bMc227Xeile",
+      "_stats": {
+        "compendiumSource": "Item.2DXxFBhlmKJp8awe",
+        "coreVersion": "12.343",
+        "createdTime": 1758206063069,
+        "duplicateSource": "Item.lCSU2g4YsA0m9fWO",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/meditation.png",
+      "name": "Resonant Clarity",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Monk",
+          "cost": "-",
+          "damage_bonus": "0",
+          "description": "<p>Your unwavering resolve and mental clarity radiate outward, reaching your companions. For each <strong>[SL]</strong>, you can share one of your active benefits from the <strong>Clarity</strong> Skill, up to three creatures.</p>\n",
+          "duration": "-",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "3",
+          "name": "Resonant Clarity",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width:100%; text-align:center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>Benefits You Can Share</strong></p></td><td><p><strong>Recipients</strong></p></td></tr><tr><td><p>1</p></td><td><p>1</p></td><td><p>Up to 3 creatures</p></td></tr><tr><td><p>2</p></td><td><p>2</p></td><td><p>Up to 3 creatures</p></td></tr><tr><td><p>3</p></td><td><p>3</p></td><td><p>Up to 3 creatures</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "2DXxFBhlmKJp8awe"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "v4Yvk3vZhLztG7xk",
+      "_stats": {
+        "compendiumSource": "Item.OW0ZWEJNhBtMwdc9",
+        "coreVersion": "12.343",
+        "createdTime": 1758206024406,
+        "duplicateSource": "Item.Ke9AGrtliTVfttcv",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/masterful_blitz.png",
+      "name": "Beaded Weapon",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Monk",
+          "cost": "40 MP",
+          "damage_bonus": "0",
+          "description": "<p>At any moment, if you have a full set of <strong>Soul Beads</strong>, you may spend <strong>40 MP</strong> and imbue one equipped weapon with them. Until this effect ends, the weapon gains a <strong>+3 bonus</strong> to <strong>Accuracy Checks</strong>, and its damage <strong>ignores Resistances</strong>.</p>\n<p>If it’s a <em>melee</em> weapon, it also becomes a <em>ranged</em> weapon, and its attacks can be launched from afar. If you have that weapon equipped while activating this effect, you may perform a free 【⚔️ Attack】 with it as part of the same action.</p>\n<p>You lose access to the <strong>Soul Beads</strong> used, and they don’t count toward the <strong>Clarity</strong> Skill while imbued in your weapon. You can generate <strong>Soul Beads</strong> as normal from the next turn onwards. Only one weapon can benefit from this Skill at a time.</p>\n",
+          "duration": "Scene",
+          "heroic_requirement": "You must have mastered the Monk Class",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Beaded Weapon",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Any",
+          "skill_target": "One weapon",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "OW0ZWEJNhBtMwdc9"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Monk",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar4": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "DEF",
+            "max": 13,
+            "maxcolor": "#f26d40",
+            "mincolor": "#f26d40",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 13
+          },
+          "bar5": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar5",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MDEF",
+            "max": 10,
+            "maxcolor": "#26d6ed",
+            "mincolor": "#26d6ed",
+            "opacity": null,
+            "order": 4,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 10
+          }
+        }
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Monk",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://i.pinimg.com/736x/98/ce/13/98ce1398a50c83a8b17d19bd58a0163e.jpg",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 400000,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {
+      "also_text": "Ascetic, Sage, Shīfù",
+      "benefit_dropdown": "mp_benefit",
+      "classMechanic_text": "<h1 style=\"font-family: Signika, sans-serif; letter-spacing:.5px; color:#8a4b22; text-align:center; border-bottom:3px solid #cfa057; padding-bottom:.25rem; margin:.25rem 0 .5rem;\"><span style=\"font-family: Signika, sans-serif\">MONK MECHANIC — </span><span style=\"color:#e0a84e;\"><span style=\"font-family: Signika, sans-serif\">SOUL BEADS</span></span></h1><p style=\"font-style: italic; color: #6b3e1e; margin: .25rem 0 1rem; text-align: center\"><em>“Steady breath, steady light.”</em></p><div style=\"display:grid; gap:.75rem; grid-template-columns:1fr;\"><section style=\"border:1px solid #cfa057; background:#fff8ef; padding:.75rem; border-radius:.6rem;\"><h2 style=\"margin:.25rem 0; color:#8a4b22;\">What Are Soul Beads?</h2><p style=\"margin: .25rem 0\"><strong>Soul Beads</strong> are motes of disciplined spirit. They appear as charms, floating orbs, glowing marks—how do yours manifest? You manage two states: <strong>Core Soul Beads</strong> (your starting set) and <strong>Resolve Soul Beads</strong> (generated over time once you start releasing Core).</p><ul style=\"margin:.25rem 0 .25rem 1rem;\"><li><strong>Limit:</strong> equals <em>half your Willpower die size</em> (min <strong>3</strong>, max <strong>6</strong>).</li><li><strong>Start of conflict:</strong> You begin with a <strong>full set of Core Soul Beads</strong>. <em>Core does not count for the Clarity Skill.</em></li><li><strong>After you start releasing Core:</strong> you gain <strong>2 Resolve Soul Beads per turn</strong>, up to your Soul Bead limit.</li></ul></section><section style=\"border:1px solid #cfa057; background:#fffdf7; padding:.75rem; border-radius:.6rem;\"><h2 style=\"margin:.25rem 0; color:#8a4b22;\">Your Soul Bead Limit (Examples)</h2><div class=\"tableWrapper\" style=\"margin:.25rem 0;\"><table style=\"width:100%; border-collapse:collapse;\"><thead><tr style=\"background:#f3e2c8; color:#6b3e1e;\"><th style=\"text-align:left; padding:.4rem .5rem;\">Willpower Die</th><th style=\"text-align:left; padding:.4rem .5rem;\">Half</th><th style=\"text-align:left; padding:.4rem .5rem;\">Soul Bead Limit</th><th style=\"text-align:left; padding:.4rem .5rem;\">Notes</th></tr></thead><tbody><tr style=\"background:#ffffff;\"><td style=\"padding:.4rem .5rem;\">d6</td><td style=\"padding:.4rem .5rem;\">3</td><td style=\"padding:.4rem .5rem;\"><strong>3</strong></td><td style=\"padding:.4rem .5rem;\">Minimum floor is 3</td></tr><tr style=\"background:#fffaf2;\"><td style=\"padding:.4rem .5rem;\">d8</td><td style=\"padding:.4rem .5rem;\">4</td><td style=\"padding:.4rem .5rem;\"><strong>4</strong></td><td style=\"padding:.4rem .5rem;\">—</td></tr><tr style=\"background:#ffffff;\"><td style=\"padding:.4rem .5rem;\">d10</td><td style=\"padding:.4rem .5rem;\">5</td><td style=\"padding:.4rem .5rem;\"><strong>5</strong></td><td style=\"padding:.4rem .5rem;\">—</td></tr><tr style=\"background:#fffaf2;\"><td style=\"padding:.4rem .5rem;\">d12</td><td style=\"padding:.4rem .5rem;\">6</td><td style=\"padding:.4rem .5rem;\"><strong>6</strong></td><td style=\"padding:.4rem .5rem;\">Maximum cap is 6</td></tr></tbody></table></div></section><section style=\"border:1px solid #cfa057; background:#ffffff; padding:.75rem; border-radius:.6rem;\"><h2 style=\"margin:.25rem 0; color:#8a4b22;\">How the Engine Runs</h2><ol style=\"margin:.25rem 0 .5rem 1.25rem;\"><li><strong>Start full:</strong> You enter with <em>Core Beads = your limit</em>.</li><li><strong>Spend Core</strong> with Monk skills (heal, attack, defend). <em>The moment you first release Core</em>, your Resolve flow begins.</li><li><strong>Generate Resolve:</strong> At the end of each of your turns, gain <strong>+2 Resolve Beads</strong> (up to your limit). These <em>do</em> count for <strong>Clarity</strong>.</li><li><strong>Maintain or spend:</strong> Resolve Beads power your toolkit and also fuel <strong>Clarity</strong>’s passive bonuses (by pairs). Balance “banking for buffs” vs “spending for effects.”</li></ol></section><section style=\"border:1px solid #cfa057; background:#fff8ef; padding:.75rem; border-radius:.6rem;\"><h2 style=\"margin:.25rem 0; color:#8a4b22;\">Clarity & Resonance (Core Skills)</h2><div style=\"display:grid; grid-template-columns:1fr 1fr; gap:.5rem;\"><div style=\"border:1px dashed #e6d7c6; border-radius:.5rem; padding:.55rem; background:#ffffff;\"><p style=\"margin: .25rem 0 0 0\"><strong>Clarity (SL +3)</strong></p><ul style=\"margin:.25rem 0 0 1rem;\"><li>For each <strong>pair of active Resolve Beads</strong> you possess, choose one benefit:</li><li style=\"margin-left:1rem;\">• <em>Immunity</em> to a chosen status.</li><li style=\"margin-left:1rem;\">• Your attacks/spells of a chosen damage type <em>ignore Resistances</em>.</li><li style=\"margin-left:1rem;\">• <em>Resistance</em> to a chosen damage type.</li><li><strong>You can maintain up to [SL] benefits at once</strong>, and you can’t pick the same benefit more than once.</li></ul></div><div style=\"border:1px dashed #e6d7c6; border-radius:.5rem; padding:.55rem; background:#ffffff;\"><p style=\"margin: .25rem 0 0 0\"><strong>Resonant Clarity (SL +3)</strong></p><p style=\"margin: .25rem 0 0 0\">Your clarity radiates outward. For each <strong>[SL]</strong>, you may <strong>share one of your active Clarity benefits</strong> with allies, up to <strong>three creatures</strong>.</p></div></div></section><section style=\"border:1px solid #cfa057; background:#ffffff; padding:.75rem; border-radius:.6rem;\"><h2 style=\"margin:.25rem 0; color:#8a4b22;\">Active Skills — Spend Beads with Purpose</h2><div style=\"display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:.5rem;\"><div style=\"border:1px dashed #e6d7c6; border-radius:.5rem; padding:.55rem; background:#fffefb;\"><p style=\"margin: .25rem 0\"><strong>Soul Renewal</strong></p><p style=\"margin: .25rem 0\">Action. Choose up to three creatures. <strong>Release Beads</strong> toward them, spending <strong>2 MP per Bead</strong>. Each delivered Bead restores <strong>10 HP or MP</strong> (your choice). Improves at L20 → <strong>12</strong>, L40 → <strong>15</strong> per Bead. <em>Each Bead released is destroyed.</em></p></div><div style=\"border:1px dashed #e6d7c6; border-radius:.5rem; padding:.55rem; background:#fffefb;\"><p style=\"margin: .25rem 0\"><strong>Spirit Shot (SL +2)</strong></p><p style=\"margin: .25rem 0\">Action. Choose any number of Beads. Spend <strong>2 MP per Bead</strong>, then make a <strong>[DEX + WLP]</strong> Check. On a hit, each target loses <strong>[SL × 4]</strong> <em>HP or MP per Bead</em> (you choose), <strong>ignoring Resistances</strong>. HP shots test <strong>Defense</strong>; MP shots test <strong>Magical Defense</strong>. <em>Beads are destroyed whether you hit or not.</em></p></div><div style=\"border:1px dashed #e6d7c6; border-radius:.5rem; padding:.55rem; background:#fffefb;\"><p style=\"margin: .25rem 0\"><strong>Spiritual Fortress (SL +3)</strong></p><p style=\"margin: .25rem 0\">Reaction. Release any number of Beads to reduce incoming damage to you or up to three creatures by <strong>[SL × 2]</strong> <em>per Bead</em>, before applying Affinities. Each Bead destroyed this way costs <strong>2 MP</strong>.</p></div></div></section><section style=\"border:1px solid #cfa057; background:#fff8ef; padding:.75rem; border-radius:.6rem;\"><h2 style=\"margin:.25rem 0; color:#8a4b22;\">Heroic Skills — When your practice becomes legend</h2><div style=\"display:grid; grid-template-columns:1fr 1fr; gap:.5rem;\"><div style=\"border:1px dashed #e6d7c6; border-radius:.5rem; padding:.55rem; background:#ffffff;\"><p style=\"margin: .25rem 0 0 0\"><strong>Crystal Clear</strong></p><ul style=\"margin:.25rem 0 0 1rem;\"><li>Requires <em>Clarity</em> (SL 3).</li><li>With a <strong>full set of Resolve Beads</strong>, you gain <strong>+2</strong> to <em>Defense, Magical Defense, and Accuracy Checks</em>.</li><li>With <em>Resonant Clarity</em>, allies gain <strong>+1</strong> to those stats from you.</li></ul></div><div style=\"border:1px dashed #e6d7c6; border-radius:.5rem; padding:.55rem; background:#ffffff;\"><p style=\"margin: .25rem 0 0 0\"><strong>Beaded Weapon</strong></p><ul style=\"margin:.25rem 0 0 1rem;\"><li>If you have a <strong>full set of Soul Beads</strong>, spend <strong>40 MP</strong> to imbue one equipped weapon.</li><li>Weapon gains <strong>+3 Accuracy</strong> and its damage <strong>ignores Resistances</strong>.</li><li>If <em>melee</em>, it also becomes <em>ranged</em> (can be launched from afar).</li><li>If the weapon is equipped while casting, make a <strong>free attack</strong> as part of the same action.</li><li>You lose access to the Beads used; they <em>don’t count</em> toward Clarity while imbued. You can generate new Beads from next turn.</li><li>Only one weapon can be imbued at a time.</li></ul></div></div></section><section style=\"border:1px solid #cfa057; background:#ffffff; padding:.75rem; border-radius:.6rem;\"><h2 style=\"margin:.25rem 0; color:#8a4b22;\">Turn Flow — Step by Step</h2><ol style=\"margin:.25rem 0 .5rem 1.25rem;\"><li><strong>Opening State:</strong> Core Beads = limit. Pick no Clarity yet (Core doesn’t count).</li><li><strong>First Release:</strong> Spend any number of <em>Core</em> with Renewal / Shot / Fortress / other effects.</li><li><strong>End of Turn:</strong> Begin the Resolve flow: gain <strong>+2 Resolve</strong> (bank up to your limit).</li><li><strong>Clarity Online:</strong> For every <em>pair</em> of active Resolve, choose a benefit (up to <strong>[SL]</strong> simultaneous). Swap choices as Bead counts change on your turns.</li><li><strong>Repeat:</strong> Each turn, decide between conserving Resolve to keep Clarity stacks vs. spending for effects.</li></ol><div style=\"border-left:4px solid #cfa057; background:#fff6e2; padding:.55rem; border-radius:.25rem;\"><p style=\"margin: .25rem 0\"><strong>Table tip:</strong> Track Core and Resolve separately (two rows of tokens). Flip or move tokens to a “spent” box when destroyed.</p></div></section><section style=\"border:1px solid #cfa057; background:#fffefc; padding:.75rem; border-radius:.6rem;\"><h2 style=\"margin:.25rem 0; color:#8a4b22;\">Worked Examples</h2><div style=\"border:1px dashed #d8b793; background:linear-gradient(180deg,#fff7ea,#ffffff); border-radius:.6rem; padding:.6rem; margin-bottom:.6rem;\"><p style=\"margin: .25rem 0\"><strong>Example A — Bring Clarity Online, then Share:</strong> You start with 5 Core (limit 5). Turn 1, you <em>don’t spend</em>—instead you release <strong>1 Core</strong> with a minor <em>Soul Renewal</em> (healing 10), starting the flow. End of Turn 1 → you gain <strong>+2 Resolve</strong> (now 2 Resolve active). Turn 2: pick <strong>Clarity</strong> benefit #1 (e.g., <em>Resistance to Fire</em>). End of Turn 2 → +2 Resolve (now 4 active) → pick benefit #2 (e.g., <em>Immunity: Poisoned</em>). With <strong>Resonant Clarity</strong> at sufficient SL, you share those benefits to allies (up to 3 targets).</p></div><div style=\"border:1px dashed #e6d7c6; background:linear-gradient(180deg,#fffaf2,#ffffff); border-radius:.6rem; padding:.6rem; margin-bottom:.6rem;\"><p style=\"margin: .25rem 0\"><strong>Example B — Spirit Shot Burst (SL 2):</strong> You choose to spend <strong>3 Beads</strong> on <em>Spirit Shot</em> and pay <strong>6 MP</strong>. Roll <strong>[DEX+WLP]</strong>; on a hit, each enemy in the attack loses <strong>3 × ([SL × 4])</strong> = <strong>3 × 8 = 24</strong> HP (or MP) <em>ignoring Resistances</em>. Whether you hit or miss, those 3 Beads are destroyed, so your Clarity stacks may drop—plan for that.</p></div><div style=\"border:1px dashed #e6d7c6; background:linear-gradient(180deg,#fffef9,#ffffff); border-radius:.6rem; padding:.6rem;\"><p style=\"margin: .25rem 0\"><strong>Example C — Spiritual Fortress as Panic Button (SL 3):</strong> A big AoE is coming. As a <em>reaction</em>, you release <strong>2 Beads</strong> to reduce damage by <strong>2 × ([SL × 2])</strong> = <strong>2 × 6 = 12</strong> to you and up to two allies (or up to three creatures total), paying <strong>4 MP</strong>. Damage reductions apply <em>before</em> Affinities.</p></div></section><section style=\"border:2px dashed #cfa057; background:linear-gradient(180deg,#fffaf0,#ffffff); padding:.75rem; border-radius:.8rem;\"><h2 style=\"margin:.25rem 0; color:#8a4b22;\">Pocket Card (Hand to Players)</h2><ol style=\"margin:.25rem 0 .5rem 1.25rem;\"><li><strong>Start:</strong> Core = limit. Core doesn’t count for Clarity.</li><li><strong>First Release:</strong> Spend any Core → begin flow.</li><li><strong>Each End of Turn:</strong> +2 Resolve (cap = limit).</li><li><strong>Clarity:</strong> Every 2 Resolve = pick a benefit; max <strong>[SL]</strong> benefits active; no duplicates.</li><li><strong>Spend:</strong> <em>Renewal</em> (heal 10/12/15), <em>Shot</em> (2 MP/Bead, [DEX+WLP], [SL×4] per Bead, ignores Resist.), <em>Fortress</em> (reaction, [SL×2] reduce per Bead, 2 MP/Bead).</li><li><strong>Heroic:</strong> <em>Crystal Clear</em> (+2 self, +1 allies via Resonance with full Resolve set), <em>Beaded Weapon</em> (40 MP, +3 Acc, ignore Resist., may become ranged; you lose those Beads while imbued).</li></ol></section></div>",
+      "class_facet": {
+        "D4fE1Z1xE0SWlWuG": {
+          "facet_cost": "-",
+          "facet_description": "<p>Whenever you have a full set of <strong>Resolve Soul Beads</strong>, you also receive a <strong>+2 bonus</strong> to your <strong>Defense</strong>, <strong>Magical Defense</strong>, and <strong>Accuracy Checks</strong>.</p>\n<p>For the purposes of the <strong>Resonant Clarity</strong> Skill, these benefits are shared as a <strong>+1 bonus</strong> to your allies’ <strong>Defense</strong>, <strong>Magical Defense</strong>, and <strong>Accuracy Checks</strong>.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "-",
+          "id": "${item.id}",
+          "name": "Crystal Clear",
+          "uuid": "Actor.jMfWQJznfTBPUATv.Item.D4fE1Z1xE0SWlWuG"
+        },
+        "DbxJECHhTAKZA5P2": {
+          "facet_cost": "2 MP per Bead",
+          "facet_description": "<p>Choose up to three creatures. As an action, release your <strong>Soul Beads</strong> towards them, spending <strong>2 MP per Bead</strong>. Each delivered Bead restores <strong>10 HP or MP</strong>, at your discretion. Each Bead released in this way is destroyed.</p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20</strong> ― <em>Regeneration per Bead</em> increases to <strong>12 HP/MP</strong>.</p>\n<p><strong>Skill Enhancement Lv. 40</strong> ― <em>Regeneration per Bead</em> increases to <strong>15 HP/MP</strong>.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "Up to three creature",
+          "id": "${item.id}",
+          "name": "Soul Renewal",
+          "uuid": "Actor.jMfWQJznfTBPUATv.Item.DbxJECHhTAKZA5P2"
+        },
+        "JhyL6sE4yVSotUrH": {
+          "facet_cost": "2 MP per Bead",
+          "facet_description": "<p>As an action, choose any number of <strong>Soul Beads</strong> to release in a <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Fcq1HgCEh3jxxELa\" data-id=\"Fcq1HgCEh3jxxELa\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Range</span></strong></a></span> 【⚔️ Attack】 against enemies, spending <strong>2 MP per Bead</strong>. Perform a <strong>[ DEX + WLP ]</strong> Check. On a hit, each target loses <strong>[SL × 4]</strong> HP or MP <em>per Bead</em>, based on your choice. This damage <strong>ignores Resistances</strong>.</p><p>Beads targeting HP affect the target’s <strong>Defense</strong>, while those targeting MP affect their <strong>Magic Defense</strong>. Each Bead is destroyed after release, whether it hits or not.</p>",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Spirit Shot",
+          "uuid": "Actor.jMfWQJznfTBPUATv.Item.JhyL6sE4yVSotUrH"
+        },
+        "Kf8iCCB27CIANW4N": {
+          "facet_cost": "2 MP per Bead",
+          "facet_description": "<p>As a reaction, release any number of <strong>Soul Beads</strong> to reduce incoming damage to you or up to three creatures by <strong>[SL × 2]</strong>, before applying any damage Affinities. Each Bead destroyed this way costs <strong>2 MP</strong>.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "Up to three creature",
+          "id": "${item.id}",
+          "name": "Spiritual Fortress",
+          "uuid": "Actor.jMfWQJznfTBPUATv.Item.Kf8iCCB27CIANW4N"
+        },
+        "KpdUXBDyg9nYnh1Y": {
+          "facet_cost": "-",
+          "facet_description": "<p>For each pair of active <strong>Resolve Soul Beads</strong> you possess, choose one of these cumulative benefits:</p>\n<ul>\n  <li><strong>Immunity</strong> to a chosen status effect.</li>\n  <li>Your attacks or spells of a chosen damage type <strong>ignore Resistances</strong>.</li>\n  <li>You gain <strong>Resistance</strong> to a chosen damage type.</li>\n</ul>\n<p>The number of bonuses you can have active at any given moment is equal to <strong>[SL]</strong>. You cannot select the same benefit more than once.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "-",
+          "id": "${item.id}",
+          "name": "Clarity",
+          "uuid": "Actor.jMfWQJznfTBPUATv.Item.KpdUXBDyg9nYnh1Y"
+        },
+        "sBv11bMc227Xeile": {
+          "facet_cost": "-",
+          "facet_description": "<p>Your unwavering resolve and mental clarity radiate outward, reaching your companions. For each <strong>[SL]</strong>, you can share one of your active benefits from the <strong>Clarity</strong> Skill, up to three creatures.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "-",
+          "id": "${item.id}",
+          "name": "Resonant Clarity",
+          "uuid": "Actor.jMfWQJznfTBPUATv.Item.sBv11bMc227Xeile"
+        },
+        "v4Yvk3vZhLztG7xk": {
+          "facet_cost": "40 MP",
+          "facet_description": "<p>At any moment, if you have a full set of <strong>Soul Beads</strong>, you may spend <strong>40 MP</strong> and imbue one equipped weapon with them. Until this effect ends, the weapon gains a <strong>+3 bonus</strong> to <strong>Accuracy Checks</strong>, and its damage <strong>ignores Resistances</strong>.</p>\n<p>If it’s a <em>melee</em> weapon, it also becomes a <em>ranged</em> weapon, and its attacks can be launched from afar. If you have that weapon equipped while activating this effect, you may perform a free 【⚔️ Attack】 with it as part of the same action.</p>\n<p>You lose access to the <strong>Soul Beads</strong> used, and they don’t count toward the <strong>Clarity</strong> Skill while imbued in your weapon. You can generate <strong>Soul Beads</strong> as normal from the next turn onwards. Only one weapon can benefit from this Skill at a time.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "One weapon",
+          "id": "${item.id}",
+          "name": "Beaded Weapon",
+          "uuid": "Actor.jMfWQJznfTBPUATv.Item.v4Yvk3vZhLztG7xk"
+        }
+      },
+      "class_heroicSkill": {
+        "D4fE1Z1xE0SWlWuG": {
+          "id": "${item.id}",
+          "name": "Crystal Clear",
+          "skill_cost": "-",
+          "skill_description": "<p>Whenever you have a full set of <strong>Resolve Soul Beads</strong>, you also receive a <strong>+2 bonus</strong> to your <strong>Defense</strong>, <strong>Magical Defense</strong>, and <strong>Accuracy Checks</strong>.</p>\n<p>For the purposes of the <strong>Resonant Clarity</strong> Skill, these benefits are shared as a <strong>+1 bonus</strong> to your allies’ <strong>Defense</strong>, <strong>Magical Defense</strong>, and <strong>Accuracy Checks</strong>.</p>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.jMfWQJznfTBPUATv.Item.D4fE1Z1xE0SWlWuG"
+        },
+        "v4Yvk3vZhLztG7xk": {
+          "id": "${item.id}",
+          "name": "Beaded Weapon",
+          "skill_cost": "40 MP",
+          "skill_description": "<p>At any moment, if you have a full set of <strong>Soul Beads</strong>, you may spend <strong>40 MP</strong> and imbue one equipped weapon with them. Until this effect ends, the weapon gains a <strong>+3 bonus</strong> to <strong>Accuracy Checks</strong>, and its damage <strong>ignores Resistances</strong>.</p>\n<p>If it’s a <em>melee</em> weapon, it also becomes a <em>ranged</em> weapon, and its attacks can be launched from afar. If you have that weapon equipped while activating this effect, you may perform a free 【⚔️ Attack】 with it as part of the same action.</p>\n<p>You lose access to the <strong>Soul Beads</strong> used, and they don’t count toward the <strong>Clarity</strong> Skill while imbued in your weapon. You can generate <strong>Soul Beads</strong> as normal from the next turn onwards. Only one weapon can benefit from this Skill at a time.</p>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.jMfWQJznfTBPUATv.Item.v4Yvk3vZhLztG7xk"
+        }
+      },
+      "class_lore": "<blockquote><p><strong>Monks</strong> are masters of mind, body, and spirit, using their inner clarity to achieve supernatural feats. Through rigorous discipline, they can harness raw spiritual might to endure adversity, aid their allies, and strike with precision. Monks seek to maintain balance — within themselves and in the world around them — believing that true strength lies not in mastering combat, but in understanding the nature of conflict itself. Some monks choose solitude to perfect their discipline, while others act as conduits to harmonious living, helping the world around them</p></blockquote>",
+      "class_skill": {
+        "DbxJECHhTAKZA5P2": {
+          "id": "${item.id}",
+          "name": "Soul Renewal",
+          "skill_cost": "2 MP per Bead",
+          "skill_description": "<p>Choose up to three creatures. As an action, release your <strong>Soul Beads</strong> towards them, spending <strong>2 MP per Bead</strong>. Each delivered Bead restores <strong>10 HP or MP</strong>, at your discretion. Each Bead released in this way is destroyed.</p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20</strong> ― <em>Regeneration per Bead</em> increases to <strong>12 HP/MP</strong>.</p>\n<p><strong>Skill Enhancement Lv. 40</strong> ― <em>Regeneration per Bead</em> increases to <strong>15 HP/MP</strong>.</p>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.jMfWQJznfTBPUATv.Item.DbxJECHhTAKZA5P2"
+        },
+        "JhyL6sE4yVSotUrH": {
+          "id": "${item.id}",
+          "name": "Spirit Shot",
+          "skill_cost": "2 MP per Bead",
+          "skill_description": "<p>As an action, choose any number of <strong>Soul Beads</strong> to release in a <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Fcq1HgCEh3jxxELa\" data-id=\"Fcq1HgCEh3jxxELa\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Range</span></strong></a></span> 【⚔️ Attack】 against enemies, spending <strong>2 MP per Bead</strong>. Perform a <strong>[ DEX + WLP ]</strong> Check. On a hit, each target loses <strong>[SL × 4]</strong> HP or MP <em>per Bead</em>, based on your choice. This damage <strong>ignores Resistances</strong>.</p><p>Beads targeting HP affect the target’s <strong>Defense</strong>, while those targeting MP affect their <strong>Magic Defense</strong>. Each Bead is destroyed after release, whether it hits or not.</p>",
+          "skill_maxLevel": 2,
+          "skill_type": "Active",
+          "uuid": "Actor.jMfWQJznfTBPUATv.Item.JhyL6sE4yVSotUrH"
+        },
+        "Kf8iCCB27CIANW4N": {
+          "id": "${item.id}",
+          "name": "Spiritual Fortress",
+          "skill_cost": "2 MP per Bead",
+          "skill_description": "<p>As a reaction, release any number of <strong>Soul Beads</strong> to reduce incoming damage to you or up to three creatures by <strong>[SL × 2]</strong>, before applying any damage Affinities. Each Bead destroyed this way costs <strong>2 MP</strong>.</p>\n",
+          "skill_maxLevel": 3,
+          "skill_type": "Active",
+          "uuid": "Actor.jMfWQJznfTBPUATv.Item.Kf8iCCB27CIANW4N"
+        },
+        "KpdUXBDyg9nYnh1Y": {
+          "id": "${item.id}",
+          "name": "Clarity",
+          "skill_cost": "-",
+          "skill_description": "<p>For each pair of active <strong>Resolve Soul Beads</strong> you possess, choose one of these cumulative benefits:</p>\n<ul>\n  <li><strong>Immunity</strong> to a chosen status effect.</li>\n  <li>Your attacks or spells of a chosen damage type <strong>ignore Resistances</strong>.</li>\n  <li>You gain <strong>Resistance</strong> to a chosen damage type.</li>\n</ul>\n<p>The number of bonuses you can have active at any given moment is equal to <strong>[SL]</strong>. You cannot select the same benefit more than once.</p>\n",
+          "skill_maxLevel": 3,
+          "skill_type": "Passive",
+          "uuid": "Actor.jMfWQJznfTBPUATv.Item.KpdUXBDyg9nYnh1Y"
+        },
+        "sBv11bMc227Xeile": {
+          "id": "${item.id}",
+          "name": "Resonant Clarity",
+          "skill_cost": "-",
+          "skill_description": "<p>Your unwavering resolve and mental clarity radiate outward, reaching your companions. For each <strong>[SL]</strong>, you can share one of your active benefits from the <strong>Clarity</strong> Skill, up to three creatures.</p>\n",
+          "skill_maxLevel": 3,
+          "skill_type": "Passive",
+          "uuid": "Actor.jMfWQJznfTBPUATv.Item.sBv11bMc227Xeile"
+        }
+      },
+      "flavor_text": "<p style=\"text-align: center;\"><span style=\"font-family: Amiri\"><em>Balance and resolve</em></span></p><p style=\"text-align: center;\"><span style=\"font-family: Amiri\"><em> are the riverbed of strength.</em></span></p>",
+      "martialArmor_equippable": false,
+      "martialMelee_equippable": true,
+      "martialRanged_equippable": true,
+      "martialShield_equippable": false,
+      "name": "Monk",
+      "project_performable": false,
+      "ritual_performable": false
+    },
+    "statusEffects": {},
+    "template": "hoxC3HFCtMYGScIo",
+    "templateSystemUniqueVersion": 504201233
+  },
+  "type": "character"
+}

@@ -1,0 +1,19 @@
+{
+  "_id": "jYbZuqwzbSuIOWl1",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1753926150847,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": "#a95aaa",
+  "description": "",
+  "flags": {},
+  "folder": "PaPzgCs9Rd0kzMSB",
+  "name": "Prototype Classes",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Actor"
+}

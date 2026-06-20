@@ -1,0 +1,57 @@
+{
+  "_id": "H7r8HeuTLPbOfi1T",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1758257642106,
+    "duplicateSource": "Item.8Vn4CZdcyrkTJKm3",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "YA2JFqxM2mPd9JBp",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Swordsman/warri_CorridaFinale.png",
+  "name": "Corrida Finale",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Matador",
+      "cost": "5 Adoration",
+      "damage_bonus": "0",
+      "description": "<p>Incite target beast to attack nearby enemies, Choose target <strong>soldier-rank Beast, </strong><strong data-start=\"110\" data-end=\"130\">On its next turn</strong>, the target <strong data-start=\"143\" data-end=\"175\">treats its allies as enemies</strong> and <strong data-start=\"180\" data-end=\"210\">must use a damaging action</strong> that <strong data-start=\"216\" data-end=\"235\">targets an ally</strong>.<br data-start=\"236\" data-end=\"239\">The compulsion ends after that action.</p>",
+      "duration": "Instantaneous",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": true,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Corrida Finale",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "Range",
+      "skill_target": "One Beast",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "H7r8HeuTLPbOfi1T"
+  },
+  "type": "equippableItem"
+}

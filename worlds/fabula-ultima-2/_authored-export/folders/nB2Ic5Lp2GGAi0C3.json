@@ -1,0 +1,19 @@
+{
+  "_id": "nB2Ic5Lp2GGAi0C3",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1761350234939,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "ao7MvDYKSVhEwWj3",
+  "name": "Show image in multi client",
+  "sort": 1100000,
+  "sorting": "a",
+  "type": "Macro"
+}

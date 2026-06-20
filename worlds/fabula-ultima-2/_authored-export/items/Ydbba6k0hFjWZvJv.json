@@ -1,0 +1,74 @@
+{
+  "_id": "Ydbba6k0hFjWZvJv",
+  "_stats": {
+    "compendiumSource": "Item.OoVNUOIssIfwPo7H",
+    "coreVersion": "12.343",
+    "createdTime": 1781924499757,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "C5LAJaVZ1tj2Lxxn",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/HealerRollAction/surecast.png",
+  "name": "Dispel",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3,
+    "yL2PQxh3R9ddt0te": 3
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "active_effect_config_table": {},
+      "check_bonus": "0",
+      "class": "Entropist",
+      "cost": "10 MP",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>You release a wave of negative energy and cleanse all magic from a creature. If the target is affected by one or more spells with a <strong>duration</strong> of Scene, they are no longer affected by any of those spells instead</p>",
+      "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "count": "all",
+          "effect_kind": "remove_tagged_ae",
+          "effect_label": "dispel_cleanse",
+          "filter_tag": "dispellable",
+          "target_ref": "action_targets"
+        }
+      },
+      "heroic_requirement": "",
+      "ignore_hr": false,
+      "isCheck": false,
+      "isFacet": true,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Dispel",
+      "on_activate_effect_ref": "dispel_cleanse",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_information": "",
+      "skill_range": "Range",
+      "skill_target": "One creature",
+      "skill_type": "Spell",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "Ydbba6k0hFjWZvJv"
+  },
+  "type": "equippableItem"
+}

@@ -1,0 +1,19 @@
+{
+  "_id": "fcIscg0DtU8rMDtB",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1763292122055,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "ao7MvDYKSVhEwWj3",
+  "name": "Ping Other Client",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Macro"
+}

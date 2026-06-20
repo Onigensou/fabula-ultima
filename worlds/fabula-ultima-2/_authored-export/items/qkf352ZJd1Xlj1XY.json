@@ -1,0 +1,85 @@
+{
+  "_id": "qkf352ZJd1Xlj1XY",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1730689086505,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "qkf352ZJd1Xlj1XY",
+        "itemName": "Butler Gloves",
+        "pickedOldProps": {
+          "cost": "800",
+          "martial": false
+        },
+        "ts": 1769647020008
+      }
+    }
+  },
+  "folder": "AW77WJGta3x8x3dy",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/hand.png",
+  "name": "Butler Gloves",
+  "ownership": {
+    "2vy7wrEUqBy0kzsU": 3,
+    "6DmgigM5jq76r0Gd": 3,
+    "7hKw8KGsimboeDif": 3,
+    "9sFgrDy4MvAgoCmQ": 3,
+    "Am7qxPOavfKeDGPd": 3,
+    "JQGNzKpDPHJmcUIW": 3,
+    "JvF9tXvr7aaiS06m": 3,
+    "KD5d0efqHETPpIux": 3,
+    "LT3Z8EnRdMVk5ncQ": 3,
+    "MwTL6zXFCEpVBTpI": 3,
+    "NozW36XIGEGx7oVH": 3,
+    "NpGkA7uxaarkPiwS": 3,
+    "ULBTZPjtza939Mvy": 3,
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3,
+    "eGu3tuw7HwJd2bpx": 3,
+    "iLeUVmwqnze8ulOI": 3,
+    "mE5aEkDlrQJIYyhG": 3,
+    "nSGZ1sz1rdKao0kz": 3,
+    "nXC7OD7u5Zw5UDDU": 3,
+    "t41knaXNbgCEygM5": 3,
+    "tz9BP9MKfNGf2P3n": 3,
+    "wNzPmItLYCKE1I8t": 3,
+    "yL2PQxh3R9ddt0te": 3,
+    "yUfwoVmEPVdFG3AY": 3
+  },
+  "sort": 2200000,
+  "system": {
+    "container": null,
+    "props": {
+      "category": "Brawling",
+      "check_bonus": "1",
+      "damage_bonus": "6",
+      "description": "<ul>\n<li>When you're perform the<strong>【Protect】</strong>skill<strong> </strong>on an ally. If the ally you're protecting is female, You may perform a <strong>free attack</strong> on the attacker, treat your High Roll as 0 when calculating damage dealt by this attack.<hr></li>\n</ul>\n<ul>\n<li style=\"list-style-type: none;\">\n<ul>\n<li><strong>【Set Bonus】</strong></li>\n</ul>\n<p><strong>2 Piece</strong></p>\n<ul>\n<li>When a <strong>potion</strong> or <strong>magisphere</strong> created with your Inventory Points restores<br>Hit Points, it restores 5 extra Hit Points.<hr></li>\n</ul>\n<p><strong>3 Piece</strong></p>\n<ul>\n<li>When a <strong>potion</strong> or <strong>magisphere</strong> created with your Inventory Points restores<br>Hit Points, it restores 5 extra Hit Points.</li>\n</ul>\n</li>\n</ul>",
+      "hand_slots": "One-handed",
+      "isMartial": false,
+      "item_cost": "800",
+      "item_type": "weapon",
+      "name": "Butler Gloves",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "MIG",
+      "set_name": "Royal Retainer",
+      "skill_target": "One Enemy",
+      "type_damage": "Physical",
+      "weapon_range": "Melee"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "qkf352ZJd1Xlj1XY"
+  },
+  "type": "equippableItem"
+}

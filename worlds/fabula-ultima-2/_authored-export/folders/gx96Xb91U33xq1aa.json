@@ -1,0 +1,19 @@
+{
+  "_id": "gx96Xb91U33xq1aa",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1766759130284,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "color": "#000000",
+  "description": "",
+  "flags": {},
+  "folder": "eZWKkXNgeaFs6HSS",
+  "name": "Trinio's PC",
+  "sort": 200000,
+  "sorting": "a",
+  "type": "Actor"
+}

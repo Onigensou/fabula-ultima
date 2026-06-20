@@ -1,0 +1,19 @@
+{
+  "_id": "LNN6QSv7NRWdXUkf",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1753298283054,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": "#000000",
+  "description": "",
+  "flags": {},
+  "folder": "Ta27JAFtAPKOOZb8",
+  "name": "Non-Offensive Spells",
+  "sort": 100000,
+  "sorting": "a",
+  "type": "Item"
+}

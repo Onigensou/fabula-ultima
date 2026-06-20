@@ -1,0 +1,58 @@
+{
+  "_id": "f7LAMimGFhqpUUWX",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1756941532988,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "V1GQFKpiCOrYGH1x",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/oath_mastery.png",
+  "name": "Queen's Gambit",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Commander",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>During a conflict, you may use an action to perform a <strong>free attack</strong> with a weapon you have equipped, treating your High Roll (HR) as 0 when calculating damage. After the attack is resolved, <strong>choose one option:</strong></p><ul><li>One ally who is able to hear you recovers <strong>【5 + (SL × 5)】</strong> Hit Points</li><li>You may immediately use a Skill you acquired among <strong>【💥Bishop’s Edict】</strong>, <strong>【💥Charging Cavalry】</strong> or <strong>【💥King's Castle</strong>】 for free (spending the appropriate MP)</li></ul>",
+      "duration": "Instantaneous",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "6",
+      "name": "Queen's Gambit",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>HP Recovered</strong></p></td></tr><tr><td><p>1</p></td><td><p>10</p></td></tr><tr><td><p>2</p></td><td><p>15</p></td></tr><tr><td><p>3</p></td><td><p>20</p></td></tr><tr><td><p>4</p></td><td><p>25</p></td></tr><tr><td><p>5</p></td><td><p>30</p></td></tr><tr><td><p>6</p></td><td><p>35</p></td></tr></tbody></table>",
+      "skill_range": "Any",
+      "skill_target": "Special",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "f7LAMimGFhqpUUWX"
+  },
+  "type": "equippableItem"
+}

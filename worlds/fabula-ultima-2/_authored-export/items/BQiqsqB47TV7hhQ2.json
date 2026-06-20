@@ -1,0 +1,86 @@
+{
+  "_id": "BQiqsqB47TV7hhQ2",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780644542313,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "w7ey5G3zPC78EXos",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/cure_iii.png",
+  "name": "Awaken",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "class": "Spiritist",
+      "cost": "20 MP",
+      "damage_bonus": "0",
+      "description": "<p>You allow a creature to focus their vital energy into accomplishing what they previously could not. <strong>Choose:</strong> Dexterity, Insight, Might, or Willpower. Until this spell ends, the target treats the chosen Attribute as if it were one die size higher <em>(up to a maximum of d12)</em>.</p>",
+      "effect_table": {
+        "0": {
+          "effect_kind": "open_action_menu",
+          "effect_label": "awaken_pick",
+          "menu_option_descriptions": "DEX die rises one stage (d6→d8→d10→d12). Applies the common Swift AE. | INS die rises one stage. Applies the common Awake AE. | MIG die rises one stage. Applies the common Strong AE. | WLP die rises one stage. Applies the common Focus AE.",
+          "menu_option_labels": "Dexterity | Insight | Might | Willpower",
+          "menu_option_refs": "awaken_dex, awaken_ins, awaken_mig, awaken_wlp",
+          "menu_subtitle": "Target's chosen Attribute rises one die size (max d12).",
+          "menu_title": "Awaken: choose an Attribute to bump"
+        },
+        "1": {
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_template_ref": "Swift",
+          "effect_kind": "apply_ae",
+          "effect_label": "awaken_dex",
+          "target_ref": "action_targets"
+        },
+        "2": {
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_template_ref": "Awake",
+          "effect_kind": "apply_ae",
+          "effect_label": "awaken_ins",
+          "target_ref": "action_targets"
+        },
+        "3": {
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_template_ref": "Strong",
+          "effect_kind": "apply_ae",
+          "effect_label": "awaken_mig",
+          "target_ref": "action_targets"
+        },
+        "4": {
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_template_ref": "Focus",
+          "effect_kind": "apply_ae",
+          "effect_label": "awaken_wlp",
+          "target_ref": "action_targets"
+        }
+      },
+      "isCheck": false,
+      "isOffensiveSpell": false,
+      "name": "Awaken",
+      "on_activate_effect_ref": "awaken_pick",
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_range": "Range",
+      "skill_target": "One creature",
+      "skill_type": "Spell",
+      "type_damage": ""
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": true,
+    "uniqueId": "BQiqsqB47TV7hhQ2"
+  },
+  "type": "equippableItem"
+}

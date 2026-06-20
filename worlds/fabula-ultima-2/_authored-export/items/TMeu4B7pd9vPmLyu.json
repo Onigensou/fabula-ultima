@@ -1,0 +1,62 @@
+{
+  "_id": "TMeu4B7pd9vPmLyu",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1756967722916,
+    "duplicateSource": "Item.XpSvvPKiAzoY4nqp",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "2OplVa9fwLYbzD8b",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/radiant_shield.png",
+  "name": "Magic Guard",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 5600000,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "check_bonus": "0",
+      "class": "Spiritist",
+      "cost": "",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>When you perform the 【🛡️Guard】 action, if you choose not to provide cover to another creature, you gain the following benefit until the start of your next turn: when a creature you can see casts a spell, after that creature pays for the spell’s MP cost, you may spend an amount of <strong>Mind Points</strong> equal to <strong>【10 + the spell’s total MP cost】</strong> in order to completely stop the casting of the spell and negate its effects (the spell isn’t cast, but the creature is still considered to have spent their action).</p>\n",
+      "duration": "",
+      "heroic_requirement": "you must have mastered one or more Classes among Chimerist, Elementalist, Entropist, and Spiritist.",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Magic Guard",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "TMeu4B7pd9vPmLyu"
+  },
+  "type": "equippableItem"
+}

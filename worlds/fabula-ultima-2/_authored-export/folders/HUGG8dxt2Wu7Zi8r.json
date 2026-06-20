@@ -1,0 +1,19 @@
+{
+  "_id": "HUGG8dxt2Wu7Zi8r",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1766759038325,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "SVTl3Xx6rQbe8a52",
+  "name": "Hina",
+  "sort": 200000,
+  "sorting": "a",
+  "type": "Actor"
+}

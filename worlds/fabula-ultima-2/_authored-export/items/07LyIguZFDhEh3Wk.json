@@ -1,0 +1,59 @@
+{
+  "_id": "07LyIguZFDhEh3Wk",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780667874968,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "coreAction": "study"
+    }
+  },
+  "folder": "Zrv5DRCx5PzFvLUj",
+  "img": "icons/svg/eye.svg",
+  "name": "Study",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "action_command": "study",
+      "check_mode": "open",
+      "cost": "",
+      "description": "<p>Make an Open Check (【INS + INS】) to learn about a creature. The higher the result, the more its Monster Encyclopedia entry reveals.</p>",
+      "details_roller": "Show",
+      "effect_table": {
+        "0": {
+          "effect_kind": "encyclopedia_record",
+          "effect_label": "study_record"
+        }
+      },
+      "id": "07LyIguZFDhEh3Wk",
+      "img": "icons/svg/eye.svg",
+      "isCheck": true,
+      "isReaction": false,
+      "max_level": "1",
+      "name": "Study",
+      "on_activate_effect_ref": "study_record",
+      "rolled_atr1": "INS",
+      "rolled_atr2": "INS",
+      "skill_target": "One Enemy",
+      "skill_type": "Active",
+      "uuid": "Item.07LyIguZFDhEh3Wk"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": true,
+    "uniqueId": "07LyIguZFDhEh3Wk"
+  },
+  "type": "equippableItem"
+}

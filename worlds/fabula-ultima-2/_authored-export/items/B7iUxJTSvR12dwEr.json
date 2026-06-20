@@ -1,0 +1,98 @@
+{
+  "_id": "B7iUxJTSvR12dwEr",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780631513368,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "GrXCu6oUXmMBW9yS",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/enhanced_asylum.png",
+  "name": "Healing Power",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "check_bonus": "0",
+      "class": "Spiritist",
+      "cost": "",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>When you cast a spell that targets one or more allies, if you have an <strong>arcane</strong> weapon equipped, you may have each of those allies recover Hit Points equal to <strong>SL × the number of Bonds you have</strong>. Separate from any healing caused by the spell.</p>",
+      "duration": "",
+      "effect_table": {
+        "0": {
+          "effect_kind": "grant",
+          "effect_label": "healing_power_grant",
+          "grant_amount": "SL * BOND_COUNT",
+          "grant_resource": "hp",
+          "menu_description": "",
+          "menu_label": "",
+          "target_ref": "ally_action_targets"
+        }
+      },
+      "heroic_requirement": "",
+      "ignore_hr": false,
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": true,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "2",
+      "name": "Healing Power",
+      "on_activate_effect_ref": "",
+      "optional_params": {},
+      "reaction_config_table": {
+        "0": {
+          "$deleted": false,
+          "condition_formula": "HAS_ARCANE_WEAPON",
+          "reaction_action_intent": "",
+          "reaction_action_target": "ally",
+          "reaction_damage_amount": "",
+          "reaction_damage_source": "",
+          "reaction_damage_type": "",
+          "reaction_debuff_count_min": "",
+          "reaction_debuff_count_target": "",
+          "reaction_effect_ref": "healing_power_grant",
+          "reaction_ownership": "",
+          "reaction_passive_mode": "ask",
+          "reaction_passive_target": "self",
+          "reaction_source": "self",
+          "reaction_subject_kind": "",
+          "reaction_trigger": "creature_completes_spell",
+          "requires_skill": ""
+        }
+      },
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "",
+      "skill_target": "-",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "B7iUxJTSvR12dwEr"
+  },
+  "type": "equippableItem"
+}

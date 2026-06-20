@@ -1,0 +1,62 @@
+{
+  "_id": "peLYH0zSiab4UQ4E",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1758202849896,
+    "duplicateSource": "Item.zbulFnM318NgBgh5",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "dhfFJlHW6EIUd4UD",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/RadiantSoulHyper.png",
+  "name": "Placebo Energy",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "check_bonus": "0",
+      "class": "Illusionist",
+      "cost": "10 MP",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>You create an illusion that makes your companions feel healthier and refreshed for a while. For their next <strong>3 turns</strong>, they gain <strong>40 additional HP</strong> — this increases both their maximum and their current HP by 40.</p><p>After 3 turns, they lose this additional HP. If reduced to 0 HP at the end of the spell, the Sacrifice and Surrender rules apply as normal.</p><hr contenteditable=\"false\"><p><strong>Skill Enhancement Lv. 20</strong> ― This amount increases to <strong>50 HP</strong>.</p><p><strong>Skill Enhancement Lv. 40</strong> ― This amount increases to <strong>60 HP</strong>.</p>",
+      "duration": "Instantaneous",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": true,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Placebo Energy",
+      "optional_params": {},
+      "rolled_atr1": "INS",
+      "rolled_atr2": "WLP",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "Range",
+      "skill_target": "One Creature",
+      "skill_type": "Spell",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "peLYH0zSiab4UQ4E"
+  },
+  "type": "equippableItem"
+}

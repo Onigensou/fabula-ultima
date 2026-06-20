@@ -1,0 +1,245 @@
+{
+  "_id": "ZySnR7edyoUvFZM3",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780593575876,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "B5MD3egCKp0ygmKU",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1780593576888,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "bonus_hp",
+          "mode": 2,
+          "priority": 20,
+          "value": "${fetchFromParent('ins_base')}$"
+        }
+      ],
+      "description": "<p><em>Prophetic Defender:</em> Permanent +base Insight die size to maximum HP.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "B5MD3egCKp0ygmKU",
+          "originalParentId": "ZySnR7edyoUvFZM3",
+          "originalUuid": "Item.ZySnR7edyoUvFZM3.ActiveEffect.B5MD3egCKp0ygmKU"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/nocturnal_sect.png",
+      "name": "Prophetic Defender",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    },
+    {
+      "_id": "FdV5AMuyIEzqTIaV",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1780593576802,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><em>Prophetic Defender:</em> Spend to take the place of allies threatened by a danger.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "FdV5AMuyIEzqTIaV",
+          "originalParentId": "ZySnR7edyoUvFZM3",
+          "originalUuid": "Item.ZySnR7edyoUvFZM3.ActiveEffect.FdV5AMuyIEzqTIaV"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "chargeKey": "prophecy",
+          "charges": 1,
+          "chargesMax": 1,
+          "directorPermanent": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/nocturnal_sect.png",
+      "name": "Prophecy Point",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-prophecy-point"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "dwzaQarGIGnKc3j4",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/nocturnal_sect.png",
+  "name": "Prophetic Defender",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "cost": "",
+      "description": "<p>Your maximum Hit Points are permanently increased by an amount equal to your base <strong>Insight</strong> die size (update your maximum HP if this size changes).</p><p>When a conflict scene begins, if you have learned the <strong>Divination</strong> spell, you gain <strong>1 Prophecy Point</strong>. You also gain <strong>1 Prophecy Point</strong> at the start of each even-numbered round (regardless of whether you have learned Divination). You lose all Prophecy Points at the end of each scene.</p><p>When <strong>one or more allies</strong> are threatened by a single attack, spell, or other danger, you may spend <strong>1 Prophecy Point</strong> to take the place of all those allies (any Checks that are part of the danger will be performed against you; you may declare the use of this Skill before or after the Checks have been made). The danger will affect you once for each creature it was threatening (including yourself, if you were among those creatures). Resolve each of these instances separately.</p>",
+      "effect_table": {
+        "0": {
+          "auto_confirm_when_obvious": true,
+          "candidate_source": "self",
+          "count": "1",
+          "effect_kind": "targeting",
+          "effect_label": "pds_self",
+          "exclude_self": false,
+          "iteration_mode": "together",
+          "mode": "exact",
+          "skip_when_passive": true
+        },
+        "1": {
+          "auto_confirm_when_obvious": true,
+          "candidate_source": "action_targets",
+          "effect_kind": "targeting",
+          "effect_label": "pds_threatened",
+          "exclude_self": false,
+          "iteration_mode": "together",
+          "mode": "all",
+          "skip_when_passive": true
+        },
+        "2": {
+          "ae_duplicate_mode": "stack",
+          "ae_template_ref": "Prophecy Point",
+          "effect_kind": "apply_ae",
+          "effect_label": "pds_gain",
+          "target_ref": "pds_self"
+        },
+        "3": {
+          "charge_key": "prophecy",
+          "count": "1",
+          "effect_kind": "consume_charge",
+          "effect_label": "pds_consume",
+          "on_empty": "abort",
+          "target_ref": "pds_self"
+        },
+        "4": {
+          "destination_ref": "pds_self",
+          "effect_kind": "redirect_target",
+          "effect_label": "pds_redirect",
+          "rebuild_card": true,
+          "target_ref": "pds_threatened"
+        },
+        "5": {
+          "chain_steps": "pds_consume,pds_redirect",
+          "effect_kind": "chain",
+          "effect_label": "pds_reaction"
+        }
+      },
+      "heroic_requirement": "You must have mastered one or more Classes among Entropist and Guardian.",
+      "isCheck": false,
+      "isHeroic": true,
+      "isReaction": true,
+      "level": 1,
+      "max_level": "1",
+      "name": "Prophetic Defender",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "HAS_SKILL_DIVINATION == 1",
+          "reaction_effect_ref": "pds_gain",
+          "reaction_passive_mode": "force",
+          "reaction_source": "",
+          "reaction_trigger": "conflict_start"
+        },
+        "1": {
+          "condition_formula": "ROUND % 2 == 0 && ROUND > 0",
+          "reaction_effect_ref": "pds_gain",
+          "reaction_passive_mode": "force",
+          "reaction_source": "",
+          "reaction_trigger": "round_start"
+        },
+        "2": {
+          "condition_formula": "",
+          "reaction_action_intent": "harmful",
+          "reaction_effect_ref": "pds_reaction",
+          "reaction_passive_mode": "ask",
+          "reaction_source": "ally",
+          "reaction_trigger": "creature_targeted_by_action"
+        }
+      },
+      "skill_range": "-",
+      "skill_target": "-",
+      "skill_type": "Passive"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "ZySnR7edyoUvFZM3"
+  },
+  "type": "equippableItem"
+}

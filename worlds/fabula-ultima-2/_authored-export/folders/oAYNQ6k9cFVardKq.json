@@ -1,0 +1,19 @@
+{
+  "_id": "oAYNQ6k9cFVardKq",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1761113634038,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "ao7MvDYKSVhEwWj3",
+  "name": "Pulling Active Effect Data",
+  "sort": 1000000,
+  "sorting": "a",
+  "type": "Macro"
+}

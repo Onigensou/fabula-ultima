@@ -1,0 +1,55 @@
+{
+  "_id": "mFofHK8tCjo0HMcT",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1754162754100,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "uuBCmFnWytMuWiTe",
+  "img": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/dragupload/fabula%20class/pirate/Illustration2.jpg",
+  "name": "Expirenced Barrelman",
+  "ownership": {
+    "default": 3,
+    "nXC7OD7u5Zw5UDDU": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Pirate",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>Increase all Check against <strong>avoiding hazards </strong>by <strong>【SL】</strong></p>",
+      "duration": "",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "level": "1",
+      "max_level": "4",
+      "name": "Expirenced Barrelman",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "mFofHK8tCjo0HMcT"
+  },
+  "type": "equippableItem"
+}

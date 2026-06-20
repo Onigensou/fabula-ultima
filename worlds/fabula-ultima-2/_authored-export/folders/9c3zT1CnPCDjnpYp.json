@@ -1,0 +1,19 @@
+{
+  "_id": "9c3zT1CnPCDjnpYp",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1764589260911,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "KgBnGPu5byw1durO",
+  "name": "DEMO",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Macro"
+}

@@ -1,0 +1,19 @@
+{
+  "_id": "o96A4KbgobOXBh9e",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1757424152653,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "VVjpCERIXMrOJna7",
+  "name": "Necromancer",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

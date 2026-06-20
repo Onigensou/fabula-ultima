@@ -1,0 +1,96 @@
+{
+  "_id": "Uo4iOf0EFG1z8AU2",
+  "_stats": {
+    "compendiumSource": "Item.kMH1iSlYIZyXl8hV",
+    "coreVersion": "12.343",
+    "createdTime": 1781924508402,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "H83kUcvIWorYKyr8",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/unmend.png",
+  "name": "Painful Lesson",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "active_effect_config_table": {},
+      "check_bonus": "0",
+      "class": "Darkblade",
+      "cost": "",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>After another creature causes you to lose Hit Points <em>(with an attack, a spell or any other method)</em>, you may immediately perform the <strong>Study</strong> action on that creature for free. If you do, gain a bonus equal to <strong>【SL】</strong> to your Check. </p><p>Remember, you can study the same aspect of a creature only once</p>",
+      "duration": "",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "allowed_types": "Study",
+          "check_bonus_formula": "SL",
+          "effect_kind": "open_action_menu",
+          "effect_label": "pl_free_study",
+          "free_mode": true,
+          "target_ref": "pl_attacker"
+        },
+        "1": {
+          "$deleted": false,
+          "auto_confirm_when_obvious": true,
+          "candidate_source": "trigger_actor",
+          "category": "",
+          "count": 1,
+          "effect_kind": "targeting",
+          "effect_label": "pl_attacker",
+          "iteration_mode": "together",
+          "mode": "exact",
+          "skip_when_passive": true
+        }
+      },
+      "heroic_requirement": "",
+      "ignore_hr": false,
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": true,
+      "isZeroPower": false,
+      "level": "3",
+      "max_level": "3",
+      "name": "Painful Lesson",
+      "optional_params": {},
+      "reaction_config_table": {
+        "0": {
+          "$deleted": false,
+          "reaction_action_intent": "harmful",
+          "reaction_damage_source": "enemy",
+          "reaction_effect_ref": "pl_free_study",
+          "reaction_passive_mode": "ask",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_takes_damage"
+        }
+      },
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p>Level</p></td><td data-colwidth=\"148\"><p>Study Bonus</p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p><strong>+1</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p><strong>+2</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>3</p></td><td data-colwidth=\"148\"><p><strong>+3</strong></p></td></tr></tbody></table>",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "Uo4iOf0EFG1z8AU2"
+  },
+  "type": "equippableItem"
+}

@@ -1,0 +1,19 @@
+{
+  "_id": "HMMNuNW9gXSoNCxy",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": null,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "2.4.4"
+  },
+  "color": "#000000",
+  "description": "",
+  "flags": {},
+  "folder": "eZWKkXNgeaFs6HSS",
+  "name": "Nougat's PC",
+  "sort": 1700000,
+  "sorting": "a",
+  "type": "Actor"
+}

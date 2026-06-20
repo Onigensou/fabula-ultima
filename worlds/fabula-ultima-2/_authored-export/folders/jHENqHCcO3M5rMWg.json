@@ -1,0 +1,19 @@
+{
+  "_id": "jHENqHCcO3M5rMWg",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1769519076444,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "eZWKkXNgeaFs6HSS",
+  "name": "Tata's PC",
+  "sort": 300000,
+  "sorting": "a",
+  "type": "Actor"
+}

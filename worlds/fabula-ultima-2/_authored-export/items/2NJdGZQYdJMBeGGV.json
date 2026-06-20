@@ -1,0 +1,62 @@
+{
+  "_id": "2NJdGZQYdJMBeGGV",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1747417817551,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.4.2"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "2NJdGZQYdJMBeGGV",
+        "itemName": "Hope Sword&Shield",
+        "pickedOldProps": {
+          "cost": "2300",
+          "martial": true
+        },
+        "ts": 1769647435746
+      }
+    }
+  },
+  "folder": "D1OgeGHLjJ9dSkxS",
+  "img": "https://img.altema.jp/valkyrieconnect/sobi/ico/1210.jpg",
+  "name": "Hope Sword&Shield",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3
+  },
+  "sort": 1200000,
+  "system": {
+    "container": null,
+    "props": {
+      "category": "Sword",
+      "check_bonus": "0",
+      "damage_bonus": "8",
+      "description": "<ul><li><p>Attack from this weapon ignore target <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shield</span></strong></a></span></p></li><li><p>+2 DEF and M.DEF</p></li></ul><hr contenteditable=\"false\"><p><strong>【Set Bonus】</strong></p><p><strong>2-Piece</strong></p><ul><li><p>While in <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span>, your attack ignore resist and immunity.</p></li><li><p><strong>【Adrenaline】SL+3</strong></p><hr contenteditable=\"false\"></li></ul><p><strong>3-Piece</strong></p><ul><li><p>When you are the <strong>last </strong>person in the party, you gain <strong>All Basic Buff</strong></p></li><li><p><span class=\"fontstyle0\">When your allies <strong>surrender</strong>, you gain <strong>1 turn activation</strong> or <strong>2 turn activation</strong> if they <strong>sacrifice</strong>. This effect doesn't stack and only the highest one apply.</span></p></li></ul>",
+      "hand_slots": "Two-handed",
+      "isMartial": true,
+      "item_cost": "2300",
+      "item_type": "weapon",
+      "name": "Hope Sword&Shield",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "MIG",
+      "set_name": "Last Hope",
+      "skill_target": "One Enemy",
+      "type_damage": "Light",
+      "weapon_range": "Melee"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "2NJdGZQYdJMBeGGV"
+  },
+  "type": "equippableItem"
+}

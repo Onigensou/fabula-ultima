@@ -1,0 +1,92 @@
+{
+  "_id": "aTce11W2dmw2lKtR",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780667892694,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "R7r4YaPVG9VGe9lS",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lithia/FortuneFinderSkill3.png",
+  "name": "Soul Steal",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "check_bonus": "0",
+      "class": "Rogue",
+      "cost": "",
+      "damage_bonus": "0",
+      "defense_target_type": "mdef",
+      "description": "<p>You may use an action to perform a <strong>【DEX + WLP】</strong> Check against the Magic Defense of a creature you can see. If you succeed and the target is a soldier, you recover <strong>【SL】</strong> Inventory Points.</p><p>Additionally, if they are an <strong>elite</strong> or <strong>champion</strong>, the GM gives you the target's soul treasure, an item worth an amount of zenit <strong>equal to or lower than 【the target's level multiplied by 30, or by 50 if they are a Villain】</strong>. This soul treasure will appear inside your backpack; <em>a creature can be successfully stolen from with this Skill only once.</em></p><p class=\"bonus\">You gain a bonus equal to <strong>【SL】</strong> to your <strong>【DEX + WLP】</strong> Checks for this Skill.</p>",
+      "duration": "-",
+      "effect_table": {
+        "0": {
+          "condition_formula": "HIT_COUNT > 0",
+          "effect_kind": "grant",
+          "effect_label": "soul_steal_grant_ip",
+          "grant_amount": "SL * HIT_COUNT",
+          "grant_resource": "ip",
+          "grant_target": "self",
+          "menu_description": "",
+          "menu_label": "",
+          "target_ref": "self"
+        },
+        "1": {
+          "condition_formula": "HIT_COUNT > 0",
+          "effect_kind": "roll_loot_table",
+          "effect_label": "soul_steal_loot_roll",
+          "target_ref": "hit_action_targets"
+        },
+        "2": {
+          "chain_steps": "soul_steal_grant_ip,soul_steal_loot_roll",
+          "condition_formula": "HIT_COUNT > 0",
+          "effect_kind": "chain",
+          "effect_label": "soul_steal_root"
+        }
+      },
+      "heroic_requirement": "",
+      "ignore_hr": false,
+      "isCheck": true,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "5",
+      "name": "Soul Steal",
+      "on_activate_effect_ref": "soul_steal_root",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "WLP",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "Range",
+      "skill_target": "Up to (1 + 98 * HAS_SKILL_PILLAGE) creatures",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": true,
+    "uniqueId": "aTce11W2dmw2lKtR"
+  },
+  "type": "equippableItem"
+}

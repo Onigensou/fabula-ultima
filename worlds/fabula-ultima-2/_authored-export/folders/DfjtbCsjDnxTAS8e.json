@@ -1,0 +1,19 @@
+{
+  "_id": "DfjtbCsjDnxTAS8e",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1771008718479,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "Vg0nGevL0N3Wqh0D",
+  "name": "Party Manager",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Macro"
+}

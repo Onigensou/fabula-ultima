@@ -1,0 +1,19 @@
+{
+  "_id": "9lG5mIZCO2tEEMvb",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1765533341162,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "ao7MvDYKSVhEwWj3",
+  "name": "Pseudo Animation",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Macro"
+}

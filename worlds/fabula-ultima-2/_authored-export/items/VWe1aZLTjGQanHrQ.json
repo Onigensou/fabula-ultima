@@ -1,0 +1,122 @@
+{
+  "_id": "VWe1aZLTjGQanHrQ",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1753895961497,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "t7zqjF8WFh19XCK7",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.331",
+        "createdTime": 1753898291292,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.6.4"
+      },
+      "changes": [
+        {
+          "key": "attack_accuracy_mod_melee",
+          "mode": 2,
+          "priority": 1,
+          "value": "${level}$"
+        }
+      ],
+      "description": "<p>You gain a bonus equal to <strong>【SL】</strong> to all Accuracy Checks with <strong>melee</strong> weapons.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "t7zqjF8WFh19XCK7",
+          "originalParentId": "VWe1aZLTjGQanHrQ",
+          "originalUuid": "Item.VWe1aZLTjGQanHrQ.ActiveEffect.t7zqjF8WFh19XCK7"
+        },
+        "statuscounter": {
+          "config": {
+            "durationType": 0,
+            "modifyDuration": false,
+            "multiplyEffect": false,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/skills/melee/maneuver-sword-katana-yellow.webp",
+      "name": "Melee Weapon Mastery",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "Class Skill",
+          "Passive",
+          "Weaponmaster"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "diBQChLQ9jkhmnXX",
+  "img": "icons/skills/melee/maneuver-sword-katana-yellow.webp",
+  "name": "Melee Weapon Mastery",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Weaponmaster",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>You gain a bonus equal to <strong>【SL】</strong> to all Accuracy Checks with <strong>melee</strong> weapons.</p>",
+      "duration": "",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "4",
+      "name": "Melee Weapon Mastery",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": true,
+    "uniqueId": "VWe1aZLTjGQanHrQ"
+  },
+  "type": "equippableItem"
+}

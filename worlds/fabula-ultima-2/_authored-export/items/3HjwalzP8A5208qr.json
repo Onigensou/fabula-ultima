@@ -1,0 +1,64 @@
+{
+  "_id": "3HjwalzP8A5208qr",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1758195077077,
+    "duplicateSource": "Item.MBbqLKpQZa3UiPtg",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "2OplVa9fwLYbzD8b",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/Vitalpointpiercing.png",
+  "name": "Unerring Focus",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 7800000,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "check_bonus": "0",
+      "class": "Hunter",
+      "cost": "-",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>When you use the <strong>【💥Lock-On】</strong> Skill, you may choose to spend <strong>20 MP</strong> instead of 10. If you do, the associated bonus increases to <strong>+4</strong></p>",
+      "duration": "-",
+      "heroic_requirement": "You must have mastered the Hunter Class.",
+      "ignore_hr": false,
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Unerring Focus",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "",
+      "skill_target": "-",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "3HjwalzP8A5208qr"
+  },
+  "type": "equippableItem"
+}

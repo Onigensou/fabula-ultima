@@ -1,0 +1,19 @@
+{
+  "_id": "anhNjengynV9A7lU",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1753062090655,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": "#50a5a0",
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "Buffs",
+  "sort": 1300000,
+  "sorting": "a",
+  "type": "Item"
+}

@@ -1,0 +1,225 @@
+{
+  "_id": "1w2LjUOVhlbLR8nn",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1781451765686,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "vE96q7FVLmhb7wDD",
+  "img": "icons/svg/item-bag.svg",
+  "name": "Gadgets",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "class": "Tinkerer",
+      "cost": "2 IP",
+      "description": "<p>You can produce <strong>infusions</strong> and other gadgets on the fly.</p><p><strong>Infusions.</strong> When you successfully <strong>hit one or more targets with an attack</strong>, you may spend <strong>2 Inventory Points</strong> to produce a special infusion and apply its effect to that attack. If the attack had the <em>multi</em> property, the effect applies to <strong>each</strong> target. You cannot apply more than one infusion to the same attack; producing and using an infusion are both part of the attack.</p><ul><li><strong>Cryo / Pyro / Volt:</strong> deal 5 extra damage; the attack's damage becomes <strong>ice / fire / bolt</strong>.</li><li><strong>Cyclone / Exorcism / Seismic / Shadow:</strong> deal 5 extra damage; the attack's damage becomes <strong>air / light / earth / dark</strong>.</li><li><strong>Venom:</strong> deal 5 extra damage; the attack's damage becomes <strong>poison</strong>; each creature hit suffers <strong>poisoned</strong>.</li><li><strong>Vampire:</strong> heal HP equal to <strong>half the damage dealt</strong>. <em>Single-target attacks only.</em></li></ul>",
+      "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "effect_kind": "open_action_menu",
+          "effect_label": "inf_offer",
+          "menu_option_descriptions": "+5; becomes Ice|+5; becomes Fire|+5; becomes Bolt|+5; becomes Air|+5; becomes Light|+5; becomes Earth|+5; becomes Dark|+5; becomes Poison + Poisoned|Single-target: heal 50% of damage dealt",
+          "menu_option_labels": "Cryo|Pyro|Volt|Cyclone|Exorcism|Seismic|Shadow|Venom|Vampire",
+          "menu_option_refs": "inf_cryo,inf_pyro,inf_volt,inf_cyclone,inf_exorcism,inf_seismic,inf_shadow,inf_venom,inf_vampire",
+          "menu_pick_count": "1",
+          "menu_subtitle": "Spend 2 IP — the attack's damage changes",
+          "menu_title": "Produce an Infusion"
+        },
+        "1": {
+          "chain_steps": "inf_pay,inf_el_ice,inf_plus5",
+          "condition_formula": "GADGET_INFUSION_TIER >= 1",
+          "effect_kind": "chain",
+          "effect_label": "inf_cryo",
+          "menu_label": "Cryo"
+        },
+        "2": {
+          "chain_steps": "inf_pay,inf_el_fire,inf_plus5",
+          "condition_formula": "GADGET_INFUSION_TIER >= 1",
+          "effect_kind": "chain",
+          "effect_label": "inf_pyro",
+          "menu_label": "Pyro"
+        },
+        "3": {
+          "chain_steps": "inf_pay,inf_el_bolt,inf_plus5",
+          "condition_formula": "GADGET_INFUSION_TIER >= 1",
+          "effect_kind": "chain",
+          "effect_label": "inf_volt",
+          "menu_label": "Volt"
+        },
+        "4": {
+          "chain_steps": "inf_pay,inf_el_air,inf_plus5",
+          "condition_formula": "GADGET_INFUSION_TIER >= 2",
+          "effect_kind": "chain",
+          "effect_label": "inf_cyclone",
+          "menu_label": "Cyclone"
+        },
+        "5": {
+          "chain_steps": "inf_pay,inf_el_light,inf_plus5",
+          "condition_formula": "GADGET_INFUSION_TIER >= 2",
+          "effect_kind": "chain",
+          "effect_label": "inf_exorcism",
+          "menu_label": "Exorcism"
+        },
+        "6": {
+          "chain_steps": "inf_pay,inf_el_earth,inf_plus5",
+          "condition_formula": "GADGET_INFUSION_TIER >= 2",
+          "effect_kind": "chain",
+          "effect_label": "inf_seismic",
+          "menu_label": "Seismic"
+        },
+        "7": {
+          "chain_steps": "inf_pay,inf_el_dark,inf_plus5",
+          "condition_formula": "GADGET_INFUSION_TIER >= 2",
+          "effect_kind": "chain",
+          "effect_label": "inf_shadow",
+          "menu_label": "Shadow"
+        },
+        "8": {
+          "chain_steps": "inf_pay,inf_el_poison,inf_plus5,inf_poison",
+          "condition_formula": "GADGET_INFUSION_TIER >= 3",
+          "effect_kind": "chain",
+          "effect_label": "inf_venom",
+          "menu_label": "Venom"
+        },
+        "9": {
+          "consume_amount": "2",
+          "consume_resource": "ip",
+          "effect_kind": "consume_resource",
+          "effect_label": "inf_pay",
+          "on_empty": "abort",
+          "target_ref": "self"
+        },
+        "10": {
+          "damage_amount": "5",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "inf_plus5"
+        },
+        "11": {
+          "change_element": "ice",
+          "effect_kind": "change_damage_element",
+          "effect_label": "inf_el_ice"
+        },
+        "12": {
+          "change_element": "fire",
+          "effect_kind": "change_damage_element",
+          "effect_label": "inf_el_fire"
+        },
+        "13": {
+          "change_element": "bolt",
+          "effect_kind": "change_damage_element",
+          "effect_label": "inf_el_bolt"
+        },
+        "14": {
+          "change_element": "air",
+          "effect_kind": "change_damage_element",
+          "effect_label": "inf_el_air"
+        },
+        "15": {
+          "change_element": "light",
+          "effect_kind": "change_damage_element",
+          "effect_label": "inf_el_light"
+        },
+        "16": {
+          "change_element": "earth",
+          "effect_kind": "change_damage_element",
+          "effect_label": "inf_el_earth"
+        },
+        "17": {
+          "change_element": "dark",
+          "effect_kind": "change_damage_element",
+          "effect_label": "inf_el_dark"
+        },
+        "18": {
+          "change_element": "poison",
+          "effect_kind": "change_damage_element",
+          "effect_label": "inf_el_poison"
+        },
+        "19": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Poisoned",
+          "effect_kind": "apply_ae",
+          "effect_label": "inf_poison",
+          "target_ref": "hit_action_targets"
+        },
+        "20": {
+          "effect_kind": "open_action_menu",
+          "effect_label": "gadget_active_root",
+          "menu_option_descriptions": "Mix a potion|Build a magitech device",
+          "menu_option_labels": "Alchemy|Magitech",
+          "menu_option_refs": "stub_alchemy,stub_magitech",
+          "menu_pick_count": "1",
+          "menu_subtitle": "Choose a gadget branch",
+          "menu_title": "Use a Gadget"
+        },
+        "21": {
+          "condition_formula": "GADGET_ALCHEMY_TIER >= 1",
+          "effect_kind": "notify",
+          "effect_label": "stub_alchemy",
+          "menu_label": "Alchemy",
+          "notify_message": "Alchemy gadgets (potion-mixing) are not yet implemented.",
+          "notify_type": "info"
+        },
+        "22": {
+          "condition_formula": "GADGET_MAGITECH_TIER >= 1",
+          "effect_kind": "notify",
+          "effect_label": "stub_magitech",
+          "menu_label": "Magitech",
+          "notify_message": "Magitech gadgets are not yet implemented.",
+          "notify_type": "info"
+        },
+        "23": {
+          "chain_steps": "inf_pay,inf_drain",
+          "condition_formula": "GADGET_INFUSION_TIER >= 3 && HIT_COUNT == 1",
+          "effect_kind": "chain",
+          "effect_label": "inf_vampire",
+          "menu_label": "Vampire"
+        },
+        "24": {
+          "action_keyword": "drain",
+          "effect_kind": "apply_action_keyword",
+          "effect_label": "inf_drain"
+        }
+      },
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isReaction": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Gadgets",
+      "on_activate_effect_ref": "gadget_active_root",
+      "reaction_config_table": {
+        "0": {
+          "reaction_action_kind": "Attack",
+          "reaction_effect_ref": "inf_offer",
+          "reaction_passive_mode": "ask",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        }
+      },
+      "skill_range": "-",
+      "skill_target": "Special",
+      "skill_type": "Active"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": true,
+    "uniqueId": "1w2LjUOVhlbLR8nn"
+  },
+  "type": "equippableItem"
+}

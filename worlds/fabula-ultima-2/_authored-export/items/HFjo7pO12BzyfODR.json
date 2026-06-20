@@ -1,0 +1,125 @@
+{
+  "_id": "HFjo7pO12BzyfODR",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1781819703186,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "wdsdya99TeBHekKT",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><em>Brainwave Clock:</em> Your accumulated psychic charge (0–4 sections), filled and spent by Esper gifts.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "fabula-ultima-companion": {
+          "category": "Other",
+          "chargeKey": "brainwave",
+          "charges": 0,
+          "chargesMax": 4,
+          "lifetimeMode": "persistent_counter",
+          "reactionConfig": {
+            "effect_table": {},
+            "reaction_config_table": {}
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 0,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Add/DiabolicEsperPassive3.png",
+      "name": "Brainwave Clock",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-brainwave-clock"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "H5HE3g8k3EvxVyvM",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Add/DiabolicEsperPassive3.png",
+  "name": "Psychic Gifts",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "candidate_source": "self",
+          "count": "1",
+          "effect_kind": "targeting",
+          "effect_label": "pg_self",
+          "mode": "exact",
+          "skip_when_passive": true
+        },
+        "1": {
+          "$deleted": false,
+          "ae_duplicate_mode": "replace",
+          "ae_initial_charges": "0",
+          "ae_initial_charges_max": "4",
+          "ae_template_ref": "Brainwave Clock",
+          "effect_kind": "apply_ae",
+          "effect_label": "pg_seed_clock",
+          "target_ref": "pg_self"
+        }
+      },
+      "reaction_config_table": {
+        "0": {
+          "$deleted": false,
+          "condition_formula": "",
+          "reaction_damage_amount": "",
+          "reaction_damage_type": "",
+          "reaction_effect_ref": "pg_seed_clock",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "",
+          "reaction_trigger": "conflict_start"
+        }
+      },
+      "skill_type": "Passive"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "HFjo7pO12BzyfODR"
+  },
+  "type": "equippableItem"
+}

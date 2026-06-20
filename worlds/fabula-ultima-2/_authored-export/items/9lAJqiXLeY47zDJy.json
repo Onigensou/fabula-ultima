@@ -1,0 +1,45 @@
+{
+  "_id": "9lAJqiXLeY47zDJy",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1715917231582,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    }
+  },
+  "folder": "Bg5DI4ep2SjF1yVR",
+  "img": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQopUbdZHqibuJd4s9MCUK7Qagh_jFIsALAOE0wkOqxRYoXrypYsd9oR61k50MY76IQ0ys&usqp=CAU.jpg",
+  "name": "Boots of Speed b",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 400000,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "1",
+      "class": "",
+      "cost": "1",
+      "damage_bonus": "1",
+      "description": "<p>When travel roll, you can choose to travel 2 space in any direction.</p>",
+      "duration": "",
+      "name": "Boots of Speed b",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "target": "",
+      "type_damage": ""
+    },
+    "template": "FZmpKcQRP7hZQqbV",
+    "templateSystemUniqueVersion": 1700837225,
+    "unique": false,
+    "uniqueId": "9lAJqiXLeY47zDJy"
+  },
+  "type": "equippableItem"
+}

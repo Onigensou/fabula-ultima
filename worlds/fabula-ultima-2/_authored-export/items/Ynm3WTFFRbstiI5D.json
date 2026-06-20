@@ -1,0 +1,55 @@
+{
+  "_id": "Ynm3WTFFRbstiI5D",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1754158095694,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "uuBCmFnWytMuWiTe",
+  "img": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/dragupload/fabula%20class/pirate/Illustration.jpg",
+  "name": "Blade&Gun",
+  "ownership": {
+    "default": 3,
+    "nXC7OD7u5Zw5UDDU": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Pirate",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<ul><li><p>When you acquire this skill, you can equip both one hand melee weapon and one hand range weapon at the same time and can use two-weapon fighting with it.</p></li><li><p>When you attack with two-weapon fighting using both melee and range in the same turn, both attack gain bonus damage equal to [SL]</p></li></ul>",
+      "duration": "",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "level": "1",
+      "max_level": "5",
+      "name": "Blade&Gun",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "Ynm3WTFFRbstiI5D"
+  },
+  "type": "equippableItem"
+}

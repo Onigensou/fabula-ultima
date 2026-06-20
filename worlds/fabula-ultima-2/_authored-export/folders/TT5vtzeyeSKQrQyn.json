@@ -1,0 +1,19 @@
+{
+  "_id": "TT5vtzeyeSKQrQyn",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1746439478365,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.4.2"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "7BehFh18zI1r7x4Q",
+  "name": "Manual",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Macro"
+}

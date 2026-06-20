@@ -1,0 +1,19 @@
+{
+  "_id": "SPvX0PiXpGCzQ7YQ",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1765672901459,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "color": "#737f48",
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "The Legend of Dragonslayer",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Scene"
+}

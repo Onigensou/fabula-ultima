@@ -1,0 +1,52 @@
+{
+  "_id": "XHGBM5xt57tAvOpT",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1751460613327,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "recipe",
+        "fromTemplate": "VJCHYWOx1mPsMSip",
+        "itemId": "XHGBM5xt57tAvOpT",
+        "itemName": "Magic Tent",
+        "pickedOldProps": {
+          "recipe_description": "<ul><li><p>Allows the entire group to <strong>rest</strong> in the wilderness.</p></li></ul>",
+          "recipe_ip": "4",
+          "recipe_label": ""
+        },
+        "ts": 1769647435945
+      }
+    }
+  },
+  "folder": "MOf4y5KdI6ZvNBHg",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Backpack.png",
+  "name": "Magic Tent",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "description": "<ul><li><p>Allows the entire group to <strong>rest</strong> in the wilderness.</p></li></ul>",
+      "ip_cost": "4",
+      "item_type": "recipe",
+      "name": "Magic Tent"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "XHGBM5xt57tAvOpT"
+  },
+  "type": "equippableItem"
+}

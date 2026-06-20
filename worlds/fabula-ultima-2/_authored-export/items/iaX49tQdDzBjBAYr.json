@@ -1,0 +1,53 @@
+{
+  "_id": "iaX49tQdDzBjBAYr",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1751639203939,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "consumable",
+        "fromTemplate": "xdZPhVF8AnmwQEPM",
+        "itemId": "iaX49tQdDzBjBAYr",
+        "itemName": "Mixed Juice Recipe",
+        "pickedOldProps": {
+          "consumable_cost": "2500",
+          "consumable_description": "<ul><li>Learned how to create  with <strong>@UUID[Item.OLHlThT9J5Epu7GA]{Mixed Juice}</strong> <strong>5 IP</strong></li></ul>",
+          "consumable_ip": "",
+          "consumable_label": ""
+        },
+        "ts": 1769647436046
+      }
+    }
+  },
+  "folder": "3xHGNagIXPyzukcU",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/book.png",
+  "name": "Mixed Juice Recipe",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 550000,
+  "system": {
+    "container": null,
+    "props": {
+      "description": "<ul><li>Learned how to create  with <strong>@UUID[Item.OLHlThT9J5Epu7GA]{Mixed Juice}</strong> <strong>5 IP</strong></li></ul>",
+      "item_cost": "2500",
+      "item_type": "consumable",
+      "name": "Mixed Juice Recipe"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "iaX49tQdDzBjBAYr"
+  },
+  "type": "equippableItem"
+}

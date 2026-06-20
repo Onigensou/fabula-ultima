@@ -1,0 +1,336 @@
+{
+  "_id": "aYFc8cAMUmBs13wq",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1676044228018,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.5.0"
+    }
+  },
+  "folder": "HMMNuNW9gXSoNCxy",
+  "img": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Alicia/2023-02-10%20Alicia%20Face.png",
+  "name": "Alicia",
+  "ownership": {
+    "Am7qxPOavfKeDGPd": 3,
+    "default": 0
+  },
+  "prototypeToken": {
+    "actorLink": true,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 30,
+    "displayName": 30,
+    "disposition": 1,
+    "flags": {},
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Alicia",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Alicia/2023-02-10%20Alicia%20Token.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 100000,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "activeEffects": {},
+    "props": {
+      "accesory_details": "<p>A shell given by Mina of Anon island. No particular effect but has sentimental value.</p>",
+      "accesory_name": "Gifted Shell",
+      "arcanism": false,
+      "armor_mod": "11",
+      "armor_name": "Runic Plate",
+      "backpack": "",
+      "backstory": "",
+      "bond_1": "Mother Jelly",
+      "bond_2": "Guy",
+      "bond_3": "Religion Follower",
+      "bond_4": "",
+      "bond_5": "",
+      "bond_6": "",
+      "char_identity": "Wandering Zealot",
+      "check_roller": "Roll!",
+      "chimerism": false,
+      "class_list": {
+        "0": {
+          "$deleted": false,
+          "benefit": "hp",
+          "class_name": "Guardian",
+          "level": "1"
+        },
+        "1": {
+          "$deleted": false,
+          "benefit": "hp",
+          "class_name": "Fury",
+          "level": "7"
+        },
+        "2": {
+          "$deleted": false,
+          "benefit": "hp",
+          "class_name": "Mutant",
+          "level": "2"
+        }
+      },
+      "crisis_hp": "ERROR",
+      "current_hp": "75",
+      "current_ip": "6",
+      "current_mp": "40",
+      "dex_base": "6",
+      "dex_current": 6,
+      "elementalism": false,
+      "emotion_1_1": "",
+      "emotion_1_2": "",
+      "emotion_1_3": "1",
+      "emotion_2_1": "1",
+      "emotion_2_2": "",
+      "emotion_2_3": "1",
+      "emotion_3_1": "",
+      "emotion_3_2": "2",
+      "emotion_3_3": "",
+      "emotion_4_1": "",
+      "emotion_4_2": "",
+      "emotion_4_3": "",
+      "emotion_5_1": "",
+      "emotion_5_2": "",
+      "emotion_5_3": "",
+      "emotion_6_1": "",
+      "emotion_6_2": "",
+      "emotion_6_3": "",
+      "entropism": false,
+      "experience": "0",
+      "fp": "3",
+      "id": "aYFc8cAMUmBs13wq",
+      "img": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Alicia/2023-02-10%20Alicia%20Face.png",
+      "init_penalty": "-3",
+      "ins_base": "10",
+      "ins_current": 10,
+      "inventory_label": "💼 Inventory",
+      "inventory_list": {},
+      "isAwake": false,
+      "isClarity": false,
+      "isDazed": false,
+      "isEnergized": false,
+      "isEnraged": false,
+      "isFocus": false,
+      "isPoisoned": false,
+      "isShaken": false,
+      "isSlow": false,
+      "isStrong": false,
+      "isSwift": false,
+      "isWeak": false,
+      "is_martialarmor": true,
+      "key_list": {},
+      "level": "10",
+      "magic_defense_mod": "1",
+      "main_attrib_1": "MIG",
+      "main_attrib_2": "MIG",
+      "main_details": "<table style=\"width: 99.9153%; height: 52.8px;\" border=\"1\"><colgroup><col style=\"width: 22.2841%;\"><col style=\"width: 42.2337%;\"><col style=\"width: 35.4424%;\"></colgroup>\n<tbody>\n<tr style=\"height: 16.8px;\">\n<td style=\"height: 16.8px;\"><strong>&nbsp; &nbsp;WEAPON</strong></td>\n<td style=\"height: 16.8px;\"><strong>&nbsp; &nbsp;ACCURACY</strong></td>\n<td style=\"height: 16.8px;\"><strong>&nbsp; &nbsp;DAMAGE</strong></td>\n</tr>\n<tr style=\"height: 19.2px;\">\n<td style=\"height: 19.2px;\"><strong>&nbsp; &nbsp;Twin Shields</strong></td>\n<td style=\"height: 19.2px;\"><strong>【MIG + MIG】</strong></td>\n<td style=\"height: 19.2px;\"><strong>【HR + 5】 physical</strong></td>\n</tr>\n<tr style=\"height: 16.8px;\">\n<td style=\"height: 16.8px;\" colspan=\"3\">&nbsp; &nbsp;Deals extra damage equal to your <strong>【SL】</strong> in <strong>Defensive Mastery</strong>.</td>\n</tr>\n</tbody>\n</table>",
+      "main_hand": "Twin Runic Shield",
+      "main_hand_attack": "",
+      "max_hp": "ERROR",
+      "max_ip": "ERROR",
+      "max_mp": "ERROR",
+      "memories_list": {},
+      "mig_base": "10",
+      "mig_current": 10,
+      "name": "Alicia",
+      "normal_spell_list": {
+        "0": {
+          "$deleted": false,
+          "class": "Mutant",
+          "cost": "20",
+          "description": "<p>You allow a creature to focus their vital energy into accomplishing what they previously could not. Choose one Attribute: <strong>Dexterity</strong>, <strong>Insight</strong>, <strong>Might</strong>, or <strong>Willpower</strong>. Until this spell ends, the target treats the chosen Attribute as if it were one die size higher (up to a maximum of d12).</p>",
+          "duration": "Scene",
+          "roll": "",
+          "spell_name": "Awaken",
+          "target": "One creature"
+        }
+      },
+      "notes_text": "",
+      "off_attrib_1": "SHI",
+      "off_attrib_2": "SHI",
+      "off_hand": "Twin Runic Shield",
+      "off_hand_attack": "",
+      "off_mod_1": "4",
+      "off_mod_2": "4",
+      "origin": "The Church",
+      "passive_list": {},
+      "pronouns": "She",
+      "re_experience": "0",
+      "reaction_list": {},
+      "relationship_1": "",
+      "relationship_2": "",
+      "relationship_3": "",
+      "relationship_4": "",
+      "relationship_5": "",
+      "relationship_6": "",
+      "resource_value_1": "0",
+      "resource_value_2": "0",
+      "resource_value_3": "0",
+      "ritualism": true,
+      "rolled_atr1": "MIG",
+      "rolled_atr2": "MIG",
+      "shield_type": "PHYSICAL",
+      "shield_value": "0",
+      "skill_hp": "0",
+      "skill_ip": "",
+      "skill_list": {
+        "0": {
+          "$deleted": false,
+          "class": "Guardian",
+          "description": "<p>You may now equip a shield in your main hand slot. As long as you have two shields<br>equipped, you gain the benefits of both items and may treat them as the following<br>combined two-handed melee brawling weapon:</p>\n<table style=\"width: 99.9153%; height: 52.8px;\" border=\"1\"><colgroup><col style=\"width: 22.2841%;\"><col style=\"width: 42.2337%;\"><col style=\"width: 35.4424%;\"></colgroup>\n<tbody>\n<tr style=\"height: 16.8px;\">\n<td style=\"height: 16.8px;\"><strong>&nbsp; &nbsp;WEAPON</strong></td>\n<td style=\"height: 16.8px;\"><strong>&nbsp; &nbsp;ACCURACY</strong></td>\n<td style=\"height: 16.8px;\"><strong>&nbsp; &nbsp;DAMAGE</strong></td>\n</tr>\n<tr style=\"height: 19.2px;\">\n<td style=\"height: 19.2px;\"><strong>&nbsp; &nbsp;Twin Shields</strong></td>\n<td style=\"height: 19.2px;\"><strong>【MIG + MIG】</strong></td>\n<td style=\"height: 19.2px;\"><strong>【HR + 5】 physical</strong></td>\n</tr>\n<tr style=\"height: 16.8px;\">\n<td style=\"height: 16.8px;\" colspan=\"3\">&nbsp; &nbsp;Deals extra damage equal to your <strong>【SL】</strong> in <strong>Defensive Mastery</strong>.</td>\n</tr>\n</tbody>\n</table>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Dual Shieldbearer"
+        },
+        "1": {
+          "$deleted": true,
+          "class": "Guardian",
+          "description": "<p>When another creature is threatened by an <strong>attack,</strong> <strong>spell </strong>or other <strong>danger</strong>, you may take their place (any Checks that are part of the danger will be performed against you; you may declare the use of this Skill <strong>before or after</strong> the Checks have been made). If the danger already affected you, it affects you<strong> twice</strong> (resolve both instances separately); you also cannot protect multiple creatures from the same danger. If you use this Skill<br>during a conflict, you cannot use it again until the start of your next turn.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Protect"
+        },
+        "2": {
+          "$deleted": true,
+          "class": "Guardian",
+          "description": "<p>When another creature is threatened by an <strong>attack</strong>, <strong>spell </strong>or other <strong>danger</strong>, you may take their place (any Checks that are part of the danger will be performed against you; you may declare the use of this Skill <strong>before or after</strong> the Checks have been made). If the danger already affected you, it affects you<strong> twice</strong> (resolve both instances separately); you also cannot protect multiple creatures from the same danger. If you use this Skill during a conflict, you cannot use it again until the start of your next turn.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Protect"
+        },
+        "3": {
+          "$deleted": false,
+          "class": "Fury",
+          "description": "<p>Your Accuracy Checks with <strong>brawling</strong>, <strong>dagger</strong>, <strong>flail </strong>and <strong>thrown </strong>weapons trigger a <strong>critical success</strong> if both dice show the same number (and the Check is not a <strong>fumble</strong>).</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Frenzy"
+        },
+        "4": {
+          "$deleted": false,
+          "class": "Fury",
+          "description": "",
+          "level": "5",
+          "roll": "",
+          "skill_name": "Adrenaline"
+        },
+        "5": {
+          "$deleted": false,
+          "class": "Fury",
+          "description": "<p>You may use an action and spend 5 Mind Points to perform an Opposed <strong>【MIG + WLP】</strong>Check against a creature you can see &mdash; describe how you taunt them! If you succeed, the target suffers <strong>enraged</strong> and is compelled to focus their attention on you (their attacks and offensive spells must include you among the targets if possible). This compulsion ends if you fall unconscious or leave the scene, if the creature is no longer <strong>enraged</strong>, or if they are successfully <strong>provoked</strong> by someone else. You gain a bonus equal to 【SL】 to your <strong>【MIG + WLP】</strong> Checks for this Skill.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Provoke"
+        },
+        "6": {
+          "$deleted": false,
+          "class": "Mutant",
+          "description": "<p>Each time you acquire this Skill, you learn a <strong>therioform</strong>.<br>You may use an action and spend <strong>one third of your current Hit Points</strong> (rounded down) to manifest the effects of <strong>up to two therioforms</strong> you have learned:</p>\n<table style=\"width: 100%; height: 68px;\" border=\"1\"><colgroup><col style=\"width: 28.6624%;\"><col style=\"width: 71.3376%;\"></colgroup>\n<tbody>\n<tr style=\"height: 17px;\">\n<td style=\"height: 17px;\"><strong>Dynamotheria</strong></td>\n<td style=\"height: 17px;\"><em>Bears, elephants, rhinoceros beetles.</em></td>\n</tr>\n<tr style=\"height: 17px;\">\n<td style=\"height: 17px;\" colspan=\"2\">You treat your <strong>Might </strong>as if it were one die size higher (to a maximum of <strong>d12</strong>).<br>When you succeed on a Check that includes <strong>Might </strong>and that Check allows you to advance or turn back a Clock, you may fill or erase an additional section of that Clock.</td>\n</tr>\n<tr style=\"height: 17px;\">\n<td style=\"height: 17px;\"><strong>Arpaktida</strong></td>\n<td style=\"height: 17px;\"><em>Birds of prey, sharks, wolves.</em></td>\n</tr>\n<tr style=\"height: 17px;\">\n<td style=\"height: 17px;\" colspan=\"2\">You treat your <strong>Insight </strong>as if it were one die size higher (to a maximum of <strong>d12</strong>).<br>When you deal damage to one or more creatures for the first time during a turn, if at least one of them is in <strong>Crisis</strong>, you deal 5 extra damage to each of those creatures</td>\n</tr>\n</tbody>\n</table>",
+          "level": "2",
+          "roll": "",
+          "skill_name": "Theriomorphosis"
+        }
+      },
+      "skill_mp": "0",
+      "spiritism": false,
+      "theme": "Morality",
+      "uuid": "Actor.aYFc8cAMUmBs13wq",
+      "weapon1_damage": "5",
+      "weapon1_damagetype": "Physical",
+      "weapon1_mod": "0",
+      "weapon2_damagetype": "-",
+      "wlp_base": "6",
+      "wlp_current": 6,
+      "your_class_name": "",
+      "zenit": "200",
+      "zero_effect_label": "💬 Zero Effect",
+      "zero_label": "💥 Zero Power : ",
+      "zero_power_name": "",
+      "zero_power_value": "0",
+      "zero_trigger_label": "⚔️ Zero Trigger"
+    },
+    "statusEffects": {},
+    "template": "gN4AtNuVF4Tc5LxK",
+    "templateSystemUniqueVersion": 93170772
+  },
+  "type": "character"
+}

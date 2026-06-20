@@ -1,0 +1,62 @@
+{
+  "_id": "2bq3QDtXnhVPWscx",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1715371531485,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "2bq3QDtXnhVPWscx",
+        "itemName": "Magitech Binocular",
+        "pickedOldProps": {
+          "cost": "400",
+          "martial": false
+        },
+        "ts": 1769647435954
+      }
+    }
+  },
+  "folder": "8mJfXdKYmmONftVP",
+  "img": "https://i.imgur.com/yyXaath.png",
+  "name": "Magitech Binocular",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3
+  },
+  "sort": 200000,
+  "system": {
+    "container": null,
+    "props": {
+      "category": "Arcane",
+      "check_bonus": "0",
+      "damage_bonus": "0",
+      "description": "<p>+1 Vision range in traver scene.</p>",
+      "hand_slots": "One-handed",
+      "isMartial": false,
+      "item_cost": "400",
+      "item_type": "weapon",
+      "name": "Magitech Binocular",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "set_name": "",
+      "skill_target": "One Enemy",
+      "type_damage": "Physical",
+      "weapon_range": "Melee"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "2bq3QDtXnhVPWscx"
+  },
+  "type": "equippableItem"
+}

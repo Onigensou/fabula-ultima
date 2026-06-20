@@ -1,0 +1,62 @@
+{
+  "_id": "9tAsz176ZSt1HVuS",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1743846781316,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "9tAsz176ZSt1HVuS",
+        "itemName": "Sidewinder Rev-II",
+        "pickedOldProps": {
+          "cost": "3000",
+          "martial": false
+        },
+        "ts": 1769647436457
+      }
+    }
+  },
+  "folder": "kxuacCVdg0PZwTDV",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gun.png",
+  "name": "Sidewinder Rev-II",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "category": "Firearm",
+      "check_bonus": "0",
+      "damage_bonus": "16",
+      "description": "<ul>\n<li>When you apply an <strong>infusion</strong> to an attack made with this weapon, that attack deals extra damage equal to your Skill Level in <strong>Gadgets</strong></li>\n<li>Transform into <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Hitman%20Suitcase.gif\" alt=\"\" width=\"21\" height=\"21\"><strong>@UUID[Item.9tAsz176ZSt1HVuS]{Magitech Briefcase}</strong></li>\n</ul>",
+      "hand_slots": "Two-handed",
+      "isMartial": false,
+      "item_cost": "3000",
+      "item_type": "weapon",
+      "name": "Sidewinder Rev-II",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "INS",
+      "set_name": "",
+      "skill_target": "One Enemy",
+      "type_damage": "Physical",
+      "weapon_range": "Ranged"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "9tAsz176ZSt1HVuS"
+  },
+  "type": "equippableItem"
+}

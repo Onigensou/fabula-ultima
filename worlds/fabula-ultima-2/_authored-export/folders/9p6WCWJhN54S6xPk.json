@@ -1,0 +1,19 @@
+{
+  "_id": "9p6WCWJhN54S6xPk",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1745781395817,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.4.2"
+  },
+  "color": "#ffa200",
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "Levels",
+  "sort": 100000,
+  "sorting": "a",
+  "type": "Compendium"
+}

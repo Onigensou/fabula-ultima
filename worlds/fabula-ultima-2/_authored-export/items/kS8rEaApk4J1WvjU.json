@@ -1,0 +1,65 @@
+{
+  "_id": "kS8rEaApk4J1WvjU",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1761298002888,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.4"
+    }
+  },
+  "folder": "2OplVa9fwLYbzD8b",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Swordsman/icon_warri_esquivetoucher.png",
+  "name": "Counter Pass",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 1906250,
+  "system": {
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_script": "",
+      "check_bonus": "0",
+      "class": "Matador",
+      "cost": "-",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>Once per round, When an enemy attack you a <strong>misses, </strong>you may immediately perform a <strong>Pass </strong>Skill<strong> </strong>as a <strong>Reaction</strong>, if this <strong>Pass </strong>would targets an enemy, it must target the enemy triggering this effect as one of its targets.</p>",
+      "duration": "-",
+      "heroic_requirement": "You must have mastered the Matador Class",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Counter Pass",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "",
+      "skill_target": "-",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "kS8rEaApk4J1WvjU"
+  },
+  "type": "equippableItem"
+}

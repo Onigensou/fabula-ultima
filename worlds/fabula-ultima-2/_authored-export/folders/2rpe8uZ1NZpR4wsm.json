@@ -1,0 +1,19 @@
+{
+  "_id": "2rpe8uZ1NZpR4wsm",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": null,
+    "duplicateSource": null,
+    "systemId": null,
+    "systemVersion": null
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "Class Specific Skill",
+  "sort": 300000,
+  "sorting": "a",
+  "type": "Macro"
+}

@@ -1,0 +1,19 @@
+{
+  "_id": "Qpc6ITpm60JVdwXF",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": null,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "2.4.4"
+  },
+  "color": "#7a7a7a",
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "Template",
+  "sort": 800000,
+  "sorting": "a",
+  "type": "Actor"
+}

@@ -1,0 +1,19 @@
+{
+  "_id": "3kI9LE25lrqxT9Xl",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1747378903947,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.4.2"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "faDXweVXMG6e5TcA",
+  "name": "Encounter Drop",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

@@ -1,0 +1,19 @@
+{
+  "_id": "5fTI1CfujLAXR4wp",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": null,
+    "duplicateSource": null,
+    "systemId": null,
+    "systemVersion": null
+  },
+  "color": "#7d4f7a",
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "John's BGM",
+  "sort": 0,
+  "sorting": "m",
+  "type": "Playlist"
+}

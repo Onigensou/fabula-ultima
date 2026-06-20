@@ -1,0 +1,58 @@
+{
+  "_id": "m4akX4dvBn3NElng",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757285107458,
+    "duplicateSource": "Item.bLDsPMvsYMlv5hJA",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "OFXRN3P2p6Ce5ySM",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Flower/282675ae43f08200572013be92c692c9_1652894437625395503.webp",
+  "name": "Serrated Rose",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Floralist",
+      "cost": "20 MP",
+      "damage_bonus": "0",
+      "description": "<p><em>Its thorns form a tangle equally breathtaking and dangerous.</em></p> <table style=\"width:100%;\"> <tbody> <tr><td><strong>Growth</strong></td><td><strong>Effect</strong></td></tr> <tr> <td>1</td> <td>At the <strong>end of your turn</strong>, you may choose an enemy you can see. If you do, that enemy suffers <a class=\"content-link\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\"><strong><u>Slow</u></strong></a>. </td> </tr> <tr> <td>2</td> <td>At the <strong>end of your turn</strong>, every enemy you can see suffers <a class=\"content-link\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\"><strong><u>Slow</u></strong></a>. </td> </tr> <tr> <td>3</td> <td>At the <strong>end of your turn</strong>, you deal an amount of <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\"><strong><u>Physical</u></strong></a> damage equal to <strong>[15 + your Skill Level in Chloromancy]</strong> to each enemy you can see who is suffering from <a class=\"content-link\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\"><strong><u>Slow</u></strong></a>. </td> </tr> </tbody> </table>",
+      "duration": "Scene",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": true,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Serrated Rose",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Chloromancy SL</strong></p></td><td><p><strong>Damage</strong></p></td></tr><tr><td><p>1</p></td><td><p>16</p></td></tr><tr><td><p>2</p></td><td><p>17</p></td></tr><tr><td><p>3</p></td><td><p>18</p></td></tr><tr><td><p>4</p></td><td><p>19</p></td></tr><tr><td><p>5</p></td><td><p>20</p></td></tr><tr><td><p>6</p></td><td><p>21</p></td></tr><tr><td><p>7</p></td><td><p>22</p></td></tr><tr><td><p>8</p></td><td><p>23</p></td></tr><tr><td><p>9</p></td><td><p>24</p></td></tr><tr><td><p>10</p></td><td><p>25</p></td></tr></tbody></table>",
+      "skill_range": "Any",
+      "skill_target": "Special",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "m4akX4dvBn3NElng"
+  },
+  "type": "equippableItem"
+}

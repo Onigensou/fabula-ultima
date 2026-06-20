@@ -1,0 +1,181 @@
+{
+  "_id": "jlPwgwAQkOBCNg6K",
+  "_stats": {
+    "compendiumSource": "Item.iFhrsC0cnyChDhgw",
+    "coreVersion": "12.343",
+    "createdTime": 1781924499010,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "gumRfidu7rfmWlmR",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><em>Acceleration:</em> at the start of each of your turns you may take one extra Attack or Spell. Ends after two extra actions.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": 999999,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "gumRfidu7rfmWlmR",
+          "originalParentId": "iFhrsC0cnyChDhgw",
+          "originalUuid": "Item.iFhrsC0cnyChDhgw.ActiveEffect.gumRfidu7rfmWlmR"
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "acceleration",
+          "charges": 2,
+          "chargesMax": 2,
+          "lifetimeMode": "on_activation",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "$deleted": false,
+                "chain_steps": "accel_consume,accel_freeact",
+                "effect_kind": "chain",
+                "effect_label": "accel_chain"
+              },
+              "1": {
+                "$deleted": false,
+                "charge_key": "acceleration",
+                "count": "1",
+                "effect_kind": "consume_charge",
+                "effect_label": "accel_consume",
+                "on_empty": "abort",
+                "target_ref": "self"
+              },
+              "2": {
+                "$deleted": false,
+                "action_ref": "Attack,Spell",
+                "effect_kind": "free_action",
+                "effect_label": "accel_freeact"
+              }
+            },
+            "name": "Acceleration",
+            "reaction_config_table": {
+              "0": {
+                "$deleted": false,
+                "reaction_effect_ref": "accel_chain",
+                "reaction_passive_mode": "ask",
+                "reaction_passive_target": "self",
+                "reaction_source": "self",
+                "reaction_trigger": "turn_start"
+              }
+            }
+          }
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/astrodyne.png",
+      "name": "Acceleration",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-acceleration"
+      ],
+      "system": {
+        "tags": [
+          "dispellable"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "C5LAJaVZ1tj2Lxxn",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/astrodyne.png",
+  "name": "Acceleration",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "active_effect_config_table": {
+        "0": {
+          "$deleted": false,
+          "active_effect_application": "add",
+          "active_effect_apply_mode": "percentage",
+          "active_effect_dice_1": "",
+          "active_effect_dice_2": "",
+          "active_effect_dl": "0",
+          "active_effect_id": "gumRfidu7rfmWlmR",
+          "active_effect_percent": "100",
+          "active_effect_target": "ally",
+          "active_effect_trigger": "on_attack"
+        }
+      },
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_script": "<p>// ONI — Clockwork Blades (polished: X-only sidestep, no Y drift)</p><p>(async () => {</p><p>  const TAG = \"[ONI][FX]\";</p><p>  // --- Assets ---</p><p>  const SFX_MOVE   = \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Beginspell.mp3\";</p><p>  const FX_TARGET  = \"modules/boss-loot-assets-free/artwork/07-steampunk/clock/Clockwork_Blades_1_1200x1200.webm\";</p><p>  const SFX_TARGET = \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Haste.ogg\";</p><p>  // --- Checks ---</p><p>  if (!game.modules.get(\"sequencer\")?.active) {</p><p>    ui.notifications.error(`${TAG} Sequencer module is not active.`);</p><p>    return;</p><p>  }</p><p>  const caster = canvas.tokens.controlled?.[0];</p><p>  if (!caster) {</p><p>    ui.notifications.warn(`${TAG} Please SELECT exactly 1 token (the caster).`);</p><p>    return;</p><p>  }</p><p>  const targets = Array.from(game.user.targets ?? []);</p><p>  if (targets.length !== 1) {</p><p>    ui.notifications.warn(`${TAG} Please TARGET exactly 1 token.`);</p><p>    return;</p><p>  }</p><p>  const target = targets[0];</p><p>  // --- X-only movement using DOCUMENT coords (top-left) ---</p><p>  const original = { x: caster.document.x, y: caster.document.y };</p><p>  const disp = caster.document.disposition;</p><p>  const squares = 0.35; // tweak distance here</p><p>  const offsetPx = canvas.grid.size * squares;</p><p>  // Hostile (-1) => move RIGHT, else => move LEFT</p><p>  const dx = (disp === -1) ? +offsetPx : -offsetPx;</p><p>  // IMPORTANT: Y stays EXACTLY original.y (no touching Y)</p><p>  const destOut  = { x: original.x + dx, y: original.y };</p><p>  const destBack = { x: original.x,      y: original.y };</p><p>  // ✅ animation start hook</p><p>  Hooks.callAll(\"oni:animationStart\", { tag: \"ClockworkBlades\", tokenId: caster.id });</p><p>  const seq = new Sequence()</p><p>    // Movement sound</p><p>    .sound()</p><p>      .file(SFX_MOVE)</p><p>      .volume(0.9)</p><p>    // Move out (X-only destination)</p><p>    .animation()</p><p>      .on(caster)</p><p>      .moveTowards(destOut)</p><p>      .duration(350)</p><p>      .waitUntilFinished()</p><p>    // wait 0.5s</p><p>    .wait(500)</p><p>    // Target SFX + FX</p><p>    .sound()</p><p>      .file(SFX_TARGET)</p><p>      .volume(0.9)</p><p>    .effect()</p><p>      .file(FX_TARGET)</p><p>      .atLocation(target)</p><p>      .scaleToObject(2.15)</p><p>      .anchor({ x: 0.5, y: 0.5 })</p><p>      .opacity(1.0)</p><p>      .belowTokens(false)</p><p>      .waitUntilFinished()</p><p>    // wait 0.5s</p><p>    .wait(500)</p><p>    // Move back (exact original)</p><p>    .animation()</p><p>      .on(caster)</p><p>      .moveTowards(destBack)</p><p>      .duration(350)</p><p>      .waitUntilFinished();</p><p>  await seq.play();</p><p>  // Hard guarantee: snap back exactly (still does not change Y beyond original)</p><p>  if (caster.document.x !== original.x || caster.document.y !== original.y) {</p><p>    await caster.document.update({ x: original.x, y: original.y });</p><p>  }</p><p>  // ✅ animation end hook</p><p>  Hooks.callAll(\"oni:animationEnd\", { tag: \"ClockworkBlades\", tokenId: caster.id });</p><p>})();</p>",
+      "check_bonus": "0",
+      "class": "Entropist",
+      "cost": "20 MP",
+      "damage_bonus": "",
+      "defense_target_type": "def",
+      "description": "<div class=\"oni-tooltip\"><p>At the end of each of their turns, the target may <strong>choose one option:</strong></p><ul><li><p>Perform a <strong>free attack</strong> with a weapon they have equipped</p></li><li><p>Perform the【📕Spell】 action for free, casting a spell with a total MP cost equal to or lower than 10 <em>(paying its MP cost).</em></p></li></ul><p>After the same creature benefits from this effect a second time, this spell ends.</p></div>",
+      "duration": "Scene",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_template_ref": "Acceleration",
+          "effect_kind": "apply_ae",
+          "effect_label": "accel_apply",
+          "target_ref": "action_targets"
+        }
+      },
+      "heroic_requirement": "",
+      "ignore_hr": false,
+      "isCheck": false,
+      "isFacet": true,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Acceleration",
+      "on_activate_effect_ref": "accel_apply",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "custom",
+      "skill_information": "",
+      "skill_range": "Range",
+      "skill_target": "One creature",
+      "skill_type": "Spell",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "jlPwgwAQkOBCNg6K"
+  },
+  "type": "equippableItem"
+}

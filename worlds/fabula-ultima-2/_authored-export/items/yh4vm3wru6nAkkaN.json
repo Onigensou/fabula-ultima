@@ -1,0 +1,103 @@
+{
+  "_id": "yh4vm3wru6nAkkaN",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780935702984,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "4nfTLrlahxy3xTs8",
+  "img": "icons/skills/ranged/arrow-strike-glowing-orange.webp",
+  "name": "Barrage",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "active_effect_config_table": {},
+      "check_bonus": "0",
+      "class": "Sharpshooter",
+      "cost": "10 MP",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>When you perform a <strong>ranged attack</strong>, you may spend <strong>10 Mind Points</strong> to have the attack target one additional creature. Loose a hail of shots!</p>",
+      "duration": "-",
+      "effect_table": {
+        "0": {
+          "chain_steps": "barrage_add,barrage_cost",
+          "effect_kind": "chain",
+          "effect_label": "barrage_do"
+        },
+        "1": {
+          "effect_kind": "add_target",
+          "effect_label": "barrage_add",
+          "menu_description": "Spend 10 MP to target one additional creature.",
+          "menu_label": "Barrage",
+          "target_ref": "barrage_pick"
+        },
+        "2": {
+          "consume_amount": "10",
+          "consume_resource": "mp",
+          "effect_kind": "consume_resource",
+          "effect_label": "barrage_cost",
+          "on_empty": "abort",
+          "target_ref": "self"
+        },
+        "3": {
+          "auto_confirm_when_obvious": false,
+          "candidate_source": "combat",
+          "category": "enemy",
+          "count": 1,
+          "effect_kind": "targeting",
+          "effect_label": "barrage_pick",
+          "exclude_action_targets": true,
+          "mode": "exact",
+          "skip_when_passive": false
+        }
+      },
+      "ignore_hr": false,
+      "img": "icons/skills/ranged/arrow-strike-glowing-orange.webp",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": true,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Barrage",
+      "on_activate_effect_ref": "",
+      "post_damage_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "ATTACK_IS_RANGED == 1",
+          "reaction_action_kind": "Attack",
+          "reaction_effect_ref": "barrage_do",
+          "reaction_passive_mode": "ask",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_performs_action"
+        }
+      },
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_range": "",
+      "skill_target": "-",
+      "skill_type": "Passive",
+      "type_damage": ""
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "yh4vm3wru6nAkkaN"
+  },
+  "type": "equippableItem"
+}

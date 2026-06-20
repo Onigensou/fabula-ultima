@@ -1,0 +1,57 @@
+{
+  "_id": "4E3auFhcWT06tIn5",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1758189621168,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "97p1xGjGPYztDsVo",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20(33).png",
+  "name": "Lock-On",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Hunter",
+      "cost": "10 MP",
+      "damage_bonus": "0",
+      "description": "<p>You may perform an action and spend 10 MP to lock onto a target. During the next turn, any action performed by an ally against this target gains a <strong>+2 bonus</strong> to associated Checks.</p>\n<p>If all performed Checks against the target during this time are successful, the target also suffers \n  <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\">\n    <a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\">\n      <strong><span style=\"text-decoration: underline;\">Weak</span></strong>\n    </a>\n  </span></span>.\n</p>\n<p>If the target is reduced to 0 Hit Points (HP) while under the effect of this Skill, you may immediately mark another target at no additional MP cost.</p>\n",
+      "duration": "2 Turns",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Lock-On",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "Range",
+      "skill_target": "One creature",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "4E3auFhcWT06tIn5"
+  },
+  "type": "equippableItem"
+}

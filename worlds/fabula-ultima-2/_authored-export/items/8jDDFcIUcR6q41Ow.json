@@ -1,0 +1,56 @@
+{
+  "_id": "8jDDFcIUcR6q41Ow",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1754965393495,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "AYqJLwzAu9WvlJ5C",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/DarkMagicianSkill5.png",
+  "name": "Trail of Death",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Reaper",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>You may perform Rituals of the <strong>Spiritism</strong> discipline, and you may perform a <strong>Ritual </strong>to <strong>Speak with the Dead, </strong>if the spirit you're trying to called is hostile towards you, they may choose to not appear</p><p>You gain 【SL】Bonus to <strong>Checks</strong> that involve <strong>Gathering information from Dead Bodies</strong></p>",
+      "duration": "",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "level": "1",
+      "max_level": "2",
+      "name": "Trail of Death",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p>Level</p></td><td data-colwidth=\"148\"><p>Check Bonus</p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p><strong>+1</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p><strong>+2</strong></p></td></tr></tbody></table>",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "8jDDFcIUcR6q41Ow"
+  },
+  "type": "equippableItem"
+}

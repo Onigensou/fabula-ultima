@@ -1,0 +1,40 @@
+{
+  "_id": "D6IehPsp6h7srIJH",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1753062325790,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "anhNjengynV9A7lU",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/GrandArcherSkill1.png",
+  "name": "Hunter's Mark",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 600000,
+  "system": {
+    "container": null,
+    "props": {
+      "description": "<p>The next attack that target this creature gain +3 Accuracy</p><p>After the attack resolve, remove this Effect</p>",
+      "detail_roller": "Show",
+      "id": "D6IehPsp6h7srIJH",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/GrandArcherSkill1.png",
+      "name": "Hunter's Mark",
+      "uuid": "Item.D6IehPsp6h7srIJH"
+    },
+    "template": "nS5URyF3aoxhvPsZ",
+    "templateSystemUniqueVersion": 4221238629,
+    "unique": false,
+    "uniqueId": "D6IehPsp6h7srIJH"
+  },
+  "type": "equippableItem"
+}

@@ -1,0 +1,63 @@
+{
+  "_id": "tGgGFGEavGVjJVAz",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1781959951056,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Mega-Ether_from_Final_Fantasy_XIV_icon.webp",
+  "name": "Skull Orb",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "hPNGofTLZQVvhtbf",
+    "props": {
+      "cost": "-",
+      "description": "<p><em>Love Potion:</em> target enemy is Charmed.</p>",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "damage_amount": "5",
+          "damage_element": "dark",
+          "effect_kind": "deal_damage",
+          "effect_label": "skullorb_dmg",
+          "target_ref": "trigger_subject"
+        }
+      },
+      "isCheck": false,
+      "name": "Love Potion",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "$deleted": false,
+          "condition_formula": "CAUSE_IS_SELF == 1",
+          "reaction_effect_ref": "skullorb_dmg",
+          "reaction_passive_mode": "force",
+          "reaction_source": "enemy",
+          "reaction_trigger": "creature_status_applied"
+        }
+      },
+      "skill_description": "<p><em>Skull Orb:</em> when you apply a Status Condition to an enemy, it takes 5 Dark damage.</p>",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": ""
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "tGgGFGEavGVjJVAz"
+  },
+  "type": "equippableItem"
+}

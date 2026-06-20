@@ -1,0 +1,19 @@
+{
+  "_id": "VwGXmuqbwBOzXPgY",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1773590977060,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "W7glNj8YN8HXrq9A",
+  "name": "Effects",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Macro"
+}

@@ -1,0 +1,58 @@
+{
+  "_id": "0Vih9E0FXoykGEf7",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757294713652,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "qntM763ba1AdSE3w",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rose/RoseSkill2.png",
+  "name": "Cooking",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Gourmet",
+      "cost": "Up to 3 Ingredients",
+      "damage_bonus": "0",
+      "description": "<p>When you <strong>rest</strong> inside a <strong>settlement</strong>, you gain <strong>[SL]</strong> <strong>ingredients</strong> (see Unique Mechanic).</p><p>You may <strong>use an action</strong> and <strong>combine 2 or 3 ingredients</strong> to prepare a <strong>delicacy</strong> (see Unique Mechanic). and <strong>Choose one option:</strong></p><ul><li><strong>you apply its effects</strong> to yourself or an ally you can see;</li><li>or you perform a <strong>free attack</strong> with a weapon you have equipped. This attack deals no damage, but you apply the <strong>delicacy’s</strong> effects to each enemy hit by the attack.</li></ul><p>You may carry up to <strong>10 + [SL × 5]</strong> ingredients, and they will <strong>never spoil</strong> until you use them; if you take this Skill during <strong>character creation</strong>, you begin play with <strong>ten ingredients</strong> with random tastes.</p>",
+      "duration": "Instantaneous",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "5",
+      "name": "Cooking",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Ingredients gained on rest</strong></p></td><td><p><strong>Max ingredients carried</strong></p></td></tr><tr><td><p>1</p></td><td><p>1</p></td><td><p>15</p></td></tr><tr><td><p>2</p></td><td><p>2</p></td><td><p>20</p></td></tr><tr><td><p>3</p></td><td><p>3</p></td><td><p>25</p></td></tr><tr><td><p>4</p></td><td><p>4</p></td><td><p>30</p></td></tr><tr><td><p>5</p></td><td><p>5</p></td><td><p>35</p></td></tr></tbody></table>",
+      "skill_range": "Any",
+      "skill_target": "Special",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "0Vih9E0FXoykGEf7"
+  },
+  "type": "equippableItem"
+}

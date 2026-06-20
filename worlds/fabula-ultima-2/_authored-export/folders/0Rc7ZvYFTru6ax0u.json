@@ -1,0 +1,19 @@
+{
+  "_id": "0Rc7ZvYFTru6ax0u",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1756408264507,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "RrGa6q1F9XMvUnC4",
+  "name": "Invocations",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

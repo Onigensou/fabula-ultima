@@ -1,0 +1,58 @@
+{
+  "_id": "xoTEbUTLldx63w85",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757283875660,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "Gbn6vXIF7FdH7EdG",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/NWTrans4.png",
+  "name": "Battle Gardening",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Floralist",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>After you <strong>plant a magiseed</strong> through the <strong>Chloromancy</strong> Skill (not when using 【📜<strong>Graft】</strong>), you may <strong>choose one option</strong>:</p><ul><li>Perform a free 【⚔️Attack】 with an equipped weapon</li><li>Perform the 【📕Spell】 action for free, casting a spell with a total <strong>Mind Point</strong> cost equal to or lower than <strong>[5 + (SL × 5)]</strong> (you must still pay its MP cost).</li></ul><p>Treat the <strong>High Roll (HR)</strong> of your <strong>Accuracy Check</strong> or <strong>Magic Check</strong> as being equal to 0 when determining damage dealt by this attack or spell.</p>",
+      "duration": "",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "3",
+      "name": "Battle Gardening",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Free Spell MP Cap</strong></p></td></tr><tr><td><p>1</p></td><td><p>10</p></td></tr><tr><td><p>2</p></td><td><p>15</p></td></tr><tr><td><p>3</p></td><td><p>20</p></td></tr></tbody></table>",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "xoTEbUTLldx63w85"
+  },
+  "type": "equippableItem"
+}

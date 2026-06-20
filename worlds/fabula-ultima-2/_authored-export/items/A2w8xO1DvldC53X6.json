@@ -1,0 +1,180 @@
+{
+  "_id": "A2w8xO1DvldC53X6",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780631516185,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "v5fbELzWd3MrGEPb",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "bonus_check",
+          "mode": 2,
+          "priority": 20,
+          "value": "BOND_STRENGTH"
+        }
+      ],
+      "description": "<p>Bonus to next Check equal to the Spiritist's Bond strength toward this creature.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "1kYcwjLglF6tBQ9v",
+          "originalParentId": "9aOTCoRiI7e0FB04",
+          "originalUuid": "Item.9aOTCoRiI7e0FB04.ActiveEffect.1kYcwjLglF6tBQ9v"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "chargeKey": "support-magic",
+          "charges": 1,
+          "chargesMax": 1,
+          "crossScene": true,
+          "lifetimeMode": "on_activation",
+          "reactionConfig": {
+            "effect_table": {},
+            "reaction_config_table": {
+              "0": {
+                "reaction_effect_ref": "",
+                "reaction_passive_mode": "on",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_performs_check"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/aero_mastery.png",
+      "name": "Support Magic",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-support-magic"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "GrXCu6oUXmMBW9yS",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/aero_mastery.png",
+  "name": "Support Magic",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "check_bonus": "0",
+      "class": "Spiritist",
+      "cost": "",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>When you cast a spell that targets one or more allies, if you have an <strong>arcane</strong> weapon equipped, you may choose one of those allies you have a Bond towards. That ally gains a bonus to their next Check during the current scene equal to the <strong>strength</strong> of your Bond toward them.</p>",
+      "duration": "",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_template_ref": "Support Magic",
+          "effect_kind": "apply_ae",
+          "effect_label": "support_magic_apply",
+          "menu_description": "",
+          "menu_label": "",
+          "target_ref": "ally_action_targets"
+        }
+      },
+      "heroic_requirement": "",
+      "ignore_hr": false,
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": true,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Support Magic",
+      "on_activate_effect_ref": "",
+      "optional_params": {},
+      "reaction_config_table": {
+        "0": {
+          "$deleted": false,
+          "condition_formula": "HAS_ARCANE_WEAPON",
+          "reaction_action_intent": "",
+          "reaction_action_target": "ally",
+          "reaction_damage_amount": "",
+          "reaction_damage_source": "",
+          "reaction_damage_type": "",
+          "reaction_debuff_count_min": "",
+          "reaction_debuff_count_target": "",
+          "reaction_effect_ref": "support_magic_apply",
+          "reaction_ownership": "",
+          "reaction_passive_mode": "ask",
+          "reaction_passive_target": "self",
+          "reaction_source": "self",
+          "reaction_subject_kind": "",
+          "reaction_trigger": "creature_completes_spell",
+          "requires_skill": ""
+        }
+      },
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "",
+      "skill_target": "-",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "A2w8xO1DvldC53X6"
+  },
+  "type": "equippableItem"
+}

@@ -1,0 +1,58 @@
+{
+  "_id": "DT2crRFPtAIqeRUu",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757430785836,
+    "duplicateSource": "Item.ToXarLKT0G2ggon1",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "jrKIkae1l6fNLgRS",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/royal_road.png",
+  "name": "Trap Card",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Ace of Cards",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>After an enemy you can see performs an action during a conflict, you may declare one of your deck’s <strong>suits</strong> (after the action has been resolved) and put the <strong>top card</strong> of your deck into your <strong>discard pile</strong>, face up. If that card is a <strong>joker</strong> or its suit matches the one you declared, you may immediately perform the <strong>Spell</strong> action <em>for free</em>, casting a spell with a total Mind Point cost equal to or lower than <strong>[SL × 5]</strong> (you must still pay its MP cost).</p>\n<div class=\"tableWrapper\"></div>",
+      "duration": "",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Trap Card",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_information": "<table style=\"width:100%; text-align:center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Max Spell Cost</strong></p></td></tr><tr><td><p>1</p></td><td><p>5</p></td></tr><tr><td><p>2</p></td><td><p>10</p></td></tr><tr><td><p>3</p></td><td><p>15</p></td></tr><tr><td><p>4</p></td><td><p>20</p></td></tr></tbody></table><p style=\"font-size: 12px; margin-top: 4px; text-align: center\">(Max spell MP cost = <em>5 × SL</em>.)</p>",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "DT2crRFPtAIqeRUu"
+  },
+  "type": "equippableItem"
+}

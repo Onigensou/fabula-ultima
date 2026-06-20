@@ -1,0 +1,957 @@
+{
+  "_id": "TGB44APysDdXbJ5M",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1754274668674,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "tmNVy5jIbM9rzx80",
+  "img": "https://tiermaker.com/images/media/template_images/2024/16720717/fabula-ultima-classes-16720717/chimerist.png",
+  "items": [
+    {
+      "_id": "3jbWR6cHdLf0CqCD",
+      "_stats": {
+        "compendiumSource": "Item.WZXRy2InQtCP7vEA",
+        "coreVersion": "12.343",
+        "createdTime": 1754275937651,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/chirp.png",
+      "name": "Feral Speech",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Chimerist",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>You can communicate with creatures of the <strong>beast,</strong> <strong>monster</strong> and <strong>plant</strong> Species</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Feral Speech",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "WZXRy2InQtCP7vEA"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "46KpoqlsM0IK4PKc",
+      "_stats": {
+        "compendiumSource": "Item.X8nWZK2iCZwZQ2dH",
+        "coreVersion": "12.343",
+        "createdTime": 1754275940844,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/tingle.png",
+      "name": "Spell Mimic",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Chimerist",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you see a creature belonging to the <strong>beast, monster</strong> or <strong>plant</strong> Species cast a spell, you may immediately choose to learn that spell as a Chimerist spell of your own: if you do, record the <strong>Species</strong> of the creature you learned it from.</p><p> When you first acquire this Skill, choose <strong>【INS + WLP】</strong>or<strong>【MIG + WLP】</strong>. From now on, your offensive (⚡) Chimerist spells will use the chosen Attributes for the Magic Check, regardless of the Attributes used by the creature you learned the spell from.</p><p> You may have <strong>up to 【SL + 2】 different Chimerist spells</strong> memorized this way. If you want to memorize a new Chimerist spell but are already at your limit, you must forget one of your old spells and replace it with the new spell.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "10",
+          "name": "Spell Mimic",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Other",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "X8nWZK2iCZwZQ2dH"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "bnAbK9og3TGJF1Vy",
+      "_stats": {
+        "compendiumSource": "Item.4itLjWpw5cQKLgYt",
+        "coreVersion": "12.343",
+        "createdTime": 1754275939740,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/mind_blast.png",
+      "name": "Ritual Chimerism",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Chimerist",
+          "cost": "0",
+          "damage_bonus": "0",
+          "description": "<p>You may perform Rituals whose effects fall within the <strong>Chimerism discipline</strong>. </p><p>When you acquire this Skill, choose <strong>【INS + WLP】</strong>or<strong>【MIG + WLP】</strong>. From now on, your Chimerism Rituals will use the chosen Attributes for the Magic Check.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Ritual Chimerism",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "4itLjWpw5cQKLgYt"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "CedJIsHiW6aQQyLc",
+      "_stats": {
+        "compendiumSource": "Item.icLqbMXvupakMgQe",
+        "coreVersion": "12.343",
+        "createdTime": 1754275946967,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/the_ram%27s_voice.png",
+      "name": "Chimeric Mastery",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Chimerist",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>Choose two creature Species among <strong>construct, demon, elemental, and undead.</strong> You can now use spell mimic to learn spells from creatures of the chosen Species.</p><p> This Heroic Skill <strong>may be acquired up to twice</strong>, each time selecting two Species from the list above.</p><p> Whenever you acquire this Skill, you also increase your upper limit for memorized Chimerist spells by 2.</p>",
+          "duration": "",
+          "heroic_requirement": "You must have mastered the Chimerist Class.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "level": "1",
+          "max_level": "1",
+          "name": "Chimeric Mastery",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "icLqbMXvupakMgQe"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "EK71o9QFumvCxiKS",
+      "_stats": {
+        "compendiumSource": "Item.TMeu4B7pd9vPmLyu",
+        "coreVersion": "12.343",
+        "createdTime": 1756969038797,
+        "duplicateSource": "Item.XpSvvPKiAzoY4nqp",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/radiant_shield.png",
+      "name": "Magic Guard",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Spiritist",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you perform the 【🛡️Guard】 action, if you choose not to provide cover to another creature, you gain the following benefit until the start of your next turn: when a creature you can see casts a spell, after that creature pays for the spell’s MP cost, you may spend an amount of <strong>Mind Points</strong> equal to <strong>【10 + the spell’s total MP cost】</strong> in order to completely stop the casting of the spell and negate its effects (the spell isn’t cast, but the creature is still considered to have spent their action).</p>\n",
+          "duration": "",
+          "heroic_requirement": "you must have mastered one or more Classes among Chimerist, Elementalist, Entropist, and Spiritist.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Magic Guard",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "TMeu4B7pd9vPmLyu"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "HlGyHPAPLJrYLwvl",
+      "_stats": {
+        "compendiumSource": "Item.ZRTMm0aLWKq2UHeR",
+        "coreVersion": "12.343",
+        "createdTime": 1754275936465,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/peculiar_light.png",
+      "name": "Consume",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Chimerist",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>After you deal damage to one or more creatures with a spell, if you have an arcane, dagger or flail weapon equipped, you recover <strong>【SL × 2】</strong> Mind Points.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "5",
+          "name": "Consume",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "ZRTMm0aLWKq2UHeR"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "MdnMuWBijF61y8GR",
+      "_stats": {
+        "compendiumSource": "Item.DWvwudjVhTIDUZpr",
+        "coreVersion": "12.343",
+        "createdTime": 1754275938725,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/bad_breath.png",
+      "name": "Pathogenesis",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Chimerist",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you deal damage to one or more creatures with one of your <strong>Chimerist</strong> spells, each of those creatures that share their <strong>Species</strong> with the creature you originally learned that spell from suffers <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.JltwIqzHbBKhkD45\" data-id=\"JltwIqzHbBKhkD45\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poisoned</span></strong></a></span></p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Pathogenesis",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "DWvwudjVhTIDUZpr"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "pcZqAVdSFfnTggnZ",
+      "_stats": {
+        "compendiumSource": "Item.qAW9i3EkrRUTNE0o",
+        "coreVersion": "12.343",
+        "createdTime": 1756968871825,
+        "duplicateSource": "Item.g121BQspB6TKcCf9",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/emerald_catastrophe.png",
+      "name": "Fast Ritual",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Spiritist",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you initiate a <strong>Ritual</strong> during a conflict scene, its <strong>Ritual Clock</strong> is created with <strong>two fewer sections</strong> than normal, to a minimum of <strong>four sections</strong>.</p>\n",
+          "duration": "",
+          "heroic_requirement": "you must have mastered one or more Classes among Chimerist, Elementalist, Entropist, and Spiritist.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Fast Ritual",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "qAW9i3EkrRUTNE0o"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "qMiHdMZlj2N1MesV",
+      "_stats": {
+        "compendiumSource": "Item.TPxgsBNWQ3vA3fgu",
+        "coreVersion": "12.343",
+        "createdTime": 1754275944028,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/EMTrans5.png",
+      "name": "Powerful Spell",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Elementalist",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you cast a spell that deals damage to one or more creatures, that spell deals 5 extra damage to each creature.</p><p> The amount of extra damage increases to 10 if you are <strong>level 40 or higher.</strong></p>",
+          "duration": "",
+          "heroic_requirement": "You must have mastered one or more Classes among the following: Chimerist, Elementalist, Entropist, or Spiritist.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "level": "1",
+          "max_level": "1",
+          "name": "Powerful Spell",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "TPxgsBNWQ3vA3fgu"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Chimerist",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar4": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "DEF",
+            "max": 13,
+            "maxcolor": "#f26d40",
+            "mincolor": "#f26d40",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 13
+          },
+          "bar5": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar5",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MDEF",
+            "max": 10,
+            "maxcolor": "#26d6ed",
+            "mincolor": "#26d6ed",
+            "opacity": null,
+            "order": 4,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 10
+          }
+        }
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Chimerist",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://tiermaker.com/images/media/template_images/2024/16720717/fabula-ultima-classes-16720717/chimerist.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 0,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {
+      "also_text": "Druid, Shapeshifter, Wild Mage",
+      "benefit_dropdown": "mp_benefit",
+      "classMechanic_text": "",
+      "class_facet": {
+        "3jbWR6cHdLf0CqCD": {
+          "facet_cost": "",
+          "facet_description": "<p>You can communicate with creatures of the <strong>beast,</strong> <strong>monster</strong> and <strong>plant</strong> Species</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Feral Speech",
+          "uuid": "Actor.TGB44APysDdXbJ5M.Item.3jbWR6cHdLf0CqCD"
+        },
+        "46KpoqlsM0IK4PKc": {
+          "facet_cost": "",
+          "facet_description": "<p>When you see a creature belonging to the <strong>beast, monster</strong> or <strong>plant</strong> Species cast a spell, you may immediately choose to learn that spell as a Chimerist spell of your own: if you do, record the <strong>Species</strong> of the creature you learned it from.</p><p> When you first acquire this Skill, choose <strong>【INS + WLP】</strong>or<strong>【MIG + WLP】</strong>. From now on, your offensive (⚡) Chimerist spells will use the chosen Attributes for the Magic Check, regardless of the Attributes used by the creature you learned the spell from.</p><p> You may have <strong>up to 【SL + 2】 different Chimerist spells</strong> memorized this way. If you want to memorize a new Chimerist spell but are already at your limit, you must forget one of your old spells and replace it with the new spell.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Spell Mimic",
+          "uuid": "Actor.TGB44APysDdXbJ5M.Item.46KpoqlsM0IK4PKc"
+        },
+        "CedJIsHiW6aQQyLc": {
+          "facet_cost": "",
+          "facet_description": "<p>Choose two creature Species among <strong>construct, demon, elemental, and undead.</strong> You can now use spell mimic to learn spells from creatures of the chosen Species.</p><p> This Heroic Skill <strong>may be acquired up to twice</strong>, each time selecting two Species from the list above.</p><p> Whenever you acquire this Skill, you also increase your upper limit for memorized Chimerist spells by 2.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Chimeric Mastery",
+          "uuid": "Actor.TGB44APysDdXbJ5M.Item.CedJIsHiW6aQQyLc"
+        },
+        "EK71o9QFumvCxiKS": {
+          "facet_cost": "",
+          "facet_description": "<p>When you perform the 【🛡️Guard】 action, if you choose not to provide cover to another creature, you gain the following benefit until the start of your next turn: when a creature you can see casts a spell, after that creature pays for the spell’s MP cost, you may spend an amount of <strong>Mind Points</strong> equal to <strong>【10 + the spell’s total MP cost】</strong> in order to completely stop the casting of the spell and negate its effects (the spell isn’t cast, but the creature is still considered to have spent their action).</p>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Magic Guard",
+          "uuid": "Actor.TGB44APysDdXbJ5M.Item.EK71o9QFumvCxiKS"
+        },
+        "HlGyHPAPLJrYLwvl": {
+          "facet_cost": "",
+          "facet_description": "<p>After you deal damage to one or more creatures with a spell, if you have an arcane, dagger or flail weapon equipped, you recover <strong>【SL × 2】</strong> Mind Points.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Consume",
+          "uuid": "Actor.TGB44APysDdXbJ5M.Item.HlGyHPAPLJrYLwvl"
+        },
+        "MdnMuWBijF61y8GR": {
+          "facet_cost": "",
+          "facet_description": "<p>When you deal damage to one or more creatures with one of your <strong>Chimerist</strong> spells, each of those creatures that share their <strong>Species</strong> with the creature you originally learned that spell from suffers <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.JltwIqzHbBKhkD45\" data-id=\"JltwIqzHbBKhkD45\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poisoned</span></strong></a></span></p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Pathogenesis",
+          "uuid": "Actor.TGB44APysDdXbJ5M.Item.MdnMuWBijF61y8GR"
+        },
+        "bnAbK9og3TGJF1Vy": {
+          "facet_cost": 0,
+          "facet_description": "<p>You may perform Rituals whose effects fall within the <strong>Chimerism discipline</strong>. </p><p>When you acquire this Skill, choose <strong>【INS + WLP】</strong>or<strong>【MIG + WLP】</strong>. From now on, your Chimerism Rituals will use the chosen Attributes for the Magic Check.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Ritual Chimerism",
+          "uuid": "Actor.TGB44APysDdXbJ5M.Item.bnAbK9og3TGJF1Vy"
+        },
+        "pcZqAVdSFfnTggnZ": {
+          "facet_cost": "",
+          "facet_description": "<p>When you initiate a <strong>Ritual</strong> during a conflict scene, its <strong>Ritual Clock</strong> is created with <strong>two fewer sections</strong> than normal, to a minimum of <strong>four sections</strong>.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Fast Ritual",
+          "uuid": "Actor.TGB44APysDdXbJ5M.Item.pcZqAVdSFfnTggnZ"
+        },
+        "qMiHdMZlj2N1MesV": {
+          "facet_cost": "",
+          "facet_description": "<p>When you cast a spell that deals damage to one or more creatures, that spell deals 5 extra damage to each creature.</p><p> The amount of extra damage increases to 10 if you are <strong>level 40 or higher.</strong></p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Powerful Spell",
+          "uuid": "Actor.TGB44APysDdXbJ5M.Item.qMiHdMZlj2N1MesV"
+        }
+      },
+      "class_heroicSkill": {
+        "CedJIsHiW6aQQyLc": {
+          "id": "${item.id}",
+          "name": "Chimeric Mastery",
+          "skill_cost": "",
+          "skill_description": "<p>Choose two creature Species among <strong>construct, demon, elemental, and undead.</strong> You can now use spell mimic to learn spells from creatures of the chosen Species.</p><p> This Heroic Skill <strong>may be acquired up to twice</strong>, each time selecting two Species from the list above.</p><p> Whenever you acquire this Skill, you also increase your upper limit for memorized Chimerist spells by 2.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.TGB44APysDdXbJ5M.Item.CedJIsHiW6aQQyLc"
+        },
+        "EK71o9QFumvCxiKS": {
+          "id": "${item.id}",
+          "name": "Magic Guard",
+          "skill_cost": "",
+          "skill_description": "<p>When you perform the 【🛡️Guard】 action, if you choose not to provide cover to another creature, you gain the following benefit until the start of your next turn: when a creature you can see casts a spell, after that creature pays for the spell’s MP cost, you may spend an amount of <strong>Mind Points</strong> equal to <strong>【10 + the spell’s total MP cost】</strong> in order to completely stop the casting of the spell and negate its effects (the spell isn’t cast, but the creature is still considered to have spent their action).</p>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.TGB44APysDdXbJ5M.Item.EK71o9QFumvCxiKS"
+        },
+        "pcZqAVdSFfnTggnZ": {
+          "id": "${item.id}",
+          "name": "Fast Ritual",
+          "skill_cost": "",
+          "skill_description": "<p>When you initiate a <strong>Ritual</strong> during a conflict scene, its <strong>Ritual Clock</strong> is created with <strong>two fewer sections</strong> than normal, to a minimum of <strong>four sections</strong>.</p>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.TGB44APysDdXbJ5M.Item.pcZqAVdSFfnTggnZ"
+        },
+        "qMiHdMZlj2N1MesV": {
+          "id": "${item.id}",
+          "name": "Powerful Spell",
+          "skill_cost": "",
+          "skill_description": "<p>When you cast a spell that deals damage to one or more creatures, that spell deals 5 extra damage to each creature.</p><p> The amount of extra damage increases to 10 if you are <strong>level 40 or higher.</strong></p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.TGB44APysDdXbJ5M.Item.qMiHdMZlj2N1MesV"
+        }
+      },
+      "class_lore": "<blockquote><p><strong>Chimerists</strong> gather their power from the souls of the monsters and beasts they encounter.</p><p>By manipulating their inner wild energy, these mages may mimic the magical abilities of monsters and have reached a supernatural understanding of feral creatures.</p><p>Chimerists frequently rely on their toughness and physical prowess in addition to magic; they are often seen traveling the world in search of rare and enchanted creatures.</p></blockquote>",
+      "class_skill": {
+        "3jbWR6cHdLf0CqCD": {
+          "id": "${item.id}",
+          "name": "Feral Speech",
+          "skill_cost": "",
+          "skill_description": "<p>You can communicate with creatures of the <strong>beast,</strong> <strong>monster</strong> and <strong>plant</strong> Species</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.TGB44APysDdXbJ5M.Item.3jbWR6cHdLf0CqCD"
+        },
+        "46KpoqlsM0IK4PKc": {
+          "id": "${item.id}",
+          "name": "Spell Mimic",
+          "skill_cost": "",
+          "skill_description": "<p>When you see a creature belonging to the <strong>beast, monster</strong> or <strong>plant</strong> Species cast a spell, you may immediately choose to learn that spell as a Chimerist spell of your own: if you do, record the <strong>Species</strong> of the creature you learned it from.</p><p> When you first acquire this Skill, choose <strong>【INS + WLP】</strong>or<strong>【MIG + WLP】</strong>. From now on, your offensive (⚡) Chimerist spells will use the chosen Attributes for the Magic Check, regardless of the Attributes used by the creature you learned the spell from.</p><p> You may have <strong>up to 【SL + 2】 different Chimerist spells</strong> memorized this way. If you want to memorize a new Chimerist spell but are already at your limit, you must forget one of your old spells and replace it with the new spell.</p>",
+          "skill_maxLevel": 10,
+          "skill_type": "Other",
+          "uuid": "Actor.TGB44APysDdXbJ5M.Item.46KpoqlsM0IK4PKc"
+        },
+        "HlGyHPAPLJrYLwvl": {
+          "id": "${item.id}",
+          "name": "Consume",
+          "skill_cost": "",
+          "skill_description": "<p>After you deal damage to one or more creatures with a spell, if you have an arcane, dagger or flail weapon equipped, you recover <strong>【SL × 2】</strong> Mind Points.</p>",
+          "skill_maxLevel": 5,
+          "skill_type": "Passive",
+          "uuid": "Actor.TGB44APysDdXbJ5M.Item.HlGyHPAPLJrYLwvl"
+        },
+        "MdnMuWBijF61y8GR": {
+          "id": "${item.id}",
+          "name": "Pathogenesis",
+          "skill_cost": "",
+          "skill_description": "<p>When you deal damage to one or more creatures with one of your <strong>Chimerist</strong> spells, each of those creatures that share their <strong>Species</strong> with the creature you originally learned that spell from suffers <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.JltwIqzHbBKhkD45\" data-id=\"JltwIqzHbBKhkD45\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poisoned</span></strong></a></span></p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.TGB44APysDdXbJ5M.Item.MdnMuWBijF61y8GR"
+        },
+        "bnAbK9og3TGJF1Vy": {
+          "id": "${item.id}",
+          "name": "Ritual Chimerism",
+          "skill_cost": 0,
+          "skill_description": "<p>You may perform Rituals whose effects fall within the <strong>Chimerism discipline</strong>. </p><p>When you acquire this Skill, choose <strong>【INS + WLP】</strong>or<strong>【MIG + WLP】</strong>. From now on, your Chimerism Rituals will use the chosen Attributes for the Magic Check.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.TGB44APysDdXbJ5M.Item.bnAbK9og3TGJF1Vy"
+        }
+      },
+      "flavor_text": "<p style=\"text-align: center\"><span style=\"font-family: Amiri\"><em>Power without harmony</em></span></p><p style=\"text-align: center\"><span style=\"font-family: Amiri\"><em>will only lead to suffering</em></span></p>",
+      "martialArmor_equippable": false,
+      "martialMelee_equippable": false,
+      "martialRanged_equippable": false,
+      "martialShield_equippable": false,
+      "name": "Chimerist",
+      "project_performable": false,
+      "ritual_performable": true
+    },
+    "statusEffects": {},
+    "template": "hoxC3HFCtMYGScIo",
+    "templateSystemUniqueVersion": 504201233
+  },
+  "type": "character"
+}

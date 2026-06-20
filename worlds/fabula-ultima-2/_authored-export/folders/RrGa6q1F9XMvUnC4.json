@@ -1,0 +1,19 @@
+{
+  "_id": "RrGa6q1F9XMvUnC4",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1756407439656,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "VVjpCERIXMrOJna7",
+  "name": "Invoker",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

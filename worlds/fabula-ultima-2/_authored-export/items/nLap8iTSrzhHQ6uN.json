@@ -1,0 +1,56 @@
+{
+  "_id": "nLap8iTSrzhHQ6uN",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1747411645724,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.4.2"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "consumable",
+        "fromTemplate": "xdZPhVF8AnmwQEPM",
+        "itemId": "nLap8iTSrzhHQ6uN",
+        "itemName": "Speed",
+        "pickedOldProps": {
+          "consumable_cost": "1000",
+          "consumable_description": "<p><span style=\"font-family: Roboto, Arial, sans-serif\"><strong>-1 willpower die size<br style=\"color: rgb(232, 234, 237); font-family: Roboto, Arial, sans-serif; font-size: 16px; font-style: normal; font-variant-ligatures: none; font-variant-caps: normal; font-weight: 400; letter-spacing: 0.1px; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: pre-wrap; background-color: rgb(32, 33, 36); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">+1 dex die size</strong><br style=\"color: rgb(232, 234, 237); font-family: Roboto, Arial, sans-serif; font-size: 16px; font-style: normal; font-variant-ligatures: none; font-variant-caps: normal; font-weight: 400; letter-spacing: 0.1px; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: pre-wrap; background-color: rgb(32, 33, 36); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">Until rest.</span></p>",
+          "consumable_flavor": "<p><em>Wait, This is not literal speed. It's Methamphetamine.</em></p>",
+          "consumable_ip": "0",
+          "consumable_label": ""
+        },
+        "ts": 1769647436504
+      }
+    }
+  },
+  "folder": "S6wUD2ILTn8gBIvp",
+  "img": "systems/pf2e/icons/equipment/alchemical-items/drugs/scour.webp",
+  "name": "Speed",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 200000,
+  "system": {
+    "container": null,
+    "props": {
+      "description": "<p><span style=\"font-family: Roboto, Arial, sans-serif\"><strong>-1 willpower die size<br style=\"color: rgb(232, 234, 237); font-family: Roboto, Arial, sans-serif; font-size: 16px; font-style: normal; font-variant-ligatures: none; font-variant-caps: normal; font-weight: 400; letter-spacing: 0.1px; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: pre-wrap; background-color: rgb(32, 33, 36); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">+1 dex die size</strong><br style=\"color: rgb(232, 234, 237); font-family: Roboto, Arial, sans-serif; font-size: 16px; font-style: normal; font-variant-ligatures: none; font-variant-caps: normal; font-weight: 400; letter-spacing: 0.1px; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: pre-wrap; background-color: rgb(32, 33, 36); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">Until rest.</span></p>",
+      "flavor_text": "<p><em>Wait, This is not literal speed. It's Methamphetamine.</em></p>",
+      "ip_cost": "0",
+      "item_cost": "1000",
+      "item_type": "consumable",
+      "name": "Speed"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "nLap8iTSrzhHQ6uN"
+  },
+  "type": "equippableItem"
+}

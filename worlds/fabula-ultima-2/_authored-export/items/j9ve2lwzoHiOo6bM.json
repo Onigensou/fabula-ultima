@@ -1,0 +1,67 @@
+{
+  "_id": "j9ve2lwzoHiOo6bM",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1758203703718,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "2OplVa9fwLYbzD8b",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/RustyChildSkill4.png",
+  "name": "Create Phantasm: Numen",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 1912500,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_script": "",
+      "check_bonus": "0",
+      "class": "Illusionist",
+      "cost": "50 MP",
+      "custom_logic_action": "<p>// [Create Phantasm: Numen] - Custom Logic (Action)</p><p>// Spawns the phantasm token on the casters scene and stamps summonedBy via</p><p>// FUCompanion.api.phantasm.markSummon, so Phantasmal Echo (and other</p><p>// summon-ownership reactions) can fire when this phantasm is defeated.</p><p>//</p><p>// Placement: picks the first empty tile in the 8 squares around the caster.</p><p>// Falls back to caster.x + grid if all 8 are occupied. Falls back to scene</p><p>// center if no caster token is on the current scene.</p><p>//</p><p>// Debug: set `globalThis.ONI_CREATE_PHANTASM_TRACE = true` in console to</p><p>// echo step traces as GM whispers (console.log always runs).</p><p></p><p>const TAG = \"[CL-ACTION][CreatePhantasm:Numen]\";</p><p>const PHANTASM_ACTOR_UUID = \"Actor.VLaGqwrMzpmq0whe\"; // Fox fire</p><p>const TRACE_CHAT = globalThis.ONI_CREATE_PHANTASM_TRACE === true;</p><p></p><p>const trace = (msg, extra) =&gt; {</p><p>  try { console.log(TAG, msg, extra ?? null); } catch (_e) {}</p><p>  if (!TRACE_CHAT) return;</p><p>  try { ChatMessage.create({ whisper: ChatMessage.getWhisperRecipients(\"GM\"), content: `&lt;b&gt;${TAG}&lt;/b&gt; ${msg}` + (extra ? `&lt;pre&gt;${JSON.stringify(extra, null, 2).slice(0, 600)}&lt;/pre&gt;` : \"\") }); } catch (_e) {}</p><p>};</p><p></p><p>try {</p><p>  const p = globalThis.__PAYLOAD;</p><p>  if (!p) { trace(\"abort: missing __PAYLOAD\"); return; }</p><p></p><p>  const inputUuid = p?.meta?.attackerUuid ?? p?.attackerActorUuid ?? p?.attackerUuid ?? null;</p><p>  const inputDoc = inputUuid ? await fromUuid(inputUuid) : null;</p><p>  let casterTokenDoc = inputDoc?.documentName === \"Token\" ? inputDoc : null;</p><p>  let casterActor = inputDoc?.actor ?? (inputDoc?.documentName === \"Actor\" ? inputDoc : null);</p><p>  if (!casterActor &amp;&amp; p?.attackerActorUuid) { casterActor = await fromUuid(p.attackerActorUuid); }</p><p>  trace(\"start\", { inputUuid, casterActorUuid: casterActor?.uuid ?? null, casterTokenUuid: casterTokenDoc?.uuid ?? null });</p><p></p><p>  if (!casterActor) { trace(\"abort: caster actor not resolved\", { inputUuid }); return; }</p><p>  const scene = canvas?.scene;</p><p>  if (!scene) { trace(\"abort: no active scene\"); return; }</p><p>  const phantasmActor = await fromUuid(PHANTASM_ACTOR_UUID);</p><p>  if (!phantasmActor) { trace(\"abort: phantasm template missing\"); return; }</p><p></p><p>  if (!casterTokenDoc) casterTokenDoc = scene.tokens.contents.find(t =&gt; t.actor?.uuid === casterActor.uuid) ?? null;</p><p>  if (!casterTokenDoc) {</p><p>    const tk = casterActor.getActiveTokens?.(true, true)?.[0] ?? casterActor.getActiveTokens?.()?.[0] ?? null;</p><p>    casterTokenDoc = tk?.document ?? tk ?? null;</p><p>  }</p><p></p><p>  const grid = scene.grid?.size ?? 50;</p><p>  let x, y;</p><p>  if (casterTokenDoc) {</p><p>    const cx = casterTokenDoc.x;</p><p>    const cy = casterTokenDoc.y;</p><p>    // 8 surrounding tiles, cardinals first then diagonals</p><p>    const ring = [</p><p>      [cx + grid, cy], [cx - grid, cy], [cx, cy + grid], [cx, cy - grid],</p><p>      [cx + grid, cy + grid], [cx + grid, cy - grid], [cx - grid, cy + grid], [cx - grid, cy - grid]</p><p>    ];</p><p>    const isOccupied = (tx, ty) =&gt; scene.tokens.contents.some(t =&gt; t.x === tx &amp;&amp; t.y === ty);</p><p>    const found = ring.find(([tx, ty]) =&gt; !isOccupied(tx, ty));</p><p>    if (found) { [x, y] = found; }</p><p>    else { x = cx + grid; y = cy; trace(\"warn: all 8 surrounding tiles occupied, stacking on default\"); }</p><p>  } else {</p><p>    const w = scene.dimensions?.sceneWidth ?? 1000;</p><p>    const h = scene.dimensions?.sceneHeight ?? 1000;</p><p>    x = Math.floor((w / 2) / grid) * grid;</p><p>    y = Math.floor((h / 2) / grid) * grid;</p><p>  }</p><p>  trace(\"spawning\", { x, y, casterTokenUuid: casterTokenDoc?.uuid ?? null });</p><p></p><p>  const proto = await phantasmActor.getTokenDocument({ x, y });</p><p>  const created = await scene.createEmbeddedDocuments(\"Token\", [proto.toObject()]);</p><p>  const tokenDoc = created?.[0];</p><p>  if (!tokenDoc) { trace(\"abort: token creation returned nothing\"); return; }</p><p>  const markFn = globalThis.FUCompanion?.api?.phantasm?.markSummon;</p><p>  if (typeof markFn !== \"function\") { trace(\"warn: markSummon unavailable\"); return; }</p><p>  const markResult = await markFn(tokenDoc, casterActor.uuid);</p><p>  trace(markResult?.ok ? \"done\" : \"warn: markSummon not-ok\", { tokenUuid: tokenDoc.uuid, markedAs: casterActor.uuid, markResult });</p><p>} catch (e) {</p><p>  try { console.error(TAG, \"threw\", e); } catch (_e) {}</p><p>  try { ChatMessage.create({ whisper: ChatMessage.getWhisperRecipients(\"GM\"), content: `&lt;b&gt;${TAG}&lt;/b&gt; THREW &lt;pre&gt;${String(e?.message ?? e).slice(0, 400)}&lt;/pre&gt;` }); } catch (_e) {}</p><p>}</p>",
+      "damage_bonus": "",
+      "defense_target_type": "def",
+      "description": "<p>You can now have up to <strong>4</strong> active Phantasms, but one of them must necessarily be <strong>Numen</strong>. Also, you cannot have more than one Numen Phantasm active at a time. This Phantasm cannot be used in any of the Illusionist’s Skills or Spells.</p>\n<p>Numen is bound by the same set of special rules as any other Phantasm, with the following exceptions:</p>\n<ul>\n  <li>Numen Phantasms cost <strong>50 MP</strong> to cast.</li>\n  <li>Numen’s Phantasmal Vitality equals <strong>twice your base Insight die size plus your level</strong>.</li>\n  <li>Once active, Numen has its <strong>own turn and a single action</strong>. It does not benefit from Spells that grant additional actions. Numen’s turn can be taken either before or after the Illusionist’s turn.</li>\n</ul>\n\n<p>When creating a Numen Phantasm, choose one essence, which dictates Numen’s damage type:</p>\n<ul>\n  <li><strong>Ravana</strong> — <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:rgb(153,153,153) 0 0 4px;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a></span></span></li>\n  <li><strong>Asura</strong> — <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:rgb(202,189,154) 0 0 4px;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></span></li>\n  <li><strong>Diablos</strong> — <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:rgb(182,102,210) 0 0 4px;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span></li>\n</ul>\n\n<p>The target hit by Numen suffers <strong>[HR + 14]</strong> damage.</p>\n<p>Damage dealt by Numen <strong>ignores Resistances and Immunities</strong>.</p>\n<p>The <strong>range</strong> of the attack is determined by your current weapon.</p>\n\n<hr>\n\n<p><strong>Skill Enhancement Lv. 20</strong> ― <em>Numen’s on-hit damage</em> increases to <strong>18</strong>.</p>\n<p><strong>Skill Enhancement Lv. 40</strong> ― <em>Numen’s on-hit damage</em> increases to <strong>20</strong>.</p>\n",
+      "duration": "Instantaneous",
+      "heroic_requirement": "You must have mastered the Illusionist Class.",
+      "isCheck": true,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": true,
+      "isReaction": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Create Phantasm: Numen",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "INS",
+      "rolled_atr2": "WLP",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "Any",
+      "skill_target": "Special",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "j9ve2lwzoHiOo6bM"
+  },
+  "type": "equippableItem"
+}

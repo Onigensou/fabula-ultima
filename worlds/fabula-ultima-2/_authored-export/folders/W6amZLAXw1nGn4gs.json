@@ -1,0 +1,19 @@
+{
+  "_id": "W6amZLAXw1nGn4gs",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1766123592971,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "yvRW0RqT5kwSxKFl",
+  "name": "Eisendrache",
+  "sort": 100000,
+  "sorting": "a",
+  "type": "Scene"
+}

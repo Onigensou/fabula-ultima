@@ -1,0 +1,19 @@
+{
+  "_id": "DuRdEOgbsdCjJ7Pl",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": null,
+    "duplicateSource": null,
+    "systemId": null,
+    "systemVersion": null
+  },
+  "color": "#fe2a2a",
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "Omnious Passengers",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Scene"
+}

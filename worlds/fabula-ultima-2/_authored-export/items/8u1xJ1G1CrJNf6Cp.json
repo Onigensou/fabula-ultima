@@ -1,0 +1,55 @@
+{
+  "_id": "8u1xJ1G1CrJNf6Cp",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1754247317521,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "diBQChLQ9jkhmnXX",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Els/SwordKnightSkill5.png",
+  "name": "Breach",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Weaponmaster",
+      "cost": "5 MP",
+      "damage_bonus": "0",
+      "description": "<p>You may use an action and spend <strong>5 Mind Points</strong> to perform a <strong>free attack</strong> with a melee weapon you have equipped. This attack must target a <strong>single creature</strong>. If the attack is successful, it deals no damage and you choose one option:</p><ul><li><p>You destroy one <strong>shield</strong> equipped by the target</p></li><li><p>You destroy the target's equipped <strong>armor</strong></p></li><li><p>Whenever the target suffers damage from a source before the start of your next turn, that source deals <strong>【SL × 2】</strong> extra damage to them.</p></li></ul>",
+      "duration": "Instantaneous",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "level": "1",
+      "max_level": "3",
+      "name": "Breach",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_target": "One Creature",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "8u1xJ1G1CrJNf6Cp"
+  },
+  "type": "equippableItem"
+}

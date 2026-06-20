@@ -1,0 +1,19 @@
+{
+  "_id": "w8fzwQIgXEgGQJRq",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780593556022,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "341jxGTHbioINnUl",
+  "name": "Spiritist",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

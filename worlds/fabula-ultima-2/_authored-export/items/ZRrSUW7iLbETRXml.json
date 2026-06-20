@@ -1,0 +1,90 @@
+{
+  "_id": "ZRrSUW7iLbETRXml",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1753299065155,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "category": "skill",
+        "detectedType": "spellcard_v1",
+        "fromTemplate": "XfUpjwaovj4v9AjI",
+        "itemId": "ZRrSUW7iLbETRXml",
+        "itemName": "Chaos Bolt",
+        "pickedOldProps": {
+          "class": "Entropist",
+          "cost": "20 MP",
+          "damage": "30",
+          "description": "<p>You fire a bolt of unpredictable chaotic energy at target creature, <strong>Flip a coin</strong>:</p><ul><li><p><strong>Headー</strong> Deals 30 dark damage to the target, this damage type cannot be changed</p></li><li><p><strong>Tailー</strong> Deals 30 dark damage to you, this damage type cannot be changed</p></li></ul><p>You may repeat this process up to 5 time</p>",
+          "discipline": "entropism",
+          "duration": "Instantaneous",
+          "id": "ZRrSUW7iLbETRXml",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20(89).png",
+          "name": "Chaos Bolt",
+          "target": "One Creature",
+          "type_damage": "dark",
+          "uuid": "Item.ZRrSUW7iLbETRXml"
+        },
+        "ts": 1770021391751
+      }
+    }
+  },
+  "folder": "LNN6QSv7NRWdXUkf",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20(89).png",
+  "name": "Chaos Bolt",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 100000,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_script": "",
+      "check_bonus": "0",
+      "class": "Entropist",
+      "cost": "50 MP",
+      "damage_bonus": "30",
+      "defense_target_type": "def",
+      "description": "<p>You fire a bolt of unpredictable chaotic energy at target creature, <strong>Flip a coin</strong>:</p><ul><li><p><strong>Headー</strong> Deals 30 dark damage to the target, this damage type cannot be changed</p></li><li><p><strong>Tailー</strong> Deals 30 dark damage to you, this damage type cannot be changed</p></li></ul><p>You may repeat this process up to 5 time</p>",
+      "duration": "Instantaneous",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": true,
+      "isReaction": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Chaos Bolt",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "",
+      "skill_target": "One Creature",
+      "skill_type": "Spell",
+      "type_damage": "dark",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "ZRrSUW7iLbETRXml"
+  },
+  "type": "equippableItem"
+}

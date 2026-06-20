@@ -1,0 +1,57 @@
+{
+  "_id": "I44gazsj0lrkq9ab",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757285096451,
+    "duplicateSource": "Item.zKzHicZLy7NK119i",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "OFXRN3P2p6Ce5ySM",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Flower/f464ceb38705b0d39c93ef8089294474_7758389642025479009.webp",
+  "name": "Lunar Magnolia",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Floralist",
+      "cost": "20 MP",
+      "damage_bonus": "0",
+      "description": "<p><em>It blooms in the darkest hours of the night.</em></p> <table style=\"width:100%;\"> <tbody> <tr><td><strong>Growth</strong></td><td><strong>Effect</strong></td></tr> <tr> <td>1–3</td> <td>At the <strong>end of your turn</strong>, choose <a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\"><strong><u>Ice</u></strong></a> or <a class=\"content-link\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\"><strong><u>Light</u></strong></a>. Until you use this effect again or this magiseed is no longer in your garden, all damage dealt by you and every ally present on the scene becomes the chosen type, its type cannot change, and it <strong>ignores Resistances</strong>. </td> </tr> </tbody> </table>",
+      "duration": "Scene",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": true,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Lunar Magnolia",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "Any",
+      "skill_target": "Special",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "I44gazsj0lrkq9ab"
+  },
+  "type": "equippableItem"
+}

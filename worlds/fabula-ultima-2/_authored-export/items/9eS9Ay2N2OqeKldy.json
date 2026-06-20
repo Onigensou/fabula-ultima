@@ -1,0 +1,62 @@
+{
+  "_id": "9eS9Ay2N2OqeKldy",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1749329986297,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.4.2"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "9eS9Ay2N2OqeKldy",
+        "itemName": "Earthshaker Pillar",
+        "pickedOldProps": {
+          "cost": "2300",
+          "martial": true
+        },
+        "ts": 1769647435515
+      }
+    }
+  },
+  "folder": "D1OgeGHLjJ9dSkxS",
+  "img": "icons/environment/traps/metal-spikes.webp",
+  "name": "Earthshaker Pillar",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3
+  },
+  "sort": 500000,
+  "system": {
+    "container": null,
+    "props": {
+      "category": "Heavy",
+      "check_bonus": "0",
+      "damage_bonus": "15",
+      "description": "<ul><li><p>When you attack with this weapon, you may pay <strong>10 MP</strong> per enemy present in the scene. If you do, This attack gain <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Overflow</span></strong></a></span></p></li></ul>",
+      "hand_slots": "Two-handed",
+      "isMartial": true,
+      "item_cost": "2300",
+      "item_type": "weapon",
+      "name": "Earthshaker Pillar",
+      "rolled_atr1": "MIG",
+      "rolled_atr2": "WLP",
+      "set_name": "",
+      "skill_target": "One Enemy",
+      "type_damage": "Earth",
+      "weapon_range": "Melee"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "9eS9Ay2N2OqeKldy"
+  },
+  "type": "equippableItem"
+}

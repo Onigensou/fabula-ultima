@@ -1,0 +1,58 @@
+{
+  "_id": "uIOWgwxvii5TNnY6",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757292606094,
+    "duplicateSource": "Item.wOiDH5AooBXaKX5c",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "1OgS5nkAcuhIF8W2",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lithia/FortuneFinderSkill7.png",
+  "name": "Real Treasure",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Merchant",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p><strong>Once per session</strong>, when you help an NPC or community <strong>defeat greed and corruption</strong>, <strong>improve their quality of life</strong>, or <strong>coexist with other creatures</strong>, if you have acquired the <strong>Winds of Trade</strong> Skill, you gain <strong>[SL + 1] Trade Points</strong>.</p>",
+      "duration": "",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "3",
+      "name": "Real Treasure",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Trade Points gained (once per session)</strong></p></td></tr><tr><td><p>1</p></td><td><p>2</p></td></tr><tr><td><p>2</p></td><td><p>3</p></td></tr><tr><td><p>3</p></td><td><p>4</p></td></tr></tbody></table>",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "uIOWgwxvii5TNnY6"
+  },
+  "type": "equippableItem"
+}

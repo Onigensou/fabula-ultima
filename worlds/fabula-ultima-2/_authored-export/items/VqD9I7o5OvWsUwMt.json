@@ -1,0 +1,57 @@
+{
+  "_id": "VqD9I7o5OvWsUwMt",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757285099901,
+    "duplicateSource": "Item.2YiUymRL6Uxakssg",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "OFXRN3P2p6Ce5ySM",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Flower/7bede847a7eed7ff31e7bd0f471ccdf6_8985173788365028111.webp",
+  "name": "Pilgrim Gazalia",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Floralist",
+      "cost": "20 MP",
+      "damage_bonus": "0",
+      "description": "<p><em>Its flamboyant corolla is synonymous with abundance.</em></p> <table style=\"width:100%;\"> <tbody> <tr><td><strong>Growth</strong></td><td><strong>Effect</strong></td></tr> <tr><td>1–2</td><td>At the <strong>end of your turn</strong>, choose yourself or another Player Character you can see. The chosen character regains <strong>2 Inventory Points</strong>.</td></tr> <tr><td>3</td><td>At the <strong>end of your turn</strong>, you and every other Player Character you can see regain <strong>1 Inventory Point</strong>.</td></tr> </tbody> </table>",
+      "duration": "Scene",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": true,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Pilgrim Gazalia",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "Any",
+      "skill_target": "Special",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "VqD9I7o5OvWsUwMt"
+  },
+  "type": "equippableItem"
+}

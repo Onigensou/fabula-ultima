@@ -1,0 +1,19 @@
+{
+  "_id": "MDKOkEdwbNw7sVNm",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": null,
+    "duplicateSource": null,
+    "systemId": null,
+    "systemVersion": null
+  },
+  "color": "#8d6090",
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "John's DM Map",
+  "sort": 0,
+  "sorting": "m",
+  "type": "Scene"
+}

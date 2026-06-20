@@ -1,0 +1,19 @@
+{
+  "_id": "JqtzBcq3QdQ4Uycs",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1747414447597,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.4.2"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "Class Macro",
+  "sort": 700000,
+  "sorting": "a",
+  "type": "Macro"
+}

@@ -1,0 +1,84 @@
+{
+  "_id": "5AILlQ9J1Bf7vp9k",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1739553547667,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "accessory",
+        "fromTemplate": "r0yZpLPAK9VXhM2p",
+        "itemId": "5AILlQ9J1Bf7vp9k",
+        "itemName": "Vengeance Kabuto",
+        "pickedOldProps": {
+          "cost": "1500",
+          "def_bonus": "",
+          "defense": "0",
+          "defense_include_dex": false,
+          "initiative": "0",
+          "magic_defense": "0",
+          "magic_defense_include_ins": false,
+          "mdef_bonus": ""
+        },
+        "ts": 1769647436667
+      }
+    }
+  },
+  "folder": "5uQIy5BCy7UEVfcT",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Image/Vengeance%20Kabuto.webp",
+  "name": "Vengeance Kabuto",
+  "ownership": {
+    "2vy7wrEUqBy0kzsU": 3,
+    "6DmgigM5jq76r0Gd": 3,
+    "7hKw8KGsimboeDif": 3,
+    "9sFgrDy4MvAgoCmQ": 3,
+    "Am7qxPOavfKeDGPd": 3,
+    "JQGNzKpDPHJmcUIW": 3,
+    "JvF9tXvr7aaiS06m": 3,
+    "KD5d0efqHETPpIux": 3,
+    "LT3Z8EnRdMVk5ncQ": 3,
+    "MwTL6zXFCEpVBTpI": 3,
+    "NozW36XIGEGx7oVH": 3,
+    "NpGkA7uxaarkPiwS": 3,
+    "ULBTZPjtza939Mvy": 3,
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3,
+    "eGu3tuw7HwJd2bpx": 3,
+    "iLeUVmwqnze8ulOI": 3,
+    "mE5aEkDlrQJIYyhG": 3,
+    "nSGZ1sz1rdKao0kz": 3,
+    "nXC7OD7u5Zw5UDDU": 3,
+    "t41knaXNbgCEygM5": 3,
+    "tz9BP9MKfNGf2P3n": 3,
+    "wNzPmItLYCKE1I8t": 3,
+    "yL2PQxh3R9ddt0te": 3,
+    "yUfwoVmEPVdFG3AY": 3
+  },
+  "sort": 11300000,
+  "system": {
+    "container": null,
+    "props": {
+      "description": "<ul>\n<li>When you are hit by an attack, you may create a <strong>Bond of Hatred&nbsp;</strong>towards the attacker.</li>\n<li>When you perform the&nbsp;<strong>Attack&nbsp;</strong>action, if you have a bond of&nbsp;<strong>Hatred&nbsp;</strong>towards your target, Gain +1 to your <strong>Accuracy Check.</strong></li>\n</ul>\n<p><strong>【Set Bonus】</strong></p>\n<p><strong>2-Piece</strong></p>\n<ul>\n<li>When you hit a creature with an attack, Gain <strong>10</strong><strong>&nbsp;HP</strong></li>\n</ul>\n<hr>\n<p><strong>3-Piece</strong></p>\n<ul>\n<li>????????</li>\n</ul>\n<hr>\n<p>&nbsp;</p>",
+      "flavor_text": "<p><em>Those who wear its hear the whisper of vengeance....</em></p>",
+      "item_baseDef": "0",
+      "item_baseMdef": "0",
+      "item_cost": "1500",
+      "item_type": "accessory",
+      "name": "Vengeance Kabuto",
+      "set_name": "Spirit of Vengeance"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "5AILlQ9J1Bf7vp9k"
+  },
+  "type": "equippableItem"
+}

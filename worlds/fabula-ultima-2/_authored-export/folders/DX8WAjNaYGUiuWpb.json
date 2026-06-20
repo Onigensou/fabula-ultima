@@ -1,0 +1,19 @@
+{
+  "_id": "DX8WAjNaYGUiuWpb",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": null,
+    "duplicateSource": null,
+    "systemId": null,
+    "systemVersion": null
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "8Gw8I743DzSuS2WO",
+  "name": "Generic NPCs",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Actor"
+}

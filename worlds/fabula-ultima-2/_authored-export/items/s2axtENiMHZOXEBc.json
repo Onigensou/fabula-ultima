@@ -1,0 +1,48 @@
+{
+  "_id": "s2axtENiMHZOXEBc",
+  "_stats": {
+    "compendiumSource": "Item.IqxqwBqS9KHO8e3j",
+    "coreVersion": "12.343",
+    "createdTime": 1674804440986,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "core": {
+      "sourceId": "Item.IqxqwBqS9KHO8e3j"
+    },
+    "custom-system-builder": {
+      "version": "3.2.4"
+    }
+  },
+  "folder": "ffyJMvbd23HTZhEU",
+  "img": "https://assets.forge-vtt.com/5fb02919b573a96aaf33938c/sk6.jpg",
+  "name": "Anomaly",
+  "ownership": {
+    "JvF9tXvr7aaiS06m": 3,
+    "default": 3
+  },
+  "sort": 200000,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Entropist",
+      "cost": "20",
+      "damage_bonus": "0",
+      "description": "<p>You alter the very nature of your target. Until this spell ends, if the target would suffer<br>damage of a type they Absorb or are Immune to, they are instead treated as if they<br>were Vulnerable to that damage type. Once that happens, this spell ends.</p>",
+      "duration": "scene",
+      "name": "Anomaly",
+      "rolled_atr1": "INS",
+      "rolled_atr2": "WLP",
+      "target": "One creature",
+      "type_damage": ""
+    },
+    "template": "FZmpKcQRP7hZQqbV",
+    "templateSystemUniqueVersion": 1700837225,
+    "unique": false,
+    "uniqueId": "s2axtENiMHZOXEBc"
+  },
+  "type": "equippableItem"
+}

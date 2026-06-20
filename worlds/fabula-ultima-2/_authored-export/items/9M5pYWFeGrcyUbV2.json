@@ -1,0 +1,55 @@
+{
+  "_id": "9M5pYWFeGrcyUbV2",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1754456353052,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "HUFtgWKFvGOD3NOW",
+  "img": "systems/pf2e/icons/features/classes/double-debilitation.webp",
+  "name": "Reckless",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Berzerker",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>While you're Enraged, You lose resistance to all type of damages.</p><p>While you're Berserk, You have [SLx2] bonus damage.</p>",
+      "duration": "",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "level": "1",
+      "max_level": "5",
+      "name": "Reckless",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "9M5pYWFeGrcyUbV2"
+  },
+  "type": "equippableItem"
+}

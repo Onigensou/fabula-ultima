@@ -1,0 +1,63 @@
+{
+  "_id": "wheHn5atsqRq8v6e",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1756409136766,
+    "duplicateSource": "Item.mNv9WayU5l6mEkY6",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "0Rc7ZvYFTru6ax0u",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/stone_ii.png",
+  "name": "Geo Hex",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Invoker",
+      "cost": "5 MP",
+      "damage_bonus": "0",
+      "description": "<p>Until the start of your next turn, the target suffers 5 extra damage from all sources that deal \n<a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#a8ffbb 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a> and \n<a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#a6e3ff 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a> damage. <em>Only usable if an Earth wellspring is present on the scene.</em></p>\n",
+      "duration": "Instantanious",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": true,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Geo Hex",
+      "optional_params": {
+        "0": {
+          "$deleted": false,
+          "key": "wellspring_type",
+          "value": "earth"
+        }
+      },
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "Range",
+      "skill_target": "One Creature",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": true
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "wheHn5atsqRq8v6e"
+  },
+  "type": "equippableItem"
+}

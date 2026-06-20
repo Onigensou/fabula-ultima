@@ -1,0 +1,62 @@
+{
+  "_id": "wjUCpLZK3lxYd16i",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1732265316740,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "wjUCpLZK3lxYd16i",
+        "itemName": "Near-Death Sword",
+        "pickedOldProps": {
+          "cost": "1500",
+          "martial": true
+        },
+        "ts": 1769647436082
+      }
+    }
+  },
+  "folder": "xMVY94FXuACmcFkd",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/sword.png",
+  "name": "Near-Death Sword",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "category": "Sword",
+      "check_bonus": "1",
+      "damage_bonus": "6",
+      "description": "<ul><li><p>&nbsp;Deals 5 extra damage if you are in <strong>@UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis}</strong></p></li><li><p>Deals 5 extra damage if you are inflicted with <strong>@UUID[JournalEntry.Do0VLf6wW9uCSLwD]{Doom}</strong></p></li><li>Deals 5 extra damage if you are inflicted with a <strong>debuff</strong>.</li><li>Deals 5 extra damage if your <strong>HP&nbsp;</strong>is below 10.</li></ul>",
+      "hand_slots": "One-handed",
+      "isMartial": true,
+      "item_cost": "1500",
+      "item_type": "weapon",
+      "name": "Near-Death Sword",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "MIG",
+      "set_name": "",
+      "skill_target": "One Enemy",
+      "type_damage": "Dark",
+      "weapon_range": "Melee"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "wjUCpLZK3lxYd16i"
+  },
+  "type": "equippableItem"
+}

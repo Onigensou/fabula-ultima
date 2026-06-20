@@ -1,0 +1,57 @@
+{
+  "_id": "aXEKl2F1e8qfY46Y",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757286786404,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "2OplVa9fwLYbzD8b",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/AnemosPassive1.png",
+  "name": "Green Thumb",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 8500000,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Floralist",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>When you <strong>fill</strong> <strong>1 or more</strong> sections of your <strong>Growth Clock</strong>, you may choose one option:</p>\n<ul>\n  <li>you <strong>fill 1 additional section</strong> of your <strong>Growth Clock</strong>;</li>\n  <li>or you <strong>fill 1 fewer section</strong> of your <strong>Growth Clock</strong> (to a minimum of 0 sections filled).</li>\n</ul>\n<p>If you do, you cannot use this effect again until after your <strong>Growth Clock</strong> has become completely empty.</p>\n<p>Additionally, damage dealt by your <strong>magiseeds</strong> ignores <strong>Resistances</strong>.</p>\n",
+      "duration": "",
+      "heroic_requirement": "You must have mastered the Floralist Class.",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Green Thumb",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "aXEKl2F1e8qfY46Y"
+  },
+  "type": "equippableItem"
+}

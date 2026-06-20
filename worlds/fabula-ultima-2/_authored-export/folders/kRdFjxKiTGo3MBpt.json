@@ -1,0 +1,19 @@
+{
+  "_id": "kRdFjxKiTGo3MBpt",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1767565847579,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "color": "#558551",
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "The Legend of Dragonslayer",
+  "sort": 0,
+  "sorting": "a",
+  "type": "JournalEntry"
+}

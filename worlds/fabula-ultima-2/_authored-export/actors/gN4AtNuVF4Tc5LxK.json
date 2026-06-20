@@ -1,0 +1,2151 @@
+{
+  "_id": "gN4AtNuVF4Tc5LxK",
+  "_stats": {
+    "compendiumSource": "Actor.jij0hGI3KVWAo2at",
+    "coreVersion": "12.343",
+    "createdTime": 1674794308847,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "core": {
+      "sourceId": "Actor.jij0hGI3KVWAo2at"
+    },
+    "custom-system-builder": {
+      "templateHistory": [
+        [
+          {
+            "index": 5,
+            "item": {
+              "kind": "D",
+              "lhs": {
+                "contents": [
+                  {
+                    "contents": [
+                      {
+                        "altRollMessage": "",
+                        "cssClass": "",
+                        "defaultValue": null,
+                        "icon": "",
+                        "key": "",
+                        "label": null,
+                        "permission": "0",
+                        "prefix": "",
+                        "role": "0",
+                        "rollMessage": "",
+                        "size": "full-size",
+                        "style": "bold",
+                        "suffix": "",
+                        "tooltip": "",
+                        "type": "label",
+                        "value": "Skills",
+                        "visibilityFormula": null
+                      },
+                      {
+                        "canPlayerAdd": true,
+                        "cssClass": "",
+                        "deleteWarning": true,
+                        "head": true,
+                        "key": "skill_list",
+                        "permission": "0",
+                        "predefinedLines": [],
+                        "role": "0",
+                        "rowLayout": [
+                          {
+                            "align": "left",
+                            "charList": "",
+                            "colName": "Skill Name",
+                            "cssClass": null,
+                            "defaultValue": "",
+                            "key": "skill_name",
+                            "label": "",
+                            "maxLength": "",
+                            "permission": "0",
+                            "role": "0",
+                            "size": "m-large",
+                            "tooltip": "",
+                            "type": "textField",
+                            "visibilityFormula": null
+                          },
+                          {
+                            "align": "left",
+                            "colName": "",
+                            "cssClass": null,
+                            "defaultValue": "",
+                            "key": "class",
+                            "label": "",
+                            "options": [],
+                            "permission": "0",
+                            "role": "0",
+                            "size": "medium",
+                            "tableKey": "class_list",
+                            "tableKeyColumn": "class_name",
+                            "tableLabelColumn": "",
+                            "tooltip": "",
+                            "type": "select",
+                            "visibilityFormula": null
+                          },
+                          {
+                            "align": "center",
+                            "allowDecimal": false,
+                            "allowRelative": false,
+                            "colName": "SL",
+                            "controlsStyle": "hover",
+                            "cssClass": null,
+                            "defaultValue": "1",
+                            "key": "level",
+                            "label": "",
+                            "maxVal": "10",
+                            "minVal": "1",
+                            "permission": "0",
+                            "role": "0",
+                            "showControls": false,
+                            "size": "small",
+                            "tooltip": "",
+                            "type": "numberField",
+                            "visibilityFormula": null
+                          },
+                          {
+                            "align": "left",
+                            "colName": "",
+                            "cssClass": null,
+                            "defaultValue": "",
+                            "key": "description",
+                            "label": "",
+                            "permission": "0",
+                            "role": "0",
+                            "size": "full-size",
+                            "style": "icon",
+                            "tooltip": "",
+                            "type": "textArea",
+                            "visibilityFormula": null
+                          },
+                          {
+                            "align": "right",
+                            "altRollMessage": "",
+                            "colName": "",
+                            "cssClass": null,
+                            "defaultValue": null,
+                            "icon": "dice",
+                            "key": "roll",
+                            "label": null,
+                            "permission": "0",
+                            "prefix": "",
+                            "role": "0",
+                            "rollMessage": "<h2>${!sameRow('skill_name')}$</h2>\n<p><b>SL:</b> ${!sameRow('level')}$</p>\n${!sameRow('description')}$",
+                            "size": "full-size",
+                            "style": "label",
+                            "suffix": "",
+                            "tooltip": "",
+                            "type": "label",
+                            "value": "",
+                            "visibilityFormula": null
+                          }
+                        ],
+                        "tooltip": "",
+                        "type": "dynamicTable",
+                        "visibilityFormula": null
+                      }
+                    ],
+                    "cssClass": null,
+                    "key": "skill_list_tab",
+                    "name": "🔰 Skills",
+                    "permission": "0",
+                    "role": "0",
+                    "tooltip": "",
+                    "type": "tab",
+                    "visibilityFormula": ""
+                  },
+                  {
+                    "contents": [
+                      {
+                        "altRollMessage": "",
+                        "cssClass": "",
+                        "defaultValue": null,
+                        "icon": "",
+                        "key": "",
+                        "label": null,
+                        "permission": "0",
+                        "prefix": "",
+                        "role": "0",
+                        "rollMessage": "",
+                        "size": "full-size",
+                        "style": "bold",
+                        "suffix": "",
+                        "tooltip": "",
+                        "type": "label",
+                        "value": "Passives",
+                        "visibilityFormula": null
+                      }
+                    ],
+                    "cssClass": null,
+                    "key": "passives_list_tab",
+                    "name": "🌐 Passives",
+                    "permission": "0",
+                    "role": "0",
+                    "tooltip": "",
+                    "type": "tab",
+                    "visibilityFormula": ""
+                  }
+                ],
+                "cssClass": "",
+                "key": "",
+                "permission": "0",
+                "role": "0",
+                "tooltip": "",
+                "type": "tabbedPanel",
+                "visibilityFormula": ""
+              }
+            },
+            "kind": "A",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents"
+            ]
+          },
+          {
+            "index": 2,
+            "item": {
+              "kind": "D",
+              "lhs": {
+                "allowDecimal": false,
+                "allowRelative": false,
+                "controlsStyle": "hover",
+                "cssClass": "",
+                "defaultValue": "",
+                "key": "skill_ip",
+                "label": "IP from Skills",
+                "maxVal": "",
+                "minVal": "",
+                "permission": "0",
+                "role": "0",
+                "showControls": false,
+                "size": "full-size",
+                "tooltip": "",
+                "type": "numberField",
+                "visibilityFormula": ""
+              }
+            },
+            "kind": "A",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              4,
+              "contents"
+            ]
+          },
+          {
+            "kind": "E",
+            "lhs": "skill_mp",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              4,
+              "contents",
+              1,
+              "key"
+            ],
+            "rhs": "passives_list_tab"
+          },
+          {
+            "kind": "E",
+            "lhs": "",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              4,
+              "contents",
+              1,
+              "cssClass"
+            ],
+            "rhs": null
+          },
+          {
+            "kind": "E",
+            "lhs": null,
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              4,
+              "contents",
+              1,
+              "visibilityFormula"
+            ],
+            "rhs": ""
+          },
+          {
+            "kind": "D",
+            "lhs": "MP from Skills",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              4,
+              "contents",
+              1,
+              "label"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": "0",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              4,
+              "contents",
+              1,
+              "defaultValue"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": "full-size",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              4,
+              "contents",
+              1,
+              "size"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": false,
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              4,
+              "contents",
+              1,
+              "allowDecimal"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": "0",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              4,
+              "contents",
+              1,
+              "minVal"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": "",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              4,
+              "contents",
+              1,
+              "maxVal"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": true,
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              4,
+              "contents",
+              1,
+              "allowRelative"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": true,
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              4,
+              "contents",
+              1,
+              "showControls"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": "hover",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              4,
+              "contents",
+              1,
+              "controlsStyle"
+            ]
+          },
+          {
+            "kind": "E",
+            "lhs": "numberField",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              4,
+              "contents",
+              1,
+              "type"
+            ],
+            "rhs": "tab"
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              4,
+              "contents",
+              1,
+              "contents"
+            ],
+            "rhs": [
+              {
+                "altRollMessage": "",
+                "cssClass": "",
+                "defaultValue": null,
+                "icon": "",
+                "key": "",
+                "label": null,
+                "permission": "0",
+                "prefix": "",
+                "role": "0",
+                "rollMessage": "",
+                "size": "full-size",
+                "style": "bold",
+                "suffix": "",
+                "tooltip": "",
+                "type": "label",
+                "value": "Passives",
+                "visibilityFormula": null
+              },
+              {
+                "canPlayerAdd": true,
+                "cssClass": "",
+                "deleteWarning": true,
+                "head": true,
+                "key": "passive_list",
+                "permission": "0",
+                "predefinedLines": [],
+                "role": "0",
+                "rowLayout": [
+                  {
+                    "align": "left",
+                    "charList": "",
+                    "colName": "Passive Name",
+                    "cssClass": null,
+                    "defaultValue": "",
+                    "key": "passive_name",
+                    "label": "",
+                    "maxLength": "",
+                    "permission": "0",
+                    "role": "0",
+                    "size": "full-size",
+                    "tooltip": "",
+                    "type": "textField",
+                    "visibilityFormula": null
+                  },
+                  {
+                    "align": "left",
+                    "colName": "Source",
+                    "cssClass": null,
+                    "defaultValue": "",
+                    "key": "passive_source",
+                    "label": "",
+                    "options": [
+                      {
+                        "key": "quirk",
+                        "value": "Quirk"
+                      },
+                      {
+                        "key": "camp_activity",
+                        "value": "Camp Activity"
+                      },
+                      {
+                        "key": "heroic_skill",
+                        "value": "Heroic Skill"
+                      },
+                      {
+                        "key": "heroic_style",
+                        "value": "Heroic Style"
+                      }
+                    ],
+                    "permission": "0",
+                    "role": "0",
+                    "size": "full-size",
+                    "tableKey": null,
+                    "tableKeyColumn": null,
+                    "tableLabelColumn": null,
+                    "tooltip": "",
+                    "type": "select",
+                    "visibilityFormula": null
+                  },
+                  {
+                    "align": "left",
+                    "colName": "Description",
+                    "cssClass": null,
+                    "defaultValue": "",
+                    "key": "passive_description",
+                    "label": "",
+                    "permission": "0",
+                    "role": "0",
+                    "size": "full-size",
+                    "style": "sheet",
+                    "tooltip": "",
+                    "type": "textArea",
+                    "visibilityFormula": null
+                  },
+                  {
+                    "align": "left",
+                    "altRollMessage": "",
+                    "colName": "",
+                    "cssClass": null,
+                    "defaultValue": null,
+                    "icon": "dice",
+                    "key": "passive_roll",
+                    "label": null,
+                    "permission": "0",
+                    "prefix": "",
+                    "role": "0",
+                    "rollMessage": "<h2>${!sameRow('passive_name')}$</h2>\n<p><b>Source:</b> ${!sameRow('passive_source')}$</p>\n${!sameRow('passive_description')}$",
+                    "size": "full-size",
+                    "style": "label",
+                    "suffix": "",
+                    "tooltip": "",
+                    "type": "label",
+                    "value": "",
+                    "visibilityFormula": null
+                  }
+                ],
+                "tooltip": "",
+                "type": "dynamicTable",
+                "visibilityFormula": null
+              }
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              4,
+              "contents",
+              1,
+              "name"
+            ],
+            "rhs": "🌐 Passives"
+          },
+          {
+            "kind": "E",
+            "lhs": "skill_hp",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              4,
+              "contents",
+              0,
+              "key"
+            ],
+            "rhs": "skill_list_tab"
+          },
+          {
+            "kind": "E",
+            "lhs": "",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              4,
+              "contents",
+              0,
+              "cssClass"
+            ],
+            "rhs": null
+          },
+          {
+            "kind": "E",
+            "lhs": null,
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              4,
+              "contents",
+              0,
+              "visibilityFormula"
+            ],
+            "rhs": ""
+          },
+          {
+            "kind": "D",
+            "lhs": "HP from Skills",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              4,
+              "contents",
+              0,
+              "label"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": "0",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              4,
+              "contents",
+              0,
+              "defaultValue"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": "full-size",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              4,
+              "contents",
+              0,
+              "size"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": false,
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              4,
+              "contents",
+              0,
+              "allowDecimal"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": "0",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              4,
+              "contents",
+              0,
+              "minVal"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": "",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              4,
+              "contents",
+              0,
+              "maxVal"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": true,
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              4,
+              "contents",
+              0,
+              "allowRelative"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": true,
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              4,
+              "contents",
+              0,
+              "showControls"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": "hover",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              4,
+              "contents",
+              0,
+              "controlsStyle"
+            ]
+          },
+          {
+            "kind": "E",
+            "lhs": "numberField",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              4,
+              "contents",
+              0,
+              "type"
+            ],
+            "rhs": "tab"
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              4,
+              "contents",
+              0,
+              "contents"
+            ],
+            "rhs": [
+              {
+                "altRollMessage": "",
+                "cssClass": "",
+                "defaultValue": null,
+                "icon": "",
+                "key": "",
+                "label": null,
+                "permission": "0",
+                "prefix": "",
+                "role": "0",
+                "rollMessage": "",
+                "size": "full-size",
+                "style": "bold",
+                "suffix": "",
+                "tooltip": "",
+                "type": "label",
+                "value": "Skills",
+                "visibilityFormula": null
+              },
+              {
+                "canPlayerAdd": true,
+                "cssClass": "",
+                "deleteWarning": true,
+                "head": true,
+                "key": "skill_list",
+                "permission": "0",
+                "predefinedLines": [],
+                "role": "0",
+                "rowLayout": [
+                  {
+                    "align": "left",
+                    "charList": "",
+                    "colName": "Skill Name",
+                    "cssClass": null,
+                    "defaultValue": "",
+                    "key": "skill_name",
+                    "label": "",
+                    "maxLength": "",
+                    "permission": "0",
+                    "role": "0",
+                    "size": "m-large",
+                    "tooltip": "",
+                    "type": "textField",
+                    "visibilityFormula": null
+                  },
+                  {
+                    "align": "left",
+                    "colName": "",
+                    "cssClass": null,
+                    "defaultValue": "",
+                    "key": "class",
+                    "label": "",
+                    "options": [],
+                    "permission": "0",
+                    "role": "0",
+                    "size": "medium",
+                    "tableKey": "class_list",
+                    "tableKeyColumn": "class_name",
+                    "tableLabelColumn": "",
+                    "tooltip": "",
+                    "type": "select",
+                    "visibilityFormula": null
+                  },
+                  {
+                    "align": "center",
+                    "allowDecimal": false,
+                    "allowRelative": false,
+                    "colName": "SL",
+                    "controlsStyle": "hover",
+                    "cssClass": null,
+                    "defaultValue": "1",
+                    "key": "level",
+                    "label": "",
+                    "maxVal": "10",
+                    "minVal": "1",
+                    "permission": "0",
+                    "role": "0",
+                    "showControls": false,
+                    "size": "small",
+                    "tooltip": "",
+                    "type": "numberField",
+                    "visibilityFormula": null
+                  },
+                  {
+                    "align": "left",
+                    "colName": "",
+                    "cssClass": null,
+                    "defaultValue": "",
+                    "key": "description",
+                    "label": "",
+                    "permission": "0",
+                    "role": "0",
+                    "size": "full-size",
+                    "style": "icon",
+                    "tooltip": "",
+                    "type": "textArea",
+                    "visibilityFormula": null
+                  },
+                  {
+                    "align": "right",
+                    "altRollMessage": "",
+                    "colName": "",
+                    "cssClass": null,
+                    "defaultValue": null,
+                    "icon": "dice",
+                    "key": "roll",
+                    "label": null,
+                    "permission": "0",
+                    "prefix": "",
+                    "role": "0",
+                    "rollMessage": "<h2>${!sameRow('skill_name')}$</h2>\n<p><b>SL:</b> ${!sameRow('level')}$</p>\n${!sameRow('description')}$",
+                    "size": "full-size",
+                    "style": "label",
+                    "suffix": "",
+                    "tooltip": "",
+                    "type": "label",
+                    "value": "",
+                    "visibilityFormula": null
+                  }
+                ],
+                "tooltip": "",
+                "type": "dynamicTable",
+                "visibilityFormula": null
+              }
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              4,
+              "contents",
+              0,
+              "name"
+            ],
+            "rhs": "🔰 Skills"
+          },
+          {
+            "kind": "D",
+            "lhs": "grid-3",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              4,
+              "flow"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": "center",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              4,
+              "align"
+            ]
+          },
+          {
+            "kind": "E",
+            "lhs": "panel",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              4,
+              "type"
+            ],
+            "rhs": "tabbedPanel"
+          },
+          {
+            "kind": "E",
+            "lhs": "passive_list",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              3,
+              "key"
+            ],
+            "rhs": ""
+          },
+          {
+            "kind": "E",
+            "lhs": null,
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              3,
+              "visibilityFormula"
+            ],
+            "rhs": ""
+          },
+          {
+            "kind": "D",
+            "lhs": [
+              {
+                "align": "left",
+                "charList": "",
+                "colName": "Passive Name",
+                "cssClass": null,
+                "defaultValue": "",
+                "key": "passive_name",
+                "label": "",
+                "maxLength": "",
+                "permission": "0",
+                "role": "0",
+                "size": "full-size",
+                "tooltip": "",
+                "type": "textField",
+                "visibilityFormula": null
+              },
+              {
+                "align": "left",
+                "colName": "Source",
+                "cssClass": null,
+                "defaultValue": "",
+                "key": "passive_source",
+                "label": "",
+                "options": [
+                  {
+                    "key": "quirk",
+                    "value": "Quirk"
+                  },
+                  {
+                    "key": "camp_activity",
+                    "value": "Camp Activity"
+                  },
+                  {
+                    "key": "heroic_skill",
+                    "value": "Heroic Skill"
+                  },
+                  {
+                    "key": "heroic_style",
+                    "value": "Heroic Style"
+                  }
+                ],
+                "permission": "0",
+                "role": "0",
+                "size": "full-size",
+                "tableKey": null,
+                "tableKeyColumn": null,
+                "tableLabelColumn": null,
+                "tooltip": "",
+                "type": "select",
+                "visibilityFormula": null
+              },
+              {
+                "align": "left",
+                "colName": "Description",
+                "cssClass": null,
+                "defaultValue": "",
+                "key": "passive_description",
+                "label": "",
+                "permission": "0",
+                "role": "0",
+                "size": "full-size",
+                "style": "sheet",
+                "tooltip": "",
+                "type": "textArea",
+                "visibilityFormula": null
+              },
+              {
+                "align": "left",
+                "altRollMessage": "",
+                "colName": "",
+                "cssClass": null,
+                "defaultValue": null,
+                "icon": "dice",
+                "key": "passive_roll",
+                "label": null,
+                "permission": "0",
+                "prefix": "",
+                "role": "0",
+                "rollMessage": "<h2>${!sameRow('passive_name')}$</h2>\n<p><b>Source:</b> ${!sameRow('passive_source')}$</p>\n${!sameRow('passive_description')}$",
+                "size": "full-size",
+                "style": "label",
+                "suffix": "",
+                "tooltip": "",
+                "type": "label",
+                "value": "",
+                "visibilityFormula": null
+              }
+            ],
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              3,
+              "rowLayout"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": true,
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              3,
+              "head"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": true,
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              3,
+              "deleteWarning"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": [],
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              3,
+              "predefinedLines"
+            ]
+          },
+          {
+            "kind": "D",
+            "lhs": true,
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              3,
+              "canPlayerAdd"
+            ]
+          },
+          {
+            "kind": "E",
+            "lhs": "dynamicTable",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              3,
+              "type"
+            ],
+            "rhs": "panel"
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              3,
+              "contents"
+            ],
+            "rhs": [
+              {
+                "allowDecimal": false,
+                "allowRelative": true,
+                "controlsStyle": "hover",
+                "cssClass": "",
+                "defaultValue": "0",
+                "key": "skill_hp",
+                "label": "HP from Skills",
+                "maxVal": "",
+                "minVal": "0",
+                "permission": "0",
+                "role": "0",
+                "showControls": true,
+                "size": "full-size",
+                "tooltip": "",
+                "type": "numberField",
+                "visibilityFormula": null
+              },
+              {
+                "allowDecimal": false,
+                "allowRelative": true,
+                "controlsStyle": "hover",
+                "cssClass": "",
+                "defaultValue": "0",
+                "key": "skill_mp",
+                "label": "MP from Skills",
+                "maxVal": "",
+                "minVal": "0",
+                "permission": "0",
+                "role": "0",
+                "showControls": true,
+                "size": "full-size",
+                "tooltip": "",
+                "type": "numberField",
+                "visibilityFormula": null
+              },
+              {
+                "allowDecimal": false,
+                "allowRelative": false,
+                "controlsStyle": "hover",
+                "cssClass": "",
+                "defaultValue": "",
+                "key": "skill_ip",
+                "label": "IP from Skills",
+                "maxVal": "",
+                "minVal": "",
+                "permission": "0",
+                "role": "0",
+                "showControls": false,
+                "size": "full-size",
+                "tooltip": "",
+                "type": "numberField",
+                "visibilityFormula": ""
+              }
+            ]
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              3,
+              "flow"
+            ],
+            "rhs": "grid-3"
+          },
+          {
+            "kind": "N",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              3,
+              "align"
+            ],
+            "rhs": "center"
+          }
+        ],
+        [
+          {
+            "index": 2,
+            "item": {
+              "kind": "N",
+              "rhs": {
+                "contents": [],
+                "cssClass": null,
+                "key": "reaction_list_tab",
+                "name": "❗️ Reaction",
+                "permission": "0",
+                "role": "0",
+                "tooltip": "",
+                "type": "tab",
+                "visibilityFormula": ""
+              }
+            },
+            "kind": "A",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              4,
+              "contents"
+            ]
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "item": {
+              "kind": "N",
+              "rhs": {
+                "canPlayerAdd": true,
+                "cssClass": "",
+                "deleteWarning": false,
+                "head": false,
+                "key": "reaction_list",
+                "permission": "0",
+                "predefinedLines": [],
+                "role": "0",
+                "rowLayout": [],
+                "tooltip": "",
+                "type": "dynamicTable",
+                "visibilityFormula": ""
+              }
+            },
+            "kind": "A",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              4,
+              "contents",
+              2,
+              "contents"
+            ]
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "item": {
+              "kind": "N",
+              "rhs": {
+                "align": "left",
+                "charList": "",
+                "colName": "Name",
+                "cssClass": "",
+                "defaultValue": "",
+                "key": "reaction_name",
+                "label": "",
+                "maxLength": "",
+                "permission": "0",
+                "role": "0",
+                "size": "full-size",
+                "tooltip": "",
+                "type": "textField",
+                "visibilityFormula": ""
+              }
+            },
+            "kind": "A",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              4,
+              "contents",
+              2,
+              "contents",
+              0,
+              "rowLayout"
+            ]
+          }
+        ],
+        [
+          {
+            "index": 1,
+            "item": {
+              "kind": "N",
+              "rhs": {
+                "align": "left",
+                "colName": "Source",
+                "cssClass": "",
+                "defaultValue": "-",
+                "key": "reaction_source",
+                "label": "",
+                "options": [
+                  {
+                    "key": "NA",
+                    "value": "-"
+                  },
+                  {
+                    "key": "SKILL",
+                    "value": "SKILL"
+                  },
+                  {
+                    "key": "EQUIP",
+                    "value": "EQUIP"
+                  },
+                  {
+                    "key": "SUPPORT",
+                    "value": "SUPPORT"
+                  }
+                ],
+                "permission": "0",
+                "role": "0",
+                "size": "full-size",
+                "tableKey": null,
+                "tableKeyColumn": null,
+                "tableLabelColumn": null,
+                "tooltip": "",
+                "type": "select",
+                "visibilityFormula": ""
+              }
+            },
+            "kind": "A",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              4,
+              "contents",
+              2,
+              "contents",
+              0,
+              "rowLayout"
+            ]
+          }
+        ],
+        [
+          {
+            "index": 2,
+            "item": {
+              "kind": "N",
+              "rhs": {
+                "align": "left",
+                "colName": "Trigger",
+                "cssClass": "",
+                "defaultValue": "",
+                "key": "reaction_trigger",
+                "label": "",
+                "permission": "0",
+                "role": "0",
+                "size": null,
+                "style": "sheet",
+                "tooltip": "",
+                "type": "textArea",
+                "visibilityFormula": ""
+              }
+            },
+            "kind": "A",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              4,
+              "contents",
+              2,
+              "contents",
+              0,
+              "rowLayout"
+            ]
+          }
+        ],
+        [
+          {
+            "index": 3,
+            "item": {
+              "kind": "N",
+              "rhs": {
+                "align": "left",
+                "colName": "Effect",
+                "cssClass": "",
+                "defaultValue": "",
+                "key": "reaction_description",
+                "label": "",
+                "permission": "0",
+                "role": "0",
+                "size": null,
+                "style": "sheet",
+                "tooltip": "",
+                "type": "textArea",
+                "visibilityFormula": ""
+              }
+            },
+            "kind": "A",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              4,
+              "contents",
+              2,
+              "contents",
+              0,
+              "rowLayout"
+            ]
+          }
+        ],
+        [
+          {
+            "kind": "E",
+            "lhs": "full-size",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              4,
+              "contents",
+              2,
+              "contents",
+              0,
+              "rowLayout",
+              0,
+              "size"
+            ],
+            "rhs": "m-small"
+          }
+        ],
+        [
+          {
+            "kind": "E",
+            "lhs": "full-size",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              4,
+              "contents",
+              2,
+              "contents",
+              0,
+              "rowLayout",
+              1,
+              "size"
+            ],
+            "rhs": "m-small"
+          }
+        ],
+        [
+          {
+            "index": 4,
+            "item": {
+              "kind": "N",
+              "rhs": {
+                "align": "left",
+                "altRollMessage": "",
+                "colName": "",
+                "cssClass": "",
+                "defaultValue": null,
+                "icon": "dice",
+                "key": "reaction_roll",
+                "label": null,
+                "permission": "0",
+                "prefix": "",
+                "role": "0",
+                "rollMessage": "<h2>${!sameRow('reaction_name')}$</h2>\n<p><b>Source:</b> ${!sameRow('reaction_source')}$</p>\n${!sameRow('reaction_description')}$",
+                "size": "full-size",
+                "style": "label",
+                "suffix": "",
+                "tooltip": "",
+                "type": "label",
+                "value": "",
+                "visibilityFormula": ""
+              }
+            },
+            "kind": "A",
+            "path": [
+              "body",
+              "contents",
+              0,
+              "contents",
+              0,
+              0,
+              "contents",
+              0,
+              "contents",
+              2,
+              "contents",
+              0,
+              "contents",
+              4,
+              "contents",
+              2,
+              "contents",
+              0,
+              "rowLayout"
+            ]
+          }
+        ]
+      ],
+      "templateHistoryRedo": [],
+      "version": "4.5.0"
+    },
+    "exportSource": {
+      "coreVersion": "10.288",
+      "system": "custom-system-builder",
+      "systemVersion": "2.1.0",
+      "world": "fabula-ultima"
+    }
+  },
+  "folder": "Qpc6ITpm60JVdwXF",
+  "img": "icons/svg/mystery-man.svg",
+  "name": "_FabU Char Template v2.fire (Tab)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": null
+    },
+    "bar2": {
+      "attribute": null
+    },
+    "detectionModes": [],
+    "displayBars": 0,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {},
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "_FabU Char Template v2.fire (Tab)",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "icons/svg/mystery-man.svg",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 300000,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "statusEffects": {},
+    "templateSystemUniqueVersion": 93170772
+  },
+  "type": "_template"
+}

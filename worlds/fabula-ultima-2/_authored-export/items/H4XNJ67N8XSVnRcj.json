@@ -1,0 +1,53 @@
+{
+  "_id": "H4XNJ67N8XSVnRcj",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1751460244906,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "recipe",
+        "fromTemplate": "VJCHYWOx1mPsMSip",
+        "itemId": "H4XNJ67N8XSVnRcj",
+        "itemName": "Elixir",
+        "pickedOldProps": {
+          "recipe_description": "<ul><li><p>Target creature recovers <strong>50</strong> Mind Points.</p></li></ul>",
+          "recipe_flavor": "",
+          "recipe_ip": "3",
+          "recipe_label": ""
+        },
+        "ts": 1769647435537
+      }
+    }
+  },
+  "folder": "MOf4y5KdI6ZvNBHg",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion2.png",
+  "name": "Elixir",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "description": "<ul><li><p>Target creature recovers <strong>50</strong> Mind Points.</p></li></ul>",
+      "ip_cost": "3",
+      "item_type": "recipe",
+      "name": "Elixir"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "H4XNJ67N8XSVnRcj"
+  },
+  "type": "equippableItem"
+}

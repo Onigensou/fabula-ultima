@@ -1,0 +1,312 @@
+{
+  "_id": "roafy3ui2JMXHqsa",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1747233250105,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "Ec0pJzHjZGxAofAT",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1775334455549,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "base_magic_defense",
+          "mode": 4,
+          "priority": 1,
+          "value": "${isEquipped ? (isMartial ? (item_baseMdef * 1) : 0) : 0}$"
+        },
+        {
+          "key": "bonus_magic_defense",
+          "mode": 2,
+          "priority": 2,
+          "value": "${isEquipped ? (isMartial ? 0 : (item_mdef_bonus * 1)) : 0}$"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "core": {
+          "overlay": false
+        },
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "Ec0pJzHjZGxAofAT",
+          "originalParentId": "roafy3ui2JMXHqsa",
+          "originalUuid": "Item.roafy3ui2JMXHqsa.ActiveEffect.Ec0pJzHjZGxAofAT"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-mdef-up",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUpStack.webp",
+      "name": "Armor MDEF",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    },
+    {
+      "_id": "T4TMf7zllbW5bvED",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1775334455507,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "base_defense",
+          "mode": 4,
+          "priority": 1,
+          "value": "${isEquipped ? (isMartial ? (item_baseDef * 1) : 0) : 0}$"
+        },
+        {
+          "key": "bonus_defense",
+          "mode": 2,
+          "priority": 2,
+          "value": "${isEquipped ? (isMartial ? 0 : (item_def_bonus * 1)) : 0}$"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "core": {
+          "overlay": false
+        },
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "T4TMf7zllbW5bvED",
+          "originalParentId": "roafy3ui2JMXHqsa",
+          "originalUuid": "Item.roafy3ui2JMXHqsa.ActiveEffect.T4TMf7zllbW5bvED"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-def-up",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUp.webp",
+      "name": "Armor DEF",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.4.2"
+    },
+    "fabula-ultima-companion": {
+      "armorDefMdefAeMassPatchBackup_v1": {
+        "createdAt": 1777705756307,
+        "effects": [
+          {
+            "changes": [
+              {
+                "key": "defense",
+                "mode": 2,
+                "priority": 1,
+                "value": "${isEquipped ? (isMartial ? 0 : item_def_bonus) : 0}$"
+              },
+              {
+                "key": "defense",
+                "mode": 4,
+                "priority": 2,
+                "value": "${isEquipped ? (isMartial ? item_baseDef : 0) : 0}$"
+              }
+            ],
+            "id": "T4TMf7zllbW5bvED",
+            "name": "Armor DEF"
+          },
+          {
+            "changes": [
+              {
+                "key": "magic_defense",
+                "mode": 2,
+                "priority": 1,
+                "value": "${isEquipped ? (isMartial ? 0 : item_mdef_bonus) : 0}$"
+              },
+              {
+                "key": "magic_defense",
+                "mode": 4,
+                "priority": 2,
+                "value": "${isEquipped ? (isMartial ? item_baseMdef : 0) : 0}$"
+              }
+            ],
+            "id": "Ec0pJzHjZGxAofAT",
+            "name": "Armor MDEF"
+          }
+        ],
+        "itemName": "Moonlight Dancer Robe",
+        "itemUuid": "Item.roafy3ui2JMXHqsa",
+        "parentName": "",
+        "parentType": "World"
+      },
+      "defMdefHelperKeyPatchBackup_v1": {
+        "createdAt": 1777708466194,
+        "effects": [
+          {
+            "changes": [
+              {
+                "key": "defense",
+                "mode": 2,
+                "priority": 1,
+                "value": "${isEquipped ? (isMartial ? 0 : item_def_bonus) : 0}$"
+              },
+              {
+                "key": "defense",
+                "mode": 4,
+                "priority": 2,
+                "value": "${isEquipped ? (isMartial ? item_baseDef : 0) : 0}$"
+              }
+            ],
+            "id": "T4TMf7zllbW5bvED",
+            "name": "Armor DEF"
+          },
+          {
+            "changes": [
+              {
+                "key": "magic_defense",
+                "mode": 2,
+                "priority": 1,
+                "value": "${isEquipped ? (isMartial ? 0 : item_mdef_bonus) : 0}$"
+              },
+              {
+                "key": "magic_defense",
+                "mode": 4,
+                "priority": 2,
+                "value": "${isEquipped ? (isMartial ? item_baseMdef : 0) : 0}$"
+              }
+            ],
+            "id": "Ec0pJzHjZGxAofAT",
+            "name": "Armor MDEF"
+          }
+        ],
+        "itemId": "roafy3ui2JMXHqsa",
+        "itemName": "Moonlight Dancer Robe",
+        "itemType": "armor",
+        "itemUuid": "Item.roafy3ui2JMXHqsa",
+        "owner": {
+          "actor": "",
+          "actorUuid": "",
+          "source": "World Item"
+        }
+      }
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "armor",
+        "fromTemplate": "5Z0gKtN5R51ebJOa",
+        "itemId": "roafy3ui2JMXHqsa",
+        "itemName": "Moonlight Dancer Robe",
+        "pickedOldProps": {
+          "cost": "2700",
+          "def_bonus": "2",
+          "defense": "0",
+          "defense_include_dex": true,
+          "initiative": "1",
+          "magic_defense": "0",
+          "magic_defense_include_ins": true,
+          "martial": false,
+          "mdef_bonus": "1",
+          "shield": false
+        },
+        "ts": 1769647436065
+      }
+    }
+  },
+  "folder": "D1OgeGHLjJ9dSkxS",
+  "img": "https://img.altema.jp/valkyrieconnect/sobi/ico/796.jpg",
+  "name": "Moonlight Dancer Robe",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3
+  },
+  "sort": 2000000,
+  "system": {
+    "container": null,
+    "props": {
+      "description": "<ul><li><p>You may perform one additional <strong>Dance</strong> per round, if you do, these <strong>Dance </strong>cost <strong>15 MP </strong>instead</p></li></ul><hr class=\"\" contenteditable=\"false\"><p><strong>【Set Bonus】</strong></p><p><strong>2-Piece</strong></p><ul><li><p>When you perform a <strong>Dance</strong>, if you had performed a different <strong>Dance</strong> during your <strong>last turn</strong>, gain +2 <strong>DEF</strong> and <strong>M.DEF </strong>until the <strong>start of your next turn</strong>.</p><hr contenteditable=\"false\"></li></ul><p><strong>3-Piece</strong></p><ul><li><p>When you perform a <strong>Dance</strong>, if you had performed a different <strong>Dance</strong> during your <strong>last turn, </strong>you gains <strong>Waltz Points: </strong>Each point increases your damage with <strong>Thrown</strong> weapons by <strong>3</strong>. You lose all your <strong>Waltz Points </strong>when you end your turn without performing <strong>Dance </strong>or you perform the same <strong>Dance </strong>as your previous turn.</p></li></ul>",
+      "isMartial": false,
+      "item_baseDef": "0",
+      "item_baseMdef": "0",
+      "item_cost": "2700",
+      "item_def_bonus": "2",
+      "item_mdef_bonus": "1",
+      "item_type": "armor",
+      "name": "Moonlight Dancer Robe",
+      "set_name": "Moonlight Dancer"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "roafy3ui2JMXHqsa"
+  },
+  "type": "equippableItem"
+}

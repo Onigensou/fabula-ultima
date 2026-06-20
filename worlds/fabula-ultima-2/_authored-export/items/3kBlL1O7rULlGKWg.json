@@ -1,0 +1,553 @@
+{
+  "_id": "3kBlL1O7rULlGKWg",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780644517996,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "wZvldpOExwRLelGH",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><em>Rampart:</em> Once per conflict. Spend 20 MP at round start to fire.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "dUO9BTptVtS6Vgz9",
+          "originalParentId": "Xc2ngRpn0v85GjIB",
+          "originalUuid": "Item.Xc2ngRpn0v85GjIB.ActiveEffect.dUO9BTptVtS6Vgz9"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "chargeKey": "rampart",
+          "charges": 1,
+          "chargesMax": 1,
+          "crossScene": true,
+          "directorPermanent": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/sentinel.png",
+      "name": "Rampart Ready",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-rampart-ready"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "Y87tEd1zay2kw7iW",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_1",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"RS\")"
+        },
+        {
+          "key": "affinity_2",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"RS\")"
+        },
+        {
+          "key": "affinity_3",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"RS\")"
+        },
+        {
+          "key": "affinity_4",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"RS\")"
+        },
+        {
+          "key": "affinity_5",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"RS\")"
+        },
+        {
+          "key": "affinity_6",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"RS\")"
+        },
+        {
+          "key": "affinity_7",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"RS\")"
+        },
+        {
+          "key": "affinity_8",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"RS\")"
+        },
+        {
+          "key": "affinity_9",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"RS\")"
+        },
+        {
+          "key": "condition_slow",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_dazed",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_weak",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_shaken",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_poisoned",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_enraged",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_silence",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_stagger",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_frightened",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_paralyzed",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_confused",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_panic",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_grappled",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_envenomed",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_burn",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_blind",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_zombie",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_wither",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_bleed",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_obscure",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_fatigue",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_charm",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_berserk",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_despair",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_doom",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_bane",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_curse",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_wet",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_oil",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_petrify",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_hypothermia",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_turbulence",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_delayed",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_isolate",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_suppress",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_disarmed",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        },
+        {
+          "key": "condition_anomaly",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
+        }
+      ],
+      "description": "<p><em>Rampart:</em> Resistance to all damage + status immunity until end of round.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "oB93r8xv0q6aTGeM",
+          "originalParentId": "Xc2ngRpn0v85GjIB",
+          "originalUuid": "Item.Xc2ngRpn0v85GjIB.ActiveEffect.oB93r8xv0q6aTGeM"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "crossScene": false,
+          "directorPermanent": false,
+          "lifetimeMode": "round_end"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/sentinel.png",
+      "name": "Rampart",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-rampart"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "HEOkiQVr6cpvbXxl",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/sentinel.png",
+  "name": "Rampart",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "check_bonus": "0",
+      "class": "Guardian",
+      "cost": "20 MP",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>During the <strong>first round</strong> of a conflict, you gain Resistance to all damage types and you cannot be afflicted by status effects.</p>",
+      "duration": "-",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Rampart Ready",
+          "effect_kind": "apply_ae",
+          "effect_label": "rampart_arm",
+          "menu_description": "",
+          "menu_label": "",
+          "target_ref": "self"
+        },
+        "1": {
+          "chain_steps": "rampart_consume_charge,rampart_consume_mp,rampart_apply_buff",
+          "effect_kind": "chain",
+          "effect_label": "rampart_fire",
+          "menu_description": "",
+          "menu_label": ""
+        },
+        "2": {
+          "charge_key": "rampart",
+          "count": "1",
+          "effect_kind": "consume_charge",
+          "effect_label": "rampart_consume_charge",
+          "menu_description": "",
+          "menu_label": "",
+          "on_empty": "abort",
+          "target_ref": "self"
+        },
+        "3": {
+          "consume_amount": "20",
+          "consume_resource": "mp",
+          "effect_kind": "consume_resource",
+          "effect_label": "rampart_consume_mp",
+          "grant_amount": "",
+          "grant_resource": "",
+          "menu_description": "",
+          "menu_label": "",
+          "on_empty": "abort",
+          "target_ref": "self"
+        },
+        "4": {
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_template_ref": "Rampart",
+          "effect_kind": "apply_ae",
+          "effect_label": "rampart_apply_buff",
+          "menu_description": "",
+          "menu_label": "",
+          "target_ref": "rampart_target_allies"
+        },
+        "5": {
+          "auto_confirm_when_obvious": true,
+          "candidate_source": "combat",
+          "category": "ally",
+          "count": 1,
+          "effect_kind": "targeting",
+          "effect_label": "rampart_target_allies",
+          "exclude_self": false,
+          "iteration_mode": "together",
+          "menu_description": "",
+          "menu_label": "",
+          "mode": "all",
+          "skip_when_passive": true,
+          "target_prompt": ""
+        }
+      },
+      "heroic_requirement": "",
+      "ignore_hr": false,
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": false,
+      "isReaction": true,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Rampart",
+      "on_activate_effect_ref": "",
+      "optional_params": {},
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "",
+          "reaction_effect_ref": "rampart_arm",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "",
+          "reaction_source": "",
+          "reaction_trigger": "conflict_start",
+          "requires_skill": ""
+        },
+        "1": {
+          "condition_formula": "HAS_MARTIAL_ARMOR == 1 || HAS_SHIELD == 1",
+          "reaction_debuff_count_min": "",
+          "reaction_debuff_count_target": "",
+          "reaction_effect_ref": "rampart_fire",
+          "reaction_passive_mode": "ask",
+          "reaction_passive_target": "",
+          "reaction_source": "",
+          "reaction_trigger": "round_start",
+          "requires_skill": ""
+        }
+      },
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "",
+      "skill_target": "-",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "3kBlL1O7rULlGKWg"
+  },
+  "type": "equippableItem"
+}

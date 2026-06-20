@@ -1,0 +1,2425 @@
+{
+  "_id": "uR31vv89f6OJeJHF",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1754150107028,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "lrk2jhOW5Ok9sgH1",
+  "img": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/dragupload/fabula%20class/pirate/Illustration.png",
+  "items": [
+    {
+      "_id": "73MNuUGGuHsGDbm1",
+      "_stats": {
+        "compendiumSource": "Item.tF3FlbbmeOOgnYvl",
+        "coreVersion": "12.343",
+        "createdTime": 1754673761513,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/dragupload/fabula%20class/pirate/13.jpg",
+      "name": "Boardside Cannon Salvo",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Pirate",
+          "cost": "X IP",
+          "damage_bonus": "0",
+          "description": "<p>You call a full bombardment fire support from your ship. Choose to spend any amount of IP.</p><p>This action deal <strong>【10 x amount of IP spend】</strong> to all enemy present in the scene.</p><p>This skill is considered an <strong>【Inventory】</strong>Action.</p>",
+          "duration": "Instantanoeus",
+          "heroic_requirement": "You must have mastered the Pirate Class.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "level": "1",
+          "max_level": "1",
+          "name": "Boardside Cannon Salvo",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "tF3FlbbmeOOgnYvl"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "a0e8HYnhDrBG9Vyi",
+      "_stats": {
+        "compendiumSource": "Item.h796jftqMnc17n8d",
+        "coreVersion": "12.343",
+        "createdTime": 1754673447838,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "ptxo7JcoHmplIZWc",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.331",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.6.4"
+          },
+          "changes": [],
+          "description": "<p>When <strong>hit </strong>by an enemy attack, give the enemy some <strong>Zenit. </strong>Removed after <strong>1 Round</strong></p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": 298800,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "ptxo7JcoHmplIZWc",
+              "originalParentId": "h796jftqMnc17n8d",
+              "originalUuid": "Item.h796jftqMnc17n8d.ActiveEffect.ptxo7JcoHmplIZWc"
+            },
+            "statuscounter": {
+              "config": {
+                "dataSource": "flags.statuscounter.value",
+                "durationType": 1,
+                "modifyDuration": false,
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lithia/GreedyWonderPassive1.png",
+          "name": "Pirate's Mark",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/dragupload/fabula%20class/pirate/xxx.jpg",
+      "name": "Plundering Assault",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Pirate",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<div class=\"skill-tooltip\"><p>At the start of a <strong>conflict scene</strong>, all enemies gain <span class=\"mark-icon\"><strong>10 Pirate's Mark</strong></span></p><p>Each time you successfully hit an enemy with an attack, remove <span class=\"mark-icon\"><strong>【Pirate's Mark】</strong> </span>equal to <strong>【SL】</strong>. You gain <strong>【10 × mark removed】 Zenit</strong>.</p><p>When you reduce a creature's <span class=\"mark-icon\"><strong>【Pirate's Mark】</strong> </span>to 0, gain <strong>2 IP</strong>.</p></div>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "5",
+          "name": "Plundering Assault",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "h796jftqMnc17n8d"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "ASzCiHAcrmrGnPQs",
+      "_stats": {
+        "compendiumSource": "Item.Ow65p5bPkydy1qMh",
+        "coreVersion": "12.343",
+        "createdTime": 1754675552476,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/dragupload/fabula%20class/pirate/7.jpg",
+      "name": "Arm Hook",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Pirate",
+          "cost": "2 IP",
+          "damage_bonus": "0",
+          "description": "<p>Choose 1 enemy. Made a contest of 【MIG】+【DEX】Check. On a <strong>success, </strong>inflicts <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Grappled</span></strong></a><span style=\"text-decoration: underline;\">&nbsp;to the target</span></span></p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Arm Hook",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "Ow65p5bPkydy1qMh"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "CuPSBKVrVk4WCuoi",
+      "_stats": {
+        "compendiumSource": "Item.mPnznou5f7WIMz3U",
+        "coreVersion": "12.343",
+        "createdTime": 1754674946505,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/dragupload/fabula%20class/pirate/12.jpg",
+      "name": "Cannon",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Pirate",
+          "cost": "3 IP",
+          "damage_bonus": "0",
+          "description": "<p>Choose 1 target. You make a contest of <strong>【DEX】+【INS】</strong> against that target.</p><ul><li><p><strong>Win</strong>: The target take 【<strong>50</strong> + <em>difference in the result of the check】　</em><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a></span></span> damage.</p></li><li><p><strong>Lose</strong>: The target take <strong>25</strong> <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a></span></span> damage.</p></li></ul>",
+          "duration": "Instanteneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Cannon",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "One creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "mPnznou5f7WIMz3U"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "FaUlTM5NWtdiAGB1",
+      "_stats": {
+        "compendiumSource": "Item.PmxzBjRRxn1rZJKg",
+        "coreVersion": "12.343",
+        "createdTime": 1754670958733,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/dragupload/fabula%20class/pirate/Illustration5.jpg",
+      "name": "Pirate Gadget",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Pirate",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p><span class=\"fontstyle0\">Each time you take this Skill, you learn one <strong>【Pirate gadget】</strong></span></p><p>You can use <strong>【Pirate Gadget】</strong> with <strong>【Inventory】</strong> Action</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "10",
+          "name": "Pirate Gadget",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Other",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "PmxzBjRRxn1rZJKg"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "GRxzkzH4G8GjfxB6",
+      "_stats": {
+        "compendiumSource": "Item.mFofHK8tCjo0HMcT",
+        "coreVersion": "12.343",
+        "createdTime": 1754670810735,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/dragupload/fabula%20class/pirate/Illustration2.jpg",
+      "name": "Expirenced Barrelman",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Pirate",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>Increase all Check against <strong>avoiding hazards </strong>by <strong>【SL】</strong></p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "4",
+          "name": "Expirenced Barrelman",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "mFofHK8tCjo0HMcT"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "iJSdrbEmrWePun5o",
+      "_stats": {
+        "compendiumSource": "Item.OwS0VtxeZlqWA0ji",
+        "coreVersion": "12.343",
+        "createdTime": 1754674944834,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/dragupload/fabula%20class/pirate/9.jpg",
+      "name": "Barrel Bomb",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Pirate",
+          "cost": "3 IP",
+          "damage_bonus": "0",
+          "description": "<p>All enemy take 30 <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span> damage</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Barrel Bomb",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "OwS0VtxeZlqWA0ji"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "Jujq07JnvK1jHpcy",
+      "_stats": {
+        "compendiumSource": "Item.SJPIH5n1U5mH4BNP",
+        "coreVersion": "12.343",
+        "createdTime": 1754674945636,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/dragupload/fabula%20class/pirate/Illustration4.jpg",
+      "name": "Blood Chalice",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 100000,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Pirate",
+          "cost": "1 IP",
+          "damage_bonus": "0",
+          "description": "<p>Reduce all condition timer on you by 1.</p>",
+          "duration": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Blood Chalice",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "SJPIH5n1U5mH4BNP"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "khg9JCtOF2eSrLIr",
+      "_stats": {
+        "compendiumSource": "Item.BXmFgtn7CXaRPDxX",
+        "coreVersion": "12.343",
+        "createdTime": 1754674986044,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/dragupload/fabula%20class/pirate/3.jpg",
+      "name": "Magic Monocular",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Pirate",
+          "cost": "1 IP",
+          "damage_bonus": "0",
+          "description": "<p>Perform a <strong>【Study】</strong>action</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Magic Monocular",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "BXmFgtn7CXaRPDxX"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "kHoPUcwkHqhLy5t6",
+      "_stats": {
+        "compendiumSource": "Item.mXFpWSZukNAIQC0K",
+        "coreVersion": "12.343",
+        "createdTime": 1754675018146,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/dragupload/fabula%20class/pirate/6.jpg",
+      "name": "Magic Conch",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Pirate",
+          "cost": "2 IP",
+          "damage_bonus": "0",
+          "description": "<p>Choose 1 ally. They gain +3 on next attack roll.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Magic Conch",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "mXFpWSZukNAIQC0K"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "lHrOuMu8W12BM7su",
+      "_stats": {
+        "compendiumSource": "Item.zAHCggghcrdT9McL",
+        "coreVersion": "12.343",
+        "createdTime": 1754674947422,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/dragupload/fabula%20class/pirate/1.jpg",
+      "name": "Cursed Dagger",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Pirate",
+          "cost": "1 IP",
+          "damage_bonus": "0",
+          "description": "<p>Inflict <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.V8mKI3BdXusfSBLq\" data-id=\"V8mKI3BdXusfSBLq\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Curse</span></strong></a></span> on you and the target</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Cursed Dagger",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "zAHCggghcrdT9McL"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "NfOsqIN8c5AxSJt4",
+      "_stats": {
+        "compendiumSource": "Item.lpMBVDYMYKxDBqUm",
+        "coreVersion": "12.343",
+        "createdTime": 1754673418300,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/dragupload/fabula%20class/pirate/Illustration3.jpg",
+      "name": "X Marks the Spot",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>X Mark(s) appear on the map on overworld travel.</p><p>Reaching the marked spot trigger normal effect of that panel and then generate random loot equal to map difficulty or player level.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "X Marks the Spot",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "lpMBVDYMYKxDBqUm"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "oUnbpKqap5xUkldS",
+      "_stats": {
+        "compendiumSource": "Item.Ynm3WTFFRbstiI5D",
+        "coreVersion": "12.343",
+        "createdTime": 1754239791763,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/dragupload/fabula%20class/pirate/Illustration.jpg",
+      "name": "Blade&Gun",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Pirate",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<ul><li><p>When you acquire this skill, you can equip both one hand melee weapon and one hand range weapon at the same time and can use two-weapon fighting with it.</p></li><li><p>When you attack with two-weapon fighting using both melee and range in the same turn, both attack gain bonus damage equal to [SL]</p></li></ul>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "5",
+          "name": "Blade&Gun",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "Ynm3WTFFRbstiI5D"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "qx7hx9580rNjHm4c",
+      "_stats": {
+        "compendiumSource": "Item.f11anje4F91avPFp",
+        "coreVersion": "12.343",
+        "createdTime": 1754670730587,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/dragupload/fabula%20class/pirate/Illustration6.jpg",
+      "name": "Boarding Action Tactic",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Pirate",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you learned the skill, you gain a <strong>Piracy Clock, </strong>this clock contains <strong>【SL】</strong>section.</p><p>When you perform <strong>Two-weapon fighting, </strong>filled 1 section of your <strong>Piracy Clock </strong>equal to your number of successful <strong>hit</strong> against a target</p><p>At the end of your turn, you can spend sections of your your <strong>Piracy Clock</strong> and immediately perform an <strong>【Inventory】</strong> action for <strong>free</strong>. This action must cost no more Inventory point than the amount of <strong>section</strong> spent <em>(before reduce by any skill or equipment).</em></p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "2",
+          "name": "Boarding Action Tactic",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "f11anje4F91avPFp"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "SdtXCMt0jHXvWpfh",
+      "_stats": {
+        "compendiumSource": "Item.TEpWF4PhvtqcQc72",
+        "coreVersion": "12.343",
+        "createdTime": 1754674953667,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/dragupload/fabula%20class/pirate/5.jpg",
+      "name": "Smoke Pipe",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Pirate",
+          "cost": "2 IP",
+          "damage_bonus": "0",
+          "description": "<p>You gain Resistence on the next damage taken.</p>",
+          "duration": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Smoke Pipe",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "TEpWF4PhvtqcQc72"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "TlBPEqvIKwKRaq4T",
+      "_stats": {
+        "compendiumSource": "Item.uVtfoHtHkTq364Nz",
+        "coreVersion": "12.343",
+        "createdTime": 1754675072792,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/dragupload/fabula%20class/pirate/4.jpg",
+      "name": "Hook Throw",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Pirate",
+          "cost": "1 IP",
+          "damage_bonus": "0",
+          "description": "<p>Inflict <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.IBN7DtvWLFDo8jNh\" data-id=\"IBN7DtvWLFDo8jNh\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Stagger</span></strong></a></span> on a target. If it is <strong>Covering</strong> someone, now it doesn't.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Hook Throw",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "uVtfoHtHkTq364Nz"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "TS078R6Uhk9f0CKE",
+      "_stats": {
+        "compendiumSource": "Item.RhyNri0zzevBR5R8",
+        "coreVersion": "12.343",
+        "createdTime": 1754675161036,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/dragupload/fabula%20class/pirate/2.jpg",
+      "name": "Spare Bullet",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Pirate",
+          "cost": "1 IP",
+          "damage_bonus": "0",
+          "description": "<p>You made <strong>free attack</strong> with range weapon you equipped with no <strong>HR</strong>.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Spare Bullet",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "RhyNri0zzevBR5R8"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "uZ8tbr9JqzxRuPDS",
+      "_stats": {
+        "compendiumSource": "Item.B1srHAyHZfnT1Bdo",
+        "coreVersion": "12.343",
+        "createdTime": 1754675445419,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/dragupload/fabula%20class/pirate/8.jpg",
+      "name": "Anchor Smash",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Pirate",
+          "cost": "3 IP",
+          "damage_bonus": "0",
+          "description": "<p>Made a <strong>free attack</strong> with melee weapon you equipped.</p><p>But it deal <strong>【15 + HR】</strong> <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a></span></span> damage, it category becomes <strong>Heavy</strong> and it gain <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.U76k25jMlkIFIVB9\" data-id=\"U76k25jMlkIFIVB9\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crush</span></strong></a><strong><span style=\"text-decoration: underline;\">.</span></strong></span></span></p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Anchor Smash",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "B1srHAyHZfnT1Bdo"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "WJxERMV9FBJhuDoS",
+      "_stats": {
+        "compendiumSource": "Item.yRwAD4hBhdQ4tZbn",
+        "coreVersion": "12.343",
+        "createdTime": 1754674076064,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/dragupload/fabula%20class/pirate/14.jpg",
+      "name": "Daring Spendor",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Pirate",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>Increase your <strong>【📜 Boarding Action Tactic】</strong> Skill level by 1 <em>(To a maximum of 3).</em></p><p>In addition, after you use spent <strong>Piracy Clock</strong>, You may choose a target to lose <strong>【10 x Piracy Clock spent 】</strong> HP as you throw some random bullshit at them.</p>",
+          "duration": "",
+          "heroic_requirement": "You must have mastered the Pirate Class.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "level": "1",
+          "max_level": "1",
+          "name": "Daring Spendor",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "yRwAD4hBhdQ4tZbn"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "X22J5uKght7ULZt0",
+      "_stats": {
+        "compendiumSource": "Item.8y5TUMsI7aloHTSw",
+        "coreVersion": "12.343",
+        "createdTime": 1754674948319,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/dragupload/fabula%20class/pirate/10.jpg",
+      "name": "Grenadose",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Pirate",
+          "cost": "2 IP",
+          "damage_bonus": "0",
+          "description": "<p>Target creature take 20 <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a><strong><span style=\"text-decoration: underline;\"> </span></strong></span></span><strong>Throw</strong> damage</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Grenadose",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "8y5TUMsI7aloHTSw"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Pirate",
+  "ownership": {
+    "default": 3,
+    "nXC7OD7u5Zw5UDDU": 3
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar4": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "DEF",
+            "max": 13,
+            "maxcolor": "#f26d40",
+            "mincolor": "#f26d40",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 13
+          },
+          "bar5": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar5",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MDEF",
+            "max": 10,
+            "maxcolor": "#26d6ed",
+            "mincolor": "#26d6ed",
+            "opacity": null,
+            "order": 4,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 10
+          }
+        }
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Pirate",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/dragupload/fabula%20class/Sandrax.jpg",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 1200000,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {
+      "also_text": "Mariner, Seafarer , Admiral",
+      "benefit_dropdown": "ip_benefit",
+      "classMechanic_text": "",
+      "class_facet": {
+        "2D8zMQvOJDXFV5XT": {
+          "facet_cost": "2 IP",
+          "facet_description": "<p>You gain Resistence on the next damage taken.</p>",
+          "id": "2D8zMQvOJDXFV5XT",
+          "name": "Smoke Pipe",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.2D8zMQvOJDXFV5XT"
+        },
+        "348Sw2JuWAjqV0hC": {
+          "facet_cost": "3 IP",
+          "facet_description": "<p>Choose 1 target. You make a contest of DEX+INS against that target.</p><p>It take 50+(The difference in the resault of the check) Physical damage if you win.</p><p>It take 25 Physical damage instead if you lose.</p>",
+          "id": "348Sw2JuWAjqV0hC",
+          "name": "Cannon",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.348Sw2JuWAjqV0hC"
+        },
+        "73MNuUGGuHsGDbm1": {
+          "facet_cost": "X IP",
+          "facet_description": "<p>You call a full bombardment fire support from your ship. Choose to spend any amount of IP.</p><p>This action deal <strong>【10 x amount of IP spend】</strong> to all enemy present in the scene.</p><p>This skill is considered an <strong>【Inventory】</strong>Action.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Boardside Cannon Salvo",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.73MNuUGGuHsGDbm1"
+        },
+        "ASzCiHAcrmrGnPQs": {
+          "facet_cost": "2 IP",
+          "facet_description": "<p>Choose 1 enemy. Made a contest of 【MIG】+【DEX】Check. On a <strong>success, </strong>inflicts <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Grappled</span></strong></a><span style=\"text-decoration: underline;\">&nbsp;to the target</span></span></p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Arm Hook",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.ASzCiHAcrmrGnPQs"
+        },
+        "BndusvxUiGr6a3ie": {
+          "facet_cost": "2 IP",
+          "facet_description": "<p>Choose 1 ally. They gain +5 on next attack roll.</p>",
+          "id": "BndusvxUiGr6a3ie",
+          "name": "Magic Conch",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.BndusvxUiGr6a3ie"
+        },
+        "Cc4Q6R4IFqUtoUcf": {
+          "facet_cost": "2 IP",
+          "facet_description": "<p>Choose 1 enemy. Made a contest of MIG+DEX. You Grapple it on success.</p>",
+          "id": "Cc4Q6R4IFqUtoUcf",
+          "name": "Arm Hook",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.Cc4Q6R4IFqUtoUcf"
+        },
+        "CuPSBKVrVk4WCuoi": {
+          "facet_cost": "3 IP",
+          "facet_description": "<p>Choose 1 target. You make a contest of <strong>【DEX】+【INS】</strong> against that target.</p><ul><li><p><strong>Win</strong>: The target take 【<strong>50</strong> + <em>difference in the result of the check】　</em><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a></span></span> damage.</p></li><li><p><strong>Lose</strong>: The target take <strong>25</strong> <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a></span></span> damage.</p></li></ul>",
+          "facet_offensive": "",
+          "facet_target": "One creature",
+          "id": "${item.id}",
+          "name": "Cannon",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.CuPSBKVrVk4WCuoi"
+        },
+        "DWIf5gCqFE0yp1TP": {
+          "facet_cost": "2 IP",
+          "facet_description": "<p>Choose 1 ally. They gain +5 on next attack roll.</p>",
+          "id": "DWIf5gCqFE0yp1TP",
+          "name": "Magic Conch",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.DWIf5gCqFE0yp1TP"
+        },
+        "FaUlTM5NWtdiAGB1": {
+          "facet_cost": "",
+          "facet_description": "<p><span class=\"fontstyle0\">Each time you take this Skill, you learn one <strong>【Pirate gadget】</strong></span></p><p>You can use <strong>【Pirate Gadget】</strong> with <strong>【Inventory】</strong> Action</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Pirate Gadget",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.FaUlTM5NWtdiAGB1"
+        },
+        "GRxzkzH4G8GjfxB6": {
+          "facet_cost": "",
+          "facet_description": "<p>Increase all Check against <strong>avoiding hazards </strong>by <strong>【SL】</strong></p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Expirenced Barrelman",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.GRxzkzH4G8GjfxB6"
+        },
+        "GYaKPIuocQLVd2zv": {
+          "facet_cost": "",
+          "facet_description": "<p>Increse your \"Boarding Action Tactic\" Skill level by 1 (To a maximum of 3).</p><p>In addition, after you use \"Pirate Gadget\", You may choose 1 target to lose 10 HP as you throw some random bullshit at them.</p>",
+          "id": "GYaKPIuocQLVd2zv",
+          "name": "Daring Spendor",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.GYaKPIuocQLVd2zv"
+        },
+        "GdRKXSwTkpFuPgq5": {
+          "facet_cost": "1 IP",
+          "facet_description": "<p>Made a free attack with melee weapon you equiped.</p><p>But it deal 10+HR Physical damage and Heavy category instead.</p>",
+          "id": "GdRKXSwTkpFuPgq5",
+          "name": "Anchor Smash",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.GdRKXSwTkpFuPgq5"
+        },
+        "GpfgMHllUYZrHPx6": {
+          "facet_cost": "",
+          "facet_description": "<ul><li><p>When you acquire this skill, you can equip both one hand melee weapon and one hand range weapon at the same time and can use two-weapon fighting with it.</p></li><li><p>When you attack with two-weapon fighting using both melee and range in the same turn, both attack gain bonus damage equal to [SL]</p></li></ul>",
+          "id": "GpfgMHllUYZrHPx6",
+          "name": "Blade&Gun",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.GpfgMHllUYZrHPx6"
+        },
+        "IQPprIEEU0eNlFHt": {
+          "facet_cost": "3 IP",
+          "facet_description": "<p>All enemy take 30 Fire damage</p>",
+          "id": "IQPprIEEU0eNlFHt",
+          "name": "Barrel Bomb",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.IQPprIEEU0eNlFHt"
+        },
+        "Jujq07JnvK1jHpcy": {
+          "facet_cost": "1 IP",
+          "facet_description": "<p>Reduce all condition timer on you by 1.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Blood Chalice",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.Jujq07JnvK1jHpcy"
+        },
+        "M7GMulpUHNe0vlqe": {
+          "facet_cost": "",
+          "facet_description": "<p>With an Inventory Action. You call a full bombardment fire support from your ship. Choose to spend any amont of IP.</p><p>This action deal 10 x [amont of IP spend] to all enemy persent in the scene.</p>",
+          "id": "M7GMulpUHNe0vlqe",
+          "name": "Boardside Cannon Salvo",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.M7GMulpUHNe0vlqe"
+        },
+        "MfGru4jklxM0WKqn": {
+          "facet_cost": "1 IP",
+          "facet_description": "<p>Inflict Stagger on 1 target. If it is cover someone, now it doesn't.</p>",
+          "id": "MfGru4jklxM0WKqn",
+          "name": "Hook Throw",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.MfGru4jklxM0WKqn"
+        },
+        "MvpdK9QzWALdANLc": {
+          "facet_cost": "1 IP",
+          "facet_description": "<p>Reduce all condition timer on you by 1.</p>",
+          "id": "MvpdK9QzWALdANLc",
+          "name": "Blood Chalice",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.MvpdK9QzWALdANLc"
+        },
+        "NfOsqIN8c5AxSJt4": {
+          "facet_cost": "",
+          "facet_description": "<p>X Mark(s) appear on the map on overworld travel.</p><p>Reaching the marked spot trigger normal effect of that panel and then generate random loot equal to map difficulty or player level.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "X Marks the Spot",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.NfOsqIN8c5AxSJt4"
+        },
+        "R1CzoSqgzn2unATh": {
+          "facet_cost": "1 IP",
+          "facet_description": "<p>You made a free Study Action</p>",
+          "id": "R1CzoSqgzn2unATh",
+          "name": "Magic Monocular",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.R1CzoSqgzn2unATh"
+        },
+        "RSpYXPYNFXkla3qw": {
+          "facet_cost": "2 IP",
+          "facet_description": "<p>You gain Resistence on the next damage taken.</p>",
+          "id": "RSpYXPYNFXkla3qw",
+          "name": "Smoke Pipe",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.RSpYXPYNFXkla3qw"
+        },
+        "SdtXCMt0jHXvWpfh": {
+          "facet_cost": "2 IP",
+          "facet_description": "<p>You gain Resistence on the next damage taken.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Smoke Pipe",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.SdtXCMt0jHXvWpfh"
+        },
+        "TS078R6Uhk9f0CKE": {
+          "facet_cost": "1 IP",
+          "facet_description": "<p>You made <strong>free attack</strong> with range weapon you equipped with no <strong>HR</strong>.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Spare Bullet",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.TS078R6Uhk9f0CKE"
+        },
+        "TlBPEqvIKwKRaq4T": {
+          "facet_cost": "1 IP",
+          "facet_description": "<p>Inflict <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.IBN7DtvWLFDo8jNh\" data-id=\"IBN7DtvWLFDo8jNh\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Stagger</span></strong></a></span> on a target. If it is <strong>Covering</strong> someone, now it doesn't.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Hook Throw",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.TlBPEqvIKwKRaq4T"
+        },
+        "U6nUnAWxnhuXsoAd": {
+          "facet_cost": "2 IP",
+          "facet_description": "<p>Target take 25 Fire damage of Throw category.</p>",
+          "id": "U6nUnAWxnhuXsoAd",
+          "name": "Grenadose",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.U6nUnAWxnhuXsoAd"
+        },
+        "WJxERMV9FBJhuDoS": {
+          "facet_cost": "",
+          "facet_description": "<p>Increase your <strong>【📜 Boarding Action Tactic】</strong> Skill level by 1 <em>(To a maximum of 3).</em></p><p>In addition, after you use spent <strong>Piracy Clock</strong>, You may choose a target to lose <strong>【10 x Piracy Clock spent 】</strong> HP as you throw some random bullshit at them.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Daring Spendor",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.WJxERMV9FBJhuDoS"
+        },
+        "WzWAEkC1tR4RKrCC": {
+          "facet_cost": "3 IP",
+          "facet_description": "<p>Choose 1 target. You make a contest of DEX+INS against that target.</p><p>It take 50+(The difference in the resault of the check) Physical damage if you win.</p><p>It take 25 Physical damage instead if you lose.</p>",
+          "id": "WzWAEkC1tR4RKrCC",
+          "name": "Cannon",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.WzWAEkC1tR4RKrCC"
+        },
+        "X22J5uKght7ULZt0": {
+          "facet_cost": "2 IP",
+          "facet_description": "<p>Target creature take 20 <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a><strong><span style=\"text-decoration: underline;\"> </span></strong></span></span><strong>Throw</strong> damage</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Grenadose",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.X22J5uKght7ULZt0"
+        },
+        "XfSJkUGiCad2wQg1": {
+          "facet_cost": "1 IP",
+          "facet_description": "<p>Inflict 1 target with Curse condition</p>",
+          "id": "XfSJkUGiCad2wQg1",
+          "name": "Cursed Dagger",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.XfSJkUGiCad2wQg1"
+        },
+        "ZelPjcgfUCt5O8Ct": {
+          "facet_cost": "",
+          "facet_description": "<p>You take reduce damage from overworld map hazard by half. And take reduce damage from conflict scene map hazard by [SL]x2.</p>",
+          "id": "ZelPjcgfUCt5O8Ct",
+          "name": "Expirenced Barrelman",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.ZelPjcgfUCt5O8Ct"
+        },
+        "a0e8HYnhDrBG9Vyi": {
+          "facet_cost": "",
+          "facet_description": "<div class=\"skill-tooltip\"><p>At the start of a <strong>conflict scene</strong>, all enemies gain <span class=\"mark-icon\"><strong>10 Pirate's Mark</strong></span></p><p>Each time you successfully hit an enemy with an attack, remove <span class=\"mark-icon\"><strong>【Pirate's Mark】</strong> </span>equal to <strong>【SL】</strong>. You gain <strong>【10 × mark removed】 Zenit</strong>.</p><p>When you reduce a creature's <span class=\"mark-icon\"><strong>【Pirate's Mark】</strong> </span>to 0, gain <strong>2 IP</strong>.</p></div>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Plundering Assault",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.a0e8HYnhDrBG9Vyi"
+        },
+        "fIZb3fNMIUThD3pX": {
+          "facet_cost": "10 MP",
+          "facet_description": "<p>After you use Two-weapon fighting, you can pay 10MP and immediately take one \"Inventory action\" for free. This \"Inventory Action\" must cost no more than [SL] Inventory point (before reduce by any skill or equipment).</p>",
+          "id": "fIZb3fNMIUThD3pX",
+          "name": "Boarding Action Tactic",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.fIZb3fNMIUThD3pX"
+        },
+        "iJSdrbEmrWePun5o": {
+          "facet_cost": "3 IP",
+          "facet_description": "<p>All enemy take 30 <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span> damage</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Barrel Bomb",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.iJSdrbEmrWePun5o"
+        },
+        "j6oPHK24a72SXLui": {
+          "facet_cost": "1 IP",
+          "facet_description": "<p>Made a free attack with melee weapon you equiped.</p><p>But it deal 10+HR Physical damage and Heavy category instead.</p>",
+          "id": "j6oPHK24a72SXLui",
+          "name": "Anchor Smash",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.j6oPHK24a72SXLui"
+        },
+        "jWtg9Ew6vu6PbYhD": {
+          "facet_cost": "",
+          "facet_description": "<p><span class=\"fontstyle0\">Each time you take this Skill, you learn one [Pirate gadget]</span></p><p>You can use [Pirate Gadget] with \"Inventory Action\"</p>",
+          "id": "jWtg9Ew6vu6PbYhD",
+          "name": "Pirate Gadget",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.jWtg9Ew6vu6PbYhD"
+        },
+        "jsUWeXWfTDPJclIi": {
+          "facet_cost": "1 IP",
+          "facet_description": "<p>You made a free Study Action</p>",
+          "id": "jsUWeXWfTDPJclIi",
+          "name": "Magic Monocular",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.jsUWeXWfTDPJclIi"
+        },
+        "kHoPUcwkHqhLy5t6": {
+          "facet_cost": "2 IP",
+          "facet_description": "<p>Choose 1 ally. They gain +3 on next attack roll.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Magic Conch",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.kHoPUcwkHqhLy5t6"
+        },
+        "khg9JCtOF2eSrLIr": {
+          "facet_cost": "1 IP",
+          "facet_description": "<p>Perform a <strong>【Study】</strong>action</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Magic Monocular",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.khg9JCtOF2eSrLIr"
+        },
+        "lHrOuMu8W12BM7su": {
+          "facet_cost": "1 IP",
+          "facet_description": "<p>Inflict <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.V8mKI3BdXusfSBLq\" data-id=\"V8mKI3BdXusfSBLq\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Curse</span></strong></a></span> on you and the target</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Cursed Dagger",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.lHrOuMu8W12BM7su"
+        },
+        "mMzBxUThsEWjeLJ0": {
+          "facet_cost": "1 IP",
+          "facet_description": "<p>Reduce all condition timer on you by 1.</p>",
+          "id": "mMzBxUThsEWjeLJ0",
+          "name": "Blood Chalice",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.mMzBxUThsEWjeLJ0"
+        },
+        "oUnbpKqap5xUkldS": {
+          "facet_cost": "",
+          "facet_description": "<ul><li><p>When you acquire this skill, you can equip both one hand melee weapon and one hand range weapon at the same time and can use two-weapon fighting with it.</p></li><li><p>When you attack with two-weapon fighting using both melee and range in the same turn, both attack gain bonus damage equal to [SL]</p></li></ul>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Blade&Gun",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.oUnbpKqap5xUkldS"
+        },
+        "oWdaVejnb0yY0wA8": {
+          "facet_cost": "2 IP",
+          "facet_description": "<p>Choose 1 enemy. Made a contest of MIG+DEX. You Grapple it on success.</p>",
+          "id": "oWdaVejnb0yY0wA8",
+          "name": "Arm Hook",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.oWdaVejnb0yY0wA8"
+        },
+        "pESWV8Df2mInJ6zn": {
+          "facet_cost": "",
+          "facet_description": "<p>When your attack hit enemy(s), Give that enemy [SL] number of \"Pirate's mark\".</p><p>When \"Pirate's mark\" on one target reach 10, the target lose 50MP and all Player character that has pirate class gain 1IP and 100 Zeny, then remove all mark's on that target.</p><p>The amont of MP lose increse by character level. 60 at level20 and 70 at level 40.</p><p>The enemy class effect how many time they can be plundered.</p><ul><li><p>Soldier - 1</p></li><li><p>Elite - 3</p></li><li><p>Villian and Super - Unlimited but you gain no Zeny after 5</p></li></ul>",
+          "id": "pESWV8Df2mInJ6zn",
+          "name": "Plundering Assault",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.pESWV8Df2mInJ6zn"
+        },
+        "qx7hx9580rNjHm4c": {
+          "facet_cost": "",
+          "facet_description": "<p>When you learned the skill, you gain a <strong>Piracy Clock, </strong>this clock contains <strong>【SL】</strong>section.</p><p>When you perform <strong>Two-weapon fighting, </strong>filled 1 section of your <strong>Piracy Clock </strong>equal to your number of successful <strong>hit</strong> against a target</p><p>At the end of your turn, you can spend sections of your your <strong>Piracy Clock</strong> and immediately perform an <strong>【Inventory】</strong> action for <strong>free</strong>. This action must cost no more Inventory point than the amount of <strong>section</strong> spent <em>(before reduce by any skill or equipment).</em></p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Boarding Action Tactic",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.qx7hx9580rNjHm4c"
+        },
+        "rRvAPOWCjqRamuhg": {
+          "facet_cost": "3 IP",
+          "facet_description": "<p>All enemy take 30 Fire damage</p>",
+          "id": "rRvAPOWCjqRamuhg",
+          "name": "Barrel Bomb",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.rRvAPOWCjqRamuhg"
+        },
+        "twv28VuPBsjXG48j": {
+          "facet_cost": "1 IP",
+          "facet_description": "<p>You made free attack with range weapon you equiped with no HR.</p>",
+          "id": "twv28VuPBsjXG48j",
+          "name": "Spare Bullet",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.twv28VuPBsjXG48j"
+        },
+        "uZ8tbr9JqzxRuPDS": {
+          "facet_cost": "3 IP",
+          "facet_description": "<p>Made a <strong>free attack</strong> with melee weapon you equipped.</p><p>But it deal <strong>【15 + HR】</strong> <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a></span></span> damage, it category becomes <strong>Heavy</strong> and it gain <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.U76k25jMlkIFIVB9\" data-id=\"U76k25jMlkIFIVB9\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crush</span></strong></a><strong><span style=\"text-decoration: underline;\">.</span></strong></span></span></p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Anchor Smash",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.uZ8tbr9JqzxRuPDS"
+        },
+        "x7I38jqxPlBDWSeR": {
+          "facet_cost": "1 IP",
+          "facet_description": "<p>You made free attack with range weapon you equiped with no HR.</p>",
+          "id": "x7I38jqxPlBDWSeR",
+          "name": "Spare Bullet",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.x7I38jqxPlBDWSeR"
+        },
+        "ydAg3CRz5WgCh617": {
+          "facet_cost": "2 IP",
+          "facet_description": "<p>Target take 25 Fire damage of Throw category.</p>",
+          "id": "ydAg3CRz5WgCh617",
+          "name": "Grenadose",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.ydAg3CRz5WgCh617"
+        },
+        "ynOT88vKbmYrXfO4": {
+          "facet_cost": "1 IP",
+          "facet_description": "<p>Inflict Stagger on 1 target. If it is cover someone, now it doesn't.</p>",
+          "id": "ynOT88vKbmYrXfO4",
+          "name": "Hook Throw",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.ynOT88vKbmYrXfO4"
+        },
+        "z07IXHx1Hm8QUy2X": {
+          "facet_cost": "1 IP",
+          "facet_description": "<p>Inflict 1 target with Curse condition</p>",
+          "id": "z07IXHx1Hm8QUy2X",
+          "name": "Cursed Dagger",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.z07IXHx1Hm8QUy2X"
+        },
+        "zSEzTUkqqvYg6mb6": {
+          "facet_cost": "",
+          "facet_description": "<p>[SL] Mark(s) appear on the map on overworld tarvel.</p><p>Reaching the marked spot trigger normal effect of that panel and then generate random loot equal to map difficulty or player level.</p>",
+          "id": "zSEzTUkqqvYg6mb6",
+          "name": "X Marks the Spot",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.zSEzTUkqqvYg6mb6"
+        }
+      },
+      "class_heroicSkill": {
+        "73MNuUGGuHsGDbm1": {
+          "id": "${item.id}",
+          "name": "Boardside Cannon Salvo",
+          "skill_cost": "X IP",
+          "skill_description": "<p>You call a full bombardment fire support from your ship. Choose to spend any amount of IP.</p><p>This action deal <strong>【10 x amount of IP spend】</strong> to all enemy present in the scene.</p><p>This skill is considered an <strong>【Inventory】</strong>Action.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.73MNuUGGuHsGDbm1"
+        },
+        "8MZ192PeIfgtJx3O": {
+          "id": "8MZ192PeIfgtJx3O",
+          "name": "Boardside Cannon Salvo",
+          "skill_cost": "",
+          "skill_description": "<p>With an Inventory Action. You call a full bombardment fire support from your ship. Choose to spend any amont of IP.</p><p>This action deal 10 x [amont of IP spend] to all enemy persent in the scene.</p>",
+          "skill_isHeroic": true,
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.8MZ192PeIfgtJx3O"
+        },
+        "GYaKPIuocQLVd2zv": {
+          "id": "GYaKPIuocQLVd2zv",
+          "name": "Daring Spendor",
+          "skill_cost": "",
+          "skill_description": "<p>Increse your \"Boarding Action Tactic\" Skill level by 1 (To a maximum of 3).</p><p>In addition, after you use \"Pirate Gadget\", You may choose 1 target to lose 10 HP as you throw some random bullshit at them.</p>",
+          "skill_isHeroic": true,
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.GYaKPIuocQLVd2zv"
+        },
+        "M7GMulpUHNe0vlqe": {
+          "id": "M7GMulpUHNe0vlqe",
+          "name": "Boardside Cannon Salvo",
+          "skill_cost": "",
+          "skill_description": "<p>With an Inventory Action. You call a full bombardment fire support from your ship. Choose to spend any amont of IP.</p><p>This action deal 10 x [amont of IP spend] to all enemy persent in the scene.</p>",
+          "skill_isHeroic": true,
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.M7GMulpUHNe0vlqe"
+        },
+        "WJxERMV9FBJhuDoS": {
+          "id": "${item.id}",
+          "name": "Daring Spendor",
+          "skill_cost": "",
+          "skill_description": "<p>Increase your <strong>【📜 Boarding Action Tactic】</strong> Skill level by 1 <em>(To a maximum of 3).</em></p><p>In addition, after you use spent <strong>Piracy Clock</strong>, You may choose a target to lose <strong>【10 x Piracy Clock spent 】</strong> HP as you throw some random bullshit at them.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.WJxERMV9FBJhuDoS"
+        },
+        "Zfjwt8sjCiM1vEAH": {
+          "id": "Zfjwt8sjCiM1vEAH",
+          "name": "Boardside Cannon Salvo",
+          "skill_cost": "",
+          "skill_description": "<p>With an Inventory Action. You call a full bombardment fire support from your ship. Choose to spend any amont of IP.</p><p>This action deal 10 x [amont of IP spend] to all enemy persent in the scene.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.Zfjwt8sjCiM1vEAH"
+        },
+        "a5R9iCynpfwsDmiT": {
+          "id": "a5R9iCynpfwsDmiT",
+          "name": "Daring Spendor",
+          "skill_cost": "",
+          "skill_description": "<p>Increse your \"Boarding Action Tactic\" Skill level by 1 (To a maximum of 3).</p><p>In addition, after you use \"Pirate Gadget\", You may choose 1 target to lose 10 HP as you throw some random bullshit at them.</p>",
+          "skill_isHeroic": true,
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.a5R9iCynpfwsDmiT"
+        },
+        "jxVBIG0K1Z8EDUKc": {
+          "id": "jxVBIG0K1Z8EDUKc",
+          "name": "Daring Spendor",
+          "skill_cost": "",
+          "skill_description": "<p>Increse your \"Boarding Action Tactic\" Skill level by 1 (To a maximum of 3).</p><p>In addition, after you use \"Pirate Gadget\", You may choose 1 target to lose 10 HP as you throw some random bullshit at them.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.jxVBIG0K1Z8EDUKc"
+        }
+      },
+      "class_lore": "<p>How can one sustain yourself on a long journey? Plunder from everyone!! Whether they're enemies or people on the road. Pirate doesn't care as long as ther survive. Armed with both melee and range weapon. Threatening with powderkeg and cannon. Pirate has many trick to bring even the strongest foe down.</p>",
+      "class_skill": {
+        "1vuBrhAlDNV7XSbt": {
+          "id": "1vuBrhAlDNV7XSbt",
+          "name": "Expirenced Barrelman",
+          "skill_cost": "",
+          "skill_description": "<p>You take reduce damage from overworld map hazard by half. And take reduce damage from conflict scene map hazard by [SL]x2.</p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 5,
+          "skill_type": "",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.1vuBrhAlDNV7XSbt"
+        },
+        "2D8zMQvOJDXFV5XT": {
+          "id": "2D8zMQvOJDXFV5XT",
+          "name": "Smoke Pipe",
+          "skill_cost": "2 IP",
+          "skill_description": "<p>You gain Resistence on the next damage taken.</p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 1,
+          "skill_type": "",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.2D8zMQvOJDXFV5XT"
+        },
+        "2vUXM6mhd8Fxr3xu": {
+          "id": "2vUXM6mhd8Fxr3xu",
+          "name": "Expirenced Barrelman",
+          "skill_cost": "",
+          "skill_description": "<p>You take reduce damage from overworld map hazard by half. And take reduce damage from conflict scene map hazard by [SL]x2.</p>",
+          "skill_maxLevel": 5,
+          "skill_type": "",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.2vUXM6mhd8Fxr3xu"
+        },
+        "348Sw2JuWAjqV0hC": {
+          "id": "348Sw2JuWAjqV0hC",
+          "name": "Cannon",
+          "skill_cost": "3 IP",
+          "skill_description": "<p>Choose 1 target. You make a contest of DEX+INS against that target.</p><p>It take 50+(The difference in the resault of the check) Physical damage if you win.</p><p>It take 25 Physical damage instead if you lose.</p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.348Sw2JuWAjqV0hC"
+        },
+        "4xDKhaaHMh8L35bN": {
+          "id": "4xDKhaaHMh8L35bN",
+          "name": "Boarding Action Tactic",
+          "skill_cost": "10 MP",
+          "skill_description": "<p>After you use Two-weapon fighting, you can pay 10MP and immediately take one \"Inventory action\" for free. This \"Inventory Action\" must cost no more than [SL] Inventory point (before reduce by any skill or equipment).</p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 2,
+          "skill_type": "Active",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.4xDKhaaHMh8L35bN"
+        },
+        "6TqIie1dyNRkz4q9": {
+          "id": "6TqIie1dyNRkz4q9",
+          "name": "Boarding Action Tactic",
+          "skill_cost": "10 MP",
+          "skill_description": "<p>After you use Two-weapon fighting, you can pay 10MP and immediately take one \"Inventory action\" for free. This \"Inventory Action\" must cost no more than [SL] Inventory point (before reduce by any skill or equipment).</p>",
+          "skill_maxLevel": 2,
+          "skill_type": "Active",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.6TqIie1dyNRkz4q9"
+        },
+        "8MZ192PeIfgtJx3O": {
+          "id": "8MZ192PeIfgtJx3O",
+          "name": "Boardside Cannon Salvo",
+          "skill_cost": "",
+          "skill_description": "<p>With an Inventory Action. You call a full bombardment fire support from your ship. Choose to spend any amont of IP.</p><p>This action deal 10 x [amont of IP spend] to all enemy persent in the scene.</p>",
+          "skill_isHeroic": true,
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.8MZ192PeIfgtJx3O"
+        },
+        "8TQxe4xLsPopzEp8": {
+          "id": "8TQxe4xLsPopzEp8",
+          "name": "Plundering Assault",
+          "skill_cost": "",
+          "skill_description": "<p>When your attack hit enemy(s), Give that enemy [SL] number of \"Pirate's mark\".</p><p>When \"Pirate's mark\" on one target reach 10, the target lose 50MP and all Player character that has pirate class gain 1IP and 100 Zeny, then remove all mark's on that target.</p><p>The amont of MP lose increse by character level. 60 at level20 and 70 at level 40.</p><p>The enemy class effect how many time they can be plundered.</p><ul><li><p>Soldier - 1</p></li><li><p>Elite - 3</p></li><li><p>Villian and Super - Unlimited but you gain no Zeny after 5</p></li></ul>",
+          "skill_maxLevel": 5,
+          "skill_type": "Passive",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.8TQxe4xLsPopzEp8"
+        },
+        "9rtpTj3LnUvxqz9U": {
+          "id": "9rtpTj3LnUvxqz9U",
+          "name": "X Marks the Spot",
+          "skill_cost": "",
+          "skill_description": "<p>[SL] Mark(s) appear on the map on overworld tarvel.</p><p>Reaching the marked spot trigger normal effect of that panel and then generate random loot equal to map difficulty or player level.</p>",
+          "skill_maxLevel": 3,
+          "skill_type": "Passive",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.9rtpTj3LnUvxqz9U"
+        },
+        "B7J4ry9lDedpRhYP": {
+          "id": "B7J4ry9lDedpRhYP",
+          "name": "Boarding Action Tactic",
+          "skill_cost": "10 MP",
+          "skill_description": "<p>After you use Two-weapon fighting, you can pay 10MP and immediately take one \"Inventory action\" for free. This \"Inventory Action\" must cost no more than [SL] Inventory point (before reduce by any skill or equipment).</p>",
+          "skill_maxLevel": 2,
+          "skill_type": "Active",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.B7J4ry9lDedpRhYP"
+        },
+        "BndusvxUiGr6a3ie": {
+          "id": "BndusvxUiGr6a3ie",
+          "name": "Magic Conch",
+          "skill_cost": "2 IP",
+          "skill_description": "<p>Choose 1 ally. They gain +5 on next attack roll.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.BndusvxUiGr6a3ie"
+        },
+        "Cc4Q6R4IFqUtoUcf": {
+          "id": "Cc4Q6R4IFqUtoUcf",
+          "name": "Arm Hook",
+          "skill_cost": "2 IP",
+          "skill_description": "<p>Choose 1 enemy. Made a contest of MIG+DEX. You Grapple it on success.</p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.Cc4Q6R4IFqUtoUcf"
+        },
+        "D68Ysh0pme9KZXov": {
+          "id": "D68Ysh0pme9KZXov",
+          "name": "Pirate Gadget",
+          "skill_cost": "",
+          "skill_description": "<p><span class=\"fontstyle0\">Each time you take this Skill, you learn one [Pirate gadget]</span></p><p>You can use [Pirate Gadget] with \"Inventory Action\"</p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 10,
+          "skill_type": "Passive",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.D68Ysh0pme9KZXov"
+        },
+        "DWIf5gCqFE0yp1TP": {
+          "id": "DWIf5gCqFE0yp1TP",
+          "name": "Magic Conch",
+          "skill_cost": "2 IP",
+          "skill_description": "<p>Choose 1 ally. They gain +5 on next attack roll.</p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.DWIf5gCqFE0yp1TP"
+        },
+        "FaUlTM5NWtdiAGB1": {
+          "id": "${item.id}",
+          "name": "Pirate Gadget",
+          "skill_cost": "",
+          "skill_description": "<p><span class=\"fontstyle0\">Each time you take this Skill, you learn one <strong>【Pirate gadget】</strong></span></p><p>You can use <strong>【Pirate Gadget】</strong> with <strong>【Inventory】</strong> Action</p>",
+          "skill_maxLevel": 10,
+          "skill_type": "Other",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.FaUlTM5NWtdiAGB1"
+        },
+        "GRxzkzH4G8GjfxB6": {
+          "id": "${item.id}",
+          "name": "Expirenced Barrelman",
+          "skill_cost": "",
+          "skill_description": "<p>Increase all Check against <strong>avoiding hazards </strong>by <strong>【SL】</strong></p>",
+          "skill_maxLevel": 4,
+          "skill_type": "Passive",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.GRxzkzH4G8GjfxB6"
+        },
+        "GdRKXSwTkpFuPgq5": {
+          "id": "GdRKXSwTkpFuPgq5",
+          "name": "Anchor Smash",
+          "skill_cost": "1 IP",
+          "skill_description": "<p>Made a free attack with melee weapon you equiped.</p><p>But it deal 10+HR Physical damage and Heavy category instead.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.GdRKXSwTkpFuPgq5"
+        },
+        "GpfgMHllUYZrHPx6": {
+          "id": "GpfgMHllUYZrHPx6",
+          "name": "Blade&Gun",
+          "skill_cost": "",
+          "skill_description": "<ul><li><p>When you acquire this skill, you can equip both one hand melee weapon and one hand range weapon at the same time and can use two-weapon fighting with it.</p></li><li><p>When you attack with two-weapon fighting using both melee and range in the same turn, both attack gain bonus damage equal to [SL]</p></li></ul>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 5,
+          "skill_type": "Passive",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.GpfgMHllUYZrHPx6"
+        },
+        "IQPprIEEU0eNlFHt": {
+          "id": "IQPprIEEU0eNlFHt",
+          "name": "Barrel Bomb",
+          "skill_cost": "3 IP",
+          "skill_description": "<p>All enemy take 30 Fire damage</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.IQPprIEEU0eNlFHt"
+        },
+        "MfGru4jklxM0WKqn": {
+          "id": "MfGru4jklxM0WKqn",
+          "name": "Hook Throw",
+          "skill_cost": "1 IP",
+          "skill_description": "<p>Inflict Stagger on 1 target. If it is cover someone, now it doesn't.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.MfGru4jklxM0WKqn"
+        },
+        "MvpdK9QzWALdANLc": {
+          "id": "MvpdK9QzWALdANLc",
+          "name": "Blood Chalice",
+          "skill_cost": "1 IP",
+          "skill_description": "<p>Reduce all condition timer on you by 1.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.MvpdK9QzWALdANLc"
+        },
+        "NfOsqIN8c5AxSJt4": {
+          "id": "${item.id}",
+          "name": "X Marks the Spot",
+          "skill_cost": "",
+          "skill_description": "<p>X Mark(s) appear on the map on overworld travel.</p><p>Reaching the marked spot trigger normal effect of that panel and then generate random loot equal to map difficulty or player level.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.NfOsqIN8c5AxSJt4"
+        },
+        "R1CzoSqgzn2unATh": {
+          "id": "R1CzoSqgzn2unATh",
+          "name": "Magic Monocular",
+          "skill_cost": "1 IP",
+          "skill_description": "<p>You made a free Study Action</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.R1CzoSqgzn2unATh"
+        },
+        "RSpYXPYNFXkla3qw": {
+          "id": "RSpYXPYNFXkla3qw",
+          "name": "Smoke Pipe",
+          "skill_cost": "2 IP",
+          "skill_description": "<p>You gain Resistence on the next damage taken.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.RSpYXPYNFXkla3qw"
+        },
+        "U6nUnAWxnhuXsoAd": {
+          "id": "U6nUnAWxnhuXsoAd",
+          "name": "Grenadose",
+          "skill_cost": "2 IP",
+          "skill_description": "<p>Target take 25 Fire damage of Throw category.</p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.U6nUnAWxnhuXsoAd"
+        },
+        "UzZjial6ej1OR5La": {
+          "id": "UzZjial6ej1OR5La",
+          "name": "Pirate Gadget",
+          "skill_cost": "",
+          "skill_description": "<p><span class=\"fontstyle0\">Each time you take this Skill, you learn one [Pirate gadget]</span></p><p>You can use [Pirate Gadget] with \"Inventory Action\"</p>",
+          "skill_maxLevel": 10,
+          "skill_type": "Passive",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.UzZjial6ej1OR5La"
+        },
+        "WzWAEkC1tR4RKrCC": {
+          "id": "WzWAEkC1tR4RKrCC",
+          "name": "Cannon",
+          "skill_cost": "3 IP",
+          "skill_description": "<p>Choose 1 target. You make a contest of DEX+INS against that target.</p><p>It take 50+(The difference in the resault of the check) Physical damage if you win.</p><p>It take 25 Physical damage instead if you lose.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.WzWAEkC1tR4RKrCC"
+        },
+        "XfSJkUGiCad2wQg1": {
+          "id": "XfSJkUGiCad2wQg1",
+          "name": "Cursed Dagger",
+          "skill_cost": "1 IP",
+          "skill_description": "<p>Inflict 1 target with Curse condition</p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.XfSJkUGiCad2wQg1"
+        },
+        "ZdOqhtSPJE5a7AjL": {
+          "id": "ZdOqhtSPJE5a7AjL",
+          "name": "X Marks the Spot",
+          "skill_cost": "",
+          "skill_description": "<p>[SL] Mark(s) appear on the map on overworld tarvel.</p><p>Reaching the marked spot trigger normal effect of that panel and then generate random loot equal to map difficulty or player level.</p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 3,
+          "skill_type": "Passive",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.ZdOqhtSPJE5a7AjL"
+        },
+        "ZelPjcgfUCt5O8Ct": {
+          "id": "ZelPjcgfUCt5O8Ct",
+          "name": "Expirenced Barrelman",
+          "skill_cost": "",
+          "skill_description": "<p>You take reduce damage from overworld map hazard by half. And take reduce damage from conflict scene map hazard by [SL]x2.</p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 5,
+          "skill_type": "",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.ZelPjcgfUCt5O8Ct"
+        },
+        "Zfjwt8sjCiM1vEAH": {
+          "id": "Zfjwt8sjCiM1vEAH",
+          "name": "Boardside Cannon Salvo",
+          "skill_cost": "",
+          "skill_description": "<p>With an Inventory Action. You call a full bombardment fire support from your ship. Choose to spend any amont of IP.</p><p>This action deal 10 x [amont of IP spend] to all enemy persent in the scene.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.Zfjwt8sjCiM1vEAH"
+        },
+        "a0e8HYnhDrBG9Vyi": {
+          "id": "${item.id}",
+          "name": "Plundering Assault",
+          "skill_cost": "",
+          "skill_description": "<div class=\"skill-tooltip\"><p>At the start of a <strong>conflict scene</strong>, all enemies gain <span class=\"mark-icon\"><strong>10 Pirate's Mark</strong></span></p><p>Each time you successfully hit an enemy with an attack, remove <span class=\"mark-icon\"><strong>【Pirate's Mark】</strong> </span>equal to <strong>【SL】</strong>. You gain <strong>【10 × mark removed】 Zenit</strong>.</p><p>When you reduce a creature's <span class=\"mark-icon\"><strong>【Pirate's Mark】</strong> </span>to 0, gain <strong>2 IP</strong>.</p></div>",
+          "skill_maxLevel": 5,
+          "skill_type": "Passive",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.a0e8HYnhDrBG9Vyi"
+        },
+        "a5R9iCynpfwsDmiT": {
+          "id": "a5R9iCynpfwsDmiT",
+          "name": "Daring Spendor",
+          "skill_cost": "",
+          "skill_description": "<p>Increse your \"Boarding Action Tactic\" Skill level by 1 (To a maximum of 3).</p><p>In addition, after you use \"Pirate Gadget\", You may choose 1 target to lose 10 HP as you throw some random bullshit at them.</p>",
+          "skill_isHeroic": true,
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.a5R9iCynpfwsDmiT"
+        },
+        "csYG0j5C7KbTD6Ue": {
+          "id": "csYG0j5C7KbTD6Ue",
+          "name": "Blade&Gun",
+          "skill_cost": "",
+          "skill_description": "<ul><li><p>When you acquire this skill, you can equip both one hand melee weapon and one hand range weapon at the same time and can use two-weapon fighting with it.</p></li><li><p>When you attack with two-weapon fighting using both melee and range in the same turn, both attack gain bonus damage equal to [SL]</p></li></ul>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 5,
+          "skill_type": "Passive",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.csYG0j5C7KbTD6Ue"
+        },
+        "fIZb3fNMIUThD3pX": {
+          "id": "fIZb3fNMIUThD3pX",
+          "name": "Boarding Action Tactic",
+          "skill_cost": "10 MP",
+          "skill_description": "<p>After you use Two-weapon fighting, you can pay 10MP and immediately take one \"Inventory action\" for free. This \"Inventory Action\" must cost no more than [SL] Inventory point (before reduce by any skill or equipment).</p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 2,
+          "skill_type": "Active",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.fIZb3fNMIUThD3pX"
+        },
+        "j6oPHK24a72SXLui": {
+          "id": "j6oPHK24a72SXLui",
+          "name": "Anchor Smash",
+          "skill_cost": "1 IP",
+          "skill_description": "<p>Made a free attack with melee weapon you equiped.</p><p>But it deal 10+HR Physical damage and Heavy category instead.</p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.j6oPHK24a72SXLui"
+        },
+        "jWtg9Ew6vu6PbYhD": {
+          "id": "jWtg9Ew6vu6PbYhD",
+          "name": "Pirate Gadget",
+          "skill_cost": "",
+          "skill_description": "<p><span class=\"fontstyle0\">Each time you take this Skill, you learn one [Pirate gadget]</span></p><p>You can use [Pirate Gadget] with \"Inventory Action\"</p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 10,
+          "skill_type": "Passive",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.jWtg9Ew6vu6PbYhD"
+        },
+        "jsUWeXWfTDPJclIi": {
+          "id": "jsUWeXWfTDPJclIi",
+          "name": "Magic Monocular",
+          "skill_cost": "1 IP",
+          "skill_description": "<p>You made a free Study Action</p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.jsUWeXWfTDPJclIi"
+        },
+        "jxVBIG0K1Z8EDUKc": {
+          "id": "jxVBIG0K1Z8EDUKc",
+          "name": "Daring Spendor",
+          "skill_cost": "",
+          "skill_description": "<p>Increse your \"Boarding Action Tactic\" Skill level by 1 (To a maximum of 3).</p><p>In addition, after you use \"Pirate Gadget\", You may choose 1 target to lose 10 HP as you throw some random bullshit at them.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.jxVBIG0K1Z8EDUKc"
+        },
+        "mMzBxUThsEWjeLJ0": {
+          "id": "mMzBxUThsEWjeLJ0",
+          "name": "Blood Chalice",
+          "skill_cost": "1 IP",
+          "skill_description": "<p>Reduce all condition timer on you by 1.</p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.mMzBxUThsEWjeLJ0"
+        },
+        "n6vDCfP5DI0Lj5p2": {
+          "id": "n6vDCfP5DI0Lj5p2",
+          "name": "Blade&Gun",
+          "skill_cost": "",
+          "skill_description": "<ul><li><p>When you acquire this skill, you can equip both one hand melee weapon and one hand range weapon at the same time and can use two-weapon fighting with it.</p></li><li><p>When you attack with two-weapon fighting using both melee and range in the same turn, both attack gain bonus damage equal to [SL]</p></li></ul>",
+          "skill_maxLevel": 5,
+          "skill_type": "Passive",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.n6vDCfP5DI0Lj5p2"
+        },
+        "oUnbpKqap5xUkldS": {
+          "id": "${item.id}",
+          "name": "Blade&Gun",
+          "skill_cost": "",
+          "skill_description": "<ul><li><p>When you acquire this skill, you can equip both one hand melee weapon and one hand range weapon at the same time and can use two-weapon fighting with it.</p></li><li><p>When you attack with two-weapon fighting using both melee and range in the same turn, both attack gain bonus damage equal to [SL]</p></li></ul>",
+          "skill_maxLevel": 5,
+          "skill_type": "Passive",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.oUnbpKqap5xUkldS"
+        },
+        "oWdaVejnb0yY0wA8": {
+          "id": "oWdaVejnb0yY0wA8",
+          "name": "Arm Hook",
+          "skill_cost": "2 IP",
+          "skill_description": "<p>Choose 1 enemy. Made a contest of MIG+DEX. You Grapple it on success.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.oWdaVejnb0yY0wA8"
+        },
+        "pESWV8Df2mInJ6zn": {
+          "id": "pESWV8Df2mInJ6zn",
+          "name": "Plundering Assault",
+          "skill_cost": "",
+          "skill_description": "<p>When your attack hit enemy(s), Give that enemy [SL] number of \"Pirate's mark\".</p><p>When \"Pirate's mark\" on one target reach 10, the target lose 50MP and all Player character that has pirate class gain 1IP and 100 Zeny, then remove all mark's on that target.</p><p>The amont of MP lose increse by character level. 60 at level20 and 70 at level 40.</p><p>The enemy class effect how many time they can be plundered.</p><ul><li><p>Soldier - 1</p></li><li><p>Elite - 3</p></li><li><p>Villian and Super - Unlimited but you gain no Zeny after 5</p></li></ul>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 5,
+          "skill_type": "Passive",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.pESWV8Df2mInJ6zn"
+        },
+        "qx7hx9580rNjHm4c": {
+          "id": "${item.id}",
+          "name": "Boarding Action Tactic",
+          "skill_cost": "",
+          "skill_description": "<p>When you learned the skill, you gain a <strong>Piracy Clock, </strong>this clock contains <strong>【SL】</strong>section.</p><p>When you perform <strong>Two-weapon fighting, </strong>filled 1 section of your <strong>Piracy Clock </strong>equal to your number of successful <strong>hit</strong> against a target</p><p>At the end of your turn, you can spend sections of your your <strong>Piracy Clock</strong> and immediately perform an <strong>【Inventory】</strong> action for <strong>free</strong>. This action must cost no more Inventory point than the amount of <strong>section</strong> spent <em>(before reduce by any skill or equipment).</em></p>",
+          "skill_maxLevel": 2,
+          "skill_type": "Passive",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.qx7hx9580rNjHm4c"
+        },
+        "rRvAPOWCjqRamuhg": {
+          "id": "rRvAPOWCjqRamuhg",
+          "name": "Barrel Bomb",
+          "skill_cost": "3 IP",
+          "skill_description": "<p>All enemy take 30 Fire damage</p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.rRvAPOWCjqRamuhg"
+        },
+        "twv28VuPBsjXG48j": {
+          "id": "twv28VuPBsjXG48j",
+          "name": "Spare Bullet",
+          "skill_cost": "1 IP",
+          "skill_description": "<p>You made free attack with range weapon you equiped with no HR.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.twv28VuPBsjXG48j"
+        },
+        "x7I38jqxPlBDWSeR": {
+          "id": "x7I38jqxPlBDWSeR",
+          "name": "Spare Bullet",
+          "skill_cost": "1 IP",
+          "skill_description": "<p>You made free attack with range weapon you equiped with no HR.</p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.x7I38jqxPlBDWSeR"
+        },
+        "yLijHni9MaLI1iti": {
+          "id": "yLijHni9MaLI1iti",
+          "name": "Plundering Assault",
+          "skill_cost": "",
+          "skill_description": "<p>When your attack hit enemy(s), Give that enemy [SL] number of \"Pirate's mark\".</p><p>When \"Pirate's mark\" on one target reach 10, the target lose 50MP and all Player character that has pirate class gain 1IP and 100 Zeny, then remove all mark's on that target.</p><p>The amont of MP lose increse by character level. 60 at level20 and 70 at level 40.</p><p>The enemy class effect how many time they can be plundered.</p><ul><li><p>Soldier - 1</p></li><li><p>Elite - 3</p></li><li><p>Villian and Super - Unlimited but you gain no Zeny after 5</p></li></ul>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 5,
+          "skill_type": "Passive",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.yLijHni9MaLI1iti"
+        },
+        "ydAg3CRz5WgCh617": {
+          "id": "ydAg3CRz5WgCh617",
+          "name": "Grenadose",
+          "skill_cost": "2 IP",
+          "skill_description": "<p>Target take 25 Fire damage of Throw category.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.ydAg3CRz5WgCh617"
+        },
+        "ynOT88vKbmYrXfO4": {
+          "id": "ynOT88vKbmYrXfO4",
+          "name": "Hook Throw",
+          "skill_cost": "1 IP",
+          "skill_description": "<p>Inflict Stagger on 1 target. If it is cover someone, now it doesn't.</p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.ynOT88vKbmYrXfO4"
+        },
+        "z07IXHx1Hm8QUy2X": {
+          "id": "z07IXHx1Hm8QUy2X",
+          "name": "Cursed Dagger",
+          "skill_cost": "1 IP",
+          "skill_description": "<p>Inflict 1 target with Curse condition</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.z07IXHx1Hm8QUy2X"
+        },
+        "zSEzTUkqqvYg6mb6": {
+          "id": "zSEzTUkqqvYg6mb6",
+          "name": "X Marks the Spot",
+          "skill_cost": "",
+          "skill_description": "<p>[SL] Mark(s) appear on the map on overworld tarvel.</p><p>Reaching the marked spot trigger normal effect of that panel and then generate random loot equal to map difficulty or player level.</p>",
+          "skill_isHeroic": false,
+          "skill_maxLevel": 3,
+          "skill_type": "Passive",
+          "uuid": "Actor.uR31vv89f6OJeJHF.Item.zSEzTUkqqvYg6mb6"
+        }
+      },
+      "flavor_text": "<p style=\"text-align: center;\"><span style=\"font-family: Amiri\"><em>Take what you can</em></span></p><p style=\"text-align: center\"><span style=\"font-family: Amiri\"><em>give nothing back!</em></span></p>",
+      "martialArmor_equippable": false,
+      "martialMelee_equippable": true,
+      "martialRanged_equippable": true,
+      "martialShield_equippable": false,
+      "name": "Pirate",
+      "project_performable": false,
+      "ritual_performable": false
+    },
+    "statusEffects": {},
+    "template": "hoxC3HFCtMYGScIo",
+    "templateSystemUniqueVersion": 504201233
+  },
+  "type": "character"
+}

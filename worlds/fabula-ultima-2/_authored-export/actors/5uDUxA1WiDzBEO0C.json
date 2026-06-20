@@ -1,0 +1,1239 @@
+{
+  "_id": "5uDUxA1WiDzBEO0C",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1743271087855,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.5.0"
+    },
+    "theatre": {
+      "baseinsert": "",
+      "disabledefault": false,
+      "emotes": {
+        "angry": {
+          "insert": "https://i.imgur.com/MkTSfuZ.png"
+        },
+        "annoyed": {
+          "insert": "https://i.imgur.com/MkTSfuZ.png"
+        },
+        "awe-struck": {
+          "insert": "https://i.imgur.com/EntGY10.png"
+        },
+        "blushing": {
+          "insert": "https://i.imgur.com/EntGY10.png"
+        },
+        "carefree": {
+          "insert": "https://i.imgur.com/CcQXJu8.png"
+        },
+        "confused": {
+          "insert": "https://i.imgur.com/FglTLbV.png"
+        },
+        "cry": {
+          "insert": "https://i.imgur.com/FglTLbV.png"
+        },
+        "dissatisfied": {
+          "insert": "https://i.imgur.com/CcQXJu8.png"
+        },
+        "dizzy": {
+          "insert": "https://i.imgur.com/FglTLbV.png"
+        },
+        "frown": {
+          "insert": "https://i.imgur.com/MkTSfuZ.png"
+        },
+        "frustrated": {
+          "insert": "https://i.imgur.com/MkTSfuZ.png"
+        },
+        "grin": {
+          "insert": "https://i.imgur.com/EntGY10.png"
+        },
+        "happy": {
+          "insert": "https://i.imgur.com/EntGY10.png"
+        },
+        "happytears": {
+          "insert": "https://i.imgur.com/EntGY10.png"
+        },
+        "hearts": {
+          "insert": "https://i.imgur.com/EntGY10.png"
+        },
+        "idea": {
+          "insert": "https://i.imgur.com/EntGY10.png"
+        },
+        "innocent": {
+          "insert": "https://i.imgur.com/CcQXJu8.png"
+        },
+        "kiss": {
+          "insert": "https://i.imgur.com/EntGY10.png"
+        },
+        "laughing": {
+          "insert": "https://i.imgur.com/EntGY10.png"
+        },
+        "laughingsquint": {
+          "insert": "https://i.imgur.com/EntGY10.png"
+        },
+        "meh": {
+          "insert": "https://i.imgur.com/CcQXJu8.png"
+        },
+        "mischevious": {
+          "insert": "https://i.imgur.com/CcQXJu8.png"
+        },
+        "panic": {
+          "insert": "https://i.imgur.com/FglTLbV.png"
+        },
+        "playful": {
+          "insert": "https://i.imgur.com/CcQXJu8.png"
+        },
+        "rofl": {
+          "insert": "https://i.imgur.com/EntGY10.png"
+        },
+        "sad": {
+          "insert": "https://i.imgur.com/FglTLbV.png"
+        },
+        "scared": {
+          "insert": "https://i.imgur.com/FglTLbV.png"
+        },
+        "serious": {
+          "insert": "https://i.imgur.com/MkTSfuZ.png"
+        },
+        "sleeping": {
+          "insert": "https://i.imgur.com/CcQXJu8.png"
+        },
+        "smile": {
+          "insert": "https://i.imgur.com/CcQXJu8.png"
+        },
+        "smug": {
+          "insert": "https://i.imgur.com/EntGY10.png"
+        },
+        "speechless": {
+          "insert": "https://i.imgur.com/FglTLbV.png"
+        },
+        "surprised": {
+          "insert": "https://i.imgur.com/FglTLbV.png"
+        },
+        "thinking": {
+          "insert": "https://i.imgur.com/CcQXJu8.png"
+        },
+        "tongue": {
+          "insert": "https://i.imgur.com/CcQXJu8.png"
+        },
+        "wink": {
+          "insert": "https://i.imgur.com/CcQXJu8.png"
+        },
+        "worried": {
+          "insert": "https://i.imgur.com/FglTLbV.png"
+        }
+      },
+      "name": "",
+      "optalign": "top",
+      "settings": {
+        "emote": "smile",
+        "textcolor": null,
+        "textflyin": "typewriter",
+        "textfont": null,
+        "textsize": null,
+        "textstanding": "none"
+      }
+    }
+  },
+  "folder": "4ZnFueiJf526eQFt",
+  "img": "https://i.imgur.com/CcQXJu8.png",
+  "items": [
+    {
+      "_id": "343KJPljP2y9bNrr",
+      "_stats": {
+        "compendiumSource": "Item.JReKcw8VQA7whmq9",
+        "coreVersion": "12.343",
+        "createdTime": 1748025707834,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.4.2"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://iili.io/3r51Ko7.png",
+      "name": "Furrcule De Beerot",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "active_name": "Better than One",
+          "dice": "Show",
+          "flavor_text": "<hr>\n<blockquote>\n<p>&nbsp;</p>\n</blockquote>",
+          "name": "Furrcule De Beerot",
+          "passive_name": "Professional Assistant",
+          "support_active": "<p>Perform study 2 enemies.</p>",
+          "support_passive": "<p>+2 check for investigate something</p>"
+        },
+        "template": "lUpHsEfBDEY3BeNq",
+        "templateSystemUniqueVersion": 4245463866,
+        "unique": false,
+        "uniqueId": "JReKcw8VQA7whmq9"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "76LdtZgnrmhd0JQT",
+      "_stats": {
+        "compendiumSource": "Item.EHEVaGG0p0cVb4Be",
+        "coreVersion": "12.343",
+        "createdTime": 1748025700775,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.4.2"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "systems/pf2e/icons/equipment/treasure/art-objects/moderate-art-object/gold-and-garnet-ring.webp",
+      "name": "Gilded Ring",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "acess": true,
+          "cost": "1000",
+          "def_bonus": "",
+          "defense": "0",
+          "defense_include_dex": false,
+          "description": "",
+          "details_roller": "Show",
+          "flavor_text": "<p><em>Valuable ring with letters \"Marl\" engraved on it.</em></p>",
+          "initiative": "0",
+          "magic_defense": "0",
+          "magic_defense_include_ins": false,
+          "mdef_bonus": "",
+          "name": "Gilded Ring",
+          "set_name": ""
+        },
+        "template": "r0yZpLPAK9VXhM2p",
+        "templateSystemUniqueVersion": 1853581118,
+        "unique": false,
+        "uniqueId": "EHEVaGG0p0cVb4Be"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "CbgXWzbgJ9Kt5TiG",
+      "_stats": {
+        "compendiumSource": "Item.YdYhFx1vrvod4P2Y",
+        "coreVersion": "12.343",
+        "createdTime": 1747559935352,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/item%20icon.pnghood.png",
+      "name": "Sage Robe",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "acess": false,
+          "cost": "0",
+          "def_bonus": "+1",
+          "defense": "0",
+          "defense_include_dex": true,
+          "initiative": "-2",
+          "magic_defense": "0",
+          "magic_defense_include_ins": true,
+          "martial": false,
+          "mdef_bonus": "+2",
+          "name": "Sage Robe",
+          "set_name": "",
+          "shield": false
+        },
+        "template": "5Z0gKtN5R51ebJOa",
+        "templateSystemUniqueVersion": 2929120018,
+        "unique": false,
+        "uniqueId": "YdYhFx1vrvod4P2Y"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "FLgWY21mu45VC5xJ",
+      "_stats": {
+        "compendiumSource": "Item.C1FR55h1SsY8GEpF",
+        "coreVersion": "12.343",
+        "createdTime": 1702144891794,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.C1FR55h1SsY8GEpF"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "uxn1YZCbNnCqXnGo",
+      "img": "icons/magic/unholy/silhouette-evil-horned-giant.webp",
+      "name": "Create Phantasm: Strike",
+      "ownership": {
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 100000,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Illusionist",
+          "cost": "10",
+          "damage_bonus": "12",
+          "description": "<p><span class=\"fontstyle0\">You may spend one action to create a Phantasm and command it to attack<br>a creature. </span></p>\n<p><span class=\"fontstyle0\">The target hit by the Phantasm suffers </span><span class=\"fontstyle2\">【</span><span class=\"fontstyle3\">HR + 12</span><span class=\"fontstyle2\">】 </span><span class=\"fontstyle0\">damage. &nbsp;The </span><span class=\"fontstyle3\">range </span><span class=\"fontstyle0\">of the attack is determined by your current weapon. </span></p>\n<p>&nbsp;</p>\n<p><span class=\"fontstyle0\">On any subsequent turn, you can perform an action and another<br>Magic Check to command the Phantasm to attack again, with no MP<br>requirements. Damage dealt by this spell ignores Resistances</span></p>\n<p>&nbsp;</p>\n<p><span class=\"fontstyle0\">This damage increases to 16 if you are level 20 or higher, or to 18 if you are<br>level 40 or higher.</span></p>",
+          "duration": "Scene",
+          "name": "Create Phantasm: Strike",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "target": "1 creature",
+          "type_damage": "Physical"
+        },
+        "template": "FZmpKcQRP7hZQqbV",
+        "templateSystemUniqueVersion": 1700837225,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "FZ0pdIAV4B5di3uy",
+      "_stats": {
+        "compendiumSource": "Item.C1FR55h1SsY8GEpF",
+        "coreVersion": "12.343",
+        "createdTime": 1702144891794,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.C1FR55h1SsY8GEpF"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "uxn1YZCbNnCqXnGo",
+      "img": "icons/magic/unholy/strike-body-life-soul-green.webp",
+      "name": "Detonate Phantasm",
+      "ownership": {
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 100000,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Illusionist",
+          "cost": "20",
+          "damage_bonus": "25",
+          "description": "<p><span class=\"fontstyle0\">You overflow one Phantasm with energy, making it explode to devastating<br>effect. </span></p>\n<p><span class=\"fontstyle0\">Choose a damage type: </span><span class=\"fontstyle2\">light </span><span class=\"fontstyle0\">or </span><span class=\"fontstyle2\">dark</span><span class=\"fontstyle0\">. The target hit by this spell<br>suffers </span><span class=\"fontstyle3\">【</span><span class=\"fontstyle2\">HR + 25</span><span class=\"fontstyle3\">】 </span><span class=\"fontstyle0\">damage of the chosen type. This shatters the Phantasm</span></p>",
+          "duration": "Instantaneous",
+          "name": "Detonate Phantasm",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "target": "1 creature",
+          "type_damage": "Light"
+        },
+        "template": "FZmpKcQRP7hZQqbV",
+        "templateSystemUniqueVersion": 1700837225,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "r5Fe2SXqF4GG37EV",
+      "_stats": {
+        "compendiumSource": "Item.C1FR55h1SsY8GEpF",
+        "coreVersion": "12.343",
+        "createdTime": 1702144891794,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.C1FR55h1SsY8GEpF"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "uxn1YZCbNnCqXnGo",
+      "img": "icons/magic/unholy/strike-body-explode-disintegrate.webp",
+      "name": "Numen Attack",
+      "ownership": {
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 100000,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Illusionist",
+          "cost": "0",
+          "damage_bonus": "14",
+          "description": "<p><span class=\"fontstyle0\">This damage increases to 18 if you are level 20 or higher, or to 20 if you are<br>level 40 or higher.</span></p>\n<p><span class=\"fontstyle0\"><br>Damage dealt by Numen ignores Resistances and Immunities.</span></p>\n<p><span class=\"fontstyle0\"><br>The range of the attack is determined by your current weapon.</span> </p>",
+          "duration": "Instantaneous",
+          "name": "Numen Attack",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "target": "1 creature",
+          "type_damage": "Light"
+        },
+        "template": "FZmpKcQRP7hZQqbV",
+        "templateSystemUniqueVersion": 1700837225,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "yZYiyDfZ5jIC8Zhd",
+      "_stats": {
+        "compendiumSource": "Item.AODgzRmiVIrotwW1",
+        "coreVersion": "12.343",
+        "createdTime": 1747560307771,
+        "duplicateSource": "Item.23dQXPmLWKFjpwNt",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "icons/sundries/books/book-symbol-triangle-silver-brown.webp",
+      "name": "Anthology of Forgotten Fable",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 450000,
+      "system": {
+        "container": null,
+        "props": {
+          "category": "Arcane",
+          "check": "Check",
+          "check_bonus": "0",
+          "cost": "0",
+          "damage_bonus": "6",
+          "description": "<p>&nbsp;No Quality.</p>",
+          "hand_slots": "Two-handed",
+          "martial": false,
+          "name": "Staff",
+          "rolled_atr1": "WLP",
+          "rolled_atr2": "WLP",
+          "set_name": "",
+          "type_damage": "Physical",
+          "weapon_range": "Melee"
+        },
+        "template": "gIRU9XGqYeMBwBN9",
+        "templateSystemUniqueVersion": 2814471460,
+        "unique": false,
+        "uniqueId": "AODgzRmiVIrotwW1"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Jacalico",
+  "ownership": {
+    "7hKw8KGsimboeDif": 3,
+    "NpGkA7uxaarkPiwS": 3,
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0,
+    "wNzPmItLYCKE1I8t": 3,
+    "yL2PQxh3R9ddt0te": 3
+  },
+  "prototypeToken": {
+    "actorLink": true,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": 1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar4": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "DEF",
+            "max": 13,
+            "maxcolor": "#f26d40",
+            "mincolor": "#f26d40",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 0,
+            "ownerVisibility": 0,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 13
+          },
+          "bar5": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar5",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MDEF",
+            "max": 10,
+            "maxcolor": "#26d6ed",
+            "mincolor": "#26d6ed",
+            "opacity": null,
+            "order": 4,
+            "otherVisibility": 0,
+            "ownerVisibility": 0,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 10
+          },
+          "bar6": {
+            "attribute": "attributeBar.zero_power_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar6",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#ff5900",
+            "mincolor": "#ffdd00",
+            "opacity": null,
+            "order": 5,
+            "otherVisibility": 30,
+            "ownerVisibility": 35,
+            "position": "bottom-outer",
+            "shareHeight": false,
+            "style": "none",
+            "subdivisions": 6,
+            "subdivisionsOwner": true
+          }
+        }
+      },
+      "hex-size-support": {
+        "alternateOrientation": false,
+        "hideBorder": true,
+        "hideFill": false,
+        "pivotx": null,
+        "pivoty": null
+      },
+      "token-variants": {
+        "disableHUDButton": false,
+        "randomImgDefault": "https://assets.forge-vtt.com/5fb02919b573a96aaf33938c/https%3A/i.imgur.com/avata1.png"
+      },
+      "token-z": {
+        "zIndex": 0
+      },
+      "wall-height": {
+        "tokenHeight": 0
+      }
+    },
+    "height": 2,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Jacalico",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": true,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 0,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.58,
+      "fit": "cover",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1.2,
+      "scaleY": 1.2,
+      "src": "https://assets.forge-vtt.com/5fb02919b573a96aaf33938c/https%3A/i.imgur.com/avata*.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 100000,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "activeEffects": {},
+    "props": {
+      "accessory2_name": "",
+      "accessory_name": "",
+      "arcanism": false,
+      "armor_mod": "1",
+      "armor_name": "Sage Robe",
+      "attack_accuracy_mod_all": "0",
+      "attack_accuracy_mod_melee": "0",
+      "attack_accuracy_mod_range": "0",
+      "attack_accuracy_mod_spell": "0",
+      "backpack": "",
+      "backstory": "",
+      "bond_1": "",
+      "bond_2": "",
+      "bond_3": "",
+      "bond_4": "",
+      "bond_5": "",
+      "bond_6": "",
+      "chanter_volume_mp_header": "MP",
+      "chanter_volume_mp_high": 30,
+      "chanter_volume_mp_low": 10,
+      "chanter_volume_mp_medium": 20,
+      "chanter_volume_target_high": "Every enemy who can hear you.",
+      "chanter_volume_target_low": "Yourself <b>or</b> another creature you can see who can hear you.",
+      "chanter_volume_target_medium": "Every ally who can hear you.",
+      "char_identity": "Impersonator, Planner, Prankster",
+      "check_roller": "Roll!",
+      "chimerism": false,
+      "class_list": {
+        "0": {
+          "$deleted": false,
+          "benefit": "mp",
+          "class_name": "Illusionist",
+          "level": "10"
+        },
+        "1": {
+          "$deleted": false,
+          "benefit": "mp",
+          "class_name": "Elementalist",
+          "level": "3"
+        },
+        "2": {
+          "$deleted": false,
+          "benefit": "mp",
+          "class_name": "Chimerist",
+          "level": "1"
+        },
+        "3": {
+          "$deleted": false,
+          "benefit": "mp",
+          "class_name": "Arcanist",
+          "level": "1"
+        }
+      },
+      "clock_brainwave": "0",
+      "clock_trade": "0",
+      "cooking_roller": "🔪Cook!",
+      "current_hp": "45",
+      "current_ip": "6",
+      "current_mp": "59",
+      "damage_receiving_mod_air": "0",
+      "damage_receiving_mod_all": "0",
+      "damage_receiving_mod_bolt": "0",
+      "damage_receiving_mod_dark": "0",
+      "damage_receiving_mod_earth": "0",
+      "damage_receiving_mod_fire": "0",
+      "damage_receiving_mod_ice": "0",
+      "damage_receiving_mod_light": "0",
+      "damage_receiving_mod_melee": "0",
+      "damage_receiving_mod_physical": "0",
+      "damage_receiving_mod_poison": "0",
+      "damage_receiving_mod_range": "0",
+      "dex_base": "6",
+      "dex_current": 6,
+      "draw_card": "Draw",
+      "draw_card_copy1": "Use",
+      "elementalism": false,
+      "emotion_1_1": "",
+      "emotion_1_2": "",
+      "emotion_1_3": "",
+      "emotion_2_1": "",
+      "emotion_2_2": "",
+      "emotion_2_3": "",
+      "emotion_3_1": "",
+      "emotion_3_2": "",
+      "emotion_3_3": "",
+      "emotion_4_1": "",
+      "emotion_4_2": "",
+      "emotion_4_3": "",
+      "emotion_5_1": "",
+      "emotion_5_2": "",
+      "emotion_5_3": "",
+      "emotion_6_1": "",
+      "emotion_6_2": "",
+      "emotion_6_3": "",
+      "entropism": false,
+      "experience": "0",
+      "experience_ui": "0",
+      "fp": "4",
+      "init_penalty": "-2",
+      "ins_base": "10",
+      "ins_current": 10,
+      "inventory_label": "💼 Inventory",
+      "inventory_list": {},
+      "isAwake": false,
+      "isClarity": false,
+      "isDazed": false,
+      "isEnergized": false,
+      "isEnraged": false,
+      "isFocus": false,
+      "isPoisoned": false,
+      "isShaken": false,
+      "isSlow": false,
+      "isStrong": false,
+      "isSwift": false,
+      "isWeak": false,
+      "is_martialarmor": false,
+      "itemContainer1": {
+        "343KJPljP2y9bNrr": {
+          "active_description": "<p>Perform study 2 enemies.</p>",
+          "id": "343KJPljP2y9bNrr",
+          "name": "Furrcule De Beerot",
+          "passive_description": "<p>+2 check for investigate something</p>",
+          "uuid": "Actor.5uDUxA1WiDzBEO0C.Item.343KJPljP2y9bNrr"
+        }
+      },
+      "itemContainer2": {
+        "CbgXWzbgJ9Kt5TiG": {
+          "armor_description": "<p>ERROR</p>",
+          "armor_martial": false,
+          "id": "CbgXWzbgJ9Kt5TiG",
+          "name": "Sage Robe",
+          "roll": "",
+          "uuid": "Actor.5uDUxA1WiDzBEO0C.Item.CbgXWzbgJ9Kt5TiG"
+        }
+      },
+      "itemContainer4": {
+        "76LdtZgnrmhd0JQT": {
+          "acess_description": "",
+          "id": "76LdtZgnrmhd0JQT",
+          "name": "Gilded Ring",
+          "roll": "",
+          "uuid": "Actor.5uDUxA1WiDzBEO0C.Item.76LdtZgnrmhd0JQT"
+        }
+      },
+      "key_list": {},
+      "level": "15",
+      "magic_defense_mod": "2",
+      "main_attrib_1": "WLP",
+      "main_attrib_2": "WLP",
+      "main_details": "<p>&nbsp;No Quality.</p>",
+      "main_hand": "Anthology of Forgotten Fable",
+      "main_hand_attack": "",
+      "max_hp": 45,
+      "max_ip": 6,
+      "max_mp": 85,
+      "memories_list": {},
+      "memory": "Memories",
+      "mig_base": "6",
+      "mig_current": 6,
+      "name": "Jacalico",
+      "normal_spell_list": {
+        "0": {
+          "$deleted": true,
+          "class": "Illusionist",
+          "cost": "10",
+          "description": "<p><span class=\"fontstyle0\">You may spend action to create a Phantasm and command it to attack<br>a creature. </span></p>\n<p><span class=\"fontstyle0\">The target hit by the Phantasm suffers </span><span class=\"fontstyle2\">【</span><span class=\"fontstyle3\">HR + 12</span><span class=\"fontstyle2\">】 </span><span class=\"fontstyle0\">damage. </span></p>\n<p><span class=\"fontstyle0\">The </span><span class=\"fontstyle3\">range </span><span class=\"fontstyle0\">of the attack is determined by your current weapon. </span></p>\n<p><span class=\"fontstyle0\">On any subsequent turn, you can perform an action and another<br>Magic Check to command the Phantasm to attack again, with no MP<br>requirements. Damage dealt by this spell ignores Resistances.</span></p>\n<p>&nbsp;</p>\n<p><span class=\"fontstyle0\">This damage increases to 16 if you are level 20 or higher, or to 18 if you are<br>level 40 or higher. </span></p>",
+          "duration": "Scene",
+          "roll": "",
+          "spell_name": "Create Phantasm: Strike",
+          "target": "One creature"
+        },
+        "1": {
+          "$deleted": true,
+          "class": "Illusionist",
+          "cost": "20",
+          "description": "",
+          "duration": "Instantaneous",
+          "roll": "",
+          "spell_name": "Detonate Phantasm",
+          "target": "One creature"
+        },
+        "2": {
+          "$deleted": false,
+          "class": "Illusionist",
+          "cost": "20",
+          "description": "<p><span class=\"fontstyle0\">When another creature is threatened by an attack, spell, or other danger,<br>command one Phantasm to take their place.</span></p>\n<p>&nbsp;</p>\n<p><span class=\"fontstyle0\">Any Checks that are part of the danger will be performed against the Phantasm.</span></p>\n<p>&nbsp;</p>\n<p><span class=\"fontstyle0\">The Phantasm shields the creature, suffering an amount of damage corresponding to how much PV it has left, until it shatters.</span></p>\n<p>&nbsp;</p>\n<p><span class=\"fontstyle0\">The remaining damage goes to the creature being defended. </span></p>\n<p><span class=\"fontstyle0\">All status effects related to the attack are nullified</span></p>",
+          "duration": "Instantaneous",
+          "roll": "",
+          "spell_name": "Illusory Shield",
+          "target": "One creature"
+        },
+        "3": {
+          "$deleted": false,
+          "class": "Arcanist",
+          "cost": "30",
+          "description": "<p><span class=\"fontstyle0\">You may use an action and spend 30 Mind Points to </span><span class=\"fontstyle2\">summon </span><span class=\"fontstyle0\">the power of one of the Arcana you have previously bound.</span></p>\n<p>&nbsp;</p>\n<p><span class=\"fontstyle0\"><strong>MERGING WITH AN ARCANUM</strong><br></span></p>\n<p><span class=\"fontstyle2\">When you summon an Arcanum, you gain their </span><span class=\"fontstyle3\">merge </span><span class=\"fontstyle2\">benefits; those benefits last until the Arcanum is dismissed You cannot summon an Arcanum while already merged with one; you must first dismiss the current Arcanum.</span></p>\n<p>&nbsp;</p>\n<p><span class=\"fontstyle2\"><strong>DISMISSING AN ARCANUM</strong><br>If you are merged with an Arcanum, they will be automatically dismissed at the end of the scene, if you die or fall unconscious, or if you leave the scene.<br>You may also willingly dismiss the Arcanum you are currently merged with: <strong>this never requires an action</strong>, but during a conflict it can only be done on your turn, and never while another effect is being resolved.</span></p>\n<p>&nbsp;</p>\n<p><span class=\"fontstyle2\">When you willingly dismiss an Arcanum, you may use their dismiss effect - if the Arcanum is dismissed for any other reason, this effect cannot be used. </span></p>\n<p><span class=\"fontstyle2\">You are also free to ignore a dismiss effect if you don't want to use it.<br>If a pulse or dismiss effect deals damage, it will deal 5 extra damage if you are level 20 or higher, or 10 extra damage if you are level 40 or higher.</span></p>",
+          "duration": "Scene",
+          "roll": "",
+          "spell_name": "Summon Arcanum",
+          "target": "Self"
+        }
+      },
+      "notes_text": "<p style=\"\"><span class=\"fontstyle0\">Phantasms rules.</span></p><p style=\"\"><span class=\"fontstyle0\"><br>1. Phantasms are entities of pure energy, capable of taking on various sizes and forms — even becoming exact replicas of you!<br>2. They </span><span class=\"fontstyle2\">do not talk or have a mind of their own</span><span class=\"fontstyle0\">, and are </span><span class=\"fontstyle2\">not capable of reason or logic</span><span class=\"fontstyle0\">.<br>3. They only follow </span><span class=\"fontstyle2\">simple one-clause </span><span class=\"fontstyle0\">commands and cannot abstract meaning or extrapolate from them. For example, if you ask a Phantasm to<br>   grab some milk, it knows where the milk is because you do. It also knows that you are feeling thirsty — because you know it too. However, it won't<br>   understand that milk can quench thirst, nor will it know to pour the milk into a glass; these thought processes are </span><span class=\"fontstyle2\">too complex </span><span class=\"fontstyle0\">for Phantasms. So,<br>   it would just bring you the whole bottle of milk, with a deadpan look.<br>4. Phantasms share your base Attributes and Defenses, have no MP, and their </span><span class=\"fontstyle2\">Phantasmal Vitality </span><span class=\"fontstyle0\">(PV) is equal to your </span><span class=\"fontstyle2\">base Insight die size plus<br>   your level (= 25)</span><span class=\"fontstyle0\">. They have Immunity to all status effects.<br>5. They have no Initiative score. Phantasms do not get a turn during conflicts, but </span><span class=\"fontstyle2\">on your turn, you can perform an action to command one or more Phantasms, depending on the wording of the spell</span><span class=\"fontstyle0\">. Phantasms always target Magical Defense.<br>6. You may create a Phantasm and command it </span><span class=\"fontstyle2\">in the same action</span><span class=\"fontstyle0\">. After this first command — which directly follows its creation — on your next turn, it requires </span><span class=\"fontstyle2\">a whole action to be commanded again</span><span class=\"fontstyle0\">. Therefore, you cannot command Phantasm 1 and then proceed to create Phantasm 2 in the same     action.<br>7. Unless stated otherwise, you can have up to </span><span class=\"fontstyle2\">3 </span><span class=\"fontstyle0\">Phantasms active at the same time. Attempts to cast more Phantasms beyond 3 will fail.<br>8. Your Phantasms shatter if they fall to 0 PV, if you fall to 0 HP, or if you leave the scene. You can also shatter them through skills, spells, or at will.</span></p>",
+      "off_attrib_1": "SHI",
+      "off_attrib_2": "SHI",
+      "off_base_mod_1": "0",
+      "off_base_mod_2": "0",
+      "off_hand": "",
+      "off_hand_attack": "",
+      "off_mod_1": 0,
+      "off_mod_2": 0,
+      "offensive_spell_list": {
+        "FLgWY21mu45VC5xJ": {
+          "class": "Illusionist",
+          "cost": 10,
+          "duration": "Scene",
+          "id": "FLgWY21mu45VC5xJ",
+          "name": "Create Phantasm: Strike",
+          "roll": "",
+          "target": "1 creature",
+          "uuid": "Actor.5uDUxA1WiDzBEO0C.Item.FLgWY21mu45VC5xJ"
+        },
+        "FZ0pdIAV4B5di3uy": {
+          "class": "Illusionist",
+          "cost": 20,
+          "duration": "Instantaneous",
+          "id": "FZ0pdIAV4B5di3uy",
+          "name": "Detonate Phantasm",
+          "roll": "",
+          "target": "1 creature",
+          "uuid": "Actor.5uDUxA1WiDzBEO0C.Item.FZ0pdIAV4B5di3uy"
+        },
+        "r5Fe2SXqF4GG37EV": {
+          "class": "Illusionist",
+          "cost": 0,
+          "duration": "Instantaneous",
+          "id": "r5Fe2SXqF4GG37EV",
+          "name": "Numen Attack",
+          "roll": "",
+          "target": "1 creature",
+          "uuid": "Actor.5uDUxA1WiDzBEO0C.Item.r5Fe2SXqF4GG37EV"
+        }
+      },
+      "origin": "Amourn",
+      "passive_list": {
+        "0": {
+          "$deleted": false,
+          "passive_description": "<p><span class=\"fontstyle0\">You can now have up to </span><span class=\"fontstyle2\">4 </span><span class=\"fontstyle0\">active Phantasms, but one of them must<br>necessarily be </span><span class=\"fontstyle2\">Numen</span><span class=\"fontstyle0\">. Also, you cannot have more than one Numen<br>Phantasm active at a time. </span></p>\n<p><span class=\"fontstyle0\">This Phantasm cannot be used in any of the Illusionist's Skills or Spells.</span></p>\n<p><span class=\"fontstyle0\"><br>Numen is bound by the same set of special rules as any other Phantasm,<br>with the following exceptions</span></p>\n<ul>\n<li><span class=\"fontstyle0\">Numen Phantasms cost 50 MP to cast.</span></li>\n<li><span class=\"fontstyle0\">Numen's Phantasmal Vitality equals [35]</span></li>\n<li><span class=\"fontstyle0\">Once active, </span><span class=\"fontstyle2\">Numen has its own turn and a single action</span><span class=\"fontstyle0\">. It does not<br>benefit from Spells that grant additional actions. </span></li>\n<li><span class=\"fontstyle0\">Numen’s turn can be taken either before or after the </span><span class=\"fontstyle2\">Illusionist’s </span><span class=\"fontstyle0\">turn</span></li>\n</ul>",
+          "passive_name": "CREATE PHANTASM: NUMEN",
+          "passive_roll": "",
+          "passive_source": "heroic_skill"
+        },
+        "1": {
+          "$deleted": false,
+          "passive_description": "<p><span class=\"fontstyle0\">If you are away from prying eyes, you may use the </span><span class=\"fontstyle2\">Skill </span><span class=\"fontstyle0\">action and spend 1 Fabula<br>Point to disguise yourself as another creature of humanoid size and shape.</span></p>\n<p>&nbsp;</p>\n<p><span class=\"fontstyle0\">If the creature is someone you had a chance to meet, observe or research, you may also<br>adopt their voice and mannerisms.</span></p>\n<p><span class=\"fontstyle0\"><br>Your disguise will reliably fool any </span><span class=\"fontstyle2\">soldier</span><span class=\"fontstyle0\">-rank creature, but </span><span class=\"fontstyle2\">elite</span><span class=\"fontstyle0\">- and </span><span class=\"fontstyle2\">champion</span><span class=\"fontstyle0\">rank creatures might see through it due to a failed Check or </span><span class=\"fontstyle2\">opportunity</span><span class=\"fontstyle0\">. </span></p>\n<p><span class=\"fontstyle0\">If a </span><span class=\"fontstyle2\">Villain </span><span class=\"fontstyle0\">is present on the scene with you, they may spend 1 Ultima Point to reveal your true identity through sheer coincidence or superior intuition.</span></p>",
+          "passive_name": "HUNDRED FACES",
+          "passive_roll": "",
+          "passive_source": "quirk"
+        },
+        "2": {
+          "$deleted": false,
+          "passive_description": "<p><span class=\"fontstyle0\">Once before the next rest, you may perform an additional action on your turn during<br>a conflict scene. This action </span><span class=\"fontstyle2\">must </span><span class=\"fontstyle0\">be used to perform the </span><span class=\"fontstyle2\">Equipment</span><span class=\"fontstyle0\">, </span><span class=\"fontstyle2\">Hinder</span><span class=\"fontstyle0\">, or<br></span><span class=\"fontstyle2\">Inventory </span><span class=\"fontstyle0\">action</span> </p>",
+          "passive_name": "Sleep Soundly",
+          "passive_roll": "",
+          "passive_source": "camp activity"
+        },
+        "3": {
+          "$deleted": false,
+          "passive_description": "<p><span class=\"fontstyle0\">You spend your time looking for useful items; describe how, then roll </span><span class=\"fontstyle2\">1d6</span><span class=\"fontstyle0\">.<br></span><span class=\"fontstyle3\"> </span><span class=\"fontstyle2\">1. Ouch! </span><span class=\"fontstyle0\">You recover </span><span class=\"fontstyle2\">half </span><span class=\"fontstyle0\">the normal amount of HP and MP during this rest.<br></span><span class=\"fontstyle3\"> </span><span class=\"fontstyle2\">2. Not what I was looking for... </span><span class=\"fontstyle0\">The target regains </span><span class=\"fontstyle2\">2 Inventory Points</span><span class=\"fontstyle0\">.<br></span><span class=\"fontstyle3\"> </span><span class=\"fontstyle2\">3-5. Hoho, this can be useful! </span><span class=\"fontstyle0\">The target regains </span><span class=\"fontstyle2\">3 Inventory Points</span><span class=\"fontstyle0\">.<br></span><span class=\"fontstyle3\"> </span><span class=\"fontstyle2\">6. Jackpot! </span><span class=\"fontstyle0\">The target regains </span><span class=\"fontstyle2\">3 Inventory Points</span><span class=\"fontstyle0\">, and you also find an amount of<br>zenit equal to</span><span class=\"fontstyle4\">【</span><span class=\"fontstyle2\">your character’s level × 50</span><span class=\"fontstyle4\">】</span> </p>",
+          "passive_name": "Exploration",
+          "passive_roll": "",
+          "passive_source": "camp activity"
+        }
+      },
+      "place_card_vanguard": "Place",
+      "populate_deck": "Populate",
+      "pronouns": "She/Her",
+      "reaction_list": {},
+      "relationship_1": "",
+      "relationship_2": "",
+      "relationship_3": "",
+      "relationship_4": "",
+      "relationship_5": "",
+      "relationship_6": "",
+      "reset_cards": "Resets",
+      "resolve_set": "Resolve",
+      "resource_value_1": "0",
+      "resource_value_2": "0",
+      "resource_value_3": "0",
+      "reveal_cards": "Reveal",
+      "ritualism": false,
+      "rolled_atr1": "MIG",
+      "rolled_atr2": "DEX",
+      "shield_type": "",
+      "shield_value": "0",
+      "shuffle_deck": "Shuffle",
+      "skill_accuracy": "0",
+      "skill_attack_damage": "0",
+      "skill_hp": "0",
+      "skill_ip": "0",
+      "skill_list": {
+        "0": {
+          "$deleted": false,
+          "class": "Illusionist",
+          "description": "<p><span class=\"fontstyle0\">After any of your Phantasms is shattered, you recover </span><span class=\"fontstyle2\">【</span><span class=\"fontstyle3\">7</span><span class=\"fontstyle2\">】 </span><span class=\"fontstyle0\">MP.</span> </p>",
+          "level": "5",
+          "roll": "",
+          "skill_name": "PHANTASMAL ECHO"
+        },
+        "1": {
+          "$deleted": false,
+          "class": "Illusionist",
+          "description": "<p><span class=\"fontstyle0\">When you cast a spell, if you don't have enough MP to pay for its total cost, you may choose to shatter one of your Phantasms instead.</span></p>\n<p><span class=\"fontstyle0\"> Destroying a Phantasm this way will not trigger the Phantasmal Echo skill. </span></p>\n<p><span class=\"fontstyle0\">You cannot use this skill to create a Phantasm</span> </p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "PHANTASMAL RECYCLING"
+        },
+        "2": {
+          "$deleted": false,
+          "class": "Elementalist",
+          "description": "<p><span class=\"fontstyle0\">When you cast an </span><span class=\"fontstyle2\">instantaneous </span><span class=\"fontstyle0\">spell, if you have an </span><span class=\"fontstyle2\">arcane </span><span class=\"fontstyle0\">weapon equipped, you may </span><span class=\"fontstyle2\">increase the spell's total MP cost </span><span class=\"fontstyle0\">by up to</span><span class=\"fontstyle3\">【</span><span class=\"fontstyle2\">SL × 10</span><span class=\"fontstyle3\">】 </span><span class=\"fontstyle0\">Mind Points. </span></p>\n<p><span class=\"fontstyle0\">If you do so and the spell deals damage to one or more creatures, it will deal 5 extra damage to each creature for every 10 Mind Points by which you increased its total MP cost</span> </p>",
+          "level": "3",
+          "roll": "",
+          "skill_name": "CATACLYSM"
+        },
+        "3": {
+          "$deleted": false,
+          "class": "Chimerist",
+          "description": "<p><span class=\"fontstyle0\">When you see a creature belonging to the </span><span class=\"fontstyle2\">beast</span><span class=\"fontstyle0\">, </span><span class=\"fontstyle2\">monster </span><span class=\"fontstyle0\">or </span><span class=\"fontstyle2\">plant </span><span class=\"fontstyle0\">Species cast a spell, you may immediately choose to learn that spell as a Chimerist spell of your own: if you do, record the </span><span class=\"fontstyle2\">Species </span><span class=\"fontstyle0\">of the creature you learned it from.</span> </p>\n<p><span class=\"fontstyle0\">When you first acquire this Skill, choose<span class=\"fontstyle2\">【</span><span class=\"fontstyle3\">INS + WLP</span><span class=\"fontstyle2\">】 </span><span class=\"fontstyle3\">or</span><span class=\"fontstyle2\">【</span><span class=\"fontstyle3\">MIG + WLP</span><span class=\"fontstyle2\">】</span>. From now on, your offensive (<span class=\"fontstyle4\">r</span>) Chimerist spells will use the chosen Attributes for the Magic Check, regardless of the Attributes used by the creature you learned the spell from. <br></span></p>\n<p><span class=\"fontstyle0\">You may have <span class=\"fontstyle2\">up to</span><span class=\"fontstyle3\">【</span><span class=\"fontstyle2\">SL + 2</span><span class=\"fontstyle3\">】 </span><span class=\"fontstyle2\">different Chimerist spells </span>memorized this way. If you want to memorize a new Chimerist spell but are already at your limit, you must forget one of your old spells and replace it with the new spell <br></span></p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "SPELL MIMIC"
+        },
+        "4": {
+          "$deleted": false,
+          "class": "Arcanist",
+          "description": "<p>There is nothing heavier than word.</p>\n<p>It can create, destroy, purify and defy.</p>\n<p>And I who control the word will surpass every limit.</p>\n<p>Don't you see now little human.</p>\n<p>What you desired will never be found.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "EMERGENCE OF THE LOST SUN"
+        },
+        "5": {
+          "$deleted": false,
+          "class": "Arcanist",
+          "description": "<p><strong>MERGE : SPEARS OF THE ARDENT SOVEREIGN</strong><br>You have <strong>Resistance</strong> to <strong>fire</strong> damage.</p>\n<p>Additionally, as long as you are <span style=\"text-decoration: underline;\"><strong>not in Crisis</strong></span>, you also have <strong>Resistance</strong> to <strong>physical</strong> damage.</p>\n<p>All damage you deal becomes <strong>fire</strong>, its type <strong>cannot change</strong>, and it <strong>ignores Resistances</strong>; as long as <span style=\"text-decoration: underline;\"><strong>you are in Crisis</strong></span>, it also <strong>ignores Immunities</strong>.</p>\n<p>&nbsp;</p>\n<p>When you deal damage with a spell, if that spell deals damage to <strong>only one creature</strong>, it deals <strong>10 extra damage</strong>.</p>\n<p><br><strong>DISMISS : FORGOTTEN RADIANCE</strong><br>You deal <strong>20 fire damage </strong>to every enemy present on the scene, or <strong>30 fire damage</strong> if you are in <strong>Crisis</strong>; this damage <strong>ignores Resistances and &nbsp;Immunities </strong>.</p>\n<p>Then, you and every ally present on the scene regain <strong>2 Inventory Points</strong> for every enemy reduced to 0 Hit Points by this damage.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "SUMMON : OPOCHLI THE OLD SUN GOD"
+        },
+        "6": {
+          "$deleted": false,
+          "class": "Arcanist",
+          "description": "<p><span class=\"fontstyle0\">You may </span><span class=\"fontstyle2\">bind </span><span class=\"fontstyle0\">Arcana to your soul and </span><span class=\"fontstyle2\">summon </span><span class=\"fontstyle0\">them later. When you encounter a new Arcanum, the Game Master will reveal what you must do in order to bind them.<br>You may use an action and spend 30 Mind Points to </span><span class=\"fontstyle2\">summon </span><span class=\"fontstyle0\">the power of one of the Arcana you have previously bound.<br>If you take this Skill at character creation, you begin play with one Arcanum bound to you (you may </span><span class=\"fontstyle2\">choose it </span><span class=\"fontstyle0\">from the sample Arcana or </span><span class=\"fontstyle2\">create it </span><span class=\"fontstyle0\">with your group). </span></p>\n<p><span class=\"fontstyle0\">Any further Arcana must be obtained through exploration and story progression</span> </p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "BIND AND SUMMON"
+        },
+        "7": {
+          "$deleted": false,
+          "class": "Illusionist",
+          "description": "<p><span class=\"fontstyle0\">You may perform Rituals whose effects fall within the </span><span class=\"fontstyle2\">Illusionism<br></span><span class=\"fontstyle0\">discipline. Illusionism Rituals use </span><span class=\"fontstyle3\">【</span><span class=\"fontstyle0\">INS + WLP</span><span class=\"fontstyle3\">】 </span><span class=\"fontstyle0\">for the Magic Check</span> </p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "RITUAL ILLUSIONISM"
+        },
+        "8": {
+          "$deleted": false,
+          "class": "Illusionist",
+          "description": "<p><span class=\"fontstyle0\">Each time you acquire this Skill, learn one Illusionist spell. Offensive (</span><span class=\"fontstyle2\">o</span><span class=\"fontstyle0\">)<br></span><span class=\"fontstyle3\">Illusionist </span><span class=\"fontstyle0\">spells and Phantasm use </span><span class=\"fontstyle4\">【</span><span class=\"fontstyle3\">INS + WLP</span><span class=\"fontstyle4\">】 </span><span class=\"fontstyle0\">for their Checks</span> </p>",
+          "level": "3",
+          "roll": "",
+          "skill_name": "ILLUSIONIST MAGIC"
+        }
+      },
+      "skill_mp": "0",
+      "spiritism": false,
+      "theme": "Fable Collector",
+      "weapon1_base_damage": "6",
+      "weapon1_base_mod": "0",
+      "weapon1_damage": 6,
+      "weapon1_damagetype": "Physical",
+      "weapon1_mod": 0,
+      "weapon2_damagetype": "-",
+      "weapon_list": {
+        "yZYiyDfZ5jIC8Zhd": {
+          "id": "yZYiyDfZ5jIC8Zhd",
+          "name": "Anthology of Forgotten Fable",
+          "roll": "",
+          "type": "Arcane",
+          "uuid": "Actor.5uDUxA1WiDzBEO0C.Item.yZYiyDfZ5jIC8Zhd",
+          "weapon_description": "<p><p>&nbsp;No Quality.</p></p>",
+          "weapon_hand": "Two-handed",
+          "weapon_martial": false,
+          "weapon_range": "Melee"
+        }
+      },
+      "wlp_base": "10",
+      "wlp_current": 10,
+      "your_class_name": "Thousand Faces Witch",
+      "zenit": "400",
+      "zero_effect_description": "<img src=\"https://iili.io/3iExplp.jpg\" width=\"300\"><p>Choose 1 target creature, Jacalico mimic the target creature and, with free action, use the last action that target used whether it is a attack, skill, spell or Zero power.</p><p>The mimic last until the end of Jacalico's turn.</p>",
+      "zero_effect_label": "💬 Zero Effect",
+      "zero_label": "💥 Zero Power : ",
+      "zero_power_name": "Primodial Witch Secret : True Polymorph",
+      "zero_power_value": "6",
+      "zero_trigger_description": "<p style=\"text-align: center\"><span class=\"fontstyle0\"><strong>Defiance</strong></span> II 1 per trigger</p><hr><p>This trigger activates at the start of your turn during a conflict, provided one or more<br><strong>Villains and/or champion-Rank</strong> enemies are present on the scene.</p>",
+      "zero_trigger_label": "⚔️ Zero Trigger"
+    },
+    "statusEffects": {
+      "1QPHKNWo17z0bBmX": [],
+      "1cksCQj3urJwddfg": [],
+      "1qTdxSVu2XLu0lUx": [],
+      "3YZNX2X5rHYtL4L5": [],
+      "4g2B0rdJ3SiUQvUv": [],
+      "5FFBDg2y54bpqgat": [],
+      "5jkr80zqdzaR003d": [],
+      "6YW8glLMYbwj6ZhC": [],
+      "7FLtIUvENcYDAJKC": [],
+      "7VDl6ac5Rzr2Rpya": [],
+      "8LN8tDQjON508Rqm": [],
+      "ACD2C8JLWUeIx89o": [],
+      "CVxHWmDb0gQsob1q": [],
+      "CfLPg6RDybSQhTSR": [],
+      "DCaKnV9kNn3EpqtY": [],
+      "DHsoSawNEZAxsnQ9": [],
+      "EVjmTFRDsuzR823Z": [],
+      "GJ0cbbj60lr4zaHm": [],
+      "MsbUHrgK7AhSeEJm": [],
+      "N4WfMf1nuOdUEXVS": [],
+      "N4rGBYQsH7PyMAWr": [],
+      "NogCaPvL5Y52Hjnq": [],
+      "OFk8VUuwDhWFoPxI": [],
+      "QOfrFCU2C6mx50gK": [],
+      "Qz8IC4v3wJ6UoM77": [],
+      "Rc8AvdmlHAK7pPea": [],
+      "StnYeDADYo2xX99O": [],
+      "T1kJfiKBZm1dnnBy": [],
+      "VxdXsFJ7YVEzAp3x": [],
+      "YhO7nUdawyeQKMWD": [],
+      "ZK0aTX8IH1NqwmTw": [],
+      "bspDC7hFRTYuwdhf": [],
+      "cDgbFRi9TA68TvYr": [],
+      "clE8TJ0G1gMwF735": [],
+      "fYkA57rVfoytHRjo": [],
+      "g7JIey1pEuRHyAOH": [],
+      "gX1fA3onNG7wsyap": [],
+      "hhqoSNhWfVD4KR7g": [],
+      "jKvrVpxLgX0KhB23": [],
+      "m2iUJjsEfJkpmOBw": [],
+      "qMZsEEuzAdrHb2fk": [],
+      "qePlOECBTS0Dftgc": [],
+      "t2C3LKukW6LPUImk": [],
+      "t5jyddIZDvbyuVsD": [],
+      "v22vl6cnP94wVBPu": [],
+      "v2vFlETIgMnff5o8": [],
+      "vLM7q3rdXVCgHYD4": [],
+      "vUYA9jgY9pdafj4i": [],
+      "wA1E8GxiXmzz80XQ": [],
+      "xuwAn7u126GfFweU": []
+    },
+    "template": "Dx16KeWcJzikM7dh",
+    "templateSystemUniqueVersion": 276398442
+  },
+  "type": "character"
+}

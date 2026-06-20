@@ -1,0 +1,19 @@
+{
+  "_id": "3dU3nyTU6FWHM0kK",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1747414481633,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.4.2"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "JqtzBcq3QdQ4Uycs",
+  "name": "Ace of Cards",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Macro"
+}

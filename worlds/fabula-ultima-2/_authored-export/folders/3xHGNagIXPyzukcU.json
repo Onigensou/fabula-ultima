@@ -1,0 +1,19 @@
+{
+  "_id": "3xHGNagIXPyzukcU",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": null,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "2.4.4"
+  },
+  "color": "#52bc9c",
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "📖 Recipe",
+  "sort": 1400000,
+  "sorting": "a",
+  "type": "Item"
+}

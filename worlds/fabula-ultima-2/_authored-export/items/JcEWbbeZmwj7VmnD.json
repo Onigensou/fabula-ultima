@@ -1,0 +1,123 @@
+{
+  "_id": "JcEWbbeZmwj7VmnD",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780644541347,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "jIpbFHAphmwImlO6",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "magic_defense",
+          "mode": 4,
+          "priority": 20,
+          "value": "12"
+        }
+      ],
+      "description": "<p><strong>Magic Defense floored at 12</strong> — if the target's MDEF would be lower, it's treated as 12 instead. Normal MDEF still applies if higher.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "QOrUjsssPlC02LLp",
+          "originalParentId": "3P2TjO0bX7ZGV1ih",
+          "originalUuid": "Item.3P2TjO0bX7ZGV1ih.ActiveEffect.QOrUjsssPlC02LLp"
+        },
+        "fabula-ultima-companion": {
+          "auraFloor": 12,
+          "category": "buff"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/tetragrammaton.png",
+      "name": "Aura",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-aura"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "w7ey5G3zPC78EXos",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/tetragrammaton.png",
+  "name": "Aura",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "class": "Spiritist",
+      "cost": "5 x T MP",
+      "damage_bonus": "0",
+      "description": "<p>You project your soul outside your body and direct it to surround the targets, shielding them from dangerous magic. Until this spell ends, each target may treat their <strong>Magic Defense as 12</strong> against effects that target them <em>(they keep their normal MDEF if higher).</em></p>",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_template_ref": "Aura",
+          "effect_kind": "apply_ae",
+          "effect_label": "aura_apply",
+          "target_ref": "action_targets"
+        }
+      },
+      "isCheck": false,
+      "isOffensiveSpell": false,
+      "name": "Aura",
+      "on_activate_effect_ref": "aura_apply",
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_range": "Range",
+      "skill_target": "Up to three creatures",
+      "skill_type": "Spell",
+      "type_damage": ""
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": true,
+    "uniqueId": "JcEWbbeZmwj7VmnD"
+  },
+  "type": "equippableItem"
+}

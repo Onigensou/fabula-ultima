@@ -1,0 +1,19 @@
+{
+  "_id": "NdGqubriIvlqSS0f",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": null,
+    "duplicateSource": null,
+    "systemId": null,
+    "systemVersion": null
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "6mmwacB3WSm0f9bN",
+  "name": "Unique Accessory",
+  "sort": 200000,
+  "sorting": "a",
+  "type": "Item"
+}

@@ -1,0 +1,62 @@
+{
+  "_id": "ugffxiCSwymr95bP",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757758789048,
+    "duplicateSource": "Item.ZWUn6A7lzpZaXLbB",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "QSU5T1V4cEJ856gJ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Raven/MutantReaperPassive1.png",
+  "name": "Blind",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "check_bonus": "0",
+      "class": "Hexer",
+      "cost": "20 MP",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>You cover the target’s eyes with pitch-black shadows, blocking their sight. Until the spell ends, the target suffers a <strong>−2 penalty to Accuracy Checks</strong>.</p>\n<p>This spell has no effect on creatures that do not rely on sight. An effect that can remove a status effect can end this effect instead.</p>\n",
+      "duration": "Scene",
+      "heroic_requirement": "",
+      "isCheck": true,
+      "isFacet": true,
+      "isHeroic": false,
+      "isOffensiveSpell": true,
+      "isReaction": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Blind",
+      "optional_params": {},
+      "rolled_atr1": "INS",
+      "rolled_atr2": "WLP",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "Range",
+      "skill_target": "One creature",
+      "skill_type": "Spell",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "ugffxiCSwymr95bP"
+  },
+  "type": "equippableItem"
+}

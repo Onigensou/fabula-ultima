@@ -1,0 +1,19 @@
+{
+  "_id": "RufK6CUVQYwLejq0",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": null,
+    "duplicateSource": null,
+    "systemId": null,
+    "systemVersion": null
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "bNXe9nP1lkpP6C4I",
+  "name": "intro",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Scene"
+}

@@ -1,0 +1,40 @@
+{
+  "_id": "zSeo4r5uJAYNwiSo",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1716858692967,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    }
+  },
+  "folder": "ysLwINNDarDAMXSq",
+  "img": "https://i.imgur.com/K1dPeeQ.png",
+  "name": "Key of Construstion",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "cost": "0",
+      "damage_bonus": "0",
+      "name": "Key of Construstion",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX"
+    },
+    "template": "FZmpKcQRP7hZQqbV",
+    "templateSystemUniqueVersion": 1700837225,
+    "unique": false,
+    "uniqueId": "zSeo4r5uJAYNwiSo"
+  },
+  "type": "equippableItem"
+}

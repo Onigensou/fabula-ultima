@@ -1,0 +1,856 @@
+{
+  "_id": "JG1DyVt8LkDvKegv",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1733050673323,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "bmRlpAaurfw2xwc4",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.331",
+        "createdTime": 1769830001468,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>This creature has less than 50% HP</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "4ldx00srGNv5AJBr",
+          "originalParentId": "0gIBYzSpjdXS6f25",
+          "originalUuid": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-crisis",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": false
+        },
+        "fabula-ultima-companion": {
+          "autoCrisis": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/08_DRG/blood_for_blood.png",
+      "name": "Crisis",
+      "origin": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr",
+      "sort": 0,
+      "statuses": [
+        "5jkr80zqdzaR003d"
+      ],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.5.0"
+    },
+    "theatre": {
+      "baseinsert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Yarrick/Yarrick_Standard.png",
+      "disabledefault": false,
+      "emotes": {
+        "angry": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Yarrick/Yarrick_Angry.png"
+        },
+        "annoyed": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Yarrick/Yarrick_Angry.png"
+        },
+        "awe-struck": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Yarrick/Yarrick_Shock.png"
+        },
+        "blushing": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Yarrick/Yarrick_Shock.png"
+        },
+        "carefree": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Yarrick/Yarrick_Happy.png"
+        },
+        "confused": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Yarrick/Yarrick_Shock.png"
+        },
+        "cry": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Yarrick/Yarrick_Sad.png"
+        },
+        "custom1": {
+          "custom": true,
+          "image": "modules/theatre/app/graphics/emotes/blank.png",
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Yarrick/Yarrick_Mysterious.png",
+          "label": "Mysterious\n                                        \n                                    ",
+          "name": "custom1"
+        },
+        "custom2": {
+          "custom": true,
+          "image": "modules/theatre/app/graphics/emotes/blank.png",
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Yarrick/Yarrick_Scary.png",
+          "label": "Horror\n                                        \n                                    ",
+          "name": "custom2"
+        },
+        "dissatisfied": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Yarrick/Yarrick_Sad.png"
+        },
+        "dizzy": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Yarrick/Yarrick_Shock.png"
+        },
+        "frown": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Yarrick/Yarrick_Sad.png"
+        },
+        "frustrated": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Yarrick/Yarrick_Angry.png"
+        },
+        "grin": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Yarrick/Yarrick_Happy.png"
+        },
+        "happy": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Yarrick/Yarrick_Happy.png"
+        },
+        "happytears": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Yarrick/Yarrick_Happy.png"
+        },
+        "hearts": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Yarrick/Yarrick_Shock.png"
+        },
+        "idea": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Yarrick/Yarrick_Shock.png"
+        },
+        "innocent": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Yarrick/Yarrick_Happy.png"
+        },
+        "kiss": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Yarrick/Yarrick_Shock.png"
+        },
+        "laughing": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Yarrick/Yarrick_Happy.png"
+        },
+        "laughingsquint": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Yarrick/Yarrick_Happy.png"
+        },
+        "meh": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Yarrick/Yarrick_Angry.png"
+        },
+        "mischevious": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Yarrick/Yarrick_Happy.png"
+        },
+        "panic": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Yarrick/Yarrick_Shock.png"
+        },
+        "playful": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Yarrick/Yarrick_Happy.png"
+        },
+        "rofl": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Yarrick/Yarrick_Happy.png"
+        },
+        "sad": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Yarrick/Yarrick_Sad.png"
+        },
+        "scared": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Yarrick/Yarrick_Sad.png"
+        },
+        "serious": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Yarrick/Yarrick_Angry.png"
+        },
+        "sleeping": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Yarrick/Yarrick_Standard.png"
+        },
+        "smile": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Yarrick/Yarrick_Standard.png"
+        },
+        "smug": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Yarrick/Yarrick_Happy.png"
+        },
+        "speechless": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Yarrick/Yarrick_Shock.png"
+        },
+        "surprised": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Yarrick/Yarrick_Shock.png"
+        },
+        "thinking": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Yarrick/Yarrick_Standard.png"
+        },
+        "tongue": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Yarrick/Yarrick_Happy.png"
+        },
+        "wink": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Yarrick/Yarrick_Happy.png"
+        },
+        "worried": {
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Yarrick/Yarrick_Sad.png"
+        }
+      },
+      "name": "",
+      "optalign": "top",
+      "settings": {
+        "emote": null,
+        "textcolor": null,
+        "textflyin": null,
+        "textfont": null,
+        "textsize": null,
+        "textstanding": null
+      }
+    }
+  },
+  "folder": "S1XTScfiXNfd94tK",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Yarrick/Yarrick_Standard.png",
+  "name": "Yarrick",
+  "ownership": {
+    "Am7qxPOavfKeDGPd": 3,
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3
+  },
+  "prototypeToken": {
+    "actorLink": true,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 0,
+    "displayName": 50,
+    "disposition": 0,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          }
+        }
+      },
+      "hex-size-support": {
+        "alternateOrientation": false,
+        "hideBorder": true,
+        "pivotx": 15,
+        "pivoty": 40
+      },
+      "token-variants": {
+        "disableHUDButton": false,
+        "randomImgDefault": ""
+      },
+      "token-z": {
+        "zIndex": 0
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Yarrick",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 2.1,
+      "scaleY": 2.1,
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Yarrick_StandardToken.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 100391,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "activeEffects": {},
+    "props": {
+      "arcanism": false,
+      "armor_details": "",
+      "armor_mod": "5",
+      "armor_name": "Combat Tunic",
+      "attack_accuracy_mod_all": "0",
+      "attack_accuracy_mod_melee": "0",
+      "attack_accuracy_mod_range": "0",
+      "attack_accuracy_mod_spell": "0",
+      "backpack": "",
+      "backstory": "",
+      "bond_1": "",
+      "bond_2": "",
+      "bond_3": "",
+      "bond_4": "",
+      "bond_5": "",
+      "bond_6": "",
+      "chanter_volume_mp_header": "MP",
+      "chanter_volume_mp_high": 30,
+      "chanter_volume_mp_low": 10,
+      "chanter_volume_mp_medium": 20,
+      "chanter_volume_target_high": "Every enemy who can hear you.",
+      "chanter_volume_target_low": "Yourself <b>or</b> another creature you can see who can hear you.",
+      "chanter_volume_target_medium": "Every ally who can hear you.",
+      "char_identity": "Monster Slayer",
+      "check_roller": "Roll!",
+      "chimerism": false,
+      "class_list": {
+        "0": {
+          "$deleted": true,
+          "benefit": "",
+          "class_name": "",
+          "level": "1"
+        },
+        "1": {
+          "$deleted": false,
+          "benefit": "hp",
+          "class_name": "Pilot",
+          "level": "10"
+        },
+        "2": {
+          "$deleted": false,
+          "benefit": "hp",
+          "class_name": "Dancer",
+          "level": "10"
+        },
+        "3": {
+          "$deleted": false,
+          "benefit": "hp",
+          "class_name": "Guardian",
+          "level": "4"
+        }
+      },
+      "clock_brainwave": "0",
+      "clock_trade": "0",
+      "cooking_roller": "🔪Cook!",
+      "current_hp": "20",
+      "current_ip": "0",
+      "current_mp": "40",
+      "damage_receiving_mod_air": "0",
+      "damage_receiving_mod_all": "0",
+      "damage_receiving_mod_bolt": "0",
+      "damage_receiving_mod_dark": "0",
+      "damage_receiving_mod_earth": "0",
+      "damage_receiving_mod_fire": "0",
+      "damage_receiving_mod_ice": "0",
+      "damage_receiving_mod_light": "0",
+      "damage_receiving_mod_melee": "0",
+      "damage_receiving_mod_physical": "0",
+      "damage_receiving_mod_poison": "0",
+      "damage_receiving_mod_range": "0",
+      "dex_base": "12",
+      "dex_current": 8,
+      "draw_card": "Draw",
+      "draw_card_copy1": "Use",
+      "elementalism": false,
+      "emotion_1_1": "",
+      "emotion_1_2": "",
+      "emotion_1_3": "",
+      "emotion_2_1": "",
+      "emotion_2_2": "",
+      "emotion_2_3": "",
+      "emotion_3_1": "",
+      "emotion_3_2": "",
+      "emotion_3_3": "",
+      "emotion_4_1": "",
+      "emotion_4_2": "",
+      "emotion_4_3": "",
+      "emotion_5_1": "",
+      "emotion_5_2": "",
+      "emotion_5_3": "",
+      "emotion_6_1": "",
+      "emotion_6_2": "",
+      "emotion_6_3": "",
+      "entropism": false,
+      "experience": "5",
+      "experience_ui": "0",
+      "fp": "0",
+      "init_penalty": "0",
+      "ins_base": "10",
+      "ins_current": 6,
+      "inventory_label": "💼 Inventory",
+      "isAwake": false,
+      "isClarity": false,
+      "isDazed": true,
+      "isEnergized": false,
+      "isEnraged": true,
+      "isFocus": false,
+      "isPoisoned": true,
+      "isShaken": true,
+      "isSlow": true,
+      "isStrong": true,
+      "isSwift": false,
+      "isWeak": true,
+      "is_martialarmor": false,
+      "level": "24",
+      "magic_defense_mod": "5",
+      "main_attrib_1": "DEX",
+      "main_attrib_2": "INS",
+      "main_details": "<p><strong>Advanced Targeting:&nbsp;</strong>Increases accuracy by <strong>2</strong>.</p>",
+      "main_hand": "Spear",
+      "main_hand_attack": "",
+      "max_hp": 69,
+      "max_ip": 6,
+      "max_mp": 54,
+      "memory": "Memories",
+      "mig_base": "6",
+      "mig_current": 6,
+      "name": "Yarrick",
+      "normal_spell_list": {
+        "0": {
+          "$deleted": false,
+          "class": "Pilot",
+          "cost": "10",
+          "description": "<p>The wind carries your strikes across the battlefield. You may immediately perform a <strong>free attack</strong> with a<strong> melee weapon</strong> you have equipped. This attack may target creatures that can only be targeted by <strong>ranged</strong> attacks.</p>\n<p>If you used a weapon belonging to the <strong>brawling</strong> or <strong>spear</strong> Category for this attack, it deals 5 extra damage.</p>\n<p>If you hit a flying target with this attack, you may force them to land immediately.</p>\n<hr>\n<p><strong>Magistatic:&nbsp;</strong>Refund 5 MP.</p>",
+          "duration": "Instantaneous",
+          "roll": "",
+          "spell_name": "Soaring Strike",
+          "target": "Self"
+        },
+        "1": {
+          "$deleted": false,
+          "class": "Pilot",
+          "cost": "10",
+          "description": "<p>You become one with the speed and strength of wind. Until this spell ends, your <strong>melee </strong>attacks can target creatures that can only be targeted by <strong>ranged </strong>attacks, and no other creature present on the scene is able to see you.</p>\n<p>On your turn, if you are under the effects of this spell and able to perform the <strong>Spell </strong>action, you <strong>must </strong>use your first available action to perform the <strong>Spell </strong>action and cast the <strong>Soaring Strike</strong> spell, ignoring its MP cost. If you do and the weapon used belongs to the <strong>spear </strong>Category, the <strong>free attack</strong> granted by <strong>Soaring Strike</strong> gains <strong>multi (2)</strong> and deals another 10 extra damage. This spell ends after the <strong>free attack</strong> is resolved.</p>\n<p>You may only cast this spell if you have a <strong>spear </strong>weapon equipped, and only if you have also learned the <strong>Soaring Strike</strong> spell.</p>\n<hr>\n<p><strong>Magistatic:&nbsp;</strong>Refund 5 MP.</p>",
+          "duration": "Scene",
+          "roll": "",
+          "spell_name": "Skyjump",
+          "target": "Self"
+        },
+        "2": {
+          "$deleted": false,
+          "class": "Dancer",
+          "cost": "10",
+          "description": "<p>If you already performed a <strong>different dance</strong> during your previous turn in this scene, the cost of the new <strong>dance </strong>is reduced to 5 Mind Points.</p>\n<p>Choose one option: you gain Resistance to <strong>light </strong>damage; or all damage dealt by your attacks and spells becomes <strong>light</strong>.</p>",
+          "duration": "Until the start of your next turn",
+          "roll": "",
+          "spell_name": "Angel Dance",
+          "target": "A creature"
+        },
+        "3": {
+          "$deleted": false,
+          "class": "Dancer",
+          "cost": "10",
+          "description": "<p>If you already performed a <strong>different dance</strong> during your previous turn in this scene, the cost of the new <strong>dance </strong>is reduced to 5 Mind Points.</p>\n<p>Choose one option: you gain Resistance to <strong>dark </strong>damage; <strong>or </strong>all damage dealt by your attacks and spells becomes <strong>dark</strong>.</p>",
+          "duration": "Until the start of your next turn",
+          "roll": "",
+          "spell_name": "Bat Dance",
+          "target": "A creature"
+        },
+        "4": {
+          "$deleted": false,
+          "class": "Dancer",
+          "cost": "10",
+          "description": "<p>If you already performed a <strong>different dance</strong> during your previous turn in this scene, the cost of the new <strong>dance </strong>is reduced to 5 Mind Points.</p>\n<p>Choose one option: you gain Resistance to <strong>bolt </strong>damage; <strong>or </strong>all damage dealt by your attacks and spells becomes <strong>bolt</strong>.</p>",
+          "duration": "Until the start of your next turn",
+          "roll": "",
+          "spell_name": "Golem Dance",
+          "target": "A creature"
+        },
+        "5": {
+          "$deleted": false,
+          "class": "Dancer",
+          "cost": "10",
+          "description": "<p>If you already performed a <strong>different dance</strong> during your previous turn in this scene, the cost of the new <strong>dance </strong>is reduced to 5 Mind Points.</p>\n<p>Choose one option: you gain Resistance to <strong>air </strong>damage; <strong>or </strong>all damage dealt by your attacks and spells becomes <strong>air</strong>.</p>",
+          "duration": "Until the start of your next turn",
+          "roll": "",
+          "spell_name": "Griffin Dance",
+          "target": "A creature"
+        },
+        "6": {
+          "$deleted": false,
+          "class": "Dancer",
+          "cost": "10",
+          "description": "<p>If you already performed a <strong>different dance</strong> during your previous turn in this scene, the cost of the new <strong>dance </strong>is reduced to 5 Mind Points.</p>\n<p>Choose one option: you gain Resistance to <strong>earth </strong>damage; <strong>or </strong>all damage dealt by your attacks and spells becomes <strong>earth</strong>.</p>",
+          "duration": "Until the start of your next turn",
+          "roll": "",
+          "spell_name": "Myrmidon Dance",
+          "target": "A creature"
+        },
+        "7": {
+          "$deleted": false,
+          "class": "Dancer",
+          "cost": "10",
+          "description": "<p>If you already performed a <strong>different dance</strong> during your previous turn in this scene, the cost of the new <strong>dance </strong>is reduced to 5 Mind Points.</p>\n<p>Choose one option: you gain Resistance to <strong>fire </strong>damage; <strong>or </strong>all damage dealt by your attacks and spells becomes <strong>fire</strong>.</p>",
+          "duration": "Until the start of your next turn",
+          "roll": "",
+          "spell_name": "Phoenix Dance",
+          "target": "A creature"
+        },
+        "8": {
+          "$deleted": false,
+          "class": "Dancer",
+          "cost": "10",
+          "description": "<p>If you already performed a <strong>different dance</strong> during your previous turn in this scene, the cost of the new <strong>dance </strong>is reduced to 5 Mind Points.</p>\n<p>Choose one ally you can see who has yet to take a turn during this round. That ally may take their turn immediately after yours during this round.</p>",
+          "duration": "Instantaneous",
+          "roll": "",
+          "spell_name": "Ouroboros Dance",
+          "target": "One ally"
+        }
+      },
+      "notes_text": "",
+      "off_attrib_1": "DEX",
+      "off_attrib_2": "INS",
+      "off_base_mod_1": "0",
+      "off_base_mod_2": "0",
+      "off_details": "<p><strong>Soaring Strike: </strong>Deals extra <strong>5</strong> damage.</p>\n<p><strong>Skyjump:&nbsp;</strong>Deals extra <strong>10</strong> damage and gains <strong>Multi(2)</strong>.</p>\n<p><strong>Heart in the Engine:&nbsp;</strong>Deals extra <strong>6</strong> damage.</p>\n<p><strong>Advanced Targeting:&nbsp;</strong>Increases accuracy by <strong>2</strong>.</p>\n<p>&nbsp;</p>",
+      "off_hand": "Skyjump Spear",
+      "off_hand_attack": "",
+      "off_mod_1": 0,
+      "off_mod_2": 0,
+      "origin": "Jotunn",
+      "passive_list": {
+        "0": {
+          "$deleted": false,
+          "passive_description": "<p>Permanently increase your maximum Hit Points <strong>and </strong>maximum Mind Points by 5.<br>Choose one option: gain the ability to equip <strong>martial melee and ranged weapons</strong>,<br><strong>martial armor</strong>, and <strong>martial shields</strong>; <strong>or</strong> learn any one spell from the <strong>Elementalist</strong> or<br><strong>Spiritist</strong> lists; <strong>or</strong> permanently increase your maximum Inventory Points by 2.</p>",
+          "passive_name": "Survivor",
+          "passive_roll": "",
+          "passive_source": "quirk"
+        },
+        "1": {
+          "$deleted": false,
+          "passive_description": "<p>You unlock the hidden art of aerial spear combat, learning the <strong>Skyjump </strong>spell.</p>",
+          "passive_name": "Skyspear Style",
+          "passive_roll": "",
+          "passive_source": "heroic_style"
+        },
+        "2": {
+          "$deleted": false,
+          "passive_description": "<p>After you cast the <strong>first </strong>spell of your turn during a conflict, if you are driving your<strong> personal vehicle</strong>, you may choose one option (after the spell has been resolved): choose one enabled module and <strong>disable </strong>it, then choose one disabled module and <strong>enable </strong>it; <strong>or</strong> the next spell you cast before the end of this scene that deals damage deals 5 extra damage; <strong>or</strong> the next spell you cast before the end of this scene that restores Hit Points to one or more creatures restores 10 additional Hit Points to each of those creatures.</p>",
+          "passive_name": "Steel Witch",
+          "passive_roll": "",
+          "passive_source": "heroic_style"
+        },
+        "3": {
+          "$deleted": false,
+          "passive_description": "<p>Once before the next rest, when you perform an attack, you may grant that attack <strong>multi (2)</strong> or increase its <strong>multi </strong>property by one point.</p>",
+          "passive_name": "Martial Practice",
+          "passive_roll": "",
+          "passive_source": "camp activity"
+        },
+        "4": {
+          "$deleted": false,
+          "passive_description": "<p>Choose a single spell among those you know. Once before the next rest, the target may perform the <strong>Spell </strong>action to cast the spell you chose (they must still pay its MP cost and perform any Magic Checks as needed)</p>",
+          "passive_name": "Magic Lesson",
+          "passive_roll": "",
+          "passive_source": "camp activity"
+        }
+      },
+      "place_card_vanguard": "Place",
+      "populate_deck": "Populate",
+      "pronouns": "",
+      "relationship_1": "",
+      "relationship_2": "",
+      "relationship_3": "",
+      "relationship_4": "",
+      "relationship_5": "",
+      "relationship_6": "",
+      "reset_cards": "Resets",
+      "resolve_set": "Resolve",
+      "resource_value_1": "0",
+      "resource_value_2": "0",
+      "resource_value_3": "0",
+      "reveal_cards": "Reveal",
+      "ritualism": false,
+      "rolled_atr1": "MIG",
+      "rolled_atr2": "WLP",
+      "shield_type": "",
+      "shield_value": "0",
+      "shuffle_deck": "Shuffle",
+      "skill_accuracy": "0",
+      "skill_attack_damage": "0",
+      "skill_hp": "0",
+      "skill_ip": "0",
+      "skill_list": {
+        "0": {
+          "$deleted": false,
+          "class": "Pilot",
+          "description": "<p>As long as there is no one aboard your <strong>personal vehicle</strong>, you may have it safely disappear from the game world at any time. What magic or technology allows it?</p>\n<p>If your <strong>personal vehicle</strong> is not present in the game world and you are in a space big enough to contain it, you may perform the <strong>Inventory</strong> action and spend 2 Inventory Points to have the vehicle appear near you, and <strong>enter </strong>it for free.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Compression Tech"
+        },
+        "1": {
+          "$deleted": false,
+          "class": "Pilot",
+          "description": "<p>At the start of your turn during a conflict, if you are driving your <strong>personal vehicle</strong>, you may spend 10 Mind Points. If you do, choose one option: the next time you deal damage during this turn, deal<strong>【6】</strong>extra damage; <strong>or</strong>, the next time you suffer damage before the start of your next turn, that damage is reduced by<strong>【6】</strong>(applied <strong>before </strong>damage Affinities); <strong>or</strong>, you recover from either the <strong>slow </strong>or <strong>weak </strong>status effects (your choice).</p>",
+          "level": "3",
+          "roll": "",
+          "skill_name": "Heart in the Engine"
+        },
+        "2": {
+          "$deleted": false,
+          "class": "Pilot",
+          "description": "<p>When you perform the <strong>Equipment </strong>or <strong>Guard </strong>action while driving your <strong>personal vehicle</strong>, you may choose up to <strong>【2】</strong>of its enabled modules and <strong>disable </strong>them. If you do, choose up to an equal amount of its disabled modules and <strong>enable </strong>them.</p>",
+          "level": "2",
+          "roll": "",
+          "skill_name": "Flexible Configuration"
+        },
+        "3": {
+          "$deleted": false,
+          "class": "Pilot",
+          "description": "<p>When you acquire this Skill, you gain a<strong> personal vehicle</strong> with a <strong>frame </strong>of your choice and <strong>three different modules</strong> of your choice.</p>\n<p>Whenever you acquire this Skill again, you acquire <strong>two additional modules</strong> of your choice.</p>\n<p>Your total acquirable modules is <strong>【11】.</strong></p>\n<p>The<strong> maximum number of modules enabled at the same time</strong> on a <strong>personal vehicle</strong> is equal to <strong>【7】</strong>. The Pilot may freely reassign their personal vehicle&rsquo;s enabled and disabled modules outside conflicts.</p>\n<hr>\n<h2>Frame</h2>\n<table style=\"font-family: var(--font-primary); font-size: var(--font-size-14); height: 102px; width: 100%;\" border=\"1\"><colgroup><col style=\"width: 27.1094%;\"><col style=\"width: 52.9335%;\"><col style=\"width: 19.9571%;\"></colgroup>\n<tbody>\n<tr style=\"height: 17px;\">\n<td style=\"height: 17px;\"><strong>FRAME</strong></td>\n<td style=\"height: 17px;\"><strong>Passengers</strong></td>\n<td style=\"height: 17px;\"><strong>Distance</strong></td>\n</tr>\n<tr style=\"height: 17px;\">\n<td style=\"height: 17px;\">Steed</td>\n<td style=\"height: 17px;\">Up to one</td>\n<td style=\"height: 17px;\">x2</td>\n</tr>\n<tr style=\"height: 68px;\">\n<td style=\"height: 68px;\" colspan=\"3\">This <strong>personal vehicle</strong> may have up to <strong>1 weapon module</strong>, <strong>1 armor module</strong> and <strong>any number of support modules</strong> enabled.<br>If you use the <strong>Heart in the Engine</strong> Skill with this <strong>personal vehicle</strong>, ignore the MP cost.</td>\n</tr>\n</tbody>\n</table>\n<hr>\n<h2>Module</h2>\n<table style=\"width: 100%; height: 34px;\" border=\"1\"><colgroup><col style=\"width: 26.6094%;\"><col style=\"width: 36.3029%;\"><col style=\"width: 37.0877%;\"></colgroup>\n<tbody>\n<tr style=\"height: 17px;\">\n<td style=\"height: 17px;\"><strong>ARMOR MODULE</strong></td>\n<td style=\"height: 17px;\"><strong>Defense</strong></td>\n<td style=\"height: 17px;\"><strong>Magic Defense</strong></td>\n</tr>\n<tr style=\"height: 17px;\">\n<td style=\"height: 17px;\">Flexible Plating</td>\n<td style=\"height: 17px;\">DEX die size + 2</td>\n<td style=\"height: 17px;\">INS die size + 1</td>\n</tr>\n</tbody>\n</table>\n<table style=\"width: 100%; height: 193px;\" border=\"1\"><colgroup><col style=\"width: 30.0429%;\"><col style=\"width: 36.0515%;\"><col style=\"width: 33.9056%;\"></colgroup>\n<tbody>\n<tr style=\"height: 17px;\">\n<td style=\"height: 17px;\"><strong>WEAPON MODULE</strong></td>\n<td style=\"height: 17px;\"><strong>Accuracy</strong></td>\n<td style=\"height: 17px;\"><strong>Damage</strong></td>\n</tr>\n<tr style=\"height: 19px;\">\n<td style=\"height: 19px;\"><strong>Spear</strong></td>\n<td style=\"height: 19px;\"><strong>【DEX + INS】</strong></td>\n<td style=\"height: 19px;\"><strong>【HR + 10】 physical</strong></td>\n</tr>\n<tr style=\"height: 34px;\">\n<td style=\"height: 34px;\" colspan=\"3\"><strong>Spear &diams; </strong>Melee <strong>&diams; </strong>No Qualities.<strong> &diams; </strong>A <strong>personal vehicle</strong> with this module enabled<br>cannot have any other <strong>weapon modules</strong> enabled.</td>\n</tr>\n<tr style=\"height: 19px;\">\n<td style=\"height: 19px;\"><strong>Arcane</strong></td>\n<td style=\"height: 19px;\"><strong>【DEX + WLP】</strong></td>\n<td style=\"height: 19px;\"><strong>【HR + 8】 physical</strong></td>\n</tr>\n<tr style=\"height: 17px;\">\n<td style=\"height: 17px;\" colspan=\"3\"><strong>Arcane &diams;</strong> Melee <strong>&diams;</strong> No Qualities.</td>\n</tr>\n<tr style=\"height: 19px;\">\n<td style=\"height: 19px;\"><strong>Trident</strong></td>\n<td style=\"height: 19px;\"><strong>【DEX + INS】</strong></td>\n<td style=\"height: 19px;\"><strong>【HR + 14】 physical</strong></td>\n</tr>\n<tr style=\"height: 17px;\">\n<td style=\"height: 17px;\" colspan=\"3\"><strong>Spear &diams; </strong>Melee &diams;<strong> </strong>No Qualities.</td>\n</tr>\n<tr style=\"height: 17px;\">\n<td style=\"height: 17px;\" colspan=\"3\"><strong>Shield</strong><strong><br></strong></td>\n</tr>\n<tr style=\"height: 34px;\">\n<td style=\"height: 34px;\" colspan=\"3\">No Qualities. While driving this <strong>personal vehicle</strong>, you gain a +2 bonus to<br>Defense and a +2 bonus to Magic Defense.</td>\n</tr>\n</tbody>\n</table>\n<table style=\"width: 100%; height: 190.359px;\" border=\"1\"><colgroup><col style=\"width: 99.8549%;\"></colgroup>\n<tbody>\n<tr style=\"height: 20px;\">\n<td style=\"height: 20px;\"><strong>ENABLED SUPPORT MODULE</strong></td>\n</tr>\n<tr style=\"height: 20px;\">\n<td style=\"height: 20px;\"><strong>Aerial (count as two enabled modules)</strong></td>\n</tr>\n<tr style=\"height: 11px;\">\n<td style=\"height: 11px;\">\n<p>This <strong>personal vehicle</strong> can fly, and its distance becomes &times;3.<br>While you are driving this <strong>personal vehicle</strong>, your <strong>melee </strong>attacks can target <strong>flying </strong>creatures, and none of the creatures inside the <strong>personal vehicle</strong> can be targeted by <strong>melee </strong>attacks unless the attacker is flying or is somehow able to reach flying targets.</p>\n<p>These benefits do not apply while the <strong>personal vehicle</strong> is inactive or grounded, while you are in <strong>Crisis</strong>, or while you are <strong>covering </strong>another creature with the <strong>Guard </strong>action.</p>\n<p>Additionally, if a creature aboard this <strong>personal vehicle</strong> suffers <strong>air</strong>, <strong>bolt </strong>or <strong>ice </strong>damage during a conflict, the benefits of this module cease until the start of your next turn.</p>\n</td>\n</tr>\n<tr style=\"height: 20px;\">\n<td style=\"height: 20px;\"><strong>Advanced Targeting</strong></td>\n</tr>\n<tr style=\"height: 41.25px;\">\n<td style=\"height: 41.25px;\">While driving this <strong>personal vehicle</strong>, you gain a +2 bonus to your Accuracy Checks and to Magic Checks for offensive spells (⚡) you cast.</td>\n</tr>\n<tr style=\"height: 20px;\">\n<td style=\"height: 20px;\"><strong>Magistatic</strong></td>\n</tr>\n<tr style=\"height: 58.1094px;\">\n<td style=\"height: 58.1094px;\">After you pay the MP cost of an <strong>Arcanum</strong>, <strong>spell</strong>, or <strong>verse</strong>,<br>if you are driving this <strong>personal vehicle</strong> and have an <strong>arcane </strong>weapon equipped, you recover 5<br>Mind Points, or 10 Mind Points if the cost was <strong>equal to or higher than 30 MP</strong>.</td>\n</tr>\n</tbody>\n</table>\n<table style=\"width: 100%; height: 136px;\" border=\"1\"><colgroup><col style=\"width: 99.8549%;\"></colgroup>\n<tbody>\n<tr style=\"height: 17px;\">\n<td style=\"height: 17px;\"><strong>DISABLED SUPPORT MODULE</strong></td>\n</tr>\n<tr style=\"height: 17px;\">\n<td style=\"height: 17px;\"><strong>Sensor</strong></td>\n</tr>\n<tr style=\"height: 34px;\">\n<td style=\"height: 34px;\">While driving this <strong>personal vehicle</strong>, you gain a +2 bonus to Open Checks made to<br>examine nearby creatures, items and locations.</td>\n</tr>\n<tr>\n<td><strong>Turbo</strong></td>\n</tr>\n<tr>\n<td>While driving this <strong>personal vehicle</strong>, you gain a +2 bonus to all Opposed Checks that<br>rely on <strong>speed </strong>and <strong>rapid maneuvers</strong>.</td>\n</tr>\n<tr style=\"height: 17px;\">\n<td style=\"height: 17px;\"><strong>Seafarer</strong></td>\n</tr>\n<tr style=\"height: 17px;\">\n<td style=\"height: 17px;\">This <strong>personal vehicle</strong> can travel on water and underwater.</td>\n</tr>\n<tr style=\"height: 17px;\">\n<td style=\"height: 17px;\"><strong>Seat</strong></td>\n</tr>\n<tr style=\"height: 17px;\">\n<td style=\"height: 17px;\">This <strong>personal vehicle</strong> can transport an additional human-sized passenger.</td>\n</tr>\n</tbody>\n</table>\n<p>&nbsp;</p>",
+          "level": "4",
+          "roll": "",
+          "skill_name": "Personal Vehicle"
+        },
+        "4": {
+          "$deleted": false,
+          "class": "Dancer",
+          "description": "",
+          "level": "7",
+          "roll": "",
+          "skill_name": "Dance"
+        },
+        "5": {
+          "$deleted": false,
+          "class": "Dancer",
+          "description": "",
+          "level": "2",
+          "roll": "",
+          "skill_name": "Frenetic Footwork"
+        },
+        "6": {
+          "$deleted": false,
+          "class": "Dancer",
+          "description": "",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Quick-Change"
+        },
+        "7": {
+          "$deleted": true,
+          "class": "",
+          "description": "",
+          "level": "1",
+          "roll": "",
+          "skill_name": ""
+        },
+        "8": {
+          "$deleted": false,
+          "class": "Guardian",
+          "description": "<p>You may now equip a <strong>shield </strong>in your <strong>main hand</strong> slot. As long as you have two shields equipped, you gain the benefits of both items.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Dual Shieldbearer"
+        },
+        "9": {
+          "$deleted": false,
+          "class": "Guardian",
+          "description": "<p>When another creature is threatened by an <strong>attack</strong>, <strong>spell </strong>or other <strong>danger</strong>, you may take their place (any Checks that are part of the danger will be performed against you; you may declare the use of this Skill <strong>before or after</strong> the Checks have been made). If the danger already affected you, it affects you <strong>twice </strong>(resolve both instances separately); you also cannot protect multiple creatures from the same danger. If you use this Skill during a conflict, you cannot use it again until the start of your next turn.</p>\n<hr>\n<p><strong>Heart in the Engine</strong>: Reduce damage by <strong>6&nbsp;</strong>for a single attack.</p>\n<p><strong>Defensive Mastery</strong>: Reduce damage by <strong>2</strong>.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Protect"
+        },
+        "10": {
+          "$deleted": false,
+          "class": "Guardian",
+          "description": "<p>As long as you have a <strong>shield </strong>or a <strong>martial armor</strong> equipped, all damage you suffer is reduced by <strong>【2】</strong> (applied before damage Affinities).</p>",
+          "level": "2",
+          "roll": "",
+          "skill_name": "Defensive Mastery"
+        }
+      },
+      "skill_mp": "0",
+      "spiritism": false,
+      "theme": "",
+      "weapon1_base_damage": "0",
+      "weapon1_base_mod": "0",
+      "weapon1_damage": 0,
+      "weapon1_damagetype": "physical",
+      "weapon1_mod": 0,
+      "weapon2_damagetype": "physical",
+      "wlp_base": "6",
+      "wlp_current": 6,
+      "your_class_name": "Monster Slayer",
+      "zenit": "3048",
+      "zero_effect_description": "",
+      "zero_effect_label": "💬 Zero Effect",
+      "zero_label": "💥 Zero Power : ",
+      "zero_power_name": "",
+      "zero_power_value": "0",
+      "zero_trigger_description": "",
+      "zero_trigger_label": "⚔️ Zero Trigger"
+    },
+    "statusEffects": {
+      "1QPHKNWo17z0bBmX": [],
+      "1cksCQj3urJwddfg": [],
+      "1qTdxSVu2XLu0lUx": [],
+      "3YZNX2X5rHYtL4L5": [],
+      "4g2B0rdJ3SiUQvUv": [],
+      "5FFBDg2y54bpqgat": [],
+      "5jkr80zqdzaR003d": [],
+      "6YW8glLMYbwj6ZhC": [],
+      "7FLtIUvENcYDAJKC": [],
+      "7VDl6ac5Rzr2Rpya": [],
+      "8LN8tDQjON508Rqm": [],
+      "ACD2C8JLWUeIx89o": [],
+      "CVxHWmDb0gQsob1q": [],
+      "CfLPg6RDybSQhTSR": [],
+      "DCaKnV9kNn3EpqtY": [],
+      "DHsoSawNEZAxsnQ9": [],
+      "EVjmTFRDsuzR823Z": [],
+      "GJ0cbbj60lr4zaHm": [],
+      "MsbUHrgK7AhSeEJm": [],
+      "N4WfMf1nuOdUEXVS": [],
+      "N4rGBYQsH7PyMAWr": [],
+      "NogCaPvL5Y52Hjnq": [],
+      "OFk8VUuwDhWFoPxI": [],
+      "QOfrFCU2C6mx50gK": [],
+      "Qz8IC4v3wJ6UoM77": [],
+      "Rc8AvdmlHAK7pPea": [],
+      "StnYeDADYo2xX99O": [],
+      "T1kJfiKBZm1dnnBy": [],
+      "VxdXsFJ7YVEzAp3x": [],
+      "YhO7nUdawyeQKMWD": [],
+      "ZK0aTX8IH1NqwmTw": [],
+      "bspDC7hFRTYuwdhf": [],
+      "cDgbFRi9TA68TvYr": [],
+      "clE8TJ0G1gMwF735": [],
+      "fYkA57rVfoytHRjo": [],
+      "g7JIey1pEuRHyAOH": [],
+      "gX1fA3onNG7wsyap": [],
+      "hhqoSNhWfVD4KR7g": [],
+      "jKvrVpxLgX0KhB23": [],
+      "m2iUJjsEfJkpmOBw": [],
+      "qMZsEEuzAdrHb2fk": [],
+      "qePlOECBTS0Dftgc": [],
+      "t2C3LKukW6LPUImk": [],
+      "t5jyddIZDvbyuVsD": [],
+      "v22vl6cnP94wVBPu": [],
+      "v2vFlETIgMnff5o8": [],
+      "vLM7q3rdXVCgHYD4": [],
+      "vUYA9jgY9pdafj4i": [],
+      "wA1E8GxiXmzz80XQ": [],
+      "xuwAn7u126GfFweU": []
+    },
+    "template": "Dx16KeWcJzikM7dh",
+    "templateSystemUniqueVersion": 276398442
+  },
+  "type": "character"
+}

@@ -1,0 +1,50 @@
+{
+  "_id": "wT2mM2zE8PKAhNLc",
+  "_stats": {
+    "compendiumSource": "Item.C1FR55h1SsY8GEpF",
+    "coreVersion": "12.343",
+    "createdTime": 1702144891794,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "core": {
+      "sourceId": "Item.C1FR55h1SsY8GEpF"
+    },
+    "custom-system-builder": {
+      "version": "3.2.4"
+    }
+  },
+  "folder": "hIrlKsiyq3vuA7ZM",
+  "img": "icons/magic/air/air-wave-gust-blue.webp",
+  "name": "Ventus",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3,
+    "nXC7OD7u5Zw5UDDU": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Elementalist",
+      "cost": "10 × T",
+      "damage_bonus": "15",
+      "description": "<p>You summon the power of winds against your enemy. Each target hit by this spell suffers <strong>【HR + 15】air</strong> damage.</p>\n<p><strong>Opportunity</strong>: Each <strong>flying </strong>target hit by this spell is forced to land immediately.</p>",
+      "discipline": "",
+      "duration": "Instantaneous",
+      "name": "Ventus",
+      "rolled_atr1": "INS",
+      "rolled_atr2": "WLP",
+      "target": "Up to 3 creature",
+      "type_damage": "Air"
+    },
+    "template": "FZmpKcQRP7hZQqbV",
+    "templateSystemUniqueVersion": 1700837225,
+    "unique": false,
+    "uniqueId": "wT2mM2zE8PKAhNLc"
+  },
+  "type": "equippableItem"
+}

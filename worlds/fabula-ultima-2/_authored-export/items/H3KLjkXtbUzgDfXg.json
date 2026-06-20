@@ -1,0 +1,54 @@
+{
+  "_id": "H3KLjkXtbUzgDfXg",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1751637141492,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "consumable",
+        "fromTemplate": "xdZPhVF8AnmwQEPM",
+        "itemId": "H3KLjkXtbUzgDfXg",
+        "itemName": "Turbo Remedy Recipe",
+        "pickedOldProps": {
+          "consumable_cost": "2800",
+          "consumable_description": "<ul><li>Learned how to create <strong>Turbo Remedy</strong> with <strong>6 IP</strong></li></ul>",
+          "consumable_ip": "6",
+          "consumable_label": ""
+        },
+        "ts": 1769647436622
+      }
+    }
+  },
+  "folder": "3xHGNagIXPyzukcU",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/book.png",
+  "name": "Turbo Remedy Recipe",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 150000,
+  "system": {
+    "container": null,
+    "props": {
+      "description": "<ul><li>Learned how to create <strong>Turbo Remedy</strong> with <strong>6 IP</strong></li></ul>",
+      "ip_cost": "6",
+      "item_cost": "2800",
+      "item_type": "consumable",
+      "name": "Turbo Remedy Recipe"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "H3KLjkXtbUzgDfXg"
+  },
+  "type": "equippableItem"
+}

@@ -1,0 +1,883 @@
+{
+  "_id": "OUDsxqNtx0deG1z8",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1758078746805,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "lrk2jhOW5Ok9sgH1",
+  "img": "https://megatenwiki.com/images/9/97/DeSu2RB_Protagonist_Artwork.png",
+  "items": [
+    {
+      "_id": "01cCr4tmv9I79qTi",
+      "_stats": {
+        "compendiumSource": "Item.msqh4FjpgblLItfH",
+        "coreVersion": "12.343",
+        "createdTime": 1758084361252,
+        "duplicateSource": "Item.DFPmC0P4Kz07z0kv",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lu/NBTrans1.png",
+      "name": "Interceptor",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Tamer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When another creature you can see would take damage, you may use one of your recruited creatures to reduce that damage by <strong>[SL × 4]</strong>. If the recruited creature has Resistance to the damage, the reduction it provides is doubled. When you use a recruited creature this way, you lose all access to it until the end of the scene.</p>\n",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "6",
+          "name": "Interceptor",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>Damage Reduced</strong></p></td></tr><tr><td><p>1</p></td><td><p>4</p></td></tr><tr><td><p>2</p></td><td><p>8</p></td></tr><tr><td><p>3</p></td><td><p>12</p></td></tr><tr><td><p>4</p></td><td><p>16</p></td></tr><tr><td><p>5</p></td><td><p>20</p></td></tr><tr><td><p>6</p></td><td><p>24</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "msqh4FjpgblLItfH"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "EmYI7O5YfjEcByah",
+      "_stats": {
+        "compendiumSource": "Item.DFPmC0P4Kz07z0kv",
+        "coreVersion": "12.343",
+        "createdTime": 1758084360113,
+        "duplicateSource": "Item.6KYKZzM1SB9qbGOi",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lu/DemActive9.png",
+      "name": "Hybridization",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Tamer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you rest, you can combine two of your recruited creatures into a single creature. The new creature has the attitude and damage Affinities of one of the original creatures and any combination of up to two basic attacks from the original creatures.</p>\n",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Hybridization",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "DFPmC0P4Kz07z0kv"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "EOCHF2hkVyOQpnwf",
+      "_stats": {
+        "compendiumSource": "Item.ClVzoll6PFNX2g2l",
+        "coreVersion": "12.343",
+        "createdTime": 1758084367969,
+        "duplicateSource": "Item.9zrcJqNtJtnU3SdY",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lu/TurbidsHyperActive.png",
+      "name": "Expanded Party",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Tamer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>Choose a Species from among:</p><ul><li><strong>beast</strong></li><li><strong>construct</strong></li><li><strong>plant</strong></li></ul><p>You may negotiate with creatures from the chosen Species. Additionally, the maximum number of creatures you can recruit is <strong>increased by 1</strong>.</p><p>This Heroic Skill may be acquired up to twice.</p>",
+          "duration": "",
+          "heroic_requirement": "You must have mastered the Tamer Class",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "2",
+          "name": "Expanded Party",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "ClVzoll6PFNX2g2l"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "ICm80clFOF2B9ceU",
+      "_stats": {
+        "compendiumSource": "Item.6KYKZzM1SB9qbGOi",
+        "coreVersion": "12.343",
+        "createdTime": 1758084358957,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lu/NBTrans5.png",
+      "name": "All-Out Attack",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Tamer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you perform an attack, you may spend 10 Mind Points to choose one option:</p>\n<ul>\n  <li>you gain a bonus to your Accuracy Check equal to <strong>[the number of different attitudes among your recruited creatures]</strong>;</li>\n  <li>or the attack deals extra damage equal to <strong>[2 × the highest number of recruited creatures that have the same attitude]</strong>.</li>\n</ul>\n",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "All-Out Attack",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "6KYKZzM1SB9qbGOi"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "RVOjEwCafQjq9qUx",
+      "_stats": {
+        "compendiumSource": "Item.4YMpZKGyDjAKW6hG",
+        "coreVersion": "12.343",
+        "createdTime": 1758084363421,
+        "duplicateSource": "Item.yRQsyxvsol3UGPlO",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lu/LuCielSkill13.png",
+      "name": "Unleash",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Tamer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>You gain the ability to perform Rituals of the Chimerism discipline. Additionally, you may use Chimerism to summon a creature of the GM’s choosing from the demon, elemental, monster, or undead Species to your location. The level of the summoned creature may be up to <strong>[SL × 5]</strong>.</p>\n<p>The creature is controlled by the GM and may not be Negotiated with during the same scene in which it was summoned. It’s already doing you a favor by showing up!</p>\n",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "4",
+          "name": "Unleash",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>Max Summoned Creature Level</strong></p></td></tr><tr><td><p>1</p></td><td><p>5</p></td></tr><tr><td><p>2</p></td><td><p>10</p></td></tr><tr><td><p>3</p></td><td><p>15</p></td></tr><tr><td><p>4</p></td><td><p>20</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "4YMpZKGyDjAKW6hG"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "SSTuLA2VFayKPrnc",
+      "_stats": {
+        "compendiumSource": "Item.9zrcJqNtJtnU3SdY",
+        "coreVersion": "12.343",
+        "createdTime": 1758084404576,
+        "duplicateSource": "Item.Q3S4dLy0ZBu8k7CU",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lu/LuCielSkill17.png",
+      "name": "Rapid Hybridization",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Tamer",
+          "cost": "1 Fabula Point",
+          "damage_bonus": "0",
+          "description": "<p>When you would take damage, or as an action on your turn, you may spend <strong>1 Fabula Point</strong> to combine two of your creatures using Hybridization. Your damage Affinities automatically change to match the new creature’s Affinities.</p>\n",
+          "duration": "Special",
+          "heroic_requirement": "You must have mastered the Tamer Class, and must have acquired the Hybridization Skill",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Rapid Hybridization",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "9zrcJqNtJtnU3SdY"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "u9QnCIHcdnwhIQIE",
+      "_stats": {
+        "compendiumSource": "Item.Q3S4dLy0ZBu8k7CU",
+        "coreVersion": "12.343",
+        "createdTime": 1758084366845,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lu/Dreadlord06.png",
+      "name": "Elite Recruitment",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Tamer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>You may negotiate with elite-rank creatures. When you do, <strong>the cost to complete negotiation is doubled</strong> and the creature counts as two creatures for the purposes of determining how many creatures you have recruited.</p><p>If you use the <strong>【📜 Hybridization】</strong> Skill using an elite creature, the new creature is also an elite and may have an additional basic attack.</p>",
+          "duration": "",
+          "heroic_requirement": "You must have mastered the Tamer Class",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Elite Recruitment",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "Q3S4dLy0ZBu8k7CU"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "W2Y6J11NLnw50Jir",
+      "_stats": {
+        "compendiumSource": "Item.yRQsyxvsol3UGPlO",
+        "coreVersion": "12.343",
+        "createdTime": 1758084362398,
+        "duplicateSource": "Item.msqh4FjpgblLItfH",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lu/LuCielSkill22.png",
+      "name": "Negotiate",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Tamer",
+          "cost": "-",
+          "damage_bonus": "0",
+          "description": "<p>You may use the <strong>【❗️Objective】</strong> action to attempt to recruit a soldier-rank creature of the demon, elemental, monster, or undead Species to join you as an ally. The full rules for negotiation and recruitment can be found on the next page. If you take this Skill at character creation, you begin play with one level 5 creature already recruited.</p>",
+          "duration": "Special",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "4",
+          "name": "Negotiate",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Range",
+          "skill_target": "One soldier-rank creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "yRQsyxvsol3UGPlO"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Tamer",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar4": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "DEF",
+            "max": 13,
+            "maxcolor": "#f26d40",
+            "mincolor": "#f26d40",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 13
+          },
+          "bar5": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar5",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MDEF",
+            "max": 10,
+            "maxcolor": "#26d6ed",
+            "mincolor": "#26d6ed",
+            "opacity": null,
+            "order": 4,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 10
+          }
+        }
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Tamer",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://megatenwiki.com/images/9/97/DeSu2RB_Protagonist_Artwork.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 900000,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {
+      "also_text": "Trainer, Devil Summoner, Handler",
+      "benefit_dropdown": "mp_benefit",
+      "classMechanic_text": "<h1 style=\"font-family: Signika, sans-serif; letter-spacing:.5px; color:#295b8a; text-align:center; border-bottom:3px solid #9ec3e8; padding-bottom:.25rem;\"><span style=\"font-family: Signika, sans-serif\">TAMER MECHANIC — </span><span style=\"color:#1f69b5;\"><span style=\"font-family: Signika, sans-serif\">NEGOTIATION</span></span></h1><p style=\"font-style: italic; color: #295b8a; text-align: center\"><em>“Win them over, earn their trust, and let their fangs fight alongside yours.”</em></p><div style=\"display:grid; gap:.75rem; grid-template-columns:1fr;\"><section style=\"border:1px solid #cfe0f5; background:#f7fbff; padding:.75rem; border-radius:.5rem;\"><h2 style=\"margin:.25rem 0; color:#295b8a;\">What Negotiation Does</h2><ul style=\"margin:.25rem 0 .5rem 1rem;\"><li>Using the <strong>Negotiation Skill</strong> to recruit a creature creates a <strong>4-section Negotiation Clock</strong>. You can track only one Clock at a time.</li><li><strong>Objective</strong> actions (yours and allies’) make Checks to fill sections. The <strong>Attributes</strong> and final <strong>cost</strong> depend on the creature’s <strong>attitude</strong>.</li><li>Fill the last section → the creature <strong>demands a cost</strong>. <strong>Pay</strong> it to recruit; <strong>refuse</strong> and it leaves the scene.</li><li>On recruit, record its sheet and pick <strong>one Resistance</strong> and <strong>one Vulnerability</strong> (no Immunities/Absorptions).</li><li>You can keep up to <strong>[SL]</strong> recruited creatures; release one first if you’re at the limit.</li><li>In conflict, on your <strong>Attack</strong> you may spend <strong>10 MP</strong> to use a recruited creature’s <em>basic attack</em> and temporarily <strong>adopt its Affinities</strong> until your next turn.</li></ul><div style=\"display:grid; grid-template-columns:1fr 1fr; gap:.5rem;\"><div style=\"border:1px dashed #b8d0f0; border-radius:.5rem; padding:.5rem;\"><p style=\"margin: 0; color: #295b8a\"><strong>Negotiation Difficulty</strong></p><p style=\"margin: .25rem 0 0 0\">Roll vs <strong>10 + the creature’s level − your level</strong> (<em>minimum 7</em>).</p></div><div style=\"border:1px dashed #b8d0f0; border-radius:.5rem; padding:.5rem;\"><p style=\"margin: 0; color: #295b8a\"><strong>Only One Clock</strong></p><p style=\"margin: .25rem 0 0 0\">Starting talks with a different creature immediately <em>erases</em> the current Clock and begins a new one.</p></div></div></section><section style=\"border:1px solid #cfe0f5; background:#ffffff; padding:.75rem; border-radius:.5rem;\"><h2 style=\"margin:.25rem 0; color:#295b8a;\">Negotiation — Step-by-Step</h2><ol style=\"margin:.25rem 0 .5rem 1.25rem;\"><li><strong>Begin Negotiation.</strong> Use the <strong>Objective</strong> action to start and create a <strong>4-section Clock</strong>.</li><li><strong>Choose Attitude.</strong> The GM picks the creature’s <strong>attitude</strong> from the table below based on its traits; this sets the <strong>Check Attributes</strong> and eventual <strong>cost</strong>.</li><li><strong>Fill the Clock.</strong> Each Objective action (including allies’) attempts the Check vs the difficulty above. On a success, fill sections as your rules specify.</li><li><strong>Close the Deal.</strong> When the last section is filled, the creature demands the <strong>cost</strong>. Pay it to recruit; otherwise it leaves the scene.</li></ol><div style=\"border-left:4px solid #9ec3e8; background:#f2f7ff; padding:.5rem; border-radius:.25rem;\"><p style=\"margin: .25rem 0\"><strong>Note:</strong> You decide whether to pay <em>after</em> rolling and seeing the final cost, and <strong>you</strong> must pay it—even if an ally filled the final section.</p></div></section><section style=\"border:1px solid #cfe0f5; background:#f9fbff; padding:.75rem; border-radius:.5rem;\"><h2 style=\"margin:.25rem 0; color:#295b8a;\">Attitudes & Costs</h2><div class=\"tableWrapper\" style=\"margin:.25rem 0;\"><table style=\"width:100%; border-collapse:separate; border-spacing:0; font-family: Signika, sans-serif; font-size:15.25px; line-height:1.35; color:#1f2737;\"><colgroup><col style=\"width:140px;\"><col><col style=\"width:170px;\"><col style=\"width:140px;\"></colgroup><thead><tr style=\"background:#e6f0fb; color:#163760;\"><th style=\"text-align:left; padding:.6rem .65rem; font-weight:800; border-top:2px solid #cfe0f5; border-bottom:2px solid #cfe0f5; border-top-left-radius:.4rem;\"><span style=\"font-family: Signika, sans-serif\"><strong>Attitude</strong></span></th><th style=\"text-align:left; padding:.6rem .65rem; font-weight:800; border-top:2px solid #cfe0f5; border-bottom:2px solid #cfe0f5;\"><span style=\"font-family: Signika, sans-serif\"><strong>Example Traits</strong></span></th><th style=\"text-align:left; padding:.6rem .65rem; font-weight:800; border-top:2px solid #cfe0f5; border-bottom:2px solid #cfe0f5;\"><span style=\"font-family: Signika, sans-serif\"><strong>Check Attributes</strong></span></th><th style=\"text-align:left; padding:.6rem .65rem; font-weight:800; border-top:2px solid #cfe0f5; border-bottom:2px solid #cfe0f5; border-top-right-radius:.4rem;\"><span style=\"font-family: Signika, sans-serif\"><strong>Cost</strong></span></th></tr></thead><tbody><tr style=\"background:#ffffff;\"><td style=\"padding:.6rem .7rem;\"><span style=\"font-family: Signika, sans-serif\"><strong>Eager</strong></span></td><td style=\"padding:.6rem .7rem;\"><span style=\"font-family: Signika, sans-serif\">Playful, excitable, fast, etc.</span></td><td style=\"padding:.6rem .7rem; white-space:nowrap;\"><span style=\"font-family: Signika, sans-serif\"><strong>[DEX + INS]</strong></span></td><td style=\"padding:.6rem .7rem; white-space:nowrap;\"><span style=\"font-family: Signika, sans-serif\"><strong>[1d6 × 5]</strong> MP</span></td></tr><tr style=\"background:#f7fbff;\"><td style=\"padding:.6rem .7rem;\"><span style=\"font-family: Signika, sans-serif\"><strong>Angry</strong></span></td><td style=\"padding:.6rem .7rem;\"><span style=\"font-family: Signika, sans-serif\">Tough, destructive, hungry, etc.</span></td><td style=\"padding:.6rem .7rem; white-space:nowrap;\"><span style=\"font-family: Signika, sans-serif\"><strong>[MIT + WLP]</strong></span></td><td style=\"padding:.6rem .7rem; white-space:nowrap;\"><span style=\"font-family: Signika, sans-serif\"><strong>[1d6 × 5]</strong> HP</span></td></tr><tr style=\"background:#ffffff;\"><td style=\"padding:.6rem .7rem;\"><span style=\"font-family: Signika, sans-serif\"><strong>Sneaky</strong></span></td><td style=\"padding:.6rem .7rem;\"><span style=\"font-family: Signika, sans-serif\">Clever, curious, silent, etc.</span></td><td style=\"padding:.6rem .7rem; white-space:nowrap;\"><span style=\"font-family: Signika, sans-serif\"><strong>[INS + WLP]</strong></span></td><td style=\"padding:.6rem .7rem; white-space:nowrap;\"><span style=\"font-family: Signika, sans-serif\"><strong>[1d6 × 50]</strong> zenit</span></td></tr><tr style=\"background:#f7fbff;\"><td style=\"padding:.6rem .7rem;\"><span style=\"font-family: Signika, sans-serif\"><strong>Scared</strong></span></td><td style=\"padding:.6rem .7rem;\"><span style=\"font-family: Signika, sans-serif\">Wary, cold, defensive, etc.</span></td><td style=\"padding:.6rem .7rem; white-space:nowrap;\"><span style=\"font-family: Signika, sans-serif\"><strong>[DEX + WLP]</strong></span></td><td style=\"padding:.6rem .7rem; white-space:nowrap;\"><span style=\"font-family: Signika, sans-serif\"><strong>[1d6]</strong> IP</span></td></tr></tbody></table></div></section><section style=\"border:1px solid #cfe0f5; background:#ffffff; padding:.75rem; border-radius:.5rem;\"><h2 style=\"margin:.25rem 0; color:#295b8a;\">Closing Negotiation</h2><ul style=\"margin:.25rem 0 .5rem 1rem;\"><li>When the final section is filled, the creature <strong>demands the cost</strong> shown by its attitude.</li><li>If you pay, you <strong>recruit</strong> the creature; if you can’t or won’t, it leaves the scene.</li><li>On recruit, write its details and pick exactly <strong>one Resistance</strong> and <strong>one Vulnerability</strong> (no Immunities/Absorptions).</li><li>You may have up to <strong>[SL]</strong> creatures recruited at once. If full, <strong>release one</strong> before adding a new ally.</li></ul></section><section style=\"border:1px solid #cfe0f5; background:#f9fbff; padding:.75rem; border-radius:.5rem;\"><h2 style=\"margin:.25rem 0; color:#295b8a;\">Using Recruited Creatures</h2><p style=\"margin: .25rem 0\">When you take the <strong>Attack</strong> action, you may spend <strong>10 MP</strong> to use one of your recruited creature’s basic attacks instead of a weapon, using your own Attributes for Accuracy.</p><p style=\"margin: .25rem 0\">After that attack (hit or miss), your damage <strong>Affinities</strong> change to match those chosen for the creature when recruited until the start of your next turn. They cannot be altered again until this ends; other effects that would change them are suppressed but resume afterward.</p><div style=\"border-left:4px solid #9ec3e8; background:#f2f7ff; padding:.55rem; border-radius:.25rem;\"><p style=\"margin: .25rem 0\"><strong>Example:</strong> If an effect makes you Vulnerable to <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span>, but you attack using a recruited creature with <em>Resistance</em> to <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span>, your Vulnerability is replaced with Resistance until your next turn. If you don’t attack with that creature next turn and the other effect remains, you revert to Vulnerability.</p></div></section><section style=\"border:2px dashed #9ec3e8; background:linear-gradient(180deg,#f7fbff,#ffffff); padding:.75rem; border-radius:.75rem;\"><h2 style=\"margin:.25rem 0; color:#295b8a;\">Quick Negotiation Card</h2><ol style=\"margin:.25rem 0 .5rem 1.25rem;\"><li><strong>Start</strong> negotiation (Objective) → make a 4-section Clock.</li><li><strong>GM sets Attitude</strong> (see table) → this sets your <strong>Check</strong> and the <strong>cost</strong>.</li><li><strong>Fill the Clock</strong> with Objective checks vs <strong>10 + foe LV − your LV</strong> (min 7).</li><li><strong>Pay cost?</strong> If yes, recruit and record Resistance & Vulnerability. If no, the creature leaves.</li><li>During combat, on <strong>Attack</strong> you can spend <strong>10 MP</strong> to use its basic attack and adopt its Affinities until your next turn.</li></ol></section></div>",
+      "class_facet": {
+        "01cCr4tmv9I79qTi": {
+          "facet_cost": "",
+          "facet_description": "<p>When another creature you can see would take damage, you may use one of your recruited creatures to reduce that damage by <strong>[SL × 4]</strong>. If the recruited creature has Resistance to the damage, the reduction it provides is doubled. When you use a recruited creature this way, you lose all access to it until the end of the scene.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Interceptor",
+          "uuid": "Actor.OUDsxqNtx0deG1z8.Item.01cCr4tmv9I79qTi"
+        },
+        "EOCHF2hkVyOQpnwf": {
+          "facet_cost": "",
+          "facet_description": "<p>Choose a Species from among:</p><ul><li><strong>beast</strong></li><li><strong>construct</strong></li><li><strong>plant</strong></li></ul><p>You may negotiate with creatures from the chosen Species. Additionally, the maximum number of creatures you can recruit is <strong>increased by 1</strong>.</p><p>This Heroic Skill may be acquired up to twice.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Expanded Party",
+          "uuid": "Actor.OUDsxqNtx0deG1z8.Item.EOCHF2hkVyOQpnwf"
+        },
+        "EmYI7O5YfjEcByah": {
+          "facet_cost": "",
+          "facet_description": "<p>When you rest, you can combine two of your recruited creatures into a single creature. The new creature has the attitude and damage Affinities of one of the original creatures and any combination of up to two basic attacks from the original creatures.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Hybridization",
+          "uuid": "Actor.OUDsxqNtx0deG1z8.Item.EmYI7O5YfjEcByah"
+        },
+        "ICm80clFOF2B9ceU": {
+          "facet_cost": "",
+          "facet_description": "<p>When you perform an attack, you may spend 10 Mind Points to choose one option:</p>\n<ul>\n  <li>you gain a bonus to your Accuracy Check equal to <strong>[the number of different attitudes among your recruited creatures]</strong>;</li>\n  <li>or the attack deals extra damage equal to <strong>[2 × the highest number of recruited creatures that have the same attitude]</strong>.</li>\n</ul>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "All-Out Attack",
+          "uuid": "Actor.OUDsxqNtx0deG1z8.Item.ICm80clFOF2B9ceU"
+        },
+        "RVOjEwCafQjq9qUx": {
+          "facet_cost": "",
+          "facet_description": "<p>You gain the ability to perform Rituals of the Chimerism discipline. Additionally, you may use Chimerism to summon a creature of the GM’s choosing from the demon, elemental, monster, or undead Species to your location. The level of the summoned creature may be up to <strong>[SL × 5]</strong>.</p>\n<p>The creature is controlled by the GM and may not be Negotiated with during the same scene in which it was summoned. It’s already doing you a favor by showing up!</p>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Unleash",
+          "uuid": "Actor.OUDsxqNtx0deG1z8.Item.RVOjEwCafQjq9qUx"
+        },
+        "SSTuLA2VFayKPrnc": {
+          "facet_cost": "1 Fabula Point",
+          "facet_description": "<p>When you would take damage, or as an action on your turn, you may spend <strong>1 Fabula Point</strong> to combine two of your creatures using Hybridization. Your damage Affinities automatically change to match the new creature’s Affinities.</p>\n",
+          "facet_offensive": "",
+          "facet_target": "Special",
+          "id": "${item.id}",
+          "name": "Rapid Hybridization",
+          "uuid": "Actor.OUDsxqNtx0deG1z8.Item.SSTuLA2VFayKPrnc"
+        },
+        "W2Y6J11NLnw50Jir": {
+          "facet_cost": "-",
+          "facet_description": "<p>You may use the <strong>【❗️Objective】</strong> action to attempt to recruit a soldier-rank creature of the demon, elemental, monster, or undead Species to join you as an ally. The full rules for negotiation and recruitment can be found on the next page. If you take this Skill at character creation, you begin play with one level 5 creature already recruited.</p>",
+          "facet_offensive": "",
+          "facet_target": "One soldier-rank creature",
+          "id": "${item.id}",
+          "name": "Negotiate",
+          "uuid": "Actor.OUDsxqNtx0deG1z8.Item.W2Y6J11NLnw50Jir"
+        },
+        "u9QnCIHcdnwhIQIE": {
+          "facet_cost": "",
+          "facet_description": "<p>You may negotiate with elite-rank creatures. When you do, <strong>the cost to complete negotiation is doubled</strong> and the creature counts as two creatures for the purposes of determining how many creatures you have recruited.</p><p>If you use the <strong>【📜 Hybridization】</strong> Skill using an elite creature, the new creature is also an elite and may have an additional basic attack.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Elite Recruitment",
+          "uuid": "Actor.OUDsxqNtx0deG1z8.Item.u9QnCIHcdnwhIQIE"
+        }
+      },
+      "class_heroicSkill": {
+        "EOCHF2hkVyOQpnwf": {
+          "id": "${item.id}",
+          "name": "Expanded Party",
+          "skill_cost": "",
+          "skill_description": "<p>Choose a Species from among:</p><ul><li><strong>beast</strong></li><li><strong>construct</strong></li><li><strong>plant</strong></li></ul><p>You may negotiate with creatures from the chosen Species. Additionally, the maximum number of creatures you can recruit is <strong>increased by 1</strong>.</p><p>This Heroic Skill may be acquired up to twice.</p>",
+          "skill_maxLevel": 2,
+          "skill_type": "Passive",
+          "uuid": "Actor.OUDsxqNtx0deG1z8.Item.EOCHF2hkVyOQpnwf"
+        },
+        "SSTuLA2VFayKPrnc": {
+          "id": "${item.id}",
+          "name": "Rapid Hybridization",
+          "skill_cost": "1 Fabula Point",
+          "skill_description": "<p>When you would take damage, or as an action on your turn, you may spend <strong>1 Fabula Point</strong> to combine two of your creatures using Hybridization. Your damage Affinities automatically change to match the new creature’s Affinities.</p>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.OUDsxqNtx0deG1z8.Item.SSTuLA2VFayKPrnc"
+        },
+        "u9QnCIHcdnwhIQIE": {
+          "id": "${item.id}",
+          "name": "Elite Recruitment",
+          "skill_cost": "",
+          "skill_description": "<p>You may negotiate with elite-rank creatures. When you do, <strong>the cost to complete negotiation is doubled</strong> and the creature counts as two creatures for the purposes of determining how many creatures you have recruited.</p><p>If you use the <strong>【📜 Hybridization】</strong> Skill using an elite creature, the new creature is also an elite and may have an additional basic attack.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.OUDsxqNtx0deG1z8.Item.u9QnCIHcdnwhIQIE"
+        }
+      },
+      "class_lore": "<blockquote><p>In matters of survival, one must use the tools that are available. And the world has no shortage of strange and deadly creatures.</p><p>While most see them merely as nuisances or threats, <strong>Tamers</strong> have learned to communicate with them, choosing to understand and negotiate with them,turning them into powerful allies, at least for a while.</p><p>Some Tamers even utilize their recruited creatures as more than simple attack dogs, using them to defend allies or even empower their own attacks.</p></blockquote>",
+      "class_skill": {
+        "01cCr4tmv9I79qTi": {
+          "id": "${item.id}",
+          "name": "Interceptor",
+          "skill_cost": "",
+          "skill_description": "<p>When another creature you can see would take damage, you may use one of your recruited creatures to reduce that damage by <strong>[SL × 4]</strong>. If the recruited creature has Resistance to the damage, the reduction it provides is doubled. When you use a recruited creature this way, you lose all access to it until the end of the scene.</p>\n",
+          "skill_maxLevel": 6,
+          "skill_type": "Passive",
+          "uuid": "Actor.OUDsxqNtx0deG1z8.Item.01cCr4tmv9I79qTi"
+        },
+        "EmYI7O5YfjEcByah": {
+          "id": "${item.id}",
+          "name": "Hybridization",
+          "skill_cost": "",
+          "skill_description": "<p>When you rest, you can combine two of your recruited creatures into a single creature. The new creature has the attitude and damage Affinities of one of the original creatures and any combination of up to two basic attacks from the original creatures.</p>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.OUDsxqNtx0deG1z8.Item.EmYI7O5YfjEcByah"
+        },
+        "ICm80clFOF2B9ceU": {
+          "id": "${item.id}",
+          "name": "All-Out Attack",
+          "skill_cost": "",
+          "skill_description": "<p>When you perform an attack, you may spend 10 Mind Points to choose one option:</p>\n<ul>\n  <li>you gain a bonus to your Accuracy Check equal to <strong>[the number of different attitudes among your recruited creatures]</strong>;</li>\n  <li>or the attack deals extra damage equal to <strong>[2 × the highest number of recruited creatures that have the same attitude]</strong>.</li>\n</ul>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.OUDsxqNtx0deG1z8.Item.ICm80clFOF2B9ceU"
+        },
+        "RVOjEwCafQjq9qUx": {
+          "id": "${item.id}",
+          "name": "Unleash",
+          "skill_cost": "",
+          "skill_description": "<p>You gain the ability to perform Rituals of the Chimerism discipline. Additionally, you may use Chimerism to summon a creature of the GM’s choosing from the demon, elemental, monster, or undead Species to your location. The level of the summoned creature may be up to <strong>[SL × 5]</strong>.</p>\n<p>The creature is controlled by the GM and may not be Negotiated with during the same scene in which it was summoned. It’s already doing you a favor by showing up!</p>\n",
+          "skill_maxLevel": 4,
+          "skill_type": "Passive",
+          "uuid": "Actor.OUDsxqNtx0deG1z8.Item.RVOjEwCafQjq9qUx"
+        },
+        "W2Y6J11NLnw50Jir": {
+          "id": "${item.id}",
+          "name": "Negotiate",
+          "skill_cost": "-",
+          "skill_description": "<p>You may use the <strong>【❗️Objective】</strong> action to attempt to recruit a soldier-rank creature of the demon, elemental, monster, or undead Species to join you as an ally. The full rules for negotiation and recruitment can be found on the next page. If you take this Skill at character creation, you begin play with one level 5 creature already recruited.</p>",
+          "skill_maxLevel": 4,
+          "skill_type": "Active",
+          "uuid": "Actor.OUDsxqNtx0deG1z8.Item.W2Y6J11NLnw50Jir"
+        }
+      },
+      "flavor_text": "",
+      "martialArmor_equippable": false,
+      "martialMelee_equippable": false,
+      "martialRanged_equippable": false,
+      "martialShield_equippable": false,
+      "name": "Tamer",
+      "project_performable": false,
+      "ritual_performable": false
+    },
+    "statusEffects": {},
+    "template": "hoxC3HFCtMYGScIo",
+    "templateSystemUniqueVersion": 504201233
+  },
+  "type": "character"
+}

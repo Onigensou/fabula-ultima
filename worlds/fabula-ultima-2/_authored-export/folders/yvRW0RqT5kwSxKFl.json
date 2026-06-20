@@ -1,0 +1,19 @@
+{
+  "_id": "yvRW0RqT5kwSxKFl",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1765677079435,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "SPvX0PiXpGCzQ7YQ",
+  "name": "Map",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Scene"
+}

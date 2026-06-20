@@ -1,0 +1,46 @@
+{
+  "_id": "Jp3WyjHBZkZxorhV",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1715916297462,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    }
+  },
+  "folder": "8mJfXdKYmmONftVP",
+  "img": "https://pbs.twimg.com/media/CrLYCPHWcAEkxSt.jpg",
+  "name": "Soul Conversion Ring",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3
+  },
+  "sort": 437500,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "",
+      "cost": "600",
+      "damage_bonus": "0",
+      "description": "<p>In combat scene use Action to lost 20 HP and then regain 40MP.</p>\n<p>The user can't be effected by Spell and Skill from self that regain HP.</p>",
+      "duration": "",
+      "name": "Soul Conversion Ring",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "target": "",
+      "type_damage": ""
+    },
+    "template": "FZmpKcQRP7hZQqbV",
+    "templateSystemUniqueVersion": 1700837225,
+    "unique": false,
+    "uniqueId": "Jp3WyjHBZkZxorhV"
+  },
+  "type": "equippableItem"
+}

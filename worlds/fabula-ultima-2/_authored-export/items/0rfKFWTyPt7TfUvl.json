@@ -1,0 +1,468 @@
+{
+  "_id": "0rfKFWTyPt7TfUvl",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1761299010198,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "effects": [
+    {
+      "_id": "2zuAqVCmob3IGnr3",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1775848544722,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "dex_current",
+          "mode": 2,
+          "priority": 1,
+          "value": "2"
+        },
+        {
+          "key": "ins_current",
+          "mode": 2,
+          "priority": 1,
+          "value": "2"
+        }
+      ],
+      "description": "<p>Increase this creature <strong>【DEX】 </strong>and<strong> 【INS】</strong>die by one stage.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "3nsIFfF2H0A9HxON",
+          "originalParentId": "0rfKFWTyPt7TfUvl",
+          "originalUuid": "Item.0rfKFWTyPt7TfUvl.ActiveEffect.3nsIFfF2H0A9HxON"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-clarity",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEFENSE%20DOUBLE%20UP.png",
+      "name": "Clarity",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "Sn4vyeFXFrvjJoUk"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "4aZ4IDuT9N2KonEr",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1775848572052,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "ins_current",
+          "mode": 2,
+          "priority": 1,
+          "value": "2"
+        }
+      ],
+      "description": "<p>Increase this creature <strong>【INS】</strong>die by one stage.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "3nsIFfF2H0A9HxON",
+          "originalParentId": "0rfKFWTyPt7TfUvl",
+          "originalUuid": "Item.0rfKFWTyPt7TfUvl.ActiveEffect.3nsIFfF2H0A9HxON"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-awake",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/MAGICDEFENSE%20UP.png",
+      "name": "Awake",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "jL1EVZtIuUv5m7FE"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "foMQpdHKjia9gJ03",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1775848567141,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "dex_current",
+          "mode": 2,
+          "priority": 1,
+          "value": "2"
+        }
+      ],
+      "description": "<p>Increse <strong>【DEX】</strong>die by one stage</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "3nsIFfF2H0A9HxON",
+          "originalParentId": "0rfKFWTyPt7TfUvl",
+          "originalUuid": "Item.0rfKFWTyPt7TfUvl.ActiveEffect.3nsIFfF2H0A9HxON"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-swift",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEFENSE%20UP.png",
+      "name": "Swift",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "3nsIFfF2H0A9HxON"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "SNtz75qDr9oLQmLI",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1775848560703,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "mig_current",
+          "mode": 2,
+          "priority": 1,
+          "value": "2"
+        }
+      ],
+      "description": "<p>Increse <strong>【MIG】</strong>die by one stage</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "3nsIFfF2H0A9HxON",
+          "originalParentId": "0rfKFWTyPt7TfUvl",
+          "originalUuid": "Item.0rfKFWTyPt7TfUvl.ActiveEffect.3nsIFfF2H0A9HxON"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-strong",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/AttackUp.png",
+      "name": "Strong",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "4hExTl498PDz9666"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "xuulC26tmB3n2wLT",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1775848554380,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "wlp_current",
+          "mode": 2,
+          "priority": 1,
+          "value": "2"
+        }
+      ],
+      "description": "<p>Increse <strong>【WLP】</strong>die by one stage</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "3nsIFfF2H0A9HxON",
+          "originalParentId": "0rfKFWTyPt7TfUvl",
+          "originalUuid": "Item.0rfKFWTyPt7TfUvl.ActiveEffect.3nsIFfF2H0A9HxON"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-focus",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/MAGIC%20UP.png",
+      "name": "Focus",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "y1pAWHov79mNGF0n"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "YjPft9LahJdQalzg",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1775848549248,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "mig_current",
+          "mode": 2,
+          "priority": 1,
+          "value": "2"
+        },
+        {
+          "key": "wlp_current",
+          "mode": 2,
+          "priority": 1,
+          "value": "2"
+        }
+      ],
+      "description": "<p>Increase this creature <strong>【MIG】</strong>and<strong> 【WLP】</strong>die by one stage.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "3nsIFfF2H0A9HxON",
+          "originalParentId": "0rfKFWTyPt7TfUvl",
+          "originalUuid": "Item.0rfKFWTyPt7TfUvl.ActiveEffect.3nsIFfF2H0A9HxON"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-energized",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/ATTACK%20DOUBLE%20UP.png",
+      "name": "Energized",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "IFMFVQf1vNEgTKhJ"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.4"
+    },
+    "dfreds-convenient-effects": {
+      "folderColor": "",
+      "isBackup": false,
+      "isConvenient": true,
+      "isViewable": true
+    }
+  },
+  "folder": null,
+  "img": "modules/dfreds-convenient-effects/images/magic-palm.svg",
+  "name": "Buff",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 300000,
+  "system": {
+    "templateSystemUniqueVersion": null
+  },
+  "type": "activeEffectContainer"
+}

@@ -1,0 +1,54 @@
+{
+  "_id": "QQLDvULYVzMymAVN",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1751456644682,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "consumable",
+        "fromTemplate": "xdZPhVF8AnmwQEPM",
+        "itemId": "QQLDvULYVzMymAVN",
+        "itemName": "Mega-Remedy Recipe",
+        "pickedOldProps": {
+          "consumable_cost": "2800",
+          "consumable_description": "<ul><li>Learned how to create <strong>@UUID[Item.RfkkVnz0B3JsTaDt]{Mega-Remedy}</strong> with <strong>5 IP</strong></li></ul>",
+          "consumable_ip": "0",
+          "consumable_label": ""
+        },
+        "ts": 1769647436007
+      }
+    }
+  },
+  "folder": "3xHGNagIXPyzukcU",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/book.png",
+  "name": "Mega-Remedy Recipe",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 700000,
+  "system": {
+    "container": null,
+    "props": {
+      "description": "<ul><li>Learned how to create <strong>@UUID[Item.RfkkVnz0B3JsTaDt]{Mega-Remedy}</strong> with <strong>5 IP</strong></li></ul>",
+      "ip_cost": "0",
+      "item_cost": "2800",
+      "item_type": "consumable",
+      "name": "Mega-Remedy Recipe"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "QQLDvULYVzMymAVN"
+  },
+  "type": "equippableItem"
+}

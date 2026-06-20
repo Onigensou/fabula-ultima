@@ -1,0 +1,637 @@
+{
+  "_id": "6c5rQ2iaxTTkGmml",
+  "_stats": {
+    "compendiumSource": "Actor.wb2SUtgxcA4iLX38",
+    "coreVersion": "12.343",
+    "createdTime": 1704002509130,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "core": {
+      "sourceId": "Actor.wb2SUtgxcA4iLX38"
+    },
+    "custom-system-builder": {
+      "version": "4.5.0"
+    },
+    "theatre": {
+      "baseinsert": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Sophie%20Langford/Report/portrait/smile.webp",
+      "disabledefault": false,
+      "emotes": {
+        "angry": {
+          "insert": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Sophie%20Langford/Report/portrait/angry.webp"
+        },
+        "annoyed": {
+          "insert": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Sophie%20Langford/Report/portrait/annoyed.webp"
+        },
+        "awe-struck": {
+          "insert": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Sophie%20Langford/Report/portrait/awe-struck.webp"
+        },
+        "blushing": {
+          "insert": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Sophie%20Langford/Report/portrait/blushing.webp"
+        },
+        "carefree": {
+          "insert": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Sophie%20Langford/Report/portrait/care-free.webp"
+        },
+        "confused": {
+          "insert": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Sophie%20Langford/Report/portrait/confused.webp"
+        },
+        "cry": {
+          "insert": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Sophie%20Langford/Report/portrait/crying.webp"
+        },
+        "custom1": {
+          "custom": true,
+          "image": "modules/theatre/app/graphics/effects/dot.png",
+          "insert": "",
+          "label": "Placeholder\n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    ",
+          "name": "custom1"
+        },
+        "custom2": {
+          "custom": true,
+          "image": "modules/theatre/app/graphics/effects/dot.png",
+          "insert": "",
+          "label": "Placeholder\n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    ",
+          "name": "custom2"
+        },
+        "custom3": {
+          "custom": true,
+          "image": "modules/theatre/app/graphics/effects/dot.png",
+          "insert": "",
+          "label": "Placeholder\n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    ",
+          "name": "custom3"
+        },
+        "custom4": {
+          "custom": true,
+          "image": "modules/theatre/app/graphics/emotes/content.png",
+          "insert": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Sophie%20Langford/Standard/portrait/smile.webp",
+          "label": "Smile Report\n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    ",
+          "name": "custom4"
+        },
+        "custom5": {
+          "custom": true,
+          "image": "modules/theatre/app/graphics/emotes/happy.png",
+          "insert": "",
+          "label": "Grin Report\n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    \n                                        \n                                    ",
+          "name": "custom5"
+        },
+        "dissatisfied": {
+          "insert": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Sophie%20Langford/Report/portrait/dissatisfied.webp"
+        },
+        "dizzy": {
+          "insert": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Sophie%20Langford/Report/portrait/dizzy.webp"
+        },
+        "frown": {
+          "insert": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Sophie%20Langford/Report/portrait/frown.webp"
+        },
+        "frustrated": {
+          "insert": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Sophie%20Langford/Report/portrait/frustrated.webp"
+        },
+        "grin": {
+          "insert": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Sophie%20Langford/Report/portrait/grin.webp"
+        },
+        "happy": {
+          "insert": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Sophie%20Langford/Report/portrait/happy.webp"
+        },
+        "happytears": {
+          "insert": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Sophie%20Langford/Report/portrait/happy-to-tear.webp"
+        },
+        "hearts": {
+          "insert": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Sophie%20Langford/Report/portrait/hearts.webp"
+        },
+        "idea": {
+          "insert": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Sophie%20Langford/Report/portrait/idea.webp"
+        },
+        "innocent": {
+          "insert": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Sophie%20Langford/Report/portrait/innocent.webp"
+        },
+        "kiss": {
+          "insert": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Sophie%20Langford/Report/portrait/blow-kiss.webp"
+        },
+        "laughing": {
+          "insert": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Sophie%20Langford/Report/portrait/laughing.webp"
+        },
+        "laughingsquint": {
+          "insert": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Sophie%20Langford/Report/portrait/laughing-squint.webp"
+        },
+        "meh": {
+          "insert": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Sophie%20Langford/Report/portrait/meh.webp"
+        },
+        "mischevious": {
+          "insert": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Sophie%20Langford/Report/portrait/mischevious.webp"
+        },
+        "panic": {
+          "insert": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Sophie%20Langford/Report/portrait/panic.webp"
+        },
+        "playful": {
+          "insert": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Sophie%20Langford/Report/portrait/playful.webp"
+        },
+        "rofl": {
+          "insert": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Sophie%20Langford/Report/portrait/laughing-roll.webp"
+        },
+        "sad": {
+          "insert": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Sophie%20Langford/Report/portrait/sad.webp"
+        },
+        "scared": {
+          "insert": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Sophie%20Langford/Report/portrait/scared.webp"
+        },
+        "serious": {
+          "insert": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Sophie%20Langford/Report/portrait/serious.webp"
+        },
+        "sleeping": {
+          "insert": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Sophie%20Langford/Report/portrait/sleeping.webp"
+        },
+        "smile": {
+          "insert": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Sophie%20Langford/Report/portrait/smile.webp"
+        },
+        "smug": {
+          "insert": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Sophie%20Langford/Report/portrait/smug.webp"
+        },
+        "speechless": {
+          "insert": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Sophie%20Langford/Report/portrait/speechless.webp"
+        },
+        "surprised": {
+          "insert": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Sophie%20Langford/Report/portrait/surprised.webp"
+        },
+        "thinking": {
+          "insert": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Sophie%20Langford/Report/portrait/thinking.webp"
+        },
+        "tongue": {
+          "insert": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Sophie%20Langford/Report/portrait/tongue.webp"
+        },
+        "wink": {
+          "insert": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Sophie%20Langford/Report/portrait/winking.webp"
+        },
+        "worried": {
+          "insert": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Sophie%20Langford/Report/portrait/worried.webp"
+        }
+      },
+      "name": "Reporter Sophie",
+      "optalign": "top",
+      "settings": {
+        "emote": "smile",
+        "textcolor": null,
+        "textflyin": null,
+        "textfont": null,
+        "textsize": null,
+        "textstanding": "quiver"
+      }
+    }
+  },
+  "folder": "JUN9vAQb8haKjHob",
+  "img": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Sophie%20Langford/Standard/avatar/ver1.webp",
+  "items": [
+    {
+      "_id": "uPP8mDEfprcRydGu",
+      "_stats": {
+        "compendiumSource": "Item.4VbPDK7tmZyKjDMQ",
+        "coreVersion": "12.343",
+        "createdTime": 1704010554966,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.4VbPDK7tmZyKjDMQ"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "lWArYAJ7WMFMXOHx",
+      "img": "icons/magic/control/hypnosis-mesmerism-eye.webp",
+      "name": "Hallucination",
+      "ownership": {
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Spiritist",
+          "cost": "5 x T",
+          "damage_bonus": "0",
+          "description": "<p>You alter the senses of your enemies, causing them to experience bizarre or frightening hallucinations. Choose <strong>dazed </strong>or <strong>shaken</strong>: you inflict the chosen status effect on each target hit by this spell.</p>",
+          "duration": "Instantaneous",
+          "name": "Hallucination",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "target": "Up to three creatures",
+          "type_damage": ""
+        },
+        "template": "FZmpKcQRP7hZQqbV",
+        "templateSystemUniqueVersion": 1700837225,
+        "unique": true
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Sophie (Reporter)",
+  "ownership": {
+    "Am7qxPOavfKeDGPd": 3,
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": null
+    },
+    "bar2": {
+      "attribute": null
+    },
+    "detectionModes": [],
+    "displayBars": 0,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {},
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Sophie",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Sophie%20Langford/Standard/avatar/ver1.webp",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 100000,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "activeEffects": {},
+    "props": {
+      "arcanism": false,
+      "armor_mod": "1",
+      "armor_name": "Combat Tunic",
+      "attack_accuracy_mod_all": "0",
+      "attack_accuracy_mod_melee": "0",
+      "attack_accuracy_mod_range": "0",
+      "attack_accuracy_mod_spell": "0",
+      "bond_1": "",
+      "bond_2": "",
+      "bond_3": "",
+      "bond_4": "",
+      "bond_5": "",
+      "bond_6": "",
+      "chanter_volume_mp_header": "MP",
+      "chanter_volume_mp_high": 30,
+      "chanter_volume_mp_low": 10,
+      "chanter_volume_mp_medium": 20,
+      "chanter_volume_target_high": "Every enemy who can hear you.",
+      "chanter_volume_target_low": "Yourself <b>or</b> another creature you can see who can hear you.",
+      "chanter_volume_target_medium": "Every ally who can hear you.",
+      "char_identity": "Training Reporter",
+      "check_roller": "Roll!",
+      "chimerism": false,
+      "class_list": {
+        "0": {
+          "$deleted": false,
+          "benefit": "mp",
+          "class_name": "Orator",
+          "level": "10"
+        },
+        "1": {
+          "$deleted": false,
+          "benefit": "mp",
+          "class_name": "Loremaster",
+          "level": "1"
+        },
+        "2": {
+          "$deleted": false,
+          "benefit": "ip",
+          "class_name": "Rogue",
+          "level": "1"
+        }
+      },
+      "clock_brainwave": "0",
+      "clock_trade": "0",
+      "cooking_roller": "🔪Cook!",
+      "current_hp": "42",
+      "current_ip": "8",
+      "current_mp": "62",
+      "damage_receiving_mod_air": "0",
+      "damage_receiving_mod_all": "0",
+      "damage_receiving_mod_bolt": "0",
+      "damage_receiving_mod_dark": "0",
+      "damage_receiving_mod_earth": "0",
+      "damage_receiving_mod_fire": "0",
+      "damage_receiving_mod_ice": "0",
+      "damage_receiving_mod_light": "0",
+      "damage_receiving_mod_melee": "0",
+      "damage_receiving_mod_physical": "0",
+      "damage_receiving_mod_poison": "0",
+      "damage_receiving_mod_range": "0",
+      "dex_base": "8",
+      "dex_current": "8",
+      "draw_card": "Draw",
+      "draw_card_copy1": "Use",
+      "elementalism": false,
+      "emotion_1_1": "",
+      "emotion_1_2": "",
+      "emotion_1_3": "",
+      "emotion_2_1": "",
+      "emotion_2_2": "",
+      "emotion_2_3": "",
+      "emotion_3_1": "",
+      "emotion_3_2": "",
+      "emotion_3_3": "",
+      "emotion_4_1": "",
+      "emotion_4_2": "",
+      "emotion_4_3": "",
+      "emotion_5_1": "",
+      "emotion_5_2": "",
+      "emotion_5_3": "",
+      "emotion_6_1": "",
+      "emotion_6_2": "",
+      "emotion_6_3": "",
+      "entropism": false,
+      "experience": "0",
+      "experience_ui": "0",
+      "fp": "3",
+      "init_penalty": "0",
+      "ins_base": "10",
+      "ins_current": "10",
+      "inventory_label": "💼 Inventory",
+      "isDazed": false,
+      "isEnraged": false,
+      "isPoisoned": false,
+      "isShaken": false,
+      "isSlow": false,
+      "isWeak": false,
+      "is_martialarmor": false,
+      "level": "12",
+      "magic_defense_mod": "1",
+      "main_attrib_1": "INS",
+      "main_attrib_2": "INS",
+      "main_details": "<p>Use stats of standard Tome</p>",
+      "main_hand": "Reporter Notepad",
+      "main_hand_attack": "",
+      "max_hp": 42,
+      "max_ip": "ERROR",
+      "max_mp": 62,
+      "memory": "Memories",
+      "mig_base": "6",
+      "mig_current": "6",
+      "name": "Sophie (Reporter)",
+      "off_attrib_1": "SHI",
+      "off_attrib_2": "SHI",
+      "off_base_mod_1": "0",
+      "off_base_mod_2": "0",
+      "off_hand": "",
+      "off_hand_attack": "",
+      "off_mod_1": 0,
+      "off_mod_2": 0,
+      "offensive_spell_list": {
+        "uPP8mDEfprcRydGu": {
+          "class": "Spiritist",
+          "cost": "5 x T",
+          "duration": "Instantaneous",
+          "id": "uPP8mDEfprcRydGu",
+          "name": "Hallucination",
+          "roll": "",
+          "target": "Up to three creatures",
+          "uuid": "Actor.6c5rQ2iaxTTkGmml.Item.uPP8mDEfprcRydGu"
+        }
+      },
+      "origin": "Fons",
+      "passive_list": {
+        "0": {
+          "$deleted": false,
+          "passive_description": "<p>During a conflict scene, you may use an action and choose a <strong>soldier</strong>-rank creature that can hear and understand you (the Game Master must tell you who is a valid target). If that creature is <strong>shaken </strong>or in <strong>Crisis</strong>, you may spend an amount of Mind Points equal to <strong>【20 + half that creature's level】</strong> to have them peacefully leave the conflict.<br>Describe how you convince them to desist.</p>",
+          "passive_name": "Disarming Rhetoric",
+          "passive_roll": "",
+          "passive_source": "heroic_skill"
+        },
+        "1": {
+          "$deleted": false,
+          "passive_description": "<p>You may verbally communicate with any creature belonging to the <strong>beast</strong>, <strong>elemental</strong>, and <strong>plant </strong>Species.<br>You learn <strong>one spell</strong> of your choice among those in the lists for the Elementalist, Entropist and Spiritist Classes in the <strong>Core Rulebook</strong>; additionally, you gain the ability to perform Rituals of the <strong>Ritualism </strong>discipline, and you may use these Rituals to <strong>transport creatures in and out of the Realm of Fairies</strong>.<br>However, you also possess a unique weakness typical of fairies: decide it together with your group. Once per session (approximately<strong> four hours of play</strong>), the Game Master may give you 1 Fabula Point in order to have sudden complications arise due to this weakness or to have you <strong>automatically fail a Check</strong> (they must do so <strong>before </strong>the Check is performed; the Check's Result and High Roll are both treated as being 0).</p>",
+          "passive_name": "Outcast Fairy",
+          "passive_roll": "",
+          "passive_source": "quirk"
+        }
+      },
+      "place_card_vanguard": "Place",
+      "populate_deck": "Populate",
+      "pronouns": "her",
+      "relationship_1": "",
+      "relationship_2": "",
+      "relationship_3": "",
+      "relationship_4": "",
+      "relationship_5": "",
+      "relationship_6": "",
+      "reset_cards": "Resets",
+      "resolve_set": "Resolve",
+      "resource_value_1": "0",
+      "resource_value_2": "0",
+      "resource_value_3": "0",
+      "reveal_cards": "Reveal",
+      "ritualism": true,
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "INS",
+      "shield_value": "0",
+      "shuffle_deck": "Shuffle",
+      "skill_accuracy": "0",
+      "skill_attack_damage": "0",
+      "skill_hp": "0",
+      "skill_list": {
+        "0": {
+          "$deleted": false,
+          "class": "Orator",
+          "description": "<p>You may use an action and spend 5 Mind Points to perform an Opposed <strong>【INS +</strong><br><strong>WLP】</strong> Check against a creature that can hear and understand you &mdash; describe your accusations! If you succeed, the target loses <strong>40</strong> Mind Points and suffers <strong>dazed </strong>or <strong>shaken </strong>(your choice).<br>You gain a bonus equal to <strong>4</strong> to your <strong>【INS + WLP】</strong> Checks for this Skill.</p>",
+          "level": "4",
+          "roll": "",
+          "skill_name": "Condemn"
+        },
+        "1": {
+          "$deleted": false,
+          "class": "Orator",
+          "description": "<p>After another Player Character who is able to hear you performs a Check, you may spend 1 Fabula Point and invoke one of their <strong>Traits</strong> or <strong>Bonds</strong> in order to let them reroll dice or improve the Result of the Check (following the normal rules). Then, if you have a <strong>Bond </strong>towards that character, they recover <strong>20</strong> Mind Points.</p>",
+          "level": "2",
+          "roll": "",
+          "skill_name": "My Trust in You"
+        },
+        "2": {
+          "$deleted": false,
+          "class": "Orator",
+          "description": "<p>When you successfully perform a Check to fill or erase sections of a Clock, if your approach relied on <strong>charm</strong>, <strong>diplomacy</strong>, <strong>deception </strong>or <strong>intimidation</strong>, you may spend up to <strong>40</strong> Mind Points. If you do, fill or erase an additional section of that Clock for every 20 Mind Points you spend this way.</p>",
+          "level": "2",
+          "roll": "",
+          "skill_name": "Persuasive"
+        },
+        "3": {
+          "$deleted": false,
+          "class": "Orator",
+          "description": "<p>You may use an action and spend 1 Fabula Point to choose a <strong>non-hostile</strong> creature able to hear and understand you. If you do, that creature becomes helpful towards you so long as you are kind and respectful to them and your requests are reasonable.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Unexpected Ally"
+        },
+        "4": {
+          "$deleted": false,
+          "class": "Orator",
+          "description": "<p>During a conflict, you may use an action and spend 5 Mind Points to choose another creature that can hear and understand you. That creature recovers <strong>5</strong> Hit Points and chooses <strong>Dexterity</strong>, <strong>Insight</strong>, <strong>Might</strong>, or <strong>Willpower</strong>: they treat the chosen Attribute as being one die size higher (up to a maximum of <strong>d12</strong>) until the start of your next turn.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Encourage"
+        },
+        "5": {
+          "$deleted": false,
+          "class": "Loremaster",
+          "description": "<p>When you roll a <strong>13 or higher</strong> on a Check performed to investigate a creature, item or location &mdash; this includes using the <strong>Study </strong>action during a conflict &mdash; you may ask the Game Master up to <strong>1</strong> questions concerning the subject of your investigation. You may ask these questions immediately or save them for later; whenever you ask one of these questions, the Game Master will answer truthfully and you will describe your character's deductive process.<br>This Skill may only be used once on the same creature, item or location.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Flash of Insight"
+        },
+        "6": {
+          "$deleted": false,
+          "class": "Rogue",
+          "description": "<p>You may use an action and spend 1 Fabula Point to vanish from the current scene, reappearing whenever you want during a <strong>different </strong>scene in which another Player Character is present. Describe how you escaped and miraculously got here!<br><br></p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "See You Later"
+        }
+      },
+      "skill_mp": "0",
+      "spiritism": false,
+      "theme": "Truth",
+      "weapon1_base_damage": "0",
+      "weapon1_base_mod": "0",
+      "weapon1_damage": 0,
+      "weapon1_damagetype": "physical",
+      "weapon1_mod": 0,
+      "weapon2_damagetype": "-",
+      "wlp_base": "8",
+      "wlp_current": "8",
+      "your_class_name": "Trainee Reporter",
+      "zenit": "0",
+      "zero_effect_label": "💬 Zero Effect",
+      "zero_label": "💥 Zero Power : ",
+      "zero_power_name": "",
+      "zero_power_value": "0",
+      "zero_trigger_label": "⚔️ Zero Trigger"
+    },
+    "statusEffects": {
+      "1QPHKNWo17z0bBmX": [],
+      "1cksCQj3urJwddfg": [],
+      "1qTdxSVu2XLu0lUx": [],
+      "3YZNX2X5rHYtL4L5": [],
+      "4g2B0rdJ3SiUQvUv": [],
+      "5FFBDg2y54bpqgat": [],
+      "5jkr80zqdzaR003d": [],
+      "6YW8glLMYbwj6ZhC": [],
+      "7FLtIUvENcYDAJKC": [],
+      "7VDl6ac5Rzr2Rpya": [],
+      "8LN8tDQjON508Rqm": [],
+      "ACD2C8JLWUeIx89o": [],
+      "CVxHWmDb0gQsob1q": [],
+      "CfLPg6RDybSQhTSR": [],
+      "DCaKnV9kNn3EpqtY": [],
+      "DHsoSawNEZAxsnQ9": [],
+      "EVjmTFRDsuzR823Z": [],
+      "GJ0cbbj60lr4zaHm": [],
+      "MsbUHrgK7AhSeEJm": [],
+      "N4WfMf1nuOdUEXVS": [],
+      "N4rGBYQsH7PyMAWr": [],
+      "NogCaPvL5Y52Hjnq": [],
+      "OFk8VUuwDhWFoPxI": [],
+      "QOfrFCU2C6mx50gK": [],
+      "Qz8IC4v3wJ6UoM77": [],
+      "Rc8AvdmlHAK7pPea": [],
+      "StnYeDADYo2xX99O": [],
+      "T1kJfiKBZm1dnnBy": [],
+      "VxdXsFJ7YVEzAp3x": [],
+      "YhO7nUdawyeQKMWD": [],
+      "ZK0aTX8IH1NqwmTw": [],
+      "bspDC7hFRTYuwdhf": [],
+      "cDgbFRi9TA68TvYr": [],
+      "clE8TJ0G1gMwF735": [],
+      "fYkA57rVfoytHRjo": [],
+      "g7JIey1pEuRHyAOH": [],
+      "gX1fA3onNG7wsyap": [],
+      "hhqoSNhWfVD4KR7g": [],
+      "jKvrVpxLgX0KhB23": [],
+      "m2iUJjsEfJkpmOBw": [],
+      "qMZsEEuzAdrHb2fk": [],
+      "qePlOECBTS0Dftgc": [],
+      "t2C3LKukW6LPUImk": [],
+      "t5jyddIZDvbyuVsD": [],
+      "v22vl6cnP94wVBPu": [],
+      "v2vFlETIgMnff5o8": [],
+      "vLM7q3rdXVCgHYD4": [],
+      "vUYA9jgY9pdafj4i": [],
+      "wA1E8GxiXmzz80XQ": [],
+      "xuwAn7u126GfFweU": []
+    },
+    "template": "Dx16KeWcJzikM7dh",
+    "templateSystemUniqueVersion": 276398442
+  },
+  "type": "character"
+}

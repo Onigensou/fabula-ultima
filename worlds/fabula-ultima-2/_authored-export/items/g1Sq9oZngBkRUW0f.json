@@ -1,0 +1,82 @@
+{
+  "_id": "g1Sq9oZngBkRUW0f",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1781382711010,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "kmQEAefGfUhoR22y",
+  "img": "icons/skills/ranged/cannon-barrel-firing-yellow.webp",
+  "name": "Bullet Break",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "active_effect_config_table": {},
+      "check_bonus": "0",
+      "class": "Sharpshooter",
+      "cost": "Special",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>After you negate a <strong>ranged attack</strong> with the <strong>Crossfire</strong> Skill, if the Result of the Accuracy Check was an <strong>even number</strong>, you may perform a <strong>free attack</strong> against the attacker with a <strong>ranged firearm</strong> weapon you have equipped.</p><p>This attack must have that enemy as its <strong>only target</strong>; treat your <strong>High Roll (HR) as 0</strong> when calculating damage dealt by it.</p>",
+      "duration": "-",
+      "effect_table": {
+        "0": {
+          "action_ref": "Attack",
+          "effect_kind": "free_action",
+          "effect_label": "bullet_break_do",
+          "free_hr_as_zero": "true",
+          "menu_description": "Free firearm attack against the attacker (treat HR as 0 for damage).",
+          "menu_label": "Bullet Break",
+          "target_ref": "trigger_attacker"
+        }
+      },
+      "heroic_requirement": "You must have learned the Crossfire Skill, and have mastered one or more Classes among Commander and Sharpshooter.",
+      "ignore_hr": false,
+      "img": "icons/skills/ranged/cannon-barrel-firing-yellow.webp",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": false,
+      "isReaction": true,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Bullet Break",
+      "on_activate_effect_ref": "",
+      "post_damage_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "ATTACK_IS_RANGED == 1 && ATTACK_CHECK_RESULT % 2 == 0 && HAS_FIREARM",
+          "reaction_effect_ref": "bullet_break_do",
+          "reaction_passive_mode": "ask",
+          "reaction_source": "self",
+          "reaction_source_skill": "Crossfire",
+          "reaction_trigger": "creature_completes_skill"
+        }
+      },
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_range": "",
+      "skill_target": "-",
+      "skill_type": "Passive",
+      "type_damage": ""
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "g1Sq9oZngBkRUW0f"
+  },
+  "type": "equippableItem"
+}

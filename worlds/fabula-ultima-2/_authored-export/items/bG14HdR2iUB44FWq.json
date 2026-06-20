@@ -1,0 +1,80 @@
+{
+  "_id": "bG14HdR2iUB44FWq",
+  "_stats": {
+    "compendiumSource": "Item.P2ZlEmmK2DUhao0y",
+    "coreVersion": "12.343",
+    "createdTime": 1769593586105,
+    "duplicateSource": "Item.P2ZlEmmK2DUhao0y",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.4"
+    }
+  },
+  "folder": "o9WySAlpwzaM9KDB",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/HealerRollAction/esuna.png",
+  "name": "Generic Dispel Effects",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 100000,
+  "system": {
+    "props": {
+      "active_effect_config_table": {
+        "0": {
+          "$deleted": false,
+          "active_effect_application": "remove",
+          "active_effect_apply_mode": "percentage",
+          "active_effect_dice_1": "",
+          "active_effect_dice_2": "",
+          "active_effect_dl": "0",
+          "active_effect_id": "",
+          "active_effect_percent": "100",
+          "active_effect_target": "any",
+          "active_effect_trigger": "on_attack"
+        }
+      },
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_script": "",
+      "check_bonus": "0",
+      "class": "",
+      "cost": "-",
+      "damage_bonus": "",
+      "defense_target_type": "def",
+      "description": "<ul><li><p>Cure <strong>[CONDITIONS] </strong>from target creature</p></li></ul>",
+      "duration": "-",
+      "heroic_requirement": "",
+      "ignore_hr": false,
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Generic Dispel Effects",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "Any",
+      "skill_target": "-",
+      "skill_type": "Item",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "bG14HdR2iUB44FWq"
+  },
+  "type": "equippableItem"
+}

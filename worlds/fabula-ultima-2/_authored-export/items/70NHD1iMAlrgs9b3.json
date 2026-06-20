@@ -1,0 +1,62 @@
+{
+  "_id": "70NHD1iMAlrgs9b3",
+  "_stats": {
+    "compendiumSource": "Item.JXTatbLpfQkBEZQT",
+    "coreVersion": "12.343",
+    "createdTime": 1747555548374,
+    "duplicateSource": "Item.YYRzwC8mqbxrZlQt",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "70NHD1iMAlrgs9b3",
+        "itemName": "IW-Karate Chop",
+        "pickedOldProps": {
+          "cost": "0",
+          "martial": false
+        },
+        "ts": 1769647435794
+      }
+    }
+  },
+  "folder": "anw1dt2P1Er82ghx",
+  "img": "icons/equipment/hand/gauntlet-simple-leather-brown-gold.webp",
+  "name": "IW-Karate Chop",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 100000,
+  "system": {
+    "container": null,
+    "props": {
+      "category": "Sword",
+      "check_bonus": "1",
+      "damage_bonus": "8",
+      "description": "<p>Automatically equipped in each empty hand slot.</p><hr contenteditable=\"false\"><p>[AKROMORPHOSIS]</p><p>At the start of your turn during a conflict, you may choose a weapon Category other than brawling. These changes last until the start of your next turn.</p><hr contenteditable=\"false\"><p>[Psychokinesis]</p><p>This weapon may target <strong>flying </strong>creatures.</p><hr contenteditable=\"false\"><p>[Fleeting Moment]</p><p>When you perform a <strong>Counterattack</strong> using a melee weapon that's sword category, You may add your high roll to the damage dealt by the attack.</p>",
+      "hand_slots": "One-handed",
+      "isMartial": false,
+      "item_cost": "0",
+      "item_type": "weapon",
+      "name": "IW-Karate Chop",
+      "rolled_atr1": "WLP",
+      "rolled_atr2": "MIG",
+      "set_name": "",
+      "skill_target": "One Enemy",
+      "type_damage": "Physical",
+      "weapon_range": "Melee"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "70NHD1iMAlrgs9b3"
+  },
+  "type": "equippableItem"
+}

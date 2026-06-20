@@ -1,0 +1,57 @@
+{
+  "_id": "ItgbEMzOO1vCxw4I",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1754246766681,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "ZGmAHDAwnNaEYlhR",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/firestarter.png",
+  "name": "Pyromancy",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Pyromancer",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>Each time you acquire this Skill, learn one Pyromancer spell <em>(see Facet)</em>. </p><p>Offensive (⚡) Pyromancer spells use <strong>【INS + WLP】</strong> for the Magic Check</p>",
+      "duration": "",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": true,
+      "level": "1",
+      "max_level": "10",
+      "name": "Pyromancy",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Other",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "ItgbEMzOO1vCxw4I"
+  },
+  "type": "equippableItem"
+}

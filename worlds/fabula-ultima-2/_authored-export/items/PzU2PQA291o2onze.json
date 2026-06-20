@@ -1,0 +1,48 @@
+{
+  "_id": "PzU2PQA291o2onze",
+  "_stats": {
+    "compendiumSource": "Item.1aeasNGWSCTtjxMt",
+    "coreVersion": "12.343",
+    "createdTime": 1674802897033,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "core": {
+      "sourceId": "Item.1aeasNGWSCTtjxMt"
+    },
+    "custom-system-builder": {
+      "version": "3.2.4"
+    }
+  },
+  "folder": "HwP13CJoWTpllhwM",
+  "img": "https://assets.forge-vtt.com/5fb02919b573a96aaf33938c/wrf3f3e.JPG",
+  "name": "Rustal's Flare",
+  "ownership": {
+    "JvF9tXvr7aaiS06m": 3,
+    "default": 3
+  },
+  "sort": 600000,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "2",
+      "class": "Elementalist",
+      "cost": "20",
+      "damage_bonus": "25",
+      "description": "<p>You channel a single ray of fire towards your foe, its temperature so high that it will<br>pierce through most defenses. The target suffers 【HR + 25】fire damage.<br>Damage dealt by this spell ignores Resistances.</p>",
+      "duration": "Instantaneous",
+      "name": "Rustal's Flare",
+      "rolled_atr1": "INS",
+      "rolled_atr2": "WLP",
+      "target": "One creature",
+      "type_damage": "fire"
+    },
+    "template": "FZmpKcQRP7hZQqbV",
+    "templateSystemUniqueVersion": 1700837225,
+    "unique": false,
+    "uniqueId": "PzU2PQA291o2onze"
+  },
+  "type": "equippableItem"
+}

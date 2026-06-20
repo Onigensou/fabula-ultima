@@ -1,0 +1,250 @@
+{
+  "_id": "M232YtaA1fJse4nE",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1676043824459,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.5.0"
+    }
+  },
+  "folder": "Cj3PsdCco0e7gpZF",
+  "img": "icons/svg/mystery-man.svg",
+  "name": "Miles",
+  "ownership": {
+    "9sFgrDy4MvAgoCmQ": 3,
+    "default": 0
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": null
+    },
+    "bar2": {
+      "attribute": null
+    },
+    "detectionModes": [],
+    "displayBars": 0,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {},
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Miles",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "icons/svg/mystery-man.svg",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 100000,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "activeEffects": {},
+    "props": {
+      "arcanism": false,
+      "bond_1": "",
+      "bond_2": "",
+      "bond_3": "",
+      "bond_4": "",
+      "bond_5": "",
+      "bond_6": "",
+      "char_identity": "Appraiser of Antique",
+      "check_roller": "Roll!",
+      "chimerism": false,
+      "class_list": {
+        "0": {
+          "$deleted": false,
+          "benefit": "hp",
+          "class_name": "Sharpshooter",
+          "level": "2"
+        },
+        "1": {
+          "$deleted": false,
+          "benefit": "ip",
+          "class_name": "Wayfarer",
+          "level": "1"
+        },
+        "2": {
+          "$deleted": false,
+          "benefit": "mp",
+          "class_name": "Loremaster",
+          "level": "1"
+        }
+      },
+      "crisis_hp": "ERROR",
+      "current_hp": "40",
+      "current_ip": "8",
+      "current_mp": "40",
+      "dex_base": "8",
+      "dex_current": 8,
+      "elementalism": false,
+      "emotion_1_1": "",
+      "emotion_1_2": "",
+      "emotion_1_3": "",
+      "emotion_2_1": "",
+      "emotion_2_2": "",
+      "emotion_2_3": "",
+      "emotion_3_1": "",
+      "emotion_3_2": "",
+      "emotion_3_3": "",
+      "emotion_4_1": "",
+      "emotion_4_2": "",
+      "emotion_4_3": "",
+      "emotion_5_1": "",
+      "emotion_5_2": "",
+      "emotion_5_3": "",
+      "emotion_6_1": "",
+      "emotion_6_2": "",
+      "emotion_6_3": "",
+      "entropism": false,
+      "experience": "0",
+      "fp": "3",
+      "ins_base": "12",
+      "ins_current": 12,
+      "inventory_label": "💼 Inventory",
+      "isDazed": false,
+      "isEnraged": false,
+      "isPoisoned": false,
+      "isShaken": false,
+      "isSlow": false,
+      "isWeak": false,
+      "level": "5",
+      "max_hp": "ERROR",
+      "max_ip": "ERROR",
+      "max_mp": "ERROR",
+      "mig_base": "6",
+      "mig_current": 6,
+      "name": "Miles",
+      "origin": "City of Gear Cycle",
+      "passive_label": "Passives",
+      "pronouns": "",
+      "ritualism": false,
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "skill_hp": "0",
+      "skill_list": {
+        "0": {
+          "$deleted": false,
+          "class": "Sharpshooter",
+          "description": "",
+          "level": "2",
+          "roll": "",
+          "skill_name": "Range Weapon Mastery"
+        },
+        "1": {
+          "$deleted": false,
+          "class": "Wayfarer",
+          "description": "",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Treasure Hunter"
+        },
+        "2": {
+          "$deleted": false,
+          "class": "Loremaster",
+          "description": "",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Knowledge is Power"
+        },
+        "3": {
+          "$deleted": false,
+          "class": "Loremaster",
+          "description": "",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Quick Assessment"
+        }
+      },
+      "skill_mp": "0",
+      "spiritism": false,
+      "theme": "Value",
+      "wlp_base": "6",
+      "wlp_current": 6,
+      "zenit": "500",
+      "zero_effect_label": "Zero Effect",
+      "zero_power_label": "💥Zero Power:",
+      "zero_power_label1": "💥 Zero Power : ",
+      "zero_power_max_value": "/ 6",
+      "zero_power_name": "",
+      "zero_power_value": "0",
+      "zero_trigger_label": "⚔️ Zero Trigger"
+    },
+    "statusEffects": {},
+    "template": "Z1r6hn2K7q4SQ1yL",
+    "templateSystemUniqueVersion": 1165654311
+  },
+  "type": "character"
+}

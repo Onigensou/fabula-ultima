@@ -1,0 +1,143 @@
+{
+  "_id": "BErxmNwM0p3aWlIF",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1781820011349,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "8G422weLCw652WPq",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1781919023796,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "can_target_flying_with",
+          "mode": 5,
+          "priority": 20,
+          "value": "arcane,sword"
+        }
+      ],
+      "description": "<p><em>Psychokinesis:</em> melee attacks with arcane or sword weapons may target Flying creatures.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "8G422weLCw652WPq",
+          "originalParentId": "BErxmNwM0p3aWlIF",
+          "originalUuid": "Item.BErxmNwM0p3aWlIF.ActiveEffect.8G422weLCw652WPq"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Add/LunaticPsykerPassive4.png",
+      "name": "Psychokinesis",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "H5HE3g8k3EvxVyvM",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Add/LunaticPsykerPassive4.png",
+  "name": "Psychokinesis",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "check_bonus": "0",
+      "class": "",
+      "cost": "-",
+      "damage_bonus": "",
+      "defense_target_type": "def",
+      "details_roller": "Show",
+      "duration": "-",
+      "effect_table": {
+        "0": {
+          "consume_self": false,
+          "effect_kind": "check_die_swap",
+          "effect_label": "pk_swap",
+          "from_resource": "",
+          "menu_label": "",
+          "swap_mode": "ask",
+          "swap_to_attribute": "WLP",
+          "to_resource": ""
+        }
+      },
+      "gadget_alchemy_tier": "",
+      "gadget_infusion_tier": "",
+      "gadget_magitech_tier": "",
+      "heroic_requirement": "",
+      "id": "BErxmNwM0p3aWlIF",
+      "ignore_hr": false,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Add/LunaticPsykerPassive4.png",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Psychokinesis",
+      "on_activate_effect_ref": "",
+      "optional_params": {},
+      "pre_activate_effect_ref": "",
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "",
+      "skill_target": "-",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false,
+      "uuid": "Item.BErxmNwM0p3aWlIF"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "BErxmNwM0p3aWlIF"
+  },
+  "type": "equippableItem"
+}

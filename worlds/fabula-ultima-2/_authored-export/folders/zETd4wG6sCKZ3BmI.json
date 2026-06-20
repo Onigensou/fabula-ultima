@@ -1,0 +1,19 @@
+{
+  "_id": "zETd4wG6sCKZ3BmI",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1770703326113,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "ao7MvDYKSVhEwWj3",
+  "name": "Inventory UI",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Macro"
+}

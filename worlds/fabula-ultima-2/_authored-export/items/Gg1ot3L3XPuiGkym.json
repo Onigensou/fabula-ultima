@@ -1,0 +1,40 @@
+{
+  "_id": "Gg1ot3L3XPuiGkym",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1753316379472,
+    "duplicateSource": "Item.PXO8X5beH1JQHuz9",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "anhNjengynV9A7lU",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/AttackUp.png",
+  "name": "Strong",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 700000,
+  "system": {
+    "container": null,
+    "props": {
+      "description": "<p style=\"\">Increase this creature <strong>【MIG】</strong>die by one stage.</p>",
+      "detail_roller": "Show",
+      "id": "Gg1ot3L3XPuiGkym",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/AttackUp.png",
+      "name": "Strong",
+      "uuid": "Item.Gg1ot3L3XPuiGkym"
+    },
+    "template": "nS5URyF3aoxhvPsZ",
+    "templateSystemUniqueVersion": 4221238629,
+    "unique": false,
+    "uniqueId": "Gg1ot3L3XPuiGkym"
+  },
+  "type": "equippableItem"
+}

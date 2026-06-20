@@ -1,0 +1,61 @@
+{
+  "_id": "qTPwunpyLYSM958Z",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1761168791717,
+    "duplicateSource": "Item.soSETT1ahFCMf5Aa",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.4"
+    }
+  },
+  "folder": "8UrFEBywo3APQenl",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/crimson_cyclone.png",
+  "name": "Quick Summoning",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "active_effect_config_table": {},
+      "check_bonus": "0",
+      "class": "Arcanist Variant",
+      "cost": "-",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>When you summon an Arcanum on your turn during a conflict, choose up to two options:</p>\n<ul>\n  <li>reduce its MP cost by <strong>[SL × 5]</strong>;</li>\n  <li>after you summon the Arcanum, if you are merged with it, immediately perform its <em>pulse</em>.</li>\n</ul>\n<p>If you choose at least one option, you cannot willingly dismiss that Arcanum until the start of your next turn; if you choose both options, that Arcanum’s dismiss effect will not be available for this summoning.</p>\n",
+      "duration": "-",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "level": "0",
+      "max_level": "6",
+      "name": "Quick Summoning",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "<p></p><table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>MP Cost Reduction</strong></p></td></tr><tr><td><p>1</p></td><td><p>5 MP</p></td></tr><tr><td><p>2</p></td><td><p>10 MP</p></td></tr></tbody></table><p></p><p></p>",
+      "skill_range": "",
+      "skill_target": "-",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "qTPwunpyLYSM958Z"
+  },
+  "type": "equippableItem"
+}

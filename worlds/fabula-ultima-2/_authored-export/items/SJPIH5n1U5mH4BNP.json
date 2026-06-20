@@ -1,0 +1,54 @@
+{
+  "_id": "SJPIH5n1U5mH4BNP",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1754163446402,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "9T2y28xQUDE0SpEv",
+  "img": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/dragupload/fabula%20class/pirate/Illustration4.jpg",
+  "name": "Blood Chalice",
+  "ownership": {
+    "default": 3,
+    "nXC7OD7u5Zw5UDDU": 3
+  },
+  "sort": 100000,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Pirate",
+      "cost": "1 IP",
+      "damage_bonus": "0",
+      "description": "<p>Reduce all condition timer on you by 1.</p>",
+      "duration": "",
+      "isCheck": false,
+      "isFacet": true,
+      "isHeroic": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Blood Chalice",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_target": "",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "SJPIH5n1U5mH4BNP"
+  },
+  "type": "equippableItem"
+}

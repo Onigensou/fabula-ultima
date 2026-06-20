@@ -1,0 +1,19 @@
+{
+  "_id": "q7MAJIYOC7KTL2wn",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1762569671388,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "ao7MvDYKSVhEwWj3",
+  "name": "Turn Change Hook",
+  "sort": 1300000,
+  "sorting": "a",
+  "type": "Macro"
+}

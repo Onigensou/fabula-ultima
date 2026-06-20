@@ -1,0 +1,19 @@
+{
+  "_id": "bHc3vfH5W0rLeZ4g",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1753062110344,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": "#b35178",
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "Debuffs",
+  "sort": 200000,
+  "sorting": "a",
+  "type": "Item"
+}

@@ -1,0 +1,105 @@
+{
+  "_id": "GNQXRnV6t7CR9hZ5",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1741052817707,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "GNQXRnV6t7CR9hZ5",
+        "itemName": "Lionheart",
+        "pickedOldProps": {
+          "cost": "3000",
+          "martial": false
+        },
+        "ts": 1769647435891
+      }
+    }
+  },
+  "folder": "xMVY94FXuACmcFkd",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Image/Lionheart.webp",
+  "name": "Lionheart",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "aquatic_ef": "100",
+      "automaton_ef": "100",
+      "avian_ef": "100",
+      "beast_ef": "100",
+      "category": "Sword",
+      "celestial_ef": "100",
+      "check_bonus": "0",
+      "construct_ef": "100",
+      "damage_bonus": "10",
+      "demiHuman_ef": "100",
+      "demon_ef": "100",
+      "description": "<p><strong>Form I</strong></p><p><strong>Sword </strong><em><strong>• Two-handed • Melee • Martial</strong></em></p><p><em><strong>Accuracy: 【DEX】+【MIG】•　Damage: 【HR + 10】Physical</strong></em></p><blockquote><ul><li><em>When you attack with this weapon, If the attack Accuracy check is an <strong>Odd</strong> number or you roll a <strong>Critical Success</strong>, the enemy is treated as <strong>vulnerable </strong>to this damage, and the damage is coverted to <strong>Fire.</strong></em><strong> </strong>(This effect cannot overrides Immunity or Absorption)</li></ul></blockquote><hr contenteditable=\"false\"><p><strong>Form II</strong></p><p><strong>Firearm </strong><em><strong>• Two-handed • Ranged • Martial</strong></em></p><p><em><strong>Accuracy: 【DEX】+【DEX】+ 1 •　Damage: 【HR + 5】Physical</strong></em></p><blockquote><ul><li><em>You gain +1 DEF and MDEF</em></li><li><em>When you&nbsp;<strong>Equip</strong> this weapon, Gain 10 @UUID[JournalEntry.wrw2ENSwzCBjztvt]{Shield}</em></li></ul></blockquote>",
+      "dragon_ef": "100",
+      "elemental_ef": "100",
+      "enforcer_ef": "100",
+      "fey_ef": "100",
+      "flavor_text": "<blockquote>\n<p>This rare gunblade gives your the strength and conviction of a lion.</p>\n</blockquote>",
+      "flora_ef": "100",
+      "fungus_ef": "100",
+      "golem_ef": "100",
+      "gorger_ef": "100",
+      "hand_slots": "Two-handed",
+      "human_ef": "100",
+      "humanoid_ef": "100",
+      "insect_ef": "100",
+      "ip_cost": "",
+      "isEquipped": false,
+      "isKey": false,
+      "isMartial": false,
+      "isModule": false,
+      "isRelatedItem": false,
+      "isSet": false,
+      "isUnique": false,
+      "item_baseDef": "0",
+      "item_baseMdef": "0",
+      "item_cost": "3000",
+      "item_def_bonus": "0",
+      "item_mdef_bonus": "0",
+      "item_quantity": "1",
+      "item_rarity": "Common",
+      "item_type": "weapon",
+      "mimic_ef": "100",
+      "monster_ef": "100",
+      "name": "Lionheart",
+      "optional_params": {},
+      "plant_ef": "100",
+      "reptilian_ef": "100",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "set_name": "",
+      "skill_target": "One Enemy",
+      "soldier_ef": "100",
+      "spirit_ef": "100",
+      "type_damage": "Physical",
+      "undead_ef": "100",
+      "vehicle_ef": "100",
+      "weapon_range": "Melee"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "GNQXRnV6t7CR9hZ5"
+  },
+  "type": "equippableItem"
+}

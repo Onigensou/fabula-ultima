@@ -1,0 +1,62 @@
+{
+  "_id": "f3xNhYYzpCiYcKc3",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1749332531372,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.4.2"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "f3xNhYYzpCiYcKc3",
+        "itemName": "Unstable Bomb",
+        "pickedOldProps": {
+          "cost": "999",
+          "martial": false
+        },
+        "ts": 1769647436632
+      }
+    }
+  },
+  "folder": "D1OgeGHLjJ9dSkxS",
+  "img": "icons/weapons/thrown/bomb-fuse-brown.webp",
+  "name": "Unstable Bomb",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3
+  },
+  "sort": 2400000,
+  "system": {
+    "container": null,
+    "props": {
+      "category": "Thrown",
+      "check_bonus": "0",
+      "damage_bonus": "20",
+      "description": "<ul><li><p>On-hit, this weapon deal it's damage to all creatures <strong>adjacent</strong> to the original target.</p></li><li><p>When you attack with this weapon, if the Accuracy check is 7 or lower and the attack doesn't is not a <strong>critical success</strong>, The attack fail and the user and adjacent ally take that damage instead.</p></li><li><p>On <strong>Fumble</strong>, the user gain <strong>Fabula point</strong> as normal but doesn't suffer <strong>opportunity</strong> and all creature in the scene take <strong>40</strong> Fire damage instead.</p></li></ul>",
+      "hand_slots": "Two-handed",
+      "isMartial": false,
+      "item_cost": "999",
+      "item_type": "weapon",
+      "name": "Unstable Bomb",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "INS",
+      "set_name": "",
+      "skill_target": "One Enemy",
+      "type_damage": "Fire",
+      "weapon_range": "Ranged"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "f3xNhYYzpCiYcKc3"
+  },
+  "type": "equippableItem"
+}

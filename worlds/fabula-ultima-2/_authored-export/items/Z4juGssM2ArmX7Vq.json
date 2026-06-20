@@ -1,0 +1,83 @@
+{
+  "_id": "Z4juGssM2ArmX7Vq",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1753061228702,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "accessory",
+        "fromTemplate": "r0yZpLPAK9VXhM2p",
+        "itemId": "Z4juGssM2ArmX7Vq",
+        "itemName": "Kindred Feather",
+        "pickedOldProps": {
+          "cost": "1200",
+          "def_bonus": "",
+          "defense": "0",
+          "defense_include_dex": false,
+          "initiative": "0",
+          "magic_defense": "0",
+          "magic_defense_include_ins": false,
+          "mdef_bonus": ""
+        },
+        "ts": 1769647435854
+      }
+    }
+  },
+  "folder": "5uQIy5BCy7UEVfcT",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/2799.gif",
+  "name": "Kindred Feather",
+  "ownership": {
+    "2vy7wrEUqBy0kzsU": 3,
+    "6DmgigM5jq76r0Gd": 3,
+    "7hKw8KGsimboeDif": 3,
+    "9sFgrDy4MvAgoCmQ": 3,
+    "Am7qxPOavfKeDGPd": 3,
+    "JQGNzKpDPHJmcUIW": 3,
+    "JvF9tXvr7aaiS06m": 3,
+    "KD5d0efqHETPpIux": 3,
+    "LT3Z8EnRdMVk5ncQ": 3,
+    "MwTL6zXFCEpVBTpI": 3,
+    "NozW36XIGEGx7oVH": 3,
+    "NpGkA7uxaarkPiwS": 3,
+    "ULBTZPjtza939Mvy": 3,
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3,
+    "eGu3tuw7HwJd2bpx": 3,
+    "iLeUVmwqnze8ulOI": 3,
+    "mE5aEkDlrQJIYyhG": 3,
+    "nSGZ1sz1rdKao0kz": 3,
+    "nXC7OD7u5Zw5UDDU": 3,
+    "t41knaXNbgCEygM5": 3,
+    "tz9BP9MKfNGf2P3n": 3,
+    "wNzPmItLYCKE1I8t": 3,
+    "yL2PQxh3R9ddt0te": 3,
+    "yUfwoVmEPVdFG3AY": 3
+  },
+  "sort": 2300000,
+  "system": {
+    "container": null,
+    "props": {
+      "description": "<ul><li><p>Your attacks gain +1 Accuracy</p></li><li><p>You may perform the <strong>【💥 Protect】</strong>skill on an an ally @UUID[Actor.GnEmdc02BDDTmeaU] <em>(You may still perform Protect once per round)</em></p><hr contenteditable=\"false\"></li></ul><p><strong>【Set Bonus】</strong></p><p><strong>2 Piece</strong></p><ul><li><p>Ally @UUID[Actor.GnEmdc02BDDTmeaU]'s <strong>【🏹 Dive Strike】</strong>apply <strong>Hunter's Mark </strong>to the target</p><hr contenteditable=\"false\"></li></ul><p><strong>3 Piece</strong></p><ul><li><p>Ally @UUID[Actor.GnEmdc02BDDTmeaU]'s <strong>Attacks </strong>gain +3 Accuracy</p><hr contenteditable=\"false\"></li></ul><p>&nbsp;<strong>4 Piece</strong></p><ul><li><p>Ally @UUID[Actor.GnEmdc02BDDTmeaU]'s <strong>【🏹 Dive Strike】</strong>gain <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.noUOPxPoZq65yYxV\" data-id=\"noUOPxPoZq65yYxV\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Chain</span></strong></a><strong><span style=\"text-decoration: underline;\"> </span></strong></span></span><strong>2</strong>&nbsp;<em>(Both attack must target the same creature)</em></p></li></ul>",
+      "item_baseDef": "0",
+      "item_baseMdef": "0",
+      "item_cost": "1200",
+      "item_type": "accessory",
+      "name": "Kindred Feather",
+      "set_name": "Warden of the Wilds"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "Z4juGssM2ArmX7Vq"
+  },
+  "type": "equippableItem"
+}

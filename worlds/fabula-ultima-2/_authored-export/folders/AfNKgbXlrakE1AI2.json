@@ -1,0 +1,19 @@
+{
+  "_id": "AfNKgbXlrakE1AI2",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1758248209970,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "VVjpCERIXMrOJna7",
+  "name": "Tailor",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

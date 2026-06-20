@@ -1,0 +1,179 @@
+{
+  "_id": "Q7LRl9Vb1LcccX8R",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780631505820,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "A5jhegW8boRf3ijU",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "cannot_target_uuids",
+          "mode": 2,
+          "priority": 10,
+          "value": "${casterActorUuid}$"
+        }
+      ],
+      "description": "<p><em>Vanish:</em> Cannot be targeted by enemies until start of your next turn.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": 1
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "hshYRHMoDwlaqomt",
+          "originalParentId": "vtT64Ckf6LoQu1Lh",
+          "originalUuid": "Item.vtT64Ckf6LoQu1Lh.ActiveEffect.hshYRHMoDwlaqomt"
+        },
+        "fabula-ultima-companion": {
+          "crossScene": false,
+          "directorPermanent": false
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/09_NIN/ninjutsu.png",
+      "name": "Vanish",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-vanished"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "nFM91gXyIfSnUUTP",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/09_NIN/ninjutsu.png",
+  "name": "Vanish",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "check_bonus": "0",
+      "class": "Rogue",
+      "cost": "1 Fabula Point",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>When you hit one or more creatures with an attack, you may spend <strong>1 Fabula Point.</strong> If you do, each of those creatures will be unable to perform any action that requires them to be able to see you until the start of your next turn.</p>",
+      "duration": "-",
+      "effect_table": {
+        "0": {
+          "chain_steps": "vanish_cost,vanish_apply_ae",
+          "effect_kind": "chain",
+          "effect_label": "vanish_apply",
+          "menu_description": "",
+          "menu_label": ""
+        },
+        "1": {
+          "consume_amount": "1",
+          "consume_resource": "fp",
+          "effect_kind": "consume_resource",
+          "effect_label": "vanish_cost",
+          "menu_description": "",
+          "menu_label": "",
+          "on_empty": "abort",
+          "target_ref": "self"
+        },
+        "2": {
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_template_ref": "Vanish",
+          "effect_kind": "apply_ae",
+          "effect_label": "vanish_apply_ae",
+          "menu_description": "",
+          "menu_label": "",
+          "target_ref": "hit_action_targets"
+        }
+      },
+      "heroic_requirement": "",
+      "ignore_hr": false,
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": false,
+      "isReaction": true,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Vanish",
+      "on_activate_effect_ref": "",
+      "optional_params": {},
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "",
+          "reaction_action_intent": "",
+          "reaction_action_target": "",
+          "reaction_damage_amount": "",
+          "reaction_damage_source": "",
+          "reaction_damage_type": "",
+          "reaction_effect_ref": "vanish_apply",
+          "reaction_ownership": "",
+          "reaction_passive_mode": "ask",
+          "reaction_passive_target": "",
+          "reaction_source": "self",
+          "reaction_subject_kind": "",
+          "reaction_trigger": "creature_deals_damage",
+          "requires_skill": ""
+        }
+      },
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "Any",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": true,
+    "uniqueId": "Q7LRl9Vb1LcccX8R"
+  },
+  "type": "equippableItem"
+}

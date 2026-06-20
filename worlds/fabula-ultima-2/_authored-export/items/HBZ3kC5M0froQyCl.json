@@ -1,0 +1,51 @@
+{
+  "_id": "HBZ3kC5M0froQyCl",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1781933810558,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Mineral2.png",
+  "name": "Golem Soulstone",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "B1s2K9VLjc4XF4GB",
+    "props": {
+      "cost": "-",
+      "description": "<p><em>Golem Soulstone:</em> target ally gains 10 Shield (keep the bigger).</p>",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "effect_kind": "set_resource",
+          "effect_label": "golemstone_shield",
+          "grant_amount": "10",
+          "grant_resource": "shield",
+          "target_ref": "action_targets"
+        }
+      },
+      "isCheck": false,
+      "on_activate_effect_ref": "golemstone_shield",
+      "skill_target": "One Ally",
+      "skill_type": "Item",
+      "type_damage": ""
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "HBZ3kC5M0froQyCl"
+  },
+  "type": "equippableItem"
+}

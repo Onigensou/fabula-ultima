@@ -1,0 +1,291 @@
+{
+  "_id": "Lmzs6VllFRo44jZq",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1779395131700,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "propheticMaxHp01",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1779395132656,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "bonus_hp",
+          "mode": 2,
+          "priority": 20,
+          "value": "${fetchFromParent('ins_current')}$"
+        }
+      ],
+      "description": "<p>Permanent bonus_hp increase equal to the bearer's INS die size. Max HP's label formula reads bonus_hp, so the bump shows up there. <code>target.ins_current</code> re-evaluates on every prepareDerivedData pass — live INS buffs/debuffs flow through automatically.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "propheticMaxHp01",
+          "originalParentId": "Lmzs6VllFRo44jZq",
+          "originalUuid": "Item.Lmzs6VllFRo44jZq.ActiveEffect.propheticMaxHp01"
+        },
+        "fabula-ultima-companion": {
+          "sourceSkillUniqueId": "propheticDefStyle"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/svg/aura.svg",
+      "name": "Prophetic Defender Style (Bonus HP)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    },
+    {
+      "_id": "propheticPoint01",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1779395132629,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>A reserve of foresight Hina spends to take the place of all creatures threatened by a single danger.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "propheticPoint01",
+          "originalParentId": "Lmzs6VllFRo44jZq",
+          "originalUuid": "Item.Lmzs6VllFRo44jZq.ActiveEffect.propheticPoint01"
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "prophecy",
+          "charges": 1,
+          "chargesMax": 1
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/svg/aura.svg",
+      "name": "Prophecy Point",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": null,
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/nocturnal_sect.png",
+  "name": "Prophetic Defender Style",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_script": "",
+      "check_bonus": "0",
+      "class": "None",
+      "cost": "",
+      "damage_bonus": "",
+      "defense_target_type": "def",
+      "description": "<p><span class=\"fontstyle0\">1.Your maximum Hit Points are permanently increased by an amount equal to your base </span><span class=\"fontstyle2\">Insight </span><span class=\"fontstyle0\">die size (update your maximum HP if this size changes).</span></p><p><span class=\"fontstyle0\"><br>2.When a conflict scene begins, you gain </span><span class=\"fontstyle2\">1 Prophecy Point</span><span class=\"fontstyle0\">. You also gain </span><span class=\"fontstyle2\">1 Prophecy Point </span><span class=\"fontstyle0\">at the end of each </span><span class=\"fontstyle2\">even-numbered </span><span class=\"fontstyle0\">round, but only if you have learned the </span><span class=\"fontstyle2\">Divination </span><span class=\"fontstyle0\">spell. You lose all </span><span class=\"fontstyle2\">Prophecy Points </span><span class=\"fontstyle0\">at the end of each scene.</span></p><p><span class=\"fontstyle0\"><br>3.When </span><span class=\"fontstyle2\">two or more </span><span class=\"fontstyle0\">creatures are threatened by a single </span><span class=\"fontstyle2\">attack</span><span class=\"fontstyle0\">, </span><span class=\"fontstyle2\">spell</span><span class=\"fontstyle0\">, or other </span><span class=\"fontstyle2\">danger</span><span class=\"fontstyle0\">, you may spend </span><span class=\"fontstyle2\">1 Prophecy Point </span><span class=\"fontstyle0\">to take the place of </span><span class=\"fontstyle2\">all </span><span class=\"fontstyle0\">those creatures (any Checks that are part of the danger will be performed against you; you may declare the use of this Skill before or after the Checks have been made). </span></p><p><span class=\"fontstyle0\">The danger will affect you once for each creature it was threatening (including yourself, if you were among those creatures). </span></p><p><span class=\"fontstyle0\">Resolve each of these instances separately, and describe what magical<br>distortion or superhuman ability allowed you to accomplish this.</span> <br style=\" font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-align: -webkit-auto; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; -webkit-text-size-adjust: auto; -webkit-text-stroke-width: 0px; \"></p>",
+      "duration": "",
+      "effect_table": {
+        "0": {
+          "auto_confirm_when_obvious": true,
+          "candidate_source": "self",
+          "category": "",
+          "count": 1,
+          "effect_kind": "targeting",
+          "effect_label": "pds_self",
+          "exclude_self": false,
+          "iteration_mode": "together",
+          "mode": "exact",
+          "skip_when_passive": true
+        },
+        "1": {
+          "auto_confirm_when_obvious": true,
+          "candidate_source": "action_targets",
+          "category": "",
+          "effect_kind": "targeting",
+          "effect_label": "pds_threatened",
+          "exclude_self": false,
+          "iteration_mode": "together",
+          "mode": "all",
+          "skip_when_passive": true
+        },
+        "2": {
+          "ae_duplicate_mode": "stack",
+          "ae_template_ref": "Prophecy Point",
+          "effect_kind": "apply_ae",
+          "effect_label": "pds_gain",
+          "target_ref": "pds_self"
+        },
+        "3": {
+          "charge_key": "prophecy",
+          "count": 1,
+          "effect_kind": "consume_charge",
+          "effect_label": "pds_consume",
+          "on_empty": "abort",
+          "target_ref": "pds_self"
+        },
+        "4": {
+          "ae_duplicate_mode": "remove",
+          "ae_template_ref": "Prophecy Point",
+          "destination_ref": "pds_self",
+          "effect_kind": "redirect_target",
+          "effect_label": "pds_redirect",
+          "rebuild_card": true,
+          "target_ref": "pds_threatened"
+        },
+        "5": {
+          "chain_steps": "pds_consume, pds_redirect",
+          "destination_ref": "pds_self",
+          "effect_kind": "chain",
+          "effect_label": "pds_reaction",
+          "rebuild_card": true,
+          "target_ref": "pds_threatened"
+        }
+      },
+      "heroic_requirement": "you must have learned the Divination spell (see Entropist).",
+      "ignore_hr": false,
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": false,
+      "isReaction": true,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Prophetic Defender Style",
+      "optional_params": {},
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "",
+          "reaction_damage_amount": "",
+          "reaction_damage_type": "",
+          "reaction_debuff_count_min": "",
+          "reaction_debuff_count_target": "",
+          "reaction_effect_ref": "",
+          "reaction_passive_mode": "ask",
+          "reaction_passive_target": "self",
+          "reaction_source": "",
+          "reaction_trigger": "conflict_start",
+          "requires_skill": ""
+        },
+        "1": {
+          "condition_formula": "ROUND % 2 == 0",
+          "reaction_damage_amount": "",
+          "reaction_damage_type": "",
+          "reaction_debuff_count_min": "",
+          "reaction_debuff_count_target": "",
+          "reaction_effect_ref": "",
+          "reaction_passive_mode": "ask",
+          "reaction_passive_target": "self",
+          "reaction_source": "",
+          "reaction_trigger": "round_end",
+          "requires_skill": "BmgIHS4DdDAT1rUc"
+        },
+        "2": {
+          "condition_formula": "",
+          "reaction_damage_amount": "",
+          "reaction_damage_type": "",
+          "reaction_debuff_count_min": "",
+          "reaction_debuff_count_target": "",
+          "reaction_effect_ref": "",
+          "reaction_passive_mode": "ask",
+          "reaction_passive_target": "self",
+          "reaction_source": "",
+          "reaction_trigger": "",
+          "requires_skill": ""
+        },
+        "3": {
+          "condition_formula": "ACTION_TARGET_COUNT >= 2",
+          "reaction_action_intent": "harmful",
+          "reaction_damage_amount": "",
+          "reaction_damage_type": "",
+          "reaction_debuff_count_min": "",
+          "reaction_debuff_count_target": "",
+          "reaction_effect_ref": "",
+          "reaction_passive_mode": "ask",
+          "reaction_passive_target": "",
+          "reaction_source": "enemy",
+          "reaction_trigger": "creature_performs_action",
+          "requires_skill": ""
+        }
+      },
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "propheticDefStyle"
+  },
+  "type": "equippableItem"
+}

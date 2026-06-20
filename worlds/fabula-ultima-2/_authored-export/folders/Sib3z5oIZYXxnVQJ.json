@@ -1,0 +1,19 @@
+{
+  "_id": "Sib3z5oIZYXxnVQJ",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1756949937116,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "IZgBc6z6Iyz2ccos",
+  "name": "Dances",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

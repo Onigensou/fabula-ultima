@@ -1,0 +1,57 @@
+{
+  "_id": "878x4sTS0xBc75oZ",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1759547067931,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "sWfX0st2X6sPXPd0",
+  "img": "icons/svg/item-bag.svg",
+  "name": "Mix",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Alchemist",
+      "cost": "-",
+      "damage_bonus": "0",
+      "description": "<p>Each time you acquire this <strong>Skill</strong>, learn a <strong>Mixture</strong> (see Facet). You may acquire this Skill multiple times.</p><p>To <strong>create </strong>a <strong>Mixture, </strong>you must perform the <strong>【⚗️Inventory】</strong>action and spend the required <strong>consumables</strong>. Each Mixture calls for a different combination of <strong>consumable</strong> items. (See Unique Mechanic)</p>",
+      "duration": "-",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "10",
+      "name": "Mix",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "",
+      "skill_target": "-",
+      "skill_type": "Other",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "878x4sTS0xBc75oZ"
+  },
+  "type": "equippableItem"
+}

@@ -1,0 +1,1859 @@
+{
+  "_id": "pZ0DEVMHTDhgFrPi",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1754483713845,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "tmNVy5jIbM9rzx80",
+  "img": "https://tiermaker.com/images/media/template_images/2024/16720717/fabula-ultima-classes-16720717/guardian.png",
+  "items": [
+    {
+      "_id": "ceJlsHHvaTa0foQZ",
+      "_stats": {
+        "compendiumSource": "Item.gTXdzJjV4Lmwfm7i",
+        "coreVersion": "12.343",
+        "createdTime": 1754485010808,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/cover.png",
+      "name": "Protect",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Guardian",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When another creature is threatened by an <strong>attack, spell</strong> or <strong>other danger</strong>, you may take their place (any Checks that are part of the danger will be performed against you; you may declare the use of this Skill <strong>before or after</strong> the Checks have been made). If the danger already affected you, it affects you <strong>twice</strong> (resolve both instances separately); you also cannot protect multiple creatures from the same danger. If you use this Skill during a conflict, you cannot use it again until the start of your next turn.</p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Protect",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "gTXdzJjV4Lmwfm7i"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "dLPCIIiQdO7KbzYQ",
+      "_stats": {
+        "compendiumSource": "Item.P3iAf8dGAQLg8tLS",
+        "coreVersion": "12.343",
+        "createdTime": 1756968967411,
+        "duplicateSource": "Item.jYKFnEb09ArDvBjb",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "yqShFeOheCE0EyUC",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1780593573910,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "bonus_defense",
+              "mode": 2,
+              "priority": 20,
+              "value": "aeSlotEquippedWhen(\"main:weapon&off:shield\", \"1\")"
+            },
+            {
+              "key": "weapon1_damage",
+              "mode": 2,
+              "priority": 20,
+              "value": "aeSlotEquippedWhen(\"main:weapon&off:shield\", \"5\")"
+            }
+          ],
+          "description": "<p><em>Hoplite:</em> Wielding weapon + shield: +1 Defense, +5 main-hand damage.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "yqShFeOheCE0EyUC",
+              "originalParentId": "dLPCIIiQdO7KbzYQ",
+              "originalUuid": "Actor.pZ0DEVMHTDhgFrPi.Item.dLPCIIiQdO7KbzYQ.ActiveEffect.yqShFeOheCE0EyUC"
+            },
+            "fabula-ultima-companion": {
+              "category": "buff"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/chivalry.png",
+          "name": "Hoplite",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "buff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/chivalry.png",
+      "name": "Hoplite",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Guardian",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>As long as you have a <strong>weapon</strong> equipped in your <strong>main hand</strong> slot and a <strong>shield</strong> equipped in your <strong>off-hand</strong> slot, your attacks with that weapon deal <strong>5 extra damage</strong> and you gain a <strong>+1 bonus to Defense</strong>.</p><p><em>This Skill cannot be combined with custom weapons with the defence boost customization, nor with the Dual Shieldbearer Skill.</em></p>",
+          "duration": "",
+          "heroic_requirement": "You must have mastered one or more Classes among Commander and Guardian.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Hoplite",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "-",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "P3iAf8dGAQLg8tLS"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "IBBjlu70adJ22zjO",
+      "_stats": {
+        "compendiumSource": "Item.tJEkJxu440vwNy0X",
+        "coreVersion": "12.343",
+        "createdTime": 1754484999777,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "AxileZwA753oNOt7",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1780593568156,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p><em>Unbreakable:</em> Once per scene. Survive a fatal hit at 1 HP.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "AxileZwA753oNOt7",
+              "originalParentId": "IBBjlu70adJ22zjO",
+              "originalUuid": "Actor.pZ0DEVMHTDhgFrPi.Item.IBBjlu70adJ22zjO.ActiveEffect.AxileZwA753oNOt7"
+            },
+            "fabula-ultima-companion": {
+              "category": "buff",
+              "crossScene": false,
+              "directorPermanent": true,
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "consume_self": true,
+                    "damage_amount": "CUR_HP - 1",
+                    "damage_operation": "cap",
+                    "damage_stage": "incoming",
+                    "effect_kind": "adjust_damage",
+                    "effect_label": "unbreakable_clamp",
+                    "modify_mode": "set_hp_floor",
+                    "modify_value": 1
+                  }
+                },
+                "name": "Unbreakable",
+                "reaction_config_table": {
+                  "0": {
+                    "reaction_damage_outcome": "would_reduce_to_zero",
+                    "reaction_effect_ref": "unbreakable_clamp",
+                    "reaction_passive_mode": "ask",
+                    "reaction_source": "self",
+                    "reaction_trigger": "creature_takes_damage"
+                  }
+                }
+              }
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Chung/SI_STRONGWILL.png",
+          "name": "Unbreakable Ready",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-unbreakable-ready"
+          ],
+          "system": {
+            "tags": [
+              "buff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Chung/SI_STRONGWILL.png",
+      "name": "Unbreakable",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Guardian",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>Once per scene when you are about to be reduced to 0 Hit Points, you may instead choose to withstand the pain and be reduced to exactly 1 Hit Point.</p>",
+          "duration": "",
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Unbreakable Ready",
+              "effect_kind": "apply_ae",
+              "effect_label": "unbreakable_arm",
+              "target_ref": "self"
+            }
+          },
+          "heroic_requirement": "You must have mastered the Guardian Class",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isReaction": true,
+          "level": "1",
+          "max_level": "1",
+          "name": "Unbreakable",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "",
+              "reaction_effect_ref": "unbreakable_arm",
+              "reaction_passive_mode": "force",
+              "reaction_source": "",
+              "reaction_trigger": "conflict_start"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "tJEkJxu440vwNy0X"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "jp2qxUQskWomlJF1",
+      "_stats": {
+        "compendiumSource": "Item.dMvcBdU80jaNnOYT",
+        "coreVersion": "12.343",
+        "createdTime": 1754485009751,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "7SCDF39JqJftaKej",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "max_hp",
+              "mode": 2,
+              "priority": 20,
+              "value": "${level * 5}$"
+            }
+          ],
+          "description": "<p><em>Fortress:</em> Max HP +5×SL.</p>",
+          "disabled": true,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": 298800,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "7SCDF39JqJftaKej",
+              "originalParentId": "dMvcBdU80jaNnOYT",
+              "originalUuid": "Item.dMvcBdU80jaNnOYT.ActiveEffect.7SCDF39JqJftaKej"
+            },
+            "fabula-ultima-companion": {
+              "crossScene": false,
+              "directorPermanent": false
+            },
+            "statuscounter": {
+              "config": {
+                "durationType": 0,
+                "modifyDuration": false,
+                "multiplyEffect": false,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/equipment/shoulder/pauldron-segmented-steel-yellow.webp",
+          "name": "Fortress",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "buff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "icons/equipment/shoulder/pauldron-segmented-steel-yellow.webp",
+      "name": "Fortress",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Guardian",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>Permanently increase your maximum Hit Points by <strong>【SL x 5】</strong>.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "4",
+          "name": "Fortress",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Other",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "dMvcBdU80jaNnOYT"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "kbdqL7e1O0knrfYp",
+      "_stats": {
+        "compendiumSource": "Item.TwiggXCPpT07L0OR",
+        "coreVersion": "12.343",
+        "createdTime": 1754485008694,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "gKnMoy9dQzqzuL7p",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1780593572011,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p><em>Dual Shieldbearer:</em> Two shields equipped: gain Twin Shields attack (MIG+MIG, HR+5 physical, +SL Defensive Mastery damage).</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "gKnMoy9dQzqzuL7p",
+              "originalParentId": "kbdqL7e1O0knrfYp",
+              "originalUuid": "Actor.pZ0DEVMHTDhgFrPi.Item.kbdqL7e1O0knrfYp.ActiveEffect.gKnMoy9dQzqzuL7p"
+            },
+            "fabula-ultima-companion": {
+              "category": "buff",
+              "exposedVirtualAttack": {
+                "condition_formula": "EQUIPPED_SHIELD_COUNT >= 2",
+                "profile": {
+                  "A1": "MIG",
+                  "A2": "MIG",
+                  "checkBonus": 0,
+                  "damageBonus": "5 + SL_DEFENSIVE_MASTERY",
+                  "damageType": "Physical",
+                  "imageUrl": "icons/equipment/shield/heater-steel-gray.webp",
+                  "name": "Twin Shields",
+                  "range": "Melee",
+                  "weaponType": "Brawling"
+                }
+              }
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/enhanced_divine_veil.png",
+          "name": "Dual Shieldbearer",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "buff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/enhanced_divine_veil.png",
+      "name": "Dual Shieldbearer",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Guardian",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>You may now equip a <strong>shield</strong> in your <strong>main hand</strong> slot. As long as you have two shields equipped, you gain the benefits of both items and may treat them as the following combined two-handed melee brawling weapon:</p><blockquote><p><strong>Twin Shields</strong> — Accuracy: <strong>【MIG + MIG】</strong> — Damage: <strong>【HR + 5】 physical</strong></p><p>Deals extra damage equal to your <strong>SL</strong> in <em>Defensive Mastery</em>.</p></blockquote>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Dual Shieldbearer",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "-",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "TwiggXCPpT07L0OR"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "rzUI8j9Qq6efqF5f",
+      "_stats": {
+        "compendiumSource": "Item.YyX9SztNfi0nxWJV",
+        "coreVersion": "12.343",
+        "createdTime": 1754485006653,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "PBqZbmkB1UtROFzz",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1780561735638,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "affinity_1",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"RS\")"
+            },
+            {
+              "key": "affinity_2",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"RS\")"
+            },
+            {
+              "key": "affinity_3",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"RS\")"
+            },
+            {
+              "key": "affinity_4",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"RS\")"
+            },
+            {
+              "key": "affinity_5",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"RS\")"
+            },
+            {
+              "key": "affinity_6",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"RS\")"
+            },
+            {
+              "key": "affinity_7",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"RS\")"
+            },
+            {
+              "key": "affinity_8",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"RS\")"
+            },
+            {
+              "key": "affinity_9",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"RS\")"
+            }
+          ],
+          "description": "<p><em>Bodyguard:</em> Resistance to all damage.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 1,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "PBqZbmkB1UtROFzz",
+              "originalParentId": "rzUI8j9Qq6efqF5f",
+              "originalUuid": "Actor.pZ0DEVMHTDhgFrPi.Item.rzUI8j9Qq6efqF5f.ActiveEffect.PBqZbmkB1UtROFzz"
+            },
+            "fabula-ultima-companion": {
+              "category": "buff",
+              "crossScene": false,
+              "directorPermanent": false
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/chivalry.png",
+          "name": "Bodyguard",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-bodyguard"
+          ],
+          "system": {
+            "tags": [
+              "buff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/chivalry.png",
+      "name": "Bodyguard",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Guardian",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>If you perform the <strong>【Guard】</strong> action and choose to provide cover to another creature, that creature gains Resistance to all damage types until the start of your next turn.</p>",
+          "duration": "",
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "replace_per_caster",
+              "ae_template_ref": "Bodyguard",
+              "effect_kind": "apply_ae",
+              "effect_label": "bodyguard_apply",
+              "target_ref": "action_targets"
+            }
+          },
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isReaction": true,
+          "level": "1",
+          "max_level": "1",
+          "name": "Bodyguard",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "DID_COVER_ALLY == 1",
+              "reaction_effect_ref": "bodyguard_apply",
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_guards"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Melee",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "YyX9SztNfi0nxWJV"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "T7Xq7T1MIO9dq7hi",
+      "_stats": {
+        "compendiumSource": "Item.VJDH632HyYqH8WAS",
+        "coreVersion": "12.343",
+        "createdTime": 1754485001060,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "mRdEvDJQLyP1Z7Tw",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1780561740641,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p><em>Rampart:</em> Once per conflict. Spend 20 MP at round start to fire.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "mRdEvDJQLyP1Z7Tw",
+              "originalParentId": "T7Xq7T1MIO9dq7hi",
+              "originalUuid": "Actor.pZ0DEVMHTDhgFrPi.Item.T7Xq7T1MIO9dq7hi.ActiveEffect.mRdEvDJQLyP1Z7Tw"
+            },
+            "fabula-ultima-companion": {
+              "category": "buff",
+              "chargeKey": "rampart",
+              "charges": 1,
+              "chargesMax": 1,
+              "crossScene": true,
+              "directorPermanent": true
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/TankRollAction/rampart.png",
+          "name": "Rampart Ready",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-rampart-ready"
+          ],
+          "system": {
+            "tags": [
+              "buff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "uYxLaahizN87xAdV",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1780561740963,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "affinity_1",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"RS\")"
+            },
+            {
+              "key": "affinity_2",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"RS\")"
+            },
+            {
+              "key": "affinity_3",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"RS\")"
+            },
+            {
+              "key": "affinity_4",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"RS\")"
+            },
+            {
+              "key": "affinity_5",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"RS\")"
+            },
+            {
+              "key": "affinity_6",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"RS\")"
+            },
+            {
+              "key": "affinity_7",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"RS\")"
+            },
+            {
+              "key": "affinity_8",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"RS\")"
+            },
+            {
+              "key": "affinity_9",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"RS\")"
+            },
+            {
+              "key": "condition_slow",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            },
+            {
+              "key": "condition_dazed",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            },
+            {
+              "key": "condition_weak",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            },
+            {
+              "key": "condition_shaken",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            },
+            {
+              "key": "condition_poisoned",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            },
+            {
+              "key": "condition_enraged",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            },
+            {
+              "key": "condition_silence",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            },
+            {
+              "key": "condition_stagger",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            },
+            {
+              "key": "condition_frightened",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            },
+            {
+              "key": "condition_paralyzed",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            },
+            {
+              "key": "condition_confused",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            },
+            {
+              "key": "condition_panic",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            },
+            {
+              "key": "condition_grappled",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            },
+            {
+              "key": "condition_envenomed",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            },
+            {
+              "key": "condition_burn",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            },
+            {
+              "key": "condition_blind",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            },
+            {
+              "key": "condition_zombie",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            },
+            {
+              "key": "condition_wither",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            },
+            {
+              "key": "condition_bleed",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            },
+            {
+              "key": "condition_obscure",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            },
+            {
+              "key": "condition_fatigue",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            },
+            {
+              "key": "condition_charm",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            },
+            {
+              "key": "condition_berserk",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            },
+            {
+              "key": "condition_despair",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            },
+            {
+              "key": "condition_doom",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            },
+            {
+              "key": "condition_bane",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            },
+            {
+              "key": "condition_curse",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            },
+            {
+              "key": "condition_wet",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            },
+            {
+              "key": "condition_oil",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            },
+            {
+              "key": "condition_petrify",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            },
+            {
+              "key": "condition_hypothermia",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            },
+            {
+              "key": "condition_turbulence",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            },
+            {
+              "key": "condition_delayed",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            },
+            {
+              "key": "condition_isolate",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            },
+            {
+              "key": "condition_suppress",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            },
+            {
+              "key": "condition_disarmed",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            },
+            {
+              "key": "condition_anomaly",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            }
+          ],
+          "description": "<p><em>Rampart:</em> Resistance to all damage + status immunity until end of round.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "uYxLaahizN87xAdV",
+              "originalParentId": "T7Xq7T1MIO9dq7hi",
+              "originalUuid": "Actor.pZ0DEVMHTDhgFrPi.Item.T7Xq7T1MIO9dq7hi.ActiveEffect.uYxLaahizN87xAdV"
+            },
+            "fabula-ultima-companion": {
+              "category": "buff",
+              "crossScene": false,
+              "directorPermanent": false,
+              "lifetimeMode": "round_end"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/TankRollAction/rampart.png",
+          "name": "Rampart",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-rampart"
+          ],
+          "system": {
+            "tags": [
+              "buff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/TankRollAction/rampart.png",
+      "name": "Rampart",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Guardian",
+          "cost": "20 MP",
+          "damage_bonus": "0",
+          "description": "<p>During the first round of each conflict scene, you have Resistance to all damage types and cannot suffer status effects (you <strong>do not</strong> recover from preexisting status effects, however). These benefits only last until the end of the first round.</p>",
+          "duration": "",
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Rampart Ready",
+              "effect_kind": "apply_ae",
+              "effect_label": "rampart_arm",
+              "target_ref": "self"
+            },
+            "1": {
+              "chain_steps": "rampart_consume_charge,rampart_consume_mp,rampart_apply_buff",
+              "effect_kind": "chain",
+              "effect_label": "rampart_fire"
+            },
+            "2": {
+              "charge_key": "rampart",
+              "count": "1",
+              "effect_kind": "consume_charge",
+              "effect_label": "rampart_consume_charge",
+              "on_empty": "abort",
+              "target_ref": "self"
+            },
+            "3": {
+              "consume_amount": "20",
+              "consume_resource": "mp",
+              "effect_kind": "consume_resource",
+              "effect_label": "rampart_consume_mp",
+              "target_ref": "self"
+            },
+            "4": {
+              "ae_duplicate_mode": "replace_per_caster",
+              "ae_template_ref": "Rampart",
+              "effect_kind": "apply_ae",
+              "effect_label": "rampart_apply_buff",
+              "target_ref": "rampart_target_allies"
+            },
+            "5": {
+              "auto_confirm_when_obvious": true,
+              "candidate_source": "combat",
+              "category": "ally",
+              "count": 1,
+              "effect_kind": "targeting",
+              "effect_label": "rampart_target_allies",
+              "exclude_self": false,
+              "iteration_mode": "together",
+              "mode": "all",
+              "skip_when_passive": true
+            }
+          },
+          "heroic_requirement": "You must have mastered the Guardian Class",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isReaction": true,
+          "level": "1",
+          "max_level": "1",
+          "name": "Rampart",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "",
+              "reaction_effect_ref": "rampart_arm",
+              "reaction_passive_mode": "force",
+              "reaction_source": "",
+              "reaction_trigger": "conflict_start"
+            },
+            "1": {
+              "condition_formula": "HAS_MARTIAL_ARMOR == 1 || HAS_SHIELD == 1",
+              "reaction_effect_ref": "rampart_fire",
+              "reaction_passive_mode": "ask",
+              "reaction_source": "",
+              "reaction_trigger": "round_start"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "VJDH632HyYqH8WAS"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "YAmEyQvAiGJCzVB0",
+      "_stats": {
+        "compendiumSource": "Item.fJshVRdauYDSTAop",
+        "coreVersion": "12.343",
+        "createdTime": 1754485007784,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "ZPiy6mSACkZDz1FG",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "damage_receiving_mod_all",
+              "mode": 2,
+              "priority": 20,
+              "value": "aeEquippedWhen(\"shield,martial_armor\", \"${level}$\")"
+            }
+          ],
+          "description": "<p><em>Defensive Mastery:</em> −SL damage while a shield or martial armor is equipped.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": 298800,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "ZPiy6mSACkZDz1FG",
+              "originalParentId": "fJshVRdauYDSTAop",
+              "originalUuid": "Item.fJshVRdauYDSTAop.ActiveEffect.ZPiy6mSACkZDz1FG"
+            },
+            "fabula-ultima-companion": {
+              "crossScene": false,
+              "directorPermanent": false
+            },
+            "statuscounter": {
+              "config": {
+                "durationType": 0,
+                "modifyDuration": false,
+                "multiplyEffect": false,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/equipment/shield/heater-steel-gold.webp",
+          "name": "Defensive Mastery",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "buff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "icons/equipment/shield/heater-steel-gold.webp",
+      "name": "Defensive Mastery",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Guardian",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>As long as you have a <strong>shield</strong> or a <strong>martial armor</strong> equipped, all damage you suffer is reduced by <strong>【SL】</strong> (applied <strong>before</strong> damage Affinities).</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "level": "1",
+          "max_level": "5",
+          "name": "Defensive Mastery",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p>Level</p></td><td data-colwidth=\"148\"><p>Damage Reduction</p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p><strong>1</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p><strong>2</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>3</p></td><td data-colwidth=\"148\"><p><strong>3</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>4</p></td><td data-colwidth=\"148\"><p><strong>4</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>5</p></td><td data-colwidth=\"148\"><p><strong>5</strong></p></td></tr></tbody></table>",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": true,
+        "uniqueId": "fJshVRdauYDSTAop"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Guardian",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar4": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "DEF",
+            "max": 13,
+            "maxcolor": "#f26d40",
+            "mincolor": "#f26d40",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 13
+          },
+          "bar5": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar5",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MDEF",
+            "max": 10,
+            "maxcolor": "#26d6ed",
+            "mincolor": "#26d6ed",
+            "opacity": null,
+            "order": 4,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 10
+          }
+        }
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Guardian",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://tiermaker.com/images/media/template_images/2024/16720717/fabula-ultima-classes-16720717/guardian.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 0,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {
+      "also_text": "Paladin, Soldier, Yōjinbō",
+      "benefit_dropdown": "hp_benefit",
+      "classMechanic_text": "",
+      "class_facet": {
+        "IBBjlu70adJ22zjO": {
+          "facet_cost": "",
+          "facet_description": "<p>Once per scene when you are about to be reduced to 0 Hit Points, you may instead choose to withstand the pain and be reduced to exactly 1 Hit Point.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Unbreakable",
+          "uuid": "Actor.pZ0DEVMHTDhgFrPi.Item.IBBjlu70adJ22zjO"
+        },
+        "T7Xq7T1MIO9dq7hi": {
+          "facet_cost": "",
+          "facet_description": "<p>During the first round of each conflict scene, you have Resistance to all damage types and cannot suffer status effects (you <strong>do not</strong> recover from preexisting status effects, however). These benefits only last until the end of the first round.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Rampart",
+          "uuid": "Actor.pZ0DEVMHTDhgFrPi.Item.T7Xq7T1MIO9dq7hi"
+        },
+        "YAmEyQvAiGJCzVB0": {
+          "facet_cost": "",
+          "facet_description": "<p>As long as you have a <strong>shield</strong> or a <strong>martial armor</strong> equipped, all damage you suffer is reduced by <strong>【SL】</strong> (applied <strong>before</strong> damage Affinities).</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Defensive Mastery",
+          "uuid": "Actor.pZ0DEVMHTDhgFrPi.Item.YAmEyQvAiGJCzVB0"
+        },
+        "ceJlsHHvaTa0foQZ": {
+          "facet_cost": "",
+          "facet_description": "<p>When another creature is threatened by an <strong>attack, spell</strong> or <strong>other danger</strong>, you may take their place (any Checks that are part of the danger will be performed against you; you may declare the use of this Skill <strong>before or after</strong> the Checks have been made). If the danger already affected you, it affects you <strong>twice</strong> (resolve both instances separately); you also cannot protect multiple creatures from the same danger. If you use this Skill during a conflict, you cannot use it again until the start of your next turn.</p>",
+          "facet_offensive": "",
+          "facet_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Protect",
+          "uuid": "Actor.pZ0DEVMHTDhgFrPi.Item.ceJlsHHvaTa0foQZ"
+        },
+        "dLPCIIiQdO7KbzYQ": {
+          "facet_cost": "",
+          "facet_description": "<p>As long as you have a weapon equipped in your <strong>main hand slot</strong> and a shield equipped in your <strong>off-hand slot</strong>, your attacks with that weapon deal 5 extra damage and you gain a +1 bonus to <strong>Defense</strong>.</p>\n<p>This Skill cannot be combined with custom weapons with the <em>defence boost</em> customization (page 107), nor with the <em>Dual Shieldbearer</em> Skill (page 197 of the Core Rulebook).</p>\n",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Hoplite",
+          "uuid": "Actor.pZ0DEVMHTDhgFrPi.Item.dLPCIIiQdO7KbzYQ"
+        },
+        "jp2qxUQskWomlJF1": {
+          "facet_cost": "",
+          "facet_description": "<p>Permanently increase your maximum Hit Points by <strong>【SL x 5】</strong>.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Fortress",
+          "uuid": "Actor.pZ0DEVMHTDhgFrPi.Item.jp2qxUQskWomlJF1"
+        },
+        "kbdqL7e1O0knrfYp": {
+          "facet_cost": "",
+          "facet_description": "<p>You may now equip a <strong>shield</strong> in your <strong>main hand</strong> slot. As long as you have two shields equipped, you gain the benefits of both items and may treat them as the following combined two-handed melee <strong>brawling</strong> weapon:</p><blockquote><p>@UUID[Item.uENFXqIkJf5MeART]{Twin Shield}</p><p><strong>Accuracy: 【MIG】+【MIG】</strong></p><p><strong>Damage: 【HR + 5】</strong><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a></span></span></p><p>Deals extra damage equal to your <strong>【SL】</strong> in <strong>【@UUID[Item.fJshVRdauYDSTAop]{📜Defensive Mastery}】</strong></p></blockquote>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Dual Shieldbearer",
+          "uuid": "Actor.pZ0DEVMHTDhgFrPi.Item.kbdqL7e1O0knrfYp"
+        },
+        "rzUI8j9Qq6efqF5f": {
+          "facet_cost": "",
+          "facet_description": "<p>If you perform the <strong>【Guard】</strong> action and choose to provide cover to another creature, that creature gains Resistance to all damage types until the start of your next turn.</p>",
+          "facet_offensive": "",
+          "facet_target": "",
+          "id": "${item.id}",
+          "name": "Bodyguard",
+          "uuid": "Actor.pZ0DEVMHTDhgFrPi.Item.rzUI8j9Qq6efqF5f"
+        }
+      },
+      "class_heroicSkill": {
+        "IBBjlu70adJ22zjO": {
+          "id": "${item.id}",
+          "name": "Unbreakable",
+          "skill_cost": "",
+          "skill_description": "<p>Once per scene when you are about to be reduced to 0 Hit Points, you may instead choose to withstand the pain and be reduced to exactly 1 Hit Point.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.pZ0DEVMHTDhgFrPi.Item.IBBjlu70adJ22zjO"
+        },
+        "T7Xq7T1MIO9dq7hi": {
+          "id": "${item.id}",
+          "name": "Rampart",
+          "skill_cost": "",
+          "skill_description": "<p>During the first round of each conflict scene, you have Resistance to all damage types and cannot suffer status effects (you <strong>do not</strong> recover from preexisting status effects, however). These benefits only last until the end of the first round.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.pZ0DEVMHTDhgFrPi.Item.T7Xq7T1MIO9dq7hi"
+        },
+        "dLPCIIiQdO7KbzYQ": {
+          "id": "${item.id}",
+          "name": "Hoplite",
+          "skill_cost": "",
+          "skill_description": "<p>As long as you have a weapon equipped in your <strong>main hand slot</strong> and a shield equipped in your <strong>off-hand slot</strong>, your attacks with that weapon deal 5 extra damage and you gain a +1 bonus to <strong>Defense</strong>.</p>\n<p>This Skill cannot be combined with custom weapons with the <em>defence boost</em> customization (page 107), nor with the <em>Dual Shieldbearer</em> Skill (page 197 of the Core Rulebook).</p>\n",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.pZ0DEVMHTDhgFrPi.Item.dLPCIIiQdO7KbzYQ"
+        }
+      },
+      "class_lore": "<blockquote><p>Proud and selfless, <strong>Guardians</strong> are individuals who know the value of life... and are willing to sacrifice themselves for a person, nation or ideal they have sworn to protect. They are often extraordinary and impressive individuals, such as valiant soldiers or veterans scarred by a thousand battles.</p><p> While some Guardians may appear loud and boisterous, many are simply masking the tormented memory of those they failed to protect.</p></blockquote>",
+      "class_skill": {
+        "YAmEyQvAiGJCzVB0": {
+          "id": "${item.id}",
+          "name": "Defensive Mastery",
+          "skill_cost": "",
+          "skill_description": "<p>As long as you have a <strong>shield</strong> or a <strong>martial armor</strong> equipped, all damage you suffer is reduced by <strong>【SL】</strong> (applied <strong>before</strong> damage Affinities).</p>",
+          "skill_maxLevel": 5,
+          "skill_type": "Passive",
+          "uuid": "Actor.pZ0DEVMHTDhgFrPi.Item.YAmEyQvAiGJCzVB0"
+        },
+        "ceJlsHHvaTa0foQZ": {
+          "id": "${item.id}",
+          "name": "Protect",
+          "skill_cost": "",
+          "skill_description": "<p>When another creature is threatened by an <strong>attack, spell</strong> or <strong>other danger</strong>, you may take their place (any Checks that are part of the danger will be performed against you; you may declare the use of this Skill <strong>before or after</strong> the Checks have been made). If the danger already affected you, it affects you <strong>twice</strong> (resolve both instances separately); you also cannot protect multiple creatures from the same danger. If you use this Skill during a conflict, you cannot use it again until the start of your next turn.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Active",
+          "uuid": "Actor.pZ0DEVMHTDhgFrPi.Item.ceJlsHHvaTa0foQZ"
+        },
+        "jp2qxUQskWomlJF1": {
+          "id": "${item.id}",
+          "name": "Fortress",
+          "skill_cost": "",
+          "skill_description": "<p>Permanently increase your maximum Hit Points by <strong>【SL x 5】</strong>.</p>",
+          "skill_maxLevel": 4,
+          "skill_type": "Other",
+          "uuid": "Actor.pZ0DEVMHTDhgFrPi.Item.jp2qxUQskWomlJF1"
+        },
+        "kbdqL7e1O0knrfYp": {
+          "id": "${item.id}",
+          "name": "Dual Shieldbearer",
+          "skill_cost": "",
+          "skill_description": "<p>You may now equip a <strong>shield</strong> in your <strong>main hand</strong> slot. As long as you have two shields equipped, you gain the benefits of both items and may treat them as the following combined two-handed melee <strong>brawling</strong> weapon:</p><blockquote><p>@UUID[Item.uENFXqIkJf5MeART]{Twin Shield}</p><p><strong>Accuracy: 【MIG】+【MIG】</strong></p><p><strong>Damage: 【HR + 5】</strong><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a></span></span></p><p>Deals extra damage equal to your <strong>【SL】</strong> in <strong>【@UUID[Item.fJshVRdauYDSTAop]{📜Defensive Mastery}】</strong></p></blockquote>",
+          "skill_maxLevel": 1,
+          "skill_type": "Other",
+          "uuid": "Actor.pZ0DEVMHTDhgFrPi.Item.kbdqL7e1O0knrfYp"
+        },
+        "rzUI8j9Qq6efqF5f": {
+          "id": "${item.id}",
+          "name": "Bodyguard",
+          "skill_cost": "",
+          "skill_description": "<p>If you perform the <strong>【Guard】</strong> action and choose to provide cover to another creature, that creature gains Resistance to all damage types until the start of your next turn.</p>",
+          "skill_maxLevel": 1,
+          "skill_type": "Passive",
+          "uuid": "Actor.pZ0DEVMHTDhgFrPi.Item.rzUI8j9Qq6efqF5f"
+        }
+      },
+      "flavor_text": "<p style=\"text-align: center;\"><span style=\"font-family: Amiri\"><em>Let me be your shield</em></span></p>",
+      "martialArmor_equippable": true,
+      "martialMelee_equippable": false,
+      "martialRanged_equippable": false,
+      "martialShield_equippable": true,
+      "name": "Guardian",
+      "project_performable": false,
+      "ritual_performable": false
+    },
+    "statusEffects": {},
+    "template": "hoxC3HFCtMYGScIo",
+    "templateSystemUniqueVersion": 504201233
+  },
+  "type": "character"
+}

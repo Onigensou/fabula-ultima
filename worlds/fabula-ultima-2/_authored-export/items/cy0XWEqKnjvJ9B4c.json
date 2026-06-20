@@ -1,0 +1,58 @@
+{
+  "_id": "cy0XWEqKnjvJ9B4c",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1756941464932,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "V1GQFKpiCOrYGH1x",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lu/LuCielSkill11.png",
+  "name": "Bishop's Edict",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Commander",
+      "cost": "10 MP",
+      "damage_bonus": "0",
+      "description": "<p>During a conflict, you may use an action and spend 10 Mind Points to <strong>choose one option:</strong></p><ul><li>All MP costs are doubled</li><li>All sources of damage deal <strong>【SL × 3】</strong> extra damage</li></ul><p>The chosen effect lasts until the start of your next turn.</p>",
+      "duration": "Until the start of your next turn",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "5",
+      "name": "Bishop's Edict",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Extra Damage</strong></p></td></tr><tr><td><p>1</p></td><td><p>+3</p></td></tr><tr><td><p>2</p></td><td><p>+6</p></td></tr><tr><td><p>3</p></td><td><p>+9</p></td></tr><tr><td><p>4</p></td><td><p>+12</p></td></tr><tr><td><p>5</p></td><td><p>+15</p></td></tr></tbody></table>",
+      "skill_range": "Any",
+      "skill_target": "All creature",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "cy0XWEqKnjvJ9B4c"
+  },
+  "type": "equippableItem"
+}

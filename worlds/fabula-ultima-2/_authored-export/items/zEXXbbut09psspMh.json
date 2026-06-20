@@ -1,0 +1,50 @@
+{
+  "_id": "zEXXbbut09psspMh",
+  "_stats": {
+    "compendiumSource": "Item.C1FR55h1SsY8GEpF",
+    "coreVersion": "12.343",
+    "createdTime": 1702144891794,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "core": {
+      "sourceId": "Item.C1FR55h1SsY8GEpF"
+    },
+    "custom-system-builder": {
+      "version": "3.2.4"
+    }
+  },
+  "folder": "uxn1YZCbNnCqXnGo",
+  "img": "icons/magic/unholy/strike-body-explode-disintegrate.webp",
+  "name": "Numen Attack",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3,
+    "nXC7OD7u5Zw5UDDU": 3
+  },
+  "sort": 100000,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Illusionist",
+      "cost": "0",
+      "damage_bonus": "14",
+      "description": "<p><span class=\"fontstyle0\">This damage increases to 18 if you are level 20 or higher, or to 20 if you are<br>level 40 or higher.</span></p>\n<p><span class=\"fontstyle0\"><br>Damage dealt by Numen ignores Resistances and Immunities.</span></p>\n<p><span class=\"fontstyle0\"><br>The range of the attack is determined by your current weapon.</span> </p>",
+      "discipline": "",
+      "duration": "Instantaneous",
+      "name": "Numen Attack",
+      "rolled_atr1": "INS",
+      "rolled_atr2": "WLP",
+      "target": "1 creature",
+      "type_damage": "Light"
+    },
+    "template": "FZmpKcQRP7hZQqbV",
+    "templateSystemUniqueVersion": 1700837225,
+    "unique": false,
+    "uniqueId": "zEXXbbut09psspMh"
+  },
+  "type": "equippableItem"
+}

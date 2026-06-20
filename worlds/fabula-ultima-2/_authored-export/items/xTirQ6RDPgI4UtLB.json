@@ -1,0 +1,52 @@
+{
+  "_id": "xTirQ6RDPgI4UtLB",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1751459087942,
+    "duplicateSource": "Item.aITJntRz2m10Rgeo",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "recipe",
+        "fromTemplate": "VJCHYWOx1mPsMSip",
+        "itemId": "xTirQ6RDPgI4UtLB",
+        "itemName": "Café au Lait",
+        "pickedOldProps": {
+          "recipe_description": "<blockquote><ul><li><em>Gain <strong>Swift </strong>for the rest of the scene<strong>.(</strong>Increase your <strong>【DEX】</strong> die by 1 stage </em>(to a maximum for D12)<em> )</em></li></ul></blockquote>",
+          "recipe_ip": "2",
+          "recipe_label": ""
+        },
+        "ts": 1769647435378
+      }
+    }
+  },
+  "folder": "MOf4y5KdI6ZvNBHg",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
+  "name": "Café au Lait",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "description": "<blockquote><ul><li><em>Gain <strong>Swift </strong>for the rest of the scene<strong>.(</strong>Increase your <strong>【DEX】</strong> die by 1 stage </em>(to a maximum for D12)<em> )</em></li></ul></blockquote>",
+      "ip_cost": "2",
+      "item_type": "recipe",
+      "name": "Café au Lait"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "xTirQ6RDPgI4UtLB"
+  },
+  "type": "equippableItem"
+}

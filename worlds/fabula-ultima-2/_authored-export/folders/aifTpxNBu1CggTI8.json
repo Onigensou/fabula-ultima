@@ -1,0 +1,19 @@
+{
+  "_id": "aifTpxNBu1CggTI8",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1755312242677,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "E2rHUSe9roqJD1FD",
+  "name": "Revolver Bullet",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

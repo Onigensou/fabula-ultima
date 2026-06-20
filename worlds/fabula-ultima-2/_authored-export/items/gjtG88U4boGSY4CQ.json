@@ -1,0 +1,66 @@
+{
+  "_id": "gjtG88U4boGSY4CQ",
+  "_stats": {
+    "compendiumSource": "Item.P2ZlEmmK2DUhao0y",
+    "coreVersion": "12.343",
+    "createdTime": 1769861585478,
+    "duplicateSource": "Item.cneU6dfTzI13k0U2",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.4"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213818.767.png",
+  "name": "Milk",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 100000,
+  "system": {
+    "container": "toqAfZfQBOKQtD3G",
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_script": "",
+      "check_bonus": "0",
+      "class": "",
+      "cost": "-",
+      "damage_bonus": "30",
+      "defense_target_type": "def",
+      "description": "<ul><li><p>Target creature <strong>recovers 30 HP</strong></p></li></ul>",
+      "duration": "Instantaneous",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Milk",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "Any",
+      "skill_target": "One Creature",
+      "skill_type": "Item",
+      "type_damage": "Heal",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "gjtG88U4boGSY4CQ"
+  },
+  "type": "equippableItem"
+}

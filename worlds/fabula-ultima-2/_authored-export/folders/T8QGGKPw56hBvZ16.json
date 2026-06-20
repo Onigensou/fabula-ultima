@@ -1,0 +1,19 @@
+{
+  "_id": "T8QGGKPw56hBvZ16",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": null,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "2.4.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "Custom Status FX",
+  "sort": 1300000,
+  "sorting": "a",
+  "type": "Macro"
+}

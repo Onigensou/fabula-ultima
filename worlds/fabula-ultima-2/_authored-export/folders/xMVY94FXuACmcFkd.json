@@ -1,0 +1,19 @@
+{
+  "_id": "xMVY94FXuACmcFkd",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": null,
+    "duplicateSource": null,
+    "systemId": null,
+    "systemVersion": null
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "UmLsjl22ZsyVMcwY",
+  "name": "Sword",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

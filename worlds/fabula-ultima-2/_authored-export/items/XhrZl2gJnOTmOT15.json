@@ -1,0 +1,64 @@
+{
+  "_id": "XhrZl2gJnOTmOT15",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1756967839961,
+    "duplicateSource": "Item.y0E31msoT18TffJT",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "2OplVa9fwLYbzD8b",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/perfect_balance.png",
+  "name": "Rising Tide",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 5800000,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "check_bonus": "0",
+      "class": "Fury",
+      "cost": "",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>When you perform a <strong>melee</strong> attack using a weapon that belongs to the <strong>brawling</strong> Category, if you have no martial armor and no shields equipped, you gain <strong>1 Bravery Point</strong>.</p>\n<p>Your melee attacks using weapons that belong to the <strong>brawling</strong> Category deal extra damage equal to your current <strong>Bravery Points</strong>.</p>\n<p>At the end of your turn, or if you have <strong>5 or more Bravery Points</strong> at the end of your turn, you must spend all your accumulated <strong>Bravery Points</strong> and recover <strong>10 Hit Points</strong> and <strong>Mind Points</strong>.</p>\n",
+      "duration": "",
+      "heroic_requirement": "you must have mastered one or more Classes among Fury and Weaponmaster.",
+      "ignore_hr": false,
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Rising Tide",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "XhrZl2gJnOTmOT15"
+  },
+  "type": "equippableItem"
+}

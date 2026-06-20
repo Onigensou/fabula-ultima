@@ -1,0 +1,90 @@
+{
+  "_id": "OmWE7jRa80TMTc1x",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1753314017709,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "category": "skill",
+        "detectedType": "spellcard_v1",
+        "fromTemplate": "XfUpjwaovj4v9AjI",
+        "itemId": "OmWE7jRa80TMTc1x",
+        "itemName": "Regen",
+        "pickedOldProps": {
+          "class": "Spiritist",
+          "cost": "10 MP",
+          "damage": "0",
+          "description": "<p>You awaken the regenerative power in target creature, For the next <strong>3 rounds,</strong> The target gains the following effects:</p><ul><li><p>At the start of your turn, restore <strong>【20% of your Max HP】</strong></p></li></ul>",
+          "discipline": "spiritism",
+          "duration": "3 Round",
+          "id": "OmWE7jRa80TMTc1x",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213818.767.png",
+          "name": "Regen",
+          "target": "One Creature",
+          "type_damage": "",
+          "uuid": "Item.OmWE7jRa80TMTc1x"
+        },
+        "ts": 1770021428497
+      }
+    }
+  },
+  "folder": "LNN6QSv7NRWdXUkf",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213818.767.png",
+  "name": "Regen",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 600000,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_script": "",
+      "check_bonus": "0",
+      "class": "Spiritist",
+      "cost": "10 MP",
+      "damage_bonus": "",
+      "defense_target_type": "def",
+      "description": "<p>You awaken the regenerative power in target creature, For the next <strong>3 rounds,</strong> The target gains the following effects:</p><ul><li><p>At the start of your turn, restore <strong>【20% of your Max HP】</strong></p></li></ul>",
+      "duration": "3 Round",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Regen",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "Range",
+      "skill_target": "One Creature",
+      "skill_type": "Spell",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "OmWE7jRa80TMTc1x"
+  },
+  "type": "equippableItem"
+}

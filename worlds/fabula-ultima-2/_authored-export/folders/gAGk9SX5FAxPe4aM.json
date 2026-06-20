@@ -1,0 +1,19 @@
+{
+  "_id": "gAGk9SX5FAxPe4aM",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1747678871019,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.4.2"
+  },
+  "color": "#ff0000",
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "Omnious Passengers",
+  "sort": 200000,
+  "sorting": "a",
+  "type": "JournalEntry"
+}

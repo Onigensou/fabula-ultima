@@ -1,0 +1,61 @@
+{
+  "_id": "YiQpn6s2FCSKUOmo",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780667893630,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "4nfTLrlahxy3xTs8",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/GrandArcherSkill8.png",
+  "name": "Perfect Aim",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "active_effect_config_table": {},
+      "check_bonus": "0",
+      "class": "Sharpshooter",
+      "cost": "",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>When you hit one or more creatures with a <strong>ranged attack</strong> and choose to deal no damage in order to gain the benefits of the <strong>Warning Shot</strong> Skill, you may choose <strong>two options instead of one</strong> (for instance, you could inflict both shaken and slow on each creature, or inflict a status effect on each creature while also lowering their Mind Points).</p><p><em>Requirements: you must have mastered the Sharpshooter Class, and must have acquired the Warning Shot Skill.</em></p>",
+      "duration": "-",
+      "effect_table": {},
+      "ignore_hr": false,
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Perfect Aim",
+      "on_activate_effect_ref": "",
+      "post_damage_effect_ref": "",
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_range": "",
+      "skill_target": "-",
+      "skill_type": "Passive",
+      "type_damage": ""
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": true,
+    "uniqueId": "YiQpn6s2FCSKUOmo"
+  },
+  "type": "equippableItem"
+}

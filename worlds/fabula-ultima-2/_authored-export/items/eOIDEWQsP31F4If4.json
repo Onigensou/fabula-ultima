@@ -1,0 +1,85 @@
+{
+  "_id": "eOIDEWQsP31F4If4",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1746795639371,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.4.2"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "eOIDEWQsP31F4If4",
+        "itemName": "Earthmate Shovel",
+        "pickedOldProps": {
+          "cost": "1500",
+          "martial": false
+        },
+        "ts": 1769647042024
+      }
+    }
+  },
+  "folder": "uiQQtrd8zEyqhHsr",
+  "img": "icons/tools/hand/shovel-trowel-steel-black.webp",
+  "name": "Earthmate Shovel",
+  "ownership": {
+    "2vy7wrEUqBy0kzsU": 3,
+    "6DmgigM5jq76r0Gd": 3,
+    "7hKw8KGsimboeDif": 3,
+    "9sFgrDy4MvAgoCmQ": 3,
+    "Am7qxPOavfKeDGPd": 3,
+    "JQGNzKpDPHJmcUIW": 3,
+    "JvF9tXvr7aaiS06m": 3,
+    "KD5d0efqHETPpIux": 3,
+    "LT3Z8EnRdMVk5ncQ": 3,
+    "MwTL6zXFCEpVBTpI": 3,
+    "NozW36XIGEGx7oVH": 3,
+    "NpGkA7uxaarkPiwS": 3,
+    "ULBTZPjtza939Mvy": 3,
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3,
+    "eGu3tuw7HwJd2bpx": 3,
+    "iLeUVmwqnze8ulOI": 3,
+    "mE5aEkDlrQJIYyhG": 3,
+    "nSGZ1sz1rdKao0kz": 3,
+    "nXC7OD7u5Zw5UDDU": 3,
+    "t41knaXNbgCEygM5": 3,
+    "tz9BP9MKfNGf2P3n": 3,
+    "wNzPmItLYCKE1I8t": 3,
+    "yL2PQxh3R9ddt0te": 3,
+    "yUfwoVmEPVdFG3AY": 3
+  },
+  "sort": 700000,
+  "system": {
+    "container": null,
+    "props": {
+      "category": "Dagger",
+      "check_bonus": "0",
+      "damage_bonus": "5",
+      "description": "<p>When performing <strong>Graft </strong>(<strong>Floralist</strong>)<strong>, </strong>you may <strong>fill </strong>section from your <strong>Growth Clock</strong>. If you do, you cannot use this effect again until your <strong>Growth Clock </strong>has become completely empty.</p>",
+      "hand_slots": "One-handed",
+      "isMartial": false,
+      "item_cost": "1500",
+      "item_type": "weapon",
+      "name": "Earthmate Shovel",
+      "rolled_atr1": "MIG",
+      "rolled_atr2": "DEX",
+      "set_name": "",
+      "skill_target": "One Enemy",
+      "type_damage": "Earth",
+      "weapon_range": "Melee"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "eOIDEWQsP31F4If4"
+  },
+  "type": "equippableItem"
+}

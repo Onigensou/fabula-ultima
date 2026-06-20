@@ -1,0 +1,46 @@
+{
+  "_id": "fMOIi6Rw15EZKfJE",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1703943883060,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    }
+  },
+  "folder": "qpw46aFVTAeQSyTP",
+  "img": "icons/magic/time/clock-stopwatch-white-blue.webp",
+  "name": "Stop (old)",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Entropist",
+      "cost": "10",
+      "damage_bonus": "0",
+      "description": "<p>You trap a foe inside a circle of altered time and space. The target will perform one fewer action on their next turn (to a minimum of 0 actions).</p>",
+      "discipline": "",
+      "duration": "Instantaneous",
+      "name": "Stop",
+      "rolled_atr1": "INS",
+      "rolled_atr2": "WLP",
+      "target": "One creature",
+      "type_damage": ""
+    },
+    "template": "FZmpKcQRP7hZQqbV",
+    "templateSystemUniqueVersion": 1700837225,
+    "unique": false,
+    "uniqueId": "fMOIi6Rw15EZKfJE"
+  },
+  "type": "equippableItem"
+}

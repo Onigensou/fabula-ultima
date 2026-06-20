@@ -1,0 +1,58 @@
+{
+  "_id": "lCSU2g4YsA0m9fWO",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1758205025555,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "yYTqxeiZBgJ0wAv0",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/anatman.png",
+  "name": "Clarity",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Monk",
+      "cost": "-",
+      "damage_bonus": "0",
+      "description": "<p>For each pair of active <strong>Resolve Soul Beads</strong> you possess, choose one of these cumulative benefits:</p>\n<ul>\n  <li><strong>Immunity</strong> to a chosen status effect.</li>\n  <li>Your attacks or spells of a chosen damage type <strong>ignore Resistances</strong>.</li>\n  <li>You gain <strong>Resistance</strong> to a chosen damage type.</li>\n</ul>\n<p>The number of bonuses you can have active at any given moment is equal to <strong>[SL]</strong>. You cannot select the same benefit more than once.</p>\n",
+      "duration": "-",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "3",
+      "name": "Clarity",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_information": "<table style=\"width:100%; text-align:center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>Active Bonuses from Clarity</strong></p></td></tr><tr><td><p>1</p></td><td><p>1 bonus</p></td></tr><tr><td><p>2</p></td><td><p>2 bonuses</p></td></tr><tr><td><p>3</p></td><td><p>3 bonuses</p></td></tr></tbody></table>",
+      "skill_range": "",
+      "skill_target": "-",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "lCSU2g4YsA0m9fWO"
+  },
+  "type": "equippableItem"
+}

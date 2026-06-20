@@ -1,0 +1,68 @@
+{
+  "_id": "jp5JDPhrhjBsFbYf",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1781819733174,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "H5HE3g8k3EvxVyvM",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Add/MastermindSkill2.png",
+  "name": "Life Transference",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "auto_target": "confirm",
+          "candidate_source": "self_or_my_focus",
+          "count": "1",
+          "effect_kind": "targeting",
+          "effect_label": "lt_pick",
+          "mode": "exact",
+          "skip_when_passive": false,
+          "target_filter": "HAS_STATUS_CRISIS"
+        },
+        "1": {
+          "$deleted": false,
+          "effect_kind": "grant",
+          "effect_label": "lt_heal",
+          "grant_amount": "5 + AE_CHARGES_BRAINWAVE_CLOCK * 5",
+          "grant_resource": "hp",
+          "target_ref": "lt_pick"
+        }
+      },
+      "reaction_config_table": {
+        "0": {
+          "$deleted": false,
+          "condition_formula": "HAS_STATUS_CRISIS == 1 || MY_FOCUS_IN_CRISIS == 1",
+          "reaction_damage_amount": "",
+          "reaction_damage_type": "",
+          "reaction_effect_ref": "lt_heal",
+          "reaction_passive_mode": "ask",
+          "reaction_passive_target": "",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_completes_action"
+        }
+      },
+      "skill_type": "Active"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "jp5JDPhrhjBsFbYf"
+  },
+  "type": "equippableItem"
+}

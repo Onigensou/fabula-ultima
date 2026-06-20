@@ -1,0 +1,250 @@
+{
+  "_id": "nNmdYuOvyNcBjpjb",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780667868672,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "b5UkuU8tDqnj7TZG",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1780667872148,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "cannot_be_targeted_by",
+          "mode": 5,
+          "priority": 0,
+          "value": "melee"
+        }
+      ],
+      "description": "<p><em>Covered:</em> Cannot be targeted by melee attacks until the guard's next turn.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 1,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "core": {
+          "statusId": "covered"
+        },
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "b5UkuU8tDqnj7TZG",
+          "originalParentId": "nNmdYuOvyNcBjpjb",
+          "originalUuid": "Item.nNmdYuOvyNcBjpjb.ActiveEffect.b5UkuU8tDqnj7TZG"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/intervene.png",
+      "name": "Covered",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "covered"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "SScnL9efkIzMzApL",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1780667870132,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_1",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"RS\")"
+        },
+        {
+          "key": "affinity_2",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"RS\")"
+        },
+        {
+          "key": "affinity_3",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"RS\")"
+        },
+        {
+          "key": "affinity_4",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"RS\")"
+        },
+        {
+          "key": "affinity_5",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"RS\")"
+        },
+        {
+          "key": "affinity_6",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"RS\")"
+        },
+        {
+          "key": "affinity_7",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"RS\")"
+        },
+        {
+          "key": "affinity_8",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"RS\")"
+        },
+        {
+          "key": "affinity_9",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"RS\")"
+        }
+      ],
+      "description": "<p><em>Guard:</em> Resistance to all damage + 2 to Opposed Checks until your next turn.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 1,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "core": {
+          "statusId": "guard"
+        },
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "SScnL9efkIzMzApL",
+          "originalParentId": "nNmdYuOvyNcBjpjb",
+          "originalUuid": "Item.nNmdYuOvyNcBjpjb.ActiveEffect.SScnL9efkIzMzApL"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/shield_oath.png",
+      "name": "Guard",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "guard"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "coreAction": "guard"
+    }
+  },
+  "folder": "Zrv5DRCx5PzFvLUj",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/shield_oath.png",
+  "name": "Guard",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "cost": "",
+      "description": "<p>Until the start of your next turn you have Resistance to all damage types and a +2 bonus to Opposed Checks. You may also Cover one ally, who cannot be targeted by melee attacks until then.</p>",
+      "effect_table": {
+        "0": {
+          "chain_steps": "guard_self,guard_cover",
+          "effect_kind": "chain",
+          "effect_label": "guard_activate"
+        },
+        "1": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Guard",
+          "effect_kind": "apply_ae",
+          "effect_label": "guard_self",
+          "target_ref": "self"
+        },
+        "2": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Covered",
+          "effect_kind": "apply_ae",
+          "effect_label": "guard_cover",
+          "target_ref": "cover_target"
+        }
+      },
+      "isCheck": false,
+      "isReaction": false,
+      "max_level": "1",
+      "name": "Guard",
+      "on_activate_effect_ref": "guard_activate",
+      "skill_target": "Self",
+      "skill_type": "Active"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": true,
+    "uniqueId": "nNmdYuOvyNcBjpjb"
+  },
+  "type": "equippableItem"
+}

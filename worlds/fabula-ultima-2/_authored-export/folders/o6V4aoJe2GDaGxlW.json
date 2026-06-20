@@ -1,0 +1,19 @@
+{
+  "_id": "o6V4aoJe2GDaGxlW",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780593539333,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "h2HJjjofm9NBfrkP",
+  "name": "Skill",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

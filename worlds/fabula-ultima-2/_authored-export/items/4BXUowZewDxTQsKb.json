@@ -1,0 +1,53 @@
+{
+  "_id": "4BXUowZewDxTQsKb",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1753958319786,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "Sypglcm85sjY8KNe",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/05_SCH/recitation.png",
+  "name": "Blitzkrieg",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Tactician",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>Once per round, you may use an <strong>【Objective】</strong>action as a <strong>Free Action</strong></p>",
+      "duration": "",
+      "isCheck": false,
+      "isHeroic": true,
+      "level": "1",
+      "max_level": "1",
+      "name": "Blitzkrieg",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "4BXUowZewDxTQsKb"
+  },
+  "type": "equippableItem"
+}

@@ -1,0 +1,784 @@
+{
+  "_id": "9l27YMdBWjuKT2sC",
+  "_stats": {
+    "compendiumSource": "Actor.fWSRuY5KoSbjaeh4",
+    "coreVersion": "12.343",
+    "createdTime": 1748579921836,
+    "duplicateSource": "Actor.fWSRuY5KoSbjaeh4",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "m2V4hXhARIyNadOi",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.331",
+        "createdTime": 1754826337097,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.6.4"
+      },
+      "changes": [
+        {
+          "key": "macro.tokenMagic",
+          "mode": 0,
+          "priority": null,
+          "value": "Bleed"
+        }
+      ],
+      "description": "<p>This creature has less than 50% HP</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": 3,
+        "startTime": 298800,
+        "startTurn": 4,
+        "turns": null
+      },
+      "flags": {
+        "combat-utility-belt": {
+          "conditionId": "5jkr80zqdzaR003d"
+        },
+        "condition-lab-triggler": {
+          "conditionId": "5jkr80zqdzaR003d"
+        },
+        "core": {
+          "overlay": false
+        },
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "m2V4hXhARIyNadOi",
+          "originalParentId": "9l27YMdBWjuKT2sC",
+          "originalUuid": "Actor.9l27YMdBWjuKT2sC.ActiveEffect.m2V4hXhARIyNadOi"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/08_DRG/blood_for_blood.png",
+      "name": "Crisis",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "5jkr80zqdzaR003d"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "xaR2QIARb0NSZrnO",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.331",
+        "createdTime": 1769830001537,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>This creature has less than 50% HP</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "4ldx00srGNv5AJBr",
+          "originalParentId": "0gIBYzSpjdXS6f25",
+          "originalUuid": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-crisis",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": false
+        },
+        "fabula-ultima-companion": {
+          "autoCrisis": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/08_DRG/blood_for_blood.png",
+      "name": "Crisis",
+      "origin": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr",
+      "sort": 0,
+      "statuses": [
+        "5jkr80zqdzaR003d"
+      ],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.5.0"
+    },
+    "theatre": {
+      "baseinsert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/NPCs/Elena.png",
+      "disabledefault": false,
+      "emotes": {
+        "angry": {
+          "insert": ""
+        },
+        "annoyed": {
+          "insert": ""
+        },
+        "awe-struck": {
+          "insert": ""
+        },
+        "blushing": {
+          "insert": ""
+        },
+        "carefree": {
+          "insert": ""
+        },
+        "confused": {
+          "insert": ""
+        },
+        "cry": {
+          "insert": ""
+        },
+        "custom1": {
+          "custom": true,
+          "image": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Zynapse_Elena.png",
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Zynapse_Elena.png",
+          "label": "Snipe\n                                        \n                                    ",
+          "name": "custom1"
+        },
+        "dissatisfied": {
+          "insert": ""
+        },
+        "dizzy": {
+          "insert": ""
+        },
+        "frown": {
+          "insert": ""
+        },
+        "frustrated": {
+          "insert": ""
+        },
+        "grin": {
+          "insert": ""
+        },
+        "happy": {
+          "insert": ""
+        },
+        "happytears": {
+          "insert": ""
+        },
+        "hearts": {
+          "insert": ""
+        },
+        "idea": {
+          "insert": ""
+        },
+        "innocent": {
+          "insert": ""
+        },
+        "kiss": {
+          "insert": ""
+        },
+        "laughing": {
+          "insert": ""
+        },
+        "laughingsquint": {
+          "insert": ""
+        },
+        "meh": {
+          "insert": ""
+        },
+        "mischevious": {
+          "insert": ""
+        },
+        "panic": {
+          "insert": ""
+        },
+        "playful": {
+          "insert": ""
+        },
+        "rofl": {
+          "insert": ""
+        },
+        "sad": {
+          "insert": ""
+        },
+        "scared": {
+          "insert": ""
+        },
+        "serious": {
+          "insert": ""
+        },
+        "sleeping": {
+          "insert": ""
+        },
+        "smile": {
+          "insert": ""
+        },
+        "smug": {
+          "insert": ""
+        },
+        "speechless": {
+          "insert": ""
+        },
+        "surprised": {
+          "insert": ""
+        },
+        "thinking": {
+          "insert": ""
+        },
+        "tongue": {
+          "insert": ""
+        },
+        "wink": {
+          "insert": ""
+        },
+        "worried": {
+          "insert": ""
+        }
+      },
+      "name": "",
+      "optalign": "top",
+      "settings": {
+        "emote": null,
+        "textcolor": null,
+        "textflyin": "typewriter",
+        "textfont": null,
+        "textsize": null,
+        "textstanding": "none"
+      }
+    }
+  },
+  "folder": "oUzk94EFQKU0oBK7",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Zynapse_Elena.png",
+  "name": "⭐️ Elenoa",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "prototypeToken": {
+    "actorLink": true,
+    "alpha": 0,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar4": {
+            "attribute": "attributeBar.current_ip",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": true,
+            "id": "bar4",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "IP",
+            "maxcolor": "#e59c1f",
+            "mincolor": "#e59c1f",
+            "opacity": null,
+            "order": 4,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-outer",
+            "shareHeight": false,
+            "style": "none",
+            "subdivisions": 6,
+            "subdivisionsOwner": true
+          },
+          "bar6": {
+            "attribute": "attributeBar.zero_power_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar6",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#ff6600",
+            "mincolor": "#feaf06",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-outer",
+            "shareHeight": false,
+            "style": "none",
+            "subdivisions": 6,
+            "subdivisionsOwner": true
+          }
+        }
+      },
+      "hex-size-support": {
+        "hideBorder": true,
+        "hideFill": false
+      },
+      "token-variants": {
+        "disableHUDButton": false,
+        "randomImgDefault": ""
+      },
+      "token-z": {
+        "zIndex": 0
+      },
+      "wall-height": {
+        "tokenHeight": 0
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "⭐️ Elenoa",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 0,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.7,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1.8,
+      "scaleY": 1.8,
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Zynapse_Elena.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 1200000,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "activeEffects": {},
+    "props": {
+      "affinity_1": "NA",
+      "affinity_2": "NA",
+      "affinity_3": "NA",
+      "affinity_4": "NA",
+      "affinity_5": "NA",
+      "affinity_6": "NA",
+      "affinity_7": "NA",
+      "affinity_8": "NA",
+      "affinity_9": "VU",
+      "arcane_ef": "100",
+      "arcane_vu": "NA",
+      "attribute": "",
+      "basic_attacks": {
+        "0": {
+          "$deleted": false,
+          "ailments": "@UUID[JournalEntry.GePNxftPupElcCWp]{Bleed}",
+          "ailments_chance": "100",
+          "attrib_1": "DEX",
+          "attrib_2": "INS",
+          "basic_name": "🏹 Deadshot",
+          "check_bonus": "7",
+          "defense_type": "DEF",
+          "detail": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.2hNU23YLpCcZCCmf\" data-id=\"2hNU23YLpCcZCCmf\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background: none !important; padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Pierce</span></strong></a></span></span></p></li><li><p>This attack ignore <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.yE84jvVXyebDulAP\" data-id=\"yE84jvVXyebDulAP\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background: none !important; text-shadow: rgb(255, 0, 0) 0px 0px 8px; padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Isolate</span></strong></a></span> when selecting target.</p></li></ul>",
+          "dmg_bonus": "50",
+          "icon": "<i class=\"fa-solid fa-bow-arrow\"></i>",
+          "macro_name": "",
+          "roll": "",
+          "type": "physical"
+        },
+        "1": {
+          "$deleted": false,
+          "ailments": "",
+          "ailments_chance": "0",
+          "attrib_1": "DEX",
+          "attrib_2": "DEX",
+          "basic_name": "🏹 Railed Snipe",
+          "check_bonus": "10",
+          "defense_type": "DEF",
+          "detail": "<ul><li><p><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.VCBaZfA3PZzN4sx3\" data-id=\"VCBaZfA3PZzN4sx3\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); text-shadow: rgb(255, 0, 0) 0px 0px 8px; padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Massive</span></strong></a></span></p></li></ul><p>Reduce accuracy for each tile away from Lacus Frysta's \"The tower\".</p><p></p>",
+          "dmg_bonus": "120",
+          "icon": "<i class=\"fa-solid fa-bow-arrow\"></i>",
+          "macro_name": "",
+          "roll": "",
+          "type": "bolt"
+        }
+      },
+      "bow_ef": "125",
+      "bow_vu": "NA",
+      "brawling_ef": "50",
+      "brawling_vu": "NA",
+      "condition_1": "NA",
+      "condition_10": "NA",
+      "condition_11": "NA",
+      "condition_12": "NA",
+      "condition_13": "NA",
+      "condition_14": "NA",
+      "condition_15": "NA",
+      "condition_16": "NA",
+      "condition_17": "NA",
+      "condition_18": "NA",
+      "condition_19": "NA",
+      "condition_2": "NA",
+      "condition_20": "NA",
+      "condition_21": "NA",
+      "condition_22": "NA",
+      "condition_23": "NA",
+      "condition_24": "NA",
+      "condition_25": "NA",
+      "condition_26": "NA",
+      "condition_27": "NA",
+      "condition_28": "NA",
+      "condition_29": "NA",
+      "condition_3": "NA",
+      "condition_30": "NA",
+      "condition_31": "NA",
+      "condition_32": "NA",
+      "condition_33": "NA",
+      "condition_34": "NA",
+      "condition_35": "NA",
+      "condition_36": "NA",
+      "condition_4": "NA",
+      "condition_5": "NA",
+      "condition_6": "NA",
+      "condition_7": "NA",
+      "condition_8": "NA",
+      "condition_9": "NA",
+      "current_def": "<b><i class=\"fa-solid fa-shield\"></i> DEF: </b>\n10",
+      "current_hp": "0",
+      "current_ip": "0",
+      "current_mdef": "<b><i class=\"fa-solid fa-shield-halved\"></i> MDEF: </b>\n8",
+      "current_mp": "100",
+      "dagger_ef": "100",
+      "dagger_vu": "NA",
+      "def_mod": "+0",
+      "desc": "<p>Description</p>",
+      "dex_base": "12",
+      "dex_current": 10,
+      "firearm_ef": "150",
+      "firearm_vu": "NA",
+      "flail_ef": "100",
+      "flail_vu": "NA",
+      "fp": "3",
+      "gorger": false,
+      "heavy_ef": "50",
+      "heavy_vu": "NA",
+      "id": "9l27YMdBWjuKT2sC",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Zynapse_Elena.png",
+      "init": "6",
+      "ins_base": "12",
+      "ins_current": 8,
+      "isAlmighty": false,
+      "isAwake": false,
+      "isClarity": false,
+      "isDazed": true,
+      "isEnergized": false,
+      "isEnlighten": false,
+      "isEnraged": true,
+      "isFocus": false,
+      "isMasterful": false,
+      "isPoisoned": true,
+      "isShaken": false,
+      "isSlow": false,
+      "isStrong": false,
+      "isSwift": false,
+      "isUnyielding": false,
+      "isWeak": false,
+      "level": "35",
+      "max_hp": "200",
+      "max_ip": "0",
+      "max_mp": "100",
+      "max_zero": "6",
+      "mdef_mod": "+0",
+      "mig_base": "6",
+      "mig_current": 6,
+      "mimic": false,
+      "name": "⭐️ Elenoa",
+      "npc_rank": "eli",
+      "other_list": {
+        "0": {
+          "$deleted": false,
+          "details": "<p>Next <strong>range</strong> attack gains @UUID[JournalEntry.qXBYN6c9FMZzmS2n]{Cripple}.</p>",
+          "icon": "",
+          "other_name": "💥Prepare Bullet \"Death\"",
+          "roll": ""
+        },
+        "1": {
+          "$deleted": false,
+          "details": "<p>Next <strong>range</strong> attack gains @UUID[JournalEntry.tQE9WGDt0bNhgxXw]{Homing}.</p>",
+          "icon": "",
+          "other_name": "💥Prepare Bullet \"Unavoidable\"",
+          "roll": ""
+        },
+        "2": {
+          "$deleted": false,
+          "details": "<p>Next <strong>range</strong> attack gains @UUID[JournalEntry.YojfVwJv8ABa45c6]{Exploit}.</p>",
+          "icon": "",
+          "other_name": "💥Prepare Bullet \"Exploit\"",
+          "roll": ""
+        },
+        "3": {
+          "$deleted": false,
+          "details": "<p><strong>【Cost: 6 Zero Power】</strong></p><p><strong>Elenoa </strong>may perform a <strong>Prepare Bullet </strong>action for free and <strong>select the target creature</strong> for the bullet.</p><p>At the <strong>end of the round</strong>, she will perform <strong>Deadshot </strong>for free, <strong>once for each bullet she has prepared</strong>.</p>",
+          "icon": "",
+          "other_name": "💥Death Sentence",
+          "roll": ""
+        }
+      },
+      "rare": false,
+      "resource_value_1": "0",
+      "resource_value_2": "0",
+      "resource_value_3": "0",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "INS",
+      "shield_type": "PHYSICAL",
+      "shield_value": "0",
+      "spear_ef": "100",
+      "spear_vu": "NA",
+      "special_list": {
+        "0": {
+          "$deleted": false,
+          "details": "<p><strong>Elenoa</strong> is <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.yE84jvVXyebDulAP\" data-id=\"yE84jvVXyebDulAP\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background: none !important; text-shadow: rgb(255, 0, 0) 0px 0px 8px; padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Isolate</span></strong></a></span> while there are other ally<strong> </strong>creatures in the scene.</p>",
+          "icon": "",
+          "macro_name": "",
+          "roll": "",
+          "special_name": "📜Sniper Wolf"
+        },
+        "2": {
+          "$deleted": false,
+          "details": "<p><strong>Elenoa </strong>has <strong>no</strong> activations per round and a <strong>6 </strong>section <strong>Zero Power</strong> clock.</p>",
+          "icon": "",
+          "macro_name": "",
+          "roll": "",
+          "special_name": "📜Elite "
+        },
+        "3": {
+          "$deleted": false,
+          "details": "<p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.FbwTycwFuAdCfXi7\" data-id=\"FbwTycwFuAdCfXi7\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background: none !important; text-shadow: rgb(255, 0, 0) 0px 0px 8px; padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Innate</span></strong></a></span></span></p><p>When opposing creatures perform an 【<strong>Attack】</strong> or 【<strong>Spell】</strong> action that does not include <strong>Elenoa </strong>as target, <strong>Elenoa </strong>fills her <strong>Zero Power </strong>clock by <strong>1</strong>.</p><p>Once <strong>Elenoa</strong>'s <strong>Zero Power Clock </strong>is filled, she may performs <strong>Death Sentence </strong>for free.</p>",
+          "icon": "",
+          "macro_name": "",
+          "roll": "",
+          "special_name": "📜【Zero Trigger】 Preying Eyes"
+        },
+        "4": {
+          "$deleted": false,
+          "details": "<p>When there are less than <strong>2 soldier </strong>ally in the scene <strong>at the end of each round</strong>, summons <strong>2 random Zynapse soldier-level creatures </strong>into the scene.</p>",
+          "icon": "",
+          "macro_name": "",
+          "roll": "",
+          "special_name": "📜Pack Leader"
+        },
+        "5": {
+          "$deleted": false,
+          "details": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.0XjR7LzG6oiU74Lj\" data-id=\"0XjR7LzG6oiU74Lj\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background: none !important; text-shadow: rgb(255, 0, 0) 0px 0px 8px; padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Desperation</span></strong></a></span></span></p></li></ul><p>Summon <strong>Zynapse Shielder </strong>into the scene.</p><p>Elenoa <strong>gains 2 sections of Zero Power Clock per trigger</strong> instead.</p>",
+          "icon": "",
+          "macro_name": "",
+          "roll": "",
+          "special_name": "📜Royal Alpha"
+        }
+      },
+      "species": "HUMANOID",
+      "spell_list": {},
+      "stolen_check": false,
+      "study_text": "<p><span style=\"font-family: Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif\">The Fame mercenary \"Sniper Wolf\", she prefer fighting at a long range to compensate her physique, it is best to take care of her allied before aiming for her, but beware not to use too much action to hide away from her preying eyes</span></p>",
+      "subtype": "Sub-Type",
+      "subtype_list": "SOLDIER",
+      "sword_ef": "50",
+      "sword_vu": "NA",
+      "tactic_notes": "",
+      "thrown_ef": "100",
+      "thrown_vu": "NA",
+      "traits": "",
+      "unique": true,
+      "uuid": "Actor.9l27YMdBWjuKT2sC",
+      "wlp_base": "6",
+      "wlp_current": 6,
+      "zero_power_value": "2"
+    },
+    "statusEffects": {},
+    "template": "yibwK7D0bMmrmXhL",
+    "templateSystemUniqueVersion": 3152673362
+  },
+  "type": "character"
+}

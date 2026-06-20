@@ -1,0 +1,53 @@
+{
+  "_id": "63pwoJC6rSF82KZo",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1753956716856,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "Sypglcm85sjY8KNe",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/05_SCH/chain_stratagem.png",
+  "name": "Chain Strategem",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Tactician",
+      "cost": "30 MP",
+      "damage_bonus": "0",
+      "description": "<p>Once per round, You may spend <strong>40 MP, </strong>if you do,<strong> </strong>Choose another Player Character that can hear you who has yet to take a turn during this round. That character may take their turn immediately after yours during this round. The MP usage of this skill is reduce by <strong>【SL x 10】</strong></p><p>You may use this skill during the end of an ally turn.</p>",
+      "duration": "Instantaneous",
+      "isCheck": false,
+      "isHeroic": false,
+      "level": "1",
+      "max_level": "3",
+      "name": "Chain Strategem",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_target": "One ally",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "63pwoJC6rSF82KZo"
+  },
+  "type": "equippableItem"
+}

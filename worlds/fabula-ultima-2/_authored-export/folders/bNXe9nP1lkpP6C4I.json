@@ -1,0 +1,19 @@
+{
+  "_id": "bNXe9nP1lkpP6C4I",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": null,
+    "duplicateSource": null,
+    "systemId": null,
+    "systemVersion": null
+  },
+  "color": "#9c732b",
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "DuneSandstorm",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Scene"
+}

@@ -1,0 +1,104 @@
+{
+  "_id": "yBIG5gXrwvGr8kiN",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1781388919400,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "SjLPRxbCfnPBgxaX",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1781388920064,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><em>Double Arrow:</em> attack twice with a lone bow (two-weapon fighting; HR as 0).</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "SjLPRxbCfnPBgxaX",
+          "originalParentId": "yBIG5gXrwvGr8kiN",
+          "originalUuid": "Item.yBIG5gXrwvGr8kiN.ActiveEffect.SjLPRxbCfnPBgxaX"
+        },
+        "fabula-ultima-companion": {
+          "twoWeaponGrant": {
+            "category": "bow",
+            "soloWeapon": true
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/weapons/ranged/bow-recurve-yellow.webp",
+      "name": "Double Arrow",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "dwzaQarGIGnKc3j4",
+  "img": "icons/weapons/ranged/bow-recurve-yellow.webp",
+  "name": "Double Arrow",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "cost": "",
+      "description": "<p>When you perform the <strong>Attack</strong> action with a ranged weapon that belongs to the <strong>bow</strong> Category, if you have <strong>no other weapon equipped</strong>, you may perform <strong>two separate attacks</strong> instead of one (against the same target or against different targets).</p><p>If you do, both attacks follow the rules for <strong>two-weapon fighting</strong>: each attack loses the <strong>multi</strong> property and cannot gain it, and you treat the <strong>High Roll (HR)</strong> of each Accuracy Check as 0 when determining damage dealt by it.</p><p><em>This Heroic Skill does not stack with a custom weapon's quick customization.</em></p>",
+      "heroic_requirement": "You must have mastered one or more Classes among Commander and Sharpshooter.",
+      "isCheck": false,
+      "isHeroic": true,
+      "isReaction": false,
+      "level": 1,
+      "max_level": "1",
+      "name": "Double Arrow",
+      "on_activate_effect_ref": "",
+      "skill_range": "-",
+      "skill_target": "-",
+      "skill_type": "Passive"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "yBIG5gXrwvGr8kiN"
+  },
+  "type": "equippableItem"
+}

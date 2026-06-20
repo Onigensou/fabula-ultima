@@ -1,0 +1,19 @@
+{
+  "_id": "UNuBsFNeuyDDZ5AZ",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1781282155705,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": "#8a4b2d",
+  "description": "Cooking-system dish definitions. Edit AE changes / flags to tune effects.",
+  "flags": {},
+  "folder": null,
+  "name": "🍲 Dishes",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

@@ -1,0 +1,301 @@
+{
+  "_id": "REiWhq9LCn6WgjHG",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1674861315872,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.5.0"
+    },
+    "theatre": {
+      "settings": {
+        "emote": null,
+        "textcolor": null,
+        "textflyin": null,
+        "textfont": null,
+        "textsize": null,
+        "textstanding": null
+      }
+    }
+  },
+  "folder": "KWnuOptf4pQKCX5g",
+  "img": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Character%20Tokens/Portraits/freya.png",
+  "name": "Freya",
+  "ownership": {
+    "MwTL6zXFCEpVBTpI": 3,
+    "default": 0
+  },
+  "prototypeToken": {
+    "actorLink": true,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 30,
+    "displayName": 30,
+    "disposition": -1,
+    "flags": {},
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Freya",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://media.discordapp.net/attachments/1071503583155068979/1072882421420269568/shooter.png?width=499&height=499",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": -100000,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "activeEffects": {},
+    "props": {
+      "accesory_details": "<p>Immune to slow</p>",
+      "accesory_name": "Silky Gloves",
+      "arcanism": false,
+      "armor_mod": "0",
+      "armor_name": "",
+      "backpack": "",
+      "backstory": "",
+      "bond_1": "Aska",
+      "bond_2": "Illavia",
+      "bond_3": "",
+      "bond_4": "",
+      "bond_5": "",
+      "bond_6": "",
+      "char_identity": "Gunslinger Adventurer",
+      "check_roller": "Roll!",
+      "chimerism": false,
+      "class_list": {
+        "0": {
+          "$deleted": false,
+          "benefit": "hp",
+          "class_name": "Sharpshooter",
+          "level": "3"
+        },
+        "1": {
+          "$deleted": false,
+          "benefit": "ip",
+          "class_name": "Wayfarer",
+          "level": "1"
+        },
+        "2": {
+          "$deleted": false,
+          "benefit": "ip",
+          "class_name": "Rogue",
+          "level": "1"
+        }
+      },
+      "crisis_hp": "ERROR",
+      "current_hp": "40",
+      "current_ip": "10",
+      "current_mp": "35",
+      "dex_base": "10",
+      "dex_current": "10",
+      "elementalism": false,
+      "emotion_1_1": "1",
+      "emotion_1_2": "2",
+      "emotion_1_3": "",
+      "emotion_2_1": "1",
+      "emotion_2_2": "",
+      "emotion_2_3": "",
+      "emotion_3_1": "",
+      "emotion_3_2": "",
+      "emotion_3_3": "",
+      "emotion_4_1": "",
+      "emotion_4_2": "",
+      "emotion_4_3": "",
+      "emotion_5_1": "",
+      "emotion_5_2": "",
+      "emotion_5_3": "",
+      "emotion_6_1": "",
+      "emotion_6_2": "",
+      "emotion_6_3": "",
+      "entropism": false,
+      "experience": "0",
+      "fp": "1",
+      "init_penalty": "0",
+      "ins_base": "10",
+      "ins_current": "10",
+      "inventory_label": "💼 Inventory",
+      "isDazed": false,
+      "isEnraged": false,
+      "isPoisoned": false,
+      "isShaken": false,
+      "isSlow": false,
+      "isWeak": false,
+      "is_martialarmor": false,
+      "level": "5",
+      "magic_defense_mod": "0",
+      "main_attrib_1": "DEX",
+      "main_attrib_2": "INS",
+      "main_hand": "Pistol",
+      "main_hand_attack": "",
+      "max_hp": "ERROR",
+      "max_ip": "ERROR",
+      "max_mp": "ERROR",
+      "mig_base": "6",
+      "mig_current": "6",
+      "name": "Freya",
+      "notes_text": "",
+      "off_attrib_1": "SHI",
+      "off_attrib_2": "SHI",
+      "off_hand": "",
+      "off_hand_attack": "",
+      "off_mod_1": "0",
+      "off_mod_2": "0",
+      "origin": "",
+      "pronouns": "She/Her",
+      "relationship_1": "",
+      "relationship_2": "",
+      "relationship_3": "",
+      "relationship_4": "",
+      "relationship_5": "",
+      "relationship_6": "",
+      "resource_value_1": "0",
+      "resource_value_2": "0",
+      "resource_value_3": "0",
+      "ritualism": false,
+      "rolled_atr1": "INS",
+      "rolled_atr2": "INS",
+      "shield_type": "PHYSICAL",
+      "shield_value": "0",
+      "skill_hp": "0",
+      "skill_list": {
+        "0": {
+          "$deleted": false,
+          "class": "Sharpshooter",
+          "description": "<p>When you hit one or more targets with a ranged attack that would deal damage, you<br>may have the attack deal no damage. If you do, choose one option: inflict shaken on<br>each target hit by the attack; or inflict slow on each target hit by the attack; or each<br>target hit by the attack loses 【SL &times; 10】 Mind Points. Describe your maneuver</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Warning Shot"
+        },
+        "1": {
+          "$deleted": false,
+          "class": "Sharpshooter",
+          "description": "<p>When you perform a ranged attack, you may spend 10 Mind Points to choose one<br>option: the attack gains multi (2); or you increase the attack's multi property by one,<br>up to a maximum of multi (3).</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Barrage"
+        },
+        "2": {
+          "$deleted": false,
+          "class": "Sharpshooter",
+          "description": "<p>You gain a bonus equal to 【SL】 to all Accuracy Checks with ranged weapons.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Ranged Weapon Mastery"
+        },
+        "3": {
+          "$deleted": false,
+          "class": "Wayfarer",
+          "description": "<p>When your group journeys on the world map, you will make a discovery on a roll of<br>【SL + 1】 or lower on the travel roll (instead of only on a 1).</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Treasure Hunter"
+        },
+        "4": {
+          "$deleted": false,
+          "class": "Rogue",
+          "description": "<p>When you hit a creature with an attack, if the attack only targeted that creature and<br>they are suffering from one or more status effects, you may have it deal extra damage<br>equal to 【SL + the number of status effects on the creature】.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Cheap Shot"
+        }
+      },
+      "skill_mp": "0",
+      "spiritism": false,
+      "theme": "Guns",
+      "weapon1_damage": "8",
+      "weapon1_damagetype": "physical",
+      "weapon1_mod": "1",
+      "weapon2_damagetype": "-",
+      "wlp_base": "6",
+      "wlp_current": "6",
+      "your_class_name": "",
+      "zenit": "0",
+      "zero_effect_label": "💬 Zero Effect",
+      "zero_label": "💥 Zero Power : ",
+      "zero_power_name": "",
+      "zero_power_value": "",
+      "zero_trigger_label": "⚔️ Zero Trigger"
+    },
+    "statusEffects": {},
+    "template": "gN4AtNuVF4Tc5LxK",
+    "templateSystemUniqueVersion": 93170772
+  },
+  "type": "character"
+}

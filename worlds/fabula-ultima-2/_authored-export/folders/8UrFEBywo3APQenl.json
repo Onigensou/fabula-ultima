@@ -1,0 +1,19 @@
+{
+  "_id": "8UrFEBywo3APQenl",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1761167933127,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "z7NLbCmTWrDRsqk6",
+  "name": "Variant",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

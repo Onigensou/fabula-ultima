@@ -1,0 +1,19 @@
+{
+  "_id": "757iqFJcC32i3ddY",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1746787489341,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.4.2"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "R9qxPTmZo1v6MBup",
+  "name": "Vyrona",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Actor"
+}

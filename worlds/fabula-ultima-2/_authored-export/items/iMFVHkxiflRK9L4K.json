@@ -1,0 +1,105 @@
+{
+  "_id": "iMFVHkxiflRK9L4K",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1732265316740,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "iMFVHkxiflRK9L4K",
+        "itemName": "Excalibur",
+        "pickedOldProps": {
+          "cost": "3000",
+          "martial": true
+        },
+        "ts": 1769647435564
+      }
+    }
+  },
+  "folder": "xMVY94FXuACmcFkd",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Valkyrie%20Connect/Excalibur_%2528Sp.%2529_icon.webp",
+  "name": "Excalibur",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "aquatic_ef": "100",
+      "automaton_ef": "100",
+      "avian_ef": "100",
+      "beast_ef": "100",
+      "category": "Sword",
+      "celestial_ef": "100",
+      "check_bonus": "2",
+      "construct_ef": "100",
+      "damage_bonus": "15",
+      "demiHuman_ef": "100",
+      "demon_ef": "100",
+      "description": "<ul>\n    <li>&nbsp;You are <strong>immune</strong> to all <strong>Basic status effects.</strong></li>\n    <li>\n        <p>You may perform the skill 【💥<strong> Judgement Sword </strong>】</p>\n    </li>\n</ul>\n<hr>\n<details>\n    <summary><strong>💥 Judgement Sword</strong></summary>\n    <p><strong>Cost: 6 Zero Power</strong></p>\n    <p><strong>Target: One Creature</strong></p>\n    <p><strong>Duration: Instantaneous</strong></p>\n    <p>Deals <strong>100 Light</strong> damage to target creature, this damage ignore <strong>immunity</strong> and cannot be <strong>reduced</strong> or <strong>negated</strong></p>\n    <p></p>\n</details>",
+      "dragon_ef": "100",
+      "elemental_ef": "100",
+      "enforcer_ef": "100",
+      "fey_ef": "100",
+      "flavor_text": "<p><em>A Mythical Sword once wielded by a legendary king, his name is lost to time, yet the blade radiance still glimmer through the darkness</em></p>",
+      "flora_ef": "100",
+      "fungus_ef": "100",
+      "golem_ef": "100",
+      "gorger_ef": "100",
+      "hand_slots": "Two-handed",
+      "human_ef": "100",
+      "humanoid_ef": "100",
+      "insect_ef": "100",
+      "ip_cost": "",
+      "isEquipped": false,
+      "isKey": false,
+      "isMartial": true,
+      "isModule": false,
+      "isRelatedItem": false,
+      "isSet": false,
+      "isUnique": false,
+      "item_baseDef": "0",
+      "item_baseMdef": "0",
+      "item_cost": "3000",
+      "item_def_bonus": "0",
+      "item_mdef_bonus": "0",
+      "item_quantity": "1",
+      "item_rarity": "Legendary",
+      "item_type": "weapon",
+      "mimic_ef": "100",
+      "monster_ef": "100",
+      "name": "Excalibur",
+      "optional_params": {},
+      "plant_ef": "100",
+      "reptilian_ef": "100",
+      "rolled_atr1": "MIG",
+      "rolled_atr2": "WLP",
+      "set_name": "",
+      "skill_target": "One Enemy",
+      "soldier_ef": "100",
+      "spirit_ef": "100",
+      "type_damage": "Light",
+      "undead_ef": "100",
+      "vehicle_ef": "100",
+      "weapon_range": "Melee"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "iMFVHkxiflRK9L4K"
+  },
+  "type": "equippableItem"
+}

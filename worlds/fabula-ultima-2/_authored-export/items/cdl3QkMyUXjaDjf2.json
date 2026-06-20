@@ -1,0 +1,58 @@
+{
+  "_id": "cdl3QkMyUXjaDjf2",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757285092839,
+    "duplicateSource": "Item.f0C1lEOtdqKUuN7z",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "OFXRN3P2p6Ce5ySM",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Flower/41637e198890bc1dcf99440d9b213e1d_5450934023619344092.webp",
+  "name": "Hookleaf Nightshade",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Floralist",
+      "cost": "20 MP",
+      "damage_bonus": "0",
+      "description": "<p><em>Its purplish berries contain a deadly magical venom.</em></p> <table style=\"width:100%;\"> <tbody> <tr><td><strong>Growth</strong></td><td><strong>Effect</strong></td></tr> <tr> <td>0–1</td> <td>All damage you deal becomes <a class=\"content-link\" data-uuid=\"Item.tDcCWc67Ary9nVxe\"><strong><u>Poison</u></strong></a>, its type cannot change, and it <strong>ignores Immunities and Resistances</strong>. </td> </tr> <tr> <td>2–3</td> <td>All damage you deal becomes <a class=\"content-link\" data-uuid=\"Item.tDcCWc67Ary9nVxe\"><strong><u>Poison</u></strong></a>, its type cannot change, and it ignores Immunities and Resistances. Additionally, when you deal <a class=\"content-link\" data-uuid=\"Item.tDcCWc67Ary9nVxe\"><strong><u>Poison</u></strong></a> damage for the first time during your turn, you deal extra damage equal to <strong>[your Skill Level in Chloromancy]</strong> and each creature that lost <strong>Hit Points</strong> this way suffers <a class=\"content-link\" data-uuid=\"JournalEntry.JltwIqzHbBKhkD45\"><strong><u>Poisoned</u></strong></a>. </td> </tr> </tbody> </table>",
+      "duration": "Scene",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": true,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Hookleaf Nightshade",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Chloromancy SL</strong></p></td><td><p><strong>Extra Damage</strong></p></td></tr><tr><td><p>1</p></td><td><p>1</p></td></tr><tr><td><p>2</p></td><td><p>2</p></td></tr><tr><td><p>3</p></td><td><p>3</p></td></tr><tr><td><p>4</p></td><td><p>4</p></td></tr><tr><td><p>5</p></td><td><p>5</p></td></tr><tr><td><p>6</p></td><td><p>6</p></td></tr><tr><td><p>7</p></td><td><p>7</p></td></tr><tr><td><p>8</p></td><td><p>8</p></td></tr><tr><td><p>9</p></td><td><p>9</p></td></tr><tr><td><p>10</p></td><td><p>10</p></td></tr></tbody></table>",
+      "skill_range": "Any",
+      "skill_target": "Special",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "cdl3QkMyUXjaDjf2"
+  },
+  "type": "equippableItem"
+}

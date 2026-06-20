@@ -1,0 +1,19 @@
+{
+  "_id": "zmeucMpq8Q0wkkSn",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780401258460,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "EPe7ml6WmzFyqmol",
+  "name": "Encounter",
+  "sort": 0,
+  "sorting": "a",
+  "type": "RollTable"
+}

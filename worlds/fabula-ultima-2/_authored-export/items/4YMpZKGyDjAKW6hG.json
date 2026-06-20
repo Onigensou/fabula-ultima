@@ -1,0 +1,58 @@
+{
+  "_id": "4YMpZKGyDjAKW6hG",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1758079291680,
+    "duplicateSource": "Item.yRQsyxvsol3UGPlO",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "VIOEoJCJMxZPFOxA",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lu/LuCielSkill13.png",
+  "name": "Unleash",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Tamer",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>You gain the ability to perform Rituals of the Chimerism discipline. Additionally, you may use Chimerism to summon a creature of the GM’s choosing from the demon, elemental, monster, or undead Species to your location. The level of the summoned creature may be up to <strong>[SL × 5]</strong>.</p>\n<p>The creature is controlled by the GM and may not be Negotiated with during the same scene in which it was summoned. It’s already doing you a favor by showing up!</p>\n",
+      "duration": "",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "4",
+      "name": "Unleash",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>Max Summoned Creature Level</strong></p></td></tr><tr><td><p>1</p></td><td><p>5</p></td></tr><tr><td><p>2</p></td><td><p>10</p></td></tr><tr><td><p>3</p></td><td><p>15</p></td></tr><tr><td><p>4</p></td><td><p>20</p></td></tr></tbody></table>",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "4YMpZKGyDjAKW6hG"
+  },
+  "type": "equippableItem"
+}

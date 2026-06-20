@@ -1,0 +1,1188 @@
+{
+  "_id": "Usyut9yS2Tm5ZCXI",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1767898775562,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.4"
+    },
+    "theatre": {
+      "baseinsert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Bruce%20V/Bruce%20V_Armor.png",
+      "disabledefault": false,
+      "emotes": {
+        "angry": {
+          "insert": ""
+        },
+        "annoyed": {
+          "insert": ""
+        },
+        "awe-struck": {
+          "insert": ""
+        },
+        "blushing": {
+          "insert": ""
+        },
+        "carefree": {
+          "insert": ""
+        },
+        "confused": {
+          "insert": ""
+        },
+        "cry": {
+          "insert": ""
+        },
+        "dissatisfied": {
+          "insert": ""
+        },
+        "dizzy": {
+          "insert": ""
+        },
+        "frown": {
+          "insert": ""
+        },
+        "frustrated": {
+          "insert": ""
+        },
+        "grin": {
+          "insert": ""
+        },
+        "happy": {
+          "insert": ""
+        },
+        "happytears": {
+          "insert": ""
+        },
+        "hearts": {
+          "insert": ""
+        },
+        "idea": {
+          "insert": ""
+        },
+        "innocent": {
+          "insert": ""
+        },
+        "kiss": {
+          "insert": ""
+        },
+        "laughing": {
+          "insert": ""
+        },
+        "laughingsquint": {
+          "insert": ""
+        },
+        "meh": {
+          "insert": ""
+        },
+        "mischevious": {
+          "insert": ""
+        },
+        "panic": {
+          "insert": ""
+        },
+        "playful": {
+          "insert": ""
+        },
+        "rofl": {
+          "insert": ""
+        },
+        "sad": {
+          "insert": ""
+        },
+        "scared": {
+          "insert": ""
+        },
+        "serious": {
+          "insert": ""
+        },
+        "sleeping": {
+          "insert": ""
+        },
+        "smile": {
+          "insert": ""
+        },
+        "smug": {
+          "insert": ""
+        },
+        "speechless": {
+          "insert": ""
+        },
+        "surprised": {
+          "insert": ""
+        },
+        "thinking": {
+          "insert": ""
+        },
+        "tongue": {
+          "insert": ""
+        },
+        "wink": {
+          "insert": ""
+        },
+        "worried": {
+          "insert": ""
+        }
+      },
+      "name": "",
+      "optalign": "top",
+      "settings": {
+        "emote": null,
+        "textcolor": null,
+        "textflyin": "typewriter",
+        "textfont": null,
+        "textsize": null,
+        "textstanding": "none"
+      }
+    }
+  },
+  "folder": "yrt0v9PKovSRpKQJ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Bruce%20V/Bruce%20V_Armor.png",
+  "items": [
+    {
+      "_id": "IeiuVVS4VRDfagnL",
+      "_stats": {
+        "compendiumSource": "Item.Zw14b4NHt6geS7nE",
+        "coreVersion": "12.343",
+        "createdTime": 1781875195953,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "D4k3Wa7otoaPRftU",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p>Decrease <strong>【DEX】</strong> and<strong> 【INS】 </strong>by one stage</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 3,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "core": {
+              "overlay": false
+            },
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "isPredefined": true,
+              "originalId": "GbLFOJUgTjJnaM4V",
+              "originalParentId": "XVOWOq9oUmEECGrU",
+              "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.GbLFOJUgTjJnaM4V"
+            },
+            "dfreds-convenient-effects": {
+              "ceEffectId": "ce-enraged",
+              "isBackup": false,
+              "isConvenient": true,
+              "isDynamic": false,
+              "isTemporary": false,
+              "isViewable": true
+            },
+            "effectmacro": {
+              "onCreate": {
+                "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isEnraged\n(async () => {\n  const PATH = \"system.props.isEnraged\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+              },
+              "onDelete": {
+                "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isEnraged\n(async () => {\n  const PATH = \"system.props.isEnraged\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+              },
+              "onDisable": {
+                "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isEnraged\n(async () => {\n  const PATH = \"system.props.isEnraged\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+              },
+              "onEnable": {
+                "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isEnraged\n(async () => {\n  const PATH = \"system.props.isEnraged\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+              },
+              "onToggle": {
+                "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isEnraged\n(async () => {\n  const PATH = \"system.props.isEnraged\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+              }
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEFENSE%20DOUBLE%20DOWN.png",
+          "name": "Enraged",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fYkA57rVfoytHRjo"
+          ],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/02_WAR/infuriate.png",
+      "name": "Provoke",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {
+            "0": {
+              "$deleted": false,
+              "active_effect_application": "add",
+              "active_effect_apply_mode": "opposed_check",
+              "active_effect_dice_1": "mig",
+              "active_effect_dice_2": "wlp",
+              "active_effect_dl": "0",
+              "active_effect_id": "D4k3Wa7otoaPRftU",
+              "active_effect_percent": "0",
+              "active_effect_target": "enemy",
+              "active_effect_trigger": "on_attack"
+            }
+          },
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "Fury",
+          "cost": "5 MP",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>You may use an <strong>action</strong> and spend 5 Mind Points to perform an Opposed <strong>【MIG + WLP】</strong> Check against a creature you can see — describe how you taunt them! If you succeed, the target suffers <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\" data-id=\"XkuOy0BFvKJTewGS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Enraged</span></strong></a></span></span> and<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.c4sYPClmvld4TEK8\" data-id=\"c4sYPClmvld4TEK8\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Provoked</span></strong></a><strong><span style=\"text-decoration: underline;\">.</span></strong></span></span> This compulsion ends if you fall unconscious or leave the scene, if the creature is no longer <strong>enraged</strong>, or if they are successfully provoked by someone else.</p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "5",
+          "name": "Provoke",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p>Level</p></td><td data-colwidth=\"148\"><p>HP Recover</p></td><td data-colwidth=\"148\"><p>MP Recover</p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p>5</p></td><td data-colwidth=\"148\"><p>5</p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p>10</p></td><td data-colwidth=\"148\"><p>10</p></td></tr><tr><td data-colwidth=\"79\"><p>3</p></td><td data-colwidth=\"148\"><p>15</p></td><td data-colwidth=\"148\"><p>15</p></td></tr><tr><td data-colwidth=\"79\"><p>4</p></td><td data-colwidth=\"148\"><p>20</p></td><td data-colwidth=\"148\"><p>20</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "Zw14b4NHt6geS7nE"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "Iw3IGgLDW0ai6iXR",
+      "_stats": {
+        "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
+        "coreVersion": "12.343",
+        "createdTime": 1781875195953,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/bootshine.png",
+      "name": "Double Punch",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "5",
+          "defense_target_type": "def",
+          "description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Multi</span></strong></a><strong><span style=\"text-decoration: underline;\"> 2</span></strong></span></span></p></li></ul>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Double Punch",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "MIG",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Melee",
+          "skill_target": "Up to two creatures",
+          "skill_type": "Attack",
+          "type_damage": "Physical",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "yWlkWZC2vLf4J5Pv"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "s8me7kRbMmtdi1LY",
+      "_stats": {
+        "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
+        "coreVersion": "12.343",
+        "createdTime": 1781875195953,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/flint_strike.png",
+      "name": "V-Kick",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "10",
+          "defense_target_type": "def",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "V-Kick",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "MIG",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Melee",
+          "skill_target": "One Creature",
+          "skill_type": "Attack",
+          "type_damage": "Physical",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "yWlkWZC2vLf4J5Pv"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "SceVEpxPDlApt5Ke",
+      "_stats": {
+        "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
+        "coreVersion": "12.343",
+        "createdTime": 1781875195953,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "vmCj5L25u5rRZK8e",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p>You are marked, and will explode next turn</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": 298800,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "vmCj5L25u5rRZK8e",
+              "originalParentId": "SceVEpxPDlApt5Ke",
+              "originalUuid": "Actor.Usyut9yS2Tm5ZCXI.Item.SceVEpxPDlApt5Ke.ActiveEffect.vmCj5L25u5rRZK8e"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/true_strike.png",
+          "name": "One-Ilm Punch",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/true_strike.png",
+      "name": "One-Ilm Punch",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {
+            "0": {
+              "$deleted": false,
+              "active_effect_application": "add",
+              "active_effect_apply_mode": "percentage",
+              "active_effect_dice_1": "",
+              "active_effect_dice_2": "",
+              "active_effect_dl": "0",
+              "active_effect_id": "vmCj5L25u5rRZK8e",
+              "active_effect_percent": "100",
+              "active_effect_target": "enemy",
+              "active_effect_trigger": "on_hit"
+            }
+          },
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "10 MP",
+          "damage_bonus": "5",
+          "defense_target_type": "def",
+          "description": "<p>On hit, marked the target, at the start of the marked target next turn, they take <strong>10</strong> <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(68, 68, 68) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a></span></span>&nbsp;damage.</p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "One-Ilm Punch",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "MIG",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Melee",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "Physical",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "UKzHkmIJcjXZ4GFR"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "u9xF2lLq4AUf7Thu",
+      "_stats": {
+        "compendiumSource": "Item.iFdNNGp4OVZVMEcB",
+        "coreVersion": "12.343",
+        "createdTime": 1781875195953,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Els/ElswordSkill7.png",
+      "name": "Zero Trigger: Tenacity",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>Whenever <strong>Bruce V</strong> takes damage from an enemy action, <strong>Gain 1 Zero Power</strong></p>",
+          "duration": "-",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Zero Trigger: Tenacity",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "iFdNNGp4OVZVMEcB"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "YxLBaeiOZGDHR2gs",
+      "_stats": {
+        "compendiumSource": "Item.wh14ZZz56LQHyrvF",
+        "coreVersion": "12.343",
+        "createdTime": 1781875195953,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/thunderclap.png",
+      "name": "Zero Power: Teleport Slash",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "3250",
+          "animation_damage_timing_options": "offset",
+          "animation_script": "<p>// ============================================================================</p><p>// ONI Custom Event Helper (emit) – minimal inline version</p><p>// Makes ONI.emit(eventName, payload) available if it isn't already.</p><p>// ============================================================================</p><p>globalThis.ONI = globalThis.ONI ?? {};</p><p>if (!ONI.emit) {</p><p>  // Default: LOCAL ONLY (perfect for UI-ish things like animationStart/End)</p><p>  ONI.emit = function (eventName, payload = {}, options = {}) {</p><p>    const { local = true, world = false } = options;</p><p>    if (local) Hooks.callAll(eventName, payload);</p><p>    if (world) game.socket.emit(\"world\", { action: eventName, payload });</p><p>  };</p><p>  // When you REALLY want to broadcast something across all clients</p><p>  ONI.emitWorld = function (eventName, payload = {}) {</p><p>    Hooks.callAll(eventName, payload);</p><p>    game.socket.emit(\"world\", { action: eventName, payload });</p><p>  };</p><p>  if (!ONI._worldRx) {</p><p>    ONI._worldRx = (data) => {</p><p>      if (!data?.action) return;</p><p>      Hooks.callAll(data.action, data.payload);</p><p>    };</p><p>    game.socket.on(\"world\", ONI._worldRx);</p><p>  }</p><p>  console.log(\"[ONI Events] Helper installed.\");</p><p>}</p><p>/**</p><p> * [ONI][SeqKickMotion] – Wired for ONI events + Foundry targeting</p><p> * Emits:</p><p> *  - oni:animationStart (LOCAL ONLY)</p><p> *  - oni:animationEnd   (LOCAL ONLY)</p><p> *</p><p> * Attacker/Target resolution priority:</p><p> *  1) __PAYLOAD.attacker_uuid / __PAYLOAD.target_uuid (if provided by your system)</p><p> *  2) Controlled token + Foundry V12 targeting</p><p> */</p><p>(async () => {</p><p>  const TAG = \"[ONI][SeqKickMotion]\";</p><p>  // --------------------------------------------------------------------------</p><p>  // Requirements</p><p>  // --------------------------------------------------------------------------</p><p>  if (!game.modules.get(\"sequencer\")?.active || typeof Sequence === \"undefined\") {</p><p>    return ui.notifications.error(\"Sequencer module is not active.\");</p><p>  }</p><p>  // --------------------------------------------------------------------------</p><p>  // Resolve Attacker / Target (supports __PAYLOAD wiring)</p><p>  // --------------------------------------------------------------------------</p><p>  const P = globalThis.__PAYLOAD ?? {};</p><p>  let attackerToken = null;</p><p>  let targetToken = null;</p><p>  // 1) Payload UUIDs (system wiring)</p><p>  try {</p><p>    if (P.attacker_uuid) attackerToken = await fromUuid(P.attacker_uuid);</p><p>    if (P.target_uuid) targetToken = await fromUuid(P.target_uuid);</p><p>  } catch (e) {</p><p>    console.warn(`${TAG} fromUuid payload resolve failed`, e);</p><p>  }</p><p>  // If fromUuid returns TokenDocument, grab object; if it's an Actor, etc, ignore</p><p>  attackerToken = attackerToken?.object ?? attackerToken;</p><p>  targetToken = targetToken?.object ?? targetToken;</p><p>  // 2) Fallback to selection / Foundry targets</p><p>  attackerToken = attackerToken ?? canvas.tokens.controlled?.[0] ?? null;</p><p>  targetToken = targetToken ?? Array.from(game.user.targets ?? [])[0] ?? null;</p><p>  if (!attackerToken) return ui.notifications.warn(\"Select a token first.\");</p><p>  if (!targetToken) return ui.notifications.warn(\"Target a token first (use Foundry's targeting system).\");</p><p>  // --------------------------------------------------------------------------</p><p>  // DEBUG: macro start</p><p>  // --------------------------------------------------------------------------</p><p>  console.log(</p><p>    `${TAG} START`,</p><p>    \"attacker:\", attackerToken.name, `(${attackerToken.id})`,</p><p>    \"target:\", targetToken.name, `(${targetToken.id})`,</p><p>    \"time:\", new Date().toISOString(),</p><p>    \"payload:\", P</p><p>  );</p><p>  // --------------------------------------------------------------------------</p><p>  // Broadcast: Animation START (LOCAL ONLY)</p><p>  // --------------------------------------------------------------------------</p><p>  const animMeta = {</p><p>    type: \"kickTeleport\",</p><p>    sourceTokenId: attackerToken.id,</p><p>    targetTokenId: targetToken.id,</p><p>    sceneId: canvas.scene?.id ?? null,</p><p>    timestamp: Date.now()</p><p>  };</p><p>  ONI.emit(\"oni:animationStart\", animMeta, { local: true, world: false });</p><p>  // -----------------------------</p><p>  // Tuners (YOUR CURRENT VALUES)</p><p>  // -----------------------------</p><p>  const FADE_OUT_MS = 700;</p><p>  const GAP_AFTER_FADE_MS = 500;</p><p>  const FADE_IN_MS = 700;</p><p>  const DRAMATIC_PAUSE_MS = 350;</p><p>  const RUN_BACK_MIN_MS = 350;</p><p>  const RUN_BACK_MAX_MS = 1400;</p><p>  const RUN_PIXELS_PER_SEC = 1400;</p><p>  const POST_RUN_BACK_PAUSE_MS = 80;</p><p>  const PRE_KICK_PAUSE_MS = 140;</p><p>  const JUMP_TO_TARGET_MS = 180;</p><p>  // Pause at the kick position before returning</p><p>  const POST_KICK_PAUSE_MS = 220;</p><p>  const RETURN_MS = 320;</p><p>  const FRONT_OF_TARGET_GRIDS = 0.75;</p><p>  const KICK_OFFSET_GRIDS = 0.25;</p><p>  const EASE_RUN = \"easeInOutCubic\";</p><p>  const EASE_JUMP = \"easeOutQuad\";</p><p>  const EASE_RETURN = \"easeInOutQuad\";</p><p>  // -----------------------------</p><p>  // Screen Flash Tuners</p><p>  // -----------------------------</p><p>  const FLASH_IMG = \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/whiteSquare.png\";</p><p>  const FLASH_SCALE = 50;</p><p>  const FLASH_OPACITY = 0.6;</p><p>  const FLASH_FADE_MS = 500;</p><p>  const FLASH_ZINDEX = 9999;</p><p>  // -----------------------------</p><p>  // Sound Tuners</p><p>  // -----------------------------</p><p>  const SOUND_BROADCAST = true; // everyone hears</p><p>  const FOOTSTEP_SFX = \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/SE_BTL_FootStepNormal_1.ogg\";</p><p>  const WIND_SFX     = \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Wind3.ogg\";</p><p>  const KICK_SFX     = \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Damage1.ogg\";</p><p>  const FOOTSTEP_VOL = 0.75;</p><p>  const WIND_VOL = 0.8;</p><p>  const KICK_VOL = 0.9;</p><p>  // “Throttle” rate for footsteps during ground movement only</p><p>  const FOOTSTEP_INTERVAL_MS = 300;</p><p>  // --------------------------------------------------------------------------</p><p>  // Helpers</p><p>  // --------------------------------------------------------------------------</p><p>  const waitMs = (ms) => new Promise((r) => setTimeout(r, ms));</p><p>  const playSfx = (src, volume = 0.8) => {</p><p>    AudioHelper.play({ src, volume, autoplay: true, loop: false }, SOUND_BROADCAST);</p><p>  };</p><p>  // Footsteps: start/stop looped “throttle”</p><p>  let footstepTimer = null;</p><p>  const startFootsteps = () => {</p><p>    if (footstepTimer) return;</p><p>    playSfx(FOOTSTEP_SFX, FOOTSTEP_VOL);</p><p>    footstepTimer = setInterval(() => playSfx(FOOTSTEP_SFX, FOOTSTEP_VOL), FOOTSTEP_INTERVAL_MS);</p><p>  };</p><p>  const stopFootsteps = () => {</p><p>    if (!footstepTimer) return;</p><p>    clearInterval(footstepTimer);</p><p>    footstepTimer = null;</p><p>  };</p><p>  // --------------------------------------------------------------------------</p><p>  // Compute positions</p><p>  // --------------------------------------------------------------------------</p><p>  const originDoc = {</p><p>    x: attackerToken.document.x,</p><p>    y: attackerToken.document.y,</p><p>    alpha: attackerToken.document.alpha ?? 1</p><p>  };</p><p>  const originCenter = {</p><p>    x: originDoc.x + attackerToken.w / 2,</p><p>    y: originDoc.y + attackerToken.h / 2</p><p>  };</p><p>  const targetCenter = { x: targetToken.center.x, y: targetToken.center.y };</p><p>  const gridSize = canvas.grid?.size ?? 100;</p><p>  const dx = targetCenter.x - originCenter.x;</p><p>  const dy = targetCenter.y - originCenter.y;</p><p>  const dist = Math.hypot(dx, dy) || 1;</p><p>  const ux = dx / dist;</p><p>  const uy = dy / dist;</p><p>  const frontDist = Math.max(gridSize * FRONT_OF_TARGET_GRIDS, gridSize * 0.1);</p><p>  const frontPos = {</p><p>    x: targetCenter.x - ux * frontDist,</p><p>    y: targetCenter.y - uy * frontDist</p><p>  };</p><p>  const kickDist = Math.max(gridSize * KICK_OFFSET_GRIDS, gridSize * 0.05);</p><p>  const kickPos = {</p><p>    x: targetCenter.x - ux * kickDist,</p><p>    y: targetCenter.y - uy * kickDist</p><p>  };</p><p>  const runBackDistance = Math.hypot(frontPos.x - originCenter.x, frontPos.y - originCenter.y);</p><p>  const runBackMsRaw = (runBackDistance / RUN_PIXELS_PER_SEC) * 1000;</p><p>  const runBackMs = Math.round(Math.max(RUN_BACK_MIN_MS, Math.min(RUN_BACK_MAX_MS, runBackMsRaw)));</p><p>  const screenCenter = { x: window.innerWidth / 2, y: window.innerHeight / 2 };</p><p>  // --------------------------------------------------------------------------</p><p>  // Play animation (phased for clean footstep control)</p><p>  // --------------------------------------------------------------------------</p><p>  try {</p><p>    // Phase 1: Fade out + teleport + fade in (+ wind)</p><p>    playSfx(WIND_SFX, WIND_VOL);</p><p>    await new Sequence()</p><p>      .animation()</p><p>        .on(attackerToken)</p><p>        .fadeOut(FADE_OUT_MS)</p><p>        .opacity(0)</p><p>        .waitUntilFinished()</p><p>      .wait(GAP_AFTER_FADE_MS)</p><p>      .animation()</p><p>        .on(attackerToken)</p><p>        .teleportTo(frontPos, { relativeToCenter: true })</p><p>        .waitUntilFinished()</p><p>      .animation()</p><p>        .on(attackerToken)</p><p>        .fadeIn(FADE_IN_MS)</p><p>        .opacity(originDoc.alpha)</p><p>        .waitUntilFinished()</p><p>      .wait(DRAMATIC_PAUSE_MS)</p><p>      .play();</p><p>    // Phase 2: Run back (footsteps ON)</p><p>    startFootsteps();</p><p>    await new Sequence()</p><p>      .animation()</p><p>        .on(attackerToken)</p><p>        .moveTowards(originCenter, { relativeToCenter: true, ease: EASE_RUN, rotate: false })</p><p>        .duration(runBackMs)</p><p>        .waitUntilFinished()</p><p>      .play();</p><p>    stopFootsteps();</p><p>    await waitMs(POST_RUN_BACK_PAUSE_MS);</p><p>    // Ensure EXACT home position</p><p>    await new Sequence()</p><p>      .animation()</p><p>        .on(attackerToken)</p><p>        .teleportTo(originCenter, { relativeToCenter: true })</p><p>        .waitUntilFinished()</p><p>      .play();</p><p>    // Tiny pause before kick rush</p><p>    await waitMs(PRE_KICK_PAUSE_MS);</p><p>    // Phase 3: Jump kick (NO footsteps)</p><p>    await new Sequence()</p><p>      .animation()</p><p>        .on(attackerToken)</p><p>        .moveTowards(kickPos, { relativeToCenter: true, ease: EASE_JUMP, rotate: false })</p><p>        .duration(JUMP_TO_TARGET_MS)</p><p>        .waitUntilFinished()</p><p>      // Impact flash (kick connects)</p><p>      .effect(FLASH_IMG)</p><p>        .atLocation(screenCenter)</p><p>        .screenSpaceAboveUI()</p><p>        .zIndex(FLASH_ZINDEX)</p><p>        .scale(FLASH_SCALE)</p><p>        .opacity(FLASH_OPACITY)</p><p>        .fadeOut(FLASH_FADE_MS)</p><p>      .play();</p><p>    // Impact SFX (kick connects)</p><p>    playSfx(KICK_SFX, KICK_VOL);</p><p>    // Post-kick pause</p><p>    await waitMs(POST_KICK_PAUSE_MS);</p><p>    // Phase 4: Return (footsteps ON)</p><p>    startFootsteps();</p><p>    await new Sequence()</p><p>      .animation()</p><p>        .on(attackerToken)</p><p>        .moveTowards(originCenter, { relativeToCenter: true, ease: EASE_RETURN, rotate: false })</p><p>        .duration(RETURN_MS)</p><p>        .waitUntilFinished()</p><p>      .play();</p><p>    stopFootsteps();</p><p>  } catch (err) {</p><p>    console.error(`${TAG} ERROR`, err);</p><p>    ui.notifications.error(`${TAG} Error - check console (F12).`);</p><p>  } finally {</p><p>    // Ensure footsteps never get stuck</p><p>    stopFootsteps();</p><p>    // Hard restore safety</p><p>    try {</p><p>      await attackerToken.document.update({</p><p>        x: originDoc.x,</p><p>        y: originDoc.y,</p><p>        alpha: originDoc.alpha</p><p>      });</p><p>    } catch (_) {}</p><p>    // Broadcast: Animation END (LOCAL ONLY)</p><p>    ONI.emit(\"oni:animationEnd\", {</p><p>      ...animMeta,</p><p>      timestamp: Date.now()</p><p>    }, { local: true, world: false });</p><p>    // DEBUG: macro end</p><p>    console.log(</p><p>      `${TAG} END`,</p><p>      \"attacker:\", attackerToken.name,</p><p>      \"time:\", new Date().toISOString()</p><p>    );</p><p>  }</p><p>})();</p><p></p>",
+          "check_bonus": "5",
+          "class": "NPC",
+          "cost": "6 Zero Power",
+          "damage_bonus": "20",
+          "defense_target_type": "def",
+          "description": "<ul><li><p><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.YojfVwJv8ABa45c6\" data-id=\"YojfVwJv8ABa45c6\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Exploit</span></strong></a></span></p></li></ul>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": true,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Zero Power: Teleport Slash",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "MIG",
+          "skill_animation_default": "",
+          "skill_animation_mode": "custom",
+          "skill_information": "",
+          "skill_range": "Any",
+          "skill_target": "One Creature",
+          "skill_type": "Spell",
+          "type_damage": "Physical",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163372,
+        "unique": false,
+        "uniqueId": "wh14ZZz56LQHyrvF"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Bruce",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "prototypeToken": {
+    "actorLink": true,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": 0,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          }
+        }
+      },
+      "hex-size-support": {
+        "hideBorder": true,
+        "hideFill": true
+      },
+      "token-variants": {
+        "disableHUDButton": false,
+        "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Bruce%20V/Bruce%20V_Standard.png"
+      },
+      "token-z": {
+        "zIndex": 0
+      },
+      "wall-height": {
+        "tokenHeight": 0
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Bruce",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 0,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1.6,
+      "scaleY": 1.6,
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Bruce%20V/Bruce%20V_Armor.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 0,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {
+      "activation": "1",
+      "affinity_1": "NA",
+      "affinity_2": "NA",
+      "affinity_3": "NA",
+      "affinity_4": "RS",
+      "affinity_5": "NA",
+      "affinity_6": "NA",
+      "affinity_7": "NA",
+      "affinity_8": "NA",
+      "affinity_9": "VU",
+      "animation_table": {},
+      "arcane_ef": "100",
+      "attack_accuracy_mod_all": 0,
+      "attack_accuracy_mod_magic": 0,
+      "attack_accuracy_mod_melee": 0,
+      "attack_accuracy_mod_ranged": 0,
+      "attack_list": {
+        "Iw3IGgLDW0ai6iXR": {
+          "active_target": "Up to two creatures",
+          "attack_description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Multi</span></strong></a><strong><span style=\"text-decoration: underline;\"> 2</span></strong></span></span></p></li></ul>",
+          "attribute_die1": "DEX",
+          "attribute_die2": "MIG",
+          "id": "${item.id}",
+          "name": "Double Punch",
+          "roll": "",
+          "uuid": "Actor.Usyut9yS2Tm5ZCXI.Item.Iw3IGgLDW0ai6iXR"
+        },
+        "s8me7kRbMmtdi1LY": {
+          "active_target": "One Creature",
+          "attack_description": "",
+          "attribute_die1": "DEX",
+          "attribute_die2": "MIG",
+          "id": "${item.id}",
+          "name": "V-Kick",
+          "roll": "",
+          "uuid": "Actor.Usyut9yS2Tm5ZCXI.Item.s8me7kRbMmtdi1LY"
+        }
+      },
+      "attribute": "",
+      "battle_facing_direction": "right",
+      "bow_ef": "100",
+      "brawling_ef": "100",
+      "condition_anomaly": "NA",
+      "condition_bane": "NA",
+      "condition_berserk": "NA",
+      "condition_bleed": "NA",
+      "condition_blind": "NA",
+      "condition_burn": "NA",
+      "condition_charm": "IM",
+      "condition_confused": "NA",
+      "condition_curse": "NA",
+      "condition_dazed": "IM",
+      "condition_delayed": "NA",
+      "condition_despair": "IM",
+      "condition_disarmed": "IM",
+      "condition_doom": "NA",
+      "condition_enraged": "NA",
+      "condition_envenomed": "NA",
+      "condition_fatigue": "IM",
+      "condition_frightened": "IM",
+      "condition_grappled": "NA",
+      "condition_hypothermia": "NA",
+      "condition_isolate": "NA",
+      "condition_obscure": "NA",
+      "condition_oil": "NA",
+      "condition_panic": "IM",
+      "condition_paralyzed": "NA",
+      "condition_petrify": "NA",
+      "condition_poisoned": "NA",
+      "condition_shaken": "IM",
+      "condition_silence": "NA",
+      "condition_slow": "NA",
+      "condition_stagger": "IM",
+      "condition_suppress": "NA",
+      "condition_turbulence": "NA",
+      "condition_weak": "IM",
+      "condition_wet": "NA",
+      "condition_wither": "NA",
+      "condition_zombie": "NA",
+      "critical_damage_bonus": 0,
+      "critical_damage_multiplier": 1,
+      "critical_dice_range": 0,
+      "current_hp": "230",
+      "current_ip": "0",
+      "current_mp": "125",
+      "cut_in_critical": "",
+      "cut_in_fumble": "",
+      "cut_in_zero_power": "",
+      "dagger_ef": "100",
+      "damage_receiving_mod_air": 0,
+      "damage_receiving_mod_all": 0,
+      "damage_receiving_mod_bolt": 0,
+      "damage_receiving_mod_dark": 0,
+      "damage_receiving_mod_earth": 0,
+      "damage_receiving_mod_fire": 0,
+      "damage_receiving_mod_ice": 0,
+      "damage_receiving_mod_light": 0,
+      "damage_receiving_mod_melee": 0,
+      "damage_receiving_mod_physical": 0,
+      "damage_receiving_mod_poison": 0,
+      "damage_receiving_mod_range": 0,
+      "def_mod": "+0",
+      "default_facing_direction": "left",
+      "defense": 10,
+      "dex_base": "10",
+      "dex_current": 10,
+      "enmity": 100,
+      "event_timeline_table": {},
+      "extra_damage_mod_air": 0,
+      "extra_damage_mod_all": 0,
+      "extra_damage_mod_arcane": 0,
+      "extra_damage_mod_bolt": 0,
+      "extra_damage_mod_bow": 0,
+      "extra_damage_mod_brawling": 0,
+      "extra_damage_mod_dagger": 0,
+      "extra_damage_mod_dark": 0,
+      "extra_damage_mod_earth": 0,
+      "extra_damage_mod_fire": 0,
+      "extra_damage_mod_firearm": 0,
+      "extra_damage_mod_flail": 0,
+      "extra_damage_mod_heavy": 0,
+      "extra_damage_mod_ice": 0,
+      "extra_damage_mod_light": 0,
+      "extra_damage_mod_melee": 0,
+      "extra_damage_mod_physical": 0,
+      "extra_damage_mod_poison": 0,
+      "extra_damage_mod_ranged": 0,
+      "extra_damage_mod_spear": 0,
+      "extra_damage_mod_spell": 0,
+      "extra_damage_mod_sword": 0,
+      "extra_damage_mod_thrown": 0,
+      "firearm_ef": "100",
+      "flail_ef": "100",
+      "gorger": false,
+      "heavy_ef": "100",
+      "icon_offset_x": "",
+      "icon_offset_y": "",
+      "icon_scale": "",
+      "id": "Usyut9yS2Tm5ZCXI",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Bruce%20V/Bruce%20V_Armor.png",
+      "init": "6",
+      "ins_base": "6",
+      "ins_current": 6,
+      "isAlmighty": false,
+      "isAwake": false,
+      "isBoss": true,
+      "isClarity": false,
+      "isCustomEvent": false,
+      "isDazed": false,
+      "isEnergized": false,
+      "isEnlighten": false,
+      "isEnraged": false,
+      "isFocus": false,
+      "isMasterful": false,
+      "isPoisoned": false,
+      "isShaken": false,
+      "isSlow": false,
+      "isStrong": false,
+      "isSummon": false,
+      "isSwift": false,
+      "isUnyielding": false,
+      "isVillain": false,
+      "isWeak": false,
+      "level": "20",
+      "lifesteal_percentage": 0,
+      "lifesteal_value": 0,
+      "magic_defense": 6,
+      "manadrain_percentage": 0,
+      "manadrain_value": 0,
+      "max_hp": "230",
+      "max_ip": "0",
+      "max_mp": "150",
+      "max_zero": "0",
+      "mdef_mod": "+0",
+      "mig_base": "10",
+      "mig_current": 10,
+      "mimic": false,
+      "minimum_critical_dice": 6,
+      "name": "Bruce",
+      "normal_spell_list": {
+        "Iw3IGgLDW0ai6iXR": {
+          "cost": "-",
+          "duration": "Instantaneous",
+          "id": "${item.id}",
+          "name": "Double Punch",
+          "roll": "",
+          "spell_description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Multi</span></strong></a><strong><span style=\"text-decoration: underline;\"> 2</span></strong></span></span></p></li></ul>",
+          "spell_target": "Up to two creatures",
+          "uuid": "Actor.Usyut9yS2Tm5ZCXI.Item.Iw3IGgLDW0ai6iXR"
+        },
+        "YxLBaeiOZGDHR2gs": {
+          "cost": "6 Zero Power",
+          "duration": "Instantaneous",
+          "id": "${item.id}",
+          "name": "Zero Power: Teleport Slash",
+          "roll": "",
+          "spell_description": "<ul><li><p><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.YojfVwJv8ABa45c6\" data-id=\"YojfVwJv8ABa45c6\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Exploit</span></strong></a></span></p></li></ul>",
+          "spell_target": "One Creature",
+          "uuid": "Actor.Usyut9yS2Tm5ZCXI.Item.YxLBaeiOZGDHR2gs"
+        },
+        "s8me7kRbMmtdi1LY": {
+          "cost": "-",
+          "duration": "Instantaneous",
+          "id": "${item.id}",
+          "name": "V-Kick",
+          "roll": "",
+          "spell_description": "",
+          "spell_target": "One Creature",
+          "uuid": "Actor.Usyut9yS2Tm5ZCXI.Item.s8me7kRbMmtdi1LY"
+        },
+        "wQ2X7jrblYioQgJi": {
+          "cost": "6 Zero Power",
+          "duration": "Instantaneous",
+          "id": "${item.id}",
+          "name": "Zero Power: Teleport Slash",
+          "roll": "",
+          "spell_description": "<ul><li><p><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.YojfVwJv8ABa45c6\" data-id=\"YojfVwJv8ABa45c6\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Exploit</span></strong></a></span></p></li></ul>",
+          "spell_target": "One Creature",
+          "uuid": "Actor.Usyut9yS2Tm5ZCXI.Item.wQ2X7jrblYioQgJi"
+        }
+      },
+      "npc_rank": "champion",
+      "override_damage_type": "None",
+      "rare": false,
+      "resource_maxValue_1": "0",
+      "resource_maxValue_2": "0",
+      "resource_maxValue_3": "0",
+      "resource_value_1": "0",
+      "resource_value_2": "0",
+      "resource_value_3": "0",
+      "rolled_atr1": "MIG",
+      "rolled_atr2": "WLP",
+      "shield_type": "PHYSICAL",
+      "shield_value": "0",
+      "showMacro": false,
+      "skill_active_list": {
+        "IeiuVVS4VRDfagnL": {
+          "active_cost": "5 MP",
+          "active_description": "<p>You may use an <strong>action</strong> and spend 5 Mind Points to perform an Opposed <strong>【MIG + WLP】</strong> Check against a creature you can see — describe how you taunt them! If you succeed, the target suffers <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\" data-id=\"XkuOy0BFvKJTewGS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Enraged</span></strong></a></span></span> and<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.c4sYPClmvld4TEK8\" data-id=\"c4sYPClmvld4TEK8\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Provoked</span></strong></a><strong><span style=\"text-decoration: underline;\">.</span></strong></span></span> This compulsion ends if you fall unconscious or leave the scene, if the creature is no longer <strong>enraged</strong>, or if they are successfully provoked by someone else.</p>",
+          "active_duration": "Instantaneous",
+          "active_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Provoke",
+          "roll": "",
+          "uuid": "Actor.Usyut9yS2Tm5ZCXI.Item.IeiuVVS4VRDfagnL"
+        },
+        "SceVEpxPDlApt5Ke": {
+          "active_cost": "10 MP",
+          "active_description": "<p>On hit, marked the target, at the start of the marked target next turn, they take <strong>10</strong> <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(68, 68, 68) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a></span></span>&nbsp;damage.</p>",
+          "active_duration": "Instantaneous",
+          "active_target": "One Creature",
+          "id": "${item.id}",
+          "name": "One-Ilm Punch",
+          "roll": "",
+          "uuid": "Actor.Usyut9yS2Tm5ZCXI.Item.SceVEpxPDlApt5Ke"
+        }
+      },
+      "skill_passive_list": {
+        "u9xF2lLq4AUf7Thu": {
+          "id": "${item.id}",
+          "name": "Zero Trigger: Tenacity",
+          "passive_description": "<p>Whenever <strong>Bruce V</strong> takes damage from an enemy action, <strong>Gain 1 Zero Power</strong></p>",
+          "roll": "",
+          "uuid": "Actor.Usyut9yS2Tm5ZCXI.Item.u9xF2lLq4AUf7Thu"
+        }
+      },
+      "spear_ef": "100",
+      "species": "HUMANOID",
+      "sprite_battle": "",
+      "sprite_standard": "",
+      "study_text": "",
+      "subtype": "Sub-Type",
+      "subtype_list": "HUMAN",
+      "sword_ef": "100",
+      "tactic_notes": "",
+      "thrown_ef": "100",
+      "traits": "Martial Artist, Kingdom Knight",
+      "ultima_point": "0",
+      "unique": false,
+      "uuid": "Actor.Usyut9yS2Tm5ZCXI",
+      "wlp_base": "8",
+      "wlp_current": 8,
+      "zenit_reward_max": "150",
+      "zenit_reward_min": "130",
+      "zero_power_value": "0"
+    },
+    "statusEffects": {},
+    "template": "yegF6R8aaymhrvCg",
+    "templateSystemUniqueVersion": 4211423400
+  },
+  "type": "character"
+}

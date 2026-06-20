@@ -1,0 +1,55 @@
+{
+  "_id": "m3bKoqIMUa0ITv3m",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1741633825036,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "consumable",
+        "fromTemplate": "xdZPhVF8AnmwQEPM",
+        "itemId": "m3bKoqIMUa0ITv3m",
+        "itemName": "Aunction Trick: Study",
+        "pickedOldProps": {
+          "consumable_cost": "0",
+          "consumable_description": "<p>Perform a【<strong>INS + INS】</strong>check against an aunction opponent's <strong>Difficulty Level</strong>. On success, you learn following information:</p>\n<ul>\n<li>Opponent's information regarding their <strong>Difficulty Level</strong>.</li>\n<li>Opponent's <strong>willingness </strong>to bid the <strong>item </strong>of <strong>current round </strong>as a cryptic description.</li>\n</ul>",
+          "consumable_flavor": "",
+          "consumable_ip": "0",
+          "consumable_label": ""
+        },
+        "ts": 1769647435161
+      }
+    }
+  },
+  "folder": "HwnnjljHsr5F7AqM",
+  "img": "icons/skills/targeting/crosshair-bars-yellow.webp",
+  "name": "Aunction Trick: Study",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "description": "<p>Perform a【<strong>INS + INS】</strong>check against an aunction opponent's <strong>Difficulty Level</strong>. On success, you learn following information:</p>\n<ul>\n<li>Opponent's information regarding their <strong>Difficulty Level</strong>.</li>\n<li>Opponent's <strong>willingness </strong>to bid the <strong>item </strong>of <strong>current round </strong>as a cryptic description.</li>\n</ul>",
+      "ip_cost": "0",
+      "item_cost": "0",
+      "item_type": "consumable",
+      "name": "Aunction Trick: Study"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "m3bKoqIMUa0ITv3m"
+  },
+  "type": "equippableItem"
+}

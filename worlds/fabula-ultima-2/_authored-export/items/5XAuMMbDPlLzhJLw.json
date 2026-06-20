@@ -1,0 +1,35 @@
+{
+  "_id": "5XAuMMbDPlLzhJLw",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1754405063976,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "0O2avGDasLUrz2sD",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Paralyze.png",
+  "name": "Bolt",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 2
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "name": "Bolt"
+    },
+    "template": "nS5URyF3aoxhvPsZ",
+    "templateSystemUniqueVersion": 4221238629,
+    "unique": false,
+    "uniqueId": "5XAuMMbDPlLzhJLw"
+  },
+  "type": "equippableItem"
+}

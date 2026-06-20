@@ -1,0 +1,19 @@
+{
+  "_id": "R3cmMe9TnP4mmqWJ",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": null,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "2.4.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "eZWKkXNgeaFs6HSS",
+  "name": "Blackma's PC",
+  "sort": 1600000,
+  "sorting": "a",
+  "type": "Actor"
+}

@@ -1,0 +1,64 @@
+{
+  "_id": "mMdpiA1IzeE9HWUk",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1756967988139,
+    "duplicateSource": "Item.CMlqLVtpSDNDyfvS",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "2OplVa9fwLYbzD8b",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/GNB/keen_edge.png",
+  "name": "Triple Slash",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 4300000,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "check_bonus": "0",
+      "class": "Weaponmaster",
+      "cost": "",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>As long as you have a one-handed <strong>melee</strong> weapon that belongs to the <strong>dagger</strong> or <strong>sword</strong> Categories equipped in each of your normal hand slots, you may treat your armor slot as if it were a second off-hand slot. You may only use this special slot to equip a one-handed melee weapon that belongs to the <strong>dagger</strong> or <strong>sword</strong> Categories—note that the <em>Monkey Grip</em> Skill does not turn two-handed weapons into one-handed weapons, and thus cannot be used in combination with Triple Slash.</p>\n<p>When you perform the 【⚔️Attack】 action while you have three <strong>daggers</strong> and/or <strong>swords</strong> equipped, you may attack once with each weapon. This follows the normal rules for <strong>two-weapon fighting</strong>: each of the three attacks loses the <strong>multi</strong> property and cannot gain it, and you treat the <strong>High Roll (HR)</strong> of each Accuracy Check as being equal to 0 when determining damage.</p>\n",
+      "duration": "",
+      "heroic_requirement": "you must have mastered one or more Classes among Dancer and Weaponmaster.",
+      "ignore_hr": false,
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Triple Slash",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "mMdpiA1IzeE9HWUk"
+  },
+  "type": "equippableItem"
+}

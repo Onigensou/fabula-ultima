@@ -1,0 +1,19 @@
+{
+  "_id": "HxH8pRIAy3tVzGFP",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1769851132098,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "w7jZN8CMjtlWQtyW",
+  "name": "Zero Power",
+  "sort": 100000,
+  "sorting": "a",
+  "type": "Item"
+}

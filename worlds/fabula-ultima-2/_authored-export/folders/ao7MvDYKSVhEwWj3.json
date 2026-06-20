@@ -1,0 +1,19 @@
+{
+  "_id": "ao7MvDYKSVhEwWj3",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": null,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "2.4.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "Testing Macro",
+  "sort": 1900000,
+  "sorting": "a",
+  "type": "Macro"
+}

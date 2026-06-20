@@ -1,0 +1,19 @@
+{
+  "_id": "yM3fFwZeUWnk2S35",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1756647100677,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "63Bc72HlDSrWxjXC",
+  "name": "Spiritist Spell",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

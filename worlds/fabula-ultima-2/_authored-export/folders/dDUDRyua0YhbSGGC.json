@@ -1,0 +1,19 @@
+{
+  "_id": "dDUDRyua0YhbSGGC",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1761258767102,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "w7jZN8CMjtlWQtyW",
+  "name": "NPC Skill",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

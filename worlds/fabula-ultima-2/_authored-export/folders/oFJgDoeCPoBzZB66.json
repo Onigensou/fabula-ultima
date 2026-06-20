@@ -1,0 +1,19 @@
+{
+  "_id": "oFJgDoeCPoBzZB66",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1748657144711,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.4.2"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "0vjCyV7DLcWZeLif",
+  "name": "Exploration Map",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Scene"
+}

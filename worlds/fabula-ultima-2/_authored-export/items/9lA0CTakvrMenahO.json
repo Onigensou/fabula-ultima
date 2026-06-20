@@ -1,0 +1,99 @@
+{
+  "_id": "9lA0CTakvrMenahO",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780631500029,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "urb3IyHlNbolH4tl",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "max_hp",
+          "mode": 2,
+          "priority": 20,
+          "value": "${level * 5}$"
+        }
+      ],
+      "description": "<p><em>Fortress:</em> Max HP +5×SL.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "fabula-ultima-companion": {
+          "crossScene": false,
+          "directorPermanent": false
+        }
+      },
+      "img": "icons/equipment/shoulder/pauldron-segmented-steel-yellow.webp",
+      "name": "Fortress",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "48mIiEzH4lkVf0Xf",
+  "img": "icons/equipment/shoulder/pauldron-segmented-steel-yellow.webp",
+  "name": "Fortress",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "class": "Guardian",
+      "cost": "",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>Permanently increase your maximum Hit Points by <strong>【SL × 5】</strong>.</p>",
+      "isCheck": false,
+      "level": 1,
+      "max_level": 4,
+      "name": "Fortress",
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_range": "-",
+      "skill_target": "-",
+      "skill_type": "Passive",
+      "type_damage": ""
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "9lA0CTakvrMenahO"
+  },
+  "type": "equippableItem"
+}

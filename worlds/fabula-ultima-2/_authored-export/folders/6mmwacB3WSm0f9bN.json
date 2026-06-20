@@ -1,0 +1,19 @@
+{
+  "_id": "6mmwacB3WSm0f9bN",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1767664847103,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "yIXRZeBsb9OQyi02",
+  "name": "Accessories",
+  "sort": 400000,
+  "sorting": "a",
+  "type": "Item"
+}

@@ -1,0 +1,19 @@
+{
+  "_id": "QlC3KPrfPs6P3iU6",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1774715326879,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "5KFkUixjqI5c6PpK",
+  "name": "Milky Holstein",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

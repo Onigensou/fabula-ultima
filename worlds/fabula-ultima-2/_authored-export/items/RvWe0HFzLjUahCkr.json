@@ -1,0 +1,57 @@
+{
+  "_id": "RvWe0HFzLjUahCkr",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757286780346,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "2OplVa9fwLYbzD8b",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/TaleSpinnerSkill5.png",
+  "name": "Greater Chloromancy",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 8200000,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Floralist",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>Once per turn when a <strong>magiseed</strong> leaves your <strong>garden</strong>, if that magiseed has one or more “<strong>at the end of your turn</strong>” effects, you may spend <strong>20 Mind Points</strong>. If you do, reproduce <strong>one</strong> of those effects (you may also choose an effect that doesn’t match the current sections of your <strong>Growth Clock</strong>).</p><p>Additionally, if you have acquired the 【📜<strong>Verdant Sway】</strong> Skill, your <strong>Rituals</strong> can now also influence and control <strong>soldier-Rank</strong> creatures belonging to the <strong>plant</strong> Species (but you are still unable to create them).</p>",
+      "duration": "",
+      "heroic_requirement": "You must have mastered the Floralist Class.",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Greater Chloromancy",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "RvWe0HFzLjUahCkr"
+  },
+  "type": "equippableItem"
+}

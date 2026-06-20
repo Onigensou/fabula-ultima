@@ -1,0 +1,116 @@
+{
+  "_id": "pvKt1FytqaqCkR0d",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780593572401,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "RtcA0tWMGekdpnmg",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1780593573275,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "bonus_defense",
+          "mode": 2,
+          "priority": 20,
+          "value": "aeSlotEquippedWhen(\"main:weapon&off:shield\", \"1\")"
+        },
+        {
+          "key": "weapon1_damage",
+          "mode": 2,
+          "priority": 20,
+          "value": "aeSlotEquippedWhen(\"main:weapon&off:shield\", \"5\")"
+        }
+      ],
+      "description": "<p><em>Hoplite:</em> Wielding weapon + shield: +1 Defense, +5 main-hand damage.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "RtcA0tWMGekdpnmg",
+          "originalParentId": "pvKt1FytqaqCkR0d",
+          "originalUuid": "Item.pvKt1FytqaqCkR0d.ActiveEffect.RtcA0tWMGekdpnmg"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/equipment/shield/heater-steel-gray.webp",
+      "name": "Hoplite",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "dwzaQarGIGnKc3j4",
+  "img": "icons/equipment/shield/heater-steel-gray.webp",
+  "name": "Hoplite",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "cost": "",
+      "description": "<p>As long as you have a <strong>weapon</strong> equipped in your <strong>main hand</strong> slot and a <strong>shield</strong> equipped in your <strong>off-hand</strong> slot, your attacks with that weapon deal <strong>5 extra damage</strong> and you gain a <strong>+1 bonus to Defense</strong>.</p><p><em>This Skill cannot be combined with custom weapons with the defence boost customization, nor with the Dual Shieldbearer Skill.</em></p>",
+      "heroic_requirement": "You must have mastered one or more Classes among Commander and Guardian.",
+      "isCheck": false,
+      "isHeroic": true,
+      "isReaction": false,
+      "level": 1,
+      "max_level": "1",
+      "name": "Hoplite",
+      "on_activate_effect_ref": "",
+      "skill_range": "-",
+      "skill_target": "-",
+      "skill_type": "Passive"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "pvKt1FytqaqCkR0d"
+  },
+  "type": "equippableItem"
+}

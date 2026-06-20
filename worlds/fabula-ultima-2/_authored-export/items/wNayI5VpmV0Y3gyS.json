@@ -1,0 +1,58 @@
+{
+  "_id": "wNayI5VpmV0Y3gyS",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757757643982,
+    "duplicateSource": "Item.iQwhZxs3JmvrWwym",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "QfTUK4kRvO3ww1hK",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/DWPassive1.png",
+  "name": "Where Evil Treads",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Hexer",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<!-- HEXER — Where Evil Treads -->\n<p>When your group journeys on the world map, you will make a <strong>discovery</strong> when the travel die rolls its <strong>maximum result</strong> (6 on a d6, on a d8, etc.). You still encounter a danger, as normal.</p>\n",
+      "duration": "",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Where Evil Treads",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "wNayI5VpmV0Y3gyS"
+  },
+  "type": "equippableItem"
+}

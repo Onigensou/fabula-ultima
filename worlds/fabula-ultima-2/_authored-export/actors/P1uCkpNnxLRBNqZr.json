@@ -1,0 +1,1812 @@
+{
+  "_id": "P1uCkpNnxLRBNqZr",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1767905486688,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.4"
+    },
+    "theatre": {
+      "settings": {
+        "emote": null,
+        "textcolor": null,
+        "textflyin": "typewriter",
+        "textfont": null,
+        "textsize": null,
+        "textstanding": "none"
+      }
+    }
+  },
+  "folder": "Nd8LnosrPid1eX1r",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Fafnir/Fafnir_Lightning.png",
+  "items": [
+    {
+      "_id": "5BLT8rXoDwUHz000",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1781976610577,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215724.226.png",
+      "name": "Storm Calm",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 700000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p><strong>Recovers 50 MP</strong></p>",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "effect_kind": "grant",
+              "effect_label": "sc_mp",
+              "grant_amount": "50",
+              "grant_resource": "mp",
+              "target_ref": "self"
+            }
+          },
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Storm Calm",
+          "on_activate_effect_ref": "sc_mp",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "Self",
+          "skill_type": "Spell",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "mJuSEmMc3A0HrqNO"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "5G44tRpOf2mzBFW3",
+      "_stats": {
+        "compendiumSource": "Item.mJuSEmMc3A0HrqNO",
+        "coreVersion": "12.343",
+        "createdTime": 1781875204222,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/deathflare.png",
+      "name": "Ruinous Breath",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "5000",
+          "animation_damage_timing_options": "offset",
+          "animation_script": "<p>// ============================================================================</p><p>// ONI Custom Event Helper (emit) – minimal inline version</p><p>// This makes ONI.emit(eventName, payload) available if it isn't already.</p><p>// ============================================================================</p><p>globalThis.ONI = globalThis.ONI ?? {};</p><p>if (!ONI.emit) {</p><p>// Default: LOCAL ONLY (perfect for UI-ish things like animationStart/End)</p><p>ONI.emit = function (eventName, payload = {}, options = {}) {</p><p>const { local = true, world = false } = options;</p><p>if (local) Hooks.callAll(eventName, payload);</p><p>if (world) game.socket.emit(\"world\", { action: eventName, payload });</p><p>};</p><p>// When you REALLY want to broadcast something across all clients</p><p>// (e.g. game-state changes, global cutscene flags), use this:</p><p>ONI.emitWorld = function (eventName, payload = {}) {</p><p>Hooks.callAll(eventName, payload);</p><p>game.socket.emit(\"world\", { action: eventName, payload });</p><p>};</p><p>if (!ONI._worldRx) {</p><p>ONI._worldRx = (data) =&gt; {</p><p>if (!data?.action) return;</p><p>Hooks.callAll(data.action, data.payload);</p><p>};</p><p>game.socket.on(\"world\", ONI._worldRx);</p><p>}</p><p>console.log(\"[ONI Events] Helper installed.\");</p><p>}</p><p>/**</p><p>* JRPG Lightning Breath Spell – Foundry VTT v12 + Sequencer + JB2A</p><p>* (wired to your system via oni:animationStart / oni:animationEnd events)</p><p>*</p><p>* - Source: selected token</p><p>* - Targets: ALL Foundry targets (multi-target supported)</p><p>* - Uses your spell cutscene template:</p><p>* dim screen, hide name/bars, fade out others, soft-pan to caster, play beams+impacts, pan back, restore</p><p>* - Emits oni:animationStart / oni:animationEnd (LOCAL ONLY) using ONI.emit</p><p>*/</p><p>(async () =&gt; {</p><p>if (!game.modules.get(\"sequencer\")?.active) {</p><p>return ui.notifications.error(\"Sequencer module is not active.\");</p><p>}</p><p>const sourceToken = canvas.tokens.controlled[0];</p><p>const targets = Array.from(game.user.targets ?? []);</p><p>if (!sourceToken) return ui.notifications.warn(\"Select a token first.\");</p><p>if (!targets.length) return ui.notifications.warn(\"Target at least 1 token first (use Foundry's targeting system).\");</p><p>// --- DEBUG: macro start --------------------------------------------------</p><p>console.log(</p><p>\"[ONI LightningBreath] START\",</p><p>\"source:\", sourceToken.name, `(${sourceToken.id})`,</p><p>\"targets:\", targets.map(t =&gt; `${t.name}(${t.id})`).join(\", \"),</p><p>\"time:\", new Date().toISOString()</p><p>);</p><p>// --- Broadcast: Animation START (LOCAL ONLY) ----------------------------</p><p>ONI.emit(\"oni:animationStart\", {</p><p>type: \"spellLightningBreath\",</p><p>sourceTokenId: sourceToken.id,</p><p>targetTokenIds: targets.map(t =&gt; t.id),</p><p>sceneId: canvas.scene?.id ?? null,</p><p>timestamp: Date.now()</p><p>}, { local: true, world: false });</p><p>// --- Tunables -----------------------------------------------------------</p><p>const fadeDuration = 400; // ms for token fade in/out</p><p>const dimAlpha = 0.6; // opacity for the screen dim</p><p>const dimFadeDuration = 300; // ms for dimmer fade in/out</p><p>const panDuration = 600; // ms to pan toward caster</p><p>const panBackDuration = 600; // ms to pan back</p><p>const spellDelay = 300; // ms before VFX after pan finishes</p><p>const impactDelay = 500; // ms after spell start to play impact</p><p>// Impact tint only (beam has NO tint)</p><p>const impactPurpleTint = \"#E36BFF\";</p><p>// Origin offset (your preferred values)</p><p>const lightningOriginOffsetX = 350; // world +X</p><p>const lightningOriginOffsetY = 150; // world +Y</p><p>// Scales</p><p>const spellScale = 1.25;</p><p>const impactScale = 0.55;</p><p>// Assets</p><p>const dimImageFile = \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/ScreenDimmer.png\";</p><p>const castSoundFile = \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Cast1.ogg\";</p><p>const breathSoundFile = \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Laser2.ogg\";</p><p>const impactSoundFile = \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Thunder8.ogg\";</p><p>const spellVfxFile =</p><p>\"modules/JB2A_DnD5e/Library/Generic/Template/Line/Breath_Weapon/BreathWeapon_Lightning01_Regular_Blue_30ft_Line_Burst_1200x200.webm\";</p><p>const impactVfxFile =</p><p>\"modules/JB2A_DnD5e/Library/Generic/Impact/Impact_12_Regular_Blue_400x400.webm\";</p><p>// --- Helper: get active combat tokens (fallback: all placeables) --------</p><p>const activeCombat = game.combats?.active;</p><p>let combatTokens = [];</p><p>if (activeCombat) {</p><p>for (const c of activeCombat.combatants) {</p><p>const tok = canvas.tokens.get(c.tokenId);</p><p>if (tok) combatTokens.push(tok);</p><p>}</p><p>} else {</p><p>combatTokens = canvas.tokens.placeables.slice();</p><p>}</p><p>// Everyone except source & ALL targets will be faded out</p><p>const keepIds = new Set([sourceToken.id, ...targets.map(t =&gt; t.id)]);</p><p>const others = combatTokens.filter(t =&gt; !keepIds.has(t.id));</p><p>// Store original opacity so we can restore it</p><p>const originalOpacity = new Map();</p><p>for (const t of others) originalOpacity.set(t.id, t.alpha ?? 1);</p><p>// --- Store & hide token nameplates + resource bars for ALL combat tokens -</p><p>const tokenDisplaySettings = new Map();</p><p>for (const t of combatTokens) {</p><p>const doc = t.document;</p><p>tokenDisplaySettings.set(t.id, {</p><p>displayName: doc.displayName,</p><p>displayBars: doc.displayBars</p><p>});</p><p>}</p><p>if (combatTokens.length &gt; 0) {</p><p>const hideUpdates = combatTokens.map(t =&gt; ({</p><p>_id: t.id,</p><p>displayName: CONST.TOKEN_DISPLAY_MODES.NONE,</p><p>displayBars: CONST.TOKEN_DISPLAY_MODES.NONE</p><p>}));</p><p>await canvas.scene.updateEmbeddedDocuments(\"Token\", hideUpdates);</p><p>}</p><p>// --- Start screen dimmer as a Sequencer effect BELOW tokens -------------</p><p>new Sequence()</p><p>.effect(dimImageFile)</p><p>.atLocation(sourceToken)</p><p>.scale(40)</p><p>.belowTokens()</p><p>.opacity(dimAlpha)</p><p>.persist()</p><p>.name(\"oni-spell-dimmer\")</p><p>.fadeIn(dimFadeDuration)</p><p>.fadeOut(dimFadeDuration)</p><p>.play();</p><p>// --- Fade out everyone except source & targets --------------------------</p><p>if (others.length &gt; 0) {</p><p>const fadeOutSeq = new Sequence();</p><p>for (const t of others) {</p><p>fadeOutSeq.animation().on(t).opacity(0).duration(fadeDuration);</p><p>}</p><p>await fadeOutSeq.play();</p><p>}</p><p>// --- Store original view (to pan back with Sequencer later) -------------</p><p>const originalView = canvas.getViewPosition</p><p>? canvas.getViewPosition()</p><p>: {</p><p>x: canvas.stage.pivot.x,</p><p>y: canvas.stage.pivot.y,</p><p>scale: canvas.stage.scale.x</p><p>};</p><p>// Soft pan toward source</p><p>const sourceCenter = sourceToken.center;</p><p>const panFactor = 0.35;</p><p>const panTarget = {</p><p>x: originalView.x + (sourceCenter.x - originalView.x) * panFactor,</p><p>y: originalView.y + (sourceCenter.y - originalView.y) * panFactor</p><p>};</p><p>// Origin point with your offset</p><p>const originPoint = {</p><p>x: sourceToken.center.x + lightningOriginOffsetX,</p><p>y: sourceToken.center.y + lightningOriginOffsetY</p><p>};</p><p>// --- DEBUG: before main Sequence ----------------------------------------</p><p>console.log(</p><p>\"[ONI LightningBreath] Playing main Sequence\",</p><p>\"spellVfxFile:\", spellVfxFile,</p><p>\"impactVfxFile:\", impactVfxFile,</p><p>\"originPoint:\", originPoint,</p><p>\"impactDelay:\", impactDelay,</p><p>\"time:\", new Date().toISOString()</p><p>);</p><p>// --- Main sequence: pan in -&gt; spell -&gt; impacts -&gt; pan back --------------</p><p>const seq = new Sequence();</p><p>// 1) Pan slightly toward source</p><p>seq.canvasPan()</p><p>.atLocation(panTarget)</p><p>.duration(panDuration)</p><p>.scale(originalView.scale)</p><p>.waitUntilFinished();</p><p>if (spellDelay &gt; 0) seq.wait(spellDelay);</p><p>// 2) Spell sounds</p><p>seq.sound()</p><p>.file(castSoundFile)</p><p>.volume(0.9);</p><p>seq.sound()</p><p>.file(breathSoundFile)</p><p>.volume(0.9)</p><p>.delay(3000);</p><p>// 3) Lightning breath beam for EACH target (NO TINT on beam)</p><p>// Add all beams; only the last one waits so they overlap instead of serializing.</p><p>targets.forEach((t, i) =&gt; {</p><p>const isLast = i === targets.length - 1;</p><p>const e = seq.effect()</p><p>.file(spellVfxFile)</p><p>.atLocation(originPoint)</p><p>.rotateTowards(t)</p><p>.scale(spellScale);</p><p>if (isLast) e.waitUntilFinished(0.5);</p><p>});</p><p>// 4) Impact sound ONCE + Impact VFX for EACH target (impact stays tinted purple)</p><p>seq.sound()</p><p>.file(impactSoundFile)</p><p>.delay(impactDelay)</p><p>.volume(0.9);</p><p>for (const t of targets) {</p><p>seq.effect()</p><p>.file(impactVfxFile)</p><p>.atLocation(t)</p><p>.delay(impactDelay)</p><p>.tint(impactPurpleTint)</p><p>.scale(impactScale);</p><p>}</p><p>// 5) Pan back</p><p>seq.canvasPan()</p><p>.atLocation({ x: originalView.x, y: originalView.y })</p><p>.duration(panBackDuration)</p><p>.scale(originalView.scale)</p><p>.waitUntilFinished();</p><p>await seq.play();</p><p>// --- DEBUG: after main Sequence completes -------------------------------</p><p>console.log(</p><p>\"[ONI LightningBreath] Main Sequence complete for\",</p><p>sourceToken.name, \"-&gt;\", targets.map(t =&gt; t.name).join(\", \"),</p><p>\"time:\", new Date().toISOString()</p><p>);</p><p>// --- Fade everyone back in ----------------------------------------------</p><p>if (others.length &gt; 0) {</p><p>const fadeInSeq = new Sequence();</p><p>for (const t of others) {</p><p>fadeInSeq.animation()</p><p>.on(t)</p><p>.opacity(originalOpacity.get(t.id) ?? 1)</p><p>.duration(fadeDuration);</p><p>}</p><p>await fadeInSeq.play();</p><p>}</p><p>// --- Restore token nameplates + resource bars ---------------------------</p><p>if (tokenDisplaySettings.size &gt; 0) {</p><p>const restoreUpdates = [];</p><p>for (const t of combatTokens) {</p><p>const saved = tokenDisplaySettings.get(t.id);</p><p>if (!saved) continue;</p><p>restoreUpdates.push({</p><p>_id: t.id,</p><p>displayName: saved.displayName,</p><p>displayBars: saved.displayBars</p><p>});</p><p>}</p><p>if (restoreUpdates.length &gt; 0) {</p><p>await canvas.scene.updateEmbeddedDocuments(\"Token\", restoreUpdates);</p><p>}</p><p>}</p><p>// --- End the dimmer effect so it fades out nicely ------------------------</p><p>if (globalThis.Sequencer?.EffectManager) {</p><p>Sequencer.EffectManager.endEffects({ name: \"oni-spell-dimmer\" });</p><p>}</p><p>// --- Broadcast: Animation END (LOCAL ONLY) -------------------------------</p><p>ONI.emit(\"oni:animationEnd\", {</p><p>type: \"spellLightningBreath\",</p><p>sourceTokenId: sourceToken.id,</p><p>targetTokenIds: targets.map(t =&gt; t.id),</p><p>sceneId: canvas.scene?.id ?? null,</p><p>timestamp: Date.now()</p><p>}, { local: true, world: false });</p><p>// --- DEBUG: macro end ----------------------------------------------------</p><p>console.log(</p><p>\"[ONI LightningBreath] END\",</p><p>\"source:\", sourceToken.name,</p><p>\"time:\", new Date().toISOString()</p><p>);</p><p>})();</p><p></p>",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "100 MP",
+          "damage_bonus": "300 / ACTION_TARGET_COUNT",
+          "defense_target_type": "mdef",
+          "description": "<p>Deal <strong>300 </strong><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(155, 89, 182) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(215, 169, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span><strong>damage</strong>, divided among all active enemies</p>",
+          "duration": "Instantaneous",
+          "heroic_requirement": "",
+          "ignore_hr": true,
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": true,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Ruinous Breath",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "custom",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "All Enemy",
+          "skill_type": "Spell",
+          "type_damage": "bolt",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "mJuSEmMc3A0HrqNO"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "C286kW050ikBQ85g",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1781976610720,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/08_DRG/dragon_sight.png",
+      "name": "Summon Elemental Drake",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 700000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "",
+          "defense_target_type": "def",
+          "description": "<p>Summon <strong>1 Flame Drake </strong>and <strong>1 Lightning Drake </strong>to the battlefield</p>",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "effect_kind": "summon",
+              "effect_label": "summon_drakes",
+              "summon_act_this_round": false,
+              "summon_actor": "Actor.2vmogpXhRJZzAvXt,Actor.mQlh6GTyw2449hXC",
+              "summon_count": "1"
+            }
+          },
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Summon Elemental Drake",
+          "on_activate_effect_ref": "summon_drakes",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "mJuSEmMc3A0HrqNO"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "D9P5IDOhxfrIfHvH",
+      "_stats": {
+        "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
+        "coreVersion": "12.343",
+        "createdTime": 1781875204222,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213219.279.png",
+      "name": "Torment",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "30 MP",
+          "damage_bonus": "",
+          "defense_target_type": "def",
+          "description": "<p>Unleash a terrifying aura, Inflicts <strong>All Basic Debuffs </strong>on the target, the target may <strong>choose another ally,</strong> if they do, this action target that ally instead.</p>",
+          "duration": "3 Rounds",
+          "effect_table": {
+            "0": {
+              "chain_steps": "t_slow,t_dazed,t_weak,t_shaken,t_enraged,t_poisoned",
+              "effect_kind": "chain",
+              "effect_label": "torment_all"
+            },
+            "1": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Slow",
+              "effect_kind": "apply_ae",
+              "effect_label": "t_slow",
+              "target_ref": "action_targets"
+            },
+            "2": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Dazed",
+              "effect_kind": "apply_ae",
+              "effect_label": "t_dazed",
+              "target_ref": "action_targets"
+            },
+            "3": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Weak",
+              "effect_kind": "apply_ae",
+              "effect_label": "t_weak",
+              "target_ref": "action_targets"
+            },
+            "4": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Shaken",
+              "effect_kind": "apply_ae",
+              "effect_label": "t_shaken",
+              "target_ref": "action_targets"
+            },
+            "5": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Enraged",
+              "effect_kind": "apply_ae",
+              "effect_label": "t_enraged",
+              "target_ref": "action_targets"
+            },
+            "6": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Poisoned",
+              "effect_kind": "apply_ae",
+              "effect_label": "t_poisoned",
+              "target_ref": "action_targets"
+            },
+            "7": {
+              "destination_ref": "torment_pick",
+              "effect_kind": "redirect_target",
+              "effect_label": "torment_redirect"
+            },
+            "8": {
+              "candidate_source": "combat",
+              "category": "ally",
+              "count": "1",
+              "effect_kind": "targeting",
+              "effect_label": "torment_pick",
+              "exclude_self": true,
+              "mode": "exact"
+            }
+          },
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Torment",
+          "on_activate_effect_ref": "torment_all",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "reaction_effect_ref": "torment_redirect",
+              "reaction_passive_mode": "ask",
+              "reaction_responder": "target",
+              "reaction_source_skill": "Torment",
+              "reaction_trigger": "creature_targeted_by_action"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "One Enemy",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "UKzHkmIJcjXZ4GFR"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "ejrKWNUQJPXB6cS6",
+      "_stats": {
+        "compendiumSource": "Item.iFdNNGp4OVZVMEcB",
+        "coreVersion": "12.343",
+        "createdTime": 1781875204222,
+        "duplicateSource": "Item.iFdNNGp4OVZVMEcB",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Els/MagicResistanceMasteryR.png",
+      "name": "Zero Trigger: Suffering",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "",
+          "defense_target_type": "def",
+          "description": "<p>At the start of any turn, if there's an enemy in <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a><strong><span style=\"text-decoration: underline;\">,</span></strong></span> Fafnir <strong>gain 1 Zero Power</strong></p>",
+          "duration": "-",
+          "effect_table": {
+            "0": {
+              "effect_kind": "grant",
+              "effect_label": "suffering_zp",
+              "grant_amount": "1",
+              "grant_resource": "zero_power",
+              "target_ref": "self"
+            }
+          },
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Zero Trigger: Suffering",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "ENEMY_IN_CRISIS == 1",
+              "reaction_effect_ref": "suffering_zp",
+              "reaction_passive_mode": "force",
+              "reaction_source": "",
+              "reaction_source_skill": "",
+              "reaction_trigger": "turn_start"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "OC8vNuHXdOf5tJMq"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "eLMFbgeZkVWUbE0i",
+      "_stats": {
+        "compendiumSource": "Item.mJuSEmMc3A0HrqNO",
+        "coreVersion": "12.343",
+        "createdTime": 1781875204222,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "bS8dwsANxoxdpiaT",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1781976611625,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p><em>Searing Brand:</em> taking damage detonates the mark for 50 Fire; at your turn start you may pass it to an ally.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 3,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "isPredefined": true,
+              "originalId": "p9LiHBdGDaDIlOtQ",
+              "originalParentId": "XVOWOq9oUmEECGrU",
+              "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.p9LiHBdGDaDIlOtQ"
+            },
+            "dfreds-convenient-effects": {
+              "ceEffectId": "ce-searing-brand",
+              "isBackup": false,
+              "isConvenient": true,
+              "isDynamic": false,
+              "isTemporary": false,
+              "isViewable": true
+            },
+            "fabula-ultima-companion": {
+              "chargeKey": "searing_brand",
+              "charges": 3,
+              "chargesMax": 3,
+              "lifetimeMode": "target_turn_start",
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "damage_amount": "50",
+                    "damage_cause": "damage",
+                    "damage_element": "fire",
+                    "effect_kind": "deal_damage",
+                    "effect_label": "sb_explode",
+                    "target_ref": "self"
+                  },
+                  "1": {
+                    "chain_steps": "sb_pick,sb_move",
+                    "effect_kind": "chain",
+                    "effect_label": "sb_transfer"
+                  },
+                  "2": {
+                    "candidate_source": "combat",
+                    "category": "ally",
+                    "count": "1",
+                    "effect_kind": "targeting",
+                    "effect_label": "sb_pick",
+                    "exclude_self": true,
+                    "mode": "exact"
+                  },
+                  "3": {
+                    "ae_template_ref": "Searing Brand",
+                    "effect_kind": "transfer_ae",
+                    "effect_label": "sb_move",
+                    "from_ref": "self",
+                    "target_ref": "sb_pick"
+                  }
+                },
+                "reaction_config_table": {
+                  "0": {
+                    "reaction_effect_ref": "sb_explode",
+                    "reaction_passive_mode": "on",
+                    "reaction_resource_filter": "hp",
+                    "reaction_source": "self",
+                    "reaction_trigger": "creature_lose_resource"
+                  },
+                  "1": {
+                    "reaction_effect_ref": "sb_transfer",
+                    "reaction_passive_mode": "ask",
+                    "reaction_source": "self",
+                    "reaction_trigger": "turn_start"
+                  }
+                }
+              }
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T214026.610.png",
+          "name": "Searing Brand",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-searing-brand"
+          ],
+          "system": {
+            "tags": [
+              "debuff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T214026.610.png",
+      "name": "Searing Brand",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 700000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "30 MP",
+          "damage_bonus": "",
+          "defense_target_type": "def",
+          "description": "<p>Place a Draconic Curse on a target, For <strong>3 Rounds, </strong>if the target takes damage, the mark explode, dealing <strong>bonus</strong> <strong>50 </strong><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(226, 88, 34) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span>&nbsp;<strong>damage</strong> to the marked target</p><p>At the beginning of the <strong>marked</strong> creature turn, they may <strong>transfer</strong> the marked to an ally as a <strong>Free Action</strong></p>",
+          "duration": "3 Rounds",
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Searing Brand",
+              "effect_kind": "apply_ae",
+              "effect_label": "sb_mark",
+              "target_ref": "action_targets"
+            }
+          },
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Searing Brand",
+          "on_activate_effect_ref": "sb_mark",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "One Creature",
+          "skill_type": "Spell",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "mJuSEmMc3A0HrqNO"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "FE8qB6pC9i7CWqSg",
+      "_stats": {
+        "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
+        "coreVersion": "12.343",
+        "createdTime": 1781875204222,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215134.796.png",
+      "name": "Rend",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {
+            "0": {
+              "$deleted": false,
+              "active_effect_application": "add",
+              "active_effect_apply_mode": "percentage",
+              "active_effect_dice_1": "",
+              "active_effect_dice_2": "",
+              "active_effect_dl": "0",
+              "active_effect_id": "n3wpBsy66HMziTPB",
+              "active_effect_percent": "100",
+              "active_effect_target": "enemy",
+              "active_effect_trigger": "on_hit"
+            }
+          },
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "2",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "50",
+          "defense_target_type": "def",
+          "description": "<p>On hit, inflicts <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GePNxftPupElcCWp\" data-id=\"GePNxftPupElcCWp\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bleed</span></strong></a></span>&nbsp;to the target</p>",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Bleed",
+              "effect_kind": "apply_ae",
+              "effect_label": "rend_bleed",
+              "target_ref": "hit_action_targets"
+            }
+          },
+          "heroic_requirement": "",
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Rend",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "",
+              "reaction_effect_ref": "rend_bleed",
+              "reaction_passive_mode": "on",
+              "reaction_source": "self",
+              "reaction_source_skill": "Rend",
+              "reaction_trigger": "creature_deals_damage"
+            }
+          },
+          "rolled_atr1": "MIG",
+          "rolled_atr2": "DEX",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Melee",
+          "skill_target": "One Creature",
+          "skill_type": "Attack",
+          "type_damage": "Physical",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "yWlkWZC2vLf4J5Pv"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "mYlHtbtd808Wrze0",
+      "_stats": {
+        "compendiumSource": "Item.mJuSEmMc3A0HrqNO",
+        "coreVersion": "12.343",
+        "createdTime": 1781875204222,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215904.664.png",
+      "name": "Draconic Domination",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 700000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "30 MP",
+          "damage_bonus": "",
+          "defense_target_type": "def",
+          "description": "<p>The target roll a <strong>DL15 【WLP】+【MIG】</strong>check, <strong>on a failure, </strong>they suffers <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.x6ByoJnflDAuVn9r\" data-id=\"x6ByoJnflDAuVn9r\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Charm</span></strong></a></span></span></p><p>During the <strong>Charmed </strong>creature turn, they <strong>must spend their action </strong>to performs a <strong>harmful action </strong>to an ally</p>",
+          "duration": "3 Rounds",
+          "effect_table": {
+            "0": {
+              "chain_steps": "dom_save,dom_charm,dom_dominate",
+              "effect_kind": "chain",
+              "effect_label": "dom_unleash"
+            },
+            "1": {
+              "effect_kind": "save_check",
+              "effect_label": "dom_save",
+              "save_attr1": "wlp",
+              "save_attr2": "mig",
+              "save_dl": "15",
+              "target_ref": "action_targets"
+            },
+            "2": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Charmed",
+              "effect_kind": "apply_ae",
+              "effect_label": "dom_charm",
+              "target_ref": "save_failed_targets"
+            },
+            "3": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Draconic Domination",
+              "effect_kind": "apply_ae",
+              "effect_label": "dom_dominate",
+              "target_ref": "save_failed_targets"
+            }
+          },
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Draconic Domination",
+          "on_activate_effect_ref": "dom_unleash",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "One Enemy",
+          "skill_type": "Spell",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "mJuSEmMc3A0HrqNO"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "mZnxgj2JnNYO2Hat",
+      "_stats": {
+        "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
+        "coreVersion": "12.343",
+        "createdTime": 1781875204222,
+        "duplicateSource": "Item.UKzHkmIJcjXZ4GFR",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T214702.650.png",
+      "name": "Zero Power: Cruel Ultimatum",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "6 Zero Power",
+          "damage_bonus": "",
+          "defense_target_type": "def",
+          "description": "<p>Offer the enemy a vile edict, <strong>Enemy Choose:</strong></p><ul><li>One target enemy takes <strong>300</strong> <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(226, 88, 34) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span>&nbsp;damage (Enemy Choice)</li><li>All enemies take <strong>120</strong> <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(155, 89, 182) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(215, 169, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a></span></span> damage</li></ul>",
+          "duration": "-",
+          "effect_table": {
+            "0": {
+              "chain_steps": "cu_cost,cu_choice",
+              "effect_kind": "open_action_menu",
+              "effect_label": "cu_choice",
+              "menu_option_refs": "cu_optA,cu_optB",
+              "menu_responder": "enemy",
+              "menu_subtitle": "The enemy chooses their fate",
+              "menu_title": "Cruel Ultimatum"
+            },
+            "1": {
+              "chain_steps": "cu_pick_one,cu_300",
+              "consume_amount": "6",
+              "consume_resource": "zero_power",
+              "effect_kind": "chain",
+              "effect_label": "cu_optA",
+              "menu_label": "One of us takes 300 Fire (we choose who)",
+              "target_ref": "self"
+            },
+            "2": {
+              "candidate_source": "combat",
+              "category": "enemy",
+              "count": "1",
+              "effect_kind": "targeting",
+              "effect_label": "cu_pick_one",
+              "menu_option_refs": "cu_optA,cu_optB",
+              "menu_responder": "enemy",
+              "menu_subtitle": "The enemy chooses their fate",
+              "menu_title": "Cruel Ultimatum",
+              "mode": "exact"
+            },
+            "3": {
+              "chain_steps": "cu_pick_one,cu_300",
+              "damage_amount": "300",
+              "damage_cause": "damage",
+              "damage_element": "fire",
+              "effect_kind": "deal_damage",
+              "effect_label": "cu_300",
+              "menu_label": "One of us takes 300 Fire (we choose who)",
+              "target_ref": "cu_pick_one"
+            },
+            "4": {
+              "candidate_source": "combat",
+              "category": "enemy",
+              "count": "1",
+              "damage_amount": "120",
+              "damage_cause": "damage",
+              "damage_element": "bolt",
+              "effect_kind": "deal_damage",
+              "effect_label": "cu_optB",
+              "menu_label": "All of us take 120 Bolt",
+              "mode": "exact",
+              "target_ref": "cu_all"
+            },
+            "5": {
+              "candidate_source": "combat",
+              "category": "enemy",
+              "damage_amount": "300",
+              "damage_cause": "damage",
+              "damage_element": "fire",
+              "effect_kind": "targeting",
+              "effect_label": "cu_all",
+              "mode": "all",
+              "target_ref": "cu_pick_one"
+            }
+          },
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Zero Power: Cruel Ultimatum",
+          "on_activate_effect_ref": "cu_choice",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Any",
+          "skill_target": "All Enemy",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "aZsP1q7CHCB33kXz"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "PTmYIP52JtFcOHua",
+      "_stats": {
+        "compendiumSource": "Item.mJuSEmMc3A0HrqNO",
+        "coreVersion": "12.343",
+        "createdTime": 1781875204222,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/dreadwyrm_trance.png",
+      "name": "Dreadwyrm Descent",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {
+            "0": {
+              "$deleted": false,
+              "active_effect_application": "add",
+              "active_effect_apply_mode": "target_check",
+              "active_effect_dice_1": "wlp",
+              "active_effect_dice_2": "mig",
+              "active_effect_dl": "15",
+              "active_effect_id": "952hVVfrHOoUaVhg",
+              "active_effect_percent": "0",
+              "active_effect_target": "enemy",
+              "active_effect_trigger": "on_attack"
+            },
+            "1": {
+              "$deleted": false,
+              "active_effect_application": "add",
+              "active_effect_apply_mode": "target_check",
+              "active_effect_dice_1": "wlp",
+              "active_effect_dice_2": "mig",
+              "active_effect_dl": "15",
+              "active_effect_id": "NitHvCFQ3b6vRdyY",
+              "active_effect_percent": "0",
+              "active_effect_target": "enemy",
+              "active_effect_trigger": "on_attack"
+            },
+            "2": {
+              "$deleted": false,
+              "active_effect_application": "add",
+              "active_effect_apply_mode": "target_check",
+              "active_effect_dice_1": "wlp",
+              "active_effect_dice_2": "mig",
+              "active_effect_dl": "15",
+              "active_effect_id": "tLyHR6RhLcpb7U1R",
+              "active_effect_percent": "0",
+              "active_effect_target": "enemy",
+              "active_effect_trigger": "on_attack"
+            }
+          },
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.UqXGUQM31kWc7BTc\" data-id=\"UqXGUQM31kWc7BTc\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Unleash</span></strong></a></span></span></p></li></ul><p>All enemy roll a <strong>DL 15 【MIG】+【WLP】</strong>Check, on a failure, they suffers <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.TOF8epes1eGHwx5J\" data-id=\"TOF8epes1eGHwx5J\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Frightened</span></strong></a><strong><span style=\"text-decoration: underline;\">, </span></strong><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GqqgHkKOs0hkghdG\" data-id=\"GqqgHkKOs0hkghdG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Paralyzed</span></strong></a></span></span> and<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><strong><span style=\"text-decoration: underline;\"> </span></strong><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Q8FTFPsXVpNj2zxT\" data-id=\"Q8FTFPsXVpNj2zxT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Silence</span></strong></a></span></span>&nbsp;</p>",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "chain_steps": "dd_save,dd_frightened,dd_paralyzed,dd_silence",
+              "effect_kind": "chain",
+              "effect_label": "dd_unleash"
+            },
+            "1": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Frightened",
+              "effect_kind": "apply_ae",
+              "effect_label": "dd_frightened",
+              "target_ref": "save_failed_targets"
+            },
+            "2": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Paralyzed",
+              "effect_kind": "apply_ae",
+              "effect_label": "dd_paralyzed",
+              "target_ref": "save_failed_targets"
+            },
+            "3": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Silence",
+              "effect_kind": "apply_ae",
+              "effect_label": "dd_silence",
+              "target_ref": "save_failed_targets"
+            },
+            "4": {
+              "action_ref": "self",
+              "effect_kind": "free_action",
+              "effect_label": "dd_autocast"
+            },
+            "5": {
+              "effect_kind": "save_check",
+              "effect_label": "dd_save",
+              "save_attr1": "mig",
+              "save_attr2": "wlp",
+              "save_dl": "15",
+              "target_ref": "action_targets"
+            }
+          },
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Dreadwyrm Descent",
+          "on_activate_effect_ref": "dd_unleash",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "reaction_effect_ref": "dd_autocast",
+              "reaction_passive_mode": "force",
+              "reaction_source": "",
+              "reaction_trigger": "conflict_start"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Any",
+          "skill_target": "All Enemy",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "mJuSEmMc3A0HrqNO"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "XohaJJnUhPSYLzFG",
+      "_stats": {
+        "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
+        "coreVersion": "12.343",
+        "createdTime": 1781875204222,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213329.101.png",
+      "name": "Condemn",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "7",
+          "class": "NPC",
+          "cost": "20 MP",
+          "damage_bonus": "100",
+          "defense_target_type": "mdef",
+          "description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.2hNU23YLpCcZCCmf\" data-id=\"2hNU23YLpCcZCCmf\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Pierce</span></strong></a></span></span></p></li></ul><p>Deal heavy <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(75, 0, 130) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span><strong>damage</strong> to a target, the target may <strong>choose another ally, </strong>if they do, this action target that ally instead</p>",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "destination_ref": "condemn_pick",
+              "effect_kind": "redirect_target",
+              "effect_label": "condemn_redirect"
+            },
+            "1": {
+              "candidate_source": "combat",
+              "category": "ally",
+              "count": "1",
+              "effect_kind": "targeting",
+              "effect_label": "condemn_pick",
+              "exclude_self": true,
+              "mode": "exact"
+            }
+          },
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Condemn",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "reaction_effect_ref": "condemn_redirect",
+              "reaction_passive_mode": "ask",
+              "reaction_responder": "target",
+              "reaction_source_skill": "Condemn",
+              "reaction_trigger": "creature_targeted_by_action"
+            }
+          },
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "One Enemy",
+          "skill_type": "Active",
+          "type_damage": "Dark",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "UKzHkmIJcjXZ4GFR"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "⭐️ Fafnir",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "prototypeToken": {
+    "actorLink": true,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 50,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar4": {
+            "attribute": "attributeBar.zero_power_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#e3580d",
+            "mincolor": "#ec9736",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "percent",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          }
+        }
+      },
+      "hex-size-support": {
+        "hideBorder": true,
+        "hideFill": true
+      },
+      "token-variants": {
+        "disableHUDButton": false,
+        "randomImgDefault": ""
+      },
+      "token-z": {
+        "zIndex": 0
+      },
+      "wall-height": {
+        "tokenHeight": 0
+      }
+    },
+    "height": 1.5,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "⭐️ Fafnir",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 0,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 5,
+      "scaleY": 5,
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Fafnir/Fafnir_Lightning.png",
+      "tint": "#ffffff"
+    },
+    "width": 1.5
+  },
+  "sort": 3300000,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {
+      "action_pattern_table": {},
+      "activation": "4",
+      "affinity_1": "NA",
+      "affinity_2": "RS",
+      "affinity_3": "RS",
+      "affinity_4": "IM",
+      "affinity_5": "IM",
+      "affinity_6": "RS",
+      "affinity_7": "NA",
+      "affinity_8": "VU",
+      "affinity_9": "NA",
+      "animation_table": {},
+      "arcane_ef": "100",
+      "attack_accuracy_mod_all": 0,
+      "attack_accuracy_mod_magic": 0,
+      "attack_accuracy_mod_melee": 0,
+      "attack_accuracy_mod_ranged": 0,
+      "attack_list": {
+        "FE8qB6pC9i7CWqSg": {
+          "active_target": "One Creature",
+          "attack_description": "<p>On hit, inflicts <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GePNxftPupElcCWp\" data-id=\"GePNxftPupElcCWp\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bleed</span></strong></a></span>&nbsp;to the target</p>",
+          "attribute_die1": "MIG",
+          "attribute_die2": "DEX",
+          "id": "${item.id}",
+          "name": "Rend",
+          "roll": "",
+          "uuid": "Actor.P1uCkpNnxLRBNqZr.Item.FE8qB6pC9i7CWqSg"
+        }
+      },
+      "attribute": "LIGHTNING",
+      "battle_facing_direction": "right",
+      "bonus_hp": 0,
+      "bonus_mp": 0,
+      "bow_ef": "100",
+      "brawling_ef": "100",
+      "check_mod_all": 0,
+      "check_mod_stealth": 0,
+      "condition_anomaly": "NA",
+      "condition_bane": "NA",
+      "condition_berserk": "IM",
+      "condition_bleed": "NA",
+      "condition_blind": "NA",
+      "condition_burn": "NA",
+      "condition_charm": "RS",
+      "condition_confused": "NA",
+      "condition_curse": "NA",
+      "condition_dazed": "IM",
+      "condition_delayed": "NA",
+      "condition_despair": "IM",
+      "condition_disarmed": "NA",
+      "condition_doom": "IM",
+      "condition_enraged": "NA",
+      "condition_envenomed": "NA",
+      "condition_fatigue": "NA",
+      "condition_frightened": "IM",
+      "condition_grappled": "RS",
+      "condition_hypothermia": "NA",
+      "condition_isolate": "NA",
+      "condition_obscure": "NA",
+      "condition_oil": "NA",
+      "condition_panic": "NA",
+      "condition_paralyzed": "IM",
+      "condition_petrify": "NA",
+      "condition_poisoned": "NA",
+      "condition_shaken": "IM",
+      "condition_silence": "IM",
+      "condition_slow": "IM",
+      "condition_stagger": "NA",
+      "condition_suppress": "NA",
+      "condition_turbulence": "NA",
+      "condition_weak": "IM",
+      "condition_wet": "NA",
+      "condition_wither": "NA",
+      "condition_zombie": "IM",
+      "critical_damage_bonus": 0,
+      "critical_damage_multiplier": 1,
+      "critical_dice_range": 0,
+      "current_hp": "1824",
+      "current_ip": "0",
+      "current_mp": "400",
+      "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Fafnir/Fafnir_Lightning.png",
+      "cut_in_fumble": "",
+      "cut_in_offset_y": "",
+      "cut_in_zero_power": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Fafnir/Fafnir_Lightning.png",
+      "dagger_ef": "50",
+      "damage_receiving_mod_air": 0,
+      "damage_receiving_mod_all": 0,
+      "damage_receiving_mod_bolt": 0,
+      "damage_receiving_mod_dark": 0,
+      "damage_receiving_mod_earth": 0,
+      "damage_receiving_mod_fire": 0,
+      "damage_receiving_mod_ice": 0,
+      "damage_receiving_mod_light": 0,
+      "damage_receiving_mod_melee": 0,
+      "damage_receiving_mod_physical": 0,
+      "damage_receiving_mod_poison": 0,
+      "damage_receiving_mod_range": 0,
+      "def_mod": "+4",
+      "default_facing_direction": "left",
+      "defense": 16,
+      "dex_base": "12",
+      "dex_current": 12,
+      "enmity": 100,
+      "event_timeline_table": {},
+      "extra_damage_mod_air": 0,
+      "extra_damage_mod_all": 0,
+      "extra_damage_mod_arcane": 0,
+      "extra_damage_mod_bolt": 0,
+      "extra_damage_mod_bow": 0,
+      "extra_damage_mod_brawling": 0,
+      "extra_damage_mod_dagger": 0,
+      "extra_damage_mod_dark": 0,
+      "extra_damage_mod_earth": 0,
+      "extra_damage_mod_fire": 0,
+      "extra_damage_mod_firearm": 0,
+      "extra_damage_mod_flail": 0,
+      "extra_damage_mod_heavy": 0,
+      "extra_damage_mod_ice": 0,
+      "extra_damage_mod_light": 0,
+      "extra_damage_mod_melee": 0,
+      "extra_damage_mod_physical": 0,
+      "extra_damage_mod_poison": 0,
+      "extra_damage_mod_ranged": 0,
+      "extra_damage_mod_spear": 0,
+      "extra_damage_mod_spell": 0,
+      "extra_damage_mod_sword": 0,
+      "extra_damage_mod_thrown": 0,
+      "firearm_ef": "100",
+      "flail_ef": "100",
+      "gorger": false,
+      "heavy_ef": "100",
+      "icon_offset_x": "",
+      "icon_offset_y": "",
+      "icon_scale": "",
+      "id": "P1uCkpNnxLRBNqZr",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Fafnir/Fafnir_Lightning.png",
+      "init": "6",
+      "ins_base": "12",
+      "ins_current": 12,
+      "isAlmighty": false,
+      "isAwake": false,
+      "isBlacksmith": false,
+      "isBoss": true,
+      "isClarity": false,
+      "isCustomEvent": false,
+      "isDazed": false,
+      "isEnergized": false,
+      "isEnlighten": false,
+      "isEnraged": false,
+      "isFocus": false,
+      "isMasterful": false,
+      "isPhantasm": false,
+      "isPoisoned": false,
+      "isShaken": false,
+      "isShop": false,
+      "isSlow": false,
+      "isStolen": false,
+      "isStrong": false,
+      "isSummon": false,
+      "isSwift": false,
+      "isUnyielding": false,
+      "isVillain": true,
+      "isWeak": false,
+      "level": "50",
+      "lifesteal_percentage": 0,
+      "lifesteal_value": 0,
+      "magic_defense": 17,
+      "manadrain_percentage": 0,
+      "manadrain_value": 0,
+      "max_hp": "1824",
+      "max_ip": "0",
+      "max_mp": "400",
+      "max_zero": "6",
+      "mdef_mod": "+5",
+      "mig_base": "12",
+      "mig_current": 12,
+      "mimic": false,
+      "minimum_critical_dice": 6,
+      "name": "⭐️ Fafnir",
+      "normal_spell_list": {
+        "5G44tRpOf2mzBFW3": {
+          "cost": "100 MP",
+          "duration": "Instantaneous",
+          "id": "${item.id}",
+          "name": "Ruinous Breath",
+          "roll": "",
+          "spell_description": "<p>Deal <strong>300 </strong><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(155, 89, 182) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(215, 169, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span><strong>damage</strong>, divided among all active enemies</p>",
+          "spell_target": "All Enemy",
+          "uuid": "Actor.P1uCkpNnxLRBNqZr.Item.5G44tRpOf2mzBFW3"
+        },
+        "C286kW050ikBQ85g": {
+          "cost": "-",
+          "duration": "Instantaneous",
+          "id": "${item.id}",
+          "name": "Summon Elemental Drake",
+          "roll": "",
+          "spell_description": "<p>Summon <strong>1 Flame Drake </strong>and <strong>1 Lightning Drake </strong>to the battlefield</p>",
+          "spell_target": "Special",
+          "uuid": "Actor.P1uCkpNnxLRBNqZr.Item.C286kW050ikBQ85g"
+        },
+        "FE8qB6pC9i7CWqSg": {
+          "cost": "-",
+          "duration": "Instantaneous",
+          "id": "${item.id}",
+          "name": "Rend",
+          "roll": "",
+          "spell_description": "",
+          "spell_target": "One Creature",
+          "uuid": "Actor.P1uCkpNnxLRBNqZr.Item.FE8qB6pC9i7CWqSg"
+        },
+        "PTmYIP52JtFcOHua": {
+          "cost": "-",
+          "duration": "Instantaneous",
+          "id": "${item.id}",
+          "name": "Dreadwyrm Descent",
+          "roll": "",
+          "spell_description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.UqXGUQM31kWc7BTc\" data-id=\"UqXGUQM31kWc7BTc\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Unleash</span></strong></a></span></span></p></li></ul><p>All enemy roll a <strong>DL 15 【MIG】+【WLP】</strong>Check, on a failure, they suffers <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.TOF8epes1eGHwx5J\" data-id=\"TOF8epes1eGHwx5J\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Frightened</span></strong></a><strong><span style=\"text-decoration: underline;\">, </span></strong><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GqqgHkKOs0hkghdG\" data-id=\"GqqgHkKOs0hkghdG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Paralyzed</span></strong></a></span></span> and<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><strong><span style=\"text-decoration: underline;\"> </span></strong><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Q8FTFPsXVpNj2zxT\" data-id=\"Q8FTFPsXVpNj2zxT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Silence</span></strong></a></span></span>&nbsp;</p>",
+          "spell_target": "All Enemy",
+          "uuid": "Actor.P1uCkpNnxLRBNqZr.Item.PTmYIP52JtFcOHua"
+        },
+        "eLMFbgeZkVWUbE0i": {
+          "cost": "30 MP",
+          "duration": "3 Rounds",
+          "id": "${item.id}",
+          "name": "Searing Brand",
+          "roll": "",
+          "spell_description": "<p>Place a Draconic Curse on a target, For <strong>3 Rounds, </strong>if the target takes damage, the mark explode, dealing <strong>bonus</strong> <strong>50 </strong><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(226, 88, 34) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span>&nbsp;<strong>damage</strong> to the marked target</p><p>At the beginning of the <strong>marked</strong> creature turn, they may <strong>transfer</strong> the marked to an ally as a <strong>Free Action</strong></p>",
+          "spell_target": "One Creature",
+          "uuid": "Actor.P1uCkpNnxLRBNqZr.Item.eLMFbgeZkVWUbE0i"
+        },
+        "mYlHtbtd808Wrze0": {
+          "cost": "30 MP",
+          "duration": "3 Rounds",
+          "id": "${item.id}",
+          "name": "Draconic Domination",
+          "roll": "",
+          "spell_description": "<p>The target roll a <strong>DL15 【WLP】+【MIG】</strong>check, <strong>on a failure, </strong>they suffers <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.x6ByoJnflDAuVn9r\" data-id=\"x6ByoJnflDAuVn9r\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Charm</span></strong></a></span></span></p><p>During the <strong>Charmed </strong>creature turn, they <strong>must spend their action </strong>to performs a <strong>harmful action </strong>to an ally</p>",
+          "spell_target": "One Enemy",
+          "uuid": "Actor.P1uCkpNnxLRBNqZr.Item.mYlHtbtd808Wrze0"
+        }
+      },
+      "npc_rank": "champion",
+      "override_all_damage_type": "None",
+      "override_attack_damage_type": "None",
+      "override_damage_type": "None",
+      "override_spell_damage_type": "None",
+      "rare": false,
+      "resource_maxValue_1": "0",
+      "resource_maxValue_2": "0",
+      "resource_maxValue_3": "0",
+      "resource_value_1": "0",
+      "resource_value_2": "0",
+      "resource_value_3": "0",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "shield_type": "PHYSICAL",
+      "shield_value": "0",
+      "showMacro": false,
+      "skill_active_list": {
+        "1u5234qnQ9c9adE2": {
+          "active_cost": "50 MP",
+          "active_description": "<p>Imprison the target in a cage of lightning, inflicts <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.yE84jvVXyebDulAP\" data-id=\"yE84jvVXyebDulAP\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Isolate</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span>to the target until the prison <strong>breaks</strong>.</p>",
+          "active_duration": "Scene",
+          "active_target": "One Creature",
+          "id": "${item.id}",
+          "name": "Lightning Prison",
+          "roll": "",
+          "uuid": "Actor.P1uCkpNnxLRBNqZr.Item.1u5234qnQ9c9adE2"
+        },
+        "D9P5IDOhxfrIfHvH": {
+          "active_cost": "30 MP",
+          "active_description": "<p>Unleash a terrifying aura, Inflicts <strong>All Basic Debuffs </strong>on the target, the target may <strong>choose another ally,</strong> if they do, this action target that ally instead.</p>",
+          "active_duration": "3 Rounds",
+          "active_target": "One Enemy",
+          "id": "${item.id}",
+          "name": "Torment",
+          "roll": "",
+          "uuid": "Actor.P1uCkpNnxLRBNqZr.Item.D9P5IDOhxfrIfHvH"
+        },
+        "XohaJJnUhPSYLzFG": {
+          "active_cost": "20 MP",
+          "active_description": "<ul><li><p><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.2hNU23YLpCcZCCmf\" data-id=\"2hNU23YLpCcZCCmf\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Pierce</span></strong></a></span></p></li></ul><p>Deal heavy <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(75, 0, 130) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span><strong>damage</strong> and inflicts<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><strong><span style=\"text-decoration: underline;\"> </span></strong><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.JltwIqzHbBKhkD45\" data-id=\"JltwIqzHbBKhkD45\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poisoned</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>to a target, the target may <strong>choose another ally, </strong>if they do, this action target that ally instead</p>",
+          "active_duration": "Instantaneous",
+          "active_target": "One Enemy",
+          "id": "${item.id}",
+          "name": "Condemn",
+          "roll": "",
+          "uuid": "Actor.P1uCkpNnxLRBNqZr.Item.XohaJJnUhPSYLzFG"
+        },
+        "mZnxgj2JnNYO2Hat": {
+          "active_cost": "6 Zero Power",
+          "active_description": "<p>Offer the enemy a vile edict, <strong>Enemy Choose:</strong></p><ul><li>One target enemy takes <strong>300</strong> <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(226, 88, 34) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span>&nbsp;damage (Enemy Choice)</li><li>All enemies take <strong>120</strong> <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(155, 89, 182) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(215, 169, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a></span></span> damage</li></ul>",
+          "active_duration": "-",
+          "active_target": "-",
+          "id": "${item.id}",
+          "name": "Zero Power: Cruel Ultimatum",
+          "roll": "",
+          "uuid": "Actor.P1uCkpNnxLRBNqZr.Item.mZnxgj2JnNYO2Hat"
+        }
+      },
+      "skill_passive_list": {
+        "PTmYIP52JtFcOHua": {
+          "id": "${item.id}",
+          "name": "Dreadwyrm Descent",
+          "passive_description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.UqXGUQM31kWc7BTc\" data-id=\"UqXGUQM31kWc7BTc\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Unleash</span></strong></a></span></span></p></li></ul><p>All enemy roll a <strong>DL 15 【MIG】+【WLP】</strong>Check, on a failure, they suffers <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.TOF8epes1eGHwx5J\" data-id=\"TOF8epes1eGHwx5J\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Frightened</span></strong></a><strong><span style=\"text-decoration: underline;\">, </span></strong><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GqqgHkKOs0hkghdG\" data-id=\"GqqgHkKOs0hkghdG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Paralyzed</span></strong></a></span></span> and<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><strong><span style=\"text-decoration: underline;\"> </span></strong><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Q8FTFPsXVpNj2zxT\" data-id=\"Q8FTFPsXVpNj2zxT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Silence</span></strong></a></span></span>&nbsp;</p>",
+          "roll": "",
+          "uuid": "Actor.P1uCkpNnxLRBNqZr.Item.PTmYIP52JtFcOHua"
+        },
+        "ejrKWNUQJPXB6cS6": {
+          "id": "${item.id}",
+          "name": "Zero Trigger: Suffering",
+          "passive_description": "<p>At the start of any turn, if there's an enemy in <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a><strong><span style=\"text-decoration: underline;\">,</span></strong></span> Fafnir <strong>gain 1 Zero Power</strong></p>",
+          "roll": "",
+          "uuid": "Actor.P1uCkpNnxLRBNqZr.Item.ejrKWNUQJPXB6cS6"
+        }
+      },
+      "spear_ef": "200",
+      "species": "MONSTER",
+      "sprite_battle": "",
+      "sprite_standard": "",
+      "steal_percentage_table": {},
+      "study_text": "",
+      "subtype": "Sub-Type",
+      "subtype_list": "DRAGON",
+      "sword_ef": "100",
+      "tactic_notes": "",
+      "thrown_ef": "50",
+      "token_option_persist": false,
+      "traits": "The Dread Wrym who lurks in the dark for century",
+      "ultima_point": "10",
+      "unique": false,
+      "uuid": "Actor.P1uCkpNnxLRBNqZr",
+      "wlp_base": "12",
+      "wlp_current": 12,
+      "zenit_reward_max": "5000",
+      "zenit_reward_min": "5000",
+      "zero_power_value": "0"
+    },
+    "statusEffects": {},
+    "template": "yegF6R8aaymhrvCg",
+    "templateSystemUniqueVersion": 4211423400
+  },
+  "type": "character"
+}

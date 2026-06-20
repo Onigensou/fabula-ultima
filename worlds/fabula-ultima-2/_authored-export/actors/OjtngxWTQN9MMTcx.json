@@ -1,0 +1,939 @@
+{
+  "_id": "OjtngxWTQN9MMTcx",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1746826696314,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.5.0"
+    },
+    "theatre": {
+      "baseinsert": "https://iili.io/36pYZdJ.png",
+      "disabledefault": false,
+      "emotes": {
+        "angry": {
+          "insert": ""
+        },
+        "annoyed": {
+          "insert": ""
+        },
+        "awe-struck": {
+          "insert": ""
+        },
+        "blushing": {
+          "insert": ""
+        },
+        "carefree": {
+          "insert": ""
+        },
+        "confused": {
+          "insert": ""
+        },
+        "cry": {
+          "insert": ""
+        },
+        "dissatisfied": {
+          "insert": ""
+        },
+        "dizzy": {
+          "insert": ""
+        },
+        "frown": {
+          "insert": ""
+        },
+        "frustrated": {
+          "insert": ""
+        },
+        "grin": {
+          "insert": ""
+        },
+        "happy": {
+          "insert": ""
+        },
+        "happytears": {
+          "insert": ""
+        },
+        "hearts": {
+          "insert": ""
+        },
+        "idea": {
+          "insert": ""
+        },
+        "innocent": {
+          "insert": ""
+        },
+        "kiss": {
+          "insert": ""
+        },
+        "laughing": {
+          "insert": ""
+        },
+        "laughingsquint": {
+          "insert": ""
+        },
+        "meh": {
+          "insert": ""
+        },
+        "mischevious": {
+          "insert": ""
+        },
+        "panic": {
+          "insert": ""
+        },
+        "playful": {
+          "insert": ""
+        },
+        "rofl": {
+          "insert": ""
+        },
+        "sad": {
+          "insert": ""
+        },
+        "scared": {
+          "insert": ""
+        },
+        "serious": {
+          "insert": ""
+        },
+        "sleeping": {
+          "insert": ""
+        },
+        "smile": {
+          "insert": ""
+        },
+        "smug": {
+          "insert": ""
+        },
+        "speechless": {
+          "insert": ""
+        },
+        "surprised": {
+          "insert": ""
+        },
+        "thinking": {
+          "insert": ""
+        },
+        "tongue": {
+          "insert": ""
+        },
+        "wink": {
+          "insert": ""
+        },
+        "worried": {
+          "insert": ""
+        }
+      },
+      "name": "",
+      "optalign": "top",
+      "settings": {
+        "emote": null,
+        "textcolor": null,
+        "textflyin": "typewriter",
+        "textfont": null,
+        "textsize": null,
+        "textstanding": "none"
+      }
+    }
+  },
+  "folder": "R3cmMe9TnP4mmqWJ",
+  "img": "https://i.imgur.com/0h5wPPy.jpeg",
+  "items": [
+    {
+      "_id": "KdiBElIflLsFmPNN",
+      "_stats": {
+        "compendiumSource": "Item.oKPpoUeuGyJNCmEB",
+        "coreVersion": "12.343",
+        "createdTime": 1747282770403,
+        "duplicateSource": "Item.wj3d3T5zY4hd7xqH",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.4.2"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "systems/pf2e/icons/equipment/staves/staff-of-enchantment.webp",
+      "name": "Loudhailer",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "category": "Arcane",
+          "check": "Check",
+          "check_bonus": "2",
+          "cost": "300",
+          "damage_bonus": "7",
+          "description": "<p><strong>Accurate</strong></p><p>Adds a +2 bonus to the weapon’s Accuracy Check formula.</p><p><strong>Defense Boost</strong></p><p>You gain a +2 bonus to Defense, and you are treated as having a shield equipped for the sake of your Skills (for instance, Defensive Mastery or Dodge; see Core Rulebook, page 197 and 203)</p><p><strong>Elemental</strong></p><p>Choose air, bolt, dark, earth, fire, ice, <strong>light</strong> or poison. The weapon now deals damage of the chosen type instead of physical, and also deals 2 extra damage.</p><hr contenteditable=\"false\"><p>Carla's bong</p><p></p>",
+          "hand_slots": "Two-handed",
+          "martial": false,
+          "name": "Loudhailer",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "MIG",
+          "set_name": "",
+          "type_damage": "Light",
+          "weapon_range": "Ranged"
+        },
+        "template": "gIRU9XGqYeMBwBN9",
+        "templateSystemUniqueVersion": 2814471460,
+        "unique": false,
+        "uniqueId": "oKPpoUeuGyJNCmEB"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "vRygBApVXrbZHsUM",
+      "_stats": {
+        "compendiumSource": "Item.YdYhFx1vrvod4P2Y",
+        "coreVersion": "12.343",
+        "createdTime": 1747559876553,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/item%20icon.pnghood.png",
+      "name": "Sage Robe",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "acess": false,
+          "cost": "0",
+          "def_bonus": "+1",
+          "defense": "0",
+          "defense_include_dex": true,
+          "initiative": "-2",
+          "magic_defense": "0",
+          "magic_defense_include_ins": true,
+          "martial": false,
+          "mdef_bonus": "+2",
+          "name": "Sage Robe",
+          "set_name": "",
+          "shield": false
+        },
+        "template": "5Z0gKtN5R51ebJOa",
+        "templateSystemUniqueVersion": 2929120018,
+        "unique": false,
+        "uniqueId": "YdYhFx1vrvod4P2Y"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Ishasha Isu",
+  "ownership": {
+    "7hKw8KGsimboeDif": 3,
+    "NpGkA7uxaarkPiwS": 3,
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0,
+    "wNzPmItLYCKE1I8t": 3,
+    "yL2PQxh3R9ddt0te": 3
+  },
+  "prototypeToken": {
+    "actorLink": true,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": 1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar4": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "DEF",
+            "max": 13,
+            "maxcolor": "#f26d40",
+            "mincolor": "#f26d40",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 0,
+            "ownerVisibility": 0,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 13
+          },
+          "bar5": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar5",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MDEF",
+            "max": 10,
+            "maxcolor": "#26d6ed",
+            "mincolor": "#26d6ed",
+            "opacity": null,
+            "order": 4,
+            "otherVisibility": 0,
+            "ownerVisibility": 0,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 10
+          },
+          "bar6": {
+            "attribute": "attributeBar.zero_power_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar6",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#ff5900",
+            "mincolor": "#ffdd00",
+            "opacity": null,
+            "order": 5,
+            "otherVisibility": 30,
+            "ownerVisibility": 35,
+            "position": "bottom-outer",
+            "shareHeight": false,
+            "style": "none",
+            "subdivisions": 6,
+            "subdivisionsOwner": true
+          }
+        }
+      },
+      "hex-size-support": {
+        "hideBorder": true,
+        "hideFill": false
+      },
+      "token-variants": {
+        "disableHUDButton": false,
+        "randomImgDefault": ""
+      },
+      "token-z": {
+        "zIndex": 0
+      },
+      "wall-height": {
+        "tokenHeight": 0
+      }
+    },
+    "height": 2,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Ishasha Isu",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 0,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.58,
+      "fit": "cover",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1.2,
+      "scaleY": 1.2,
+      "src": "https://i.imgur.com/YicH0ic.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 0,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "activeEffects": {},
+    "props": {
+      "accessory2_name": "",
+      "accessory_name": "",
+      "arcanism": false,
+      "armor_mod": "1",
+      "armor_name": "sage robe",
+      "attack_accuracy_mod_all": "0",
+      "attack_accuracy_mod_melee": "0",
+      "attack_accuracy_mod_range": "0",
+      "attack_accuracy_mod_spell": "0",
+      "bond_1": "",
+      "bond_2": "",
+      "bond_3": "",
+      "bond_4": "",
+      "bond_5": "",
+      "bond_6": "",
+      "chanter_chant_effect": "<p>Each target recovers <strong>【mp】</strong> equal to <strong>【30】</strong>. This amount increases by 10 if you are level 20 or higher, or by 20 if you are level 40 or higher. If this tone causes MP recovery, it has no effect on the character who sings it</p>",
+      "chanter_chant_mp": "20 MP",
+      "chanter_chant_name": "Calm Frost",
+      "chanter_chant_target": "Every ally who can hear you.",
+      "chanter_key_list": {
+        "0": {
+          "$deleted": false,
+          "chanter_key_attribute": "MIG",
+          "chanter_key_name": "Flame",
+          "chanter_key_recovery": "hp",
+          "chanter_key_status_effect": "shaken",
+          "chanter_key_type": "fire"
+        },
+        "1": {
+          "$deleted": false,
+          "chanter_key_attribute": "WLP",
+          "chanter_key_name": "Frost",
+          "chanter_key_recovery": "mp",
+          "chanter_key_status_effect": "weak",
+          "chanter_key_type": "ice"
+        },
+        "2": {
+          "$deleted": false,
+          "chanter_key_attribute": "WLP",
+          "chanter_key_name": "Iron",
+          "chanter_key_recovery": "mp",
+          "chanter_key_status_effect": "slow",
+          "chanter_key_type": "physical"
+        },
+        "3": {
+          "$deleted": false,
+          "chanter_key_attribute": "DEX",
+          "chanter_key_name": "Radiance",
+          "chanter_key_recovery": "hp",
+          "chanter_key_status_effect": "shaken",
+          "chanter_key_type": "bolt"
+        },
+        "4": {
+          "$deleted": false,
+          "chanter_key_attribute": "INS",
+          "chanter_key_name": "Shadow",
+          "chanter_key_recovery": "hp",
+          "chanter_key_status_effect": "dazed",
+          "chanter_key_type": "light"
+        }
+      },
+      "chanter_selected_key": "Frost",
+      "chanter_selected_tone": "Calm",
+      "chanter_selected_volume": "Medium",
+      "chanter_tone_list": {
+        "0": {
+          "$deleted": false,
+          "chanter_tone_effect": "<p>Each target recovers <strong>【key recovery】</strong> equal to <strong>【10 + twice your current Willpower die size】</strong>. This amount increases by 10 if you are level 20 or higher, or by 20 if you are level 40 or higher. If this tone causes MP recovery, it has no effect on the character who sings it</p>",
+          "chanter_tone_name": "Calm"
+        },
+        "1": {
+          "$deleted": false,
+          "chanter_tone_effect": "<p>Each target suffers <strong>【key status effect】</strong>. Each target also loses Resistance to <strong>【key type】</strong> damage (if they have it) until the start of your next turn</p>",
+          "chanter_tone_name": "Haunting"
+        },
+        "2": {
+          "$deleted": false,
+          "chanter_tone_effect": "<p>Each target treats their <strong>【key Attribute】</strong> as being one die size higher (up to a maximum of d12) until the start of your next turn</p>",
+          "chanter_tone_name": " Lively"
+        },
+        "3": {
+          "chanter_tone_effect": "",
+          "chanter_tone_name": ""
+        }
+      },
+      "chanter_volume_mp_header": "MP",
+      "chanter_volume_mp_high": 30,
+      "chanter_volume_mp_low": 10,
+      "chanter_volume_mp_medium": 20,
+      "chanter_volume_target_high": "Every enemy who can hear you.",
+      "chanter_volume_target_low": "Yourself <b>or</b> another creature you can see who can hear you.",
+      "chanter_volume_target_medium": "Every ally who can hear you.",
+      "char_identity": "Traveling singer in the journey of Harmony",
+      "check_roller": "Roll!",
+      "chimerism": false,
+      "class_list": {
+        "0": {
+          "$deleted": false,
+          "benefit": "mp",
+          "class_name": "Chanter",
+          "level": "8"
+        },
+        "1": {
+          "$deleted": false,
+          "benefit": "mp",
+          "class_name": "Esper",
+          "level": "7"
+        }
+      },
+      "clock_brainwave": "0",
+      "clock_trade": "0",
+      "cooking_roller": "🔪Cook!",
+      "current_hp": "55",
+      "current_ip": "6",
+      "current_mp": "30",
+      "damage_receiving_mod_air": "0",
+      "damage_receiving_mod_all": "0",
+      "damage_receiving_mod_bolt": "0",
+      "damage_receiving_mod_dark": "0",
+      "damage_receiving_mod_earth": "0",
+      "damage_receiving_mod_fire": "0",
+      "damage_receiving_mod_ice": "0",
+      "damage_receiving_mod_light": "0",
+      "damage_receiving_mod_melee": "0",
+      "damage_receiving_mod_physical": "0",
+      "damage_receiving_mod_poison": "0",
+      "damage_receiving_mod_range": "0",
+      "dex_base": "6",
+      "dex_current": 6,
+      "draw_card": "Draw",
+      "draw_card_copy1": "Use",
+      "elementalism": false,
+      "emotion_1_1": "",
+      "emotion_1_2": "",
+      "emotion_1_3": "",
+      "emotion_2_1": "",
+      "emotion_2_2": "",
+      "emotion_2_3": "",
+      "emotion_3_1": "",
+      "emotion_3_2": "",
+      "emotion_3_3": "",
+      "emotion_4_1": "",
+      "emotion_4_2": "",
+      "emotion_4_3": "",
+      "emotion_5_1": "",
+      "emotion_5_2": "",
+      "emotion_5_3": "",
+      "emotion_6_1": "",
+      "emotion_6_2": "",
+      "emotion_6_3": "",
+      "entropism": false,
+      "experience": "0",
+      "experience_ui": "0",
+      "fp": "4",
+      "id": "OjtngxWTQN9MMTcx",
+      "img": "https://i.imgur.com/0h5wPPy.jpeg",
+      "init_penalty": "0",
+      "ins_base": "8",
+      "ins_current": 8,
+      "inventory_label": "💼 Inventory",
+      "inventory_list": {},
+      "isAwake": false,
+      "isClarity": false,
+      "isDazed": false,
+      "isEnergized": false,
+      "isEnraged": false,
+      "isFocus": false,
+      "isPoisoned": false,
+      "isShaken": false,
+      "isSlow": false,
+      "isStrong": false,
+      "isSwift": false,
+      "isWeak": false,
+      "is_martialarmor": false,
+      "itemContainer2": {
+        "vRygBApVXrbZHsUM": {
+          "armor_description": "<p>ERROR</p>",
+          "armor_martial": false,
+          "id": "vRygBApVXrbZHsUM",
+          "name": "Sage Robe",
+          "roll": "",
+          "uuid": "Actor.OjtngxWTQN9MMTcx.Item.vRygBApVXrbZHsUM"
+        }
+      },
+      "key_list": {},
+      "level": "15",
+      "magic_defense_mod": "1",
+      "main_attrib_1": "DEX",
+      "main_attrib_2": "MIG",
+      "main_hand": "Loudhailer",
+      "main_hand_attack": "",
+      "max_hp": 55,
+      "max_ip": 6,
+      "max_mp": 75,
+      "memories_list": {},
+      "memory": "Memories",
+      "mig_base": "8",
+      "mig_current": 8,
+      "name": "Ishasha Isu",
+      "normal_spell_list": {},
+      "off_attrib_1": "SHI",
+      "off_attrib_2": "SHI",
+      "off_base_mod_1": "2",
+      "off_base_mod_2": "0",
+      "off_hand": "Loudhailer",
+      "off_hand_attack": "",
+      "off_mod_1": 2,
+      "off_mod_2": 0,
+      "origin": "Dreamers(Musical troupe)",
+      "passive_list": {
+        "8": {
+          "$deleted": false,
+          "passive_description": "<p>When you cause one or more allies to <strong>recover Hit Points and/or Mind Points</strong>, </p><p>each of those allies recovers <strong>5 additional Hit Points and/or Mind Points</strong> </p><p></p><p>and you choose a status effect from among <strong>dazed, enraged, poisoned, shaken, slow,</strong> and <strong>weak</strong>: </p><p>each of those allies <strong>recovers </strong>from the chosen status effect.</p><p></p><p>The recovery effect increases to 10 Hit Points and/or Mind Points if you are level 30 or higher.</p><p>You also gain the ability to perform Rituals of the <strong>Spiritism</strong> discipline</p>",
+          "passive_name": " PLANET ORACLE",
+          "passive_roll": "",
+          "passive_source": "quirk"
+        },
+        "9": {
+          "$deleted": false,
+          "passive_description": "<p><strong>Target: self</strong></p><p>Once before the next rest, if you are about to suffer one or more status effects from</p><p>the same source, you may instead choose not to suffer any of those status effects.</p><hr><p>While you perform training, Others remain silent.</p><p><em>Like there is nothing but your song allowed in that hall.</em></p>",
+          "passive_name": "Music Training",
+          "passive_roll": "",
+          "passive_source": "camp activity"
+        },
+        "10": {
+          "$deleted": false,
+          "passive_description": "<p><strong>Target: One ally</strong></p><p>Once before the next rest, after the target performs a Group Check as leader or</p><p>performs a Check to <strong>negotiate, communicate</strong> with someone or something, they may add a bonus of +4 to the Result of that Check.</p><hr><p><em>\"Ah.. the Dreamers song..</em></p><p><em>Someone said the miracle always happen to those who hear it..\"<br>Time to share love and harmony!</em></p>",
+          "passive_name": "Singing",
+          "passive_roll": "",
+          "passive_source": "camp activity"
+        }
+      },
+      "place_card_vanguard": "Place",
+      "populate_deck": "Populate",
+      "pronouns": "",
+      "reaction_list": {},
+      "relationship_1": "",
+      "relationship_2": "",
+      "relationship_3": "",
+      "relationship_4": "",
+      "relationship_5": "",
+      "relationship_6": "",
+      "reset_cards": "Resets",
+      "resolve_set": "Resolve",
+      "resource_value_1": "0",
+      "resource_value_2": "0",
+      "resource_value_3": "0",
+      "reveal_cards": "Reveal",
+      "ritualism": false,
+      "rolled_atr1": "WLP",
+      "rolled_atr2": "WLP",
+      "shield_type": "",
+      "shield_value": "0",
+      "shuffle_deck": "Shuffle",
+      "skill_accuracy": "0",
+      "skill_attack_damage": "0",
+      "skill_hp": "0",
+      "skill_ip": "",
+      "skill_list": {
+        "0": {
+          "$deleted": false,
+          "class": "Esper",
+          "description": "<p>At the start of your turn during a conflict, you may choose one ally who is able to hear you or one enemy you can see that is suffering from <strong>dazed</strong>, <strong>enraged</strong>, and/or <strong>shaken</strong>. </p><p> </p><p>Until the start of your next turn, the chosen creature becomes your <strong>focus</strong>.<br> You gain a bonus equal to <strong>【SL】</strong> to Checks you perform to examine your <strong>focus</strong>, as well as to your Accuracy Checks and Magic Checks for attacks and offensive spells (r) that include your <strong>focus</strong> among the targets.</p><p> </p><p>When you cause your <strong>focus</strong> to recover Hit Points and/or Mind Points, they recover <strong>【SL × 2】</strong> additional HP and/or MP, respectively.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Cognitive Focus"
+        },
+        "1": {
+          "$deleted": false,
+          "class": "Esper",
+          "description": "<p>The total MP cost of your spells and verses (see High Fantasy Atlas, page 138) that include your focus among their targets is reduced by 【SL】, or by 【SL × 2】 if your focus is the only target (to a minimum cost of 0 Mind Points)</p>",
+          "level": "5",
+          "roll": "",
+          "skill_name": " HYPERCOGNITION"
+        },
+        "2": {
+          "$deleted": false,
+          "class": "Esper",
+          "description": "<p>You can communicate telepathically with any conscious ally within 1 travel day of you; </p><p>you are able to hear each other for the sake of Skills and effects. </p><p></p><p>You gain the ability to perform Rituals of the Ritualism discipline. </p><p></p><p>Additionally, you may use Ritualism to transport creatures in and out of the soul network, and to gain information and track entities while inside the soul network</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": " NAVIGATOR"
+        },
+        "3": {
+          "$deleted": false,
+          "class": "Chanter",
+          "description": "<p>On your turn during a conflict scene, you may use an action and spend a variable amount of MP to weave voice and music into a magical effect known as a verse. </p><p></p><p>You may only sing one verse per turn, even if you have access to multiple actions; </p><p>the full rules for verses can be found starting on the next page. </p><p></p><p>When you first acquire this Skill, you learn all three volumes, </p><p>plus one key and one tone (see next page). </p><p>Whenever you acquire this Skill again, you may learn one key or one tone (your choice)</p>",
+          "level": "7",
+          "roll": "",
+          "skill_name": "MAGICHANT"
+        },
+        "4": {
+          "$deleted": false,
+          "class": "Chanter",
+          "description": "<p>You gain the ability to perform Rituals of the Ritualism discipline; additionally, you may use Ritualism to create hearing-based illusions</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "SIREN’S SONG"
+        },
+        "5": {
+          "$deleted": false,
+          "class": "Chanter",
+          "description": "<p>You may perform Rituals whose effects fall within the Spiritism discipline. </p><p>Spiritism Rituals use <strong>【INS + WLP】</strong> for the Magic Check.</p><hr><p>[Spiritists can manipulate the raw energy found within the souls of living creatures, influencing their emotions and manipulating their vital force: a power both miraculous and frightening.]</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "RITUAL SPIRITISM"
+        }
+      },
+      "skill_mp": "0",
+      "spiritism": false,
+      "theme": "Pilgrimage",
+      "uuid": "Actor.OjtngxWTQN9MMTcx",
+      "weapon1_base_damage": "7",
+      "weapon1_base_mod": "2",
+      "weapon1_damage": 7,
+      "weapon1_damagetype": "light",
+      "weapon1_mod": 2,
+      "weapon2_damagetype": "-",
+      "weapon_list": {
+        "KdiBElIflLsFmPNN": {
+          "id": "KdiBElIflLsFmPNN",
+          "name": "Loudhailer",
+          "roll": "",
+          "type": "Arcane",
+          "uuid": "Actor.OjtngxWTQN9MMTcx.Item.KdiBElIflLsFmPNN",
+          "weapon_description": "<p><p><strong>Accurate</strong></p><p>Adds a +2 bonus to the weapon’s Accuracy Check formula.</p><p><strong>Defense Boost</strong></p><p>You gain a +2 bonus to Defense, and you are treated as having a shield equipped for the sake of your Skills (for instance, Defensive Mastery or Dodge; see Core Rulebook, page 197 and 203)</p><p><strong>Elemental</strong></p><p>Choose air, bolt, dark, earth, fire, ice, <strong>light</strong> or poison. The weapon now deals damage of the chosen type instead of physical, and also deals 2 extra damage.</p><hr contenteditable=\"false\"><p>Carla's bong</p><p></p></p>",
+          "weapon_hand": "Two-handed",
+          "weapon_martial": false,
+          "weapon_range": "Ranged"
+        }
+      },
+      "wlp_base": "10",
+      "wlp_current": 10,
+      "your_class_name": "Dreamer",
+      "zenit": "250",
+      "zero_effect_description": "<img src=\"https://iili.io/3i0j6ZJ.jpg\" width=\"300\"><hr><p style=\"text-align: center\"><strong>Ishasha</strong> recovery 100% <strong>MP</strong></p><p style=\"text-align: center\">Then, Choose one effect (Deniable by targets);</p><p style=\"text-align: center\"></p><p style=\"text-align: center\"><span style=\"font-family: 'gg sans', 'Noto Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif\"><strong>Somniomancer:</strong></span></p><p style=\"text-align: center\"><span style=\"font-family: 'gg sans', 'Noto Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif\">Target-one character.</span></p><p style=\"text-align: center\"><span style=\"font-family: 'gg sans', 'Noto Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif\">That character gains extra turn until the end of battle.</span></p><p style=\"text-align: center\">Additionally, <span style=\"font-family: 'gg sans', 'Noto Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif\">Ignore all negative status until the end of this round.</span></p><p style=\"text-align: center\"><strong>or</strong></p><p style=\"text-align: center\"><span style=\"font-family: 'gg sans', 'Noto Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif\"><strong>Revealing:</strong></span></p><p style=\"text-align: center\"><span style=\"font-family: 'gg sans', 'Noto Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif\">Target-all other allied characters.</span></p><p style=\"text-align: center\"><span style=\"font-family: 'gg sans', 'Noto Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif\">They gain extra turn until the end of this round.</span></p><p style=\"text-align: center\">Additionally, <span style=\"font-family: 'gg sans', 'Noto Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif\">Ignore all negative status until the end of this round.</span></p>",
+      "zero_effect_label": "💬 Zero Effect",
+      "zero_label": "💥 Zero Power : ",
+      "zero_power_name": "Dream Loop Song",
+      "zero_power_value": "6",
+      "zero_trigger_description": "<p><strong>Encore</strong> II 1 per trigger</p><hr><p>When you sing a verse on your turn, Activate your zero trigger.</p>",
+      "zero_trigger_label": "⚔️ Zero Trigger"
+    },
+    "statusEffects": {
+      "1QPHKNWo17z0bBmX": [],
+      "1cksCQj3urJwddfg": [],
+      "1qTdxSVu2XLu0lUx": [],
+      "3YZNX2X5rHYtL4L5": [],
+      "4g2B0rdJ3SiUQvUv": [],
+      "5FFBDg2y54bpqgat": [],
+      "5jkr80zqdzaR003d": [],
+      "6YW8glLMYbwj6ZhC": [],
+      "7FLtIUvENcYDAJKC": [],
+      "7VDl6ac5Rzr2Rpya": [],
+      "8LN8tDQjON508Rqm": [],
+      "ACD2C8JLWUeIx89o": [],
+      "CVxHWmDb0gQsob1q": [],
+      "CfLPg6RDybSQhTSR": [],
+      "DCaKnV9kNn3EpqtY": [],
+      "DHsoSawNEZAxsnQ9": [],
+      "EVjmTFRDsuzR823Z": [],
+      "GJ0cbbj60lr4zaHm": [],
+      "MsbUHrgK7AhSeEJm": [],
+      "N4WfMf1nuOdUEXVS": [],
+      "N4rGBYQsH7PyMAWr": [],
+      "NogCaPvL5Y52Hjnq": [],
+      "OFk8VUuwDhWFoPxI": [],
+      "QOfrFCU2C6mx50gK": [],
+      "Qz8IC4v3wJ6UoM77": [],
+      "Rc8AvdmlHAK7pPea": [],
+      "StnYeDADYo2xX99O": [],
+      "T1kJfiKBZm1dnnBy": [],
+      "VxdXsFJ7YVEzAp3x": [],
+      "YhO7nUdawyeQKMWD": [],
+      "ZK0aTX8IH1NqwmTw": [],
+      "bspDC7hFRTYuwdhf": [],
+      "cDgbFRi9TA68TvYr": [],
+      "clE8TJ0G1gMwF735": [],
+      "fYkA57rVfoytHRjo": [],
+      "g7JIey1pEuRHyAOH": [],
+      "gX1fA3onNG7wsyap": [],
+      "hhqoSNhWfVD4KR7g": [],
+      "jKvrVpxLgX0KhB23": [],
+      "m2iUJjsEfJkpmOBw": [],
+      "qMZsEEuzAdrHb2fk": [],
+      "qePlOECBTS0Dftgc": [],
+      "t2C3LKukW6LPUImk": [],
+      "t5jyddIZDvbyuVsD": [],
+      "v22vl6cnP94wVBPu": [],
+      "v2vFlETIgMnff5o8": [],
+      "vLM7q3rdXVCgHYD4": [],
+      "vUYA9jgY9pdafj4i": [],
+      "wA1E8GxiXmzz80XQ": [],
+      "xuwAn7u126GfFweU": []
+    },
+    "template": "Dx16KeWcJzikM7dh",
+    "templateSystemUniqueVersion": 276398442
+  },
+  "type": "character"
+}

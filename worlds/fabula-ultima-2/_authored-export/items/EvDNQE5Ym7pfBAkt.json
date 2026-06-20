@@ -1,0 +1,187 @@
+{
+  "_id": "EvDNQE5Ym7pfBAkt",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1781957056047,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "Z0EEw3RmXj4UD5EK",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1781957056661,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><em>Counter Pass:</em> ready to counter a missed attack this round.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "Z0EEw3RmXj4UD5EK",
+          "originalParentId": "EvDNQE5Ym7pfBAkt",
+          "originalUuid": "Item.EvDNQE5Ym7pfBAkt.ActiveEffect.Z0EEw3RmXj4UD5EK"
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "counterpass",
+          "charges": 1,
+          "chargesMax": 1,
+          "lifetimeMode": "on_activation"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/svg/upgrade.svg",
+      "name": "Counter Pass",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-counter-pass-ready"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "7XPRzEprVTXCugxm",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Swordsman/icon_warri_esquivetoucher.png",
+  "name": "Counter Pass",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "active_effect_config_table": {},
+      "check_bonus": "0",
+      "class": "Matador",
+      "cost": "-",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>Once per round, When an enemy attack you a <strong>misses, </strong>you may immediately perform a <strong>Pass </strong>Skill<strong> </strong>as a <strong>Reaction</strong>, if this <strong>Pass </strong>would targets an enemy, it must target the enemy triggering this effect as one of its targets.</p>",
+      "details_roller": "Show",
+      "duration": "-",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Counter Pass",
+          "effect_kind": "apply_ae",
+          "effect_label": "cp_refresh",
+          "target_ref": "self"
+        },
+        "1": {
+          "chain_steps": "cp_spend,cp_free",
+          "effect_kind": "chain",
+          "effect_label": "cp_do"
+        },
+        "2": {
+          "charge_key": "counterpass",
+          "count": "1",
+          "effect_kind": "consume_charge",
+          "effect_label": "cp_spend",
+          "on_empty": "abort",
+          "target_ref": "self"
+        },
+        "3": {
+          "action_ref": "skill",
+          "allowed_skill_refs": "Muleta,Descabello,Verónica,Tafallera,Castigo,Capote",
+          "effect_kind": "free_action",
+          "effect_label": "cp_free",
+          "target_ref": "trigger_subject"
+        }
+      },
+      "heroic_requirement": "You must have mastered the Matador Class",
+      "id": "r4G9YFC4MXYL8lC3",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Swordsman/icon_warri_esquivetoucher.png",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": false,
+      "isReaction": true,
+      "level": "1",
+      "max_level": "1",
+      "name": "Counter Pass",
+      "optional_params": {},
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "",
+          "reaction_effect_ref": "cp_refresh",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "",
+          "reaction_trigger": "conflict_start"
+        },
+        "1": {
+          "condition_formula": "",
+          "reaction_effect_ref": "cp_refresh",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "",
+          "reaction_trigger": "round_start"
+        },
+        "2": {
+          "condition_formula": "AE_CHARGES_COUNTER_PASS >= 1",
+          "reaction_action_intent": "harmful",
+          "reaction_action_kind": "",
+          "reaction_cause_filter": "",
+          "reaction_damage_source": "",
+          "reaction_effect_ref": "cp_do",
+          "reaction_passive_mode": "ask",
+          "reaction_passive_target": "self",
+          "reaction_resource_filter": "",
+          "reaction_responder": "",
+          "reaction_source": "enemy",
+          "reaction_source_skill": "",
+          "reaction_status_filter": "",
+          "reaction_trigger": "creature_miss_action",
+          "requires_skill": ""
+        }
+      },
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "",
+      "skill_target": "-",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false,
+      "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.r4G9YFC4MXYL8lC3"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "EvDNQE5Ym7pfBAkt"
+  },
+  "type": "equippableItem"
+}

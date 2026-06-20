@@ -1,0 +1,145 @@
+{
+  "_id": "Cb6Oe233Zr3PmlFH",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1780644552001,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "uFsEUHqY4Bq6T3pH",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "override_attack_damage_type",
+          "mode": 5,
+          "priority": 20,
+          "value": "Light"
+        }
+      ],
+      "description": "<p>This creature's equipped-weapon attacks deal <strong>Light</strong> damage instead of their normal type.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "neDOGWmr7btsOll1",
+          "originalParentId": "JyqC3yuKdQSOliWn",
+          "originalUuid": "Item.JyqC3yuKdQSOliWn.ActiveEffect.neDOGWmr7btsOll1"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "crossScene": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/circle_of_scorn.png",
+      "name": "Soul Weapon",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-soul-weapon"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "w7ey5G3zPC78EXos",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/circle_of_scorn.png",
+  "name": "Soul Weapon",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "check_bonus": "0",
+      "class": "Spiritist",
+      "cost": "10 MP",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>You imbue a willing creature's equipped weapon with the cleansing energy of your spirit. Until this spell ends, all damage dealt by that creature's equipped weapons becomes <strong>Light</strong> type. <em>(Per-weapon scoping is a follow-up — currently affects all of the target's equipped weapons.)</em></p>",
+      "duration": "-",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_template_ref": "Soul Weapon",
+          "effect_kind": "apply_ae",
+          "effect_label": "soul_weapon_apply",
+          "menu_description": "",
+          "menu_label": "",
+          "target_ref": "action_targets"
+        }
+      },
+      "heroic_requirement": "",
+      "ignore_hr": false,
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Soul Weapon",
+      "on_activate_effect_ref": "soul_weapon_apply",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "Range",
+      "skill_target": "One creature",
+      "skill_type": "Spell",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": true,
+    "uniqueId": "Cb6Oe233Zr3PmlFH"
+  },
+  "type": "equippableItem"
+}

@@ -1,0 +1,58 @@
+{
+  "_id": "ptthimAjvjpNdtEP",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757294729883,
+    "duplicateSource": "Item.Ou5w7XHSNGb02T9y",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "qntM763ba1AdSE3w",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/angel_whisper.png",
+  "name": "Made with Love",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Gourmet",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>When you <strong>use the </strong>【💥<strong>Cooking】 Skill</strong> and choose to apply the effects of the <strong>delicacy</strong> to yourself or an ally you can see, you may spend up to <strong>[SL × 10] MP</strong>. For every <strong>10 MP</strong> you spend this way, apply the <strong>delicacy’s</strong> effects to an <strong>additional ally</strong> you can see.</p>",
+      "duration": "",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "3",
+      "name": "Made with Love",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Max MP you can spend</strong></p></td><td><p><strong>Max extra allies affected</strong></p></td></tr><tr><td><p>1</p></td><td><p>10</p></td><td><p>1</p></td></tr><tr><td><p>2</p></td><td><p>20</p></td><td><p>2</p></td></tr><tr><td><p>3</p></td><td><p>30</p></td><td><p>3</p></td></tr></tbody></table>",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "ptthimAjvjpNdtEP"
+  },
+  "type": "equippableItem"
+}

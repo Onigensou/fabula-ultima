@@ -1,0 +1,61 @@
+{
+  "_id": "Gk0pJtWurS6kIDzK",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1761180722137,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.4"
+    }
+  },
+  "folder": "anhNjengynV9A7lU",
+  "img": "icons/svg/item-bag.svg",
+  "name": "npc_attack",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "active_effect_config_table": {},
+      "check_bonus": "1",
+      "class": "",
+      "cost": "-",
+      "damage_bonus": "5",
+      "defense_target_type": "def",
+      "description": "<p>this is basic attack</p>",
+      "duration": "-",
+      "heroic_requirement": "",
+      "isCheck": true,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "npc_attack",
+      "optional_params": {},
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "MIG",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "",
+      "skill_target": "-",
+      "skill_type": "Attack",
+      "type_damage": "Physical",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "Gk0pJtWurS6kIDzK"
+  },
+  "type": "equippableItem"
+}

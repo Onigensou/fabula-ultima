@@ -1,0 +1,45 @@
+{
+  "_id": "rcbqD5hempUwQywK",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1722087689941,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    }
+  },
+  "folder": "OA6n4poPyZy021SH",
+  "img": "https://i.imgur.com/XYx3mln.jpg",
+  "name": "UberwidS b",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>You can choose to take 15 damage at the start of your turn.</p>\n<p>You can increase or decrease 1 section of clock or 1 stack of anything that come from your skill.</p>",
+      "duration": "",
+      "name": "UberwidS b",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "target": "",
+      "type_damage": ""
+    },
+    "template": "FZmpKcQRP7hZQqbV",
+    "templateSystemUniqueVersion": 1700837225,
+    "unique": false,
+    "uniqueId": "rcbqD5hempUwQywK"
+  },
+  "type": "equippableItem"
+}

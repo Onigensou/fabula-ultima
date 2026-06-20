@@ -1,0 +1,19 @@
+{
+  "_id": "8VHBObYtwGPFESMC",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1767664833756,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "yIXRZeBsb9OQyi02",
+  "name": "Armor",
+  "sort": 200000,
+  "sorting": "a",
+  "type": "Item"
+}

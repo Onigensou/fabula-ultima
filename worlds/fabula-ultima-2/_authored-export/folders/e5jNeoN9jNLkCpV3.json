@@ -1,0 +1,19 @@
+{
+  "_id": "e5jNeoN9jNLkCpV3",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1778257489096,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "w7jZN8CMjtlWQtyW",
+  "name": "Zero Trigger",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

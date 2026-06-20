@@ -1,0 +1,2245 @@
+{
+  "_id": "zSCt4x8DUTuYUqTa",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1747461149767,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "01SFFP9JbqXDhD6G",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.331",
+        "createdTime": 1755440527363,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.6.4"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "01SFFP9JbqXDhD6G",
+          "originalParentId": "zSCt4x8DUTuYUqTa",
+          "originalUuid": "Actor.zSCt4x8DUTuYUqTa.ActiveEffect.01SFFP9JbqXDhD6G"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        },
+        "world": {
+          "sheerColdStacks": 4
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/17_PCT/Holy_in_White.png",
+      "name": "Sheer Cold",
+      "origin": "macro.SheerColdTile",
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.5.0"
+    },
+    "theatre": {
+      "settings": {
+        "emote": null,
+        "textcolor": null,
+        "textflyin": "typewriter",
+        "textfont": null,
+        "textsize": null,
+        "textstanding": "none"
+      }
+    },
+    "world": {
+      "sheerColdStacks": 4
+    }
+  },
+  "folder": "KxLrVD3mmlt6jekG",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/NPCs/Koshka.png",
+  "items": [
+    {
+      "_id": "1nMDK5kdzHvP7oCx",
+      "_stats": {
+        "compendiumSource": "Item.1wK4VjvHOefDJ4Ig",
+        "coreVersion": "12.343",
+        "createdTime": 1752086498272,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1230.gif",
+      "name": "Nine-Inch Nail",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 2
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "acess": true,
+          "cost": "0",
+          "def_bonus": "",
+          "defense": "0",
+          "defense_include_dex": false,
+          "description": "<ul><li><p>You gain +1 to Checks made with your <strong>【Hinder】</strong>action</p></li><li><p>When you successfully perform the <strong>【Hinder】</strong> action on a target, deals 10 dark damage to it</p></li></ul>",
+          "details_roller": "Show",
+          "id": "1wK4VjvHOefDJ4Ig",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1230.gif",
+          "initiative": "0",
+          "magic_defense": "0",
+          "magic_defense_include_ins": false,
+          "mdef_bonus": "",
+          "name": "Nine-Inch Nail",
+          "set_name": "",
+          "uuid": "Item.1wK4VjvHOefDJ4Ig"
+        },
+        "template": "r0yZpLPAK9VXhM2p",
+        "templateSystemUniqueVersion": 1853581118,
+        "unique": false,
+        "uniqueId": "1wK4VjvHOefDJ4Ig"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "20t7qPDoF34DD3Aj",
+      "_stats": {
+        "compendiumSource": "Item.JgAHGewfef49F7tx",
+        "coreVersion": "12.343",
+        "createdTime": 1751648996519,
+        "duplicateSource": "Item.JXezG8T9yiKaJ3jd",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/item%20icon.pngmush.png",
+      "name": "Magic Mushroom",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 37500,
+      "system": {
+        "container": null,
+        "props": {
+          "name": "Magic Mushroom",
+          "recipe_description": "<ul><li>Inflicts a <strong>Random Status Effect </strong>to you. <em>(Randomize from all status in the game)</em></li></ul>",
+          "recipe_ip": "1",
+          "recipe_label": ""
+        },
+        "template": "VJCHYWOx1mPsMSip",
+        "templateSystemUniqueVersion": 1621258142,
+        "unique": false,
+        "uniqueId": "JgAHGewfef49F7tx"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "28SmyjrMINJ2XEpC",
+      "_stats": {
+        "compendiumSource": "Item.JAOtuEZGBjGgDVJo",
+        "coreVersion": "12.343",
+        "createdTime": 1751653110092,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Dark%20Ring.gif",
+      "name": "Dark Ring",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 2
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "acess": true,
+          "cost": "2300",
+          "def_bonus": "",
+          "defense": "0",
+          "defense_include_dex": false,
+          "description": "<ul><li><p>Whenever you are inflicted with a <strong>debuff, </strong>you may inflicts the <strong>same debuff</strong> on target creature.</p></li></ul>",
+          "details_roller": "Show",
+          "id": "JAOtuEZGBjGgDVJo",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Dark%20Ring.gif",
+          "initiative": "0",
+          "magic_defense": "0",
+          "magic_defense_include_ins": false,
+          "mdef_bonus": "",
+          "name": "Dark Ring",
+          "set_name": "",
+          "uuid": "Item.JAOtuEZGBjGgDVJo"
+        },
+        "template": "r0yZpLPAK9VXhM2p",
+        "templateSystemUniqueVersion": 1853581118,
+        "unique": false,
+        "uniqueId": "JAOtuEZGBjGgDVJo"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "6lf0s7fAJJdQVEQh",
+      "_stats": {
+        "compendiumSource": "Item.vfHGsdplGlAOzKNF",
+        "coreVersion": "12.343",
+        "createdTime": 1751648953357,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion%20of%20healing.png",
+      "name": "Remedy",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "name": "Remedy",
+          "recipe_description": "<ul><li><p>Target creature recovers <strong>50</strong> Hit Points.</p></li></ul>",
+          "recipe_ip": "3"
+        },
+        "template": "VJCHYWOx1mPsMSip",
+        "templateSystemUniqueVersion": 1621258142,
+        "unique": false,
+        "uniqueId": "vfHGsdplGlAOzKNF"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "9l8bIK8IsHbA582U",
+      "_stats": {
+        "compendiumSource": "Item.XS2XcpLQhbq9p04p",
+        "coreVersion": "12.343",
+        "createdTime": 1747484177522,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.4.2"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/dress.png",
+      "name": "Gothic Lolita Dress",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 250000,
+      "system": {
+        "container": null,
+        "props": {
+          "acess": false,
+          "cost": "2500",
+          "def_bonus": "",
+          "defense": "0",
+          "defense_include_dex": true,
+          "description": "<ul><li>You have Resistance to <strong>dark</strong> damage.</li><li>Your <strong>offensive </strong>【<strong>spell】 </strong>that deal <strong>dark </strong>damage<strong> </strong>deals <strong>5 extra damage</strong>.</li><li><p>When you perform an offensive 【<strong>spell】 </strong>that deal <strong>dark </strong>damage, you may spend <strong>15 Mind Points</strong> to ignore target <strong>dark resistance and immunity</strong>.</p></li></ul>",
+          "initiative": "0",
+          "magic_defense": "0",
+          "magic_defense_include_ins": true,
+          "martial": false,
+          "mdef_bonus": "+2",
+          "name": "Gothic Lolita Dress",
+          "set_name": "",
+          "shield": false
+        },
+        "template": "5Z0gKtN5R51ebJOa",
+        "templateSystemUniqueVersion": 2929120018,
+        "unique": false,
+        "uniqueId": "XS2XcpLQhbq9p04p"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "AjgkHlAOzdFuFJ3H",
+      "_stats": {
+        "compendiumSource": "Item.LF8FnALVLZaAVek3",
+        "coreVersion": "12.343",
+        "createdTime": 1756034694880,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.4.2"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://legeclo.wikiru.jp/attach2/696D67_576561706F6E5F5353525F31332E706E67.png",
+      "name": "Spirit Orb",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 2
+      },
+      "sort": 1300000,
+      "system": {
+        "container": null,
+        "props": {
+          "category": "Arcane",
+          "check": "Check",
+          "check_bonus": "0",
+          "cost": "2200",
+          "damage_bonus": "10",
+          "description": "<ul><li><p>This weapon deals <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-type=\"JournalEntry\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(61, 166, 255) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Magic Damage</span></strong></a></span></span></p></li><li><p>When you deal <strong>dark</strong> damage with <strong>skill</strong> or <strong>spell</strong>, if the target is not <strong>Resist</strong>, <strong>Immune</strong> or <strong>Absorb</strong> that damage, inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.V8mKI3BdXusfSBLq\" data-id=\"V8mKI3BdXusfSBLq\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Curse</span></strong></a></span></span> on the target.</p></li></ul>",
+          "hand_slots": "One-handed",
+          "id": "LF8FnALVLZaAVek3",
+          "img": "https://legeclo.wikiru.jp/attach2/696D67_576561706F6E5F5353525F31332E706E67.png",
+          "martial": false,
+          "name": "Spirit Orb",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "set_name": "",
+          "type_damage": "Dark",
+          "uuid": "Item.LF8FnALVLZaAVek3",
+          "weapon_range": "Ranged"
+        },
+        "template": "gIRU9XGqYeMBwBN9",
+        "templateSystemUniqueVersion": 2814471460,
+        "unique": false,
+        "uniqueId": "LF8FnALVLZaAVek3"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "BLjnAoYeLK1Np4zu",
+      "_stats": {
+        "compendiumSource": "Item.awj31d2XM7DM7hev",
+        "coreVersion": "12.343",
+        "createdTime": 1747469549409,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.4.2"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/MagicalRangedRollAction/drain.png",
+      "name": "Deteriorate",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hexer",
+          "cost": "10",
+          "damage_bonus": "0",
+          "description": "<p>You place a mark on the target’s soul that weakens their ability to resist afflictions and ailments. The target suffers your choice of slow, dazed, weak, or shaken. </p><p>Until this spell ends, if an effect would cause the target to recover from one or more status effects, you choose one of those status effects for the target to keep. Once that happens, this spell ends. If the target becomes immune to a status effect, they still recover as normal.</p>",
+          "duration": "Scene",
+          "name": "Deteriorate",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "target": "One creature",
+          "type_damage": ""
+        },
+        "template": "FZmpKcQRP7hZQqbV",
+        "templateSystemUniqueVersion": 1700837225,
+        "unique": false,
+        "uniqueId": "awj31d2XM7DM7hev"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "cT6jTlsV5PjNqjxT",
+      "_stats": {
+        "compendiumSource": "Item.mnOxzYcWGKOsKRP6",
+        "coreVersion": "12.343",
+        "createdTime": 1747469546652,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.4.2"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/MagicalRangedRollAction/addle.png",
+      "name": "Muddle",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hexer",
+          "cost": "20",
+          "damage_bonus": "0",
+          "description": "<p>You conjure troubling visions in the target’s mind, wearing down their focus. Until the spell ends, the target suffers a <strong>-2 penalty</strong> to <strong>Magic Checks.</strong></p><p>An effect that can remove a status effect can end this effect instead.</p>",
+          "duration": "Scene",
+          "name": "Muddle",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "target": "One creature",
+          "type_damage": ""
+        },
+        "template": "FZmpKcQRP7hZQqbV",
+        "templateSystemUniqueVersion": 1700837225,
+        "unique": false,
+        "uniqueId": "mnOxzYcWGKOsKRP6"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "Dxy8kVJt9fMK0Dms",
+      "_stats": {
+        "compendiumSource": "Item.zR8XK1LQJdxKOx9D",
+        "coreVersion": "12.343",
+        "createdTime": 1751648969379,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/aphr.png",
+      "name": "Tonic",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "name": "Tonic",
+          "recipe_description": "<ul><li><p>Target creature recovers from a single status effect.</p></li></ul>",
+          "recipe_ip": "2"
+        },
+        "template": "VJCHYWOx1mPsMSip",
+        "templateSystemUniqueVersion": 1621258142,
+        "unique": false,
+        "uniqueId": "zR8XK1LQJdxKOx9D"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "eHPdafvtceGW5zex",
+      "_stats": {
+        "compendiumSource": "Item.3BKWrwYhsdaDG3eN",
+        "coreVersion": "12.343",
+        "createdTime": 1747469781046,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "icons/magic/unholy/beam-ringed-impact-purple.webp",
+      "name": "Umbra",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Entropist",
+          "cost": "10 x T",
+          "damage_bonus": "15",
+          "description": "<p>A storm of dark energy turns matter into ash. Each target hit by this spell suffers <strong>【HR + 15】 dark</strong> damage.<br><strong>Opportunity</strong>: Each target hit by this spell suffers <strong>weak</strong>.</p>",
+          "duration": "Instantaneous",
+          "name": "Umbra",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "target": "Up to three creatures",
+          "type_damage": "Dark"
+        },
+        "template": "FZmpKcQRP7hZQqbV",
+        "templateSystemUniqueVersion": 1700837225,
+        "unique": false,
+        "uniqueId": "3BKWrwYhsdaDG3eN"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "KHsBw6o4iDKw86A1",
+      "_stats": {
+        "compendiumSource": "Item.OemPdYeOs5FkUj1M",
+        "coreVersion": "12.343",
+        "createdTime": 1747469899062,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "icons/magic/death/hand-undead-skeleton-fire-pink.webp",
+      "name": "Drain Spirit",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3,
+        "nXC7OD7u5Zw5UDDU": 3
+      },
+      "sort": 200000,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Entropist",
+          "cost": "5",
+          "damage_bonus": "20",
+          "description": "<p>You consume a creature's psyche. The target loses <strong>【HR + 20】</strong> Mind Points. Then, you recover an amount of Mind Points equal to half the Mind Points loss they suffered (if the loss was reduced to 0 in some way, you recover none).</p>",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "effect_kind": "grant",
+              "effect_label": "drain_recover",
+              "grant_amount": "MP_DEALT / 2",
+              "grant_resource": "mp",
+              "target_ref": "ds_self"
+            },
+            "1": {
+              "$deleted": false,
+              "auto_confirm_when_obvious": true,
+              "candidate_source": "self",
+              "category": "",
+              "count": 1,
+              "effect_kind": "targeting",
+              "effect_label": "ds_self",
+              "iteration_mode": "together",
+              "mode": "exact",
+              "skip_when_passive": true
+            }
+          },
+          "name": "Drain Spirit",
+          "post_damage_effect_ref": "drain_recover",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "target": "One creature",
+          "type_damage": "Mind Points"
+        },
+        "template": "FZmpKcQRP7hZQqbV",
+        "templateSystemUniqueVersion": 1700837225,
+        "unique": false,
+        "uniqueId": "OemPdYeOs5FkUj1M"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "lFJGWzGrIxsE7uOM",
+      "_stats": {
+        "compendiumSource": "Item.GJncNkcUmuDLfKHO",
+        "coreVersion": "12.343",
+        "createdTime": 1747469551844,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.4.2"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/bio_iii.png",
+      "name": "Plague",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hexer",
+          "cost": "15",
+          "damage_bonus": "0",
+          "description": "<p>You cause the target’s condition to worsen into a debilitating infection.The target recovers from being <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a></span> or <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span> (you choose one if it has both) and it becomes <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.JltwIqzHbBKhkD45\" data-id=\"JltwIqzHbBKhkD45\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poisoned</span></strong></a></span></p>",
+          "duration": "Instantaneous",
+          "name": "Plague",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "target": "One weak or shaken creature",
+          "type_damage": ""
+        },
+        "template": "FZmpKcQRP7hZQqbV",
+        "templateSystemUniqueVersion": 1700837225,
+        "unique": false,
+        "uniqueId": "GJncNkcUmuDLfKHO"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "MLFVqemQftXQLIE0",
+      "_stats": {
+        "compendiumSource": "Item.DY5RBlybpPqfV4dw",
+        "coreVersion": "12.343",
+        "createdTime": 1752086213094,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.4.2"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1535.gif",
+      "name": "Curse Mallet",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 600000,
+      "system": {
+        "container": null,
+        "props": {
+          "category": "Arcane",
+          "check": "Check",
+          "check_bonus": "0",
+          "cost": "2500",
+          "damage_bonus": "4",
+          "description": "<ul>\n    <li>\n        <p>When you <strong>hit </strong>a creature with this weapon, inflicts a random <strong>debuff </strong>on the target.</p>\n    </li>\n    <li>\n        <p>You may cast the spell 【<strong>✨ Hex </strong>】</p>\n    </li>\n</ul>\n<hr>\n<details>\n    <summary><strong>✨ Hex</strong></summary>\n    <p><strong>Cost:</strong> 10 MP</p>\n    <p><strong>Target:</strong> One Creature</p>\n    <p><strong>Duration:</strong> Instantaneous</p>\n    <p>Deal dark damage to target creature equal to <strong>【5 x the amount of Status Effects on the target】</strong>if this is the seventh round or more, this effect deal 300% damage instead.</p>\n    <p></p>\n</details>",
+          "hand_slots": "Two-handed",
+          "id": "DY5RBlybpPqfV4dw",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1535.gif",
+          "martial": false,
+          "name": "Curse Mallet",
+          "rolled_atr1": "WLP",
+          "rolled_atr2": "WLP",
+          "set_name": "",
+          "type_damage": "Dark",
+          "uuid": "Item.DY5RBlybpPqfV4dw",
+          "weapon_range": "Melee"
+        },
+        "template": "gIRU9XGqYeMBwBN9",
+        "templateSystemUniqueVersion": 2814471460,
+        "unique": false,
+        "uniqueId": "DY5RBlybpPqfV4dw"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "MnUkGnlZr4uxV6XN",
+      "_stats": {
+        "compendiumSource": "Item.QQaglOgoT8r8FAJb",
+        "coreVersion": "12.343",
+        "createdTime": 1747469553415,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.4.2"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/bad_breath.png",
+      "name": "Seething Blight",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hexer",
+          "cost": "15",
+          "damage_bonus": "0",
+          "description": "<p>You magnify the target’s distress into blinding rage. The target recovers from being <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span> or <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dazed</span></strong></a></span> (you choose one if it has both) and it becomes <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\" data-id=\"XkuOy0BFvKJTewGS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Enraged</span></strong></a></span></p>",
+          "duration": "Instantaneous",
+          "name": "Seething Blight",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "target": "One slow or dazed creature",
+          "type_damage": ""
+        },
+        "template": "FZmpKcQRP7hZQqbV",
+        "templateSystemUniqueVersion": 1700837225,
+        "unique": false,
+        "uniqueId": "QQaglOgoT8r8FAJb"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "oNhy2bJdjXqvRmO0",
+      "_stats": {
+        "compendiumSource": "Item.5K7TTYa2uNQcmaEJ",
+        "coreVersion": "12.343",
+        "createdTime": 1751648978476,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cryst.png",
+      "name": "Elemental Shard",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "name": "Elemental Shard",
+          "recipe_description": "<ul><li><p>Target creature suffers <strong>10</strong> damage of a type of your choice <em>(air, bolt, earth, fire, or ice)</em>.</p></li></ul>",
+          "recipe_ip": "2"
+        },
+        "template": "VJCHYWOx1mPsMSip",
+        "templateSystemUniqueVersion": 1621258142,
+        "unique": false,
+        "uniqueId": "5K7TTYa2uNQcmaEJ"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "q2OkCwdQOW6FeaE0",
+      "_stats": {
+        "compendiumSource": "Item.ZYHVemO7N3YJ5HZG",
+        "coreVersion": "12.343",
+        "createdTime": 1751648988153,
+        "duplicateSource": "Item.y61V2VLRAwlVDgcM",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
+      "name": "Blue Bovine",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 100000,
+      "system": {
+        "container": null,
+        "props": {
+          "name": "Blue Bovine",
+          "recipe_description": "<ul><li><p><em>Gain <strong>Strong (</strong>Increase your <strong>【MIG】</strong> die by 1 stage </em>(to a maximum for D12))<em> for the rest of the scene.</em></p></li></ul>",
+          "recipe_ip": "2",
+          "recipe_label": ""
+        },
+        "template": "VJCHYWOx1mPsMSip",
+        "templateSystemUniqueVersion": 1621258142,
+        "unique": false,
+        "uniqueId": "ZYHVemO7N3YJ5HZG"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "rFxrwqPTS2NffXXK",
+      "_stats": {
+        "compendiumSource": "Item.xFhQPSTZVIDJ4gPo",
+        "coreVersion": "12.343",
+        "createdTime": 1747469540181,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.4.2"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/chirp.png",
+      "name": "Anomaly",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Entropist",
+          "cost": "20",
+          "damage_bonus": "0",
+          "description": "<p>Until this spell ends, if the target would suffer damage of a type they <strong>Absorb</strong> or are <strong>Immune</strong> to, they are instead treated as if they were <strong>Vulnerable</strong> to that damage type. Once that happens, this spell ends.</p>",
+          "duration": "Scene",
+          "name": "Anomaly",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "target": "One creature",
+          "type_damage": ""
+        },
+        "template": "FZmpKcQRP7hZQqbV",
+        "templateSystemUniqueVersion": 1700837225,
+        "unique": false,
+        "uniqueId": "xFhQPSTZVIDJ4gPo"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "rO6FL8nXPFinLU1d",
+      "_stats": {
+        "compendiumSource": "Item.l4UCgMvrMT3emrYT",
+        "coreVersion": "12.343",
+        "createdTime": 1747469569119,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.4.2"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/02_WAR/inner_beast.png",
+      "name": "Enrage",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Spiritist",
+          "cost": "10",
+          "damage_bonus": "0",
+          "description": "<p>You cause a creature to lose any semblance of temper and act brazenly. The target suffers enraged and cannot perform the <strong>Guard</strong> or <strong>Spell</strong> actions during their next turn.</p>",
+          "duration": "Instantaneous",
+          "name": "Enrage",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "target": "One creature",
+          "type_damage": ""
+        },
+        "template": "FZmpKcQRP7hZQqbV",
+        "templateSystemUniqueVersion": 1700837225,
+        "unique": false,
+        "uniqueId": "l4UCgMvrMT3emrYT"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "uY0JYynVXRTGohgF",
+      "_stats": {
+        "compendiumSource": "Item.ckkEwxSXMPK6JyQr",
+        "coreVersion": "12.343",
+        "createdTime": 1747469783989,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "icons/magic/unholy/orb-beam-pink.webp",
+      "name": "Omega",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Entropist",
+          "cost": "20",
+          "damage_bonus": "0",
+          "description": "<p>You invoke doom on your foe, turning strength into frailty. The target loses an amount<br>of Hit Points equal to <strong>【20 + half the target's level】</strong>.</p>",
+          "duration": "Instantaneous",
+          "name": "Omega",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "target": "One creature",
+          "type_damage": ""
+        },
+        "template": "FZmpKcQRP7hZQqbV",
+        "templateSystemUniqueVersion": 1700837225,
+        "unique": false,
+        "uniqueId": "ckkEwxSXMPK6JyQr"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "VQyUFWMPMEDdLUSH",
+      "_stats": {
+        "compendiumSource": "Item.H4XNJ67N8XSVnRcj",
+        "coreVersion": "12.343",
+        "createdTime": 1751648951354,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion2.png",
+      "name": "Elixir",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "name": "Elixir",
+          "recipe_description": "<ul><li><p>Target creature recovers <strong>50</strong> Mind Points.</p></li></ul>",
+          "recipe_ip": "3"
+        },
+        "template": "VJCHYWOx1mPsMSip",
+        "templateSystemUniqueVersion": 1621258142,
+        "unique": false,
+        "uniqueId": "H4XNJ67N8XSVnRcj"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "vwyTLGIhXOIvfMYX",
+      "_stats": {
+        "compendiumSource": "Item.uf8ifn1JuEflXJ6E",
+        "coreVersion": "12.343",
+        "createdTime": 1747469543218,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.4.2"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/glower.png",
+      "name": "Blind",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hexer",
+          "cost": "20",
+          "damage_bonus": "0",
+          "description": "<p>You cover the target’s eyes with pitch-black shadows, blocking their sight. Until the spell ends, the target suffers a <strong>-2 penalty</strong> to <strong>Accuracy Checks.</strong></p><p>This spell has no effect on creatures that do not rely on sight. An effect that can remove a status effect can end this effect instead.</p>",
+          "duration": "Scene",
+          "name": "Blind",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "target": "One creature",
+          "type_damage": ""
+        },
+        "template": "FZmpKcQRP7hZQqbV",
+        "templateSystemUniqueVersion": 1700837225,
+        "unique": false,
+        "uniqueId": "uf8ifn1JuEflXJ6E"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "wE3BuyHgolJgGb0S",
+      "_stats": {
+        "compendiumSource": "Item.XHGBM5xt57tAvOpT",
+        "coreVersion": "12.343",
+        "createdTime": 1751648981713,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Backpack.png",
+      "name": "Magic Tent",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "name": "Magic Tent",
+          "recipe_description": "<ul><li><p>Allows the entire group to <strong>rest</strong> in the wilderness.</p></li></ul>",
+          "recipe_ip": "4"
+        },
+        "template": "VJCHYWOx1mPsMSip",
+        "templateSystemUniqueVersion": 1621258142,
+        "unique": false,
+        "uniqueId": "XHGBM5xt57tAvOpT"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "xy8Coov5LqBqaCtj",
+      "_stats": {
+        "compendiumSource": "Item.ghki8JXtqcKxQFCa",
+        "coreVersion": "12.343",
+        "createdTime": 1748703344880,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Rod.gif",
+      "name": "Refflesia Staff",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 2
+      },
+      "sort": 2500000,
+      "system": {
+        "container": null,
+        "props": {
+          "category": "Arcane",
+          "check": "Check",
+          "check_bonus": "0",
+          "cost": "2200",
+          "damage_bonus": "10",
+          "description": "<ul><li><p>When you hit one or more creatures with an offensive spell, each of them suffers <strong>@UUID[JournalEntry.JltwIqzHbBKhkD45]{Poisoned},&nbsp;</strong>if they are already poisoned, they suffer <strong>@UUID[JournalEntry.XRlyg27yLgoQUOXZ]{Envenomed}&nbsp;</strong>instead.</p></li></ul>",
+          "hand_slots": "Two-handed",
+          "martial": false,
+          "name": "Refflesia Staff",
+          "rolled_atr1": "WLP",
+          "rolled_atr2": "WLP",
+          "set_name": "",
+          "type_damage": "Poison",
+          "weapon_range": "Melee"
+        },
+        "template": "gIRU9XGqYeMBwBN9",
+        "templateSystemUniqueVersion": 2814471460,
+        "unique": false,
+        "uniqueId": "ghki8JXtqcKxQFCa"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "YZuuGHJLhFZ3eWwj",
+      "_stats": {
+        "compendiumSource": "Item.BGEFG325IQFbh6Tm",
+        "coreVersion": "12.343",
+        "createdTime": 1751653072506,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Beret.gif",
+      "name": "Beret",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 2
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "acess": true,
+          "cost": "500",
+          "def_bonus": "+1",
+          "defense": "0",
+          "defense_include_dex": false,
+          "description": "<ul><li><p>+1 Accuracy to all attacks with <strong>Firearm</strong></p></li></ul>",
+          "details_roller": "Show",
+          "id": "BGEFG325IQFbh6Tm",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Beret.gif",
+          "initiative": "0",
+          "magic_defense": "0",
+          "magic_defense_include_ins": false,
+          "mdef_bonus": "",
+          "name": "Beret",
+          "set_name": "",
+          "uuid": "Item.BGEFG325IQFbh6Tm"
+        },
+        "template": "r0yZpLPAK9VXhM2p",
+        "templateSystemUniqueVersion": 1853581118,
+        "unique": false,
+        "uniqueId": "BGEFG325IQFbh6Tm"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Koshka",
+  "ownership": {
+    "7hKw8KGsimboeDif": 3,
+    "JQGNzKpDPHJmcUIW": 3,
+    "JvF9tXvr7aaiS06m": 3,
+    "default": 0,
+    "t41knaXNbgCEygM5": 3,
+    "yL2PQxh3R9ddt0te": 3
+  },
+  "prototypeToken": {
+    "actorLink": true,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 50,
+    "disposition": 1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          }
+        }
+      },
+      "hex-size-support": {
+        "hideBorder": true,
+        "hideFill": false
+      },
+      "token-variants": {
+        "disableHUDButton": false,
+        "randomImgDefault": ""
+      },
+      "token-z": {
+        "zIndex": 0
+      },
+      "wall-height": {
+        "tokenHeight": 0
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Koshka",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 0,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 2.15,
+      "scaleY": 2.15,
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/NPCs/Koshka.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 150000,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "activeEffects": {},
+    "props": {
+      "accessory2_details": "<ul><li><p>Whenever you are inflicted with a <strong>debuff, </strong>you may inflicts the <strong>same debuff</strong> on target creature.</p></li></ul>",
+      "accessory2_name": "Dark Ring",
+      "accessory_details": "<ul><li><p>+1 Accuracy to all attacks with <strong>Firearm</strong></p></li></ul>",
+      "accessory_name": "Beret",
+      "arcanism": false,
+      "armor_details": "<ul><li>You have Resistance to <strong>dark</strong> damage.</li><li>Your <strong>offensive </strong>【<strong>spell】 </strong>that deal <strong>dark </strong>damage<strong> </strong>deals <strong>5 extra damage</strong>.</li><li><p>When you perform an offensive 【<strong>spell】 </strong>that deal <strong>dark </strong>damage, you may spend <strong>15 Mind Points</strong> to ignore target <strong>dark resistance and immunity</strong>.</p></li></ul>",
+      "armor_mod": "0",
+      "armor_name": "Gothic Lolita Dress",
+      "attack_accuracy_mod_all": 0,
+      "attack_accuracy_mod_magic": 0,
+      "attack_accuracy_mod_melee": 0,
+      "attack_accuracy_mod_ranged": 0,
+      "backpack": "",
+      "backstory": "",
+      "bond_1": "Polka",
+      "bond_2": "",
+      "bond_3": "",
+      "bond_4": "",
+      "bond_5": "",
+      "bond_6": "",
+      "chanter_volume_mp_header": "MP",
+      "chanter_volume_mp_high": 30,
+      "chanter_volume_mp_low": 10,
+      "chanter_volume_mp_medium": 20,
+      "chanter_volume_target_high": "Every enemy who can hear you.",
+      "chanter_volume_target_low": "Yourself <b>or</b> another creature you can see who can hear you.",
+      "chanter_volume_target_medium": "Every ally who can hear you.",
+      "char_identity": "Witch of Curses",
+      "check_roller": "Roll!",
+      "chimerism": false,
+      "class_list": {
+        "0": {
+          "$deleted": false,
+          "benefit": "mp",
+          "class_name": "Hexer",
+          "level": "10"
+        },
+        "1": {
+          "$deleted": false,
+          "benefit": "ip",
+          "class_name": "Wayfarer",
+          "level": "10"
+        },
+        "2": {
+          "$deleted": false,
+          "benefit": "mp",
+          "class_name": "Entropist",
+          "level": "10"
+        },
+        "3": {
+          "$deleted": false,
+          "benefit": "ip",
+          "class_name": "Symbolist",
+          "level": "1"
+        },
+        "4": {
+          "$deleted": false,
+          "benefit": "mp",
+          "class_name": "Spiritist",
+          "level": "6"
+        },
+        "5": {
+          "$deleted": false,
+          "benefit": "mp",
+          "class_name": "Elementalist",
+          "level": "3"
+        }
+      },
+      "clock_brainwave": "0",
+      "clock_trade": "0",
+      "cooking_roller": "🔪Cook!",
+      "critical_dice_range": 0,
+      "current_hp": 57,
+      "current_ip": "10",
+      "current_mp": "91",
+      "damage_receiving_mod_air": 0,
+      "damage_receiving_mod_all": 0,
+      "damage_receiving_mod_bolt": 0,
+      "damage_receiving_mod_dark": 0,
+      "damage_receiving_mod_earth": 0,
+      "damage_receiving_mod_fire": 0,
+      "damage_receiving_mod_ice": 0,
+      "damage_receiving_mod_light": 0,
+      "damage_receiving_mod_melee": 0,
+      "damage_receiving_mod_physical": 0,
+      "damage_receiving_mod_poison": 0,
+      "damage_receiving_mod_range": 0,
+      "defense": 6,
+      "dex_base": "6",
+      "dex_current": 6,
+      "draw_card": "Draw",
+      "draw_card_copy1": "Use",
+      "elementalism": false,
+      "emotion_1_1": "1",
+      "emotion_1_2": "1",
+      "emotion_1_3": "1",
+      "emotion_2_1": "",
+      "emotion_2_2": "",
+      "emotion_2_3": "",
+      "emotion_3_1": "",
+      "emotion_3_2": "",
+      "emotion_3_3": "",
+      "emotion_4_1": "",
+      "emotion_4_2": "",
+      "emotion_4_3": "",
+      "emotion_5_1": "",
+      "emotion_5_2": "",
+      "emotion_5_3": "",
+      "emotion_6_1": "",
+      "emotion_6_2": "",
+      "emotion_6_3": "",
+      "entropism": false,
+      "experience": "7",
+      "experience_ui": "0",
+      "extra_damage_mod_air": 0,
+      "extra_damage_mod_all": 0,
+      "extra_damage_mod_bolt": 0,
+      "extra_damage_mod_dark": 0,
+      "extra_damage_mod_earth": 0,
+      "extra_damage_mod_fire": 0,
+      "extra_damage_mod_ice": 0,
+      "extra_damage_mod_light": 0,
+      "extra_damage_mod_melee": 0,
+      "extra_damage_mod_physical": 0,
+      "extra_damage_mod_poison": 0,
+      "extra_damage_mod_ranged": 0,
+      "fp": "3",
+      "id": "zSCt4x8DUTuYUqTa",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/NPCs/Koshka.png",
+      "init_penalty": "0",
+      "ins_base": "12",
+      "ins_current": 12,
+      "inventory_label": "💼 Inventory",
+      "inventory_list": {},
+      "isAwake": false,
+      "isClarity": false,
+      "isDazed": false,
+      "isEnergized": false,
+      "isEnraged": false,
+      "isFocus": false,
+      "isGuest": true,
+      "isPoisoned": false,
+      "isShaken": false,
+      "isSlow": false,
+      "isStrong": false,
+      "isSwift": false,
+      "isWeak": false,
+      "is_martialarmor": false,
+      "itemContainer2": {
+        "9l8bIK8IsHbA582U": {
+          "armor_description": "<p><ul><li>You have Resistance to <strong>dark</strong> damage.</li><li>Your <strong>offensive </strong>【<strong>spell】 </strong>that deal <strong>dark </strong>damage<strong> </strong>deals <strong>5 extra damage</strong>.</li><li><p>When you perform an offensive 【<strong>spell】 </strong>that deal <strong>dark </strong>damage, you may spend <strong>15 Mind Points</strong> to ignore target <strong>dark resistance and immunity</strong>.</p></li></ul></p>",
+          "armor_martial": false,
+          "id": "${item.id}",
+          "name": "Gothic Lolita Dress",
+          "roll": "",
+          "uuid": "Actor.zSCt4x8DUTuYUqTa.Item.9l8bIK8IsHbA582U"
+        }
+      },
+      "itemContainer4": {
+        "1nMDK5kdzHvP7oCx": {
+          "acess_description": "<ul><li><p>You gain +1 to Checks made with your <strong>【Hinder】</strong>action</p></li><li><p>When you successfully perform the <strong>【Hinder】</strong> action on a target, deals 10 dark damage to it</p></li></ul>",
+          "id": "${item.id}",
+          "name": "Nine-Inch Nail",
+          "roll": "",
+          "uuid": "Actor.zSCt4x8DUTuYUqTa.Item.1nMDK5kdzHvP7oCx"
+        },
+        "28SmyjrMINJ2XEpC": {
+          "acess_description": "<ul><li><p>Whenever you are inflicted with a <strong>debuff, </strong>you may inflicts the <strong>same debuff</strong> on target creature.</p></li></ul>",
+          "id": "${item.id}",
+          "name": "Dark Ring",
+          "roll": "",
+          "uuid": "Actor.zSCt4x8DUTuYUqTa.Item.28SmyjrMINJ2XEpC"
+        },
+        "YZuuGHJLhFZ3eWwj": {
+          "acess_description": "<ul><li><p>+1 Accuracy to all attacks with <strong>Firearm</strong></p></li></ul>",
+          "id": "${item.id}",
+          "name": "Beret",
+          "roll": "",
+          "uuid": "Actor.zSCt4x8DUTuYUqTa.Item.YZuuGHJLhFZ3eWwj"
+        }
+      },
+      "key_list": {},
+      "level": "37",
+      "magic_defense": 14,
+      "magic_defense_mod": "2",
+      "main_attrib_1": "INS",
+      "main_attrib_2": "WLP",
+      "main_details": "<ul><li><p>This weapon deals <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-type=\"JournalEntry\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(61, 166, 255) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Magic Damage</span></strong></a></span></span></p></li><li><p>When you deal <strong>dark</strong> damage with <strong>skill</strong> or <strong>spell</strong>, if the target is not <strong>Resist</strong>, <strong>Immune</strong> or <strong>Absorb</strong> that damage, inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.V8mKI3BdXusfSBLq\" data-id=\"V8mKI3BdXusfSBLq\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Curse</span></strong></a></span></span> on the target.</p></li></ul>",
+      "main_hand": "Spirit Orb",
+      "main_hand_attack": "",
+      "max_hp": 67,
+      "max_ip": 10,
+      "max_mp": 127,
+      "memories_list": {},
+      "memory": "Memories",
+      "mig_base": "6",
+      "mig_current": 6,
+      "minimum_critical_dice": 6,
+      "name": "Koshka",
+      "normal_spell_list": {
+        "0": {
+          "$deleted": false,
+          "class": "Hexer",
+          "cost": "10",
+          "description": "<p>The target recovers from all <strong>status effects</strong>. Then, you choose one of the status effects the target recovered from and another creature you can see. The chosen creature suffers the chosen status effect.</p>",
+          "duration": "Instantaneous",
+          "roll": "",
+          "spell_name": "Symptom Shift",
+          "target": "One creature"
+        },
+        "1": {
+          "$deleted": false,
+          "class": "Entropist",
+          "cost": "10",
+          "description": "<p>If the target is affected by one or more spells with a duration of Scene, they are no longer affected by any of those spells instead.</p>",
+          "duration": "Instantaneous",
+          "roll": "",
+          "spell_name": "Dispel",
+          "target": "One creature"
+        },
+        "2": {
+          "$deleted": false,
+          "class": "Spiritist",
+          "cost": "20",
+          "description": "<p>You strengthen the heart of a creature against suffering and despair. Until this spell ends, if the target would be reduced to 0 Hit Points, they are instead left standing with exactly 1 Hit Point. Once that happens, this spell ends.</p>",
+          "duration": "Scene",
+          "roll": "",
+          "spell_name": "Mercy",
+          "target": "One creature"
+        },
+        "3": {
+          "$deleted": false,
+          "class": "Spiritist",
+          "cost": "10 × T",
+          "description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target recovers 40 Hit Points. This amount increases to 50 Hit Points if you are level 20 or higher, or to 60 Hit Points if you are level 40 or higher.</p>",
+          "duration": "Instantaneous",
+          "roll": "",
+          "spell_name": "Heal",
+          "target": "Up to three creatures"
+        },
+        "4": {
+          "$deleted": false,
+          "class": "Hexer",
+          "cost": "50",
+          "description": "<p>You open a rift filled with malice, dread, and disease, condemning those pulled into it to overwhelming darkness. <strong>Choose</strong> one option:</p><ul><li><p>One creature you can see suffers 50 poison damage and becomes poisoned</p></li><li><p>Choose any number of creatures you can see, and each of them suffers 30 dark damage and cannot choose any of the other chosen creatures as targets for effects this round. These damage amounts increase by 5 if you are level 20 or higher, or by 10 if you are level 40 or higher.</p></li></ul><p>This spell ignores damage Resistances and Immunities, as well as condition immunities.</p>",
+          "duration": "Instantaneous",
+          "roll": "",
+          "spell_name": "Abyss",
+          "target": "Special"
+        },
+        "BLjnAoYeLK1Np4zu": {
+          "class": "Hexer",
+          "cost": 10,
+          "duration": "Scene",
+          "id": "${item.id}",
+          "name": "Deteriorate",
+          "roll": "",
+          "spell_target": "ERROR",
+          "uuid": "Actor.zSCt4x8DUTuYUqTa.Item.BLjnAoYeLK1Np4zu"
+        },
+        "KHsBw6o4iDKw86A1": {
+          "class": "Entropist",
+          "cost": 5,
+          "duration": "Instantaneous",
+          "id": "${item.id}",
+          "name": "Drain Spirit",
+          "roll": "",
+          "spell_target": "ERROR",
+          "uuid": "Actor.zSCt4x8DUTuYUqTa.Item.KHsBw6o4iDKw86A1"
+        },
+        "MnUkGnlZr4uxV6XN": {
+          "class": "Hexer",
+          "cost": 15,
+          "duration": "Instantaneous",
+          "id": "${item.id}",
+          "name": "Seething Blight",
+          "roll": "",
+          "spell_target": "ERROR",
+          "uuid": "Actor.zSCt4x8DUTuYUqTa.Item.MnUkGnlZr4uxV6XN"
+        },
+        "cT6jTlsV5PjNqjxT": {
+          "class": "Hexer",
+          "cost": 20,
+          "duration": "Scene",
+          "id": "${item.id}",
+          "name": "Muddle",
+          "roll": "",
+          "spell_target": "ERROR",
+          "uuid": "Actor.zSCt4x8DUTuYUqTa.Item.cT6jTlsV5PjNqjxT"
+        },
+        "eHPdafvtceGW5zex": {
+          "class": "Entropist",
+          "cost": "10 x T",
+          "duration": "Instantaneous",
+          "id": "${item.id}",
+          "name": "Umbra",
+          "roll": "",
+          "spell_target": "ERROR",
+          "uuid": "Actor.zSCt4x8DUTuYUqTa.Item.eHPdafvtceGW5zex"
+        },
+        "lFJGWzGrIxsE7uOM": {
+          "class": "Hexer",
+          "cost": 15,
+          "duration": "Instantaneous",
+          "id": "${item.id}",
+          "name": "Plague",
+          "roll": "",
+          "spell_target": "ERROR",
+          "uuid": "Actor.zSCt4x8DUTuYUqTa.Item.lFJGWzGrIxsE7uOM"
+        },
+        "rFxrwqPTS2NffXXK": {
+          "class": "Entropist",
+          "cost": 20,
+          "duration": "Scene",
+          "id": "${item.id}",
+          "name": "Anomaly",
+          "roll": "",
+          "spell_target": "ERROR",
+          "uuid": "Actor.zSCt4x8DUTuYUqTa.Item.rFxrwqPTS2NffXXK"
+        },
+        "rO6FL8nXPFinLU1d": {
+          "class": "Spiritist",
+          "cost": 10,
+          "duration": "Instantaneous",
+          "id": "${item.id}",
+          "name": "Enrage",
+          "roll": "",
+          "spell_target": "ERROR",
+          "uuid": "Actor.zSCt4x8DUTuYUqTa.Item.rO6FL8nXPFinLU1d"
+        },
+        "uY0JYynVXRTGohgF": {
+          "class": "Entropist",
+          "cost": 20,
+          "duration": "Instantaneous",
+          "id": "${item.id}",
+          "name": "Omega",
+          "roll": "",
+          "spell_target": "ERROR",
+          "uuid": "Actor.zSCt4x8DUTuYUqTa.Item.uY0JYynVXRTGohgF"
+        },
+        "vwyTLGIhXOIvfMYX": {
+          "class": "Hexer",
+          "cost": 20,
+          "duration": "Scene",
+          "id": "${item.id}",
+          "name": "Blind",
+          "roll": "",
+          "spell_target": "ERROR",
+          "uuid": "Actor.zSCt4x8DUTuYUqTa.Item.vwyTLGIhXOIvfMYX"
+        }
+      },
+      "notes_text": "",
+      "off_attrib_1": "SHI",
+      "off_attrib_2": "SHI",
+      "off_base_mod_1": "0",
+      "off_base_mod_2": "0",
+      "off_hand": "",
+      "off_hand_attack": "",
+      "off_mod_1": 0,
+      "off_mod_2": 0,
+      "offensive_spell_list": {
+        "BLjnAoYeLK1Np4zu": {
+          "class": "Hexer",
+          "cost": 10,
+          "duration": "Scene",
+          "id": "${item.id}",
+          "name": "Deteriorate",
+          "offensiveSpell_target": "ERROR",
+          "roll": "",
+          "target": "One creature",
+          "uuid": "Actor.zSCt4x8DUTuYUqTa.Item.BLjnAoYeLK1Np4zu"
+        },
+        "KHsBw6o4iDKw86A1": {
+          "class": "Entropist",
+          "cost": 5,
+          "duration": "Instantaneous",
+          "id": "${item.id}",
+          "name": "Drain Spirit",
+          "offensiveSpell_target": "ERROR",
+          "roll": "",
+          "target": "One creature",
+          "uuid": "Actor.zSCt4x8DUTuYUqTa.Item.KHsBw6o4iDKw86A1"
+        },
+        "MnUkGnlZr4uxV6XN": {
+          "class": "Hexer",
+          "cost": 15,
+          "duration": "Instantaneous",
+          "id": "${item.id}",
+          "name": "Seething Blight",
+          "offensiveSpell_target": "ERROR",
+          "roll": "",
+          "target": "One slow or dazed creature",
+          "uuid": "Actor.zSCt4x8DUTuYUqTa.Item.MnUkGnlZr4uxV6XN"
+        },
+        "cT6jTlsV5PjNqjxT": {
+          "class": "Hexer",
+          "cost": 20,
+          "duration": "Scene",
+          "id": "${item.id}",
+          "name": "Muddle",
+          "offensiveSpell_target": "ERROR",
+          "roll": "",
+          "target": "One creature",
+          "uuid": "Actor.zSCt4x8DUTuYUqTa.Item.cT6jTlsV5PjNqjxT"
+        },
+        "eHPdafvtceGW5zex": {
+          "class": "Entropist",
+          "cost": "10 x T",
+          "duration": "Instantaneous",
+          "id": "${item.id}",
+          "name": "Umbra",
+          "offensiveSpell_target": "ERROR",
+          "roll": "",
+          "target": "Up to three creatures",
+          "uuid": "Actor.zSCt4x8DUTuYUqTa.Item.eHPdafvtceGW5zex"
+        },
+        "lFJGWzGrIxsE7uOM": {
+          "class": "Hexer",
+          "cost": 15,
+          "duration": "Instantaneous",
+          "id": "${item.id}",
+          "name": "Plague",
+          "offensiveSpell_target": "ERROR",
+          "roll": "",
+          "target": "One weak or shaken creature",
+          "uuid": "Actor.zSCt4x8DUTuYUqTa.Item.lFJGWzGrIxsE7uOM"
+        },
+        "rFxrwqPTS2NffXXK": {
+          "class": "Entropist",
+          "cost": 20,
+          "duration": "Scene",
+          "id": "${item.id}",
+          "name": "Anomaly",
+          "offensiveSpell_target": "ERROR",
+          "roll": "",
+          "target": "One creature",
+          "uuid": "Actor.zSCt4x8DUTuYUqTa.Item.rFxrwqPTS2NffXXK"
+        },
+        "rO6FL8nXPFinLU1d": {
+          "class": "Spiritist",
+          "cost": 10,
+          "duration": "Instantaneous",
+          "id": "${item.id}",
+          "name": "Enrage",
+          "offensiveSpell_target": "ERROR",
+          "roll": "",
+          "target": "One creature",
+          "uuid": "Actor.zSCt4x8DUTuYUqTa.Item.rO6FL8nXPFinLU1d"
+        },
+        "uQXrYFcDEXVMf2t9": {
+          "class": "Hexer",
+          "cost": "10",
+          "duration": "Instantaneous",
+          "id": "uQXrYFcDEXVMf2t9",
+          "name": "Enrage",
+          "roll": "",
+          "target": "One creature",
+          "uuid": "Actor.zSCt4x8DUTuYUqTa.Item.uQXrYFcDEXVMf2t9"
+        },
+        "uY0JYynVXRTGohgF": {
+          "class": "Entropist",
+          "cost": 20,
+          "duration": "Instantaneous",
+          "id": "${item.id}",
+          "name": "Omega",
+          "offensiveSpell_target": "ERROR",
+          "roll": "",
+          "target": "One creature",
+          "uuid": "Actor.zSCt4x8DUTuYUqTa.Item.uY0JYynVXRTGohgF"
+        },
+        "vwyTLGIhXOIvfMYX": {
+          "class": "Hexer",
+          "cost": 20,
+          "duration": "Scene",
+          "id": "${item.id}",
+          "name": "Blind",
+          "offensiveSpell_target": "ERROR",
+          "roll": "",
+          "target": "One creature",
+          "uuid": "Actor.zSCt4x8DUTuYUqTa.Item.vwyTLGIhXOIvfMYX"
+        }
+      },
+      "origin": "Vyrona",
+      "override_damage_type": "None",
+      "passive_list": {
+        "0": {
+          "$deleted": false,
+          "passive_description": "<p>You learn the ultimate Hexer spell: <strong>Abyss</strong></p>",
+          "passive_name": "ABYSS",
+          "passive_roll": "",
+          "passive_source": "heroic_skill"
+        },
+        "1": {
+          "$deleted": false,
+          "passive_description": "<p>Your bond with your companion grows stronger. You gain the following benefits: The companion's maximum Hit Points increase by 10. Choose one of the companion's Attributes: Dexterity, Insight, Might, or Willpower.</p><ul><li><p> The chosen Attribute is permanently increased by one die size (up to a maximum size of d12).</p></li><li><p>  The companion gains an additional Skill. When you reach level 40, or if you have already reached it, the companion gains an additional Skill. Make sure to discuss your Skill choices with the Game Master and the other Players.</p></li></ul>",
+          "passive_name": "HEROIC COMPANION",
+          "passive_roll": "",
+          "passive_source": "heroic_skill"
+        },
+        "2": {
+          "$deleted": false,
+          "passive_description": "<p>Permanently increase your maximum Mind Points by 10. The amount of additional MP increases to 20 if you are level 40 or higher.</p>",
+          "passive_name": "EXTRA MP",
+          "passive_roll": "",
+          "passive_source": "heroic_skill"
+        }
+      },
+      "place_card_vanguard": "Place",
+      "populate_deck": "Populate",
+      "reaction_list": {},
+      "recipe_list": {
+        "20t7qPDoF34DD3Aj": {
+          "id": "${item.id}",
+          "name": "Magic Mushroom",
+          "recipe_description": "<ul><li>Inflicts a <strong>Random Status Effect </strong>to you. <em>(Randomize from all status in the game)</em></li></ul>",
+          "recipe_ip_cost": 1,
+          "recipe_roll": "",
+          "uuid": "Actor.zSCt4x8DUTuYUqTa.Item.20t7qPDoF34DD3Aj"
+        },
+        "6lf0s7fAJJdQVEQh": {
+          "id": "${item.id}",
+          "name": "Remedy",
+          "recipe_description": "<ul><li><p>Target creature recovers <strong>50</strong> Hit Points.</p></li></ul>",
+          "recipe_ip_cost": 3,
+          "recipe_roll": "",
+          "uuid": "Actor.zSCt4x8DUTuYUqTa.Item.6lf0s7fAJJdQVEQh"
+        },
+        "Dxy8kVJt9fMK0Dms": {
+          "id": "${item.id}",
+          "name": "Tonic",
+          "recipe_description": "<ul><li><p>Target creature recovers from a single status effect.</p></li></ul>",
+          "recipe_ip_cost": 2,
+          "recipe_roll": "",
+          "uuid": "Actor.zSCt4x8DUTuYUqTa.Item.Dxy8kVJt9fMK0Dms"
+        },
+        "VQyUFWMPMEDdLUSH": {
+          "id": "${item.id}",
+          "name": "Elixir",
+          "recipe_description": "<ul><li><p>Target creature recovers <strong>50</strong> Mind Points.</p></li></ul>",
+          "recipe_ip_cost": 3,
+          "recipe_roll": "",
+          "uuid": "Actor.zSCt4x8DUTuYUqTa.Item.VQyUFWMPMEDdLUSH"
+        },
+        "oNhy2bJdjXqvRmO0": {
+          "id": "${item.id}",
+          "name": "Elemental Shard",
+          "recipe_description": "<ul><li><p>Target creature suffers <strong>10</strong> damage of a type of your choice <em>(air, bolt, earth, fire, or ice)</em>.</p></li></ul>",
+          "recipe_ip_cost": 2,
+          "recipe_roll": "",
+          "uuid": "Actor.zSCt4x8DUTuYUqTa.Item.oNhy2bJdjXqvRmO0"
+        },
+        "q2OkCwdQOW6FeaE0": {
+          "id": "${item.id}",
+          "name": "Blue Bovine",
+          "recipe_description": "<ul><li><p><em>Gain <strong>Strong (</strong>Increase your <strong>【MIG】</strong> die by 1 stage </em>(to a maximum for D12))<em> for the rest of the scene.</em></p></li></ul>",
+          "recipe_ip_cost": 2,
+          "recipe_roll": "",
+          "uuid": "Actor.zSCt4x8DUTuYUqTa.Item.q2OkCwdQOW6FeaE0"
+        },
+        "wE3BuyHgolJgGb0S": {
+          "id": "${item.id}",
+          "name": "Magic Tent",
+          "recipe_description": "<ul><li><p>Allows the entire group to <strong>rest</strong> in the wilderness.</p></li></ul>",
+          "recipe_ip_cost": 4,
+          "recipe_roll": "",
+          "uuid": "Actor.zSCt4x8DUTuYUqTa.Item.wE3BuyHgolJgGb0S"
+        }
+      },
+      "relationship_1": "Affectionate Doll",
+      "relationship_2": "",
+      "relationship_3": "",
+      "relationship_4": "",
+      "relationship_5": "",
+      "relationship_6": "",
+      "reset_cards": "Resets",
+      "resolve_set": "Resolve",
+      "resource_value_1": "0",
+      "resource_value_2": "0",
+      "resource_value_3": "0",
+      "reveal_cards": "Reveal",
+      "ritualism": false,
+      "rolled_atr1": "MIG",
+      "rolled_atr2": "DEX",
+      "shield_type": "",
+      "shield_value": "0",
+      "shuffle_deck": "Shuffle",
+      "skill_accuracy": "0",
+      "skill_attack_damage": "0",
+      "skill_hideEffect": false,
+      "skill_hp": "0",
+      "skill_ip": "",
+      "skill_list": {
+        "0": {
+          "$deleted": false,
+          "class": "Hexer",
+          "description": "<p>Each time you acquire this Skill, learn one Hexer spell</p><p>Offensive Hexer spells use <strong>【INS + WLP】</strong> for the Magic Check.</p>",
+          "level": "6",
+          "roll": "",
+          "skill_name": "CURSE MAGIC"
+        },
+        "1": {
+          "$deleted": false,
+          "class": "Hexer",
+          "description": "<p>When you first take this Skill, you gain a Hex Clock with 4 sections. The Clock starts each scene empty. When you perform an attack with an arcane weapon or cast an offensive spell, you may spend 10 Hit Points to fill one section of your Hex Clock.</p><p>At the start of your turn, you may spend up to 【5 × the number of filled sections of your Hex Clock】 Mind Points. For every 5 Mind Points spent this way, deal 【SL+2】 dark or poison damage to a creature you can see. You may choose a different creature for each instance of damage.</p>",
+          "level": "3",
+          "roll": "",
+          "skill_name": "ENCROACHING HEX"
+        },
+        "2": {
+          "$deleted": false,
+          "class": "Hexer",
+          "description": "<p>You may perform rituals whose effects fall within the Spiritism discipline. Spiritism rituals use <strong>【INS + WLP】</strong> for the Magic Check. Additionally, you may use Spiritism to locate the sources of illnesses and curses.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "CURSE RITUALISM"
+        },
+        "3": {
+          "$deleted": false,
+          "class": "Wayfarer",
+          "description": "<p>Together with the rest of your group, design a level 5 beast, construct, elemental or plant creature that becomes your companion. This creature has no Initiative score and does not level up, can have up to two basic attacks, gains a bonus equal to 【SL】 to Accuracy Checks and Magic Checks, and their maximum Hit Points are equal to 【(SL multiplied by the companion's base Might die size) + half your level】. </p><p>Your companion doesn't get a turn during conflicts, but on your turn you can use an action to have the companion perform an action (only once per turn). If you leave a scene, your companion leaves with you.</p><p> If your companion falls to 0 Hit Points, they flee and rejoin you at the start of the next scene in which you are present, with HP equal to their Crisis score. When you rest, your companion also gains the full benefits of resting.</p>",
+          "level": "5",
+          "roll": "",
+          "skill_name": "FAITHFUL COMPANION"
+        },
+        "4": {
+          "$deleted": false,
+          "class": "Wayfarer",
+          "description": "<p>You recover 【SL】 Inventory Points after each travel roll</p>",
+          "level": "4",
+          "roll": "",
+          "skill_name": "RESOURCEFUL"
+        },
+        "5": {
+          "$deleted": false,
+          "class": "Wayfarer",
+          "description": "<p>When your group journeys on the world map, you will make a discovery on a roll of 【SL + 1】 or lower on the travel roll (instead of only on a 1)</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "TREASURE HUNTER "
+        },
+        "6": {
+          "$deleted": false,
+          "class": "Entropist",
+          "description": "<p>After you suffer damage, you may immediately recover 【SL × 2】 Mind Points</p>",
+          "level": "5",
+          "roll": "",
+          "skill_name": "ABSORB MP"
+        },
+        "7": {
+          "$deleted": false,
+          "class": "Entropist",
+          "description": "<p>Each time you acquire this Skill, learn one Entropist spell. </p><p>Offensive Entropist spells use 【INS + WLP】 for the Magic Check.</p>",
+          "level": "5",
+          "roll": "",
+          "skill_name": "ENTROPIC MAGIC"
+        },
+        "8": {
+          "$deleted": false,
+          "class": "Symbolist",
+          "description": "<p>Each time you acquire this Skill, you learn two symbols.</p><p>You may have up to【SL + 1】symbols active at the same time; if you create more while at your limit, you must first choose and destroy some of your previous symbols.</p><p> You may perform the Inventory action and spend 2 Inventory Points to create a symbol you have learned and choose one option: apply that symbol to yourself; or apply that symbol to an ally you can see; or perform a free attack with a weapon you have equipped. This attack deals no damage, but you apply a copy of the chosen symbol to each enemy hit by the attack (each copy counts as a separate symbol towards your limit o【r SL + 1】 active symbols)</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "SYMBOLISM"
+        },
+        "9": {
+          "$deleted": false,
+          "class": "Spiritist",
+          "description": "<p>Each time you acquire this Skill, learn one Spiritist spell.</p><p>Offensive Spiritist spells use 【INS + WLP】 for the Magic Check.</p>",
+          "level": "2",
+          "roll": "",
+          "skill_name": "SPIRITUAL MAGIC"
+        },
+        "10": {
+          "$deleted": false,
+          "class": "Spiritist",
+          "description": "<p>When you cast a spell, if you don't have enough Mind Points to pay for its total cost, you may choose to spend twice as many Hit Points instead. You cannot use this Skill if doing so would reduce you to 0 Hit Points. If a spell cast this way would cause you to recover Hit Points, you instead recover no Hit Points (the spell functions normally on any other target).</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "VISMAGUS"
+        },
+        "11": {
+          "$deleted": false,
+          "class": "Symbolist",
+          "description": "<p>As long as the creature bearing this symbol is in <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span>, any of that creature’s enemies who are able to see them must include them among the targets of their attacks and offensive spells, if possible.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "CURSE OF ENMITY"
+        },
+        "12": {
+          "$deleted": false,
+          "class": "Symbolist",
+          "description": "<p>If the creature bearing this symbol is about to be reduced to 0 Hit Points, they may destroy this symbol: if they do, they are instead reduced to exactly 1 Hit Point.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "CURSE OF REBIRTH"
+        },
+        "13": {
+          "$deleted": false,
+          "class": "Spiritist",
+          "description": "<p>When you cast a spell that targets one or more allies, if you have an arcane weapon equipped, you may have each of those allies recover an amount of Hit Points equal to 【SL, multiplied by the number of Bonds you have】. This healing is separate from any healing caused by the effects of the spell.</p>",
+          "level": "2",
+          "roll": "",
+          "skill_name": "HEALING POWER"
+        },
+        "14": {
+          "$deleted": false,
+          "class": "Spiritist",
+          "description": "<p>When you cast a spell that targets one or more allies, if you have an arcane weapon equipped, you may choose one of those allies you have a Bond towards. If you do, that ally gains a bonus to the next Check they perform during the current scene; this bonus is equal to the strength of your Bond towards them.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "SUPPORT MAGIC"
+        },
+        "15": {
+          "$deleted": false,
+          "class": "Elementalist",
+          "description": "<p>When you cast an 【⚡Offensive spell】, if you have an arcane weapon equipped, you gain a bonus to your Magic Check equal to <strong>【SL × 2】</strong>.</p>",
+          "level": "3",
+          "roll": "",
+          "skill_name": "MAGICAL ARTILLERY"
+        }
+      },
+      "skill_mp": "10",
+      "skill_type_filter": "All",
+      "spiritism": false,
+      "theme": "Gloomy n' Doom, Doubt",
+      "uuid": "Actor.zSCt4x8DUTuYUqTa",
+      "weapon1_base_damage": "10",
+      "weapon1_base_mod": "0",
+      "weapon1_damage": 10,
+      "weapon1_damagetype": "Dark",
+      "weapon1_mod": 0,
+      "weapon2_damagetype": "-",
+      "weapon_list": {
+        "AjgkHlAOzdFuFJ3H": {
+          "id": "${item.id}",
+          "name": "Spirit Orb",
+          "roll": "",
+          "type": "Arcane",
+          "uuid": "Actor.zSCt4x8DUTuYUqTa.Item.AjgkHlAOzdFuFJ3H",
+          "weapon_description": "<p><ul><li><p>This weapon deals <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-type=\"JournalEntry\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(61, 166, 255) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Magic Damage</span></strong></a></span></span></p></li><li><p>When you deal <strong>dark</strong> damage with <strong>skill</strong> or <strong>spell</strong>, if the target is not <strong>Resist</strong>, <strong>Immune</strong> or <strong>Absorb</strong> that damage, inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.V8mKI3BdXusfSBLq\" data-id=\"V8mKI3BdXusfSBLq\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Curse</span></strong></a></span></span> on the target.</p></li></ul></p>",
+          "weapon_hand": "One-handed",
+          "weapon_martial": false,
+          "weapon_range": "Ranged"
+        },
+        "Kt5TaG4HqqkUmX8z": {
+          "id": "Kt5TaG4HqqkUmX8z",
+          "name": "Curse Mallet",
+          "roll": "",
+          "type": "Arcane",
+          "uuid": "Actor.zSCt4x8DUTuYUqTa.Item.Kt5TaG4HqqkUmX8z",
+          "weapon_description": "<p><ul><li><p>As a <strong>Spell Action, </strong>you may deal damage to target creature equal to <strong>【5 x the amount of Status Effects on the target】</strong>if this is the seventh round or more, this effect deal 300% damage instead.</p></li><li><p>When you <strong>hit </strong>a creature with this weapon, inflicts a random <strong>debuff </strong>on the target.</p></li></ul></p>",
+          "weapon_hand": "Two-handed",
+          "weapon_martial": false,
+          "weapon_range": "Ranged"
+        },
+        "MLFVqemQftXQLIE0": {
+          "id": "${item.id}",
+          "name": "Curse Mallet",
+          "roll": "",
+          "type": "Arcane",
+          "uuid": "Actor.zSCt4x8DUTuYUqTa.Item.MLFVqemQftXQLIE0",
+          "weapon_description": "<p><ul>\n    <li>\n        <p>When you <strong>hit </strong>a creature with this weapon, inflicts a random <strong>debuff </strong>on the target.</p>\n    </li>\n    <li>\n        <p>You may cast the spell 【<strong>✨ Hex </strong>】</p>\n    </li>\n</ul>\n<hr>\n<details>\n    <summary><strong>✨ Hex</strong></summary>\n    <p><strong>Cost:</strong> 10 MP</p>\n    <p><strong>Target:</strong> One Creature</p>\n    <p><strong>Duration:</strong> Instantaneous</p>\n    <p>Deal dark damage to target creature equal to <strong>【5 x the amount of Status Effects on the target】</strong>if this is the seventh round or more, this effect deal 300% damage instead.</p>\n    <p></p>\n</details></p>",
+          "weapon_hand": "Two-handed",
+          "weapon_martial": false,
+          "weapon_range": "Melee"
+        },
+        "ZNAlWxPxBV7shx9X": {
+          "id": "ZNAlWxPxBV7shx9X",
+          "name": "Curse Mallet",
+          "roll": "",
+          "type": "Arcane",
+          "uuid": "Actor.zSCt4x8DUTuYUqTa.Item.ZNAlWxPxBV7shx9X",
+          "weapon_description": "<p><ul>\n    <li>\n        <p>When you <strong>hit </strong>a creature with this weapon, inflicts a random <strong>debuff </strong>on the target.</p>\n    </li>\n    <li>\n        <p>You may cast the spell 【<strong>✨ Hex </strong>】</p>\n    </li>\n</ul>\n<hr>\n<details>\n    <summary><strong>✨ Hex</strong></summary>\n    <p><strong>Cost:</strong> 10 MP</p>\n    <p><strong>Target:</strong> One Creature</p>\n    <p><strong>Duration:</strong> Instantaneous</p>\n    <p>Deal dark damage to target creature equal to <strong>【5 x the amount of Status Effects on the target】</strong>if this is the seventh round or more, this effect deal 300% damage instead.</p>\n    <p></p>\n</details></p>",
+          "weapon_hand": "Two-handed",
+          "weapon_martial": false,
+          "weapon_range": "Ranged"
+        },
+        "wn302br1heIuEUo2": {
+          "id": "wn302br1heIuEUo2",
+          "name": "Curse Mallet",
+          "roll": "",
+          "type": "Arcane",
+          "uuid": "Actor.zSCt4x8DUTuYUqTa.Item.wn302br1heIuEUo2",
+          "weapon_description": "<p><ul><li><p>As a <strong>Spell Action, </strong>you may deal damage to target creature equal to <strong>【5 x the amount of Status Effects on the target】</strong>if this is the seventh round or more, this effect deal 300% damage instead.</p></li><li><p>Your gain +1 to Skill Checks to 【<strong>Hinder】</strong>someone.</p></li></ul></p>",
+          "weapon_hand": "Two-handed",
+          "weapon_martial": "false",
+          "weapon_range": "Ranged"
+        },
+        "xy8Coov5LqBqaCtj": {
+          "id": "${item.id}",
+          "name": "Refflesia Staff",
+          "roll": "",
+          "type": "Arcane",
+          "uuid": "Actor.zSCt4x8DUTuYUqTa.Item.xy8Coov5LqBqaCtj",
+          "weapon_description": "<p><ul><li><p>When you hit one or more creatures with an offensive spell, each of them suffers <strong>@UUID[JournalEntry.JltwIqzHbBKhkD45]{Poisoned},&nbsp;</strong>if they are already poisoned, they suffer <strong>@UUID[JournalEntry.XRlyg27yLgoQUOXZ]{Envenomed}&nbsp;</strong>instead.</p></li></ul></p>",
+          "weapon_hand": "Two-handed",
+          "weapon_martial": false,
+          "weapon_range": "Melee"
+        }
+      },
+      "wlp_base": "12",
+      "wlp_current": 12,
+      "your_class_name": "Curse Witch",
+      "zenit": "500",
+      "zero_effect_description": "<p>Remove all <strong>Status Effects </strong>from every creature in the scene, then deals <strong>【10 x the number of Status Effects removed】</strong>dark damage to target creature</p>",
+      "zero_effect_label": "💬 Zero Effect",
+      "zero_label": "💥 Zero Power : ",
+      "zero_power_name": "All Malice",
+      "zero_power_value": "1",
+      "zero_trigger_description": "<p>When an ally is reduce to <strong>0 HP </strong>or enter <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span><strong> </strong>or became <strong>inflicted with a debuff,</strong> gain 1 Zero Power</p>",
+      "zero_trigger_label": "⚔️ Zero Trigger"
+    },
+    "statusEffects": {
+      "1QPHKNWo17z0bBmX": [],
+      "1cksCQj3urJwddfg": [],
+      "1qTdxSVu2XLu0lUx": [],
+      "3YZNX2X5rHYtL4L5": [],
+      "4g2B0rdJ3SiUQvUv": [],
+      "5FFBDg2y54bpqgat": [],
+      "5jkr80zqdzaR003d": [],
+      "6YW8glLMYbwj6ZhC": [],
+      "7FLtIUvENcYDAJKC": [],
+      "7VDl6ac5Rzr2Rpya": [],
+      "8LN8tDQjON508Rqm": [],
+      "ACD2C8JLWUeIx89o": [],
+      "CVxHWmDb0gQsob1q": [],
+      "CfLPg6RDybSQhTSR": [],
+      "DCaKnV9kNn3EpqtY": [],
+      "DHsoSawNEZAxsnQ9": [],
+      "EVjmTFRDsuzR823Z": [],
+      "GJ0cbbj60lr4zaHm": [],
+      "MsbUHrgK7AhSeEJm": [],
+      "N4WfMf1nuOdUEXVS": [],
+      "N4rGBYQsH7PyMAWr": [],
+      "NogCaPvL5Y52Hjnq": [],
+      "OFk8VUuwDhWFoPxI": [],
+      "QOfrFCU2C6mx50gK": [],
+      "Qz8IC4v3wJ6UoM77": [],
+      "Rc8AvdmlHAK7pPea": [],
+      "StnYeDADYo2xX99O": [],
+      "T1kJfiKBZm1dnnBy": [],
+      "VxdXsFJ7YVEzAp3x": [],
+      "YhO7nUdawyeQKMWD": [],
+      "ZK0aTX8IH1NqwmTw": [],
+      "bspDC7hFRTYuwdhf": [],
+      "cDgbFRi9TA68TvYr": [],
+      "clE8TJ0G1gMwF735": [],
+      "fYkA57rVfoytHRjo": [],
+      "g7JIey1pEuRHyAOH": [],
+      "gX1fA3onNG7wsyap": [],
+      "hhqoSNhWfVD4KR7g": [],
+      "jKvrVpxLgX0KhB23": [],
+      "m2iUJjsEfJkpmOBw": [],
+      "qMZsEEuzAdrHb2fk": [],
+      "qePlOECBTS0Dftgc": [],
+      "t2C3LKukW6LPUImk": [],
+      "t5jyddIZDvbyuVsD": [],
+      "v22vl6cnP94wVBPu": [],
+      "v2vFlETIgMnff5o8": [],
+      "vLM7q3rdXVCgHYD4": [],
+      "vUYA9jgY9pdafj4i": [],
+      "wA1E8GxiXmzz80XQ": [],
+      "xuwAn7u126GfFweU": []
+    },
+    "template": "Dx16KeWcJzikM7dh",
+    "templateSystemUniqueVersion": 3952469762
+  },
+  "type": "character"
+}

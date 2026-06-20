@@ -1,0 +1,19 @@
+{
+  "_id": "Bg5DI4ep2SjF1yVR",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": null,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "2.1.0"
+  },
+  "color": "#cd9a2d",
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "Rinri Item",
+  "sort": 1000000,
+  "sorting": "a",
+  "type": "Item"
+}

@@ -1,0 +1,507 @@
+{
+  "_id": "mdxROPt7vdhSmdmu",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1747679939578,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.5.0"
+    }
+  },
+  "folder": "xWRrpmcNPg4Ej2pb",
+  "img": "systems/pf2e/icons/spells/restyle.webp",
+  "items": [
+    {
+      "_id": "0P4mJ62fbq5xZA93",
+      "_stats": {
+        "compendiumSource": "Item.4JB8f52ldiDE8agB",
+        "coreVersion": "12.343",
+        "createdTime": 1747680477734,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.4.2"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "systems/pf2e/icons/conditions/cursebound.webp",
+      "name": "Cannabis Cookie",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "consumable_cost": "200",
+          "consumable_description": "<p>Instantly enter <strong>Crisis</strong> and<strong> Energized </strong>for the rest of this scene.</p>",
+          "consumable_flavor": "<p><em>Sugar-coated remedy.</em></p>",
+          "consumable_label": "",
+          "name": "Cannabis Cookie"
+        },
+        "template": "xdZPhVF8AnmwQEPM",
+        "templateSystemUniqueVersion": 3725551061,
+        "unique": false,
+        "uniqueId": "4JB8f52ldiDE8agB"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "0V48Xsr8pap40Wwa",
+      "_stats": {
+        "compendiumSource": "Item.0Hps8OiNjRpeOPfd",
+        "coreVersion": "12.343",
+        "createdTime": 1747681551209,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.4.2"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "systems/pf2e/icons/equipment/adventuring-gear/detectives-kit.webp",
+      "name": "IP refill",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "consumable_cost": "10",
+          "consumable_description": "<p>Refill 1 Inventory Point</p><p></p>",
+          "consumable_label": "",
+          "name": "IP refill"
+        },
+        "template": "xdZPhVF8AnmwQEPM",
+        "templateSystemUniqueVersion": 3725551061,
+        "unique": false,
+        "uniqueId": "0Hps8OiNjRpeOPfd"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "4nLeXgevS6DJX7UH",
+      "_stats": {
+        "compendiumSource": "Item.AL6EXrbTRiLn4spI",
+        "coreVersion": "12.343",
+        "createdTime": 1747681376782,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.4.2"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "systems/pf2e/icons/equipment/alchemical-items/alchemical-tools/sun-orchid-poultice.webp",
+      "name": "Orange Spice",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "consumable_cost": "300",
+          "consumable_description": "<p>You can see a random event in future. Additionally, When it happen.</p><p>+4 to a check for that scene.</p>",
+          "consumable_flavor": "<p><em>A glimpse of future in your hand.</em></p>",
+          "consumable_label": "",
+          "name": "Orange Spice"
+        },
+        "template": "xdZPhVF8AnmwQEPM",
+        "templateSystemUniqueVersion": 3725551061,
+        "unique": false,
+        "uniqueId": "AL6EXrbTRiLn4spI"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "He26KDKrK2RPEjSN",
+      "_stats": {
+        "compendiumSource": "Item.jHWcsmZZGzbfiLue",
+        "coreVersion": "12.343",
+        "createdTime": 1747681026376,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.4.2"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "systems/pf2e/icons/equipment/alchemical-items/alchemical-poisons/repulsion-resin.webp",
+      "name": "White Lady",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "consumable_cost": "800",
+          "consumable_description": "<p><span style=\"font-family: Roboto, Arial, sans-serif\">Resist all physical damage until the end of this scene.</span></p>",
+          "consumable_flavor": "<p><em>Hope it or Cope it.</em></p>",
+          "consumable_label": "",
+          "name": "White Lady"
+        },
+        "template": "xdZPhVF8AnmwQEPM",
+        "templateSystemUniqueVersion": 3725551061,
+        "unique": false,
+        "uniqueId": "jHWcsmZZGzbfiLue"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "xqj1txzH6zr6i7KA",
+      "_stats": {
+        "compendiumSource": "Item.nLap8iTSrzhHQ6uN",
+        "coreVersion": "12.343",
+        "createdTime": 1747680500381,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.4.2"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "systems/pf2e/icons/equipment/alchemical-items/drugs/scour.webp",
+      "name": "Speed",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "consumable_cost": "0",
+          "consumable_description": "<p><span style=\"font-family: Roboto, Arial, sans-serif\"><strong>-1 willpower die size<br style=\"color: rgb(232, 234, 237); font-family: Roboto, Arial, sans-serif; font-size: 16px; font-style: normal; font-variant-ligatures: none; font-variant-caps: normal; font-weight: 400; letter-spacing: 0.1px; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: pre-wrap; background-color: rgb(32, 33, 36); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">+1 dex die size</strong><br style=\"color: rgb(232, 234, 237); font-family: Roboto, Arial, sans-serif; font-size: 16px; font-style: normal; font-variant-ligatures: none; font-variant-caps: normal; font-weight: 400; letter-spacing: 0.1px; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: pre-wrap; background-color: rgb(32, 33, 36); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">Until rest.</span></p>",
+          "consumable_flavor": "<p><em>Wait, This is not literal speed. It's Methamphetamine.</em></p>",
+          "consumable_label": "",
+          "name": "Speed"
+        },
+        "template": "xdZPhVF8AnmwQEPM",
+        "templateSystemUniqueVersion": 3725551061,
+        "unique": false,
+        "uniqueId": "nLap8iTSrzhHQ6uN"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Magic shop",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar4": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "DEF",
+            "max": 13,
+            "maxcolor": "#f26d40",
+            "mincolor": "#f26d40",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 13
+          },
+          "bar5": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar5",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MDEF",
+            "max": 10,
+            "maxcolor": "#26d6ed",
+            "mincolor": "#26d6ed",
+            "opacity": null,
+            "order": 4,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 10
+          }
+        }
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "D.Jay",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "systems/pf2e/icons/spells/restyle.webp",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 0,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "activeEffects": {},
+    "props": {
+      "itemContainer14": {
+        "0P4mJ62fbq5xZA93": {
+          "consumable_cost": 200,
+          "consumable_descriptions": "<p>Instantly enter <strong>Crisis</strong> and<strong> Energized </strong>for the rest of this scene.</p>",
+          "id": "0P4mJ62fbq5xZA93",
+          "name": "Cannabis Cookie",
+          "uuid": "Actor.mdxROPt7vdhSmdmu.Item.0P4mJ62fbq5xZA93"
+        },
+        "0V48Xsr8pap40Wwa": {
+          "consumable_cost": 10,
+          "consumable_descriptions": "<p>Refill 1 Inventory Point</p><p></p>",
+          "id": "0V48Xsr8pap40Wwa",
+          "name": "IP refill",
+          "uuid": "Actor.mdxROPt7vdhSmdmu.Item.0V48Xsr8pap40Wwa"
+        },
+        "4nLeXgevS6DJX7UH": {
+          "consumable_cost": 300,
+          "consumable_descriptions": "<p>You can see a random event in future. Additionally, When it happen.</p><p>+4 to a check for that scene.</p>",
+          "id": "4nLeXgevS6DJX7UH",
+          "name": "Orange Spice",
+          "uuid": "Actor.mdxROPt7vdhSmdmu.Item.4nLeXgevS6DJX7UH"
+        },
+        "He26KDKrK2RPEjSN": {
+          "consumable_cost": 800,
+          "consumable_descriptions": "<p><span style=\"font-family: Roboto, Arial, sans-serif\">Resist all physical damage until the end of this scene.</span></p>",
+          "id": "He26KDKrK2RPEjSN",
+          "name": "White Lady",
+          "uuid": "Actor.mdxROPt7vdhSmdmu.Item.He26KDKrK2RPEjSN"
+        },
+        "xqj1txzH6zr6i7KA": {
+          "consumable_cost": 0,
+          "consumable_descriptions": "<p><span style=\"font-family: Roboto, Arial, sans-serif\"><strong>-1 willpower die size<br style=\"color: rgb(232, 234, 237); font-family: Roboto, Arial, sans-serif; font-size: 16px; font-style: normal; font-variant-ligatures: none; font-variant-caps: normal; font-weight: 400; letter-spacing: 0.1px; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: pre-wrap; background-color: rgb(32, 33, 36); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">+1 dex die size</strong><br style=\"color: rgb(232, 234, 237); font-family: Roboto, Arial, sans-serif; font-size: 16px; font-style: normal; font-variant-ligatures: none; font-variant-caps: normal; font-weight: 400; letter-spacing: 0.1px; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: pre-wrap; background-color: rgb(32, 33, 36); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">Until rest.</span></p>",
+          "id": "xqj1txzH6zr6i7KA",
+          "name": "Speed",
+          "uuid": "Actor.mdxROPt7vdhSmdmu.Item.xqj1txzH6zr6i7KA"
+        }
+      },
+      "name": "Magic shop",
+      "shop_type": "item",
+      "shopkeep_name": "D.Jay"
+    },
+    "statusEffects": {},
+    "template": "xPzJq2lz2XnEp75D",
+    "templateSystemUniqueVersion": 2444522487
+  },
+  "type": "character"
+}

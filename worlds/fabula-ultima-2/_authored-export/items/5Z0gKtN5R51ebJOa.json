@@ -1,0 +1,161 @@
+{
+  "_id": "5Z0gKtN5R51ebJOa",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1703177653553,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "templateHistory": [
+        [
+          {
+            "kind": "E",
+            "lhs": "<h2>${!ref('name')}$</h2>\n<table>\n<tbody>\n<tr>\n<td style=\"width:25%\">Cost:</td>\n<td style=\"width:25%\">${!ref('cost')}$</td>\n<td style=\"width:25%\"/>\n<td style=\"width:25%\"/>\n</tr>\n<tr>\n<td>Type:</td>\n<td colspan=\"3\">\n${!ref('martial') ? string('Martial') : string('Non-martial')}$ ${!ref('acess') ? string('Accessory') : ref('shield') ? string('Shield') : string('Armor')}$\n</td>\n</tr>\n<tr>\n<td>Defense:</td>\n<td>${!ref('defense')}$</td>\n<td>M. Defense:</td>\n<td><b>${!ref('magic_defense_include_ins') ? string('INS die') : string(ref('magic_defense'))}$${isZero(string(ref('magic_bonus'))) ? string('') : concat(string(' + '), ref('mdef_bonus'))}$</b></td>\n</tr>\n<tr>\n<td>Set:</td>\n<td colspan=\"3\">${!ref('set_name')}$</td>\n</tr>\n<tr>\n<td colspan=\"4\">${!ref('description')}$</td>\n</tr>\n</tbody>\n</table>",
+            "path": [
+              "body",
+              "contents",
+              4,
+              "rollMessage"
+            ],
+            "rhs": "<h2>${!ref('name')}$</h2>\n<table>\n<tbody>\n<tr>\n<td style=\"width:25%\">Cost:</td>\n<td style=\"width:25%\">${!ref('cost')}$</td>\n<td style=\"width:25%\"/>\n<td style=\"width:25%\"/>\n</tr>\n<tr>\n<td>Type:</td>\n<td colspan=\"3\">\n${!ref('martial') ? string('Martial') : string('Non-martial')}$ ${!ref('acess') ? string('Accessory') : ref('shield') ? string('Shield') : string('Armor')}$\n</td>\n</tr>\n<tr>\n<td>Defense:</td>\n<td>${!ref('defense')}$</td>\n<td>M. Defense:</td>\n<td><b>${!ref('magic_defense_include_ins') ? string('INS die') : string(ref('magic_defense'))}$${isZero(ref('mdef_bonus')) ? string('') : concat(string(' + '), ref('mdef_bonus'))}$</b></td>\n</tr>\n<tr>\n<td>Set:</td>\n<td colspan=\"3\">${!ref('set_name')}$</td>\n</tr>\n<tr>\n<td colspan=\"4\">${!ref('description')}$</td>\n</tr>\n</tbody>\n</table>"
+          }
+        ],
+        [
+          {
+            "kind": "E",
+            "lhs": "<h2>${!ref('name')}$</h2>\n<table>\n<tbody>\n<tr>\n<td style=\"width:25%\">Cost:</td>\n<td style=\"width:25%\">${!ref('cost')}$</td>\n<td style=\"width:25%\"/>\n<td style=\"width:25%\"/>\n</tr>\n<tr>\n<td>Type:</td>\n<td colspan=\"3\">\n${!ref('martial') ? string('Martial') : string('Non-martial')}$ ${!ref('acess') ? string('Accessory') : ref('shield') ? string('Shield') : string('Armor')}$\n</td>\n</tr>\n<tr>\n<td>Defense:</td>\n<td>${!ref('defense')}$</td>\n<td>M. Defense:</td>\n<td><b>${!ref('magic_defense_include_ins') ? string('INS die') : string(ref('magic_defense'))}$${isZero(ref('mdef_bonus')) ? string('') : concat(string(' + '), ref('mdef_bonus'))}$</b></td>\n</tr>\n<tr>\n<td>Set:</td>\n<td colspan=\"3\">${!ref('set_name')}$</td>\n</tr>\n<tr>\n<td colspan=\"4\">${!ref('description')}$</td>\n</tr>\n</tbody>\n</table>",
+            "path": [
+              "body",
+              "contents",
+              4,
+              "rollMessage"
+            ],
+            "rhs": "<h2>${!ref('name')}$</h2>\n<table>\n<tbody>\n<tr>\n<td style=\"width:25%\">Cost:</td>\n<td style=\"width:25%\">${!ref('cost')}$</td>\n<td style=\"width:25%\"/>\n<td style=\"width:25%\"/>\n</tr>\n<tr>\n<td>Type:</td>\n<td colspan=\"3\">\n${!ref('martial') ? string('Martial') : string('Non-martial')}$ ${!ref('acess') ? string('Accessory') : ref('shield') ? string('Shield') : string('Armor')}$\n</td>\n</tr>\n<tr>\n<td>Defense:</td>\n<td>${!ref('defense')}$</td>\n<td>M. Defense:</td>\n<td><b>${!ref('magic_defense_include_ins') ? string('INS die') : string(ref('magic_defense'))}$${!isZero(ref('mdef_bonus')) ? string('') : concat(string(' + '), ref('mdef_bonus'))}$</b></td>\n</tr>\n<tr>\n<td>Set:</td>\n<td colspan=\"3\">${!ref('set_name')}$</td>\n</tr>\n<tr>\n<td colspan=\"4\">${!ref('description')}$</td>\n</tr>\n</tbody>\n</table>"
+          }
+        ],
+        [
+          {
+            "kind": "E",
+            "lhs": "<h2>${!ref('name')}$</h2>\n<table>\n<tbody>\n<tr>\n<td style=\"width:25%\">Cost:</td>\n<td style=\"width:25%\">${!ref('cost')}$</td>\n<td style=\"width:25%\"/>\n<td style=\"width:25%\"/>\n</tr>\n<tr>\n<td>Type:</td>\n<td colspan=\"3\">\n${!ref('martial') ? string('Martial') : string('Non-martial')}$ ${!ref('acess') ? string('Accessory') : ref('shield') ? string('Shield') : string('Armor')}$\n</td>\n</tr>\n<tr>\n<td>Defense:</td>\n<td>${!ref('defense')}$</td>\n<td>M. Defense:</td>\n<td><b>${!ref('magic_defense_include_ins') ? string('INS die') : string(ref('magic_defense'))}$${!isZero(ref('mdef_bonus')) ? string('') : concat(string(' + '), ref('mdef_bonus'))}$</b></td>\n</tr>\n<tr>\n<td>Set:</td>\n<td colspan=\"3\">${!ref('set_name')}$</td>\n</tr>\n<tr>\n<td colspan=\"4\">${!ref('description')}$</td>\n</tr>\n</tbody>\n</table>",
+            "path": [
+              "body",
+              "contents",
+              4,
+              "rollMessage"
+            ],
+            "rhs": "<h2>${!ref('name')}$</h2>\n<table>\n<tbody>\n<tr>\n<td style=\"width:25%\">Cost:</td>\n<td style=\"width:25%\">${!ref('cost')}$</td>\n<td style=\"width:25%\"/>\n<td style=\"width:25%\"/>\n</tr>\n<tr>\n<td>Type:</td>\n<td colspan=\"3\">\n${!ref('martial') ? string('Martial') : string('Non-martial')}$ ${!ref('acess') ? string('Accessory') : ref('shield') ? string('Shield') : string('Armor')}$\n</td>\n</tr>\n<tr>\n<td>Defense:</td>\n<td>${!ref('defense')}$</td>\n<td>M. Defense:</td>\n<td><b>${!ref('magic_defense_include_ins') ? string('INS die') : string(ref('magic_defense'))}$${!isZero(ref('mdef_bonus')) ? string('') : concat(string(' + '), string(ref('mdef_bonus')))}$</b></td>\n</tr>\n<tr>\n<td>Set:</td>\n<td colspan=\"3\">${!ref('set_name')}$</td>\n</tr>\n<tr>\n<td colspan=\"4\">${!ref('description')}$</td>\n</tr>\n</tbody>\n</table>"
+          }
+        ],
+        [
+          {
+            "kind": "E",
+            "lhs": "<h2>${!ref('name')}$</h2>\n<table>\n<tbody>\n<tr>\n<td style=\"width:25%\">Cost:</td>\n<td style=\"width:25%\">${!ref('cost')}$</td>\n<td style=\"width:25%\"/>\n<td style=\"width:25%\"/>\n</tr>\n<tr>\n<td>Type:</td>\n<td colspan=\"3\">\n${!ref('martial') ? string('Martial') : string('Non-martial')}$ ${!ref('acess') ? string('Accessory') : ref('shield') ? string('Shield') : string('Armor')}$\n</td>\n</tr>\n<tr>\n<td>Defense:</td>\n<td>${!ref('defense')}$</td>\n<td>M. Defense:</td>\n<td><b>${!ref('magic_defense_include_ins') ? string('INS die') : string(ref('magic_defense'))}$${!isZero(ref('mdef_bonus')) ? string('') : concat(string(' + '), string(ref('mdef_bonus')))}$</b></td>\n</tr>\n<tr>\n<td>Set:</td>\n<td colspan=\"3\">${!ref('set_name')}$</td>\n</tr>\n<tr>\n<td colspan=\"4\">${!ref('description')}$</td>\n</tr>\n</tbody>\n</table>",
+            "path": [
+              "body",
+              "contents",
+              4,
+              "rollMessage"
+            ],
+            "rhs": "<h2>${!ref('name')}$</h2>\n<table>\n<tbody>\n<tr>\n<td style=\"width:25%\">Cost:</td>\n<td style=\"width:25%\">${!ref('cost')}$</td>\n<td style=\"width:25%\"/>\n<td style=\"width:25%\"/>\n</tr>\n<tr>\n<td>Type:</td>\n<td colspan=\"3\">\n${!ref('martial') ? string('Martial') : string('Non-martial')}$ ${!ref('acess') ? string('Accessory') : ref('shield') ? string('Shield') : string('Armor')}$\n</td>\n</tr>\n<tr>\n<td>Defense:</td>\n<td><b>${!ref('defense_include_dex') ? string('INS die') : string(ref('defense'))}$${!isZero(ref('def_bonus')) ? string('') : concat(string(' + '), string(ref('def_bonus')))}$</b></td>\n<td>M. Defense:</td>\n<td><b>${!ref('magic_defense_include_ins') ? string('INS die') : string(ref('magic_defense'))}$${!isZero(ref('mdef_bonus')) ? string('') : concat(string(' + '), string(ref('mdef_bonus')))}$</b></td>\n</tr>\n<tr>\n<td>Set:</td>\n<td colspan=\"3\">${!ref('set_name')}$</td>\n</tr>\n<tr>\n<td colspan=\"4\">${!ref('description')}$</td>\n</tr>\n</tbody>\n</table>"
+          }
+        ],
+        [
+          {
+            "kind": "E",
+            "lhs": "<h2>${!ref('name')}$</h2>\n<table>\n<tbody>\n<tr>\n<td style=\"width:25%\">Cost:</td>\n<td style=\"width:25%\">${!ref('cost')}$</td>\n<td style=\"width:25%\"/>\n<td style=\"width:25%\"/>\n</tr>\n<tr>\n<td>Type:</td>\n<td colspan=\"3\">\n${!ref('martial') ? string('Martial') : string('Non-martial')}$ ${!ref('acess') ? string('Accessory') : ref('shield') ? string('Shield') : string('Armor')}$\n</td>\n</tr>\n<tr>\n<td>Defense:</td>\n<td><b>${!ref('defense_include_dex') ? string('INS die') : string(ref('defense'))}$${!isZero(ref('def_bonus')) ? string('') : concat(string(' + '), string(ref('def_bonus')))}$</b></td>\n<td>M. Defense:</td>\n<td><b>${!ref('magic_defense_include_ins') ? string('INS die') : string(ref('magic_defense'))}$${!isZero(ref('mdef_bonus')) ? string('') : concat(string(' + '), string(ref('mdef_bonus')))}$</b></td>\n</tr>\n<tr>\n<td>Set:</td>\n<td colspan=\"3\">${!ref('set_name')}$</td>\n</tr>\n<tr>\n<td colspan=\"4\">${!ref('description')}$</td>\n</tr>\n</tbody>\n</table>",
+            "path": [
+              "body",
+              "contents",
+              4,
+              "rollMessage"
+            ],
+            "rhs": "<h2>${!ref('name')}$</h2>\n<table>\n<tbody>\n<tr>\n<td>Cost:</td>\n<td>${!ref('cost')}$</td>\n</tr>\n<tr>\n<td>Type:</td>\n<td>\n${!ref('martial') ? string('Martial') : string('Non-martial')}$ ${!ref('acess') ? string('Accessory') : ref('shield') ? string('Shield') : string('Armor')}$\n</td>\n</tr>\n<tr>\n<td>Defense:</td>\n<td><b>${!ref('defense_include_dex') ? string('INS die') : string(ref('defense'))}$${!isZero(ref('def_bonus')) ? string('') : concat(string(' + '), string(ref('def_bonus')))}$</b></td>\n</tr>\n<tr>\n<td>M. Defense:</td>\n<td><b>${!ref('magic_defense_include_ins') ? string('INS die') : string(ref('magic_defense'))}$${!isZero(ref('mdef_bonus')) ? string('') : concat(string(' + '), string(ref('mdef_bonus')))}$</b></td>\n</tr>\n<tr>\n<td>Set:</td>\n<td>${!ref('set_name')}$</td>\n</tr>\n<tr>\n<td colspan=\"2\">${!ref('description')}$</td>\n</tr>\n</tbody>\n</table>"
+          }
+        ],
+        [
+          {
+            "kind": "E",
+            "lhs": "<h2>${!ref('name')}$</h2>\n<table>\n<tbody>\n<tr>\n<td>Cost:</td>\n<td>${!ref('cost')}$</td>\n</tr>\n<tr>\n<td>Type:</td>\n<td>\n${!ref('martial') ? string('Martial') : string('Non-martial')}$ ${!ref('acess') ? string('Accessory') : ref('shield') ? string('Shield') : string('Armor')}$\n</td>\n</tr>\n<tr>\n<td>Defense:</td>\n<td><b>${!ref('defense_include_dex') ? string('INS die') : string(ref('defense'))}$${!isZero(ref('def_bonus')) ? string('') : concat(string(' + '), string(ref('def_bonus')))}$</b></td>\n</tr>\n<tr>\n<td>M. Defense:</td>\n<td><b>${!ref('magic_defense_include_ins') ? string('INS die') : string(ref('magic_defense'))}$${!isZero(ref('mdef_bonus')) ? string('') : concat(string(' + '), string(ref('mdef_bonus')))}$</b></td>\n</tr>\n<tr>\n<td>Set:</td>\n<td>${!ref('set_name')}$</td>\n</tr>\n<tr>\n<td colspan=\"2\">${!ref('description')}$</td>\n</tr>\n</tbody>\n</table>",
+            "path": [
+              "body",
+              "contents",
+              4,
+              "rollMessage"
+            ],
+            "rhs": "<h2>${!ref('name')}$</h2>\n<table>\n<tbody>\n<tr>\n<td>Cost:</td>\n<td>${!ref('cost')}$</td>\n</tr>\n<tr>\n<td>Type:</td>\n<td>\n${!ref('martial') ? string('Martial') : string('Non-martial')}$ ${!ref('acess') ? string('Accessory') : ref('shield') ? string('Shield') : string('Armor')}$\n</td>\n</tr>\n<tr>\n<td>Defense:</td>\n<td><b>${!ref('defense_include_dex') ? string('DEX die') : string(ref('defense'))}$${!isZero(ref('def_bonus')) ? string('') : concat(string(' + '), string(ref('def_bonus')))}$</b></td>\n</tr>\n<tr>\n<td>M. Defense:</td>\n<td><b>${!ref('magic_defense_include_ins') ? string('INS die') : string(ref('magic_defense'))}$${!isZero(ref('mdef_bonus')) ? string('') : concat(string(' + '), string(ref('mdef_bonus')))}$</b></td>\n</tr>\n<tr>\n<td>Set:</td>\n<td>${!ref('set_name')}$</td>\n</tr>\n<tr>\n<td colspan=\"2\">${!ref('description')}$</td>\n</tr>\n</tbody>\n</table>"
+          }
+        ],
+        [
+          {
+            "kind": "E",
+            "lhs": "<h2>${!ref('name')}$</h2>\n<table>\n<tbody>\n<tr>\n<td>Cost:</td>\n<td>${!ref('cost')}$</td>\n</tr>\n<tr>\n<td>Type:</td>\n<td>\n${!ref('martial') ? string('Martial') : string('Non-martial')}$ ${!ref('acess') ? string('Accessory') : ref('shield') ? string('Shield') : string('Armor')}$\n</td>\n</tr>\n<tr>\n<td>Defense:</td>\n<td><b>${!ref('defense_include_dex') ? string('DEX die') : string(ref('defense'))}$${!isZero(ref('def_bonus')) ? string('') : concat(string(' + '), string(ref('def_bonus')))}$</b></td>\n</tr>\n<tr>\n<td>M. Defense:</td>\n<td><b>${!ref('magic_defense_include_ins') ? string('INS die') : string(ref('magic_defense'))}$${!isZero(ref('mdef_bonus')) ? string('') : concat(string(' + '), string(ref('mdef_bonus')))}$</b></td>\n</tr>\n<tr>\n<td>Set:</td>\n<td>${!ref('set_name')}$</td>\n</tr>\n<tr>\n<td colspan=\"2\">${!ref('description')}$</td>\n</tr>\n</tbody>\n</table>",
+            "path": [
+              "body",
+              "contents",
+              4,
+              "rollMessage"
+            ],
+            "rhs": "<h2>${!ref('name')}$</h2>\n<table>\n<tbody>\n<tr>\n<td>Cost:</td>\n<td>${!ref('cost')}$</td>\n</tr>\n<tr>\n<td>Type:</td>\n<td>\n${!ref('martial') ? string('Martial') : string('Non-martial')}$ ${!ref('acess') ? string('Accessory') : ref('shield') ? string('Shield') : string('Armor')}$\n</td>\n</tr>\n<tr>\n<td>Defense:</td>\n<td><b>${!ref('defense_include_dex') ? string('DEX die') : string(ref('defense'))}$${!isZero(ref('def_bonus')) ? string('') : concat(string(' + '), string(ref('def_bonus')))}$</b></td>\n</tr>\n<tr>\n<td>M. Defense:</td>\n<td><b>${!ref('magic_defense_include_ins') ? string('INS die') : string(ref('magic_defense'))}$${!isZero(ref('mdef_bonus')) ? string('') : concat(string(' + '), string(ref('mdef_bonus')))}$</b></td>\n</tr>\n<tr>\n<td>Set:</td>\n<td>${!isZero(ref('set_name')) ? string('-') : ref('set_name')}$</td>\n</tr>\n<tr>\n<td colspan=\"2\">${!ref('description')}$</td>\n</tr>\n</tbody>\n</table>"
+          }
+        ],
+        [
+          {
+            "kind": "E",
+            "lhs": "<h2>${!ref('name')}$</h2>\n<table>\n<tbody>\n<tr>\n<td>Cost:</td>\n<td>${!ref('cost')}$</td>\n</tr>\n<tr>\n<td>Type:</td>\n<td>\n${!ref('martial') ? string('Martial') : string('Non-martial')}$ ${!ref('acess') ? string('Accessory') : ref('shield') ? string('Shield') : string('Armor')}$\n</td>\n</tr>\n<tr>\n<td>Defense:</td>\n<td><b>${!ref('defense_include_dex') ? string('DEX die') : string(ref('defense'))}$${!isZero(ref('def_bonus')) ? string('') : concat(string(' + '), string(ref('def_bonus')))}$</b></td>\n</tr>\n<tr>\n<td>M. Defense:</td>\n<td><b>${!ref('magic_defense_include_ins') ? string('INS die') : string(ref('magic_defense'))}$${!isZero(ref('mdef_bonus')) ? string('') : concat(string(' + '), string(ref('mdef_bonus')))}$</b></td>\n</tr>\n<tr>\n<td>Set:</td>\n<td>${!isZero(ref('set_name')) ? string('-') : ref('set_name')}$</td>\n</tr>\n<tr>\n<td colspan=\"2\">${!ref('description')}$</td>\n</tr>\n</tbody>\n</table>",
+            "path": [
+              "body",
+              "contents",
+              4,
+              "rollMessage"
+            ],
+            "rhs": "<h2>${!ref('name')}$</h2>\n<table>\n<tbody>\n<tr>\n<td>Cost:</td>\n<td>${!ref('cost')}$</td>\n</tr>\n<tr>\n<td>Type:</td>\n<td>\n${!ref('acess') ? string('') : ref('martial') ? string('Martial') : string('Non-martial')}$ ${!ref('acess') ? string('Accessory') : ref('shield') ? string('Shield') : string('Armor')}$\n</td>\n</tr>\n<tr>\n<td>Defense:</td>\n<td><b>${!ref('defense_include_dex') ? string('DEX die') : string(ref('defense'))}$${!isZero(ref('def_bonus')) ? string('') : concat(string(' + '), string(ref('def_bonus')))}$</b></td>\n</tr>\n<tr>\n<td>M. Defense:</td>\n<td><b>${!ref('magic_defense_include_ins') ? string('INS die') : string(ref('magic_defense'))}$${!isZero(ref('mdef_bonus')) ? string('') : concat(string(' + '), string(ref('mdef_bonus')))}$</b></td>\n</tr>\n<tr>\n<td>Set:</td>\n<td>${!isZero(ref('set_name')) ? string('-') : ref('set_name')}$</td>\n</tr>\n<tr>\n<td colspan=\"2\">${!ref('description')}$</td>\n</tr>\n</tbody>\n</table>"
+          }
+        ],
+        [
+          {
+            "kind": "E",
+            "lhs": "label",
+            "path": [
+              "body",
+              "contents",
+              4,
+              "style"
+            ],
+            "rhs": "title"
+          }
+        ],
+        [
+          {
+            "kind": "E",
+            "lhs": "<h2>${!ref('name')}$</h2>\n<table>\n<tbody>\n<tr>\n<td>Cost:</td>\n<td>${!ref('cost')}$</td>\n</tr>\n<tr>\n<td>Type:</td>\n<td>\n${!ref('acess') ? string('') : ref('martial') ? string('Martial') : string('Non-martial')}$ ${!ref('acess') ? string('Accessory') : ref('shield') ? string('Shield') : string('Armor')}$\n</td>\n</tr>\n<tr>\n<td>Defense:</td>\n<td><b>${!ref('defense_include_dex') ? string('DEX die') : string(ref('defense'))}$${!isZero(ref('def_bonus')) ? string('') : concat(string(' + '), string(ref('def_bonus')))}$</b></td>\n</tr>\n<tr>\n<td>M. Defense:</td>\n<td><b>${!ref('magic_defense_include_ins') ? string('INS die') : string(ref('magic_defense'))}$${!isZero(ref('mdef_bonus')) ? string('') : concat(string(' + '), string(ref('mdef_bonus')))}$</b></td>\n</tr>\n<tr>\n<td>Set:</td>\n<td>${!isZero(ref('set_name')) ? string('-') : ref('set_name')}$</td>\n</tr>\n<tr>\n<td colspan=\"2\">${!ref('description')}$</td>\n</tr>\n</tbody>\n</table>",
+            "path": [
+              "body",
+              "contents",
+              4,
+              "rollMessage"
+            ],
+            "rhs": "<h2>${!ref('name')}$</h2>\n<table>\n<tbody>\n<tr>\n<td>Cost:</td>\n<td>${!ref('cost')}$</td>\n</tr>\n<tr>\n<td>Type:</td>\n<td>\n${!ref('acess') ? string('') : ref('martial') ? string('Martial') : string('Non-martial')}$ ${!ref('acess') ? string('Accessory') : ref('shield') ? string('Shield') : string('Armor')}$\n</td>\n</tr>\n<tr>\n<td>Defense:</td>\n<td><b>${!ref('defense_include_dex') ? string('DEX die') : string(ref('defense'))}$${!isZero(ref('def_bonus')) ? string('') : concat(string(' + '), string(ref('def_bonus')))}$</b></td>\n</tr>\n<tr>\n<td>M. Defense:</td>\n<td><b>${!ref('magic_defense_include_ins') ? string('INS die') : string(ref('magic_defense'))}$${!isZero(ref('mdef_bonus')) ? string('') : concat(string(' + '), string(ref('mdef_bonus')))}$</b></td>\n</tr>\n<tr>\n<td>Set:</td>\n<td>${!equalText(string(ref('set_name')), '0') ? string('-') : ref('set_name')}$</td>\n</tr>\n<tr>\n<td colspan=\"2\">${!ref('description')}$</td>\n</tr>\n</tbody>\n</table>"
+          }
+        ]
+      ],
+      "templateHistoryRedo": [],
+      "version": "3.2.4"
+    }
+  },
+  "folder": "i7fbFD8Djifdw08W",
+  "img": "icons/svg/item-bag.svg",
+  "name": "_Armor Equipment",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 200000,
+  "system": {
+    "templateSystemUniqueVersion": 2929120018
+  },
+  "type": "_equippableItemTemplate"
+}

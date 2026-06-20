@@ -1,0 +1,3666 @@
+{
+  "_id": "XVOWOq9oUmEECGrU",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1758863012149,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "effects": [
+    {
+      "_id": "1saLf7CqPfHzhjTn",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1761300106862,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Unable to gain or perform <strong>Zero Power</strong></p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "1saLf7CqPfHzhjTn",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.1saLf7CqPfHzhjTn"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-despair",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/condensed_libra.png",
+      "name": "Despair",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "NogCaPvL5Y52Hjnq"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "2DYDlLqoyg0JXQza",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1761299959901,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "max_action_targets",
+          "mode": 5,
+          "priority": null,
+          "value": "1"
+        }
+      ],
+      "description": "<p>Allows only <strong>Single-target </strong>actions</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "2DYDlLqoyg0JXQza",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.2DYDlLqoyg0JXQza"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-fatigue",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "fatigue",
+          "charges": 3,
+          "chargesMax": 3,
+          "lifetimeMode": "target_turn_end"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 3,
+          "visible": true
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/feculent_flood.png",
+      "name": "Fatigue",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "N4rGBYQsH7PyMAWr"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "3LvW5XEm1E1dYrZa",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1761299541891,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "disable_action",
+          "mode": 5,
+          "priority": 0,
+          "value": "Skill"
+        }
+      ],
+      "description": "<p>Disable the <strong>Skill </strong>action</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "3LvW5XEm1E1dYrZa",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.3LvW5XEm1E1dYrZa"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-paralyzed",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "paralyzed",
+          "charges": 3,
+          "chargesMax": 3,
+          "lifetimeMode": "target_turn_end"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Paralyze.png",
+      "name": "Paralyzed",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "m2iUJjsEfJkpmOBw"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "5K3lbMsHORKZCJWQ",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1762778399173,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Prevents the use of <strong>【Melee】</strong>actions</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "5K3lbMsHORKZCJWQ",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.5K3lbMsHORKZCJWQ"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-snared",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/eerie_soundwave.png",
+      "name": "Snared",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    },
+    {
+      "_id": "62gUkhQExwD9DvaI",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1761300824709,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "bonus_mig",
+          "mode": 2,
+          "priority": 2,
+          "value": "-2"
+        }
+      ],
+      "description": "<p>Decrease <strong>【MIG】 </strong>by one stage</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "62gUkhQExwD9DvaI",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.62gUkhQExwD9DvaI"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-weak",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "effectmacro": {
+          "onCreate": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isWeak\n(async () => {\n  const PATH = \"system.props.isWeak\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+          },
+          "onDelete": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isWeak\n(async () => {\n  const PATH = \"system.props.isWeak\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+          },
+          "onDisable": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isWeak\n(async () => {\n  const PATH = \"system.props.isWeak\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+          },
+          "onEnable": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isWeak\n(async () => {\n  const PATH = \"system.props.isWeak\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+          },
+          "onToggle": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isWeak\n(async () => {\n  const PATH = \"system.props.isWeak\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+          }
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "weak",
+          "charges": 3,
+          "chargesMax": 3,
+          "lifetimeMode": "target_turn_end"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/ATK%20DOWN.png",
+      "name": "Weak",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "1cksCQj3urJwddfg"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "6TmDCjk1jdit5YtZ",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1758863093360,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "disable_action",
+          "mode": 5,
+          "priority": 0,
+          "value": "Spell"
+        }
+      ],
+      "description": "<p>This creature cannot use the <strong>【Spell】</strong>Action</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "yGEBOqxYc6Wh26IW",
+          "originalParentId": "0gIBYzSpjdXS6f25",
+          "originalUuid": "Item.0gIBYzSpjdXS6f25.ActiveEffect.yGEBOqxYc6Wh26IW"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-silence",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "silence",
+          "charges": 3,
+          "chargesMax": 3,
+          "lifetimeMode": "target_turn_end"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Silence.png",
+      "name": "Silence",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "xuwAn7u126GfFweU"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "7yTJD2T2EHOqMwKz",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1761300267856,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Gain <strong>Ice Shield </strong>but unable to act</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "7yTJD2T2EHOqMwKz",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.7yTJD2T2EHOqMwKz"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-frozen",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/blizzard.png",
+      "name": "Frozen",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "OFk8VUuwDhWFoPxI"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "8ZULwuHoGlBsToW0",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1761300173155,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Inflicts <strong>KO </strong>on countdown</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "8ZULwuHoGlBsToW0",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.8ZULwuHoGlBsToW0"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-doomed",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/level_5_death.png",
+      "name": "Doomed",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "7VDl6ac5Rzr2Rpya"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "9ru58ghiO53ZxM5e",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1761299911387,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Unable to perform <strong>Ranged </strong>actions</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "9ru58ghiO53ZxM5e",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.9ru58ghiO53ZxM5e"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-obscure",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/cold_fog.png",
+      "name": "Obscure",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "qMZsEEuzAdrHb2fk"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "9UqtybDb3Px1uWyH",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.331",
+        "createdTime": 1761301015344,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.4"
+      },
+      "changes": [],
+      "description": "<p><em>There is nothing you can do…</em></p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "9UqtybDb3Px1uWyH",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.9UqtybDb3Px1uWyH"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-death",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Death.png",
+      "name": "Death",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "vUYA9jgY9pdafj4i"
+      ],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "adwwNvnjvJM8BuK4",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1761299722304,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Taking <strong>Fire </strong>damage at the start of your turn</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "adwwNvnjvJM8BuK4",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.adwwNvnjvJM8BuK4"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-burn",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "effectmacro": {
+          "onCreate": {
+            "script": "await TokenMagic.addUpdateFiltersOnSelected(\"Burns\");\nnew Sequence()\n  .sound(\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Condition_Burn.ogg\")\n  .volume(0.5)\n  .play()"
+          },
+          "onDelete": {
+            "script": "await TokenMagic.deleteFiltersOnSelected(\"Burns\");\nnew Sequence()\n  .sound(\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Recovery.ogg\")\n  .volume(0.5)\n  .play()"
+          },
+          "onDisable": {
+            "script": "await TokenMagic.deleteFiltersOnSelected(\"Burns\");\nnew Sequence()\n  .sound(\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Recovery.ogg\")\n  .volume(0.5)\n  .play()"
+          },
+          "onEnable": {
+            "script": "await TokenMagic.addUpdateFiltersOnSelected(\"Burns\");\nnew Sequence()\n  .sound(\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Condition_Burn.ogg\")\n  .volume(0.5)\n  .play()"
+          },
+          "onTurnStart": {
+            "script": "// === Burn DOT v2 (Effect Macro → On Combat Turn Starting) ==================\n// Deals % Max HP fire damage via your Advance Damage macro, *without* UI\n// targeting flicker (uses headless targetIds override).\n//\n// • Default: 10% of max HP\n// • Champion rank (NPC): 5%\n// • PCs (no rank field): 10%\n// • Element: \"fire\", Weapon type: \"none_ef\"\n//\n// Requires: AdvanceDamage patched to accept __PAYLOAD.targetIds when __AUTO=true.\n// Macro name below must match your macro exactly.\n// ===========================================================================\n\n(async () => {\n  const ADV_DMG_MACRO_NAME = \"AdvanceDamage\"; // <-- change if yours is named differently\n\n  // --- Guard: must be owner’s actual turn ----------------------------------\n  if (!actor || !game.combat) return;\n  const isOwnersTurn = game.combat?.combatant?.actor?.id === actor.id;\n  if (!isOwnersTurn) return;\n\n  // --- Resolve the correct token id for this actor on this turn ------------\n  function pickTokenIdForActor(a) {\n    // Prefer the current combatant token if it belongs to this actor\n    const ct = game.combat?.combatant;\n    if (ct?.actor?.id === a.id && ct.token?.id) return ct.token.id;\n\n    // Else use module helper `token` if provided\n    if (token?.id) return token.id;\n\n    // Else first active token on the viewed scene\n    const t = a.getActiveTokens()?.[0];\n    return t?.id ?? t?.document?.id ?? null;\n  }\n  const tokenId = pickTokenIdForActor(actor);\n  if (!tokenId) return ui.notifications.warn(\"[Burn] No active token for effect owner.\");\n\n  // --- Determine DOT percent from NPC rank ---------------------------------\n  // NPC sheet sample uses system.props.npc_rank with values like \"sol\",\"eli\",\"cha\"\n  const props = actor.system?.props ?? {};\n  const rank  = String(props.npc_rank ?? \"\").toLowerCase();\n  const percent = (rank === \"cha\") ? 5 : 10;  // PCs or missing rank → 10%\n\n  // --- Build headless payload for AdvanceDamage ----------------------------\n  const payload = {\n    // magnitude as a percent number (no % sign)\n    baseValue: String(percent),\n    valueType: \"hp\",\n    targetAffinity: \"percentMax\",   // make ADV compute % of target's max HP\n    elementType: \"fire\",\n    weaponType: \"none_ef\",\n    ignoreDamageReduction: false,\n    ignoreShield: false,\n\n    // nice-to-have context for your logs/cards\n    attackerName: \"Burn\",\n    attackRange: \"DOT\",\n    sourceType : \"Effect: Burn\",\n\n    // HEADLESS target override (prevents crosshair UI)\n    targetIds: [tokenId]\n  };\n\n  // --- Execute your universal damage macro ---------------------------------\n  const ADV = game.macros.getName(ADV_DMG_MACRO_NAME);\n  if (!ADV) return ui.notifications.error(`[Burn] Macro \"${ADV_DMG_MACRO_NAME}\" not found.`);\n\n  await ADV.execute({ __AUTO: true, __PAYLOAD: payload });\n})();\n"
+          }
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "burn",
+          "charges": 3,
+          "lifetimeMode": "on_activation",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "damage_amount": "MAX_HP * 0.1",
+                "damage_element": "fire",
+                "damage_verbosity": "full",
+                "effect_kind": "deal_damage",
+                "effect_label": "burn_dmg",
+                "target_ref": "self"
+              }
+            },
+            "reaction_config_table": {
+              "0": {
+                "reaction_effect_ref": "burn_dmg",
+                "reaction_passive_mode": "force",
+                "reaction_passive_target": "self",
+                "reaction_source": "self",
+                "reaction_trigger": "turn_start"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Burn.png",
+      "name": "Burn",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "cDgbFRi9TA68TvYr"
+      ],
+      "system": {
+        "tags": [
+          "debuff",
+          "burn"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "b9CUFlPnwLKgxE30",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1761300152264,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Disable <strong>Passive </strong>effects</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "b9CUFlPnwLKgxE30",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.b9CUFlPnwLKgxE30"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-suppressed",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/05_SCH/art_of_war.png",
+      "name": "Suppressed",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "T1kJfiKBZm1dnnBy"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "D3F2Clh5RjGtHJDl",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1761299383784,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Prevents the creature from <strong>acting</strong> until taking damage</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "D3F2Clh5RjGtHJDl",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.D3F2Clh5RjGtHJDl"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-sleep",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Sleep.png",
+      "name": "Sleep",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "pDHAfDnaVU5wpzBO"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "dnzpUdhxjd6H3ktJ",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1761300765677,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "bonus_wlp",
+          "mode": 2,
+          "priority": 2,
+          "value": "-2"
+        }
+      ],
+      "description": "<p>Decrease <strong>【WLP】</strong> by one stage</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "dnzpUdhxjd6H3ktJ",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.dnzpUdhxjd6H3ktJ"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-shaken",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "effectmacro": {
+          "onCreate": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isShaken\n(async () => {\n  const PATH = \"system.props.isShaken\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+          },
+          "onDelete": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isShaken\n(async () => {\n  const PATH = \"system.props.isShaken\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+          },
+          "onDisable": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isShaken\n(async () => {\n  const PATH = \"system.props.isShaken\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+          },
+          "onEnable": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isShaken\n(async () => {\n  const PATH = \"system.props.isShaken\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+          },
+          "onToggle": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isShaken\n(async () => {\n  const PATH = \"system.props.isShaken\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+          }
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "shaken",
+          "charges": 3,
+          "chargesMax": 3,
+          "lifetimeMode": "target_turn_end"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/MAGIC%20ATTACK%20DOWN.png",
+      "name": "Shaken",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "6YW8glLMYbwj6ZhC"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "EaHTnkC2F5Los5uk",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1761300503960,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Gain <strong>Ice </strong>vulnerability</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "EaHTnkC2F5Los5uk",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.EaHTnkC2F5Los5uk"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-hypothermia",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/northerlies.png",
+      "name": "Hypothermia",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "t2C3LKukW6LPUImk"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "GbLFOJUgTjJnaM4V",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1761300850905,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "bonus_ins",
+          "mode": 2,
+          "priority": 2,
+          "value": "-2"
+        },
+        {
+          "key": "bonus_dex",
+          "mode": 2,
+          "priority": 2,
+          "value": "-2"
+        }
+      ],
+      "description": "<p>Decrease <strong>【DEX】</strong> and<strong> 【INS】 </strong>by one stage</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "GbLFOJUgTjJnaM4V",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.GbLFOJUgTjJnaM4V"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-enraged",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "effectmacro": {
+          "onCreate": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isEnraged\n(async () => {\n  const PATH = \"system.props.isEnraged\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+          },
+          "onDelete": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isEnraged\n(async () => {\n  const PATH = \"system.props.isEnraged\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+          },
+          "onDisable": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isEnraged\n(async () => {\n  const PATH = \"system.props.isEnraged\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+          },
+          "onEnable": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isEnraged\n(async () => {\n  const PATH = \"system.props.isEnraged\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+          },
+          "onToggle": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isEnraged\n(async () => {\n  const PATH = \"system.props.isEnraged\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+          }
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "enraged",
+          "charges": 3,
+          "chargesMax": 3,
+          "lifetimeMode": "target_turn_end"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEFENSE%20DOUBLE%20DOWN.png",
+      "name": "Enraged",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fYkA57rVfoytHRjo"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "Gk0aYzDqmpxa3t12",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.331",
+        "createdTime": 1761300297645,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.4"
+      },
+      "changes": [],
+      "description": "<p>Unable to be targeted except by creature <strong>isolated </strong>by the same effects</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "Gk0aYzDqmpxa3t12",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.Gk0aYzDqmpxa3t12"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-isolate",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/RPR/enshroud.png",
+      "name": "Isolate",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "ACD2C8JLWUeIx89o"
+      ],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "GPuJ14TZYihTuAhm",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1761300201781,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "disable_action",
+          "mode": 5,
+          "priority": 0,
+          "value": "Equipment"
+        }
+      ],
+      "description": "<p>Disable the <strong>Equipment </strong>action</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "GPuJ14TZYihTuAhm",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.GPuJ14TZYihTuAhm"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-disarmed",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "fabula-ultima-companion": {
+          "lifetimeMode": "target_turn_end"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/12_MCH/dismantle.png",
+      "name": "Disarmed",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "v22vl6cnP94wVBPu"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "h3M2iAUzB26A4zNo",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1761300686169,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "bonus_dex",
+          "mode": 2,
+          "priority": 2,
+          "value": "-2"
+        }
+      ],
+      "description": "<p>Decrease 【<strong>DEX】 </strong>by one stage</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "h3M2iAUzB26A4zNo",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.h3M2iAUzB26A4zNo"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-slow",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "effectmacro": {
+          "onCreate": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isSlow\n// Works best when run by the Effect Macro module (uses the effect owner `actor`).\n// Falls back to the first selected token's actor only if no effect context is present.\n\n(async () => {\n  const PATH = \"system.props.isSlow\";\n\n  // Prefer the effect owner `actor` (provided by Effect Macro when the macro fires).\n  // Fallback to selected token's actor if you ever run this by hand.\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) {\n    ui.notifications?.warn(\"[isSlow Toggle] No actor context (need effect owner or a selected token).\");\n    return;\n  }\n\n  // Read current value (default to false when missing), then toggle.\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  const next = !current;\n\n  await effectActor.update({ [PATH]: next });\n})();\n"
+          },
+          "onDelete": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isSlow\n// Works best when run by the Effect Macro module (uses the effect owner `actor`).\n// Falls back to the first selected token's actor only if no effect context is present.\n\n(async () => {\n  const PATH = \"system.props.isSlow\";\n\n  // Prefer the effect owner `actor` (provided by Effect Macro when the macro fires).\n  // Fallback to selected token's actor if you ever run this by hand.\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) {\n    ui.notifications?.warn(\"[isSlow Toggle] No actor context (need effect owner or a selected token).\");\n    return;\n  }\n\n  // Read current value (default to false when missing), then toggle.\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  const next = !current;\n\n  await effectActor.update({ [PATH]: next });\n})();\n"
+          },
+          "onDisable": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isSlow\n// Works best when run by the Effect Macro module (uses the effect owner `actor`).\n// Falls back to the first selected token's actor only if no effect context is present.\n\n(async () => {\n  const PATH = \"system.props.isSlow\";\n\n  // Prefer the effect owner `actor` (provided by Effect Macro when the macro fires).\n  // Fallback to selected token's actor if you ever run this by hand.\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) {\n    ui.notifications?.warn(\"[isSlow Toggle] No actor context (need effect owner or a selected token).\");\n    return;\n  }\n\n  // Read current value (default to false when missing), then toggle.\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  const next = !current;\n\n  await effectActor.update({ [PATH]: next });\n})();\n"
+          },
+          "onEnable": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isSlow\n// Works best when run by the Effect Macro module (uses the effect owner `actor`).\n// Falls back to the first selected token's actor only if no effect context is present.\n\n(async () => {\n  const PATH = \"system.props.isSlow\";\n\n  // Prefer the effect owner `actor` (provided by Effect Macro when the macro fires).\n  // Fallback to selected token's actor if you ever run this by hand.\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) {\n    ui.notifications?.warn(\"[isSlow Toggle] No actor context (need effect owner or a selected token).\");\n    return;\n  }\n\n  // Read current value (default to false when missing), then toggle.\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  const next = !current;\n\n  await effectActor.update({ [PATH]: next });\n})();\n"
+          },
+          "onToggle": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isSlow\n// Works best when run by the Effect Macro module (uses the effect owner `actor`).\n// Falls back to the first selected token's actor only if no effect context is present.\n\n(async () => {\n  const PATH = \"system.props.isSlow\";\n\n  // Prefer the effect owner `actor` (provided by Effect Macro when the macro fires).\n  // Fallback to selected token's actor if you ever run this by hand.\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) {\n    ui.notifications?.warn(\"[isSlow Toggle] No actor context (need effect owner or a selected token).\");\n    return;\n  }\n\n  // Read current value (default to false when missing), then toggle.\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  const next = !current;\n\n  await effectActor.update({ [PATH]: next });\n})();\n"
+          }
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "slow",
+          "charges": 3,
+          "chargesMax": 3,
+          "lifetimeMode": "target_turn_end"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEF%20DOWN.png",
+      "name": "Slow",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "hhqoSNhWfVD4KR7g"
+      ],
+      "system": {
+        "tags": [
+          "debuff",
+          "slow"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "H9bBhhkdW5OsvTl3",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1761300569393,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Acts <strong>slower </strong>than other creature</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "H9bBhhkdW5OsvTl3",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.H9bBhhkdW5OsvTl3"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-delay",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/summon_carbuncle.png",
+      "name": "Delay",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "CfLPg6RDybSQhTSR"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "hIgRYzdfJ4JjZ0rV",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.331",
+        "createdTime": 1761300596095,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.4"
+      },
+      "changes": [],
+      "description": "<p>Acts <strong>faster </strong>than other creature</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "hIgRYzdfJ4JjZ0rV",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.hIgRYzdfJ4JjZ0rV"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-quickened",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/summon_topaz.png",
+      "name": "Quickened",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "DCaKnV9kNn3EpqtY"
+      ],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "i8X99GdMrkAKjg5E",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.331",
+        "createdTime": 1761300994514,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.4"
+      },
+      "changes": [],
+      "description": "<p>Unable to <strong>Act</strong></p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "i8X99GdMrkAKjg5E",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.i8X99GdMrkAKjg5E"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-ko",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Incapacitate.png",
+      "name": "KO",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "4g2B0rdJ3SiUQvUv"
+      ],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "iaHAi8n76EbyQW8x",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1781195395638,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><em>Grappling:</em> You hold a foe in your grip — attacks against you also strike whoever you hold.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "core": {
+          "statusId": "fud-grappling"
+        },
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "iaHAi8n76EbyQW8x",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.iaHAi8n76EbyQW8x"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-grappling",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "fabula-ultima-companion": {
+          "directorPermanent": true,
+          "reactionConfig": {
+            "name": "Grappling",
+            "reaction_config_table": {
+              "0": {
+                "$deleted": false,
+                "reaction_action_intent": "harmful",
+                "reaction_effect_ref": "grappling_splash",
+                "reaction_passive_mode": "force",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_targeted_by_action"
+              }
+            },
+            "reaction_effect_table": {
+              "0": {
+                "$deleted": false,
+                "effect_kind": "add_target",
+                "effect_label": "grappling_splash",
+                "target_ref": {
+                  "candidate_source": "grappled_by_self",
+                  "mode": "all"
+                }
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Bludgeon.png",
+      "name": "Grappling",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-grappling"
+      ],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "IeqEs6OxODlFzbi9",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1761300525779,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Gain <strong>Air </strong>vulnerability</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "IeqEs6OxODlFzbi9",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.IeqEs6OxODlFzbi9"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-turbulence",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/alpine_draft.png",
+      "name": "Turbulence",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "1qTdxSVu2XLu0lUx"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "J15gUJ2TIXiSS52f",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1761299881443,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "heal_receiving_mod_all",
+          "mode": 2,
+          "priority": 20,
+          "value": "-0.5"
+        }
+      ],
+      "description": "<p>Reduce the effectiveness of <strong>Healing </strong>effects</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "J15gUJ2TIXiSS52f",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.J15gUJ2TIXiSS52f"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-bleed",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "bleed",
+          "charges": 3,
+          "chargesMax": 3,
+          "lifetimeMode": "target_turn_end"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/RPR/cross_reaping.png",
+      "name": "Bleed",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "QOfrFCU2C6mx50gK"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "jbXGFAky9kNXeW5R",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1761300013017,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "cannot_target_uuids",
+          "mode": 5,
+          "priority": 0,
+          "value": "${casterActorUuid}$"
+        }
+      ],
+      "description": "<p>Can't target the charmer or include them as the target of actions.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "jbXGFAky9kNXeW5R",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.jbXGFAky9kNXeW5R"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-charmed",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "charmed",
+          "charges": 3,
+          "chargesMax": 3,
+          "lifetimeMode": ""
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Heart.png",
+      "name": "Charmed",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-charmed"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "jmXojKYI5WG8L7AD",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1761300467074,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Gain <strong>Earth </strong>vulnerability and become the <strong>Construct </strong>type</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "jmXojKYI5WG8L7AD",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.jmXojKYI5WG8L7AD"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-petrify",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/peripheral_synthesis.png",
+      "name": "Petrify",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "qePlOECBTS0Dftgc"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "jXxOfGI25F4EOtlz",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1761299564938,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "disable_action",
+          "mode": 5,
+          "priority": 0,
+          "value": "Objective"
+        }
+      ],
+      "description": "<p>Disable the <strong>Objective </strong>action</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "jXxOfGI25F4EOtlz",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.jXxOfGI25F4EOtlz"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-confused",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "fabula-ultima-companion": {
+          "lifetimeMode": "target_turn_end"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Wet.png",
+      "name": "Confused",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "Rc8AvdmlHAK7pPea"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "JY64pssm1IhqK7T8",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1761301035261,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "must_target_applier",
+          "mode": 5,
+          "priority": 20,
+          "value": "Attack,Spell"
+        }
+      ],
+      "description": "<p>Must target the <strong>provoker</strong></p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "JY64pssm1IhqK7T8",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.JY64pssm1IhqK7T8"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-provoked",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "fabula-ultima-companion": {},
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/02_WAR/TankRollAction/provoke.png",
+      "name": "Provoked",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "ZK0aTX8IH1NqwmTw"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "k5Ovdpt7oSm8soLU",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1761300336047,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Losing <strong>MP </strong>at the start of your turn</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "k5Ovdpt7oSm8soLU",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.k5Ovdpt7oSm8soLU"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-cursed",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "effectmacro": {
+          "onTurnStart": {
+            "script": "// === Curse MP-Drain v1 (Effect Macro → On Combat Turn Starting) ============\n// Drains % Max MP using your Advance Damage macro, *without* UI targeting.\n//\n// • Default: 20% of max MP\n// • Champion rank (NPC): 10%\n// • PCs / no rank field: 20%\n// • Value type: \"mp\", Weapon type: \"none_ef\" (neutral), Element can be anything (not used for MP SFX)\n//\n// Requires: AdvanceDamage supports headless targets via __PAYLOAD.targetIds.\n// ===========================================================================\n\n(async () => {\n  const ADV_DMG_MACRO_NAME = \"AdvanceDamage\"; // rename if your macro differs\n\n  // --- Only act on the owner’s actual turn ---------------------------------\n  if (!actor || !game.combat) return;\n  const isOwnersTurn = game.combat?.combatant?.actor?.id === actor.id;\n  if (!isOwnersTurn) return;\n\n  // --- Resolve the correct token id for this actor on this turn ------------\n  function pickTokenIdForActor(a) {\n    const ct = game.combat?.combatant;\n    if (ct?.actor?.id === a.id && ct.token?.id) return ct.token.id;\n    if (token?.id) return token.id;\n    const t = a.getActiveTokens()?.[0];\n    return t?.id ?? t?.document?.id ?? null;\n  }\n  const tokenId = pickTokenIdForActor(actor);\n  if (!tokenId) return ui.notifications.warn(\"[Curse] No active token for effect owner.\");\n\n  // --- Determine % by NPC Rank (Champion halves it) ------------------------\n  // NPC sheet has system.props.npc_rank with options including \"cha\" (Champion).\n  const props = actor.system?.props ?? {};\n  const rank  = String(props.npc_rank ?? \"\").toLowerCase(); // e.g., \"cha\"\n  const percent = (rank === \"cha\") ? 10 : 20;  // PCs / missing field → 20%\n\n  // --- Build headless payload for AdvanceDamage ----------------------------\n  const payload = {\n    baseValue: String(percent),    // just the number, no '%' sign\n    valueType: \"mp\",               // drain MP\n    targetAffinity: \"percentMax\",  // % of target's max MP\n    elementType: \"dark\",           // thematic; MP SFX is driven by valueType anyway\n    weaponType: \"none_ef\",\n    ignoreDamageReduction: true,   // MP isn’t reduced by armor; set false if you prefer\n    ignoreShield: true,            // shields shouldn’t block MP drain\n\n    // Context strings for your logs/cards\n    attackerName: \"Curse\",\n    attackRange: \"DOT\",\n    sourceType : \"Effect: Curse\",\n\n    // Headless targets (prevents Foundry crosshair flashing)\n    targetIds: [tokenId]\n  };\n\n  const ADV = game.macros.getName(ADV_DMG_MACRO_NAME);\n  if (!ADV) return ui.notifications.error(`[Curse] Macro \"${ADV_DMG_MACRO_NAME}\" not found.`);\n\n  await ADV.execute({ __AUTO: true, __PAYLOAD: payload });\n})();\n"
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/doom.png",
+      "name": "Cursed",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "3YZNX2X5rHYtL4L5"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "LHEX0HGXQNLxQxTF",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.331",
+        "createdTime": 1761300963202,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.4"
+      },
+      "changes": [],
+      "description": "<p>This creature is channeling an ability</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "LHEX0HGXQNLxQxTF",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.LHEX0HGXQNLxQxTF"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-channeling",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/manafont.png",
+      "name": "Channeling",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "g7JIey1pEuRHyAOH"
+      ],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "MHPx2Q1ZVMeDJD4p",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1781654522107,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "disable_action_intent",
+          "mode": 5,
+          "priority": 0,
+          "value": "aid, neutral"
+        },
+        {
+          "key": "allegiance_override",
+          "mode": 5,
+          "priority": 0,
+          "value": "ally:enemy"
+        }
+      ],
+      "description": "<p>On your turn, you must spend your action to perform a harmful action against an ally.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "MHPx2Q1ZVMeDJD4p",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.MHPx2Q1ZVMeDJD4p"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-draconic-domination",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "fabula-ultima-companion": {
+          "lifetimeMode": "",
+          "riderOf": "Charmed"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215904.664.png",
+      "name": "Draconic Domination",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "n0OxEa26nnGFsoRO",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1761300233596,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Reduce <strong>Attack </strong>damage</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "n0OxEa26nnGFsoRO",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.n0OxEa26nnGFsoRO"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-bane",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "bane",
+          "charges": 3,
+          "chargesMax": 3,
+          "lifetimeMode": "target_turn_end",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "damage_amount": "0.5",
+                "damage_operation": "multiply",
+                "damage_stage": "outgoing",
+                "effect_kind": "adjust_damage",
+                "effect_label": "bane_dmg_half"
+              }
+            },
+            "reaction_config_table": {
+              "0": {
+                "reaction_action_kind": "Attack",
+                "reaction_effect_ref": "bane_dmg_half",
+                "reaction_passive_mode": "force",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_will_deal_damage"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/basic_instinct.png",
+      "name": "Bane",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "gX1fA3onNG7wsyap"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "nGDTBPQ9omhKG3rM",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1761300724106,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "bonus_ins",
+          "mode": 2,
+          "priority": 2,
+          "value": "-2"
+        }
+      ],
+      "description": "<p>Decrease <strong>【INS】 </strong>by one stage</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "nGDTBPQ9omhKG3rM",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.nGDTBPQ9omhKG3rM"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-dazed",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "effectmacro": {
+          "onCreate": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isDazed\n// Uses the Effect Macro context's `actor` (owner of the effect). Falls back\n// to the first selected token's actor only if no effect context is present.\n\n(async () => {\n  const PATH = \"system.props.isDazed\";\n\n  // Prefer the effect owner `actor` (provided by Effect Macro).\n  // Fallback to selected token's actor if run manually.\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return; // silent: no actor context\n\n  // Toggle: read current (default false if missing), then invert.\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  const next = !current;\n\n  await effectActor.update({ [PATH]: next });\n})();\n"
+          },
+          "onDelete": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isDazed\n// Uses the Effect Macro context's `actor` (owner of the effect). Falls back\n// to the first selected token's actor only if no effect context is present.\n\n(async () => {\n  const PATH = \"system.props.isDazed\";\n\n  // Prefer the effect owner `actor` (provided by Effect Macro).\n  // Fallback to selected token's actor if run manually.\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return; // silent: no actor context\n\n  // Toggle: read current (default false if missing), then invert.\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  const next = !current;\n\n  await effectActor.update({ [PATH]: next });\n})();\n"
+          },
+          "onDisable": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isDazed\n// Uses the Effect Macro context's `actor` (owner of the effect). Falls back\n// to the first selected token's actor only if no effect context is present.\n\n(async () => {\n  const PATH = \"system.props.isDazed\";\n\n  // Prefer the effect owner `actor` (provided by Effect Macro).\n  // Fallback to selected token's actor if run manually.\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return; // silent: no actor context\n\n  // Toggle: read current (default false if missing), then invert.\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  const next = !current;\n\n  await effectActor.update({ [PATH]: next });\n})();\n"
+          },
+          "onEnable": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isDazed\n// Uses the Effect Macro context's `actor` (owner of the effect). Falls back\n// to the first selected token's actor only if no effect context is present.\n\n(async () => {\n  const PATH = \"system.props.isDazed\";\n\n  // Prefer the effect owner `actor` (provided by Effect Macro).\n  // Fallback to selected token's actor if run manually.\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return; // silent: no actor context\n\n  // Toggle: read current (default false if missing), then invert.\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  const next = !current;\n\n  await effectActor.update({ [PATH]: next });\n})();\n"
+          },
+          "onToggle": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isDazed\n// Uses the Effect Macro context's `actor` (owner of the effect). Falls back\n// to the first selected token's actor only if no effect context is present.\n\n(async () => {\n  const PATH = \"system.props.isDazed\";\n\n  // Prefer the effect owner `actor` (provided by Effect Macro).\n  // Fallback to selected token's actor if run manually.\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return; // silent: no actor context\n\n  // Toggle: read current (default false if missing), then invert.\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  const next = !current;\n\n  await effectActor.update({ [PATH]: next });\n})();\n"
+          }
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "dazed",
+          "charges": 3,
+          "chargesMax": 3,
+          "lifetimeMode": "target_turn_end"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/MAGICDEFENSE%20DOWN.png",
+      "name": "Dazed",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "wA1E8GxiXmzz80XQ"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "owA4mhwuMM1Gh18f",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1761299594107,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Disable the <strong>Inventory </strong>action</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "owA4mhwuMM1Gh18f",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.owA4mhwuMM1Gh18f"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-panic",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Stun.png",
+      "name": "Panic",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "8LN8tDQjON508Rqm"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "OYLYpaZMWDFRMPgk",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1761299459893,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Disable the <strong>Guard </strong>action</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "OYLYpaZMWDFRMPgk",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.OYLYpaZMWDFRMPgk"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-stagger",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Dark.png",
+      "name": "Stagger",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "1QPHKNWo17z0bBmX"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "pZ93jM12X0L5bCsM",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.331",
+        "createdTime": 1761301271212,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.4"
+      },
+      "changes": [],
+      "description": "<p>Unable to be target by <strong>single target</strong> action</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "6N3OGMamgFnrQ6KP",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.6N3OGMamgFnrQ6KP"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-hidden",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/09_NIN/shade_shift.png",
+      "name": "Hidden",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "GJ0cbbj60lr4zaHm"
+      ],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "qabllLGasbEnui8v",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1761301228700,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><strong>Neautralize </strong>Damage<strong> Absorbtion </strong>and<strong> Immunity</strong></p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "K27ZFD2Bu5onNPfZ",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.K27ZFD2Bu5onNPfZ"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-anomaly",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "durationType": 1,
+            "modifyDuration": true,
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 3,
+          "visible": true
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/chirp.png",
+      "name": "Anomaly",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "beNHhJN46joNL0LG"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "QbgrRpba2h4ZC3uF",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1761300547357,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Gain <strong>vulnerability to all damage type</strong></p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "QbgrRpba2h4ZC3uF",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.QbgrRpba2h4ZC3uF"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-break",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/faze.png",
+      "name": "Break",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "jKvrVpxLgX0KhB23"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "QM91tXm46BFaTR9W",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1761299620849,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "QM91tXm46BFaTR9W",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.QM91tXm46BFaTR9W"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-grappled",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "fabula-ultima-companion": {
+          "charges": 1,
+          "chargesMax": 1,
+          "reciprocalAe": "Grappling"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Bludgeon.png",
+      "name": "Grappled",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "MsbUHrgK7AhSeEJm"
+      ],
+      "system": {
+        "tags": [
+          "debuff",
+          "grappled"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "Sdw3TFToNRqc4fBC",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1761299848620,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Reduce the effectiveness of <strong>Mana Gain</strong></p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "Sdw3TFToNRqc4fBC",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.Sdw3TFToNRqc4fBC"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-wither",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/ink_jet.png",
+      "name": "Wither",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "VxdXsFJ7YVEzAp3x"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "sKaI09DfDAMkJkyy",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1761300424577,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_3",
+          "mode": 0,
+          "priority": 1,
+          "value": "VU"
+        },
+        {
+          "key": "wet_status",
+          "mode": 5,
+          "priority": 1,
+          "value": "true"
+        }
+      ],
+      "description": "<p>Gain <strong>Bolt </strong>vulnerability</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "sKaI09DfDAMkJkyy",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.sKaI09DfDAMkJkyy"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-wet",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "fabula-ultima-companion": {
+          "wetStatusBooleanPatchBackup_v1": {
+            "changes": [
+              {
+                "key": "affinity_3",
+                "mode": 0,
+                "priority": 1,
+                "value": "VU"
+              }
+            ],
+            "createdAt": 1777713393201,
+            "effectName": "Wet",
+            "effectUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.sKaI09DfDAMkJkyy",
+            "parentName": "Debuff",
+            "parentType": "Item"
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/flying_sardine.png",
+      "name": "Wet",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "5FFBDg2y54bpqgat"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "SZcUg8Hgo7rzddjQ",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1761299798314,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Convert <strong>Healing </strong>into <strong>Damage </strong>and gain the <strong>Undead </strong>type</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "SZcUg8Hgo7rzddjQ",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.SZcUg8Hgo7rzddjQ"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-zombie",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Zombie.png",
+      "name": "Zombie",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "bspDC7hFRTYuwdhf"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "TI6txApoPwgYLHXQ",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1761299675547,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Taking <strong>Poison </strong>damage when performing an <strong>action</strong></p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "TI6txApoPwgYLHXQ",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.TI6txApoPwgYLHXQ"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-envenomed",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "fabula-ultima-companion": {
+          "charges": 1
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Poison.png",
+      "name": "Envenomed",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "StnYeDADYo2xX99O"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "u6SHYfoeExl1etSf",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1761300904713,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "bonus_mig",
+          "mode": 2,
+          "priority": null,
+          "value": "-2"
+        },
+        {
+          "key": "bonus_wlp",
+          "mode": 2,
+          "priority": 20,
+          "value": "-2"
+        }
+      ],
+      "description": "<p>Decrease <strong>【MIG】</strong> and<strong> 【WLP】 </strong>by one stage</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "u6SHYfoeExl1etSf",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.u6SHYfoeExl1etSf"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-poisoned",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "effectmacro": {
+          "onCreate": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isPoisoned\n(async () => {\n  const PATH = \"system.props.isPoisoned\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+          },
+          "onDelete": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isPoisoned\n(async () => {\n  const PATH = \"system.props.isPoisoned\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+          },
+          "onDisable": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isPoisoned\n(async () => {\n  const PATH = \"system.props.isPoisoned\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+          },
+          "onEnable": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isPoisoned\n(async () => {\n  const PATH = \"system.props.isPoisoned\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+          },
+          "onToggle": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isPoisoned\n(async () => {\n  const PATH = \"system.props.isPoisoned\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+          }
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "poisoned",
+          "charges": 3,
+          "chargesMax": 3,
+          "lifetimeMode": "target_turn_end"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/ATK%20DOUBLE%20DOWN.png",
+      "name": "Poisoned",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "DHsoSawNEZAxsnQ9"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "unvPmMdQnNaT1ZJa",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1761300447463,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_6",
+          "mode": 0,
+          "priority": 1,
+          "value": "VU"
+        }
+      ],
+      "description": "<p>Gain <strong>Fire </strong>vulnerability</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "unvPmMdQnNaT1ZJa",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.unvPmMdQnNaT1ZJa"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-oil",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/self-destruct.png",
+      "name": "Oil",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "t5jyddIZDvbyuVsD"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "WGLPo0XUtClK9hac",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1761300057551,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "enable_action_only",
+          "mode": 5,
+          "priority": 0,
+          "value": "Attack"
+        }
+      ],
+      "description": "<p>Gain <strong>increased damage, </strong>but only able to perform the <strong>Attack </strong>action</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "WGLPo0XUtClK9hac",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.WGLPo0XUtClK9hac"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-berserk",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "berserk",
+          "charges": 3,
+          "chargesMax": 3,
+          "lifetimeMode": "target_turn_end",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "damage_amount": "2",
+                "damage_operation": "multiply",
+                "damage_stage": "outgoing",
+                "effect_kind": "adjust_damage",
+                "effect_label": "berserk_dmg_x2"
+              }
+            },
+            "reaction_config_table": {
+              "0": {
+                "reaction_effect_ref": "berserk_dmg_x2",
+                "reaction_passive_mode": "force",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_will_deal_damage"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/02_WAR/infuriate.png",
+      "name": "Berserk",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "vLM7q3rdXVCgHYD4"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "WIZRIA6k5cnFQoak",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1761299768989,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Reduce <strong>Accuracy</strong></p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "WIZRIA6k5cnFQoak",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.WIZRIA6k5cnFQoak"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-blind",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Blind.png",
+      "name": "Blind",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "7FLtIUvENcYDAJKC"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "wWX3DvOWaeMB6Uji",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.331",
+        "createdTime": 1770018028331,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>This creature cannot be targeted by Melee attacks</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": 99999999,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "c5BLdEAvrVmUcZG9",
+          "originalParentId": "0rfKFWTyPt7TfUvl",
+          "originalUuid": "Item.0rfKFWTyPt7TfUvl.ActiveEffect.c5BLdEAvrVmUcZG9"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-flying",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/summon_garuda_II.png",
+      "name": "Flying",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    },
+    {
+      "_id": "y5YpJbxvkHnHA1Fc",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1761299510046,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "disable_action",
+          "mode": 5,
+          "priority": 0,
+          "value": "Attack"
+        }
+      ],
+      "description": "<p>Disable the <strong>Attack </strong>action</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "y5YpJbxvkHnHA1Fc",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.y5YpJbxvkHnHA1Fc"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-frightened",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "frightened",
+          "charges": 3,
+          "chargesMax": 3,
+          "lifetimeMode": "target_turn_end"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Fear.png",
+      "name": "Frightened",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "v2vFlETIgMnff5o8"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    },
+    "dfreds-convenient-effects": {
+      "folderColor": "",
+      "isBackup": false,
+      "isConvenient": true,
+      "isViewable": true
+    }
+  },
+  "folder": null,
+  "img": "modules/dfreds-convenient-effects/images/magic-palm.svg",
+  "name": "Debuff",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 400000,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {},
+    "statusEffects": {},
+    "uniqueId": "XVOWOq9oUmEECGrU"
+  },
+  "type": "activeEffectContainer"
+}

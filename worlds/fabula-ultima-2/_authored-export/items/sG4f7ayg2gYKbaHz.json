@@ -1,0 +1,64 @@
+{
+  "_id": "sG4f7ayg2gYKbaHz",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757289873444,
+    "duplicateSource": "Item.onWV1WgJlvg1iRTG",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "0Rc7ZvYFTru6ax0u",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/blizzard_III.png",
+  "name": "Invoke: Chill",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Invoker",
+      "cost": "5 MP",
+      "damage_bonus": "0",
+      "description": "<p>The target loses 20 Mind Points and also suffers \n<a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a>. <em>Only usable if a Water wellspring is present on the scene.</em></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>MP loss becomes <strong>30</strong>.</p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>MP loss becomes <strong>40</strong>.</p>\n",
+      "duration": "Instantanious",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": true,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Invoke: Chill",
+      "optional_params": {
+        "0": {
+          "$deleted": false,
+          "key": "wellspring_type",
+          "value": "water"
+        }
+      },
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "Range",
+      "skill_target": "One Creature",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": true
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "sG4f7ayg2gYKbaHz"
+  },
+  "type": "equippableItem"
+}

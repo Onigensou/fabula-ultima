@@ -1,0 +1,40 @@
+{
+  "_id": "DRao30uaSupThwos",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1754672144474,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "bHc3vfH5W0rLeZ4g",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lithia/GreedyWonderPassive1.png",
+  "name": "Pirate's Mark",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 100000,
+  "system": {
+    "container": null,
+    "props": {
+      "description": "<p>When <strong>hit </strong>by an enemy attack, give the enemy some <strong>Zenit. </strong>Removed after <strong>1 Round</strong></p>",
+      "detail_roller": "Show",
+      "id": "DRao30uaSupThwos",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lithia/GreedyWonderPassive1.png",
+      "name": "Pirate's Mark",
+      "uuid": "Item.DRao30uaSupThwos"
+    },
+    "template": "nS5URyF3aoxhvPsZ",
+    "templateSystemUniqueVersion": 4221238629,
+    "unique": false,
+    "uniqueId": "DRao30uaSupThwos"
+  },
+  "type": "equippableItem"
+}

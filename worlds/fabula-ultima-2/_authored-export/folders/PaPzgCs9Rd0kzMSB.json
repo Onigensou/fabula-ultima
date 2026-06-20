@@ -1,0 +1,19 @@
+{
+  "_id": "PaPzgCs9Rd0kzMSB",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1753921308393,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": "#ca8849",
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "Classes",
+  "sort": 100000,
+  "sorting": "a",
+  "type": "Actor"
+}

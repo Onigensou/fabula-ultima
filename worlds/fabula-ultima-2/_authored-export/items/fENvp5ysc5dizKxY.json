@@ -1,0 +1,54 @@
+{
+  "_id": "fENvp5ysc5dizKxY",
+  "_stats": {
+    "compendiumSource": "Item.C1FR55h1SsY8GEpF",
+    "coreVersion": "12.331",
+    "createdTime": 1702144891794,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "core": {
+      "sourceId": "Item.C1FR55h1SsY8GEpF"
+    },
+    "custom-system-builder": {
+      "version": "3.2.4"
+    }
+  },
+  "folder": "hIrlKsiyq3vuA7ZM",
+  "img": "icons/magic/lightning/bolt-strike-blue.webp",
+  "name": "Fulgur",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3,
+    "nXC7OD7u5Zw5UDDU": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Elementalist",
+      "cost": "10 × T",
+      "damage_bonus": "15",
+      "description": "<p>You weave electricity into a wave of crackling bolts. Each target hit by this spell suffers<strong>【HR + 15】bolt </strong>damage.</p>\n<p><strong>Opportunity</strong>: Each target hit by this spell suffers <strong>dazed</strong>.</p>",
+      "discipline": "",
+      "duration": "Instantaneous",
+      "higherLevel": {},
+      "id": "fENvp5ysc5dizKxY",
+      "img": "icons/magic/lightning/bolt-strike-blue.webp",
+      "name": "Fulgur",
+      "rolled_atr1": "INS",
+      "rolled_atr2": "WLP",
+      "target": "Up to 3 creature",
+      "type_damage": "Bolt",
+      "uuid": "Item.fENvp5ysc5dizKxY"
+    },
+    "template": "FZmpKcQRP7hZQqbV",
+    "templateSystemUniqueVersion": 1700837225,
+    "unique": false,
+    "uniqueId": "fENvp5ysc5dizKxY"
+  },
+  "type": "equippableItem"
+}

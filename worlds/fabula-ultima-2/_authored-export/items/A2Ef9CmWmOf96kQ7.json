@@ -1,0 +1,57 @@
+{
+  "_id": "A2Ef9CmWmOf96kQ7",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757425850339,
+    "duplicateSource": "Item.1eFbdLi3qXUczO6Z",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "2OplVa9fwLYbzD8b",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/spinning_slash.png",
+  "name": "Harvester of Sorrow",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 600000,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Necromancer",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>When you cast <strong>Drain Spirit</strong> or <strong>Drain Vigor</strong>, the amount of MP or HP you recover is <strong>equal to the MP or HP loss suffered by the target</strong>, respectively (<em>instead of being halved</em>).</p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ―</strong> Your <strong>Drain Spirit</strong> causes the target to lose <strong>[HR + 20]</strong> Mind Points.</p>\n<p><strong>Skill Enhancement Lv. 40 ―</strong> Your <strong>Drain Spirit</strong> causes the target to lose <strong>[HR + 25]</strong> Mind Points.</p>",
+      "duration": "",
+      "heroic_requirement": "you must have mastered one or more Classes among Entropist and Necromancer, and must have learned both the Drain Spirit and Drain Vigor spells.",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Harvester of Sorrow",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "A2Ef9CmWmOf96kQ7"
+  },
+  "type": "equippableItem"
+}

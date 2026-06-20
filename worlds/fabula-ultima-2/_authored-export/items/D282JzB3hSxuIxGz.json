@@ -1,0 +1,62 @@
+{
+  "_id": "D282JzB3hSxuIxGz",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1743847040346,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "D282JzB3hSxuIxGz",
+        "itemName": "Magitech Briefcase",
+        "pickedOldProps": {
+          "cost": "3000",
+          "martial": false
+        },
+        "ts": 1769647435960
+      }
+    }
+  },
+  "folder": "wkrvldDZ113CaPX8",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Hitman%20Suitcase.gif",
+  "name": "Magitech Briefcase",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "category": "Brawling",
+      "check_bonus": "0",
+      "damage_bonus": "5",
+      "description": "<ul>\n<li>When you&nbsp;<strong>Equip</strong> this weapon, Gain&nbsp;<strong>10</strong> <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/SGE/taurochole.png\" alt=\"\" width=\"21\" height=\"21\">@UUID[JournalEntry.wrw2ENSwzCBjztvt]{Shield}, when you&nbsp;<strong>unequip&nbsp;</strong>this weapon, lose all <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/SGE/taurochole.png\" alt=\"\" width=\"21\" height=\"21\">@UUID[JournalEntry.wrw2ENSwzCBjztvt]{Shield} points granted by this weapon</li>\n<li>You gain a <strong>+2</strong> bonus to Defense, and you are treated as having a <strong>shield</strong> equipped for the sake of your Skills</li>\n<li>Transform into <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gun.png\" alt=\"\" width=\"21\" height=\"21\"><strong>@UUID[Item.9tAsz176ZSt1HVuS]{Sidewinder Rev-II}</strong></li>\n</ul>",
+      "hand_slots": "One-handed",
+      "isMartial": false,
+      "item_cost": "3000",
+      "item_type": "weapon",
+      "name": "Magitech Briefcase",
+      "rolled_atr1": "MIG",
+      "rolled_atr2": "MIG",
+      "set_name": "",
+      "skill_target": "One Enemy",
+      "type_damage": "Physical",
+      "weapon_range": "Melee"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "D282JzB3hSxuIxGz"
+  },
+  "type": "equippableItem"
+}

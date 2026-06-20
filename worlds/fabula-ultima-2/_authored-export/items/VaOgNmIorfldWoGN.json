@@ -1,0 +1,58 @@
+{
+  "_id": "VaOgNmIorfldWoGN",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757051758176,
+    "duplicateSource": "Item.xL81GaZnOTyYdpK7",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "CC77DCVjUHEUtN3o",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/devour.png",
+  "name": "Neurophagodia",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Mutant",
+      "cost": "33% Current HP",
+      "damage_bonus": "0",
+      "description": "<p>When you use the 【📜<strong>Biophagy】</strong> Skill, you also recover an amount of <strong>Mind Points</strong> equal to <strong>[4 + (your Skill Level in 【💥Theriomorphosis】)]</strong>.</p>",
+      "duration": "Scene",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": true,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Neurophagodia",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Theriomorphosis SL</strong></p></td><td><p><strong>MP Recovered</strong></p></td></tr><tr><td><p>1</p></td><td><p>5</p></td></tr><tr><td><p>2</p></td><td><p>6</p></td></tr><tr><td><p>3</p></td><td><p>7</p></td></tr><tr><td><p>4</p></td><td><p>8</p></td></tr><tr><td><p>5</p></td><td><p>9</p></td></tr><tr><td><p>6</p></td><td><p>10</p></td></tr></tbody></table>",
+      "skill_range": "Any",
+      "skill_target": "Self",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "VaOgNmIorfldWoGN"
+  },
+  "type": "equippableItem"
+}

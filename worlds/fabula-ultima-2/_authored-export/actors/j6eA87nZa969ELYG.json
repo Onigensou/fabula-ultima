@@ -1,0 +1,680 @@
+{
+  "_id": "j6eA87nZa969ELYG",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1740156196860,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.5.0"
+    },
+    "theatre": {
+      "baseinsert": "",
+      "disabledefault": false,
+      "emotes": {
+        "angry": {
+          "insert": ""
+        },
+        "annoyed": {
+          "insert": ""
+        },
+        "awe-struck": {
+          "insert": ""
+        },
+        "blushing": {
+          "insert": ""
+        },
+        "carefree": {
+          "insert": ""
+        },
+        "confused": {
+          "insert": ""
+        },
+        "cry": {
+          "insert": ""
+        },
+        "dissatisfied": {
+          "insert": ""
+        },
+        "dizzy": {
+          "insert": ""
+        },
+        "frown": {
+          "insert": ""
+        },
+        "frustrated": {
+          "insert": ""
+        },
+        "grin": {
+          "insert": ""
+        },
+        "happy": {
+          "insert": ""
+        },
+        "happytears": {
+          "insert": ""
+        },
+        "hearts": {
+          "insert": ""
+        },
+        "idea": {
+          "insert": ""
+        },
+        "innocent": {
+          "insert": ""
+        },
+        "kiss": {
+          "insert": ""
+        },
+        "laughing": {
+          "insert": ""
+        },
+        "laughingsquint": {
+          "insert": ""
+        },
+        "meh": {
+          "insert": ""
+        },
+        "mischevious": {
+          "insert": ""
+        },
+        "panic": {
+          "insert": ""
+        },
+        "playful": {
+          "insert": ""
+        },
+        "rofl": {
+          "insert": ""
+        },
+        "sad": {
+          "insert": ""
+        },
+        "scared": {
+          "insert": ""
+        },
+        "serious": {
+          "insert": ""
+        },
+        "sleeping": {
+          "insert": ""
+        },
+        "smile": {
+          "insert": ""
+        },
+        "smug": {
+          "insert": ""
+        },
+        "speechless": {
+          "insert": ""
+        },
+        "surprised": {
+          "insert": ""
+        },
+        "thinking": {
+          "insert": ""
+        },
+        "tongue": {
+          "insert": ""
+        },
+        "wink": {
+          "insert": ""
+        },
+        "worried": {
+          "insert": ""
+        }
+      },
+      "name": "Male Enforcer",
+      "optalign": "top",
+      "settings": {
+        "emote": null,
+        "textcolor": null,
+        "textflyin": null,
+        "textfont": null,
+        "textsize": null,
+        "textstanding": null
+      }
+    }
+  },
+  "folder": "kWJqZHPj06vaaOR3",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Enforcer%20Gunbreaker.png",
+  "items": [
+    {
+      "_id": "H0h2TIwEN6iJtOtc",
+      "_stats": {
+        "compendiumSource": "Item.acdicWHrJMEMe20N",
+        "coreVersion": "12.343",
+        "createdTime": 1732265316740,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.acdicWHrJMEMe20N"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "xMVY94FXuACmcFkd",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/sword.png",
+      "name": "Gunsword",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 2
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "category": "Sword",
+          "check": "Check",
+          "check_bonus": "1",
+          "cost": "1000",
+          "damage_bonus": "10",
+          "description": "<ul>\n<li>This weapon can target <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/summon_garuda_II.png\" alt=\"\" width=\"21\" height=\"21\"><strong>@UUID[JournalEntry.q6keqwDWUsEgSWDw]{Flying}</strong> creatures</li>\n<li>If you roll a critical success on an Accuracy Check with this weapon, you may spend that <strong>opportunity</strong> deal 10 bonus damage, if you do, your damage becomes <strong>Fire.</strong></li>\n</ul>",
+          "flavor_text": "<hr>\n<blockquote>\n<p>...Not to be confused with a Gunblade</p>\n</blockquote>",
+          "hand_slots": "Two-handed",
+          "martial": true,
+          "name": "Gunsword",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "MIG",
+          "set_name": "",
+          "type_damage": "Physical",
+          "weapon_range": "Melee"
+        },
+        "template": "gIRU9XGqYeMBwBN9",
+        "templateSystemUniqueVersion": 2814471460,
+        "unique": false
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Enforcer Gunbreaker",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "prototypeToken": {
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 50,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "max": null,
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "max": null,
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "max": null,
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar4": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar4",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "DEF",
+            "max": 11,
+            "maxcolor": "#f26d40",
+            "mincolor": "#f26d40",
+            "opacity": null,
+            "order": 4,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 11
+          },
+          "bar5": {
+            "attribute": "custom",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar5",
+            "ignoreMax": false,
+            "ignoreMin": false,
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MDEF",
+            "max": 7,
+            "maxcolor": "#26d6ed",
+            "mincolor": "#26d6ed",
+            "opacity": null,
+            "order": 3,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "top-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false,
+            "value": 7
+          }
+        }
+      },
+      "hex-size-support": {
+        "alternateOrientation": false,
+        "hideBorder": true,
+        "pivotx": null,
+        "pivoty": null
+      },
+      "token-variants": {
+        "disableHUDButton": false,
+        "randomImgDefault": ""
+      },
+      "token-z": {
+        "zIndex": 0
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Enforcer Gunbreaker",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 2,
+      "scaleY": 2,
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Enforcer%20Gunbreaker.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 5100000,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "activeEffects": {},
+    "props": {
+      "affinity_1": "NA",
+      "affinity_2": "NA",
+      "affinity_3": "NA",
+      "affinity_4": "NA",
+      "affinity_5": "NA",
+      "affinity_6": "NA",
+      "affinity_7": "NA",
+      "affinity_8": "NA",
+      "affinity_9": "VU",
+      "arcane_ef": "100",
+      "arcane_vu": "NA",
+      "attribute": "",
+      "basic_attacks": {
+        "0": {
+          "$deleted": false,
+          "ailments": "",
+          "ailments_chance": "0",
+          "attrib_1": "DEX",
+          "attrib_2": "MIG",
+          "basic_name": "⚔️Shear Trigger",
+          "check_bonus": "5",
+          "defense_type": "DEF",
+          "detail": "<p>If this attack Accuracy check is an <strong>Odd</strong> number, this attack deals&nbsp;<strong>20 </strong>bonus damage, and the damage is coverted to&nbsp;<strong>Fire.</strong></p>",
+          "dmg_bonus": "12",
+          "icon": "<i class=\"fa-solid fa-swords\"></i>",
+          "roll": "",
+          "type": "physical"
+        },
+        "1": {
+          "$deleted": true,
+          "ailments": "",
+          "ailments_chance": "0",
+          "attrib_1": "DEX",
+          "attrib_2": "DEX",
+          "basic_name": "",
+          "check_bonus": "0",
+          "detail": "",
+          "dmg_bonus": "0",
+          "icon": "<i class=\"fa-solid fa-circle\"></i>",
+          "roll": "",
+          "type": "physical"
+        },
+        "2": {
+          "$deleted": false,
+          "ailments": "",
+          "ailments_chance": "0",
+          "attrib_1": "DEX",
+          "attrib_2": "DEX",
+          "basic_name": "🏹Revolver",
+          "check_bonus": "3",
+          "defense_type": "DEF",
+          "detail": "<p><img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/10_SAM/way_of_the_samurai.png\" width=\"21\" height=\"21\"><strong>@UUID[JournalEntry.Gm3upxgpUVoLSK5u]{Multi 2}</strong></p>",
+          "dmg_bonus": "20",
+          "icon": "<i class=\"fa-solid fa-bow-arrow\"></i>",
+          "roll": "",
+          "type": "physical"
+        }
+      },
+      "bow_ef": "100",
+      "bow_vu": "VU",
+      "brawling_ef": "100",
+      "brawling_vu": "NA",
+      "condition_1": "NA",
+      "condition_10": "NA",
+      "condition_11": "NA",
+      "condition_12": "NA",
+      "condition_13": "NA",
+      "condition_14": "NA",
+      "condition_15": "NA",
+      "condition_16": "NA",
+      "condition_17": "NA",
+      "condition_18": "NA",
+      "condition_19": "NA",
+      "condition_2": "NA",
+      "condition_20": "NA",
+      "condition_21": "NA",
+      "condition_22": "NA",
+      "condition_23": "NA",
+      "condition_24": "NA",
+      "condition_25": "NA",
+      "condition_26": "NA",
+      "condition_27": "NA",
+      "condition_28": "NA",
+      "condition_29": "NA",
+      "condition_3": "NA",
+      "condition_30": "NA",
+      "condition_31": "NA",
+      "condition_32": "NA",
+      "condition_33": "NA",
+      "condition_34": "NA",
+      "condition_35": "NA",
+      "condition_36": "NA",
+      "condition_4": "NA",
+      "condition_5": "NA",
+      "condition_6": "NA",
+      "condition_7": "NA",
+      "condition_8": "NA",
+      "condition_9": "NA",
+      "current_def": "<b><i class=\"fa-solid fa-shield\"></i> DEF: </b>\n11",
+      "current_hp": "90",
+      "current_ip": "0",
+      "current_mdef": "<b><i class=\"fa-solid fa-shield-halved\"></i> MDEF: </b>\n7",
+      "current_mp": "80",
+      "dagger_ef": "100",
+      "dagger_vu": "NA",
+      "def_mod": "+3",
+      "desc": "<p>Description</p>",
+      "dex_base": "8",
+      "dex_current": 8,
+      "firearm_ef": "100",
+      "firearm_vu": "NA",
+      "flail_ef": "100",
+      "flail_vu": "VU",
+      "fp": "3",
+      "heavy_ef": "100",
+      "heavy_vu": "NA",
+      "init": "6",
+      "ins_base": "6",
+      "ins_current": 6,
+      "isAlmighty": false,
+      "isAwake": false,
+      "isClarity": false,
+      "isDazed": false,
+      "isEnergized": false,
+      "isEnlighten": false,
+      "isEnraged": false,
+      "isFocus": false,
+      "isMasterful": false,
+      "isPoisoned": false,
+      "isShaken": false,
+      "isSlow": false,
+      "isStrong": false,
+      "isSwift": false,
+      "isUnyielding": false,
+      "isWeak": false,
+      "level": "30",
+      "max_hp": "90",
+      "max_ip": "0",
+      "max_mp": "80",
+      "max_zero": "0",
+      "mdef_mod": "+1",
+      "mig_base": "10",
+      "mig_current": 10,
+      "name": "Enforcer Gunbreaker",
+      "other_list": {
+        "0": {
+          "$deleted": false,
+          "details": "<p>All enemy roll a <strong>DL11 【DEX】+【DEX】</strong>check, on a failure, they are inflicted with <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/self-destruct.png\" width=\"21\" height=\"21\"><strong>@UUID[JournalEntry.Vnd1QB9lYQMYvIDF]{Oil}</strong></p>",
+          "icon": "",
+          "other_name": "💥Oil Grenade",
+          "roll": ""
+        }
+      },
+      "resource_value_1": "0",
+      "resource_value_2": "0",
+      "resource_value_3": "0",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "shield_type": "PHYSICAL",
+      "shield_value": "0",
+      "spear_ef": "100",
+      "spear_vu": "VU",
+      "special_list": {
+        "0": {
+          "$deleted": false,
+          "details": "<p>When this creature deals&nbsp;<strong>Fire&nbsp;</strong>damage, deal 50% of that damage to all creature <strong>adjacent</strong> to the original target.</p>",
+          "icon": "",
+          "roll": "",
+          "special_name": "📜Slash Bang"
+        }
+      },
+      "species": "HUMANOID",
+      "spell_list": {
+        "0": {
+          "$deleted": false,
+          "ailments": "",
+          "ailments_chance": "0",
+          "attrib_1": "DEX",
+          "attrib_2": "MIG",
+          "check_bonus": "3",
+          "cost": "30 MP",
+          "defense_type": "MDEF",
+          "details": "",
+          "dmg_bonus": "30",
+          "has_damage": "YES",
+          "icon": "<i class=\"fa-solid fa-star\"></i>",
+          "macro_name": "",
+          "roll": "",
+          "spell_name": "⚡️Flame Saber",
+          "type": "fire"
+        }
+      },
+      "stealable_equipment": {
+        "H0h2TIwEN6iJtOtc": {
+          "id": "H0h2TIwEN6iJtOtc",
+          "loot_description": "<p><ul>\n<li>This weapon can target <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/summon_garuda_II.png\" alt=\"\" width=\"21\" height=\"21\"><strong>@UUID[JournalEntry.q6keqwDWUsEgSWDw]{Flying}</strong> creatures</li>\n<li>If you roll a critical success on an Accuracy Check with this weapon, you may spend that <strong>opportunity</strong> deal 10 bonus damage, if you do, your damage becomes <strong>Fire.</strong></li>\n</ul></p>\nERROR",
+          "name": "Gunsword",
+          "roll": "",
+          "uuid": "Actor.j6eA87nZa969ELYG.Item.H0h2TIwEN6iJtOtc"
+        }
+      },
+      "stolen_check": false,
+      "study_text": "<p>A frontline melee unit wielding a gunblade capable of unleashing devastating fire-based attacks. Watch out for its Oil Grenade, which coats enemies in flammable liquid, making them more vulnerable to fire damage.</p>",
+      "subtype": "Sub-Type",
+      "subtype_list": "ENFORCER",
+      "sword_ef": "100",
+      "sword_vu": "NA",
+      "thrown_ef": "100",
+      "thrown_vu": "NA",
+      "traits": "Enforcer Grunt",
+      "unique": false,
+      "wlp_base": "6",
+      "wlp_current": 6,
+      "zero_power_value": "0"
+    },
+    "statusEffects": {},
+    "template": "yibwK7D0bMmrmXhL",
+    "templateSystemUniqueVersion": 3152673362
+  },
+  "type": "character"
+}

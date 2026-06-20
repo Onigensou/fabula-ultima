@@ -1,0 +1,19 @@
+{
+  "_id": "8Gw8I743DzSuS2WO",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": null,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "2.4.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "NPCs",
+  "sort": 200000,
+  "sorting": "a",
+  "type": "Actor"
+}

@@ -1,0 +1,455 @@
+{
+  "_id": "UF9js71VGFE9jB93",
+  "_stats": {
+    "compendiumSource": "Item.oyoBGiPAlNfKoQc9",
+    "coreVersion": "12.343",
+    "createdTime": 1781924503807,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "59y1KOVICharAnZO",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1781926982093,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_6",
+          "mode": 5,
+          "priority": 3,
+          "value": "aeAffinityFloor(\"RS\")"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "59y1KOVICharAnZO",
+          "originalParentId": "UF9js71VGFE9jB93",
+          "originalUuid": "Item.UF9js71VGFE9jB93.ActiveEffect.59y1KOVICharAnZO"
+        },
+        "fabula-ultima-companion": {
+          "lifetimeMode": "on_activation",
+          "tags": [
+            "buff"
+          ]
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/fire/barrier-wall-flame-ring-yellow.webp",
+      "name": "Elemental Shroud (Fire)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-elemental-shroud-fire"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "e0N8wokGcstyoZDw",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1781926982093,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_2",
+          "mode": 5,
+          "priority": 3,
+          "value": "aeAffinityFloor(\"RS\")"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "e0N8wokGcstyoZDw",
+          "originalParentId": "UF9js71VGFE9jB93",
+          "originalUuid": "Item.UF9js71VGFE9jB93.ActiveEffect.e0N8wokGcstyoZDw"
+        },
+        "fabula-ultima-companion": {
+          "lifetimeMode": "on_activation",
+          "tags": [
+            "buff"
+          ]
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/air/wind-vortex-swirl-blue.webp",
+      "name": "Elemental Shroud (Air)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-elemental-shroud-air"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "FmqepRBudo13YUdZ",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1781926982093,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_7",
+          "mode": 5,
+          "priority": 3,
+          "value": "aeAffinityFloor(\"RS\")"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "FmqepRBudo13YUdZ",
+          "originalParentId": "UF9js71VGFE9jB93",
+          "originalUuid": "Item.UF9js71VGFE9jB93.ActiveEffect.FmqepRBudo13YUdZ"
+        },
+        "fabula-ultima-companion": {
+          "lifetimeMode": "on_activation",
+          "tags": [
+            "buff"
+          ]
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/water/barrier-ice-crystal-wall-jagged-blue.webp",
+      "name": "Elemental Shroud (Ice)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-elemental-shroud-ice"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "n4UwdPgPGde4aHbe",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1781926982093,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_5",
+          "mode": 5,
+          "priority": 3,
+          "value": "aeAffinityFloor(\"RS\")"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "n4UwdPgPGde4aHbe",
+          "originalParentId": "UF9js71VGFE9jB93",
+          "originalUuid": "Item.UF9js71VGFE9jB93.ActiveEffect.n4UwdPgPGde4aHbe"
+        },
+        "fabula-ultima-companion": {
+          "lifetimeMode": "on_activation",
+          "tags": [
+            "buff"
+          ]
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/earth/barrier-stone-explosion-debris.webp",
+      "name": "Elemental Shroud (Earth)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-elemental-shroud-earth"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "OCqoOMT9jSKApPXR",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1781926982093,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_3",
+          "mode": 5,
+          "priority": 3,
+          "value": "aeAffinityFloor(\"RS\")"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "OCqoOMT9jSKApPXR",
+          "originalParentId": "UF9js71VGFE9jB93",
+          "originalUuid": "Item.UF9js71VGFE9jB93.ActiveEffect.OCqoOMT9jSKApPXR"
+        },
+        "fabula-ultima-companion": {
+          "lifetimeMode": "on_activation",
+          "tags": [
+            "buff"
+          ]
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/lightning/bolt-strike-blue.webp",
+      "name": "Elemental Shroud (Bolt)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-elemental-shroud-bolt"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "DZFp68E33EGGH2ZO",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/EM.png",
+  "name": "Elemental Shroud",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3,
+    "yL2PQxh3R9ddt0te": 3
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "check_bonus": "0",
+      "class": "Elementalist",
+      "cost": "5 x T MP",
+      "damage_bonus": "",
+      "defense_target_type": "def",
+      "description": "<p>You weave magical energy and protect the targets from the fury of the elements. Choose a damage type: <strong>air, bolt, earth, fire or ice</strong>. Until this spell ends, each target gains Resistance against the chosen damage type.</p>",
+      "duration": "Scene",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "effect_kind": "open_action_menu",
+          "effect_label": "shroud_pick",
+          "menu_option_labels": "Air | Bolt | Earth | Fire | Ice",
+          "menu_option_refs": "shroud_air, shroud_bolt, shroud_earth, shroud_fire, shroud_ice",
+          "menu_subtitle": "Targets gain Resistance to the chosen damage type.",
+          "menu_title": "Elemental Shroud: choose an element"
+        },
+        "1": {
+          "$deleted": false,
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_template_ref": "Elemental Shroud (Air)",
+          "effect_kind": "apply_ae",
+          "effect_label": "shroud_air",
+          "target_ref": "action_targets"
+        },
+        "2": {
+          "$deleted": false,
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_template_ref": "Elemental Shroud (Bolt)",
+          "effect_kind": "apply_ae",
+          "effect_label": "shroud_bolt",
+          "target_ref": "action_targets"
+        },
+        "3": {
+          "$deleted": false,
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_template_ref": "Elemental Shroud (Earth)",
+          "effect_kind": "apply_ae",
+          "effect_label": "shroud_earth",
+          "target_ref": "action_targets"
+        },
+        "4": {
+          "$deleted": false,
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_template_ref": "Elemental Shroud (Fire)",
+          "effect_kind": "apply_ae",
+          "effect_label": "shroud_fire",
+          "target_ref": "action_targets"
+        },
+        "5": {
+          "$deleted": false,
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_template_ref": "Elemental Shroud (Ice)",
+          "effect_kind": "apply_ae",
+          "effect_label": "shroud_ice",
+          "target_ref": "action_targets"
+        }
+      },
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": true,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Elemental Shroud",
+      "on_activate_effect_ref": "shroud_pick",
+      "optional_params": {},
+      "pre_activate_effect_ref": "shroud_pick",
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "Range",
+      "skill_target": "Up to three creatures",
+      "skill_type": "Spell",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "UF9js71VGFE9jB93"
+  },
+  "type": "equippableItem"
+}

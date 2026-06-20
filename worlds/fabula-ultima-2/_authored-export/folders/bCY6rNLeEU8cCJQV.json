@@ -1,0 +1,19 @@
+{
+  "_id": "bCY6rNLeEU8cCJQV",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1761611378053,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "Vg0nGevL0N3Wqh0D",
+  "name": "Action System",
+  "sort": 0,
+  "sorting": "m",
+  "type": "Macro"
+}

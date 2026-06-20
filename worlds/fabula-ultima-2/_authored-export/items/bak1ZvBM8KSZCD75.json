@@ -1,0 +1,66 @@
+{
+  "_id": "bak1ZvBM8KSZCD75",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1757429320744,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "jrKIkae1l6fNLgRS",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/Oracle.png",
+  "name": "Double or Nothing",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "check_bonus": "0",
+      "class": "Ace of Cards",
+      "cost": "",
+      "custom_logic_action": "",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>Before you perform an <strong>Accuracy Check</strong>, a <strong>Magic Check</strong> for an offensive spell, or a Check to advance or turn back a Clock, you may declare:</p><blockquote><p> 💬<strong>\"double or nothing\"</strong></p></blockquote><p>If you do and the Check triggers a <strong>critical success</strong>, double the damage dealt by that attack or spell, or the filled/erased sections of that Clock, respectively; however, any other kind of success becomes a <strong>failure</strong> instead.</p>",
+      "duration": "",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Double or Nothing",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "custom",
+      "skill_information": "",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "bak1ZvBM8KSZCD75"
+  },
+  "type": "equippableItem"
+}

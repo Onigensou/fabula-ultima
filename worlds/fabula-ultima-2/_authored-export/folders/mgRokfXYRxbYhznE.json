@@ -1,0 +1,19 @@
+{
+  "_id": "mgRokfXYRxbYhznE",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": null,
+    "duplicateSource": null,
+    "systemId": null,
+    "systemVersion": null
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "8VHBObYtwGPFESMC",
+  "name": "Unique Armor",
+  "sort": 300000,
+  "sorting": "a",
+  "type": "Item"
+}

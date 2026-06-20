@@ -1,0 +1,61 @@
+{
+  "_id": "YEBhZUtuBLpDnhMs",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1761056681751,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.4"
+    }
+  },
+  "folder": "anhNjengynV9A7lU",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/GrandArcherSkill1.png",
+  "name": "Mega Slash",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "active_effect_config_table": {},
+      "check_bonus": "5",
+      "class": "NPC",
+      "cost": "10 MP",
+      "damage_bonus": "50",
+      "defense_target_type": "def",
+      "description": "<p>Perform a strong Slash</p>",
+      "duration": "Instantaneous",
+      "heroic_requirement": "",
+      "isCheck": true,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Mega Slash",
+      "optional_params": {},
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "INS",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "Melee",
+      "skill_target": "One Creature",
+      "skill_type": "Active",
+      "type_damage": "Dark",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "YEBhZUtuBLpDnhMs"
+  },
+  "type": "equippableItem"
+}

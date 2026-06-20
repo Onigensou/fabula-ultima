@@ -1,0 +1,77 @@
+{
+  "_id": "yAEud7M3MV4edahv",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1781408920701,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "yNfRMksYc4OGtRL7",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Eve/CodeElectraSkill1.png",
+  "name": "Zero Trigger: Strategy",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "class": "NPC",
+      "cost": "-",
+      "description": "<p>At the <strong>end of your turn</strong>, if there are <strong>two or more distinct debuffs</strong> present among your enemies, you gain <strong>1 Zero Power</strong>.</p>",
+      "effect_table": {
+        "0": {
+          "effect_kind": "grant",
+          "effect_label": "ZP Strategy",
+          "grant_amount": "1",
+          "grant_resource": "zero_power",
+          "target_ref": "zts_self"
+        },
+        "1": {
+          "auto_confirm_when_obvious": true,
+          "candidate_source": "self",
+          "category": "",
+          "count": 1,
+          "effect_kind": "targeting",
+          "effect_label": "zts_self",
+          "exclude_self": false,
+          "iteration_mode": "together",
+          "mode": "exact",
+          "skip_when_passive": true
+        }
+      },
+      "isCheck": false,
+      "isHeroic": false,
+      "isReaction": false,
+      "level": 1,
+      "max_level": "1",
+      "name": "Zero Trigger: Strategy",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "ENEMY_DISTINCT_STATUS_COUNT >= 2",
+          "reaction_effect_ref": "ZP Strategy",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_source": "self",
+          "reaction_trigger": "turn_end"
+        }
+      },
+      "skill_range": "-",
+      "skill_target": "-",
+      "skill_type": "Passive"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": true,
+    "uniqueId": "yAEud7M3MV4edahv"
+  },
+  "type": "equippableItem"
+}

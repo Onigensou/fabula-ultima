@@ -1,0 +1,62 @@
+{
+  "_id": "nBSoueqQEie3lQ1R",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1749333861879,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.4.2"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "nBSoueqQEie3lQ1R",
+        "itemName": "Vajra",
+        "pickedOldProps": {
+          "cost": "0",
+          "martial": false
+        },
+        "ts": 1769647436644
+      }
+    }
+  },
+  "folder": "D1OgeGHLjJ9dSkxS",
+  "img": "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/57c5aa97-8c10-4571-871c-fe5d888bd9fa/d1vjl4k-d55d712e-78c4-44bd-b715-b8bf3285fe67.png/v1/fill/w_640,h_640,q_80,strp/vajra_by_k2ko_d1vjl4k-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9NjQwIiwicGF0aCI6IlwvZlwvNTdjNWFhOTctOGMxMC00NTcxLTg3MWMtZmU1ZDg4OGJkOWZhXC9kMXZqbDRrLWQ1NWQ3MTJlLTc4YzQtNDRiZC1iNzE1LWI4YmYzMjg1ZmU2Ny5wbmciLCJ3aWR0aCI6Ijw9NjQwIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmltYWdlLm9wZXJhdGlvbnMiXX0.y55lZPB9h8oKxb97JclQVAKDUoL8_vbd9q6dlsSIU9U",
+  "name": "Vajra",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3
+  },
+  "sort": 2500000,
+  "system": {
+    "container": null,
+    "props": {
+      "category": "Arcane",
+      "check_bonus": "0",
+      "damage_bonus": "5",
+      "description": "<p>The user can cast </p><p>@UUID[Item.fENvp5ysc5dizKxY]{Fulgur}</p><p>Spell</p>",
+      "hand_slots": "One-handed",
+      "isMartial": false,
+      "item_cost": "0",
+      "item_type": "weapon",
+      "name": "Vajra",
+      "rolled_atr1": "INS",
+      "rolled_atr2": "WLP",
+      "set_name": "",
+      "skill_target": "One Enemy",
+      "type_damage": "Physical",
+      "weapon_range": "Melee"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "nBSoueqQEie3lQ1R"
+  },
+  "type": "equippableItem"
+}

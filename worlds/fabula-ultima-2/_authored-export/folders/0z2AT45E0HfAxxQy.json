@@ -1,0 +1,23 @@
+{
+  "_id": "0z2AT45E0HfAxxQy",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1755256108804,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": null,
+  "description": "",
+  "flags": {
+    "monks-little-details": {
+      "sorting": "a"
+    }
+  },
+  "folder": null,
+  "name": "Fabula Ultima Compendium",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Compendium"
+}

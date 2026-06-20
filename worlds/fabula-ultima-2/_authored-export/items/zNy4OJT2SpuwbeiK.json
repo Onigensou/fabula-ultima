@@ -1,0 +1,119 @@
+{
+  "_id": "zNy4OJT2SpuwbeiK",
+  "_stats": {
+    "compendiumSource": "Item.BuOjiNzcT4CY6iue",
+    "coreVersion": "12.343",
+    "createdTime": 1768323254640,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/531.gif",
+  "name": "Apple Juice",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": "BykEf2Th3dTmg02o",
+    "props": {
+      "active_effect_config_table": {},
+      "aquatic_ef": "100",
+      "automaton_ef": "100",
+      "avian_ef": "100",
+      "beast_ef": "100",
+      "category": "Arcane",
+      "celestial_ef": "100",
+      "check_bonus": "0",
+      "construct_ef": "100",
+      "damage_bonus": "0",
+      "demiHuman_ef": "100",
+      "demon_ef": "100",
+      "description": "<ul><li><p>Target creature <strong>recovers 30 HP</strong></p></li></ul>",
+      "dragon_ef": "100",
+      "effect_table": {
+        "0": {
+          "effect_kind": "grant",
+          "effect_label": "applejuice_heal",
+          "grant_amount": "30",
+          "grant_resource": "hp",
+          "target_ref": "action_targets"
+        }
+      },
+      "elemental_ef": "100",
+      "enforcer_ef": "100",
+      "fey_ef": "100",
+      "flavor_text": "<p><em>Bottled apple juice that's easy to digest.</em></p>",
+      "flora_ef": "100",
+      "fungus_ef": "100",
+      "golem_ef": "100",
+      "gorger_ef": "100",
+      "hand_slots": "One-handed",
+      "human_ef": "100",
+      "humanoid_ef": "100",
+      "insect_ef": "100",
+      "ip_cost": "1",
+      "isEquipped": false,
+      "isKey": false,
+      "isMartial": false,
+      "isModule": false,
+      "isRelatedItem": false,
+      "isSet": false,
+      "isUnique": false,
+      "item_baseDef": "0",
+      "item_baseMdef": "0",
+      "item_cost": "10",
+      "item_def_bonus": "0",
+      "item_mdef_bonus": "0",
+      "item_quantity": "1",
+      "item_rarity": "Common",
+      "item_skill_active": {
+        "EdOkgFSo9KuVCLNd": {
+          "id": "${item.id}",
+          "name": "Apple Juice",
+          "skill_cost": "-",
+          "skill_description": "<ul><li><p>Target creature <strong>recovers 30 HP</strong></p></li></ul>",
+          "skill_maxLevel": 1,
+          "uuid": "Item.EdOkgFSo9KuVCLNd"
+        }
+      },
+      "item_type": "consumable",
+      "mimic_ef": "100",
+      "monster_ef": "100",
+      "name": "Apple Juice",
+      "optional_params": {},
+      "plant_ef": "100",
+      "related_item_list": {
+        "EdOkgFSo9KuVCLNd": {
+          "id": "${item.id}",
+          "name": "Apple Juice",
+          "related_item_description": "<ul><li><p>Target creature <strong>recovers 30 HP</strong></p></li></ul>",
+          "uuid": "Item.EdOkgFSo9KuVCLNd"
+        }
+      },
+      "reptilian_ef": "100",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "set_name": "",
+      "skill_target": "One Ally",
+      "soldier_ef": "100",
+      "spirit_ef": "100",
+      "type_damage": "",
+      "undead_ef": "100",
+      "vehicle_ef": "100",
+      "weapon_range": "Melee"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "zNy4OJT2SpuwbeiK"
+  },
+  "type": "equippableItem"
+}

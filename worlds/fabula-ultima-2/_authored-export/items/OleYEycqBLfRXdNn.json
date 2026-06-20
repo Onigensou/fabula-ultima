@@ -1,0 +1,62 @@
+{
+  "_id": "OleYEycqBLfRXdNn",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1743299524793,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "OleYEycqBLfRXdNn",
+        "itemName": "Kamaitachi",
+        "pickedOldProps": {
+          "cost": "1100",
+          "martial": false
+        },
+        "ts": 1769647435844
+      }
+    }
+  },
+  "folder": "mQjggSVh5fVzzExw",
+  "img": "icons/weapons/thrown/shuriken-double-red.webp",
+  "name": "Kamaitachi",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "category": "Thrown",
+      "check_bonus": "2",
+      "damage_bonus": "16",
+      "description": "<p>Increase <strong>M.Def </strong>by <strong>2</strong>.</p>\n<p>Damage dealt by the weapon ignores <strong>Resistances</strong>.</p>",
+      "hand_slots": "Two-handed",
+      "isMartial": false,
+      "item_cost": "1100",
+      "item_type": "weapon",
+      "name": "Kamaitachi",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "INS",
+      "set_name": "",
+      "skill_target": "One Enemy",
+      "type_damage": "Air",
+      "weapon_range": "Ranged"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": false,
+    "uniqueId": "OleYEycqBLfRXdNn"
+  },
+  "type": "equippableItem"
+}

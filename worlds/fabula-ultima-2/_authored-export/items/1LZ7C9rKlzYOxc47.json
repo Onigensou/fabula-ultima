@@ -1,0 +1,58 @@
+{
+  "_id": "1LZ7C9rKlzYOxc47",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1758248242701,
+    "duplicateSource": "Item.JhMVPxtGjw93WzS3",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "AfNKgbXlrakE1AI2",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/RumblePumnPassive2.png",
+  "name": "Our Bond Is Unbreakable",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Tailor",
+      "cost": "-",
+      "damage_bonus": "0",
+      "description": "<p>Your <strong>bond strength</strong> towards your Model gains a bonus equal to 【SL】. When your Model performs the <strong>Inventory</strong> action and would spend Inventory Points, you may pay up to 【SL + 1】 Inventory Points in their stead.</p>\n",
+      "duration": "-",
+      "heroic_requirement": "",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "level": "1",
+      "max_level": "2",
+      "name": "Our Bond Is Unbreakable",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_information": "<table style=\"width:100%; text-align:center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Bond Strength Bonus</strong></p></td><td><p><strong>Max IP You Can Pay For Model</strong></p></td></tr><tr><td><p>1</p></td><td><p>+1</p></td><td><p>2</p></td></tr><tr><td><p>2</p></td><td><p>+2</p></td><td><p> 3</p></td></tr></tbody></table>",
+      "skill_range": "",
+      "skill_target": "-",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "1LZ7C9rKlzYOxc47"
+  },
+  "type": "equippableItem"
+}

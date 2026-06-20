@@ -1,0 +1,19 @@
+{
+  "_id": "v5D8IVTfzUmsZ59F",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1745814678139,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.4.2"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "LevelsMultiLevelFog",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Scene"
+}

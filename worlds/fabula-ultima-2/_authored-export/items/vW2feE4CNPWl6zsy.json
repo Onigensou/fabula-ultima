@@ -1,0 +1,62 @@
+{
+  "_id": "vW2feE4CNPWl6zsy",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1716293385694,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "3.2.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "detectedType": "weapon",
+        "fromTemplate": "gIRU9XGqYeMBwBN9",
+        "itemId": "vW2feE4CNPWl6zsy",
+        "itemName": "Seastone Trident (lost)",
+        "pickedOldProps": {
+          "cost": "6500",
+          "martial": true
+        },
+        "ts": 1769647436332
+      }
+    }
+  },
+  "folder": "8mJfXdKYmmONftVP",
+  "img": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Item%20Icon/2.jpg",
+  "name": "Seastone Trident (lost)",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3
+  },
+  "sort": 400000,
+  "system": {
+    "container": null,
+    "props": {
+      "category": "Spear",
+      "check_bonus": "2",
+      "damage_bonus": "1",
+      "description": "<p>Deal extra 5 damage to the target in [Crisis]</p>\n<p>You can make range attack with this weapon with HR = 0</p>\n<p>On critical, the target suffer [Delay]</p>",
+      "hand_slots": "Two-handed",
+      "isMartial": true,
+      "item_cost": "6500",
+      "item_type": "weapon",
+      "name": "Seastone Trident (lost)",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "MIG",
+      "set_name": "",
+      "skill_target": "One Enemy",
+      "type_damage": "Physical",
+      "weapon_range": "Melee"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 987283856,
+    "unique": true,
+    "uniqueId": "vW2feE4CNPWl6zsy"
+  },
+  "type": "equippableItem"
+}

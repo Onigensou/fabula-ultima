@@ -1,0 +1,855 @@
+{
+  "_id": "OiuEHH2O6RuxvTj9",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1719697499285,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.5.0"
+    },
+    "theatre": {
+      "baseinsert": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Petro%20Langford/Portrait-beta.png",
+      "disabledefault": true,
+      "emotes": {
+        "angry": {
+          "insert": ""
+        },
+        "annoyed": {
+          "insert": ""
+        },
+        "awe-struck": {
+          "insert": ""
+        },
+        "blushing": {
+          "insert": ""
+        },
+        "carefree": {
+          "insert": ""
+        },
+        "confused": {
+          "insert": ""
+        },
+        "cry": {
+          "insert": ""
+        },
+        "dissatisfied": {
+          "insert": ""
+        },
+        "dizzy": {
+          "insert": ""
+        },
+        "frown": {
+          "insert": ""
+        },
+        "frustrated": {
+          "insert": ""
+        },
+        "grin": {
+          "insert": ""
+        },
+        "happy": {
+          "insert": ""
+        },
+        "happytears": {
+          "insert": ""
+        },
+        "hearts": {
+          "insert": ""
+        },
+        "idea": {
+          "insert": ""
+        },
+        "innocent": {
+          "insert": ""
+        },
+        "kiss": {
+          "insert": ""
+        },
+        "laughing": {
+          "insert": ""
+        },
+        "laughingsquint": {
+          "insert": ""
+        },
+        "meh": {
+          "insert": ""
+        },
+        "mischevious": {
+          "insert": ""
+        },
+        "panic": {
+          "insert": ""
+        },
+        "playful": {
+          "insert": ""
+        },
+        "rofl": {
+          "insert": ""
+        },
+        "sad": {
+          "insert": ""
+        },
+        "scared": {
+          "insert": ""
+        },
+        "serious": {
+          "insert": ""
+        },
+        "sleeping": {
+          "insert": ""
+        },
+        "smile": {
+          "insert": ""
+        },
+        "smug": {
+          "insert": ""
+        },
+        "speechless": {
+          "insert": ""
+        },
+        "surprised": {
+          "insert": ""
+        },
+        "thinking": {
+          "insert": ""
+        },
+        "tongue": {
+          "insert": ""
+        },
+        "wink": {
+          "insert": ""
+        },
+        "worried": {
+          "insert": ""
+        }
+      },
+      "name": "",
+      "optalign": "top",
+      "settings": {
+        "emote": null,
+        "textcolor": null,
+        "textflyin": null,
+        "textfont": null,
+        "textsize": null,
+        "textstanding": null
+      }
+    }
+  },
+  "folder": "YH3yD5kMs5q9a0sr",
+  "img": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Petro%20Langford/Avatar-beta.png",
+  "items": [
+    {
+      "_id": "EYPt0pWudcYIVrGq",
+      "_stats": {
+        "compendiumSource": "Item.3BKWrwYhsdaDG3eN",
+        "coreVersion": "12.343",
+        "createdTime": 1703943330027,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.3BKWrwYhsdaDG3eN"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "qpw46aFVTAeQSyTP",
+      "img": "icons/magic/unholy/beam-ringed-impact-purple.webp",
+      "name": "Umbra",
+      "ownership": {
+        "Am7qxPOavfKeDGPd": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "2",
+          "class": "Entropist",
+          "cost": "10 x T",
+          "damage_bonus": "15",
+          "description": "<p>A storm of dark energy turns matter into ash. Each target hit by this spell suffers <strong>【HR + 15】 dark</strong> damage.<br><strong>Opportunity</strong>: Each target hit by this spell suffers <strong>weak</strong>.</p>",
+          "duration": "Instantaneous",
+          "name": "Umbra",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "target": "Up to three creatures",
+          "type_damage": "Dark"
+        },
+        "template": "FZmpKcQRP7hZQqbV",
+        "templateSystemUniqueVersion": 1700837225,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "FAUVacsLjwF7Rkiu",
+      "_stats": {
+        "compendiumSource": "Item.hlxfXofcMxoqlEy1",
+        "coreVersion": "12.343",
+        "createdTime": 1720722836556,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.hlxfXofcMxoqlEy1"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "auU4PqllbQysIseg",
+      "img": "icons/weapons/guns/gun-brown.webp",
+      "name": "Cannon",
+      "ownership": {
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "2",
+          "class": "Pilot",
+          "cost": "-",
+          "damage_bonus": "14",
+          "description": "<p>Firearm ◆ &nbsp;Ranged ◆ No Qualities. ◆ A <strong>personal vehicle</strong> with this module<br>enabled cannot have any other <strong>weapon modules</strong> enabled.</p>",
+          "duration": "Instantaneous",
+          "name": "Cannon",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "MIG",
+          "target": "One creature",
+          "type_damage": "physical"
+        },
+        "template": "FZmpKcQRP7hZQqbV",
+        "templateSystemUniqueVersion": 1700837225,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "sOfX6uqwdag0JJcF",
+      "_stats": {
+        "compendiumSource": "Item.uTvvS3Aad5pOUvHh",
+        "coreVersion": "12.343",
+        "createdTime": 1720723439253,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.uTvvS3Aad5pOUvHh"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "auU4PqllbQysIseg",
+      "img": "icons/equipment/shield/kite-steel-boss-gold.webp",
+      "name": "Twin Shields",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "2",
+          "class": "Pilot",
+          "cost": "-",
+          "damage_bonus": "9",
+          "duration": "Instantaneous",
+          "name": "Twin Shields",
+          "rolled_atr1": "MIG",
+          "rolled_atr2": "MIG",
+          "target": "One creature",
+          "type_damage": "physical"
+        },
+        "template": "FZmpKcQRP7hZQqbV",
+        "templateSystemUniqueVersion": 1700837225,
+        "unique": false
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Petro Langford",
+  "ownership": {
+    "Am7qxPOavfKeDGPd": 3,
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "prototypeToken": {
+    "actorLink": true,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 0,
+    "disposition": 1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 30,
+            "ownerVisibility": 35,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 30,
+            "ownerVisibility": 35,
+            "position": "bottom-outer",
+            "shareHeight": false,
+            "style": "user",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          }
+        }
+      },
+      "hex-size-support": {
+        "alternateOrientation": false,
+        "hideBorder": false,
+        "pivotx": null,
+        "pivoty": null
+      },
+      "token-variants": {
+        "disableHUDButton": false,
+        "randomImgDefault": ""
+      },
+      "token-z": {
+        "zIndex": 0
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Petro",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": -1.3,
+      "scaleY": 1.3,
+      "src": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Petro%20Langford/Standard/Token/*",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 100000,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "activeEffects": {},
+    "props": {
+      "arcanism": true,
+      "armor_mod": "11",
+      "armor_name": "Runic Plate",
+      "attack_accuracy_mod_all": "0",
+      "attack_accuracy_mod_melee": "0",
+      "attack_accuracy_mod_range": "0",
+      "attack_accuracy_mod_spell": "0",
+      "backpack": "",
+      "backstory": "",
+      "bond_1": "Sophie",
+      "bond_2": "Nemu",
+      "bond_3": "Pakka",
+      "bond_4": "",
+      "bond_5": "",
+      "bond_6": "",
+      "chanter_volume_mp_header": "MP",
+      "chanter_volume_mp_high": 30,
+      "chanter_volume_mp_low": 10,
+      "chanter_volume_mp_medium": 20,
+      "chanter_volume_target_high": "Every enemy who can hear you.",
+      "chanter_volume_target_low": "Yourself <b>or</b> another creature you can see who can hear you.",
+      "chanter_volume_target_medium": "Every ally who can hear you.",
+      "char_identity": "Guardian of Vivian Tribe",
+      "check_roller": "Roll!",
+      "chimerism": false,
+      "class_list": {
+        "0": {
+          "$deleted": false,
+          "benefit": "hp",
+          "class_name": "Pilot",
+          "level": "10"
+        },
+        "1": {
+          "$deleted": false,
+          "benefit": "hp",
+          "class_name": "Guardian",
+          "level": "1"
+        },
+        "2": {
+          "$deleted": false,
+          "benefit": "hp",
+          "class_name": "Arcanist",
+          "level": "2"
+        },
+        "3": {
+          "$deleted": false,
+          "benefit": "ip",
+          "class_name": "Wayfarer",
+          "level": "2"
+        }
+      },
+      "clock_brainwave": "0",
+      "clock_trade": "0",
+      "cooking_roller": "🔪Cook!",
+      "current_hp": "72",
+      "current_ip": "4",
+      "current_mp": "65",
+      "damage_receiving_mod_air": "0",
+      "damage_receiving_mod_all": "0",
+      "damage_receiving_mod_bolt": "0",
+      "damage_receiving_mod_dark": "0",
+      "damage_receiving_mod_earth": "0",
+      "damage_receiving_mod_fire": "0",
+      "damage_receiving_mod_ice": "0",
+      "damage_receiving_mod_light": "0",
+      "damage_receiving_mod_melee": "0",
+      "damage_receiving_mod_physical": "0",
+      "damage_receiving_mod_poison": "0",
+      "damage_receiving_mod_range": "0",
+      "dex_base": "6",
+      "dex_current": "6",
+      "draw_card": "Draw",
+      "draw_card_copy1": "Use",
+      "elementalism": false,
+      "emotion_1_1": "1",
+      "emotion_1_2": "2",
+      "emotion_1_3": "1",
+      "emotion_2_1": "",
+      "emotion_2_2": "2",
+      "emotion_2_3": "",
+      "emotion_3_1": "",
+      "emotion_3_2": "1",
+      "emotion_3_3": "",
+      "emotion_4_1": "",
+      "emotion_4_2": "",
+      "emotion_4_3": "",
+      "emotion_5_1": "",
+      "emotion_5_2": "",
+      "emotion_5_3": "",
+      "emotion_6_1": "",
+      "emotion_6_2": "",
+      "emotion_6_3": "",
+      "entropism": false,
+      "experience": "0",
+      "experience_ui": "0",
+      "fp": "3",
+      "init_penalty": "-3",
+      "ins_base": "6",
+      "ins_current": "6",
+      "inventory_label": "💼 Inventory",
+      "isDazed": false,
+      "isEnraged": false,
+      "isPoisoned": false,
+      "isShaken": false,
+      "isSlow": false,
+      "isWeak": false,
+      "is_martialarmor": true,
+      "level": "15",
+      "magic_defense_mod": "4",
+      "main_attrib_1": "MIG",
+      "main_attrib_2": "MIG",
+      "main_hand": "Twin Shields",
+      "main_hand_attack": "",
+      "max_hp": 80,
+      "max_ip": "ERROR",
+      "max_mp": 65,
+      "memory": "Memories",
+      "mig_base": "10",
+      "mig_current": "10",
+      "name": "Petro Langford",
+      "normal_spell_list": {
+        "0": {
+          "$deleted": true,
+          "class": "Pilot",
+          "cost": "0",
+          "description": "",
+          "duration": "",
+          "roll": "",
+          "spell_name": "Cannon",
+          "target": ""
+        }
+      },
+      "notes_text": "",
+      "off_attrib_1": "SHI",
+      "off_attrib_2": "SHI",
+      "off_base_mod_1": "0",
+      "off_base_mod_2": "0",
+      "off_hand": "Twin Runic Shields",
+      "off_hand_attack": "",
+      "off_mod_1": 0,
+      "off_mod_2": 0,
+      "offensive_spell_list": {
+        "EYPt0pWudcYIVrGq": {
+          "class": "Entropist",
+          "cost": "10 x T",
+          "duration": "Instantaneous",
+          "id": "EYPt0pWudcYIVrGq",
+          "name": "Umbra",
+          "roll": "",
+          "target": "Up to three creatures",
+          "uuid": "Actor.OiuEHH2O6RuxvTj9.Item.EYPt0pWudcYIVrGq"
+        },
+        "FAUVacsLjwF7Rkiu": {
+          "class": "Pilot",
+          "cost": "-",
+          "duration": "Instantaneous",
+          "id": "FAUVacsLjwF7Rkiu",
+          "name": "Cannon",
+          "roll": "",
+          "target": "One creature",
+          "uuid": "Actor.OiuEHH2O6RuxvTj9.Item.FAUVacsLjwF7Rkiu"
+        },
+        "sOfX6uqwdag0JJcF": {
+          "class": "Pilot",
+          "cost": "-",
+          "duration": "Instantaneous",
+          "id": "sOfX6uqwdag0JJcF",
+          "name": "Twin Shields",
+          "roll": "",
+          "target": "One creature",
+          "uuid": "Actor.OiuEHH2O6RuxvTj9.Item.sOfX6uqwdag0JJcF"
+        }
+      },
+      "origin": "Fairytales",
+      "passive_list": {
+        "0": {
+          "$deleted": false,
+          "passive_description": "<p>Until your ruin comes true, you <strong>cannot Sacrifice yourself</strong> (in fact, servants of the Ruin might even lend you a hand and free you from any imprisonments that would prevent you from fulfilling your role in their plans).</p>\n<p>When a rule or ability requires you to spend Hit Points, Mind Points, or Fabula Points, you may instead <strong>let your ruin advance</strong> to completely ignore that cost. You describe what dark omens manifest, and the GM receives an <strong>opportunity&nbsp;</strong>that can be used to add complications <strong>after </strong>the current scene has ended.</p>\n<p>At the end of each session (approximately <strong>four hours of play</strong>), before assigning XP, roll <strong>2d20</strong>. If you roll equal to or lower than your current character level, your <strong>ruin </strong><strong>advances</strong> (it will <strong>always </strong>advance if you are <strong>level 40 or higher</strong>).</p>\n<p>When your <strong>ruin advances for the 9th time</strong>, you lose this Quirk and your <strong>ruin </strong>comes true, manifesting into the world as a <strong>supreme Villain</strong> (15 Ultima Points). However, you immediately gain a Heroic Skill from those available for your Classes (you may even choose a Heroic Skill whose requirements you <strong>do not</strong> satisfy, unless they include a Skill you don’t have). Steel yourself and face your destiny.</p>",
+          "passive_name": "Ruinbringer",
+          "passive_roll": "",
+          "passive_source": "quirk"
+        },
+        "1": {
+          "$deleted": false,
+          "passive_description": "<p>Once before the next rest, when you lose Hit Points for whatever reason, you may choose to <strong>halve </strong>that HP loss.</p>",
+          "passive_name": "Daydream",
+          "passive_roll": "",
+          "passive_source": "camp activity"
+        },
+        "2": {
+          "$deleted": false,
+          "passive_description": "<p>You spend your time looking for useful items; describe how, then roll <strong>1d6</strong>.</p>\n<ul>\n<li><strong>1. Ouch!</strong> You recover <strong>half</strong> the normal amount of HP and MP during this rest.</li>\n<li><strong>2. Not what I was looking for...</strong> The target regains <strong>2 Inventory Points</strong>.</li>\n<li><strong style=\"font-family: var(--font-primary); font-size: var(--font-size-14);\">3-5. Hoho, this can be useful!</strong><span style=\"font-family: var(--font-primary); font-size: var(--font-size-14);\"> The target regains </span><strong style=\"font-family: var(--font-primary); font-size: var(--font-size-14);\">3 Inventory Points.</strong></li>\n<li><strong style=\"font-family: var(--font-primary); font-size: var(--font-size-14);\">6. Jackpot!</strong><span style=\"font-family: var(--font-primary); font-size: var(--font-size-14);\"> The target regains </span><strong style=\"font-family: var(--font-primary); font-size: var(--font-size-14);\">3 Inventory Points</strong><span style=\"font-family: var(--font-primary); font-size: var(--font-size-14);\">, and you also find an amount of zenit equal to </span><strong style=\"font-family: var(--font-primary); font-size: var(--font-size-14);\">【your character's level × 50】</strong><span style=\"font-family: var(--font-primary); font-size: var(--font-size-14);\">.</span></li>\n</ul>",
+          "passive_name": "Exploration",
+          "passive_roll": "",
+          "passive_source": "camp activity"
+        }
+      },
+      "place_card_vanguard": "Place",
+      "populate_deck": "Populate",
+      "pronouns": "",
+      "relationship_1": "",
+      "relationship_2": "",
+      "relationship_3": "",
+      "relationship_4": "",
+      "relationship_5": "",
+      "relationship_6": "",
+      "reset_cards": "Resets",
+      "resolve_set": "Resolve",
+      "resource_value_1": "0",
+      "resource_value_2": "0",
+      "resource_value_3": "0",
+      "reveal_cards": "Reveal",
+      "ritualism": false,
+      "rolled_atr1": "MIG",
+      "rolled_atr2": "DEX",
+      "shield_value": "0",
+      "shuffle_deck": "Shuffle",
+      "skill_accuracy": "0",
+      "skill_attack_damage": "0",
+      "skill_hp": "0",
+      "skill_list": {
+        "0": {
+          "$deleted": false,
+          "class": "Pilot",
+          "description": "<p>[Personal Vehicle]</p>\n<p>When you acquire this Skill, you gain a <strong>personal vehicle</strong> with a<strong> frame</strong> of your choice and <strong>three different modules</strong> of your choice.<br>Whenever you acquire this Skill again, you acquire<strong> two additional modules</strong> of your choice.</p>\n<p>You use Exoskeleton frame.</p>\n<p>You can have total of <strong>8&nbsp;</strong>enabled modules at any time.</p>\n<p>You have total of <strong>11</strong> modules:</p>\n<ol>\n<li>[Armor] Standard Plating</li>\n<li>[Weapon] Shield (Main-hand)</li>\n<li>[Weapon] Shield (Off-hand)</li>\n<li>[Weapon] Cannon</li>\n<li>[Support] Aerial</li>\n<li>[Support] Anti-Element</li>\n<li>[Support] Advanced Targeting</li>\n<li>[Support] Excavation</li>\n<li>[Support] Power</li>\n<li>[Support] Rapid Interface</li>\n<li>[Support] Secondary Offensive</li>\n</ol>",
+          "level": "5",
+          "roll": "",
+          "skill_name": "Form of Titan"
+        },
+        "1": {
+          "$deleted": false,
+          "class": "Pilot",
+          "description": "<p>Titan's combat form.</p>\n<p>Enabled Modules:</p>\n<ol>\n<li>[Armor] <strong>Standard Plating</strong></li>\n<li>[Weapon]<strong> Shield (Main-hand)</strong></li>\n<li>[Weapon] <strong>Shield (Off-hand)</strong></li>\n<li>[Support] <strong>Anti-Element</strong></li>\n<li>[Support] <strong>Advanced Targeting</strong></li>\n<li>[Support] <strong>Power</strong></li>\n<li>[Support] <strong>Rapid Interface</strong></li>\n<li>[Support] <strong>Secondary Offensive</strong></li>\n</ol>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Form of Titan: Cronus"
+        },
+        "2": {
+          "$deleted": false,
+          "class": "Pilot",
+          "description": "<p>Titan's traverse form.</p>\n<p>Enabled Modules:</p>\n<ol>\n<li>[Armor] <strong>Standard Plating</strong></li>\n<li>[Weapon]<strong> Shield (Main-hand)</strong></li>\n<li>[Weapon] <strong>Shield (Off-hand)</strong></li>\n<li>[Support] <strong>Anti-Element</strong></li>\n<li>[Support] <strong>Aerial</strong></li>\n<li>[Support] <strong>Excavation</strong></li>\n<li>[Support] <strong>Power</strong></li>\n<li>[Support] <strong>Rapid Interface</strong></li>\n</ol>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Form of Titan: Hyperion"
+        },
+        "3": {
+          "$deleted": false,
+          "class": "Pilot",
+          "description": "<p>As long as there is no one aboard your <strong>personal vehicle</strong>, you may have it safely disappear from the game world at any time.</p>\n<p>If your <strong>personal vehicle</strong> is not present in the game world and you are in a space big enough to contain it, you may perform the <strong>Inventory </strong>action and spend 2 Inventory Points to have the vehicle appear near you, and <strong>enter </strong>it for free.</p>\n<p>If you use Compression Tech with this<strong> Exoskeleton</strong> frame, ignore the IP cost.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Compression Tech"
+        },
+        "4": {
+          "$deleted": false,
+          "class": "Pilot",
+          "description": "<p>When you perform the <strong>Equipment </strong>or <strong>Guard </strong>action while driving your <strong>personal vehicle</strong>, you may choose up to <strong>3</strong> of its enabled modules and disable them. If you do, choose up to an equal amount of its disabled modules and enable them.</p>",
+          "level": "3",
+          "roll": "",
+          "skill_name": "Flexible Configuration"
+        },
+        "5": {
+          "$deleted": false,
+          "class": "Pilot",
+          "description": "<p>When you perform an Accuracy Check with a <strong>weapon module</strong>, you may replace <strong>one </strong>of the Attributes with <strong>Might</strong>.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Strong Grip"
+        },
+        "6": {
+          "$deleted": false,
+          "class": "Pilot",
+          "description": "<p>When you are reduced to 0 Hit Points for the first time during a scene, if you are in your <strong>Titan Form</strong>, you may choose to be reduced to exactly 1 Hit Point instead. If you do, you <strong>leave </strong>your <strong>Titan Form</strong>, which <strong>disappears </strong>from the game world. Then, you may deal an amount of <strong>dark </strong>damage equal to your <strong>Crisis </strong>score of <strong>[40]</strong> to a single creature you can see.</p>\n<p>If your Titan form disappears from the game world this way, the next use of your<strong> Compression Tech</strong> Skill has an additional cost of 1 Fabula Point.&nbsp;</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Overload Burst"
+        },
+        "7": {
+          "$deleted": false,
+          "class": "Guardian",
+          "description": "",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Dual Shieldbearer"
+        },
+        "8": {
+          "$deleted": false,
+          "class": "Arcanist",
+          "description": "<p>You may <strong>bind </strong>Arcana to your soul and <strong>summon </strong>them later.</p>\n<p>You may use an action and spend 30 Mind Points to <strong>summon </strong>the power of one of the Arcana you have previously bound.</p>\n<table style=\"height: 170px; width: 100%; border-width: 1px; border-style: solid;\" border=\"1\"><colgroup><col style=\"width: 28.5171%;\"><col style=\"width: 71.4829%;\"></colgroup>\n<tbody>\n<tr style=\"height: 17px;\">\n<td style=\"height: 17px; border-width: 1px;\" colspan=\"2\"><strong>&nbsp;TITAN</strong></td>\n</tr>\n<tr style=\"height: 17px;\">\n<td style=\"height: 17px; border-width: 1px;\" colspan=\"2\"><em>&nbsp;Remnant of lost God</em></td>\n</tr>\n<tr style=\"height: 17px;\">\n<td style=\"height: 17px; border-width: 1px;\" colspan=\"2\"><strong>&nbsp;Domains: </strong>Formation, Earth, Soil</td>\n</tr>\n<tr style=\"height: 17px;\">\n<td style=\"height: 17px; border-width: 1px;\"><strong>&nbsp;Merge</strong></td>\n<td style=\"height: 17px; border-width: 1px;\">&nbsp;Dirty Armor</td>\n</tr>\n<tr style=\"height: 34px;\">\n<td style=\"height: 34px; border-width: 1px;\" colspan=\"2\">You have Resistance to <strong>earth </strong>damage and are immune to <strong>poisoned</strong>.<br>Your <strong>melee </strong>attacks can target flying creatures.</td>\n</tr>\n<tr style=\"height: 17px;\">\n<td style=\"border-width: 1px; height: 17px;\"><strong>&nbsp;Pulse</strong></td>\n<td style=\"border-width: 1px; height: 17px;\">&nbsp;Quagmire</td>\n</tr>\n<tr style=\"height: 17px;\">\n<td style=\"border-width: 1px; height: 17px;\" colspan=\"2\">You deal 10 <strong>earth</strong> damage to each of up to two creatures you can see. Then, each creature who lost Hit Points due to this damage suffers <strong>slow</strong>.</td>\n</tr>\n<tr style=\"height: 17px;\">\n<td style=\"border-width: 1px; height: 17px;\"><strong>&nbsp;Dismiss</strong></td>\n<td style=\"border-width: 1px; height: 17px;\">&nbsp;Earthquake</td>\n</tr>\n<tr style=\"height: 17px;\">\n<td style=\"border-width: 1px; height: 17px;\" colspan=\"2\">You deal 20 <strong>earth </strong>damage to every enemy present on the scene who isn't flying, floating, falling, or otherwise in mid-air. This damage ignores Resistances, and also ignores Immunities and Absorptions of creatures afflicted by <strong>slow.</strong></td>\n</tr>\n</tbody>\n</table>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Bind And Summon: Titan"
+        },
+        "9": {
+          "$deleted": false,
+          "class": "Arcanist",
+          "description": "<p>You may perform Rituals of the <strong>Arcanism </strong>discipline, as long as their effects fall within the <strong>domains </strong>of one or more Arcana you have bound.</p>\n<p>Arcanism Rituals use <strong>【WLP + WLP】</strong> for the Magic Check.</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Ritual Arcanism"
+        },
+        "10": {
+          "$deleted": false,
+          "class": "Wayfarer",
+          "description": "<p>Together with the rest of your group, design a <strong>level 5</strong> <strong>beast</strong>, <strong>construct</strong>, <strong>elemental </strong>or <strong>plant </strong>creature that becomes your companion. This creature has no Initiative score and does not level up, can have up to two basic attacks, gains a bonus equal to 【SL】 to Accuracy Checks and Magic Checks, and their maximum Hit Points are equal to 【(SL multiplied by the companion's base Might die size) + half your level】.</p>\n<p>Your companion doesn't get a turn during conflicts, but on your turn you can use an action to have the companion perform an action (only once per turn). If you leave a scene, your companion leaves with you.<br>If your companion falls to 0 Hit Points, they flee and rejoin you at the start of the next scene in which you are present, with HP equal to their Crisis score.</p>\n<p>When you rest, your companion also gains the full benefits of resting.</p>\n<p><img src=\"https://assets.forge-vtt.com/61332fffbbf86afae53df376/Petro%20Langford/T.%20T./Beta.png\" alt=\"\" width=\"476\" height=\"476\"></p>\n<table style=\"width: 100%; height: 272px;\" border=\"1\"><colgroup><col style=\"width: 14.0312%;\"><col style=\"width: 14.4766%;\"><col style=\"width: 14.4766%;\"><col style=\"width: 14.6993%;\"><col style=\"width: 5.56793%;\"><col style=\"width: 8.68597%;\"><col style=\"width: 5.79065%;\"><col style=\"width: 5.56793%;\"><col style=\"width: 8.01782%;\"><col style=\"width: 4.00891%;\"><col style=\"width: 4.45434%;\"></colgroup>\n<tbody>\n<tr style=\"height: 17px;\">\n<td style=\"height: 17px;\"><strong>T. T.</strong></td>\n<td style=\"height: 17px; text-align: right;\" colspan=\"10\">Lv 5 Elemental</td>\n</tr>\n<tr style=\"height: 19px;\">\n<td style=\"height: 19px;\" colspan=\"11\"><strong>Traits: </strong>Prideful, vengeful, hateful, ancient<strong><br></strong></td>\n</tr>\n<tr style=\"height: 22px;\">\n<td style=\"height: 22px; text-align: center;\"><strong>DEX d8</strong></td>\n<td style=\"text-align: center; height: 22px;\"><strong>INS D6</strong></td>\n<td style=\"text-align: center; height: 22px;\"><strong>MIG d12</strong></td>\n<td style=\"text-align: center; height: 22px;\"><strong>WLP d6</strong></td>\n<td style=\"text-align: center; height: 22px;\"><strong>HP</strong></td>\n<td style=\"text-align: center; height: 22px;\"><strong>19 ✦ 9</strong></td>\n<td style=\"text-align: center; height: 22px;\"><strong>MP</strong></td>\n<td style=\"text-align: center; height: 22px;\"><strong>35</strong></td>\n<td style=\"text-align: right; height: 22px;\" colspan=\"3\"><strong>Init. None</strong></td>\n</tr>\n<tr style=\"height: 51px;\">\n<td style=\"text-align: center; height: 51px;\"><strong>DEF 6</strong></td>\n<td style=\"text-align: center; height: 51px;\"><strong>M.DEF 6</strong></td>\n<td style=\"text-align: center; height: 51px;\"><strong>Immune: </strong>Poison, Earth</td>\n<td style=\"text-align: center; height: 51px;\" colspan=\"2\"><strong>Resistance: </strong>Physical, Lightning<strong><br></strong></td>\n<td style=\"text-align: center; height: 51px;\" colspan=\"3\"><strong>Vulnerable:</strong> Light</td>\n<td style=\"text-align: right; height: 51px;\" colspan=\"3\">&nbsp;</td>\n</tr>\n<tr style=\"height: 17px;\">\n<td style=\"text-align: left; height: 17px;\" colspan=\"11\"><strong>BASIC ATTACKS</strong></td>\n</tr>\n<tr style=\"height: 19px;\">\n<td style=\"text-align: left; height: 19px;\" colspan=\"11\"><strong>Heavy Tackle</strong> ✦ <strong>[MIG + MIG]&nbsp;</strong>✦&nbsp;<strong>Melee ✦ </strong><strong>[HR + 6] Physical </strong>damage.<strong><br></strong></td>\n</tr>\n<tr style=\"height: 19px;\">\n<td style=\"text-align: left; height: 19px;\" colspan=\"11\"><strong>Boulder Throw</strong> ✦ <strong>[MIG + DEX] ✦ Range ✦ [HR + 6] Earth&nbsp;</strong>damage.</td>\n</tr>\n<tr style=\"height: 17px;\">\n<td style=\"text-align: left; height: 17px;\" colspan=\"11\"><strong>SPECIAL RULES</strong></td>\n</tr>\n<tr style=\"height: 19px;\">\n<td style=\"text-align: left; height: 19px;\" colspan=\"11\"><strong>Elemental ✦ </strong>T. T. is immune to&nbsp;<strong>poisoned</strong>.</td>\n</tr>\n<tr style=\"height: 53px;\">\n<td style=\"text-align: left; height: 53px;\" colspan=\"11\"><strong>Protect ✦&nbsp;</strong>When your companion is threatened by an <strong>attack, spell</strong> or other <strong>danger</strong>, , you may take their place (any Checks that are part of the danger will be performed against you; you may declare the use of this Skill <strong>before or after</strong> the Checks have been made). If the danger already affected you, it affects you <strong>twice </strong>(resolve both instances separately); you also cannot protect multiple creatures from the same danger. If you use this Skill during a conflict, you cannot use it again until the start of your next turn.</td>\n</tr>\n<tr style=\"height: 19px;\">\n<td style=\"text-align: left; height: 19px;\" colspan=\"11\"><strong>Final Crumble ✦ </strong>When reduced to 0 HP, T. T. body crumbles on the attacker. If the attack is <strong>Melee,&nbsp;</strong>the attacker takes <strong>10 earth</strong> damage and suffer <strong>slow</strong>.</td>\n</tr>\n</tbody>\n</table>\n<p>&nbsp;</p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Faithful Companion: T. T."
+        },
+        "11": {
+          "$deleted": false,
+          "class": "Wayfarer",
+          "description": "<p>You recover <strong>1</strong> Inventory Points after each<strong> travel roll.</strong></p>",
+          "level": "1",
+          "roll": "",
+          "skill_name": "Resourceful"
+        }
+      },
+      "skill_mp": "0",
+      "spiritism": false,
+      "theme": "Responsibility",
+      "weapon1_base_damage": "0",
+      "weapon1_base_mod": "0",
+      "weapon1_damage": 0,
+      "weapon1_damagetype": "physical",
+      "weapon1_mod": 0,
+      "weapon2_damagetype": "-",
+      "wlp_base": "10",
+      "wlp_current": "10",
+      "your_class_name": "Contractor of Titan",
+      "zenit": "0",
+      "zero_effect_description": "",
+      "zero_effect_label": "💬 Zero Effect",
+      "zero_label": "💥 Zero Power : ",
+      "zero_power_name": "",
+      "zero_power_value": "0",
+      "zero_trigger_description": "",
+      "zero_trigger_label": "⚔️ Zero Trigger"
+    },
+    "statusEffects": {
+      "1QPHKNWo17z0bBmX": [],
+      "1cksCQj3urJwddfg": [],
+      "1qTdxSVu2XLu0lUx": [],
+      "3YZNX2X5rHYtL4L5": [],
+      "4g2B0rdJ3SiUQvUv": [],
+      "5FFBDg2y54bpqgat": [],
+      "5jkr80zqdzaR003d": [],
+      "6YW8glLMYbwj6ZhC": [],
+      "7FLtIUvENcYDAJKC": [],
+      "7VDl6ac5Rzr2Rpya": [],
+      "8LN8tDQjON508Rqm": [],
+      "ACD2C8JLWUeIx89o": [],
+      "CVxHWmDb0gQsob1q": [],
+      "CfLPg6RDybSQhTSR": [],
+      "DCaKnV9kNn3EpqtY": [],
+      "DHsoSawNEZAxsnQ9": [],
+      "EVjmTFRDsuzR823Z": [],
+      "GJ0cbbj60lr4zaHm": [],
+      "MsbUHrgK7AhSeEJm": [],
+      "N4WfMf1nuOdUEXVS": [],
+      "N4rGBYQsH7PyMAWr": [],
+      "NogCaPvL5Y52Hjnq": [],
+      "OFk8VUuwDhWFoPxI": [],
+      "QOfrFCU2C6mx50gK": [],
+      "Qz8IC4v3wJ6UoM77": [],
+      "Rc8AvdmlHAK7pPea": [],
+      "StnYeDADYo2xX99O": [],
+      "T1kJfiKBZm1dnnBy": [],
+      "VxdXsFJ7YVEzAp3x": [],
+      "YhO7nUdawyeQKMWD": [],
+      "ZK0aTX8IH1NqwmTw": [],
+      "bspDC7hFRTYuwdhf": [],
+      "cDgbFRi9TA68TvYr": [],
+      "clE8TJ0G1gMwF735": [],
+      "fYkA57rVfoytHRjo": [],
+      "g7JIey1pEuRHyAOH": [],
+      "gX1fA3onNG7wsyap": [],
+      "hhqoSNhWfVD4KR7g": [],
+      "jKvrVpxLgX0KhB23": [],
+      "m2iUJjsEfJkpmOBw": [],
+      "qMZsEEuzAdrHb2fk": [],
+      "qePlOECBTS0Dftgc": [],
+      "t2C3LKukW6LPUImk": [],
+      "t5jyddIZDvbyuVsD": [],
+      "v22vl6cnP94wVBPu": [],
+      "v2vFlETIgMnff5o8": [],
+      "vLM7q3rdXVCgHYD4": [],
+      "vUYA9jgY9pdafj4i": [],
+      "wA1E8GxiXmzz80XQ": [],
+      "xuwAn7u126GfFweU": []
+    },
+    "template": "Dx16KeWcJzikM7dh",
+    "templateSystemUniqueVersion": 276398442
+  },
+  "type": "character"
+}

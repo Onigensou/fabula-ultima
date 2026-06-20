@@ -1,0 +1,55 @@
+{
+  "_id": "wTVhkpDfiM0BKfe2",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1755253858944,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "2OplVa9fwLYbzD8b",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/SGE/panhaima.png",
+  "name": "Mathemagic",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 3
+  },
+  "sort": 6500000,
+  "system": {
+    "container": null,
+    "props": {
+      "check_bonus": "0",
+      "class": "Loremaster",
+      "cost": "",
+      "damage_bonus": "0",
+      "description": "<p>When you cast a spell with a <strong>target</strong> of \"One creature\", you may <strong>double the spell's total MP cost</strong>. If you do, choose an Attribute <strong>(Dexterity, Insight, Might, or Willpower</strong>) and a die size (<strong>d6, d8, d10 or d12</strong>). The spell now targets <strong>all</strong> creatures present on the scene whose current Attribute die size matches your choice, regardless of whether they are friends or foes (you might even end up targeting yourself). The effects of the spell are fully applied to every target.</p><p> If the spell is an <strong>【⚡️ offensive spell】</strong>, it follows the normal rules: you perform a single Magic Check and confront it with the Magic Defense of each target to determine who is hit by the spell.</p>",
+      "duration": "",
+      "heroic_requirement": "You must have mastered the Loremaster Class.",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "level": "1",
+      "max_level": "1",
+      "name": "Mathemagic",
+      "optional_params": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "wTVhkpDfiM0BKfe2"
+  },
+  "type": "equippableItem"
+}
