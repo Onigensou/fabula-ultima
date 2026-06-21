@@ -99,7 +99,7 @@
 
   async function load(slotId) {
     if (!game.user?.isGM) return { ok: false, error: "GM only" };
-    const blob = SS.Storage.getSlot(slotId);
+    const blob = await SS.Storage.getSlotFull(slotId);
     if (!blob) return { ok: false, error: "empty slot" };
     if (blob.version > SS.SAVE_VERSION) {
       return { ok: false, error: `save version ${blob.version} not supported` };

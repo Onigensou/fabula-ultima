@@ -25,8 +25,8 @@
       save:    (slotId) => SS.Core.save(slotId),
       /** Restore world state from a slot. Returns { ok, label|error }. */
       load:    (slotId) => SS.Core.load(slotId),
-      /** Read raw slot blob (null if empty). */
-      getSlot: (slotId) => SS.Storage.getSlot(slotId),
+      /** Read full slot blob from disk (async; null if empty). */
+      getSlot: (slotId) => SS.Storage.getSlotFull(slotId),
     };
 
     console.log(TAG, "Ready. API exposed at FUCompanion.api.saveSystem");
