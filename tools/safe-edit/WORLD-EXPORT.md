@@ -99,6 +99,45 @@ git config core.hooksPath tools/safe-edit/hooks
 If Foundry is still running when you commit data, the hook tells you to close it
 (it can't read a locked DB).
 
+## Importing JSON back into the world — `world-import` (merge + recovery)
+
+`world-export` makes the binary push *reviewable*; `world-import` makes it
+*mergeable*. It reads the per-document JSON and reconciles the live world to
+match it, so two devs can edit concurrently and merge instead of clobbering:
+
+1. Both commit the JSON companion (export already does this).
+2. On pull, git merges the JSON **per document** — different docs merge cleanly;
+   same-doc edits conflict in readable JSON you resolve by hand.
+3. `world-import apply --all` makes the live world match the merged JSON.
+
+**Recovery after a binary LevelDB conflict** (you had to pick one side's whole
+collection and dropped the other's docs): re-add them from the other side's JSON —
+
+```
+node tools/safe-edit/bin/world-import.js apply --only actors/<id>.json --ref <their-commit>
+```
+
+### How it works / rules
+
+- **Game must be OPEN.** Import drives Foundry's own document API through the
+  test-bridge (a parent stores embedded items both inline AND as separate keys,
+  kept consistent by Foundry — a raw writer would corrupt the world). Export is
+  game-closed; import is game-open.
+- **Dry-run by default:** `plan` reports what would change (create/update counts
+  + embedded). `apply` writes. `apply` refuses the whole tree without `--all`
+  (pass `--only <docs>` for a targeted reconcile).
+- **Non-destructive:** creates missing docs, updates existing, upserts embedded
+  items/effects. It never DELETES a doc/skill that's absent from the JSON —
+  pruning a removal is the dangerous case; do it by hand.
+- **Idempotent:** re-applying the same JSON updates in place, no duplicates.
+- `--ref <gitref>` reads the JSON from a commit's export tree instead of the
+  working tree. `--only` filters by relpath (`actors/<id>.json`) or bare id.
+
+```
+node tools/safe-edit/bin/world-import.js plan  [--only …] [--ref <gitref>] [--all]
+node tools/safe-edit/bin/world-import.js apply [--only …] [--ref <gitref>] [--all]
+```
+
 ## Limitation
 
 This prevents **future** invisible loss. Losses already baked into committed
