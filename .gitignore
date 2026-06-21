@@ -87,6 +87,9 @@
 
 /worlds/*/_authored-export/.baseline/
 
+# world-pack merge-rebuild scratch (CLI unpack/pack working dirs) — never committed.
+/worlds/*/_merge-work/
+
 # -----------------------------
 # Ignore archive / temp files
 # -----------------------------

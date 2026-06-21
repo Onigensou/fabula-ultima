@@ -11,6 +11,7 @@
     "safe-edit": "node bin/safe-edit.js"
   },
   "dependencies": {
+    "@foundryvtt/foundryvtt-cli": "^3.0.3",
     "classic-level": "^1.4.1"
   },
   "engines": {

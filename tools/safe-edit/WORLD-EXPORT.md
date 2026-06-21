@@ -138,6 +138,45 @@ node tools/safe-edit/bin/world-import.js plan  [--only …] [--ref <gitref>] [--
 node tools/safe-edit/bin/world-import.js apply [--only …] [--ref <gitref>] [--all]
 ```
 
+## Resolving a concurrent-edit conflict — `world-pack` (merge-rebuild)
+
+When two devs edit the **same collection** at once, the binary LevelDB conflicts
+and can't be 3-way merged — you must pick one side's whole collection and lose
+the other's. `world-pack` turns that into a real merge using Foundry's official
+CLI (`@foundryvtt/foundryvtt-cli`, an npm dep of this tool — `npm install` in
+`tools/safe-edit`), which round-trips a collection's LevelDB <-> per-document
+YAML faithfully (CSB tables + embedded actor-items; verified byte-identical).
+
+```
+# 1. unpack BOTH sides of the conflicted collection to readable YAML (game any state):
+node tools/safe-edit/bin/world-pack.js unpack --collection actors                 # OURS (live)
+node tools/safe-edit/bin/world-pack.js unpack --collection actors --ref <theirs>  # THEIRS (a commit)
+
+# 2. 3-way merge the two YAML trees by hand (or `git merge-file`) under
+#    worlds/<world>/_merge-work/ — different docs are different files; same-doc
+#    edits are a readable text conflict.
+
+# 3. pack the merged YAML back into a fresh LevelDB (safe; writes to a dir):
+node tools/safe-edit/bin/world-pack.js pack --collection actors --in worlds/<world>/_merge-work/<merged>
+
+# 4. install it into the live world — GAME CLOSED. Backs up the existing
+#    collection, verifies the new DB opens, auto-rolls-back if it doesn't:
+node tools/safe-edit/bin/world-pack.js install --collection actors --from worlds/<world>/_merge-work/actors__packed
+
+# 5. re-open Foundry to confirm, then close + `world-export report` before committing.
+```
+
+`_merge-work/` is gitignored scratch. `install` refuses while Foundry holds a
+LOCK, backs up to `tools/safe-edit/backups/`, and rolls back on a bad key count.
+
+### Which import tool for which job
+
+| Need | Tool | Game |
+|------|------|------|
+| Reviewable diff + loss tripwire on a push | `world-export` (+ hook) | closed |
+| Re-apply ONE dropped doc/skill from JSON | `world-import --only … --ref …` | open |
+| Rebuild a WHOLE collection from merged source | `world-pack` (CLI) | closed for `install` |
+
 ## Limitation
 
 This prevents **future** invisible loss. Losses already baked into committed
