@@ -128,7 +128,9 @@ Hooks.once("ready", () => {
         ONI.emit = function (eventName, payload = {}, options = {}) {
           const { local = true, world = false } = options;
           if (local) Hooks.callAll(eventName, payload);
-          if (world) game.socket.emit("world", { action: eventName, payload });
+          // module-scoped channel — never the reserved core "world" event
+          // (see reaction-phaseHandler.js for why).
+          if (world) game.socket.emit("module.fabula-ultima-companion", { action: eventName, payload });
         };
       }
     }

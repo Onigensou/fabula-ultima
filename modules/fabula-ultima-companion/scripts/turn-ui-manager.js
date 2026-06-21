@@ -1493,20 +1493,10 @@
         }
       });
 
-      // ALSO listen on 'world' with a tagged payload, similar to your TurnIndPing demo.
-      game.socket.on("world", (data) => {
-        if (!data || data._oniTurnUI == null) return;
-
-        console.log("[Turn UI Manager] WORLD socket message on user", game.user?.id, { data });
-
-        if (data._oniTurnUI === "HIDE_FOR_ANIMATION") {
-          console.log("[Turn UI Manager] -> handling HIDE_FOR_ANIMATION (world channel)");
-          TurnUI.handleHideForAnimationPacket(data.payload || {});
-        } else if (data._oniTurnUI === "SHOW_AFTER_ANIMATION") {
-          console.log("[Turn UI Manager] -> handling SHOW_AFTER_ANIMATION (world channel)");
-          TurnUI.handleShowAfterAnimationPacket(data.payload || {});
-        }
-      });
+      // NOTE: the legacy `game.socket.on("world", ...)` listener was removed.
+      // "world" is Foundry's reserved core event (triggers host world
+      // re-serialization); the sender now broadcasts ONI_TURNUI_* on the module
+      // channel above. See reaction-phaseHandler.js for the full rationale.
     }
   });
 

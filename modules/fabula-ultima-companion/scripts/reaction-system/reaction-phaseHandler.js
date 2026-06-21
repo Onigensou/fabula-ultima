@@ -261,9 +261,15 @@ Hooks.once("ready", () => {
      * ONI.emit(eventName, payload?, options?)
      * By default sends both locally and across the world socket.
      */
+    // NOTE: broadcast on the module-scoped channel, NOT the core "world" event.
+    // "world" is reserved by Foundry's server (it routes into
+    // World.requestWorldData → a full 11-13s world re-serialization on the host),
+    // so emitting on it forced spurious host serializations and crashed the host
+    // under concurrent logins. module.<id> is a private client<->client channel.
+    const ONI_BUS_CHANNEL = "module.fabula-ultima-companion";
     ONI.emit = function (eventName, payload = {}, { local = true, world = true } = {}) {
       if (local) Hooks.callAll(eventName, payload); // local subscribers
-      if (world) game.socket.emit("world", { action: eventName, payload }); // broadcast
+      if (world) game.socket.emit(ONI_BUS_CHANNEL, { action: eventName, payload }); // broadcast
     };
 
     // Generic socket receiver to re-fan into Hooks
@@ -272,7 +278,7 @@ Hooks.once("ready", () => {
         if (!data?.action) return;
         Hooks.callAll(data.action, data.payload);
       };
-      game.socket.on("world", ONI._worldRx);
+      game.socket.on(ONI_BUS_CHANNEL, ONI._worldRx);
     }
   }
 
