@@ -5178,6 +5178,23 @@ export async function postActionCard({ director, kind, payload }) {
       try { reactionAwait?.abort?.("postActionCard-finish"); } catch {}
       try { invokeAwait?.abort?.("postActionCard-finish"); } catch {}
     };
+    // Push the post-invoke actionResult to EVERY other active client so all
+    // mirror cards (acting owner, spectator players, secondary GMs) reflect
+    // the rerolled numbers. The primary GM already patched its own DOM in the
+    // worker; the u.id filter skips re-sending to self. Same audience as the
+    // initial card broadcast — spectators hold a mirror and offInvokeUpdate
+    // no-ops if they don't. patchCardDom is pure DOM (no actor reads) and
+    // preserves ??? masking for unstudied targets, so no info leak.
+    const broadcastInvokeUpdate = () => {
+      const menuSpec = {
+        kind: "action-card-invoke-update",
+        actionResult: director.ctx.actionResult,
+        invokeState: { ...invokeState },
+      };
+      for (const u of (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id)) {
+        try { director.intentChannel?.broadcastMenuOpen({ targetUserId: u.id, menuSpec }); } catch {}
+      }
+    };
     if (director?.intentChannel) {
       try {
         confirmAwait = director.intentChannel.awaitIntent(INTENTS.CONFIRM_ACTION, {
@@ -5250,20 +5267,8 @@ export async function postActionCard({ director, kind, payload }) {
                   prePickedBondIndex: body.bondIndex ?? null,
                 });
               }
-              const newAr = director.ctx.actionResult;
-              // Broadcast invoke-update to the owner + any secondary GMs so
-              // all mirror cards reflect the rerolled numbers.
-              const invokeUpdateSpec = {
-                kind: "action-card-invoke-update",
-                actionResult: newAr,
-                invokeState: { ...invokeState },
-              };
-              if (ownerUserId) {
-                director.intentChannel?.broadcastMenuOpen({ targetUserId: ownerUserId, menuSpec: invokeUpdateSpec });
-              }
-              for (const u of (game.users?.contents ?? []).filter((u) => u.isGM && u.active && u.id !== game.user?.id)) {
-                try { director.intentChannel?.broadcastMenuOpen({ targetUserId: u.id, menuSpec: invokeUpdateSpec }); } catch {}
-              }
+              // Broadcast the rerolled result to every other active client.
+              broadcastInvokeUpdate();
             } catch (e) {
               warn("postActionCard: INVOKE_CHOICE handler threw", e);
             }
@@ -5315,11 +5320,16 @@ export async function postActionCard({ director, kind, payload }) {
             }
             const worker = await import(`./invoke/invoke-worker.js?cb=${Date.now()}`);
             const ar = director.ctx.actionResult;
+            let ok = false;
             if (type === "trait") {
-              await worker.handleInvokeTrait({ director, ar, root, invokeState });
+              ok = await worker.handleInvokeTrait({ director, ar, root, invokeState });
             } else {
-              await worker.handleInvokeBond({ director, ar, root, invokeState });
+              ok = await worker.handleInvokeBond({ director, ar, root, invokeState });
             }
+            // GM invoked on their own card — propagate to all mirror cards
+            // (player owner, spectators, secondary GMs). The worker already
+            // patched this client's DOM.
+            if (ok) broadcastInvokeUpdate();
           } catch (e) {
             warn("postActionCard: invoke handler threw", e);
             ui.notifications?.error("Invoke failed (see console).");
