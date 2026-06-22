@@ -15,6 +15,7 @@ import { broadcastSfx, preloadSfx, collapseSidebarAllClients } from "./director-
 import { INVOKE_SFX_URLS } from "./invoke/invoke-hud.js";
 import { emitDamageNumber } from "./damage-numbers/director-damage-numbers.js";
 import { emitImpactFx } from "./damage-numbers/director-impact-fx.js";
+import { emitHurtReaction } from "./damage-numbers/director-hurt-reaction.js";
 
 export const DIRECTOR_STATIC_URLS = Object.freeze([
   // Guard / Covered AE icons (Forge-vtt — remote, slowest first-fetch).
@@ -385,6 +386,21 @@ function throttledSfx(url, vol) {
   broadcastSfx(url, vol);
 }
 
+// Token hurt-reaction (pseudo-animated flinch) on real damage. Throttled per
+// token so a multi-hit combo's synchronous calls don't fire N GPU snapshots —
+// the flinch self-restarts within its own debounce anyway. "strong" tier for a
+// WEAK or critical hit so it visibly hurts more.
+const _lastHurtAt = new Map(); // tokenUuid -> perf timestamp
+const HURT_THROTTLE_MS = 140;
+function fireHurt(tokenUuid, affinity, isCrit) {
+  if (!tokenUuid) return;
+  const now = performance.now();
+  if (now - (_lastHurtAt.get(tokenUuid) ?? 0) < HURT_THROTTLE_MS) return;
+  _lastHurtAt.set(tokenUuid, now);
+  try { emitHurtReaction({ tokenUuid, intensity: (affinity === "VU" || isCrit) ? "strong" : "normal" }); }
+  catch (e) { warn("fireHurt threw", e); }
+}
+
 // Map (resource, affinity) → { file, color, icon, sfx } for a LOSS. Mirrors
 // legacy `_resolveAV` for the damage/drain half (we only float losses here).
 function resolveLossAv(resource, affinity) {
@@ -410,6 +426,9 @@ export function playResourceLossVfx({ tokenUuid, resource = "hp", amount = 0, af
     // Carries the affinity (WEAK!/RESIST tag), element (numeral color), and crit
     // (gold CRITICAL banner). Renders + broadcasts on its own.
     emitDamageNumber({ kind: "loss", tokenUuid, resource, amount, affinity, element, isCrit, pierce });
+    // Token hurt flinch — only for a real physical-ish hit (HP / shield), not an
+    // MP drain. Strong tier on WEAK/crit.
+    if (resource === "hp" || resource === "shield") fireHurt(tokenUuid, affinity, isCrit);
     // Impact burst + affinity SFX — both BD-native now (DOM <video> + Web Audio).
     const { file, sfx } = resolveLossAv(resource, affinity);
     emitImpactFx({ tokenUuid, file, durationMs: 1000 });
