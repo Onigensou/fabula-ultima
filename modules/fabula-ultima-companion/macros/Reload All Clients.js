@@ -20,7 +20,7 @@
   // ms between each client's reload — ~one world-vend apart, so the host never
   // serializes the world for more than one client at a time. Three concurrent
   // reconnect-vends OOM the local Foundry V12 desktop host. Tune for party size.
-  const STAGGER_MS = 12000;
+  const STAGGER_MS = 20000;
 
   const userCount = game.users.filter(u => u.active).length;
 
