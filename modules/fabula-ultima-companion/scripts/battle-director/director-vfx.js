@@ -13,6 +13,7 @@
 import { log, warn } from "./logger.js";
 import { broadcastSfx, preloadSfx, collapseSidebarAllClients } from "./director-sfx.js";
 import { INVOKE_SFX_URLS } from "./invoke/invoke-hud.js";
+import { emitDamageNumber } from "./damage-numbers/director-damage-numbers.js";
 
 export const DIRECTOR_STATIC_URLS = Object.freeze([
   // Guard / Covered AE icons (Forge-vtt — remote, slowest first-fetch).
@@ -391,26 +392,24 @@ function resolveLossAv(resource, affinity) {
 //   resource  : "hp" | "mp"
 //   amount    : the value lost (already post-clamp / post-affinity)
 //   affinity  : "NE" | "VU" | "RS" | ... (HP only; ignored for MP)
-export function playResourceLossVfx({ tokenUuid, resource = "hp", amount = 0, affinity = "NE" } = {}) {
+export function playResourceLossVfx({ tokenUuid, resource = "hp", amount = 0, affinity = "NE", element = "elementless", isCrit = false, pierce = false } = {}) {
   try {
     if (!(amount > 0)) return;
-    if (typeof Sequence === "undefined") { log("resource-loss VFX: Sequencer not loaded, skipping"); return; }
+    // Floating NUMBER → BD-native damage-number subsystem (DOM screen-space).
+    // Carries the affinity (WEAK!/RESIST tag), element (numeral color), and crit
+    // (gold CRITICAL banner). Renders + broadcasts on its own.
+    emitDamageNumber({ kind: "loss", tokenUuid, resource, amount, affinity, element, isCrit, pierce });
+    // Impact webm + affinity SFX stay on Sequencer — Phase 1 migrated only the
+    // number text off `.scrollingText()`; the cinematic half lives here still.
+    if (typeof Sequence === "undefined") return;
     const tok = canvasTokenFromUuid(tokenUuid);
-    if (!tok) { log("resource-loss VFX: token not on canvas, skipping"); return; }
-
-    const { file, color, icon, sfx } = resolveLossAv(resource, affinity);
-    const amountText = `${icon} ${Math.abs(amount)}`;
-    const textStyle = { fill: color, fontSize: 35, fontWeight: "bold", lineJoin: "round", strokeThickness: 3 };
-
+    if (!tok) return;
+    const { file, sfx } = resolveLossAv(resource, affinity);
     new Sequence()
       .effect()
         .file(file)
         .atLocation(tok)
         .scale(0.4)
-        .duration(1000)
-      .scrollingText()
-        .atLocation(tok)
-        .text(amountText, textStyle)
         .duration(1000)
       .play();
     if (sfx) broadcastSfx(sfx, 0.6);
@@ -463,27 +462,21 @@ const RESOURCE_GAIN_DEFAULT = Object.freeze({ file: null, color: "#9be15d", icon
 export function playResourceGainVfx({ tokenUuid, resource = "hp", amount = 0 } = {}) {
   try {
     if (!(amount > 0)) return;
-    if (typeof Sequence === "undefined") { log("resource-gain VFX: Sequencer not loaded, skipping"); return; }
+    // Floating number → BD-native subsystem; heal aura webm + cue stay here.
+    emitDamageNumber({ kind: "gain", tokenUuid, resource, amount });
+    if (typeof Sequence === "undefined") return;
     const tok = canvasTokenFromUuid(tokenUuid);
-    if (!tok) { log("resource-gain VFX: token not on canvas, skipping"); return; }
-
+    if (!tok) return;
     const av = RESOURCE_GAIN_AV[String(resource).toLowerCase()] ?? RESOURCE_GAIN_DEFAULT;
-    const amountText = `${av.icon} +${Math.abs(amount)}`;
-    const textStyle = { fill: av.color, fontSize: 35, fontWeight: "bold", lineJoin: "round", strokeThickness: 3 };
-
-    const seq = new Sequence();
     if (av.file) {
-      seq.effect()
-        .file(av.file)
-        .atLocation(tok)
-        .scale(0.4)
-        .duration(1000);
+      new Sequence()
+        .effect()
+          .file(av.file)
+          .atLocation(tok)
+          .scale(0.4)
+          .duration(1000)
+        .play();
     }
-    seq.scrollingText()
-      .atLocation(tok)
-      .text(amountText, textStyle)
-      .duration(1000);
-    seq.play();
     if (av.sfx) broadcastSfx(av.sfx, 0.6);
   } catch (e) {
     warn("playResourceGainVfx threw", e);
@@ -525,20 +518,9 @@ const RESOURCE_SPEND_DEFAULT = Object.freeze({ color: "#cfd2da", icon: "⬇️",
 export function playResourceSpendVfx({ tokenUuid, resource = "mp", amount = 0 } = {}) {
   try {
     if (!(amount > 0)) return;
-    if (typeof Sequence === "undefined") { log("resource-spend VFX: Sequencer not loaded, skipping"); return; }
-    const tok = canvasTokenFromUuid(tokenUuid);
-    if (!tok) { log("resource-spend VFX: token not on canvas, skipping"); return; }
-
+    // Number-only event (no impact webm) — delegate the float, keep the soft cue.
+    emitDamageNumber({ kind: "spend", tokenUuid, resource, amount });
     const av = RESOURCE_SPEND_AV[String(resource).toLowerCase()] ?? RESOURCE_SPEND_DEFAULT;
-    const amountText = `${av.icon} -${Math.abs(amount)}`;
-    const textStyle = { fill: av.color, fontSize: 28, fontWeight: "bold", lineJoin: "round", strokeThickness: 3 };
-
-    new Sequence()
-      .scrollingText()
-        .atLocation(tok)
-        .text(amountText, textStyle)
-        .duration(1000)
-      .play();
     if (av.sfx) broadcastSfx(av.sfx, 0.45);
   } catch (e) {
     warn("playResourceSpendVfx threw", e);
@@ -564,10 +546,11 @@ const MISS_SFX_URL = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Soun
 //   tokenUuid : the token that dodged / was missed ("Scene.X.Token.Y")
 export function playMissVfx({ tokenUuid } = {}) {
   try {
-    if (typeof Sequence === "undefined") { log("miss VFX: Sequencer not loaded, skipping"); return; }
+    // Big "MISS" word → BD-native subsystem; whiff flourish + sound stay here.
+    emitDamageNumber({ kind: "miss", tokenUuid });
+    if (typeof Sequence === "undefined") return;
     const tok = canvasTokenFromUuid(tokenUuid);
-    if (!tok) { log("miss VFX: token not on canvas, skipping"); return; }
-
+    if (!tok) return;
     new Sequence()
       .effect()
         .file(MISS_FX_FILE)
@@ -592,16 +575,8 @@ export function playMissVfx({ tokenUuid } = {}) {
 const IMMUNE_SFX_URL = RESOURCE_VFX_SFX.resist;
 export function playImmuneVfx({ tokenUuid } = {}) {
   try {
-    if (typeof Sequence === "undefined") { log("immune VFX: Sequencer not loaded, skipping"); return; }
-    const tok = canvasTokenFromUuid(tokenUuid);
-    if (!tok) { log("immune VFX: token not on canvas, skipping"); return; }
-    const textStyle = { fill: "#bcd2e8", fontSize: 32, fontWeight: "bold", lineJoin: "round", stroke: "#1a2230", strokeThickness: 4 };
-    new Sequence()
-      .scrollingText()
-        .atLocation(tok)
-        .text("🛡️ IMMUNE", textStyle)
-        .duration(1100)
-      .play();
+    // "IMMUNE" tag → BD-native subsystem (number-only event); keep the cue.
+    emitDamageNumber({ kind: "immune", tokenUuid });
     broadcastSfx(IMMUNE_SFX_URL, 0.5);
   } catch (e) {
     warn("playImmuneVfx threw", e);
@@ -618,19 +593,16 @@ const ABSORB_SFX_URL = RESOURCE_VFX_HEAL_SFX.mpAbsorb;
 export function playAbsorbVfx({ tokenUuid, amount = 0 } = {}) {
   try {
     if (!(amount > 0)) return;
-    if (typeof Sequence === "undefined") { log("absorb VFX: Sequencer not loaded, skipping"); return; }
+    // Green "ABSORB +N" → BD-native subsystem; blue aura + absorb cue stay here.
+    emitDamageNumber({ kind: "absorb", tokenUuid, amount });
+    if (typeof Sequence === "undefined") return;
     const tok = canvasTokenFromUuid(tokenUuid);
-    if (!tok) { log("absorb VFX: token not on canvas, skipping"); return; }
-    const textStyle = { fill: "#5ad1ff", fontSize: 35, fontWeight: "bold", lineJoin: "round", strokeThickness: 3 };
+    if (!tok) return;
     new Sequence()
       .effect()
         .file(ABSORB_FX_FILE)
         .atLocation(tok)
         .scale(0.4)
-        .duration(1000)
-      .scrollingText()
-        .atLocation(tok)
-        .text(`🌀 +${Math.abs(amount)}`, textStyle)
         .duration(1000)
       .play();
     broadcastSfx(ABSORB_SFX_URL, 0.6);
