@@ -147,17 +147,19 @@ function worldToClient(ax, ay) {
 // an opaque BLACK BOX, but PIXI composites the texture's alpha correctly, so we
 // grab the live frame as a transparent still (fine for a ~300ms flinch). Returns
 // an HTMLCanvasElement, or null on failure (caller falls back).
-function extractTokenCanvas(token) {
+function extractTokenImageSrc(token) {
   try {
     const renderer = canvas?.app?.renderer;
     const tex = token?.mesh?.texture ?? token?.texture;
-    if (!renderer?.extract || !tex) return null;
+    if (!renderer?.extract?.base64 || !tex) return null;
     const sprite = new PIXI.Sprite(tex);
-    const out = renderer.extract.canvas(sprite);
+    // PNG data URL — PNG preserves the alpha channel, so the snapshot is
+    // transparent (no black box) and works in a plain <img> with no blend hacks.
+    const dataUrl = renderer.extract.base64(sprite, "image/png");
     try { sprite.destroy(); } catch {}
-    return out ?? null;
+    return dataUrl ?? null;
   } catch (e) {
-    warn("extractTokenCanvas threw", e);
+    warn("extractTokenImageSrc threw", e);
     return null;
   }
 }
@@ -190,11 +192,22 @@ export function playHurtReactionLocal({ tokenUuid, intensity = "normal" } = {}) 
     };
     const pt = worldToClient(c.x, c.y);
     const zoom = canvas.stage?.scale?.x ?? 1;
-    const w = (token.w ?? 100) * zoom;
-    const h = (token.h ?? 100) * zoom;
+    // Size to the token's ACTUAL rendered sprite (mesh.width/height already bake
+    // in the config "Scale" / texture.scaleX-Y), NOT the grid footprint — so a
+    // token whose image was scaled in its config matches. Fall back to footprint.
+    const mesh = token.mesh;
+    const w = Math.abs(mesh?.width || (token.w ?? 100)) * zoom;
+    const h = Math.abs(mesh?.height || (token.h ?? 100)) * zoom;
     const rot = Number(token.document?.rotation ?? 0) || 0;
     const mir = (Number(token.document?.texture?.scaleX ?? 1) < 0) ? -1 : 1;
     const isVideo = /\.(webm|mp4|m4v|ogv)$/i.test(String(src));
+
+    // Clone image source: for webm/animated tokens snapshot the live PIXI frame
+    // to a transparent PNG (a DOM <video> shows a black box); PNG tokens use src
+    // directly. Abort if a video token can't be snapshotted — better no flinch
+    // than a black box.
+    const imgSrc = isVideo ? extractTokenImageSrc(token) : src;
+    if (!imgSrc) return;
 
     const root = document.createElement("div");
     root.className = `fud-hurt fud-hurt--${strong ? "strong" : "normal"}`;
@@ -210,34 +223,22 @@ export function playHurtReactionLocal({ tokenUuid, intensity = "normal" } = {}) 
     shake.style.width = `${w}px`;
     shake.style.height = `${h}px`;
 
-    // Build the clone. For webm/animated tokens, a DOM <video> would show a
-    // black box (no alpha), so snapshot the live PIXI frame to a canvas instead.
-    // PNG tokens just use a plain <img> (cheap, already transparent).
-    let media = null;
-    if (isVideo) {
-      media = extractTokenCanvas(token);
-      if (!media) {
-        // Last-resort fallback if extraction is unavailable: a <video> with
-        // screen blend (washed, but avoids the opaque black box).
-        media = document.createElement("video");
-        media.src = src; media.muted = true; media.autoplay = true; media.loop = true; media.playsInline = true;
-        media.style.mixBlendMode = "screen";
-      }
-    } else {
-      media = document.createElement("img");
-      media.src = src;
-    }
+    // The clone is always a plain <img> (transparent PNG snapshot for webm/animated
+    // tokens, or the token's own image for PNG tokens) — no <video>, no blend hacks.
+    const media = document.createElement("img");
     media.className = "fud-hurt-img";
     media.draggable = false;
+    media.src = imgSrc;
     shake.appendChild(media);
 
-    // Red silhouette tint for strong hits (image tokens only — mask needs an image).
-    if (strong && !isVideo) {
+    // Red silhouette tint for strong hits — mask the red fill to the sprite shape.
+    // Works for both: the snapshot data URL (video tokens) or the encoded path (PNG).
+    if (strong) {
       const tint = document.createElement("div");
       tint.className = "fud-hurt-tint";
-      const url = `url("${encodeURI(src)}")`;
-      tint.style.webkitMaskImage = url;
-      tint.style.maskImage = url;
+      const maskUrl = isVideo ? `url("${imgSrc}")` : `url("${encodeURI(src)}")`;
+      tint.style.webkitMaskImage = maskUrl;
+      tint.style.maskImage = maskUrl;
       shake.appendChild(tint);
     }
 
@@ -248,7 +249,6 @@ export function playHurtReactionLocal({ tokenUuid, intensity = "normal" } = {}) 
     // Hide the real token sprite for the reaction (single toggle; restored at end).
     // Mesh = the token's image only — bars/border/nameplate are separate children
     // and stay visible. Carry the TRUE original alpha across a debounce restart.
-    const mesh = token.mesh;
     const origAlpha = (prev && prev.origAlpha != null) ? prev.origAlpha : (mesh ? mesh.alpha : null);
     if (mesh && origAlpha != null) mesh.alpha = 0;
 
@@ -263,9 +263,6 @@ export function playHurtReactionLocal({ tokenUuid, intensity = "normal" } = {}) 
     };
     const timer = setTimeout(cleanup, dur + 80);
     _active.set(tokenUuid, { el: root, timer, origAlpha });
-    // Only the <video> fallback needs an explicit play kick (the canvas snapshot
-    // and the <img> are static).
-    if (media.tagName === "VIDEO") { try { media.play?.()?.catch?.(() => {}); } catch {} }
   } catch (e) {
     warn("playHurtReactionLocal threw", e);
   }
