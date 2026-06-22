@@ -43,6 +43,7 @@ const CASES = [
   { label: "RESIST — ice 30",       fn: (t) => playResourceLossVfx({ tokenUuid: t, resource: "hp", amount: 30, element: "ice", affinity: "RS" }) },
   { label: "CRITICAL — dark 210",   fn: (t) => playResourceLossVfx({ tokenUuid: t, resource: "hp", amount: 210, element: "dark", isCrit: true }) },
   { label: "CRIT + WEAK! — 260",    fn: (t) => playResourceLossVfx({ tokenUuid: t, resource: "hp", amount: 260, element: "fire", affinity: "VU", isCrit: true }) },
+  { label: "PIERCE — fire 80",      fn: (t) => playResourceLossVfx({ tokenUuid: t, resource: "hp", amount: 80, element: "fire", pierce: true }) },
   { label: "IMMUNE",                fn: (t) => playImmuneVfx({ tokenUuid: t }) },
   { label: "ABSORB 64",             fn: (t) => playAbsorbVfx({ tokenUuid: t, amount: 64 }) },
   { label: "MISS",                  fn: (t) => playMissVfx({ tokenUuid: t }) },

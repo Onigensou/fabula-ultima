@@ -389,6 +389,7 @@ export async function applyDamageToTarget({
   // from the attacker-side logContext (null for silent callers → safe defaults).
   const _vfxElement = logContext?.element ?? "elementless";
   const _vfxIsCrit = !!logContext?.isCrit;
+  const _vfxPierce = !!logContext?.pierce;
   // Build a battle-log record from this commit's facts + the caller's context
   // and push it to the sink. The single damage/heal logging seam (misses, which
   // have no commit, are logged by the attack RESOLVE loop). Never throws into
@@ -452,7 +453,7 @@ export async function applyDamageToTarget({
       newShield = curShield - absorbed;
       toHp = damage - absorbed;
       log(`${prefix}shield absorbed ${absorbed} on ${targetName}: shield ${curShield} → ${newShield}${logSuffix}`);
-      fireResourceLossVfx({ tokenUuid, resource: "shield", amount: absorbed, affinity, element: _vfxElement, isCrit: _vfxIsCrit });
+      fireResourceLossVfx({ tokenUuid, resource: "shield", amount: absorbed, affinity, element: _vfxElement, isCrit: _vfxIsCrit, pierce: _vfxPierce });
     }
 
     // Fully absorbed — only the shield changed; HP untouched.
@@ -493,7 +494,7 @@ export async function applyDamageToTarget({
     const reactionNote = fired.length ? ` (reactions: ${fired.map((f) => f.aeName).join(", ")})` : "";
     const shieldNote = absorbed > 0 ? ` [shield −${absorbed}]` : "";
     log(`${prefix}applied ${toHp} dmg to ${targetName} [${affinity}]: ${curHp} → ${newHp}${shieldNote}${reactionNote}${logSuffix}`);
-    fireResourceLossVfx({ tokenUuid, resource: "hp", amount: dealtDamage, affinity, element: _vfxElement, isCrit: _vfxIsCrit });
+    fireResourceLossVfx({ tokenUuid, resource: "hp", amount: dealtDamage, affinity, element: _vfxElement, isCrit: _vfxIsCrit, pierce: _vfxPierce });
     _pushLog({ resource: "hp", affinity, value: damage, valueDirection: "loss", bands: { hp: { from: curHp, to: newHp }, shield: { from: curShield, to: newShield } } });
     return {
       resource: "hp",

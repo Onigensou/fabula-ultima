@@ -30,6 +30,7 @@ const CASES = [
   { label: "ABSORB +64",               payload: { kind: "absorb", resource: "hp", amount: 64 } },
   { label: "CRITICAL — dark 210",      payload: { kind: "loss", resource: "hp", amount: 210, element: "dark", isCrit: true } },
   { label: "CRITICAL + WEAK! 260",     payload: { kind: "loss", resource: "hp", amount: 260, element: "fire", affinity: "VU", isCrit: true } },
+  { label: "PIERCE — fire 80",         payload: { kind: "loss", resource: "hp", amount: 80, element: "fire", pierce: true } },
   { label: "MISS",                     payload: { kind: "miss" } },
   { label: "MP loss 22",               payload: { kind: "loss", resource: "mp", amount: 22 } },
   { label: "Shield −35",               payload: { kind: "loss", resource: "shield", amount: 35 } },

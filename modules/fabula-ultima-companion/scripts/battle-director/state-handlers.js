@@ -577,6 +577,7 @@ async function resolveAction(director, ar, opts = {}) {
             range: ar.weapon?.range ?? ar.weapon?.weapon_range ?? null,
             accuracy: ar.roll?.total ?? null,
             isCrit: !!ar.roll?.isCrit,
+            pierce: !!r.pierceMiss,
             sourceType: isAttackAction ? "Attack" : (view.kind ?? "Skill"),
             sink: battleLogSink,
           },

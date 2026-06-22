@@ -90,8 +90,23 @@ function ensureStyle() {
              fud-dn-fade ${LIFETIME_MS}ms ease-in forwards;
 }
 .fud-dn-inner {
+  position: relative;
   display: flex; flex-direction: column; align-items: center; gap: 2px;
   animation: fud-dn-pop 240ms cubic-bezier(.2,1.55,.4,1) both;
+}
+/* Crit "slab flash": a quick gold burst behind the numeral — the Persona pop. */
+.fud-dn--crit .fud-dn-inner::before {
+  content: ""; position: absolute; inset: -10px -22px; z-index: -1;
+  background: radial-gradient(ellipse at center, rgba(255,220,90,.6), rgba(255,150,40,0) 70%);
+  animation: fud-dn-flash 420ms ease-out forwards;
+}
+/* Pierce sub-tag — small "PIERCE" marker under the number when a hit pushed
+   through immunity/affinity. */
+.fud-dn-pierce {
+  font-family: var(--dn-tag-font);
+  font-weight: 700; font-style: italic; letter-spacing: 1px;
+  font-size: 12px; color: #ffd9a8; transform: skewX(-9deg);
+  text-shadow: 0 1px 0 rgba(0,0,0,.6);
 }
 .fud-dn-crit-banner {
   font-family: var(--dn-tag-font);
@@ -145,6 +160,10 @@ function ensureStyle() {
   0%, 100% { margin-left: 0; }
   20% { margin-left: -5px; } 40% { margin-left: 5px; }
   60% { margin-left: -3px; } 80% { margin-left: 3px; }
+}
+@keyframes fud-dn-flash {
+  0%   { transform: scale(.4); opacity: .9; }
+  100% { transform: scale(1.6); opacity: 0; }
 }
 `.trim();
   const style = document.createElement("style");
@@ -255,6 +274,13 @@ export function renderDamageNumberLocal(payload = {}) {
         txt.textContent = bodyText;
         num.appendChild(txt);
         inner.appendChild(num);
+      }
+      // Pierce marker — a hit that pushed through immunity/affinity.
+      if (spec.pierce && spec.number != null) {
+        const pierce = document.createElement("div");
+        pierce.className = "fud-dn-pierce";
+        pierce.textContent = "PIERCE";
+        inner.appendChild(pierce);
       }
 
       riser.appendChild(inner);
