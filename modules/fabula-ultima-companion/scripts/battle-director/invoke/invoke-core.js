@@ -68,6 +68,36 @@ export function readActorBonds(actor) {
   return bonds;
 }
 
+// Emotion slots → heart polarity. Mirrors the invoke-hud heart renderer; lives
+// here (pure data) so a serializable bond list can be built for the spectator
+// broadcast without the receiving client needing actor read-permission.
+const _EMOTION_SLOTS = [
+  { pos: "admiration", neg: "inferiority" },
+  { pos: "loyalty",    neg: "mistrust"    },
+  { pos: "affection",  neg: "hatred"      },
+];
+
+export function bondHearts(actor, bondIndex) {
+  const P = actor?.system?.props ?? {};
+  const norm = (s) => String(s ?? "").trim().toLowerCase();
+  const hearts = [];
+  for (const [i, s] of _EMOTION_SLOTS.entries()) {
+    const v = norm(P[`emotion_${bondIndex}_${i + 1}`]);
+    if (v === s.pos) hearts.push("pos");
+    else if (v === s.neg) hearts.push("neg");
+  }
+  hearts.sort((a, b) => (a === "pos" ? -1 : b === "pos" ? 1 : 0));
+  return hearts;
+}
+
+// Bond list enriched with serializable heart polarities — the payload shape the
+// spectator Bond HUD consumes. Only bonds with bonus > 0 are eligible to invoke.
+export function readActorBondsForSpectator(actor) {
+  return readActorBonds(actor)
+    .filter((b) => b.bonus > 0)
+    .map((b) => ({ index: b.index, name: b.name, bonus: b.bonus, hearts: bondHearts(actor, b.index) }));
+}
+
 // ── Dice math ─────────────────────────────────────────────────────────────────
 
 // Reroll one or both accuracy dice; keeps existing checkBonus and attributes.

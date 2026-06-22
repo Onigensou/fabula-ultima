@@ -48,13 +48,14 @@ export function getActiveType() {
 // Called externally (action-card toggle, or cleanup on card close).
 export function dismissActive({ root, ar } = {}) {
   if (!_active) return;
-  const { el, _resolve } = _active;
+  const { el, _resolve, type } = _active;
   _active = null;
   if (root && ar) _restoreCardFromAr(root, ar);
-  _playHud(SFX.cancel);
+  // Spectator HUDs have no interaction to cancel — skip the cancel cue.
+  if (type !== "spectator") _playHud(SFX.cancel);
   _despawnDimmer();
   _despawnAura();
-  _despawn(el, () => _resolve(null));
+  _despawn(el, _resolve ? () => _resolve(null) : undefined);
 }
 
 // ── Audio ─────────────────────────────────────────────────────────────────────
@@ -244,6 +245,25 @@ function ensureStyles() {
       border: 1.5px solid rgba(87,58,33,.3);
     }
     .fud-ih-cancel:hover { background: rgba(87,58,33,.18); }
+
+    /* ── Spectator (read-only mirror) ── */
+    #${HUD_ID}.is-spectating .fud-ih-card { cursor: default; }
+    #${HUD_ID}.is-spectating .fud-ih-die,
+    #${HUD_ID}.is-spectating .fud-ih-bond-row { cursor: default; pointer-events: none; }
+    .fud-ih-spectate-tag {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 10px; font-weight: 800; letter-spacing: .4px; text-transform: uppercase;
+      opacity: .7; margin-bottom: 9px; color: #a07a28;
+    }
+    .fud-ih-spectate-tag .dot {
+      width: 7px; height: 7px; border-radius: 50%; background: #c9a24a;
+      box-shadow: 0 0 6px rgba(201,162,74,.8);
+      animation: fud-ih-spectate-pulse 1.1s ease-in-out infinite;
+    }
+    @keyframes fud-ih-spectate-pulse {
+      0%, 100% { opacity: .35; transform: scale(.8); }
+      50%      { opacity: 1;   transform: scale(1.15); }
+    }
 
     /* ── Aura keyframes ── */
     @keyframes fud-invoke-glow-pulse {
@@ -827,4 +847,113 @@ export async function showBondHUD({ bonds, attacker, root, ar, tokenUuid = null 
       _resolveHud(el, resolve, null, "cancel");
     });
   });
+}
+
+// ── Spectator HUDs (read-only mirror) ──────────────────────────────────────────
+// Shown on every NON-acting client while the actor decides. Same dimmer + aura +
+// panel + open cue as the real HUD, but no interaction and no Promise — the panel
+// is a window into what the actor is doing, torn down by dismissSpectator() when
+// the actor commits (INVOKE_CHOICE → result animates via patchCardDom) or cancels.
+
+// Supersede whatever HUD is currently up (real or spectator) before spawning a
+// new spectator panel. A real HUD never coexists with a spectator one on the
+// same client (the actor isn't a spectator of their own action), but the card
+// could be re-broadcast; this keeps the singleton honest.
+function _supersedeForSpectator() {
+  if (!_active) return;
+  const old = _active;
+  _active = null;
+  if (old._resolve) _despawn(old.el, () => old._resolve(null));
+  else _despawn(old.el);
+}
+
+export function showTraitSpectator({ roll, actorName, root, tokenUuid = null }) {
+  if (!roll) return null;
+  ensureStyles();
+  _supersedeForSpectator();
+  _playHud(SFX.trait, 0.3);
+
+  const { A1, A2, dA, dB, rA, rB } = roll;
+  const who = esc(actorName || "The attacker");
+  const html = `<div class="fud-ih-card">
+    <div class="fud-ih-header">Invoke Trait</div>
+    <div class="fud-ih-title">${who} is rerolling…</div>
+    <div class="fud-ih-spectate-tag"><span class="dot"></span>Spectating</div>
+    <div class="fud-ih-dice-grid">
+      <div class="fud-ih-die">
+        <img class="fud-ih-die-icon" src="${iconFor(A1)}" alt="${esc(A1)}">
+        <span class="fud-ih-die-label">d${esc(dA)}</span>
+        <span class="fud-ih-die-val">${esc(rA)}</span>
+      </div>
+      <div class="fud-ih-die">
+        <img class="fud-ih-die-icon" src="${iconFor(A2)}" alt="${esc(A2)}">
+        <span class="fud-ih-die-label">d${esc(dB)}</span>
+        <span class="fud-ih-die-val">${esc(rB)}</span>
+      </div>
+    </div>
+    <div class="fud-ih-hint">Waiting for ${who} to choose which die to reroll…</div>
+  </div>`;
+
+  const el = _spawnEl(html, root);
+  el.classList.add("is-spectating");
+  _spawnDimmer();
+  _spawnAura(tokenUuid);
+  _active = { type: "spectator", kind: "trait", el };
+  return el;
+}
+
+export function showBondSpectator({ bonds, actorName, root, tokenUuid = null }) {
+  const viable = (bonds ?? []).filter((b) => (b?.bonus || 0) > 0);
+  if (!viable.length) return null;
+  ensureStyles();
+  _supersedeForSpectator();
+  _playHud(SFX.bond, 0.3);
+
+  const who  = esc(actorName || "The attacker");
+  const rows = viable.map((b) => {
+    const hearts = (b.hearts ?? []).map(_svgHeart).join("");
+    return `<div class="fud-ih-bond-row">
+      <span class="fud-ih-bond-name">${esc(b.name)}</span>
+      <span class="fud-ih-bond-hearts">${hearts}</span>
+      <span class="fud-ih-bond-bonus">+${b.bonus}</span>
+    </div>`;
+  }).join("");
+
+  const html = `<div class="fud-ih-card">
+    <div class="fud-ih-header">Invoke Bond</div>
+    <div class="fud-ih-title">${who} is choosing a Bond…</div>
+    <div class="fud-ih-spectate-tag"><span class="dot"></span>Spectating</div>
+    <div class="fud-ih-bond-list" role="list">${rows}</div>
+    <div class="fud-ih-hint">Waiting for ${who} to choose a Bond…</div>
+  </div>`;
+
+  const el = _spawnEl(html, root);
+  el.classList.add("is-spectating");
+  _spawnDimmer();
+  _spawnAura(tokenUuid);
+  _active = { type: "spectator", kind: "bond", el };
+  return el;
+}
+
+// Tear down the spectator HUD. On a committed trait reroll, pass
+// { traitOutcome: { oldTotal, newTotal } } so the dice + up/down cue plays in
+// sync with the card's result animation (patchCardDom). Otherwise a soft
+// confirm/cancel cue plays. No-op if no spectator HUD is up. `expectKind`
+// ("trait"|"bond") gates the dismiss so a stale close for one invoke type
+// can't tear down a freshly-opened HUD of the other type (rapid type-switch).
+export function dismissSpectator({ traitOutcome = null, cancelled = false, expectKind = null } = {}) {
+  if (!_active || _active.type !== "spectator") return;
+  if (expectKind && _active.kind !== expectKind) return;
+  const { el } = _active;
+  _active = null;
+  if (traitOutcome) playTraitOutcomeSfx(traitOutcome.oldTotal, traitOutcome.newTotal);
+  else _playHud(cancelled ? SFX.cancel : SFX.confirm, 0.6);
+  _despawnDimmer();
+  _despawnAura();
+  _despawn(el);
+}
+
+// True when a read-only spectator HUD is currently shown on this client.
+export function isSpectatorActive() {
+  return _active?.type === "spectator";
 }

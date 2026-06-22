@@ -5172,11 +5172,15 @@ export async function postActionCard({ director, kind, payload }) {
     let cancelAwait = null;
     let reactionAwait = null;
     let invokeAwait = null;
+    let hudOpenAwait = null;
+    let hudCloseAwait = null;
     const abortPendingAwaits = () => {
       try { confirmAwait?.abort?.("postActionCard-finish"); } catch {}
       try { cancelAwait?.abort?.("postActionCard-finish"); } catch {}
       try { reactionAwait?.abort?.("postActionCard-finish"); } catch {}
       try { invokeAwait?.abort?.("postActionCard-finish"); } catch {}
+      try { hudOpenAwait?.abort?.("postActionCard-finish"); } catch {}
+      try { hudCloseAwait?.abort?.("postActionCard-finish"); } catch {}
     };
     // Push the post-invoke actionResult to EVERY other active client so all
     // mirror cards (acting owner, spectator players, secondary GMs) reflect
@@ -5195,6 +5199,83 @@ export async function postActionCard({ director, kind, payload }) {
         try { director.intentChannel?.broadcastMenuOpen({ targetUserId: u.id, menuSpec }); } catch {}
       }
     };
+
+    // ── Spectator invoke HUD (read-only mirror of the theatrical panel) ───────
+    // While the ACTOR decides (real HUD on their own client), show the same
+    // dimmer/aura/panel — read-only — on every OTHER active client so the table
+    // sees the beat instead of a silent number flip. The GM is always the
+    // broadcaster (only the GM may broadcastMenuOpen); when a PLAYER is the
+    // actor the GM is itself a spectator, so it also renders the panel locally.
+    // Tracks whether the GM rendered its own local spectator panel so close
+    // can tear it down.
+    let _specHudShownLocally = false;
+
+    // Build the serializable spectator render payload from the live
+    // actionResult + attacker actor. Bond hearts are precomputed here so the
+    // receiving client needs no actor read-permission.
+    const buildSpectatorPayload = async (type) => {
+      const ar = director.ctx.actionResult;
+      if (!ar?.roll) return null;
+      let actorName = "The attacker";
+      let bonds = [];
+      try {
+        const uuid = ar.attackerActorRef ?? ar.attacker?.actorUuid ?? null;
+        const actor = uuid ? await fromUuid(uuid) : null;
+        if (actor?.name) actorName = actor.name;
+        if (type === "bond" && actor) {
+          const core = await import("./invoke/invoke-core.js");
+          bonds = core.readActorBondsForSpectator(actor);
+        }
+      } catch {}
+      const r = ar.roll;
+      return {
+        type, actorName, bonds,
+        roll: { A1: r.A1, A2: r.A2, dA: r.dA, dB: r.dB, rA: r.rA, rB: r.rB },
+        tokenUuid: ar.attacker?.tokenUuid ?? null,
+      };
+    };
+
+    // Open the spectator HUD on all active clients except `excludeUserId` (the
+    // actor). When the GM is not the actor, render it locally too.
+    const openSpectatorHud = async (type, excludeUserId) => {
+      try {
+        const spec = await buildSpectatorPayload(type);
+        if (!spec) return;
+        const menuSpec = { kind: "invoke-hud-spectator", combatId: director.combatId, spec };
+        for (const u of (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id && u.id !== excludeUserId)) {
+          try { director.intentChannel?.broadcastMenuOpen({ targetUserId: u.id, menuSpec }); } catch {}
+        }
+        // GM is a spectator whenever someone else is the actor → render locally
+        // (socket never echoes our own broadcast back to us). Dock it beside
+        // the GM's own card root.
+        if (excludeUserId && excludeUserId !== game.user?.id) {
+          const hud = await import("./invoke/invoke-hud.js");
+          if (type === "trait") hud.showTraitSpectator({ roll: spec.roll, actorName: spec.actorName, root, tokenUuid: spec.tokenUuid });
+          else hud.showBondSpectator({ bonds: spec.bonds, actorName: spec.actorName, root, tokenUuid: spec.tokenUuid });
+          _specHudShownLocally = true;
+        }
+      } catch (e) { warn("postActionCard: openSpectatorHud threw", e); }
+    };
+
+    // Close the spectator HUD everywhere. `traitOutcome` ({oldTotal,newTotal})
+    // plays the dice + up/down cue in sync with the card result animation.
+    // `type` ("trait"|"bond") gates the dismiss so a stale close can't tear
+    // down a freshly-opened HUD of the other type (rapid type-switch).
+    const closeSpectatorHud = ({ excludeUserId = null, traitOutcome = null, cancelled = false, type = null } = {}) => {
+      for (const u of (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id && u.id !== excludeUserId)) {
+        try {
+          director.intentChannel?.broadcastMenuClose({
+            targetUserId: u.id, kind: "invoke-hud-spectator",
+            data: { traitOutcome, cancelled, expectKind: type },
+          });
+        } catch {}
+      }
+      if (_specHudShownLocally) {
+        _specHudShownLocally = false;
+        import("./invoke/invoke-hud.js").then((hud) => hud.dismissSpectator({ traitOutcome, cancelled, expectKind: type })).catch(() => {});
+      }
+    };
+
     if (director?.intentChannel) {
       try {
         confirmAwait = director.intentChannel.awaitIntent(INTENTS.CONFIRM_ACTION, {
@@ -5253,31 +5334,69 @@ export async function postActionCard({ director, kind, payload }) {
           invokeAwait.then(async (intent) => {
             const body = intent?.body ?? {};
             const type = body.type; // "trait" | "bond"
+            const fromUserId = intent.fromUserId ?? null;
             log(`postActionCard: remote INVOKE_CHOICE received (${type})`);
+            const oldTotal = director.ctx.actionResult?.roll?.total ?? 0;
+            let ok = false;
             try {
               const worker = await import(`./invoke/invoke-worker.js?cb=${Date.now()}`);
               if (type === "trait") {
-                await worker.handleInvokeTrait({
+                ok = await worker.handleInvokeTrait({
                   director, ar: director.ctx.actionResult, root, invokeState,
                   prePickedChoice: body.choice ?? null,
                 });
               } else if (type === "bond") {
-                await worker.handleInvokeBond({
+                ok = await worker.handleInvokeBond({
                   director, ar: director.ctx.actionResult, root, invokeState,
                   prePickedBondIndex: body.bondIndex ?? null,
                 });
               }
               // Broadcast the rerolled result to every other active client.
-              broadcastInvokeUpdate();
+              if (ok) broadcastInvokeUpdate();
             } catch (e) {
               warn("postActionCard: INVOKE_CHOICE handler threw", e);
             }
+            // Tear down the spectator HUD on the table (the actor's own real
+            // HUD already closed locally on their pick). On a committed trait
+            // reroll, sync the dice + up/down cue with the result animation.
+            const newTotal = director.ctx.actionResult?.roll?.total ?? oldTotal;
+            closeSpectatorHud({
+              excludeUserId: fromUserId,
+              traitOutcome: (ok && type === "trait") ? { oldTotal, newTotal } : null,
+              cancelled: !ok,
+              type,
+            });
             armInvokeAwait();
           }).catch((e) => {
             if (!resolved) log(`postActionCard: INVOKE_CHOICE await aborted (${e?.message})`);
           });
         };
         if (ownerUserId) armInvokeAwait();
+
+        // Spectator-HUD relay — a player/secondary-GM actor announces when they
+        // OPEN or DISMISS (cancel) their invoke HUD, before committing. The GM
+        // mirrors it to the rest of the table (and locally). Re-arm after each
+        // so it survives multiple opens (e.g. Trait then Bond, or open/cancel/
+        // re-open). Commit is handled by the INVOKE_CHOICE close above.
+        const armHudOpenAwait = () => {
+          if (resolved) return;
+          hudOpenAwait = director.intentChannel.awaitIntent(INTENTS.INVOKE_HUD_OPEN, { timeoutMs: 30 * 60 * 1000 });
+          hudOpenAwait.then((intent) => {
+            const t = intent?.body?.type;
+            if (t === "trait" || t === "bond") openSpectatorHud(t, intent.fromUserId ?? null);
+            armHudOpenAwait();
+          }).catch((e) => { if (!resolved) log(`postActionCard: INVOKE_HUD_OPEN await aborted (${e?.message})`); });
+        };
+        const armHudCloseAwait = () => {
+          if (resolved) return;
+          hudCloseAwait = director.intentChannel.awaitIntent(INTENTS.INVOKE_HUD_CLOSE, { timeoutMs: 30 * 60 * 1000 });
+          hudCloseAwait.then((intent) => {
+            closeSpectatorHud({ excludeUserId: intent.fromUserId ?? null, cancelled: true, type: intent?.body?.type ?? null });
+            armHudCloseAwait();
+          }).catch((e) => { if (!resolved) log(`postActionCard: INVOKE_HUD_CLOSE await aborted (${e?.message})`); });
+        };
+        armHudOpenAwait();
+        armHudCloseAwait();
       } catch (e) { warn("postActionCard: remote intent setup threw", e); }
     }
 
@@ -5316,20 +5435,33 @@ export async function postActionCard({ director, kind, payload }) {
             // Toggle: re-clicking an open invoke HUD closes it instead of reopening
             if (hud.getActiveType() === type) {
               hud.dismissActive({ root, ar: director?.ctx?.actionResult });
+              // Tear down the read-only mirror on the rest of the table too.
+              closeSpectatorHud({ excludeUserId: game.user?.id, cancelled: true, type });
               return;
             }
             const worker = await import(`./invoke/invoke-worker.js?cb=${Date.now()}`);
             const ar = director.ctx.actionResult;
+            const oldTotal = ar?.roll?.total ?? 0;
+            // GM is the actor → open the read-only spectator HUD on everyone
+            // else (exclude self; the GM gets the real interactive HUD below).
+            // Fire-and-forget: the GM's own HUD shouldn't wait on the broadcast.
+            openSpectatorHud(type, game.user?.id);
             let ok = false;
             if (type === "trait") {
               ok = await worker.handleInvokeTrait({ director, ar, root, invokeState });
             } else {
               ok = await worker.handleInvokeBond({ director, ar, root, invokeState });
             }
-            // GM invoked on their own card — propagate to all mirror cards
-            // (player owner, spectators, secondary GMs). The worker already
-            // patched this client's DOM.
-            if (ok) broadcastInvokeUpdate();
+            // GM invoked on their own card — propagate the rerolled result to
+            // all mirror cards, then tear down the spectator HUD (synced cue on
+            // a committed trait). The worker already patched this client's DOM.
+            if (ok) {
+              broadcastInvokeUpdate();
+              const newTotal = director.ctx.actionResult?.roll?.total ?? oldTotal;
+              closeSpectatorHud({ excludeUserId: game.user?.id, traitOutcome: type === "trait" ? { oldTotal, newTotal } : null, type });
+            } else {
+              closeSpectatorHud({ excludeUserId: game.user?.id, cancelled: true, type });
+            }
           } catch (e) {
             warn("postActionCard: invoke handler threw", e);
             ui.notifications?.error("Invoke failed (see console).");
@@ -5720,6 +5852,9 @@ function cleanupMirror() {
     _mirrorCleanup = null;
   }
   try { dismissKeywordTooltip(); } catch {}
+  // Any read-only spectator invoke HUD belongs to this card — tear it down too
+  // (no-ops if none is up). Covers card replace AND card close.
+  import("./invoke/invoke-hud.js").then((hud) => hud.dismissSpectator({ cancelled: true })).catch(() => {});
   const existing = document.getElementById(MIRROR_ROOT_ID);
   if (existing) try { existing.remove(); } catch {}
 }
@@ -5742,6 +5877,31 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
     import(`./invoke/invoke-worker.js?cb=${Date.now()}`).then((w) => {
       w.patchCardDom(wrapper, playerAr, playerInvokeState);
     }).catch((e) => warn("action-card-invoke-update: patchCardDom threw", e));
+  });
+
+  // Spectator invoke HUD — the GM broadcasts this while the ACTOR is deciding
+  // so this client sees the dimmer + aura + panel read-only (no interaction).
+  // Positioned next to the local mirror card; torn down by the matching
+  // MENU_CLOSE (kind "invoke-hud-spectator") below, by cleanupMirror on card
+  // close, or superseded by a later spectator open.
+  const offSpectatorOpen = channel.onMenuOpen((menuSpec) => {
+    if (!menuSpec || menuSpec.kind !== "invoke-hud-spectator") return;
+    const spec = menuSpec.spec;
+    if (!spec?.type) return;
+    const wrapper = document.getElementById(MIRROR_ROOT_ID);
+    import("./invoke/invoke-hud.js").then((hud) => {
+      if (spec.type === "trait") {
+        hud.showTraitSpectator({ roll: spec.roll, actorName: spec.actorName, root: wrapper, tokenUuid: spec.tokenUuid });
+      } else {
+        hud.showBondSpectator({ bonds: spec.bonds, actorName: spec.actorName, root: wrapper, tokenUuid: spec.tokenUuid });
+      }
+    }).catch((e) => warn("invoke-hud-spectator open threw", e));
+  });
+
+  const offSpectatorClose = channel.onMenuClose((payload) => {
+    if (payload?.kind !== "invoke-hud-spectator") return;
+    const { traitOutcome = null, cancelled = false, expectKind = null } = payload?.data ?? {};
+    import("./invoke/invoke-hud.js").then((hud) => hud.dismissSpectator({ traitOutcome, cancelled, expectKind })).catch(() => {});
   });
 
   // Lightweight patch handler for pill state changes broadcast from
@@ -5977,16 +6137,25 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
               const hud = await import("./invoke/invoke-hud.js");
               if (hud.getActiveType() === type) {
                 hud.dismissActive({ root: wrapper, ar: playerAr });
+                // Tell the GM to tear down the table's read-only mirror too.
+                channel.emit({ type: INTENTS.INVOKE_HUD_CLOSE, body: { type }, combatId: menuSpec.combatId });
                 return;
               }
               if (!playerAr?.roll) return;
               if (type === "trait") {
+                // Announce the open so the GM mirrors a read-only HUD to the
+                // rest of the table while this player is deciding.
+                channel.emit({ type: INTENTS.INVOKE_HUD_OPEN, body: { type: "trait" }, combatId: menuSpec.combatId });
                 const choice = await hud.showTraitHUD({
                   roll: playerAr.roll,
                   root: wrapper,
                   tokenUuid: playerAr.attacker?.tokenUuid ?? null,
                 });
-                if (!choice) return;
+                if (!choice) {
+                  // Dismissed without committing → close the table's mirror.
+                  channel.emit({ type: INTENTS.INVOKE_HUD_CLOSE, body: { type: "trait" }, combatId: menuSpec.combatId });
+                  return;
+                }
                 invokeBtn.classList.add("is-resolved");
                 channel.emit({
                   type: INTENTS.INVOKE_CHOICE,
@@ -6010,6 +6179,9 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
                   ui.notifications?.warn("No eligible Bonds (all bonds need at least 1 filled emotion).");
                   return;
                 }
+                // Announce the open (after validation) so the GM mirrors a
+                // read-only HUD to the rest of the table.
+                channel.emit({ type: INTENTS.INVOKE_HUD_OPEN, body: { type: "bond" }, combatId: menuSpec.combatId });
                 const bondIndex = await hud.showBondHUD({
                   bonds: viable,
                   attacker,
@@ -6017,7 +6189,10 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
                   ar: playerAr,
                   tokenUuid: playerAr.attacker?.tokenUuid ?? null,
                 });
-                if (bondIndex == null) return;
+                if (bondIndex == null) {
+                  channel.emit({ type: INTENTS.INVOKE_HUD_CLOSE, body: { type: "bond" }, combatId: menuSpec.combatId });
+                  return;
+                }
                 invokeBtn.classList.add("is-resolved");
                 channel.emit({
                   type: INTENTS.INVOKE_CHOICE,
@@ -6325,9 +6500,20 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
   });
 
   const offClose = channel.onMenuClose((payload) => {
+    // Spectator-HUD closes are handled by offSpectatorClose — don't let them
+    // tear down the card.
     if (payload?.kind && payload.kind !== "action-card") return;
     cleanupMirror();
   });
 
-  return () => { try { offOpen?.(); } catch {} try { offClose?.(); } catch {} try { offPillUpdate?.(); } catch {} try { offTargetMutation?.(); } catch {} try { offBodyUpdate?.(); } catch {} try { offInvokeUpdate?.(); } catch {} };
+  return () => {
+    try { offOpen?.(); } catch {}
+    try { offClose?.(); } catch {}
+    try { offPillUpdate?.(); } catch {}
+    try { offTargetMutation?.(); } catch {}
+    try { offBodyUpdate?.(); } catch {}
+    try { offInvokeUpdate?.(); } catch {}
+    try { offSpectatorOpen?.(); } catch {}
+    try { offSpectatorClose?.(); } catch {}
+  };
 }

@@ -39,6 +39,20 @@ export const INTENTS = Object.freeze({
   // Body: { type: "trait"|"bond", choice?: "A"|"B"|"AB", bondIndex?: number }
   INVOKE_CHOICE: "INVOKE_CHOICE",
 
+  // External — sent by the owner player's mirror card the moment they OPEN an
+  // invoke HUD (before they've picked anything). The GM relays this as a
+  // read-only "invoke-hud-spectator" MENU_OPEN to every OTHER active client so
+  // the table sees the dimmer/aura/panel + hears the cue while the actor is
+  // still deciding. Paired with INVOKE_HUD_CLOSE (cancel) or INVOKE_CHOICE
+  // (commit), either of which tears the spectator HUD down.
+  // Body: { type: "trait"|"bond" }
+  INVOKE_HUD_OPEN: "INVOKE_HUD_OPEN",
+
+  // External — sent by the owner player's mirror card when they DISMISS an
+  // invoke HUD without committing (cancel / toggle-off). GM tears down the
+  // spectator HUD on all other clients. Body: { type: "trait"|"bond" }
+  INVOKE_HUD_CLOSE: "INVOKE_HUD_CLOSE",
+
   // External — sent by Reaction UIs (pill on action card OR token-
   // anchored menu) when a player owner clicks Apply / Skip / Pass /
   // a specific reaction blade. Two body shapes share this intent type:
