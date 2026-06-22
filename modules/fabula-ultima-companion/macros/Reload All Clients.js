@@ -17,6 +17,10 @@
   const SOCKET_NS = `module.${MODULE_ID}`;
   const MSG_TYPE = "FU_RELOAD_CLIENTS";
   const DELAY_MS = 800;
+  // ms between each client's reload — ~one world-vend apart, so the host never
+  // serializes the world for more than one client at a time. Three concurrent
+  // reconnect-vends OOM the local Foundry V12 desktop host. Tune for party size.
+  const STAGGER_MS = 12000;
 
   const userCount = game.users.filter(u => u.active).length;
 
@@ -54,20 +58,21 @@
       type: MSG_TYPE,
       initiatorId: game.userId,
       initiatorName: game.user?.name ?? "GM",
-      delayMs: DELAY_MS
+      delayMs: DELAY_MS,
+      staggerMs: STAGGER_MS
     });
   } catch (e) {
     console.error("[ReloadAllClients] socket emit failed:", e);
     return ui.notifications.error("Reload broadcast failed (see console).");
   }
 
-  // reload-broadcast.js staggers each non-GM client by 600 ms per index, starting
-  // at index 0 = DELAY_MS.  The GM must reload AFTER all of them so no two clients
-  // disconnect at the same millisecond — simultaneous mass-disconnect crashes the
-  // local Foundry V12 Electron app.
-  const STAGGER_MS = 600;
+  // reload-broadcast.js reloads each other client at DELAY_MS + index*STAGGER_MS
+  // (ordered by user id), so clients reload one at a time ~a vend apart and the
+  // host never serializes the world for more than one client at once. The GM
+  // reloads AFTER all of them.
   const activePlayers = game.users.filter(u => u.active && u.id !== game.userId);
   const gmDelay = DELAY_MS + activePlayers.length * STAGGER_MS;
-  ui.notifications.info("Reload broadcast sent — reloading you in a moment…");
+  const totalSecs = Math.ceil(gmDelay / 1000);
+  ui.notifications.info(`Reload sent — clients reload one at a time; you reload in ~${totalSecs}s…`);
   setTimeout(() => location.reload(), gmDelay);
 })();
