@@ -31,6 +31,9 @@
     const initiatorId = payload.initiatorId ?? null;
     const initiatorName = payload.initiatorName ?? "GM";
     const delayMs = Number.isFinite(payload.delayMs) ? payload.delayMs : 800;
+    // Per-client spacing. MUST match STAGGER_MS in the "Reload All Clients" macro,
+    // which reloads the initiator/GM after the last of these staggered clients.
+    const staggerMs = Number.isFinite(payload.staggerMs) ? payload.staggerMs : 600;
 
     log("Reload requested by:", initiatorName, "(", initiatorId, ")");
 
@@ -40,6 +43,19 @@
       return;
     }
 
+    // Stagger each client's reload so no two clients disconnect/reconnect at the
+    // same instant — a simultaneous mass-disconnect crashes the local Foundry V12
+    // Electron host (this is what the macro's gmDelay already assumes happens).
+    // Every client builds the SAME ordered list of active non-initiator users
+    // (sorted by id) and waits for its own slot: index 0 → delayMs, index 1 →
+    // delayMs + staggerMs, etc. The macro then reloads the GM one slot later.
+    const others = (game.users?.filter(u => u.active && u.id !== initiatorId) ?? [])
+      .map(u => u.id)
+      .sort();
+    const myIndex = Math.max(0, others.indexOf(game.userId));
+    const totalDelay = Math.max(0, delayMs + myIndex * staggerMs);
+    log(`Reload slot ${myIndex} → ${totalDelay}ms`);
+
     try {
       ui.notifications?.warn(
         `${initiatorName} requested a client reload — reloading…`,
@@ -47,7 +63,7 @@
       );
     } catch (_) { /* noop */ }
 
-    setTimeout(() => location.reload(), Math.max(0, delayMs));
+    setTimeout(() => location.reload(), totalDelay);
   }
 
   Hooks.once("ready", () => {
