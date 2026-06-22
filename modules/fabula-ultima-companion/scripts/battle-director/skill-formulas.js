@@ -627,6 +627,15 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         const isSpell = (k === "spell" || st === "spell");
         return (isSpell && payload?.actionIsCheck === true) ? 1 : 0;
       }
+      // 1 if the action ROLLS ACCURACY — an attack OR a check (the canonical
+      // `ar.canMiss` capability, stamped as payload.actionCanMiss on the
+      // creature_performs_action payload). Powers Adversity's "bonus on actions that
+      // roll a check" gate: attacks + offensive spells + opposed/Hinder checks fire,
+      // Heal/buff/utility (no accuracy roll) do not. Reusable for any accuracy-only
+      // rider. NOTE reads the single-source flag — do NOT re-derive kind/isCheck here.
+      case "ACTION_ROLLS_ACCURACY": {
+        return payload?.actionCanMiss === true ? 1 : 0;
+      }
       // 1 if the action targets EXACTLY ONE creature AND that creature carries MY
       // Focus (per-applier, status fud-focus), else 0. Powers Hypercognition's
       // "SL × 2 if your focus is the only target" cost discount. Mirrors

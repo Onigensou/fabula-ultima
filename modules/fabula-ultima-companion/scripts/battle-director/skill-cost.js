@@ -240,3 +240,43 @@ export function formatParsedCost(parsedCost) {
     return `${prefix}${amountStr}${targetTag} ${label}`;
   }).join(" + ");
 }
+
+// Per-target (×T) affordability cap — the SINGLE source for "clamp how many
+// targets the caster can afford on a scaling-cost spell". Called from every
+// targeting site (compose-action's player-side composer AND the GM-side
+// resolveActionTargets) so the clamp is identical wherever targets are chosen.
+//
+// Returns `{ count, capped, missing }`:
+//   - count   : the (possibly reduced) target count to offer the picker.
+//   - capped  : true iff we reduced the count (caller toasts).
+//   - missing : the checkAffordable shortfall at the first unaffordable count
+//               (resource labels for the toast), else null.
+//
+// No-op (returns the requested count unchanged) when: actor missing, requested
+// ≤ 1, the cost has no tokens, the cost does NOT scale with target count, OR the
+// caster can't afford even ONE target (that's left to the confirm-time gate,
+// which surfaces the precise shortfall). General over ANY resource — covers the
+// common scaling-MP case without hardcoding MP. Reuses resolveCost +
+// checkAffordable (the same single-source the confirm-time gate uses).
+export function affordableTargetCount(actor, costString, requestedCount) {
+  const out = { count: requestedCount, capped: false, missing: null };
+  if (!actor || !(Number(requestedCount) > 1)) return out;
+  const parsed = parseSkillCost(String(costString ?? ""));
+  if (!parsed.tokens.length) return out;
+  const c1 = resolveCost(parsed, { actor, targetCount: 1 });
+  const c2 = resolveCost(parsed, { actor, targetCount: 2 });
+  const scales = [...new Set([...c1.keys(), ...c2.keys()])]
+    .some((r) => (c2.get(r) ?? 0) > (c1.get(r) ?? 0));
+  if (!scales) return out;
+  let affordable = 0;
+  let missing = null;
+  for (let t = 1; t <= requestedCount; t++) {
+    const gate = checkAffordable(actor, resolveCost(parsed, { actor, targetCount: t }));
+    if (gate.ok) affordable = t;
+    else { missing = gate.missing; break; }
+  }
+  if (affordable >= 1 && affordable < requestedCount) {
+    return { count: affordable, capped: true, missing };
+  }
+  return out;
+}

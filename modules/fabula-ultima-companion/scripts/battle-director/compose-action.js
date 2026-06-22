@@ -42,7 +42,7 @@ import { pickItem } from "./item-picker.js";
 import { getLinkedSkillUuid } from "./item-resource.js";
 import { classifyActionIntent } from "./skill-intent.js";
 import { buildSkillResolver, evaluateFormula } from "./skill-formulas.js";
-import { extractTargetCountFromText } from "./state-handlers.js";
+import { resolveTargetPlan } from "./state-handlers.js";
 import { freeActions } from "./free-actions.js";
 import { getNpcAttackItems } from "./actor-shape.js";
 import { applyAttackRangeGate } from "./snapshot.js";
@@ -494,32 +494,26 @@ async function composeAttackNpc({ director, snap, eligible, cancelSentinel }) {
   // Target count. NPC attacks read the same `skill_target` text as skills
   // ("One Creature", "Up to two creatures", "All Enemy", "One Random Creature", etc.).
   const skillTargetText = String(attackItem.system?.props?.skill_target ?? "").trim();
+  // Single-source target plan (mode + count + ×T affordability cap). Random is
+  // resolved GM-side via the roulette picker, so we pre-compose no target.
+  const plan = resolveTargetPlan({
+    actor, skill: attackItem, skillTargetText,
+    eligibleCount: filtered.length, round: director?.dCombat?.round ?? 0,
+  });
   let targetUuids;
-  if (/\brandom\b/i.test(skillTargetText)) {
-    // Random targeting is resolved GM-side via the roulette picker.
-    // Don't pre-compose a target here — TARGET state runs resolveActionTargets.
+  if (plan.mode === "random") {
     targetUuids = [];
-  } else if (/\ball\b/i.test(skillTargetText)) {
+  } else if (plan.mode === "all") {
     targetUuids = filtered.map((e) => e.tokenUuid);
   } else {
-    const targetCountResolver = buildSkillResolver({
-      actor,
-      payload: null,
-      skill: attackItem,
-      round: director?.dCombat?.round ?? 0,
-    });
-    const isUpTo = /up\s+to/i.test(skillTargetText);
-    let count = extractTargetCountFromText(skillTargetText, { isUpTo, resolver: targetCountResolver });
-    count = Math.max(1, Math.min(count, filtered.length));
-    const mode = isUpTo ? "up_to" : "exact";
-
+    if (plan.capNote) ui.notifications?.info(plan.capNote);
     const result = await raceCancel(
       requestTargeting({
         director,
         eligible: filtered,
-        mode,
-        count,
-        titleText: `Pick ${count > 1 ? `up to ${count} targets` : "a target"} for ${snap.name}'s ${attackItem.name}`,
+        mode: plan.mode,
+        count: plan.count,
+        titleText: `Pick ${plan.count > 1 ? `up to ${plan.count} targets` : "a target"} for ${snap.name}'s ${attackItem.name}`,
         externalCancel: cancelSentinel,
       }),
       cancelSentinel,
@@ -702,11 +696,16 @@ export async function resolveTargetsForSource({ director, snap, actor, eligible,
     return { cancelled: true, reason: "no targets" };
   }
 
-  // Random → GM-side roulette (player sends empty; the theatrical roulette
-  // picker runs GM-side). "All" → enter the picker with every eligible target
-  // locked, so the player gets a confirm/cancel pass before committing.
-  if (/\brandom\b/i.test(skillTargetText)) return { cancelled: false, targetUuids: [] };
-  if (/\ball\b/i.test(skillTargetText)) {
+  // Single-source target plan (mode + count + ×T affordability cap), shared with
+  // the GM-side resolveActionTargets. Random → GM-side roulette (player sends
+  // empty). "All" → enter the picker with every eligible target locked, so the
+  // player gets a confirm/cancel pass before committing.
+  const plan = resolveTargetPlan({
+    actor, skill: source, skillTargetText,
+    eligibleCount: targetList.length, round: director?.dCombat?.round ?? 0,
+  });
+  if (plan.mode === "random") return { cancelled: false, targetUuids: [] };
+  if (plan.mode === "all") {
     const r = await raceCancel(
       requestTargeting({
         director, eligible: targetList, mode: "exact", count: targetList.length, lockSelection: true,
@@ -718,20 +717,14 @@ export async function resolveTargetsForSource({ director, snap, actor, eligible,
     return { cancelled: false, targetUuids: [...r.tokenUuids] };
   }
 
-  const targetCountResolver = buildSkillResolver({
-    actor, payload: null, skill: source, round: director?.dCombat?.round ?? 0,
-  });
-  const isUpTo = /up\s+to/i.test(skillTargetText);
-  const count = extractTargetCountFromText(skillTargetText, { isUpTo, resolver: targetCountResolver });
-  const mode = isUpTo ? "up_to" : "exact";
-
+  if (plan.capNote) ui.notifications?.info(plan.capNote);
   const result = await raceCancel(
     requestTargeting({
       director,
       eligible: targetList,
-      mode,
-      count,
-      titleText: `${snap.name}: pick target${count > 1 ? "s" : ""} for ${source.name}`,
+      mode: plan.mode,
+      count: plan.count,
+      titleText: `${snap.name}: pick target${plan.count > 1 ? "s" : ""} for ${source.name}`,
       externalCancel: cancelSentinel,
     }),
     cancelSentinel,

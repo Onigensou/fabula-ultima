@@ -35,7 +35,7 @@ import { ListPicker } from "./list-picker.js";
 import { composeAction, makeCancelToken } from "./compose-action.js";
 import { getInvokeCapability } from "./invoke/invoke-core.js";
 import { buildPseudoWeaponFromNpcAttack } from "./actor-shape.js";
-import { parseSkillCost, resolveCost, checkAffordable, debitCost } from "./skill-cost.js";
+import { parseSkillCost, resolveCost, checkAffordable, debitCost, affordableTargetCount } from "./skill-cost.js";
 // COMPUTE-side damage/accuracy helpers (resolveAccuracyParts, resolveOutgoingDamageParts,
 // isCriticalHit, applyCritDamage, resolveIncomingReduction, buildDamageBonusParts,
 // resolveDamageElementOverride) moved to action-profile.js (single-source COMPUTE).
@@ -1086,6 +1086,76 @@ export function extractTargetCountFromText(text, { isUpTo, resolver }) {
   if (!expr) return 1;
   const n = evaluateFormula(expr, resolver, 1);
   return Math.max(1, Math.floor(Number.isFinite(n) ? n : 1));
+}
+
+// SINGLE-SOURCE target-plan resolution. Parses a `skill_target` string into the
+// picker mode + count, clamps to the eligible pool, and applies the per-target
+// (×T) affordability cap — in ONE place, so every targeting site agrees. This
+// exists because the parse+cap logic was duplicated across THREE call sites
+// (compose-action's `composeAttack` + `resolveTargetsForSource` on the PLAYER's
+// client, and `resolveActionTargets` GM-side); a cross-cutting concern like the
+// affordability cap then has to be added everywhere or it silently misses the
+// path a live cast actually takes. Callers keep their OWN routing (return a
+// bundle / route a picker / send empty for GM-side random) but read the mode +
+// count from here.
+//
+// Returns `{ mode, count, randomize, capped, capNote }`:
+//   mode      — "random" | "all" | "up_to" | "exact". (Self is a disposition
+//               fact the caller handles before calling — not a count parse.)
+//   count     — targets to offer, clamped to the eligible pool (and to the
+//               affordable max for up_to / random-up-to). For "all" = pool size.
+//   randomize — random AND up-to (a variable random count).
+//   capped    — true iff the affordability cap reduced the count.
+//   capNote   — ready-to-toast string when capped (else null).
+//
+// `eligibleCount` = size of the already-filtered eligible pool (Infinity if the
+// caller hasn't built it yet). The affordability cap fires only for the
+// player-choice variable modes; "can't afford even one" is left to the
+// confirm-time gate (which surfaces the precise shortfall).
+export function resolveTargetPlan({ actor, skill, skillTargetText, eligibleCount = Infinity, round = 0 }) {
+  const text = String(skillTargetText ?? "").trim();
+  const resolver = (actor && skill)
+    ? buildSkillResolver({ actor, payload: null, skill, round })
+    : null;
+  const countFrom = (t, isUpTo) => resolver ? extractTargetCountFromText(t, { isUpTo, resolver }) : 1;
+  const poolClamp = (n) => Math.max(1, Number.isFinite(eligibleCount) ? Math.min(n, eligibleCount) : n);
+
+  const isRandom = /\brandom\b/i.test(text);
+  const isAll    = /\ball\b/i.test(text);
+  const isUpTo   = /up\s+to/i.test(text);
+
+  let mode = "exact";
+  let count = 1;
+  let randomize = false;
+  if (isRandom) {
+    mode = "random";
+    const textForCount = text.replace(/\brandom\b/gi, "").replace(/\s+/g, " ").trim();
+    randomize = isUpTo;
+    count = countFrom(textForCount, isUpTo);
+  } else if (isAll) {
+    mode = "all";
+    count = Number.isFinite(eligibleCount) ? Math.max(1, eligibleCount) : 1;
+  } else if (isUpTo) {
+    mode = "up_to";
+    count = countFrom(text, true);
+  } else {
+    count = countFrom(text, false);
+  }
+  if (mode !== "all") count = poolClamp(count);
+
+  // Affordability cap — player-choice variable counts only (up_to / random-up-to).
+  let capped = false;
+  let capNote = null;
+  if ((mode === "up_to" || (mode === "random" && randomize)) && count > 1) {
+    const cap = affordableTargetCount(actor, skill?.system?.props?.cost, count);
+    if (cap.capped) {
+      count = cap.count;
+      capped = true;
+      const resTxt = (cap.missing ?? []).map((m) => m.label).join("/") || "resources";
+      capNote = `${skill?.name ?? "Action"}: only enough ${resTxt} for ${count} target${count === 1 ? "" : "s"} — capped.`;
+    }
+  }
+  return { mode, count, randomize, capped, capNote };
 }
 
 function describeActionForRewind(ar) {
@@ -2314,7 +2384,10 @@ async function resolveActionTargets(director, attackerSnap, opts = {}) {
     }
   }
 
-  // ── Determine picker mode ──────────────────────────────────────────────
+  // ── Determine picker mode (single-source resolveTargetPlan) ─────────────
+  // Self is a disposition fact handled above (isSelf); everything else — mode,
+  // count, randomize, AND the ×T affordability cap — comes from the one shared
+  // plan resolver, identical to the player-side composer (compose-action).
   let pickerMode    = "exact";
   let count         = 1;
   let randomizeCount = false;
@@ -2322,29 +2395,15 @@ async function resolveActionTargets(director, attackerSnap, opts = {}) {
   if (isSelf) {
     pickerMode = "self";
   } else {
-    const resolver = (attackerActor && skill)
-      ? buildSkillResolver({ actor: attackerActor, payload: null, skill, round: director.dCombat?.round ?? 0 })
-      : null;
-    const isRandom    = /\brandom\b/i.test(text);
-    const textForCount = isRandom
-      ? text.replace(/\brandom\b/gi, "").replace(/\s+/g, " ").trim()
-      : text;
-    if (isRandom) {
-      pickerMode = "random";
-      if (/up\s+to/i.test(text)) {
-        randomizeCount = true;
-        count = resolver ? extractTargetCountFromText(textForCount, { isUpTo: true,  resolver }) : 1;
-      } else {
-        count = resolver ? extractTargetCountFromText(textForCount, { isUpTo: false, resolver }) : 1;
-      }
-    } else if (/\ball\b/i.test(text)) {
-      pickerMode = "all";
-    } else if (/up\s+to/i.test(text)) {
-      pickerMode = "up_to";
-      count = resolver ? extractTargetCountFromText(text, { isUpTo: true,  resolver }) : 1;
-    } else {
-      count = resolver ? extractTargetCountFromText(text, { isUpTo: false, resolver }) : 1;
-    }
+    const plan = resolveTargetPlan({
+      actor: attackerActor, skill, skillTargetText: text,
+      eligibleCount: eligibleForPicker.length,
+      round: director.dCombat?.round ?? 0,
+    });
+    pickerMode     = plan.mode;
+    count          = plan.count;
+    randomizeCount = plan.randomize;
+    if (plan.capNote) ui.notifications?.info(plan.capNote);
   }
 
   // ── Guard against empty pool ────────────────────────────────────────────
@@ -2665,6 +2724,29 @@ const Target = {
       // 3) Re-check affordability with the actual target count (×T tokens).
       const parsedCost = parseSkillCost(String(skill.system?.props?.cost ?? ""));
       let costMap = resolveCost(parsedCost, { actor: attackerActor, targetCount: targets.length });
+
+      // 3a) Free-action MP cap — RAW-correct ("total MP cost ≤ N") enforcement.
+      // The picker dims a spell by its MINIMUM (targetCount=1) cost, but a
+      // per-target ("N×T MP") or variable ("up to N MP") spell can slip under the
+      // cap at pick and then exceed it once the real targets are chosen. Re-check
+      // here against the ACTUAL resolved MP — the same generic resolveCost output,
+      // no per-skill logic. Gated on a live free-action grant carrying maxMpCost
+      // (Acceleration); null on a normal turn, so this is a no-op there. Keyed by
+      // snap.actorId exactly as compose-action reads the grant; spell-scoped to
+      // mirror the pick-time cap (compose-action only sets maxMpCost for isSpell).
+      if (isSpellAction) {
+        const { freeActions } = await import("./free-actions.js");
+        const grantCap = freeActions.get(attackerSnap.actorId)?.maxMpCost;
+        if (grantCap != null && Number.isFinite(Number(grantCap))) {
+          const mpSpend = Number(costMap.get("mp") ?? 0) || 0;
+          if (mpSpend > Number(grantCap)) {
+            ui.notifications?.warn(`${skill.name}: total MP cost ${mpSpend} exceeds this free action's ${grantCap} MP limit — choose fewer targets or a cheaper spell.`);
+            director.dispatch({ type: INTENTS.TARGET_BACK });
+            return;
+          }
+        }
+      }
+
       let gate = checkAffordable(attackerActor, costMap);
 
       // ── Short-on-MP reactions (Vismagus + future cost-swap traits) ──
@@ -3847,6 +3929,12 @@ const Confirm = {
             // spells are isCheck:false. ACTION_IS_OFFENSIVE_SPELL gates on this
             // (Magical Artillery: bonus only on offensive spells).
             actionIsCheck: !!ar.isCheck,
+            // Does this action ROLL ACCURACY (an attack OR a check)? The canonical
+            // single-source capability flag (see [[reference-action-canmiss-capability-flag]]
+            // — never re-derive kind==="Attack"||isCheck). ACTION_ROLLS_ACCURACY gates on
+            // this (Adversity: accuracy bonus only on actions that roll a check — attacks
+            // + offensive spells + opposed/Hinder checks, NOT Heal/buff/utility).
+            actionCanMiss: !!ar.canMiss,
             actionName: ar.weapon?.name ?? ar.skillName ?? ar.kind ?? "Action",
             // Acting skill/weapon name for `reaction_source_skill` self-scoping.
             sourceSkillName: ar.skillName ?? ar.weapon?.name ?? null,
@@ -5285,6 +5373,10 @@ const FreeActionWindow = {
       hrAsZero:         req.hrAsZero === true,
       sourceLabel:      req.sourceLabel,
       sourceItemUuid:   req.sourceItemUuid,
+      // Spell-only MP cap from the free_action row (Acceleration → "a spell with
+      // total MP cost ≤ 10"). Threaded so composeSkill can pass it to the picker;
+      // omitting it here is what silently disabled the cap on the free turn.
+      maxMpCost:        req.maxMpCost ?? null,
       // Compose-style restrictions threaded from the free_action row: a Skill/Spell
       // menu allow-list (Counter Pass → only Passes) and a forced target the composed
       // action must hit (the triggering enemy). Both null when unset. composeSkill

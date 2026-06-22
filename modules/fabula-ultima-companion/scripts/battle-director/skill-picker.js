@@ -433,7 +433,11 @@ export async function pickSkill({
   // Free-action MP-cost cap (Acceleration). Dim + block any candidate whose
   // resolved MP cost exceeds the cap. costMap holds the gate cost (string + in-
   // chain consume_resource debits), resolved at the minimum for variable costs.
-  const mpCap = Number(maxMpCost);
+  // ⚠ Guard null/undefined explicitly: `Number(null) === 0`, which is finite, so
+  // a no-cap call (maxMpCost == null — every normal turn) would otherwise stamp a
+  // bogus 0-MP cap on every spell. Only a real number (incl. a string-number row
+  // value) is a cap.
+  const mpCap = maxMpCost == null ? NaN : Number(maxMpCost);
   if (Number.isFinite(mpCap)) {
     for (const c of candidates) {
       const mp = Number(c.costMap?.get?.("mp") ?? 0) || 0;
