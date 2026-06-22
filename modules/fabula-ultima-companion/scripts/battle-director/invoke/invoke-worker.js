@@ -165,7 +165,7 @@ export function patchCardDom(root, newAr, invokeState) {
 
 // ── Main handlers ─────────────────────────────────────────────────────────────
 
-export async function handleInvokeTrait({ director, ar, root, invokeState, prePickedChoice = null }) {
+export async function handleInvokeTrait({ director, ar, root, invokeState, prePickedChoice = null, onSelectionChange = null }) {
   if (invokeState.trait) {
     ui.notifications?.warn("Trait already invoked for this action.");
     return false;
@@ -200,7 +200,7 @@ export async function handleInvokeTrait({ director, ar, root, invokeState, prePi
   }
 
   const tokenUuid = ar.attacker?.tokenUuid ?? null;
-  const choice = prePickedChoice ?? await showTraitHUD({ roll: ar.roll, root, tokenUuid });
+  const choice = prePickedChoice ?? await showTraitHUD({ roll: ar.roll, root, tokenUuid, onSelectionChange });
   if (!choice) return false;
 
   const spend = await payPoint(attacker);
@@ -228,7 +228,7 @@ export async function handleInvokeTrait({ director, ar, root, invokeState, prePi
   return true;
 }
 
-export async function handleInvokeBond({ director, ar, root, invokeState, prePickedBondIndex = null }) {
+export async function handleInvokeBond({ director, ar, root, invokeState, prePickedBondIndex = null, onSelectionChange = null }) {
   if (invokeState.bond) {
     ui.notifications?.warn("Bond already invoked for this action.");
     return false;
@@ -269,7 +269,7 @@ export async function handleInvokeBond({ director, ar, root, invokeState, prePic
     return false;
   }
 
-  const pickedIndex = prePickedBondIndex ?? await showBondHUD({ bonds: viable, attacker, root, ar, tokenUuid: ar.attacker?.tokenUuid ?? null });
+  const pickedIndex = prePickedBondIndex ?? await showBondHUD({ bonds: viable, attacker, root, ar, tokenUuid: ar.attacker?.tokenUuid ?? null, onSelectionChange });
   if (pickedIndex == null) return false;
   const chosen = viable.find((b) => b.index === pickedIndex) ?? viable[0];
 

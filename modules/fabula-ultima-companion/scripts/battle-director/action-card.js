@@ -5174,6 +5174,7 @@ export async function postActionCard({ director, kind, payload }) {
     let invokeAwait = null;
     let hudOpenAwait = null;
     let hudCloseAwait = null;
+    let hudSelectAwait = null;
     const abortPendingAwaits = () => {
       try { confirmAwait?.abort?.("postActionCard-finish"); } catch {}
       try { cancelAwait?.abort?.("postActionCard-finish"); } catch {}
@@ -5181,6 +5182,7 @@ export async function postActionCard({ director, kind, payload }) {
       try { invokeAwait?.abort?.("postActionCard-finish"); } catch {}
       try { hudOpenAwait?.abort?.("postActionCard-finish"); } catch {}
       try { hudCloseAwait?.abort?.("postActionCard-finish"); } catch {}
+      try { hudSelectAwait?.abort?.("postActionCard-finish"); } catch {}
     };
     // Push the post-invoke actionResult to EVERY other active client so all
     // mirror cards (acting owner, spectator players, secondary GMs) reflect
@@ -5273,6 +5275,23 @@ export async function postActionCard({ director, kind, payload }) {
       if (_specHudShownLocally) {
         _specHudShownLocally = false;
         import("./invoke/invoke-hud.js").then((hud) => hud.dismissSpectator({ traitOutcome, cancelled, expectKind: type })).catch(() => {});
+      }
+    };
+
+    // Live-selection echo (Phase 2) — relay the actor's in-progress die/bond
+    // selection to every other client's read-only HUD via in-place MENU_PATCH
+    // (uncached, no replay). When the GM is a spectator (a player is acting) it
+    // also applies the selection to its own local panel.
+    const broadcastSpectatorSelect = (type, sel, excludeUserId) => {
+      const patch = { kind: "invoke-hud-spectator-select", type, sel };
+      for (const u of (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id && u.id !== excludeUserId)) {
+        try { director.intentChannel?.broadcastMenuPatch({ targetUserId: u.id, patch }); } catch {}
+      }
+      if (_specHudShownLocally && excludeUserId && excludeUserId !== game.user?.id) {
+        import("./invoke/invoke-hud.js").then((hud) => {
+          if (type === "trait") hud.applyTraitSpectatorSelection(sel ?? {});
+          else hud.applyBondSpectatorSelection(sel ?? {});
+        }).catch(() => {});
       }
     };
 
@@ -5395,8 +5414,19 @@ export async function postActionCard({ director, kind, payload }) {
             armHudCloseAwait();
           }).catch((e) => { if (!resolved) log(`postActionCard: INVOKE_HUD_CLOSE await aborted (${e?.message})`); });
         };
+        // Live-selection echo relay — high-frequency, re-armed per event.
+        const armHudSelectAwait = () => {
+          if (resolved) return;
+          hudSelectAwait = director.intentChannel.awaitIntent(INTENTS.INVOKE_HUD_SELECT, { timeoutMs: 30 * 60 * 1000 });
+          hudSelectAwait.then((intent) => {
+            const t = intent?.body?.type;
+            if (t === "trait" || t === "bond") broadcastSpectatorSelect(t, intent?.body?.sel ?? null, intent.fromUserId ?? null);
+            armHudSelectAwait();
+          }).catch((e) => { if (!resolved) log(`postActionCard: INVOKE_HUD_SELECT await aborted (${e?.message})`); });
+        };
         armHudOpenAwait();
         armHudCloseAwait();
+        armHudSelectAwait();
       } catch (e) { warn("postActionCard: remote intent setup threw", e); }
     }
 
@@ -5446,11 +5476,13 @@ export async function postActionCard({ director, kind, payload }) {
             // else (exclude self; the GM gets the real interactive HUD below).
             // Fire-and-forget: the GM's own HUD shouldn't wait on the broadcast.
             openSpectatorHud(type, game.user?.id);
+            // Echo the GM's own die/bond selection to the table as they pick.
+            const onSel = (sel) => broadcastSpectatorSelect(type, sel, game.user?.id);
             let ok = false;
             if (type === "trait") {
-              ok = await worker.handleInvokeTrait({ director, ar, root, invokeState });
+              ok = await worker.handleInvokeTrait({ director, ar, root, invokeState, onSelectionChange: onSel });
             } else {
-              ok = await worker.handleInvokeBond({ director, ar, root, invokeState });
+              ok = await worker.handleInvokeBond({ director, ar, root, invokeState, onSelectionChange: onSel });
             }
             // GM invoked on their own card — propagate the rerolled result to
             // all mirror cards, then tear down the spectator HUD (synced cue on
@@ -5904,6 +5936,17 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
     import("./invoke/invoke-hud.js").then((hud) => hud.dismissSpectator({ traitOutcome, cancelled, expectKind })).catch(() => {});
   });
 
+  // Live-selection echo (Phase 2) — in-place patch of the read-only spectator
+  // HUD as the actor toggles dice / navigates bonds. No-ops if no spectator
+  // HUD (of the matching kind) is up on this client.
+  const offSpectatorSelect = channel.onMenuPatch((patch) => {
+    if (!patch || patch.kind !== "invoke-hud-spectator-select") return;
+    import("./invoke/invoke-hud.js").then((hud) => {
+      if (patch.type === "trait") hud.applyTraitSpectatorSelection(patch.sel ?? {});
+      else hud.applyBondSpectatorSelection(patch.sel ?? {});
+    }).catch(() => {});
+  });
+
   // Lightweight patch handler for pill state changes broadcast from
   // recordPillDecision (GM side). Applies the same DOM transformation
   // — pending → resolved + status chip — to the local mirror so the
@@ -6150,6 +6193,7 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
                   roll: playerAr.roll,
                   root: wrapper,
                   tokenUuid: playerAr.attacker?.tokenUuid ?? null,
+                  onSelectionChange: (sel) => channel.emit({ type: INTENTS.INVOKE_HUD_SELECT, body: { type: "trait", sel }, combatId: menuSpec.combatId }),
                 });
                 if (!choice) {
                   // Dismissed without committing → close the table's mirror.
@@ -6188,6 +6232,7 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
                   root: wrapper,
                   ar: playerAr,
                   tokenUuid: playerAr.attacker?.tokenUuid ?? null,
+                  onSelectionChange: (sel) => channel.emit({ type: INTENTS.INVOKE_HUD_SELECT, body: { type: "bond", sel }, combatId: menuSpec.combatId }),
                 });
                 if (bondIndex == null) {
                   channel.emit({ type: INTENTS.INVOKE_HUD_CLOSE, body: { type: "bond" }, combatId: menuSpec.combatId });
@@ -6515,5 +6560,6 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
     try { offInvokeUpdate?.(); } catch {}
     try { offSpectatorOpen?.(); } catch {}
     try { offSpectatorClose?.(); } catch {}
+    try { offSpectatorSelect?.(); } catch {}
   };
 }

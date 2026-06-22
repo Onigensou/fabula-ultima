@@ -53,6 +53,13 @@ export const INTENTS = Object.freeze({
   // spectator HUD on all other clients. Body: { type: "trait"|"bond" }
   INVOKE_HUD_CLOSE: "INVOKE_HUD_CLOSE",
 
+  // External — high-frequency selection echo while the actor navigates an open
+  // invoke HUD (Phase 2 live-selection): die toggles (trait) or row focus
+  // (bond), BEFORE committing. The GM relays it as an "invoke-hud-spectator-
+  // select" MENU_PATCH (uncached, in-place) so spectators watch the choice
+  // being made. Body: { type: "trait", sel: { a, b } } | { type: "bond", sel: { idx } }
+  INVOKE_HUD_SELECT: "INVOKE_HUD_SELECT",
+
   // External — sent by Reaction UIs (pill on action card OR token-
   // anchored menu) when a player owner clicks Apply / Skip / Pass /
   // a specific reaction blade. Two body shapes share this intent type:

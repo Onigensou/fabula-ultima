@@ -649,7 +649,7 @@ const iconFor = (attr) =>
   ATTR_ICONS[String(attr || "").toUpperCase()] ??
   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/dice.png";
 
-export function showTraitHUD({ roll, root, tokenUuid = null }) {
+export function showTraitHUD({ roll, root, tokenUuid = null, onSelectionChange = null }) {
   ensureStyles();
   if (_active) {
     const old = _active;
@@ -701,6 +701,8 @@ export function showTraitHUD({ roll, root, tokenUuid = null }) {
       dieEl.setAttribute("aria-checked", String(next));
       _playHud(next ? SFX.dieSelect : SFX.dieDeselect, 0.7);
       updateConfirm();
+      // Live-selection echo — let spectators watch the dice light up.
+      try { onSelectionChange?.({ a: dieA.classList.contains("on"), b: dieB.classList.contains("on") }); } catch {}
     };
 
     for (const [dieEl, peer] of [[dieA, dieB], [dieB, dieA]]) {
@@ -764,7 +766,7 @@ function _bondRowHTML(bond, i, selIdx, actor) {
   </div>`;
 }
 
-export async function showBondHUD({ bonds, attacker, root, ar, tokenUuid = null }) {
+export async function showBondHUD({ bonds, attacker, root, ar, tokenUuid = null, onSelectionChange = null }) {
   const viable = bonds.filter((b) => (b?.bonus || 0) > 0);
   if (!viable.length) return null;
   if (viable.length === 1) return viable[0].index;
@@ -818,15 +820,21 @@ export async function showBondHUD({ bonds, attacker, root, ar, tokenUuid = null 
           cancelRestore();
           playHoverSfx();
           if (ar && root) _previewBondOnCard(root, ar, viable[i].bonus);
+          // Live-selection echo — spectator highlight follows the actor's cursor.
+          try { onSelectionChange?.({ idx: i }); } catch {}
         });
         row.addEventListener("mouseleave", () => { scheduleRestore(); });
-        row.addEventListener("click", () => { selectedIdx = i; refresh(); });
+        row.addEventListener("click", () => {
+          selectedIdx = i; refresh();
+          try { onSelectionChange?.({ idx: i }); } catch {}
+        });
         row.addEventListener("keydown", (ev) => {
           if (ev.key === "ArrowUp" || ev.key === "ArrowDown") {
             ev.preventDefault();
             selectedIdx = Math.max(0, Math.min(viable.length - 1, selectedIdx + (ev.key === "ArrowUp" ? -1 : 1)));
             refresh();
             list.querySelector(`[data-bidx="${selectedIdx}"]`)?.focus();
+            try { onSelectionChange?.({ idx: selectedIdx }); } catch {}
           }
           if (ev.key === " " || ev.key === "Enter") { ev.preventDefault(); row.click(); }
         });
@@ -880,12 +888,12 @@ export function showTraitSpectator({ roll, actorName, root, tokenUuid = null }) 
     <div class="fud-ih-title">${who} is rerolling…</div>
     <div class="fud-ih-spectate-tag"><span class="dot"></span>Spectating</div>
     <div class="fud-ih-dice-grid">
-      <div class="fud-ih-die">
+      <div class="fud-ih-die" data-which="A">
         <img class="fud-ih-die-icon" src="${iconFor(A1)}" alt="${esc(A1)}">
         <span class="fud-ih-die-label">d${esc(dA)}</span>
         <span class="fud-ih-die-val">${esc(rA)}</span>
       </div>
-      <div class="fud-ih-die">
+      <div class="fud-ih-die" data-which="B">
         <img class="fud-ih-die-icon" src="${iconFor(A2)}" alt="${esc(A2)}">
         <span class="fud-ih-die-label">d${esc(dB)}</span>
         <span class="fud-ih-die-val">${esc(rB)}</span>
@@ -898,7 +906,7 @@ export function showTraitSpectator({ roll, actorName, root, tokenUuid = null }) 
   el.classList.add("is-spectating");
   _spawnDimmer();
   _spawnAura(tokenUuid);
-  _active = { type: "spectator", kind: "trait", el };
+  _active = { type: "spectator", kind: "trait", el, sel: { a: false, b: false } };
   return el;
 }
 
@@ -910,9 +918,9 @@ export function showBondSpectator({ bonds, actorName, root, tokenUuid = null }) 
   _playHud(SFX.bond, 0.3);
 
   const who  = esc(actorName || "The attacker");
-  const rows = viable.map((b) => {
+  const rows = viable.map((b, i) => {
     const hearts = (b.hearts ?? []).map(_svgHeart).join("");
-    return `<div class="fud-ih-bond-row">
+    return `<div class="fud-ih-bond-row${i === 0 ? " sel" : ""}" data-bidx="${i}">
       <span class="fud-ih-bond-name">${esc(b.name)}</span>
       <span class="fud-ih-bond-hearts">${hearts}</span>
       <span class="fud-ih-bond-bonus">+${b.bonus}</span>
@@ -931,8 +939,36 @@ export function showBondSpectator({ bonds, actorName, root, tokenUuid = null }) 
   el.classList.add("is-spectating");
   _spawnDimmer();
   _spawnAura(tokenUuid);
-  _active = { type: "spectator", kind: "bond", el };
+  _active = { type: "spectator", kind: "bond", el, sel: { idx: 0 } };
   return el;
+}
+
+// ── Live-selection appliers (Phase 2) ──────────────────────────────────────────
+// Reflect the actor's in-progress selection onto this client's read-only
+// spectator HUD. No-op unless a spectator HUD of the matching kind is up.
+
+export function applyTraitSpectatorSelection({ a = false, b = false } = {}) {
+  if (_active?.type !== "spectator" || _active.kind !== "trait") return;
+  const el = _active.el;
+  const prev = _active.sel ?? { a: false, b: false };
+  const dieA = el.querySelector('.fud-ih-die[data-which="A"]');
+  const dieB = el.querySelector('.fud-ih-die[data-which="B"]');
+  if (dieA) dieA.classList.toggle("on", !!a);
+  if (dieB) dieB.classList.toggle("on", !!b);
+  // Tick cue when a die's state flips, matching the actor's own select/deselect.
+  if (a !== prev.a) _playHud(a ? SFX.dieSelect : SFX.dieDeselect, 0.5);
+  if (b !== prev.b) _playHud(b ? SFX.dieSelect : SFX.dieDeselect, 0.5);
+  _active.sel = { a: !!a, b: !!b };
+}
+
+export function applyBondSpectatorSelection({ idx = 0 } = {}) {
+  if (_active?.type !== "spectator" || _active.kind !== "bond") return;
+  const el = _active.el;
+  const prev = _active.sel?.idx ?? -1;
+  const rows = el.querySelectorAll(".fud-ih-bond-row");
+  rows.forEach((row, i) => row.classList.toggle("sel", i === idx));
+  if (idx !== prev) playHoverSfx();
+  _active.sel = { idx };
 }
 
 // Tear down the spectator HUD. On a committed trait reroll, pass
