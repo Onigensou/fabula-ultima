@@ -36,6 +36,16 @@
       "defense_target_type": "def",
       "description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points.</strong></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>The amount of Hit Points recovers increase to <strong>50</strong></p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>The amount of Hit Points recovers increase to <strong>60</strong></p>",
       "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "effect_kind": "grant",
+          "effect_label": "heal_hp",
+          "grant_amount": "40",
+          "grant_resource": "hp",
+          "target_ref": "action_targets"
+        }
+      },
       "heroic_requirement": "",
       "ignore_hr": false,
       "isCheck": false,
@@ -47,6 +57,7 @@
       "level": "1",
       "max_level": "1",
       "name": "Heal",
+      "on_activate_effect_ref": "heal_hp",
       "optional_params": {},
       "reaction_config_table": {},
       "rolled_atr1": "-",

@@ -10,120 +10,242 @@
   },
   "effects": [
     {
-      "_id": "lKI4ymlwKRx46PhG",
+      "_id": "L04zV2Vagp8Q2m9n",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1781988474372,
+        "createdTime": 1782165051705,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "bonus_ins",
+          "mode": 2,
+          "priority": 2,
+          "value": "-2"
+        }
+      ],
+      "description": "<p>Decrease <strong>【INS】 </strong>by one stage</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "core": {
+          "overlay": false
+        },
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "nGDTBPQ9omhKG3rM",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.nGDTBPQ9omhKG3rM"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-dazed",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "effectmacro": {
+          "onCreate": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isDazed\n// Uses the Effect Macro context's `actor` (owner of the effect). Falls back\n// to the first selected token's actor only if no effect context is present.\n\n(async () => {\n  const PATH = \"system.props.isDazed\";\n\n  // Prefer the effect owner `actor` (provided by Effect Macro).\n  // Fallback to selected token's actor if run manually.\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return; // silent: no actor context\n\n  // Toggle: read current (default false if missing), then invert.\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  const next = !current;\n\n  await effectActor.update({ [PATH]: next });\n})();\n"
+          },
+          "onDelete": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isDazed\n// Uses the Effect Macro context's `actor` (owner of the effect). Falls back\n// to the first selected token's actor only if no effect context is present.\n\n(async () => {\n  const PATH = \"system.props.isDazed\";\n\n  // Prefer the effect owner `actor` (provided by Effect Macro).\n  // Fallback to selected token's actor if run manually.\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return; // silent: no actor context\n\n  // Toggle: read current (default false if missing), then invert.\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  const next = !current;\n\n  await effectActor.update({ [PATH]: next });\n})();\n"
+          },
+          "onDisable": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isDazed\n// Uses the Effect Macro context's `actor` (owner of the effect). Falls back\n// to the first selected token's actor only if no effect context is present.\n\n(async () => {\n  const PATH = \"system.props.isDazed\";\n\n  // Prefer the effect owner `actor` (provided by Effect Macro).\n  // Fallback to selected token's actor if run manually.\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return; // silent: no actor context\n\n  // Toggle: read current (default false if missing), then invert.\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  const next = !current;\n\n  await effectActor.update({ [PATH]: next });\n})();\n"
+          },
+          "onEnable": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isDazed\n// Uses the Effect Macro context's `actor` (owner of the effect). Falls back\n// to the first selected token's actor only if no effect context is present.\n\n(async () => {\n  const PATH = \"system.props.isDazed\";\n\n  // Prefer the effect owner `actor` (provided by Effect Macro).\n  // Fallback to selected token's actor if run manually.\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return; // silent: no actor context\n\n  // Toggle: read current (default false if missing), then invert.\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  const next = !current;\n\n  await effectActor.update({ [PATH]: next });\n})();\n"
+          },
+          "onToggle": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isDazed\n// Uses the Effect Macro context's `actor` (owner of the effect). Falls back\n// to the first selected token's actor only if no effect context is present.\n\n(async () => {\n  const PATH = \"system.props.isDazed\";\n\n  // Prefer the effect owner `actor` (provided by Effect Macro).\n  // Fallback to selected token's actor if run manually.\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return; // silent: no actor context\n\n  // Toggle: read current (default false if missing), then invert.\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  const next = !current;\n\n  await effectActor.update({ [PATH]: next });\n})();\n"
+          }
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "dazed",
+          "charges": 3,
+          "chargesMax": 3,
+          "lifetimeMode": "target_turn_end"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/MAGICDEFENSE%20DOWN.png",
+      "name": "Dazed",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "wA1E8GxiXmzz80XQ"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "ROZUuPXzcr4UFTU0",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782165051705,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "bonus_wlp",
+          "mode": 2,
+          "priority": 2,
+          "value": "-2"
+        }
+      ],
+      "description": "<p>Decrease <strong>【WLP】</strong> by one stage</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "core": {
+          "overlay": false
+        },
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "dnzpUdhxjd6H3ktJ",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.dnzpUdhxjd6H3ktJ"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-shaken",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "effectmacro": {
+          "onCreate": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isShaken\n(async () => {\n  const PATH = \"system.props.isShaken\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+          },
+          "onDelete": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isShaken\n(async () => {\n  const PATH = \"system.props.isShaken\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+          },
+          "onDisable": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isShaken\n(async () => {\n  const PATH = \"system.props.isShaken\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+          },
+          "onEnable": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isShaken\n(async () => {\n  const PATH = \"system.props.isShaken\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+          },
+          "onToggle": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isShaken\n(async () => {\n  const PATH = \"system.props.isShaken\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+          }
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "shaken",
+          "charges": 3,
+          "chargesMax": 3,
+          "lifetimeMode": "target_turn_end"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/MAGIC%20ATTACK%20DOWN.png",
+      "name": "Shaken",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "6YW8glLMYbwj6ZhC"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "yoCkf2DdiKd2zCkE",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782164483903,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
       "changes": [],
-      "description": "<p><em>Heart of Darkness:</em> armed for this scene.</p>",
+      "description": "<p><em>Heart of Darkness:</em> a temporary Bond of hatred.</p>",
       "disabled": false,
       "duration": {
         "combat": null,
         "rounds": null,
         "seconds": null,
         "startRound": null,
-        "startTime": null,
+        "startTime": 298800,
         "startTurn": null,
         "turns": null
       },
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "kID7EdEC69wi3N7A",
+          "originalId": "fJM23xvDkbkUgQ3l",
           "originalParentId": "EGYilCNAGvl2BldF",
-          "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF.ActiveEffect.kID7EdEC69wi3N7A"
+          "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF.ActiveEffect.fJM23xvDkbkUgQ3l"
         },
         "fabula-ultima-companion": {
-          "category": "buff",
-          "chargeKey": "hod_ready",
-          "charges": 1,
-          "chargesMax": 1,
+          "bondAE": {
+            "bond_name": "Hellhound",
+            "emotions": [
+              "hatred"
+            ]
+          },
           "directorAppliedBy": {
-            "appliedAtRound": 0,
-            "effectLabel": "hod_refresh",
+            "appliedAtRound": 3,
+            "effectLabel": "hod_bond",
             "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.XQZs3GqmIm32ZlsQ",
             "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF",
             "turnsRemaining": null
           },
-          "directorPermanent": true
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "icons/magic/unholy/silhouette-evil-horned-giant.webp",
-      "name": "Heart of Darkness Ready",
-      "origin": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF",
-      "sort": 0,
-      "statuses": [
-        "fud-heart-of-darkness-ready"
-      ],
-      "system": {},
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "M8BbdNyUkXBPXFbg",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1782092604107,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [
-        {
-          "key": "override_damage_type",
-          "mode": 5,
-          "priority": 20,
-          "value": "Fire"
-        }
-      ],
-      "description": "<p><em>Elemental Weapon:</em> the weapon now deals Fire damage.</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": 298800,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "YrxdDwKWPKzALeUj",
-          "originalParentId": "TPnGoyaq70WSBzmj",
-          "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.TPnGoyaq70WSBzmj.ActiveEffect.YrxdDwKWPKzALeUj"
-        },
-        "fabula-ultima-companion": {
-          "aeFamily": "elemental-weapon",
-          "directorAppliedBy": {
-            "appliedAtRound": 21,
-            "effectLabel": "ew_ae_fire",
-            "lifetimeMode": "on_activation",
-            "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.XQZs3GqmIm32ZlsQ",
-            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.TPnGoyaq70WSBzmj",
-            "turnsRemaining": null
-          },
-          "lifetimeMode": "on_activation",
           "tags": [
-            "buff"
+            "debuff"
           ]
         },
         "statuscounter": {
@@ -135,91 +257,14 @@
           "visible": false
         }
       },
-      "img": "icons/magic/lightning/bolt-strike-blue.webp",
-      "name": "Elemental Weapon (Fire)",
-      "origin": "Actor.dafTLBUscCDNgq8H.Item.TPnGoyaq70WSBzmj",
+      "img": "icons/magic/death/skull-energy-light-purple.webp",
+      "name": "Bond of Hatred (Hellhound)",
+      "origin": null,
       "sort": 0,
       "statuses": [
-        "fud-elemental-weapon-fire"
+        "fud-bond-hatred"
       ],
       "system": {},
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "u9gZxpy8dSWLo6dG",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1782092576203,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [
-        {
-          "key": "affinity_6",
-          "mode": 5,
-          "priority": 3,
-          "value": "aeAffinityFloor(\"RS\")"
-        }
-      ],
-      "description": "",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": 298800,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "2l83PWjTsDT5Mbjd",
-          "originalParentId": "lWzQBQkKvZVg6mRL",
-          "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.lWzQBQkKvZVg6mRL.ActiveEffect.2l83PWjTsDT5Mbjd"
-        },
-        "fabula-ultima-companion": {
-          "aeFamily": "elemental-shroud",
-          "directorAppliedBy": {
-            "appliedAtRound": 19,
-            "effectLabel": "shroud_pick:Fire",
-            "lifetimeMode": "on_activation",
-            "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.XQZs3GqmIm32ZlsQ",
-            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.lWzQBQkKvZVg6mRL",
-            "turnsRemaining": null
-          },
-          "lifetimeMode": "on_activation",
-          "tags": [
-            "buff"
-          ]
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "icons/magic/fire/barrier-wall-flame-ring-yellow.webp",
-      "name": "Elemental Shroud (Fire)",
-      "origin": "Actor.dafTLBUscCDNgq8H.Item.lWzQBQkKvZVg6mRL",
-      "sort": 0,
-      "statuses": [
-        "fud-elemental-shroud-fire"
-      ],
-      "system": {
-        "tags": [
-          "buff"
-        ]
-      },
       "tint": "#ffffff",
       "transfer": false,
       "type": "base"
@@ -1423,11 +1468,11 @@
       },
       "effects": [
         {
-          "_id": "HZsI7oFwUG7h57NQ",
+          "_id": "fJM23xvDkbkUgQ3l",
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1781961543611,
+            "createdTime": 1782164384017,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -1447,9 +1492,9 @@
           "flags": {
             "custom-system-builder": {
               "isFromTemplate": false,
-              "originalId": "HZsI7oFwUG7h57NQ",
+              "originalId": "fJM23xvDkbkUgQ3l",
               "originalParentId": "EGYilCNAGvl2BldF",
-              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF.ActiveEffect.HZsI7oFwUG7h57NQ"
+              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF.ActiveEffect.fJM23xvDkbkUgQ3l"
             },
             "fabula-ultima-companion": {
               "bondAE": {
@@ -1483,11 +1528,11 @@
           "type": "base"
         },
         {
-          "_id": "kID7EdEC69wi3N7A",
+          "_id": "TQINaXFTRwWZBJvx",
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1781961543611,
+            "createdTime": 1782164384017,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -1507,9 +1552,9 @@
           "flags": {
             "custom-system-builder": {
               "isFromTemplate": false,
-              "originalId": "kID7EdEC69wi3N7A",
+              "originalId": "TQINaXFTRwWZBJvx",
               "originalParentId": "EGYilCNAGvl2BldF",
-              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF.ActiveEffect.kID7EdEC69wi3N7A"
+              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF.ActiveEffect.TQINaXFTRwWZBJvx"
             },
             "fabula-ultima-companion": {
               "category": "buff",
@@ -1588,24 +1633,21 @@
               "auto_confirm_when_obvious": false,
               "candidate_source": "combat",
               "category": "",
-              "count": "1",
+              "count": 1,
               "effect_kind": "targeting",
               "effect_label": "hod_pick",
               "exclude_self": true,
               "iteration_mode": "together",
               "mode": "exact",
               "skip_when_passive": false,
-              "target_filter": "SOURCE_BONDED_TO_ME == 0",
-              "target_prompt": ""
+              "target_filter": "SOURCE_HATRED_BOND_TO_ME == 0"
             },
             "3": {
               "$deleted": false,
               "ae_template_ref": "Bond of Hatred",
               "bond_emotion": "hatred",
-              "effect_kind": "grant",
+              "effect_kind": "create_bond",
               "effect_label": "hod_bond",
-              "grant_amount": "",
-              "grant_resource": "",
               "target_ref": "hod_pick"
             },
             "4": {
@@ -1638,30 +1680,18 @@
           "reaction_config_table": {
             "0": {
               "$deleted": false,
-              "condition_formula": "",
-              "reaction_action_intent": "",
-              "reaction_damage_source": "",
-              "reaction_debuff_count_min": "",
-              "reaction_debuff_count_target": "",
               "reaction_effect_ref": "hod_use",
-              "reaction_isPassive": false,
-              "reaction_ownership": "",
               "reaction_passive_mode": "ask",
               "reaction_source": "self",
               "reaction_status_filter": "Crisis",
-              "reaction_subject_kind": "",
-              "reaction_trigger": "creature_status_applied",
-              "requires_skill": ""
+              "reaction_trigger": "creature_status_applied"
             },
             "1": {
               "$deleted": false,
-              "condition_formula": "",
               "reaction_effect_ref": "hod_refresh",
-              "reaction_isPassive": false,
               "reaction_passive_mode": "force",
               "reaction_source": "",
-              "reaction_trigger": "conflict_start",
-              "requires_skill": ""
+              "reaction_trigger": "conflict_start"
             }
           },
           "rolled_atr1": "-",
@@ -3605,7 +3635,7 @@
               "effect_kind": "grant",
               "effect_label": "drain_recover",
               "from_resource": "",
-              "grant_amount": "ceil(MP_DEALT / 2)",
+              "grant_amount": "MP_DEALT / 2",
               "grant_operation": "",
               "grant_resource": "mp",
               "grant_round": "",
@@ -3659,7 +3689,7 @@
           "pre_activate_effect_ref": "",
           "reaction_config_table": {},
           "recipe": "drain",
-          "recipe_amount": "ceil(MP_DEALT / 2)",
+          "recipe_amount": "MP_DEALT / 2",
           "recipe_resource": "mp",
           "recipe_target": "self",
           "rolled_atr1": "INS",
@@ -4945,7 +4975,7 @@
           "reaction_config_table": {
             "0": {
               "$deleted": false,
-              "condition_formula": "HAS_ARCANE_WEAPON == 1 && ACTION_IS_SPELL == 1",
+              "condition_formula": "HAS_ARCANE_WEAPON == 1 && ACTION_IS_OFFENSIVE_SPELL == 1",
               "reaction_action_kind": "Attack,Spell,Skill",
               "reaction_damage_amount": "",
               "reaction_damage_type": "",
@@ -5966,7 +5996,7 @@
           "reaction_config_table": {
             "0": {
               "$deleted": false,
-              "condition_formula": "STATUS_COUNT > 0",
+              "condition_formula": "STATUS_COUNT > 0 && ACTION_ROLLS_ACCURACY == 1",
               "reaction_action_intent": "",
               "reaction_action_kind": "Attack,Spell,Skill",
               "reaction_action_target": "",
@@ -6229,7 +6259,16 @@
           "description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points</strong>.</p><hr><p><strong>Skill Enhancement Lv. 20</strong> — The amount of Hit Points recovered increases to <strong>50</strong>.</p><p><strong>Skill Enhancement Lv. 40</strong> — The amount of Hit Points recovered increases to <strong>60</strong>.</p>",
           "details_roller": "Show",
           "duration": "-",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "effect_kind": "grant",
+              "effect_label": "heal_hp",
+              "grant_amount": "40",
+              "grant_resource": "hp",
+              "target_ref": "action_targets"
+            }
+          },
           "heroic_requirement": "",
           "id": "Wtcdd42MQHwsOsSe",
           "ignore_hr": false,
@@ -6243,7 +6282,7 @@
           "level": "1",
           "max_level": "1",
           "name": "Heal",
-          "on_activate_effect_ref": "",
+          "on_activate_effect_ref": "heal_hp",
           "optional_params": {},
           "reaction_config_table": {},
           "reaction_effect_table": {},
@@ -7071,12 +7110,12 @@
       "affinity_1": "NA",
       "affinity_2": "NA",
       "affinity_3": "NA",
-      "affinity_4": "NA",
+      "affinity_4": "RS",
       "affinity_5": "NA",
       "affinity_6": "NA",
       "affinity_7": "NA",
       "affinity_8": "NA",
-      "affinity_9": "NA",
+      "affinity_9": "RS",
       "animation_table": {},
       "anomaly_status": 0,
       "arcane_ef": "100",
@@ -7091,7 +7130,7 @@
       "backstory": "<p>เด็กสาวธรรมดาที่ถูกลักพาตัวไปโดยองค์กรชั่วร้ายซึ่งได้ทำการทดลองหวังว่าจะให้เธอได้กลายเป็นร่างทรงของเทพีแห่งราตรี แต่การทดลองถูกขัดขวางลงในขั้นตอนสุดท้ายโดยกลุ่มคนที่บุกมาช่วยทำให้การเป็นภาชนะไม่สมบูรณ์ ชิ้นส่วนของเทพีแห่งราตรี Frenio ติดอยู่ในร่าง Hina กลายเป็นคนสองบุคลิก หลังจากเหตุการณ์นั้นมาก็เริ่มมีอาการมองเห็นทางแยกของอนาคตเป็นพักๆ จึงใช้มันออกเดินทางช่วยเหลือผู้คน รวมไปถึงหาวิธีการแยกเทพีแห่งราตรีออกจากตัวเองด้วย</p>",
       "bane_status": 0,
       "base_defense": 13,
-      "base_magic_defense": 12,
+      "base_magic_defense": 10,
       "battle_facing_direction": "left",
       "berserk_status": 0,
       "bleed_status": 0,
@@ -7104,13 +7143,13 @@
       "bond_6": "",
       "bond_temp": "Training Dummy C",
       "bonus_defense": 0,
-      "bonus_dex": 0,
-      "bonus_hp": 3588,
-      "bonus_ins": 0,
+      "bonus_dex": -2,
+      "bonus_hp": 3764,
+      "bonus_ins": -2,
       "bonus_magic_defense": 0,
-      "bonus_mig": 0,
+      "bonus_mig": -2,
       "bonus_mp": 0,
-      "bonus_wlp": 0,
+      "bonus_wlp": -2,
       "bow_ef": "100",
       "brawling_ef": "100",
       "burn_status": 0,
@@ -7437,9 +7476,9 @@
       "critical_damage_bonus": 0,
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
-      "current_hp": "95",
+      "current_hp": 86,
       "current_ip": "6",
-      "current_mp": 60,
+      "current_mp": 20,
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/hina_Cut-in002.png",
       "cut_in_fumble": "",
@@ -7521,7 +7560,7 @@
       "delicacy_9_ingredient_2": "",
       "despair_status": 0,
       "dex_base": "6",
-      "dex_current": 6,
+      "dex_current": 4,
       "disarmed_status": 0,
       "doom_status": 0,
       "draw_card": "Draw",
@@ -7594,7 +7633,7 @@
       "img": "https://assets.forge-vtt.com/5fad32adc219a4c5001cb5ea/Wildcard%20token/hina/h1.png",
       "init_penalty": "0",
       "ins_base": "12",
-      "ins_current": 12,
+      "ins_current": 10,
       "inventory_label": "💼 Inventory",
       "inventory_list": {
         "0": {
@@ -7609,7 +7648,7 @@
       "isAwake": false,
       "isBounce": false,
       "isClarity": false,
-      "isDazed": false,
+      "isDazed": true,
       "isEnergized": false,
       "isEnraged": false,
       "isFloat": false,
@@ -7617,7 +7656,7 @@
       "isFocus": false,
       "isGuest": false,
       "isPoisoned": false,
-      "isShaken": false,
+      "isShaken": true,
       "isSlow": false,
       "isStrong": false,
       "isSwift": false,
@@ -8265,7 +8304,7 @@
       "level": "30",
       "lifesteal_percentage": 0,
       "lifesteal_value": 0,
-      "magic_defense": 12,
+      "magic_defense": 10,
       "magic_defense_mod": "0",
       "main_attrib_1": "INS",
       "main_attrib_2": "WLP",
@@ -8297,7 +8336,7 @@
       },
       "memory": "Memories",
       "mig_base": "6",
-      "mig_current": 6,
+      "mig_current": 4,
       "minimum_critical_dice": 6,
       "name": "Hina",
       "normal_spell_list": {
@@ -10459,7 +10498,7 @@
       "wet_status": 0,
       "wither_status": 0,
       "wlp_base": "10",
-      "wlp_current": 10,
+      "wlp_current": 8,
       "your_class_name": "Night Guidance",
       "zenit": "6516",
       "zero_label": "Zero Power",

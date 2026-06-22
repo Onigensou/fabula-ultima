@@ -61,7 +61,7 @@
       "reaction_config_table": {
         "0": {
           "$deleted": false,
-          "condition_formula": "HAS_ARCANE_WEAPON == 1 && ACTION_IS_SPELL == 1",
+          "condition_formula": "HAS_ARCANE_WEAPON == 1 && ACTION_IS_OFFENSIVE_SPELL == 1",
           "reaction_action_kind": "Attack,Spell,Skill",
           "reaction_damage_amount": "",
           "reaction_damage_type": "",

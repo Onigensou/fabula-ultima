@@ -67,7 +67,7 @@
       "reaction_config_table": {
         "0": {
           "$deleted": false,
-          "condition_formula": "STATUS_COUNT > 0",
+          "condition_formula": "STATUS_COUNT > 0 && ACTION_ROLLS_ACCURACY == 1",
           "reaction_action_kind": "Attack,Spell,Skill",
           "reaction_damage_amount": "",
           "reaction_damage_type": "",

@@ -42,7 +42,7 @@
           "$deleted": false,
           "effect_kind": "grant",
           "effect_label": "drain_recover",
-          "grant_amount": "ceil(MP_DEALT / 2)",
+          "grant_amount": "MP_DEALT / 2",
           "grant_resource": "mp",
           "target_ref": "ds_self"
         },
@@ -74,7 +74,7 @@
       "post_damage_effect_ref": "drain_recover",
       "reaction_config_table": {},
       "recipe": "drain",
-      "recipe_amount": "ceil(MP_DEALT / 2)",
+      "recipe_amount": "MP_DEALT / 2",
       "recipe_resource": "mp",
       "recipe_target": "self",
       "rolled_atr1": "INS",

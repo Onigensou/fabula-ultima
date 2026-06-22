@@ -10,11 +10,11 @@
   },
   "effects": [
     {
-      "_id": "rQ0NKVLp2KJzHjS7",
+      "_id": "CWIvlaRBTU4xECMI",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1781961542335,
+        "createdTime": 1782164382907,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -34,9 +34,9 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "rQ0NKVLp2KJzHjS7",
+          "originalId": "CWIvlaRBTU4xECMI",
           "originalParentId": "gNgDIXArTpdtUBpe",
-          "originalUuid": "Item.gNgDIXArTpdtUBpe.ActiveEffect.rQ0NKVLp2KJzHjS7"
+          "originalUuid": "Item.gNgDIXArTpdtUBpe.ActiveEffect.CWIvlaRBTU4xECMI"
         },
         "fabula-ultima-companion": {
           "category": "buff",
@@ -67,11 +67,11 @@
       "type": "base"
     },
     {
-      "_id": "rYpfIYvmerJmCCZo",
+      "_id": "thPrBOE031hb0t8a",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1781961542335,
+        "createdTime": 1782164382907,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -91,9 +91,9 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "rYpfIYvmerJmCCZo",
+          "originalId": "thPrBOE031hb0t8a",
           "originalParentId": "gNgDIXArTpdtUBpe",
-          "originalUuid": "Item.gNgDIXArTpdtUBpe.ActiveEffect.rYpfIYvmerJmCCZo"
+          "originalUuid": "Item.gNgDIXArTpdtUBpe.ActiveEffect.thPrBOE031hb0t8a"
         },
         "fabula-ultima-companion": {
           "bondAE": {
@@ -182,7 +182,7 @@
           "iteration_mode": "together",
           "mode": "exact",
           "skip_when_passive": false,
-          "target_filter": "SOURCE_BONDED_TO_ME == 0"
+          "target_filter": "SOURCE_HATRED_BOND_TO_ME == 0"
         },
         "3": {
           "$deleted": false,
