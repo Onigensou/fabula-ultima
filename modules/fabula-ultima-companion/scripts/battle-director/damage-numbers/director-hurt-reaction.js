@@ -142,22 +142,21 @@ function worldToClient(ax, ay) {
   return { x: rect.left + out.x, y: rect.top + out.y };
 }
 
-// Snapshot the token's CURRENT frame from PIXI as a canvas with alpha preserved.
-// Used for webm/animated tokens: a DOM <video> renders an alpha/black-bg webm as
-// an opaque BLACK BOX, but PIXI composites the texture's alpha correctly, so we
-// grab the live frame as a transparent still (fine for a ~300ms flinch). Returns
-// an HTMLCanvasElement, or null on failure (caller falls back).
-function extractTokenImageSrc(token) {
+// Snapshot the token's CURRENT frame from PIXI as a transparent-PNG data URL.
+// Used for webm/animated tokens: a DOM <video> renders an alpha webm as an opaque
+// BLACK BOX, but PIXI composites the texture's alpha correctly. NOTE: in PIXI 7.4
+// `extract.base64` is ASYNC (returns a Promise) — must be awaited, or img.src
+// gets "[object Promise]" → a broken-image box. Returns a data URL or null.
+async function extractTokenImageSrc(token) {
   try {
     const renderer = canvas?.app?.renderer;
     const tex = token?.mesh?.texture ?? token?.texture;
     if (!renderer?.extract?.base64 || !tex) return null;
     const sprite = new PIXI.Sprite(tex);
-    // PNG data URL — PNG preserves the alpha channel, so the snapshot is
-    // transparent (no black box) and works in a plain <img> with no blend hacks.
-    const dataUrl = renderer.extract.base64(sprite, "image/png");
+    let dataUrl = renderer.extract.base64(sprite, "image/png");
+    if (dataUrl && typeof dataUrl.then === "function") dataUrl = await dataUrl; // async in 7.4
     try { sprite.destroy(); } catch {}
-    return dataUrl ?? null;
+    return (typeof dataUrl === "string" && dataUrl.startsWith("data:")) ? dataUrl : null;
   } catch (e) {
     warn("extractTokenImageSrc threw", e);
     return null;
@@ -167,7 +166,8 @@ function extractTokenImageSrc(token) {
 // ── render (runs on EVERY client) ──────────────────────────────────────────
 //   tokenUuid : the token that took the hit
 //   intensity : "normal" | "strong"
-export function playHurtReactionLocal({ tokenUuid, intensity = "normal" } = {}) {
+// Async because the webm snapshot (extract.base64) is async in PIXI 7.4.
+export async function playHurtReactionLocal({ tokenUuid, intensity = "normal" } = {}) {
   try {
     if (typeof PIXI === "undefined" || !canvas?.ready) return;
     const token = canvasTokenFromUuid(tokenUuid);
@@ -179,22 +179,15 @@ export function playHurtReactionLocal({ tokenUuid, intensity = "normal" } = {}) 
     const strong = intensity === "strong";
     const dur = strong ? DUR.strong : DUR.normal;
 
-    // If a reaction is already mid-flight on this token, drop its element + timer
-    // but KEEP the mesh hidden (we carry origAlpha forward) so the restart is seamless.
-    const prev = _active.get(tokenUuid);
-    if (prev) { clearTimeout(prev.timer); try { prev.el.remove(); } catch {} }
-
     // Geometry — project the token center onto THIS client's screen; size to the
-    // token's on-screen footprint; carry rotation + horizontal mirror.
+    // token's ACTUAL rendered sprite (mesh.width/height already bake in the config
+    // "Scale" / texture.scaleX-Y), NOT the grid footprint, so scaled tokens match.
     const c = token.center ?? {
       x: (token.x ?? 0) + (token.w ?? 100) / 2,
       y: (token.y ?? 0) + (token.h ?? 100) / 2,
     };
     const pt = worldToClient(c.x, c.y);
     const zoom = canvas.stage?.scale?.x ?? 1;
-    // Size to the token's ACTUAL rendered sprite (mesh.width/height already bake
-    // in the config "Scale" / texture.scaleX-Y), NOT the grid footprint — so a
-    // token whose image was scaled in its config matches. Fall back to footprint.
     const mesh = token.mesh;
     const w = Math.abs(mesh?.width || (token.w ?? 100)) * zoom;
     const h = Math.abs(mesh?.height || (token.h ?? 100)) * zoom;
@@ -202,12 +195,17 @@ export function playHurtReactionLocal({ tokenUuid, intensity = "normal" } = {}) 
     const mir = (Number(token.document?.texture?.scaleX ?? 1) < 0) ? -1 : 1;
     const isVideo = /\.(webm|mp4|m4v|ogv)$/i.test(String(src));
 
-    // Clone image source: for webm/animated tokens snapshot the live PIXI frame
-    // to a transparent PNG (a DOM <video> shows a black box); PNG tokens use src
-    // directly. Abort if a video token can't be snapshotted — better no flinch
-    // than a black box.
-    const imgSrc = isVideo ? extractTokenImageSrc(token) : src;
+    // Clone image source: webm/animated tokens snapshot the live PIXI frame to a
+    // transparent PNG (await — async in 7.4); PNG tokens use src directly. Resolve
+    // this BEFORE touching the existing reaction / hiding the token, so a failed
+    // snapshot bails cleanly without leaving the token hidden.
+    const imgSrc = isVideo ? await extractTokenImageSrc(token) : src;
     if (!imgSrc) return;
+
+    // Now that we're committed: tear down any in-flight reaction on this token
+    // (carry its origAlpha forward so the mesh stays hidden across the restart).
+    const prev = _active.get(tokenUuid);
+    if (prev) { clearTimeout(prev.timer); try { prev.el.remove(); } catch {} }
 
     const root = document.createElement("div");
     root.className = `fud-hurt fud-hurt--${strong ? "strong" : "normal"}`;
