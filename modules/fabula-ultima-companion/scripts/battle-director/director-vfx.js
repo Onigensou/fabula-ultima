@@ -556,26 +556,16 @@ export function playResourceSpendVfx({ tokenUuid, resource = "mp", amount = 0 } 
 // Same Sequencer-broadcasts-to-all-clients + graceful no-op rules as the
 // resource VFX above.
 
-const MISS_FX_FILE = "jb2a.ui.miss";
 const MISS_SFX_URL = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Miss.ogg";
 
-// Float a "miss" flourish over a token + whiff sound.
+// Float the "MISS" word (BD-native) + whiff sound.
 //   tokenUuid : the token that dodged / was missed ("Scene.X.Token.Y")
 export function playMissVfx({ tokenUuid } = {}) {
   try {
-    // Big "MISS" word → BD-native subsystem; whiff flourish + sound stay here.
+    // Big "MISS" word → BD-native subsystem. The whiff SOUND stays; the legacy
+    // Sequencer visual (jb2a.ui.miss) is ITSELF a "MISS" text effect, so it would
+    // double our word — dropped now that we own the miss feedback.
     emitDamageNumber({ kind: "miss", tokenUuid });
-    if (typeof Sequence === "undefined") return;
-    const tok = canvasTokenFromUuid(tokenUuid);
-    if (!tok) return;
-    new Sequence()
-      .effect()
-        .file(MISS_FX_FILE)
-        .attachTo(tok)
-        .scaleToObject(1.0)
-        .opacity(0.9)
-        .duration(1200)
-      .play();
     throttledSfx(MISS_SFX_URL, 0.4);
   } catch (e) {
     warn("playMissVfx threw", e);
