@@ -42,6 +42,7 @@ import { initDirectorSfx, collapseSidebarLocal } from "./director-sfx.js";
 import { initSfxAudition } from "./sfx-audition.js";
 import { initDamageNumbers, emitDamageNumber, renderDamageNumberLocal } from "./damage-numbers/director-damage-numbers.js";
 import { initDamageNumberAudition } from "./damage-numbers/damage-number-audition.js";
+import { initDamageNumberLivetest } from "./damage-numbers/damage-number-livetest.js";
 import { initBattleStateTool } from "./battle-state-tool.js";
 import { initTestBattleTool } from "./test-battle-tool.js";
 import { registerBuiltinReactor, clearBuiltinReactors } from "./instance-settle.js";
@@ -1325,6 +1326,12 @@ Hooks.once("ready", () => {
   // Damage-number audition tool — registers into the Developer Tools launcher.
   try { initDamageNumberAudition(); }
   catch (e) { warn("initDamageNumberAudition on ready threw", e); }
+
+  // Damage FX live-path test tool — fires the REAL director-vfx functions
+  // (number + Sequencer impact + SFX + broadcast) on the selected token, so the
+  // Phase-1 integration can be verified without finding an attack per pattern.
+  try { initDamageNumberLivetest(); }
+  catch (e) { warn("initDamageNumberLivetest on ready threw", e); }
 
   // Director UI sound layer — delegated hover/click cues on all interactive
   // director surfaces (Legacy parity: BattleCursor_4 hover + switch_mode click).
