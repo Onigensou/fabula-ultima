@@ -42,6 +42,7 @@ import { initDirectorSfx, collapseSidebarLocal } from "./director-sfx.js";
 import { initSfxAudition } from "./sfx-audition.js";
 import { initDamageNumbers, emitDamageNumber, renderDamageNumberLocal } from "./damage-numbers/director-damage-numbers.js";
 import { initImpactFx } from "./damage-numbers/director-impact-fx.js";
+import { initHurtReaction, emitHurtReaction, playHurtReactionLocal } from "./damage-numbers/director-hurt-reaction.js";
 import { initDamageNumberAudition } from "./damage-numbers/damage-number-audition.js";
 import { initDamageNumberLivetest } from "./damage-numbers/damage-number-livetest.js";
 import { initBattleStateTool } from "./battle-state-tool.js";
@@ -919,6 +920,12 @@ Hooks.once("ready", () => {
       emit: (payload) => emitDamageNumber(payload),
       renderLocal: (payload) => renderDamageNumberLocal(payload),
     },
+    // Token hurt reaction (pseudo-animated flinch). `emit` = GM local + broadcast;
+    // `renderLocal` = this client only. See damage-numbers/director-hurt-reaction.js.
+    hurtReaction: {
+      emit: (payload) => emitHurtReaction(payload),
+      renderLocal: (payload) => playHurtReactionLocal(payload),
+    },
     // Re-broadcast the turn-action tracker from the live dCombat. Used by the
     // icon focal-point tuner to reflect a saved focus immediately mid-battle.
     refreshTurnActions: () => {
@@ -1329,6 +1336,12 @@ Hooks.once("ready", () => {
   // screens. Replaces Sequencer's .effect() webm bursts for combat feedback.
   try { initImpactFx(); }
   catch (e) { warn("initImpactFx on ready threw", e); }
+
+  // BD-native token hurt reaction (pseudo-animated DOM clone flinch) — registers
+  // its socketlib handler on every client. Phase 0: engine + audition only; the
+  // live loss path doesn't call it yet.
+  try { initHurtReaction(); }
+  catch (e) { warn("initHurtReaction on ready threw", e); }
 
   // Damage-number audition tool — registers into the Developer Tools launcher.
   try { initDamageNumberAudition(); }

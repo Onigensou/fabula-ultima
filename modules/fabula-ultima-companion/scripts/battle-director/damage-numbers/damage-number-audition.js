@@ -13,6 +13,7 @@
 import { log, warn } from "../logger.js";
 import { registerDevTool } from "../dev-tools-menu.js";
 import { renderDamageNumberLocal } from "./director-damage-numbers.js";
+import { playHurtReactionLocal } from "./director-hurt-reaction.js";
 
 const PANEL_ID = "fud-dmgnum-audition-panel";
 const STYLE_ID = "fud-dmgnum-audition-style";
@@ -38,6 +39,8 @@ const CASES = [
   { label: "MP gain +30",              payload: { kind: "gain", resource: "mp", amount: 30 } },
   { label: "Spend MP −15",             payload: { kind: "spend", resource: "mp", amount: 15 } },
   { label: "Multi-hit burst ×5",       burst: [40, 35, 60, 28, 90] },
+  { label: "Hurt reaction — normal",   hurt: "normal" },
+  { label: "Hurt reaction — strong",   hurt: "strong" },
 ];
 
 let _booted = false;
@@ -52,6 +55,10 @@ function fireCase(c) {
   const tokenUuid = targetTokenUuid();
   if (!tokenUuid) {
     ui.notifications?.warn("Damage Numbers: no token on canvas to anchor on.");
+    return;
+  }
+  if (c.hurt) {
+    playHurtReactionLocal({ tokenUuid, intensity: c.hurt });
     return;
   }
   if (Array.isArray(c.burst)) {

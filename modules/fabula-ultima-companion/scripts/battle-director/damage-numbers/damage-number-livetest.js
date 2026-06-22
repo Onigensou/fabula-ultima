@@ -28,6 +28,7 @@ import {
   playImmuneVfx,
   playAbsorbVfx,
 } from "../director-vfx.js";
+import { emitHurtReaction } from "./director-hurt-reaction.js";
 
 const PANEL_ID = "fud-dmgnum-livetest-panel";
 const STYLE_ID = "fud-dmgnum-livetest-style";
@@ -58,6 +59,17 @@ const CASES = [
       const amts = [40, 35, 60, 28, 90];
       const els = ["fire", "ice", "bolt", "physical", "fire"];
       amts.forEach((a, i) => playResourceLossVfx({ tokenUuid: t, resource: "hp", amount: a, element: els[i] }));
+    },
+  },
+  { label: "Hurt reaction — normal",  fn: (t) => emitHurtReaction({ tokenUuid: t, intensity: "normal" }) },
+  { label: "Hurt reaction — strong",  fn: (t) => emitHurtReaction({ tokenUuid: t, intensity: "strong" }) },
+  {
+    // Full intended live experience for a WEAK crit: number + impact + sound +
+    // strong hurt flinch, all together.
+    label: "FULL hit — WEAK crit",
+    fn: (t) => {
+      playResourceLossVfx({ tokenUuid: t, resource: "hp", amount: 260, element: "fire", affinity: "VU", isCrit: true });
+      emitHurtReaction({ tokenUuid: t, intensity: "strong" });
     },
   },
 ];
