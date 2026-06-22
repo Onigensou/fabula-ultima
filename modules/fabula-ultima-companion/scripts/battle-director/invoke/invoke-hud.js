@@ -1075,7 +1075,7 @@ export async function animateInvokeReroll({ choice, rA, rB, dA, dB, intense = fa
   if (wantB && valB) { dieBEl.classList.add("is-rolling"); jobs.push(_tumbleDieVal(valB, rB, dB, { intense }).then(() => dieBEl.classList.remove("is-rolling"))); }
   await Promise.all(jobs);
 
-  await _wait(650); // linger so the rerolled number reads before proceeding
+  await _wait(1650); // linger so the rerolled number reads before proceeding
   if (_active?.el === el) _active = null;
   _despawnDimmer();
   _despawnAura();
