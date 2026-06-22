@@ -374,6 +374,23 @@ function canvasTokenFromUuid(tokenUuid) {
   return tokenId ? (canvas?.tokens?.get?.(tokenId) ?? null) : null;
 }
 
+// Combo-aware SFX gate for the resource-feedback cues. A multi-hit / multi-target
+// action commits all its damage in one synchronous loop, so N identical impact
+// cues fire at once and stack into an ear-splitting blast. This collapses a burst
+// of the SAME cue within a short window down to a single play — the NUMBERS still
+// cascade (they self-stagger in the damage-number subsystem), but you hear one
+// hit, not five. Distinct cues (e.g. a WEAK hit's "super" sound mixed into a
+// normal combo) are keyed separately, so they still sound. Per-URL, per-client.
+const _lastSfxAt = new Map(); // sfx url -> perf timestamp of last play
+const COMBO_SFX_WINDOW_MS = 90;
+function throttledSfx(url, vol) {
+  if (!url) return;
+  const now = performance.now();
+  if (now - (_lastSfxAt.get(url) ?? 0) < COMBO_SFX_WINDOW_MS) return;
+  _lastSfxAt.set(url, now);
+  broadcastSfx(url, vol);
+}
+
 // Map (resource, affinity) → { file, color, icon, sfx } for a LOSS. Mirrors
 // legacy `_resolveAV` for the damage/drain half (we only float losses here).
 function resolveLossAv(resource, affinity) {
@@ -412,7 +429,7 @@ export function playResourceLossVfx({ tokenUuid, resource = "hp", amount = 0, af
         .scale(0.4)
         .duration(1000)
       .play();
-    if (sfx) broadcastSfx(sfx, 0.6);
+    if (sfx) throttledSfx(sfx, 0.6);
   } catch (e) {
     warn("playResourceLossVfx threw", e);
   }
@@ -477,7 +494,7 @@ export function playResourceGainVfx({ tokenUuid, resource = "hp", amount = 0 } =
           .duration(1000)
         .play();
     }
-    if (av.sfx) broadcastSfx(av.sfx, 0.6);
+    if (av.sfx) throttledSfx(av.sfx, 0.6);
   } catch (e) {
     warn("playResourceGainVfx threw", e);
   }
@@ -521,7 +538,7 @@ export function playResourceSpendVfx({ tokenUuid, resource = "mp", amount = 0 } 
     // Number-only event (no impact webm) — delegate the float, keep the soft cue.
     emitDamageNumber({ kind: "spend", tokenUuid, resource, amount });
     const av = RESOURCE_SPEND_AV[String(resource).toLowerCase()] ?? RESOURCE_SPEND_DEFAULT;
-    if (av.sfx) broadcastSfx(av.sfx, 0.45);
+    if (av.sfx) throttledSfx(av.sfx, 0.45);
   } catch (e) {
     warn("playResourceSpendVfx threw", e);
   }
@@ -559,7 +576,7 @@ export function playMissVfx({ tokenUuid } = {}) {
         .opacity(0.9)
         .duration(1200)
       .play();
-    broadcastSfx(MISS_SFX_URL, 0.4);
+    throttledSfx(MISS_SFX_URL, 0.4);
   } catch (e) {
     warn("playMissVfx threw", e);
   }
@@ -577,7 +594,7 @@ export function playImmuneVfx({ tokenUuid } = {}) {
   try {
     // "IMMUNE" tag → BD-native subsystem (number-only event); keep the cue.
     emitDamageNumber({ kind: "immune", tokenUuid });
-    broadcastSfx(IMMUNE_SFX_URL, 0.5);
+    throttledSfx(IMMUNE_SFX_URL, 0.5);
   } catch (e) {
     warn("playImmuneVfx threw", e);
   }
@@ -605,7 +622,7 @@ export function playAbsorbVfx({ tokenUuid, amount = 0 } = {}) {
         .scale(0.4)
         .duration(1000)
       .play();
-    broadcastSfx(ABSORB_SFX_URL, 0.6);
+    throttledSfx(ABSORB_SFX_URL, 0.6);
   } catch (e) {
     warn("playAbsorbVfx threw", e);
   }

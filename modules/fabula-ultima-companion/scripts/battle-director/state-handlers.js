@@ -682,13 +682,15 @@ async function resolveAction(director, ar, opts = {}) {
   }
 
   // 5b. Miss VFX for can-miss actions with no damage (e.g. Zarg's Soul Steal
-  //     Check). These skip the damage loop above (it's gated on ar.hasDamage),
+  //     Check). These skip the damage loop above (gated on isDamagingAction),
   //     so a failed Check would otherwise show no whiff. Fire the Miss flourish
   //     for each non-hit target. Gated on `ar.canMiss` (single-source capability
-  //     flag) because auto-hit actions can't miss — nothing to whiff. (Damaging
-  //     attacks have their own miss VFX in the damage loop, so hasDamage gates
-  //     them out here.)
-  if (!ar.hasDamage && ar.canMiss && hits.length) {
+  //     flag) because auto-hit actions can't miss — nothing to whiff.
+  //     MUST gate on `!isDamagingAction` (NOT `!ar.hasDamage`): a basic Attack
+  //     is isDamagingAction via isAttackAction yet often has hasDamage=false, so
+  //     gating on hasDamage would let this block fire a SECOND miss on top of the
+  //     damage loop's (line ~529) — the double-MISS bug.
+  if (!isDamagingAction && ar.canMiss && hits.length) {
     for (const r of hits) {
       if (!r.hit) playMissVfx({ tokenUuid: r.tokenUuid });
     }
