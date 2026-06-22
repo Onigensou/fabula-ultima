@@ -35,25 +35,11 @@
 !/worlds/fabula-ultima-2/
 !/worlds/fabula-ultima-2/**
 
-# Co-dev transfer scope: ship ONLY actors + items + folders as world data.
-# These three are the authored content covered by the world-export review
-# (tools/safe-edit/WORLD-EXPORT.md). Everything below is the co-dev's own
-# play state / session churn (or legacy compendium packs whose masters live
-# in world items) — never ours to push, so it stays untracked and a pull no
-# longer clobbers it. _authored-export/ (the reviewable JSON companion for
-# exactly those three) plus assets/ + cutscene-data/ remain tracked.
-/worlds/fabula-ultima-2/data/cards/
-/worlds/fabula-ultima-2/data/combats/
-/worlds/fabula-ultima-2/data/fog/
-/worlds/fabula-ultima-2/data/journal/
-/worlds/fabula-ultima-2/data/macros/
-/worlds/fabula-ultima-2/data/messages/
-/worlds/fabula-ultima-2/data/playlists/
-/worlds/fabula-ultima-2/data/scenes/
-/worlds/fabula-ultima-2/data/settings/
-/worlds/fabula-ultima-2/data/tables/
-/worlds/fabula-ultima-2/data/users/
-/worlds/fabula-ultima-2/packs/
+# NOTE: Co-dev transfer scope (ship only actors+items+folders) is enforced
+# LOCALLY on this clone, NOT here — a committed ignore would also block the
+# co-dev from pushing those collections back to us. The local-only exclusion
+# lives in .git/info/exclude (new shards) + `git update-index --skip-worktree`
+# (existing tracked shards). See the codev-transfer-scope memory.
 
 # -----------------------------
 # Track repo docs and scripts
