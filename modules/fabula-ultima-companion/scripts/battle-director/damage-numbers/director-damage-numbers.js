@@ -79,7 +79,10 @@ function ensureStyle() {
 .fud-dn {
   position: fixed; z-index: 99990; pointer-events: none;
   transform: translate(-50%, -50%);
-  --dn-num-font: 'Anton', 'Haettenschweiler', 'Impact', 'Arial Narrow', sans-serif;
+  /* Numerals: a clean, heavy, NON-condensed sans so the value reads at a glance
+     (the condensed Anton/Impact face was hard to parse). Tags stay condensed —
+     they're words, not numbers, and the blocky look suits them. */
+  --dn-num-font: 'Arial Black', 'Segoe UI', system-ui, Arial, sans-serif;
   --dn-tag-font: 'Bebas Neue', 'Oswald', 'Haettenschweiler', 'Impact', sans-serif;
 }
 .fud-dn-riser {
@@ -111,6 +114,7 @@ function ensureStyle() {
 .fud-dn-tag--absorb { background: #0d6c8c; }
 .fud-dn-tag--miss   { background: #444a55; }
 .fud-dn-num {
+  display: inline-flex; align-items: center; gap: .18em;
   font-family: var(--dn-num-font);
   font-weight: 900; font-style: italic; line-height: 1;
   color: var(--dn-color, #fff); font-size: var(--dn-size, 34px);
@@ -118,6 +122,7 @@ function ensureStyle() {
   -webkit-text-stroke: 2.5px #1a1a1a;
   text-shadow: 0 3px 0 rgba(0,0,0,.55), 0 0 10px rgba(0,0,0,.3);
 }
+.fud-dn-num i { font-size: .72em; -webkit-text-stroke: 0; }
 .fud-dn--crit .fud-dn-num {
   color: #ffe14a !important;
   -webkit-text-stroke: 3px #5a3500;
@@ -233,12 +238,22 @@ export function renderDamageNumberLocal(payload = {}) {
         tag.textContent = spec.tag;
         inner.appendChild(tag);
       }
-      if (spec.number != null) {
+      // Numeral slot — also hosts the big plain word (MISS) and the optional
+      // leading FA icon (shield). Icon + text live in one skewed flex row.
+      const bodyText = spec.number != null ? spec.number : spec.bigWord;
+      if (bodyText != null) {
         const num = document.createElement("div");
         num.className = "fud-dn-num";
         num.style.setProperty("--dn-color", spec.color);
         num.style.setProperty("--dn-size", `${spec.fontPx}px`);
-        num.textContent = spec.number;
+        if (spec.iconClass) {
+          const icon = document.createElement("i");
+          icon.className = spec.iconClass;
+          num.appendChild(icon);
+        }
+        const txt = document.createElement("span");
+        txt.textContent = bodyText;
+        num.appendChild(txt);
         inner.appendChild(num);
       }
 

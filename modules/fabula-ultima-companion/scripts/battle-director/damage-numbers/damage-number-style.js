@@ -12,20 +12,22 @@
 //     affinity: "NE" | "VU" | "RS" | "IM" | "AB"  (HP loss only; else ignored)
 //     element:  "fire" | "ice" | ... | "elementless"  (colors an NE hit)
 
-// Element → numeral color for a neutral (NE) hit. Persona-ish saturated hues,
-// readable on the dark battlefield with the dark text-stroke the renderer adds.
+// Element → numeral color. Mirrors the CANONICAL element palette the Battle
+// Director action card uses (ELEMENT_COLOR in action-card.js), LIGHTENED where
+// the canon hue — tuned for the light parchment card — would be illegible on
+// the dark battlefield. Identity (bolt = purple, air = green, etc.) is kept.
 export const ELEMENT_COLORS = Object.freeze({
-  fire:        "#ff5a3c",
-  ice:         "#5ad1ff",
-  bolt:        "#ffe04a",
-  lightning:   "#ffe04a",
-  earth:       "#c8924a",
-  air:         "#eaf4ff",
-  wind:        "#eaf4ff",
-  light:       "#ffe9a8",
-  dark:        "#b07cff",
-  poison:      "#9be15d",
-  physical:    "#ffffff",
+  physical:    "#ffffff", // canon #1b1b1b (near-black, for parchment) → white on battlefield
+  fire:        "#e25822", // canon
+  ice:         "#5ab3d4", // canon
+  air:         "#48c774", // canon (air is green in this game)
+  wind:        "#48c774",
+  earth:       "#b5793f", // canon #8b5e3c, lightened for dark bg
+  bolt:        "#b06cc9", // canon #9b59b6 (amethyst) lightened — PURPLE, not yellow
+  lightning:   "#b06cc9",
+  light:       "#d4bb5f", // canon #a38b50, lightened
+  dark:        "#8c6cff", // canon #4b0082 (indigo) lightened — bluer than bolt to stay distinct
+  poison:      "#3fae6c", // canon #2e8b57, lightened
   elementless: "#ffffff",
 });
 
@@ -70,9 +72,11 @@ export function resolveDamageNumberStyle(payload = {}) {
 
   const spec = {
     variant: kind,
-    tag: null,
+    tag: null,            // small slab word above the number
     tagVariant: null,
     critBanner: false,
+    bigWord: null,        // large plain word rendered IN the numeral slot (MISS)
+    iconClass: null,      // FontAwesome class prefixed inside the numeral (shield)
     number: null,
     color: DEFAULT_COLOR,
     fontPx: magnitudeFont(amount),
@@ -83,9 +87,10 @@ export function resolveDamageNumberStyle(payload = {}) {
 
   switch (kind) {
     case "miss":
-      spec.tag = "MISS";
-      spec.tagVariant = "miss";
-      spec.color = "#cfd6e0";
+      // Big plain outlined word (not a compressed slab tag) — reads at a glance.
+      spec.bigWord = "MISS";
+      spec.color = "#eef2f7";
+      spec.fontPx = 46;
       break;
 
     case "immune":
@@ -95,10 +100,12 @@ export function resolveDamageNumberStyle(payload = {}) {
       break;
 
     case "absorb":
+      // Green number to mirror the heal pattern (an absorb IS a heal), but keep
+      // the ABSORB tag so it never reads as a plain heal.
       spec.tag = "ABSORB";
       spec.tagVariant = "absorb";
       spec.number = `+${Math.abs(amount)}`;
-      spec.color = "#5ad1ff";
+      spec.color = "#52e36a";
       break;
 
     case "gain":
@@ -115,9 +122,15 @@ export function resolveDamageNumberStyle(payload = {}) {
     case "loss":
     default:
       spec.number = `${Math.abs(amount)}`;
-      if (resource === "mp")          spec.color = "#7fb6ff";
-      else if (resource === "shield") spec.color = "#d9e2ec";
-      else                            spec.color = elementColor(element);
+      if (resource === "mp") {
+        spec.color = "#7fb6ff";
+      } else if (resource === "shield") {
+        // Steel color + a shield glyph so it never reads as elemental HP damage.
+        spec.color = "#d9e2ec";
+        spec.iconClass = "fa-solid fa-shield-halved";
+      } else {
+        spec.color = elementColor(element);
+      }
 
       if (affinity === "VU") {
         spec.tag = "WEAK!";
