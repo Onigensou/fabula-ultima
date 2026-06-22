@@ -265,6 +265,23 @@ function ensureStyles() {
       50%      { opacity: 1;   transform: scale(1.15); }
     }
 
+    /* ── Reroll animation (Phase 3) ── */
+    .fud-ih-die-val { display: inline-block; transform-origin: center; }
+    @keyframes fud-ih-die-land {
+      0%   { opacity: .15; transform: scale(1.8); }
+      55%  { transform: scale(.86); }
+      100% { opacity: 1;  transform: scale(1); }
+    }
+    .fud-ih-die-val.is-landing { animation: fud-ih-die-land 360ms cubic-bezier(.22,1,.36,1) both; }
+    .fud-ih-die.is-rolling {
+      border-color: #e35151;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.7), 0 0 14px rgba(227,81,81,.55);
+    }
+    /* Committing — lock interaction while the reroll plays out. */
+    #${HUD_ID}.is-committing .fud-ih-die,
+    #${HUD_ID}.is-committing .fud-ih-btn { pointer-events: none; }
+    #${HUD_ID}.is-committing .fud-ih-btns { opacity: .4; transition: opacity .2s ease; }
+
     /* ── Aura keyframes ── */
     @keyframes fud-invoke-glow-pulse {
       0%, 100% { opacity: 0.35; transform: scale(1); }
@@ -687,6 +704,7 @@ export function showTraitHUD({ roll, root, tokenUuid = null, onSelectionChange =
 
   return new Promise((resolve) => {
     _active = { type: "trait", el, _resolve: resolve };
+    let committing = false;
 
     const confirmBtn = el.querySelector("[data-confirm]");
     const dieA = el.querySelector('[data-which="A"]');
@@ -696,6 +714,7 @@ export function showTraitHUD({ roll, root, tokenUuid = null, onSelectionChange =
       confirmBtn.disabled = !(dieA.classList.contains("on") || dieB.classList.contains("on"));
     };
     const toggle = (dieEl) => {
+      if (committing) return;
       const next = !dieEl.classList.contains("on");
       dieEl.classList.toggle("on", next);
       dieEl.setAttribute("aria-checked", String(next));
@@ -714,14 +733,22 @@ export function showTraitHUD({ roll, root, tokenUuid = null, onSelectionChange =
     }
 
     confirmBtn.addEventListener("click", () => {
+      if (committing) return;
       const aOn = dieA.classList.contains("on");
       const bOn = dieB.classList.contains("on");
       const choice = aOn && bOn ? "AB" : aOn ? "A" : bOn ? "B" : null;
-      _playHud(SFX.dice, 0.85);
-      _resolveHud(el, resolve, choice, null);
+      if (!choice) return;
+      // Keep the HUD on screen — the reroll animation runs next (driven locally
+      // by the worker, or by the GM's invoke-trait-reroll broadcast). Resolve so
+      // the caller proceeds to compute the reroll; animateInvokeReroll despawns.
+      committing = true;
+      el.classList.add("is-committing");
+      if (_active?.el === el) _active.committing = true;
+      resolve(choice);
     });
 
     el.querySelector("[data-cancel]").addEventListener("click", () => {
+      if (committing) return;
       _resolveHud(el, resolve, null, "cancel");
     });
   });
@@ -971,6 +998,96 @@ export function applyBondSpectatorSelection({ idx = 0 } = {}) {
   _active.sel = { idx };
 }
 
+// ── Reroll animation (Phase 3) ─────────────────────────────────────────────────
+// On confirm, the selected die(s) tumble in place and land on the rerolled
+// value before the HUD slides out and the action card updates — so the player
+// feels the roll instead of just seeing a number swap. Runs on whatever trait
+// HUD is up (the actor's real one OR a spectator one — identical markup).
+
+const _wait = (ms) => new Promise((r) => setTimeout(r, ms));
+
+function _activeTraitHudEl() {
+  if (_active?.type === "trait") return _active.el;
+  if (_active?.type === "spectator" && _active.kind === "trait") return _active.el;
+  return null;
+}
+
+// Tumble one die's number to `finalValue`. Two phases: a fast random scramble,
+// then a case-based deceleration with staggered "is this it?" holds, ending on
+// a scale-stamp. Ported from the Check-requester roll feel; landing is silent
+// (the up/down chime plays on the card update). `intense` = more dramatic holds.
+async function _tumbleDieVal(numEl, finalValue, faces, { intense = false } = {}) {
+  if (!numEl) return;
+  faces = Math.max(2, Number(faces) || 6);
+  finalValue = Math.max(1, Math.min(faces, Number(finalValue) || 1));
+
+  let last = -1;
+  const pick = () => { let n; do { n = Math.floor(Math.random() * faces) + 1; } while (n === last && faces > 1); return n; };
+  const show = async (v, ms) => { await _wait(ms); numEl.textContent = String(last = v); };
+
+  const decelCase = faces > 1 ? Math.floor(Math.random() * 4) : 0;
+  const numSeq    = decelCase === 0 ? 0 : Math.min(decelCase, faces - 1);
+  const seq = [];
+  for (let i = numSeq; i >= 1; i--) { let v = finalValue - i; while (v < 1) v += faces; seq.push(v); }
+  let bridge = null;
+  if (faces > 1) { const firstP2 = decelCase === 0 ? finalValue : seq[0]; bridge = firstP2 - 1; if (bridge < 1) bridge += faces; }
+
+  const stagger   = intense ? 1000 : 760;
+  const midHold   = intense ?  560 : 380;
+  const shortHold = intense ?  320 : 220;
+  const approach  = intense ?  320 : 200;
+  const tick      = intense ?  170 : 120;
+
+  for (let i = 0; i < 8; i++) {
+    const isLast = i === 7;
+    const v = (isLast && bridge !== null) ? bridge : pick();
+    await show(v, 40 + Math.floor(Math.random() * 20));
+  }
+  if (decelCase === 0)      { await show(finalValue, approach); await _wait(stagger); }
+  else if (decelCase === 1) { await show(seq[0], approach); await _wait(stagger); }
+  else if (decelCase === 2) { await show(seq[0], approach); await _wait(shortHold); await show(seq[1], tick); await _wait(stagger); }
+  else                      { await show(seq[0], approach); await _wait(shortHold); await show(seq[1], tick); await _wait(midHold); await show(seq[2], tick); await _wait(stagger); }
+
+  numEl.classList.remove("is-landing");
+  void numEl.offsetWidth;
+  numEl.textContent = String(finalValue);
+  numEl.classList.add("is-landing");
+}
+
+// Animate the reroll on the current trait HUD, then despawn it (panel + dimmer
+// + aura). No-op if no trait HUD is up on this client (the caller still patches
+// the card). Both selected dice animate at once for choice "AB".
+export async function animateInvokeReroll({ choice, rA, rB, dA, dB, intense = false } = {}) {
+  const el = _activeTraitHudEl();
+  if (!el) return;
+  el.classList.add("is-committing");
+  _playHud(SFX.dice, 0.8); // roll sound at the start; landing is silent
+
+  const dieAEl = el.querySelector('.fud-ih-die[data-which="A"]');
+  const dieBEl = el.querySelector('.fud-ih-die[data-which="B"]');
+  const valA = dieAEl?.querySelector(".fud-ih-die-val");
+  const valB = dieBEl?.querySelector(".fud-ih-die-val");
+  const wantA = choice === "A" || choice === "AB";
+  const wantB = choice === "B" || choice === "AB";
+
+  const jobs = [];
+  if (wantA && valA) { dieAEl.classList.add("is-rolling"); jobs.push(_tumbleDieVal(valA, rA, dA, { intense }).then(() => dieAEl.classList.remove("is-rolling"))); }
+  if (wantB && valB) { dieBEl.classList.add("is-rolling"); jobs.push(_tumbleDieVal(valB, rB, dB, { intense }).then(() => dieBEl.classList.remove("is-rolling"))); }
+  await Promise.all(jobs);
+
+  await _wait(650); // linger so the rerolled number reads before proceeding
+  if (_active?.el === el) _active = null;
+  _despawnDimmer();
+  _despawnAura();
+  _despawn(el);
+}
+
+// Up/down cue for the reroll outcome — played when the action card updates
+// (the reroll animation itself lands silently). No dice sound, no delay.
+export function playTraitResultChime(oldTotal, newTotal) {
+  _playHud((Number(newTotal) >= Number(oldTotal)) ? SFX.traitUp : SFX.traitDown, 0.9);
+}
+
 // Tear down the spectator HUD. On a committed trait reroll, pass
 // { traitOutcome: { oldTotal, newTotal } } so the dice + up/down cue plays in
 // sync with the card's result animation (patchCardDom). Otherwise a soft
@@ -978,8 +1095,13 @@ export function applyBondSpectatorSelection({ idx = 0 } = {}) {
 // ("trait"|"bond") gates the dismiss so a stale close for one invoke type
 // can't tear down a freshly-opened HUD of the other type (rapid type-switch).
 export function dismissSpectator({ traitOutcome = null, cancelled = false, expectKind = null } = {}) {
-  if (!_active || _active.type !== "spectator") return;
-  if (expectKind && _active.kind !== expectKind) return;
+  if (!_active) return;
+  const isSpec = _active.type === "spectator";
+  // Also tears down a committing real HUD — the failure-teardown path for a
+  // reroll that never resolves (e.g. payment failed after the actor committed).
+  const isCommitting = _active.committing === true;
+  if (!isSpec && !isCommitting) return;
+  if (expectKind && isSpec && _active.kind !== expectKind) return;
   const { el } = _active;
   _active = null;
   if (traitOutcome) playTraitOutcomeSfx(traitOutcome.oldTotal, traitOutcome.newTotal);

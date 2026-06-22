@@ -5295,6 +5295,44 @@ export async function postActionCard({ director, kind, payload }) {
       }
     };
 
+    // Trait reroll presentation — the actor's pick is committed (ctx.actionResult
+    // already holds the rerolled values). Animate the dice on EVERY open invoke
+    // HUD (the actor's real one + everyone's spectator one), THEN patch the card,
+    // THEN play the up/down chime — so the card never updates before the dice
+    // land. One authoritative roll drives all clients (the tumble frames are
+    // local flavor; the landed value is identical everywhere).
+    const presentTraitReroll = async ({ choice, oldTotal }) => {
+      const newAr = director.ctx.actionResult;
+      const roll  = newAr?.roll;
+      if (!roll) return;
+      const intense  = !!(roll.isCrit || roll.isFumble);
+      const rollLite = { rA: roll.rA, rB: roll.rB, dA: roll.dA, dB: roll.dB, total: roll.total, isCrit: !!roll.isCrit, isFumble: !!roll.isFumble };
+      const menuSpec = {
+        kind: "invoke-trait-reroll",
+        combatId: director.combatId,
+        choice, oldTotal, intense, roll: rollLite,
+        actionResult: newAr,
+        invokeState: { ...invokeState },
+      };
+      // 1) Broadcast to every other active client (their handler animates → patches).
+      for (const u of (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id)) {
+        try { director.intentChannel?.broadcastMenuOpen({ targetUserId: u.id, menuSpec }); } catch {}
+      }
+      // 2) Present locally — animate the GM's open HUD (real if GM-acts, spectator
+      //    if a player acted), then patch the card + chime.
+      try {
+        const hud = await import("./invoke/invoke-hud.js");
+        await hud.animateInvokeReroll({ choice, rA: roll.rA, rB: roll.rB, dA: roll.dA, dB: roll.dB, intense });
+        const worker = await import(`./invoke/invoke-worker.js?cb=${Date.now()}`);
+        worker.patchCardDom(root, newAr, invokeState);
+        hud.playTraitResultChime(oldTotal, roll.total);
+      } catch (e) { warn("presentTraitReroll: local present threw", e); }
+      if (roll.isCrit && !roll.isFumble) {
+        try { (await import("./director-cutin.js")).playCritCutin(newAr); } catch {}
+      }
+      _specHudShownLocally = false; // the animation tore down any local spectator HUD
+    };
+
     if (director?.intentChannel) {
       try {
         confirmAwait = director.intentChannel.awaitIntent(INTENTS.CONFIRM_ACTION, {
@@ -5356,7 +5394,7 @@ export async function postActionCard({ director, kind, payload }) {
             const fromUserId = intent.fromUserId ?? null;
             log(`postActionCard: remote INVOKE_CHOICE received (${type})`);
             const oldTotal = director.ctx.actionResult?.roll?.total ?? 0;
-            let ok = false;
+            let ok = false;      // truthy on success (trait: choice string, bond: true)
             try {
               const worker = await import(`./invoke/invoke-worker.js?cb=${Date.now()}`);
               if (type === "trait") {
@@ -5370,21 +5408,23 @@ export async function postActionCard({ director, kind, payload }) {
                   prePickedBondIndex: body.bondIndex ?? null,
                 });
               }
-              // Broadcast the rerolled result to every other active client.
-              if (ok) broadcastInvokeUpdate();
             } catch (e) {
               warn("postActionCard: INVOKE_CHOICE handler threw", e);
             }
-            // Tear down the spectator HUD on the table (the actor's own real
-            // HUD already closed locally on their pick). On a committed trait
-            // reroll, sync the dice + up/down cue with the result animation.
-            const newTotal = director.ctx.actionResult?.roll?.total ?? oldTotal;
-            closeSpectatorHud({
-              excludeUserId: fromUserId,
-              traitOutcome: (ok && type === "trait") ? { oldTotal, newTotal } : null,
-              cancelled: !ok,
-              type,
-            });
+            if (ok && type === "trait") {
+              // Reroll: animate the dice on every client's open HUD, then patch
+              // the card. Replaces the silent invoke-update + spectator-close.
+              await presentTraitReroll({ choice: body.choice ?? ok, oldTotal });
+            } else if (ok) {
+              // Bond: flat bonus, no dice animation — patch + tear down spectators.
+              broadcastInvokeUpdate();
+              closeSpectatorHud({ excludeUserId: fromUserId, type: "bond" });
+            } else {
+              // Post-commit failure (rare, e.g. payment failed). Tear down ALL
+              // open HUDs — including the actor's own committing one (excludeUserId
+              // null, so the actor isn't skipped); dismissSpectator is committing-aware.
+              closeSpectatorHud({ excludeUserId: null, cancelled: true, type });
+            }
             armInvokeAwait();
           }).catch((e) => {
             if (!resolved) log(`postActionCard: INVOKE_CHOICE await aborted (${e?.message})`);
@@ -5478,19 +5518,21 @@ export async function postActionCard({ director, kind, payload }) {
             openSpectatorHud(type, game.user?.id);
             // Echo the GM's own die/bond selection to the table as they pick.
             const onSel = (sel) => broadcastSpectatorSelect(type, sel, game.user?.id);
-            let ok = false;
+            let ok = false;      // truthy on success (trait: choice string, bond: true)
             if (type === "trait") {
               ok = await worker.handleInvokeTrait({ director, ar, root, invokeState, onSelectionChange: onSel });
             } else {
               ok = await worker.handleInvokeBond({ director, ar, root, invokeState, onSelectionChange: onSel });
             }
-            // GM invoked on their own card — propagate the rerolled result to
-            // all mirror cards, then tear down the spectator HUD (synced cue on
-            // a committed trait). The worker already patched this client's DOM.
-            if (ok) {
+            // GM invoked on their own card.
+            if (ok && type === "trait") {
+              // Reroll: animate the GM's open HUD + broadcast so the table
+              // animates in sync, then patch the card.
+              await presentTraitReroll({ choice: ok, oldTotal });
+            } else if (ok) {
+              // Bond: flat bonus, no animation — patch all mirrors + close spectators.
               broadcastInvokeUpdate();
-              const newTotal = director.ctx.actionResult?.roll?.total ?? oldTotal;
-              closeSpectatorHud({ excludeUserId: game.user?.id, traitOutcome: type === "trait" ? { oldTotal, newTotal } : null, type });
+              closeSpectatorHud({ excludeUserId: game.user?.id, type: "bond" });
             } else {
               closeSpectatorHud({ excludeUserId: game.user?.id, cancelled: true, type });
             }
@@ -5934,6 +5976,33 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
     if (payload?.kind !== "invoke-hud-spectator") return;
     const { traitOutcome = null, cancelled = false, expectKind = null } = payload?.data ?? {};
     import("./invoke/invoke-hud.js").then((hud) => hud.dismissSpectator({ traitOutcome, cancelled, expectKind })).catch(() => {});
+  });
+
+  // Trait reroll (Phase 3) — animate the dice on this client's open invoke HUD
+  // (real owner HUD or spectator HUD), THEN patch the local mirror card, THEN
+  // play the up/down chime. Mirrors the GM's local presentTraitReroll so the
+  // reveal order is identical everywhere. If no HUD is up (latecomer), the
+  // animation no-ops and we just patch the card.
+  const offTraitReroll = channel.onMenuOpen((menuSpec) => {
+    if (!menuSpec || menuSpec.kind !== "invoke-trait-reroll") return;
+    if (isActiveDirector()) return; // GM presents locally; never via its own (non-echoing) broadcast
+    playerAr = menuSpec.actionResult ?? playerAr;
+    playerInvokeState = menuSpec.invokeState ?? playerInvokeState;
+    const r = menuSpec.roll ?? {};
+    (async () => {
+      try {
+        const hud = await import("./invoke/invoke-hud.js");
+        await hud.animateInvokeReroll({ choice: menuSpec.choice, rA: r.rA, rB: r.rB, dA: r.dA, dB: r.dB, intense: !!menuSpec.intense });
+        const wrapper = document.getElementById(MIRROR_ROOT_ID);
+        if (wrapper) {
+          const w = await import(`./invoke/invoke-worker.js?cb=${Date.now()}`);
+          w.patchCardDom(wrapper, playerAr, playerInvokeState);
+        }
+        hud.playTraitResultChime(menuSpec.oldTotal, r.total);
+        // NOTE: the crit cut-in is fired ONCE by the GM (presentTraitReroll) and
+        // socket-broadcast to every client, so we must NOT call it here too.
+      } catch (e) { warn("invoke-trait-reroll receiver threw", e); }
+    })();
   });
 
   // Live-selection echo (Phase 2) — in-place patch of the read-only spectator
@@ -6561,5 +6630,6 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
     try { offSpectatorOpen?.(); } catch {}
     try { offSpectatorClose?.(); } catch {}
     try { offSpectatorSelect?.(); } catch {}
+    try { offTraitReroll?.(); } catch {}
   };
 }

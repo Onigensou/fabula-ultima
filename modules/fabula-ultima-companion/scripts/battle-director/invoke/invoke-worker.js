@@ -17,8 +17,7 @@ import { resultLabelFor, resultClsFor } from "../action-card.js";
 function _getStampedCapability(ar) {
   return ar?.attacker?.invokeCapability ?? "full";
 }
-import { showTraitHUD, showBondHUD, playTraitOutcomeSfx, animateAccTotal } from "./invoke-hud.js";
-import { playCritCutin } from "../director-cutin.js";
+import { showTraitHUD, showBondHUD, animateAccTotal } from "./invoke-hud.js";
 
 // ── Ownership gate ────────────────────────────────────────────────────────────
 
@@ -206,26 +205,28 @@ export async function handleInvokeTrait({ director, ar, root, invokeState, prePi
   const spend = await payPoint(attacker);
   if (!spend.ok) {
     ui.notifications?.error(`Could not spend 1 ${spend.label}.`);
+    // The HUD was kept open (committing) for the reroll animation — tear it
+    // down on this rare post-commit failure so it doesn't linger.
+    try { (await import("./invoke-hud.js")).dismissSpectator({ cancelled: true }); } catch {}
     return false;
   }
 
   const arAfterPay = (spend.cur != null && ar.attacker)
     ? { ...ar, attacker: { ...ar.attacker, invokePointCount: spend.cur } }
     : ar;
-  const oldTotal = ar.roll.total;
   const newRoll  = await rerollDice({ roll: ar.roll, choice, actor: attacker });
   const newAr    = recomputeArAfterInvoke(arAfterPay, newRoll);
-  playTraitOutcomeSfx(oldTotal, newRoll.total);
 
   invokeState.trait            = true;
   director.ctx.actionResult    = newAr;
   director.ctx.invokeState     = { ...invokeState };
 
-  patchCardDom(root, newAr, invokeState);
-  // Fire crit cut-in if the reroll produced a critical (fire-and-forget).
-  if (newAr.roll?.isCrit && !newAr.roll?.isFumble) playCritCutin(newAr);
+  // Presentation (reroll animation → card patch → chime → crit cut-in) is owned
+  // by the caller (action-card presentTraitReroll), so it can broadcast the one
+  // authoritative roll and keep every client's animation in sync. Return the
+  // choice so the caller knows which die/dice to animate.
   log(`[BD][Invoke] Trait — choice:${choice} rA:${ar.roll.rA}→${newRoll.rA} rB:${ar.roll.rB}→${newRoll.rB} total:${ar.roll.total}→${newRoll.total}`);
-  return true;
+  return choice;
 }
 
 export async function handleInvokeBond({ director, ar, root, invokeState, prePickedBondIndex = null, onSelectionChange = null }) {
