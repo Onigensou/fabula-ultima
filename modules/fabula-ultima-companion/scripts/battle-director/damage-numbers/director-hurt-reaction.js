@@ -71,7 +71,9 @@ function ensureStyle() {
 }
 .fud-hurt-rot { transform-origin: center; }
 .fud-hurt-shake { position: relative; }
-.fud-hurt-img { display: block; width: 100%; height: 100%; object-fit: contain; }
+/* border:0 !important — the game/system stylesheet puts a 1px solid black
+   border on every <img>, which showed as the "black box" outline on the clone. */
+.fud-hurt-img { display: block; width: 100%; height: 100%; object-fit: contain; border: 0 !important; outline: 0 !important; box-shadow: none !important; background: transparent !important; }
 .fud-hurt-tint {
   position: absolute; inset: 0; background: #ff2b2b; opacity: 0;
   -webkit-mask-size: contain; mask-size: contain;

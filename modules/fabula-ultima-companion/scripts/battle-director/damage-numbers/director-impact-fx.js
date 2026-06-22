@@ -65,6 +65,8 @@ function ensureStyle() {
   transform: translate(-50%, -50%);
   mix-blend-mode: screen;
   will-change: opacity;
+  /* Defensive: the game stylesheet borders media elements; never on our FX. */
+  border: 0 !important; outline: 0 !important; box-shadow: none !important;
 }
 `.trim();
   const style = document.createElement("style");
