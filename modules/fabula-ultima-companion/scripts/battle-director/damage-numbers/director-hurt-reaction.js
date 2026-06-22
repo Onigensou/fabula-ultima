@@ -142,6 +142,26 @@ function worldToClient(ax, ay) {
   return { x: rect.left + out.x, y: rect.top + out.y };
 }
 
+// Snapshot the token's CURRENT frame from PIXI as a canvas with alpha preserved.
+// Used for webm/animated tokens: a DOM <video> renders an alpha/black-bg webm as
+// an opaque BLACK BOX, but PIXI composites the texture's alpha correctly, so we
+// grab the live frame as a transparent still (fine for a ~300ms flinch). Returns
+// an HTMLCanvasElement, or null on failure (caller falls back).
+function extractTokenCanvas(token) {
+  try {
+    const renderer = canvas?.app?.renderer;
+    const tex = token?.mesh?.texture ?? token?.texture;
+    if (!renderer?.extract || !tex) return null;
+    const sprite = new PIXI.Sprite(tex);
+    const out = renderer.extract.canvas(sprite);
+    try { sprite.destroy(); } catch {}
+    return out ?? null;
+  } catch (e) {
+    warn("extractTokenCanvas threw", e);
+    return null;
+  }
+}
+
 // ── render (runs on EVERY client) ──────────────────────────────────────────
 //   tokenUuid : the token that took the hit
 //   intensity : "normal" | "strong"
@@ -190,10 +210,19 @@ export function playHurtReactionLocal({ tokenUuid, intensity = "normal" } = {}) 
     shake.style.width = `${w}px`;
     shake.style.height = `${h}px`;
 
-    let media;
+    // Build the clone. For webm/animated tokens, a DOM <video> would show a
+    // black box (no alpha), so snapshot the live PIXI frame to a canvas instead.
+    // PNG tokens just use a plain <img> (cheap, already transparent).
+    let media = null;
     if (isVideo) {
-      media = document.createElement("video");
-      media.src = src; media.muted = true; media.autoplay = true; media.loop = true; media.playsInline = true;
+      media = extractTokenCanvas(token);
+      if (!media) {
+        // Last-resort fallback if extraction is unavailable: a <video> with
+        // screen blend (washed, but avoids the opaque black box).
+        media = document.createElement("video");
+        media.src = src; media.muted = true; media.autoplay = true; media.loop = true; media.playsInline = true;
+        media.style.mixBlendMode = "screen";
+      }
     } else {
       media = document.createElement("img");
       media.src = src;
@@ -234,7 +263,9 @@ export function playHurtReactionLocal({ tokenUuid, intensity = "normal" } = {}) 
     };
     const timer = setTimeout(cleanup, dur + 80);
     _active.set(tokenUuid, { el: root, timer, origAlpha });
-    if (isVideo) { try { media.play?.()?.catch?.(() => {}); } catch {} }
+    // Only the <video> fallback needs an explicit play kick (the canvas snapshot
+    // and the <img> are static).
+    if (media.tagName === "VIDEO") { try { media.play?.()?.catch?.(() => {}); } catch {} }
   } catch (e) {
     warn("playHurtReactionLocal threw", e);
   }
