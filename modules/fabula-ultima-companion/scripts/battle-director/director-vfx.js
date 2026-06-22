@@ -14,6 +14,7 @@ import { log, warn } from "./logger.js";
 import { broadcastSfx, preloadSfx, collapseSidebarAllClients } from "./director-sfx.js";
 import { INVOKE_SFX_URLS } from "./invoke/invoke-hud.js";
 import { emitDamageNumber } from "./damage-numbers/director-damage-numbers.js";
+import { emitImpactFx } from "./damage-numbers/director-impact-fx.js";
 
 export const DIRECTOR_STATIC_URLS = Object.freeze([
   // Guard / Covered AE icons (Forge-vtt — remote, slowest first-fetch).
@@ -367,13 +368,6 @@ const RESOURCE_VFX_SFX = Object.freeze({
 const IMPACT_HP_FILE = "modules/JB2A_DnD5e/Library/Generic/Impact/Impact_07_Regular_Orange_400x400.webm";
 const IMPACT_MP_FILE = "modules/JB2A_DnD5e/Library/2nd_Level/Misty_Step/MistyStep_01_Regular_Blue_400x400.webm";
 
-// Resolve a token UUID ("Scene.X.Token.Y") to the placeable on the active
-// canvas. Mirrors the lookup in playStudyVfx.
-function canvasTokenFromUuid(tokenUuid) {
-  const tokenId = String(tokenUuid ?? "").split(".Token.").pop();
-  return tokenId ? (canvas?.tokens?.get?.(tokenId) ?? null) : null;
-}
-
 // Combo-aware SFX gate for the resource-feedback cues. A multi-hit / multi-target
 // action commits all its damage in one synchronous loop, so N identical impact
 // cues fire at once and stack into an ear-splitting blast. This collapses a burst
@@ -416,19 +410,9 @@ export function playResourceLossVfx({ tokenUuid, resource = "hp", amount = 0, af
     // Carries the affinity (WEAK!/RESIST tag), element (numeral color), and crit
     // (gold CRITICAL banner). Renders + broadcasts on its own.
     emitDamageNumber({ kind: "loss", tokenUuid, resource, amount, affinity, element, isCrit, pierce });
-    // Impact webm + affinity SFX stay on Sequencer — Phase 1 migrated only the
-    // number text off `.scrollingText()`; the cinematic half lives here still.
-    if (typeof Sequence === "undefined") return;
-    const tok = canvasTokenFromUuid(tokenUuid);
-    if (!tok) return;
+    // Impact burst + affinity SFX — both BD-native now (DOM <video> + Web Audio).
     const { file, sfx } = resolveLossAv(resource, affinity);
-    new Sequence()
-      .effect()
-        .file(file)
-        .atLocation(tok)
-        .scale(0.4)
-        .duration(1000)
-      .play();
+    emitImpactFx({ tokenUuid, file, durationMs: 1000 });
     if (sfx) throttledSfx(sfx, 0.6);
   } catch (e) {
     warn("playResourceLossVfx threw", e);
@@ -481,19 +465,8 @@ export function playResourceGainVfx({ tokenUuid, resource = "hp", amount = 0 } =
     if (!(amount > 0)) return;
     // Floating number → BD-native subsystem; heal aura webm + cue stay here.
     emitDamageNumber({ kind: "gain", tokenUuid, resource, amount });
-    if (typeof Sequence === "undefined") return;
-    const tok = canvasTokenFromUuid(tokenUuid);
-    if (!tok) return;
     const av = RESOURCE_GAIN_AV[String(resource).toLowerCase()] ?? RESOURCE_GAIN_DEFAULT;
-    if (av.file) {
-      new Sequence()
-        .effect()
-          .file(av.file)
-          .atLocation(tok)
-          .scale(0.4)
-          .duration(1000)
-        .play();
-    }
+    if (av.file) emitImpactFx({ tokenUuid, file: av.file, durationMs: 1000 });
     if (av.sfx) throttledSfx(av.sfx, 0.6);
   } catch (e) {
     warn("playResourceGainVfx threw", e);
@@ -602,16 +575,7 @@ export function playAbsorbVfx({ tokenUuid, amount = 0 } = {}) {
     if (!(amount > 0)) return;
     // Green "ABSORB +N" → BD-native subsystem; blue aura + absorb cue stay here.
     emitDamageNumber({ kind: "absorb", tokenUuid, amount });
-    if (typeof Sequence === "undefined") return;
-    const tok = canvasTokenFromUuid(tokenUuid);
-    if (!tok) return;
-    new Sequence()
-      .effect()
-        .file(ABSORB_FX_FILE)
-        .atLocation(tok)
-        .scale(0.4)
-        .duration(1000)
-      .play();
+    emitImpactFx({ tokenUuid, file: ABSORB_FX_FILE, durationMs: 1000 });
     throttledSfx(ABSORB_SFX_URL, 0.6);
   } catch (e) {
     warn("playAbsorbVfx threw", e);

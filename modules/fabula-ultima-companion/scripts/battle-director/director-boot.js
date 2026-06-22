@@ -41,6 +41,7 @@ import { stopBattleBgm, preloadDirectorSfx } from "./director-vfx.js";
 import { initDirectorSfx, collapseSidebarLocal } from "./director-sfx.js";
 import { initSfxAudition } from "./sfx-audition.js";
 import { initDamageNumbers, emitDamageNumber, renderDamageNumberLocal } from "./damage-numbers/director-damage-numbers.js";
+import { initImpactFx } from "./damage-numbers/director-impact-fx.js";
 import { initDamageNumberAudition } from "./damage-numbers/damage-number-audition.js";
 import { initDamageNumberLivetest } from "./damage-numbers/damage-number-livetest.js";
 import { initBattleStateTool } from "./battle-state-tool.js";
@@ -1322,6 +1323,12 @@ Hooks.once("ready", () => {
   // call sites still fire the legacy Sequencer VFX until Phase 1 repoints them.)
   try { initDamageNumbers(); }
   catch (e) { warn("initDamageNumbers on ready threw", e); }
+
+  // BD-native impact VFX (DOM <video> overlay) — registers its socketlib handler
+  // on every client so the GM-side hit/heal/absorb impact bursts render on all
+  // screens. Replaces Sequencer's .effect() webm bursts for combat feedback.
+  try { initImpactFx(); }
+  catch (e) { warn("initImpactFx on ready threw", e); }
 
   // Damage-number audition tool — registers into the Developer Tools launcher.
   try { initDamageNumberAudition(); }
