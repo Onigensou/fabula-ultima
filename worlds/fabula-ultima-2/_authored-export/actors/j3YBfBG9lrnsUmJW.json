@@ -227,7 +227,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "6HdBHEPiRoPMMydJ"
       },
@@ -290,7 +290,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "UCGtDYsRkyH4IqBs"
       },
@@ -450,7 +450,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "Lqeal1fztIoE6edN"
       },
@@ -516,7 +516,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "KaykXhgyX1J1mdPv"
       },
@@ -582,7 +582,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "O5uVGKRfZCS4ufTp"
       },
@@ -650,7 +650,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "mKlCjkSppMZoGwYr"
       },
@@ -1030,7 +1030,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "pVs2sPd5o0XMbdah"
       },
@@ -1266,7 +1266,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "qAW9i3EkrRUTNE0o"
       },
@@ -1986,7 +1986,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "X2BkD1bUUyJHdUBq"
       },
@@ -2258,7 +2258,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "propheticDefStyle"
       },
@@ -2306,7 +2306,7 @@
               "$deleted": false,
               "effect_kind": "grant",
               "effect_label": "drain_recover",
-              "grant_amount": "MP_DEALT / 2",
+              "grant_amount": "ceil(MP_DEALT / 2)",
               "grant_resource": "mp",
               "target_ref": "ds_self"
             },
@@ -2346,7 +2346,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "fIMx7fleEq7LKXNE"
       },
@@ -2411,7 +2411,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "oyoBGiPAlNfKoQc9"
       },
@@ -2552,7 +2552,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "iFhrsC0cnyChDhgw"
       },
@@ -2619,7 +2619,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "wXvaSpnM04KZ2QFA"
       },
@@ -2811,7 +2811,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "ahyRJYDdxMKqhWSm"
       },
@@ -3104,7 +3104,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "i7XP3i8a8GM70yCF"
       },
@@ -3236,7 +3236,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "BmgIHS4DdDAT1rUc"
       },
@@ -3301,7 +3301,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "97wep1as6JfhC3M3"
       },
@@ -3366,7 +3366,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "nf32D5apuWGo1rVV"
       },
@@ -3431,7 +3431,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "wPC22EqyPCSc20i0"
       },
@@ -3573,7 +3573,7 @@
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.xiVCASkFNVnbThAM"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "G2wJOMw7AgKtte1R"
       },
@@ -3638,7 +3638,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "IzAH4YAoK4vPt9MP"
       },
@@ -3700,7 +3700,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "YxXwy2Giyln0kuLT"
       },
@@ -3987,7 +3987,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "2Ncb8FEV4lynlsHH"
       },

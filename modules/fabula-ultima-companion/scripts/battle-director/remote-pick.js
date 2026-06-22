@@ -28,11 +28,55 @@ export const REMOTE_PICK_KINDS = Object.freeze({
 // param. When present, the leaf picker calls remotePick() instead of
 // rendering locally.
 
-// GM-side: send a pick request to `targetUserId`, await their result intent,
-// and return the value the player's picker produced. On timeout / abort /
-// offline player, returns the `onTimeoutValue` (a "cancelled" sentinel the
-// caller maps to its own cancel shape). `externalCancel` (a thenable) lets the
-// GM tear the prompt down early (e.g. the card resolved by another path).
+// Render the leaf picker (list or target) LOCALLY on this client and resolve
+// with its picked value (null / cancelled-shape on cancel). Shared by the GM's
+// active-racer fallback in remotePick() and the player-side responder, so both
+// ends render IDENTICAL choices from the same `spec` (no drift). `externalCancel`
+// (a thenable) tears the open picker down early.
+async function renderLocalPick({ kind, spec = {}, externalCancel = null }) {
+  if (kind === REMOTE_PICK_KINDS.LIST) {
+    const { pickFromList } = await import("./list-picker.js");
+    return await pickFromList({
+      title: spec.title,
+      subtitle: spec.subtitle ?? null,
+      options: spec.options ?? null,
+      sections: spec.sections ?? null,
+      zIndex: spec.zIndex ?? 97,
+      cancelLabel: spec.cancelLabel ?? "Cancel",
+      externalCancel,
+    });
+  }
+  const { requestTargeting } = await import("./target-picker.js");
+  return await requestTargeting({
+    director: null,
+    eligible: spec.eligible ?? [],
+    mode: spec.mode ?? "exact",
+    count: spec.count ?? 1,
+    titleText: spec.titleText ?? null,
+    cancelLabel: spec.cancelLabel ?? "Cancel",
+    secondaryAction: spec.secondaryAction ?? null,
+    randomizeCount: !!spec.randomizeCount,
+    randomPool: spec.randomPool ?? null,
+    lockSelection: !!spec.lockSelection,
+    externalCancel,
+  });
+}
+
+// GM-side: send a pick request to `targetUserId` AND render the same picker
+// locally on the GM, racing the two ("active racer"). Whoever commits first
+// wins; the loser is torn down. Returns the winning picker's value, or the
+// `onTimeoutValue` cancel-sentinel.
+//
+// Why race instead of a blind await: the choice happens mid-resolve on an
+// action that ISN'T COMMITTED yet (a player-cast spell's element pick, a
+// Protect/Barrage target pick). Awaiting only the player left the GM with NO
+// UI and no recourse if the player disconnected — the GM "lost the menu" while
+// the action hung. Now the GM holds a live local copy and can finish it,
+// exactly like the GM-local composeAction fallback in DECLARE. The GM already
+// has the full `spec`, so its local picker shows the same choices.
+//
+// `externalCancel` (a thenable) lets the GM's caller tear the whole prompt down
+// early (e.g. the card resolved by another path).
 export async function remotePick({
   channel,
   targetUserId,
@@ -64,32 +108,53 @@ export async function remotePick({
     try { awaitP.abort?.("broadcast-failed"); } catch {}
     return onTimeoutValue;
   }
-  let cancelHooked = null;
-  if (externalCancel && typeof externalCancel.then === "function") {
-    cancelHooked = externalCancel.then(() => {
-      try { awaitP.abort?.("external-cancel"); } catch {}
-    }).catch(() => {});
-  }
-  let intent = null;
-  try {
-    intent = await awaitP;
-  } catch (e) {
-    log(`remotePick(${kind}): no result (${e?.message ?? e}) — treating as cancelled`);
-    try { channel.broadcastMenuClose({ targetUserId, kind }); } catch {}
-    return onTimeoutValue;
-  } finally {
-    if (cancelHooked) { /* settled or will settle harmlessly */ }
-  }
-  // Uncache the request broadcast so a player reconnect (PLAYER_HELLO replay)
-  // doesn't resurrect an already-answered picker.
-  try { channel.broadcastMenuClose({ targetUserId, kind }); } catch {}
-  // requestId guard — ignore a stray reply from a prior request (sequential
-  // picks make this rare, but cheap to verify).
-  const body = intent?.body ?? {};
-  if (body.requestId && body.requestId !== requestId) {
-    warn(`remotePick(${kind}): requestId mismatch (${body.requestId} ≠ ${requestId}) — using value anyway`);
-  }
-  return body.value ?? onTimeoutValue;
+
+  // GM-local picker tear-down signal (fired when the player wins / external
+  // cancel) so the GM's copy closes instead of lingering.
+  let gmCancelFire = null;
+  const gmCancel = new Promise((res) => { gmCancelFire = res; });
+
+  return await new Promise((resolveRace) => {
+    let settled = false;
+    const finish = (value) => {
+      if (settled) return;
+      settled = true;
+      // Tear down whichever side didn't win: stop awaiting the player, close the
+      // GM-local picker, and uncache + dismiss the player's open picker (a
+      // reconnect replay must not resurrect an already-answered prompt).
+      try { awaitP.abort?.("race-settled"); } catch {}
+      try { gmCancelFire?.(); } catch {}
+      try { channel.broadcastMenuClose({ targetUserId, kind, data: { requestId } }); } catch {}
+      resolveRace(value ?? onTimeoutValue);
+    };
+
+    // GM's caller tore the whole prompt down (card resolved another way).
+    if (externalCancel && typeof externalCancel.then === "function") {
+      externalCancel.then(() => finish(onTimeoutValue)).catch(() => {});
+    }
+
+    // Player branch — their reply wins the race.
+    awaitP.then((intent) => {
+      const body = intent?.body ?? {};
+      if (body.requestId && body.requestId !== requestId) {
+        warn(`remotePick(${kind}): requestId mismatch (${body.requestId} ≠ ${requestId}) — using value anyway`);
+      }
+      finish(body.value ?? onTimeoutValue);
+    }).catch((e) => {
+      // Timeout / abort / external-cancel — do NOT settle here; the GM-local
+      // picker is still live and will resolve the race (its catch settles with
+      // onTimeoutValue if it too dies).
+      log(`remotePick(${kind}): player await ended (${e?.message ?? e})`);
+    });
+
+    // GM-local branch — the active racer.
+    renderLocalPick({ kind, spec, externalCancel: gmCancel })
+      .then((value) => finish(value))
+      .catch((e) => {
+        warn(`remotePick(${kind}): GM-local picker threw`, e);
+        finish(onTimeoutValue);
+      });
+  });
 }
 
 // GM-side: broadcast ONE pick request to MULTIPLE players and resolve on the
@@ -177,10 +242,23 @@ export async function remotePickAny({
 // broadcasts a pick request, then emits REMOTE_PICK_RESULT with the result.
 // Returns an unregister function. Registered once at boot on non-GM clients.
 export function registerRemotePickResponder(channel) {
+  // Requests whose picker is currently rendered on this client. Guards
+  // against a same-requestId MENU_OPEN replay (the GM re-replays its
+  // _recentBroadcasts cache on our reconnect re-announce — see
+  // director-boot.js) stacking a SECOND picker on top of the one already
+  // open. A genuinely-missed broadcast (socket was down when it fired) has
+  // no entry here, so it still renders; an already-open picker is kept.
+  const activeRequestIds = new Set();
   return channel.onMenuOpen(async (menuSpec) => {
     if (game.user?.isGM) return;
     const kind = menuSpec?.kind;
     if (kind !== REMOTE_PICK_KINDS.LIST && kind !== REMOTE_PICK_KINDS.TARGET) return;
+    const requestId = menuSpec?.requestId ?? null;
+    if (requestId && activeRequestIds.has(requestId)) {
+      log(`registerRemotePickResponder(${kind}): duplicate MENU_OPEN for requestId ${requestId} — picker already open, ignoring`);
+      return;
+    }
+    if (requestId) activeRequestIds.add(requestId);
     const reply = (value) => {
       try {
         channel.emit({
@@ -202,34 +280,11 @@ export function registerRemotePickResponder(channel) {
       closeFire?.();
     });
     try {
-      if (kind === REMOTE_PICK_KINDS.LIST) {
-        const { pickFromList } = await import("./list-picker.js");
-        const value = await pickFromList({
-          title: menuSpec.title,
-          subtitle: menuSpec.subtitle ?? null,
-          options: menuSpec.options ?? null,
-          sections: menuSpec.sections ?? null,
-          zIndex: menuSpec.zIndex ?? 97,
-          cancelLabel: menuSpec.cancelLabel ?? "Cancel",
-          externalCancel: closeSignal,
-        });
-        reply(value);
-      } else {
-        const { requestTargeting } = await import("./target-picker.js");
-        const value = await requestTargeting({
-          director: null,
-          eligible: menuSpec.eligible ?? [],
-          mode: menuSpec.mode ?? "exact",
-          count: menuSpec.count ?? 1,
-          titleText: menuSpec.titleText ?? null,
-          cancelLabel: menuSpec.cancelLabel ?? "Cancel",
-          secondaryAction: menuSpec.secondaryAction ?? null,
-          randomizeCount: !!menuSpec.randomizeCount,
-          randomPool: menuSpec.randomPool ?? null,
-          lockSelection: !!menuSpec.lockSelection,
-        });
-        reply(value);
-      }
+      // Render the SAME leaf picker the GM races locally (see renderLocalPick).
+      // closeSignal tears it down when the GM broadcasts MENU_CLOSE for this
+      // pick (the GM won the race, a sibling answered, or a teardown).
+      const value = await renderLocalPick({ kind, spec: menuSpec, externalCancel: closeSignal });
+      reply(value);
     } catch (e) {
       warn(`registerRemotePickResponder(${kind}): picker threw`, e);
       // Reply with a cancelled-shaped value so the GM doesn't hang to timeout.
@@ -237,6 +292,7 @@ export function registerRemotePickResponder(channel) {
         ? { ok: false, cancelled: true, tokenUuids: [] }
         : null);
     } finally {
+      if (requestId) activeRequestIds.delete(requestId);
       try { offClose?.(); } catch {}
     }
   });

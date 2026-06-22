@@ -2121,6 +2121,12 @@
         "parent": "Vg0nGevL0N3Wqh0D"
       },
       {
+        "id": "Lmz3zk1ikDBWqyf1",
+        "name": "Pass",
+        "type": "Item",
+        "parent": "WKp4Zi6ImmRWNjWi"
+      },
+      {
         "id": "YA2JFqxM2mPd9JBp",
         "name": "Pass",
         "type": "Item",
@@ -5045,6 +5051,12 @@
         "effects": 0
       },
       {
+        "id": "Ro1ZgoiWtBFyMQS7",
+        "name": "Capote",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "6HRY5TyV1hF2Edgh",
         "name": "Carbon Bow",
         "type": "equippableItem",
@@ -5058,6 +5070,12 @@
       },
       {
         "id": "8Vn4CZdcyrkTJKm3",
+        "name": "Castigo",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "FU58EwtboDoQ0wS1",
         "name": "Castigo",
         "type": "equippableItem",
         "effects": 0
@@ -5815,6 +5833,12 @@
       {
         "id": "1wIUPlab2ewtnYe1",
         "name": "Derringer",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "CmyctfYXyvsBmRuf",
+        "name": "Descabello",
         "type": "equippableItem",
         "effects": 0
       },
@@ -10013,6 +10037,12 @@
         "effects": 0
       },
       {
+        "id": "Qvo1tWsdqYJAhvzU",
+        "name": "Muleta",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "RxIy2d516YrLuzpS",
         "name": "Muleta",
         "type": "equippableItem",
@@ -10777,6 +10807,12 @@
       {
         "id": "xkeIviw9s7Ri1Vm4",
         "name": "Portable Cauldron",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "4sTRuDSN47Q0T4Wj",
+        "name": "Potion Rain",
         "type": "equippableItem",
         "effects": 0
       },
@@ -11793,6 +11829,12 @@
         "name": "Secret Formula",
         "type": "equippableItem",
         "effects": 0
+      },
+      {
+        "id": "tHqRjIhed3rEwo3q",
+        "name": "Secret Formula",
+        "type": "equippableItem",
+        "effects": 1
       },
       {
         "id": "vHU5RXkhcOoFrXtm",
@@ -12971,6 +13013,12 @@
         "effects": 0
       },
       {
+        "id": "nqfB7DhbpF9HHRwm",
+        "name": "Tafallera",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "tElX5Ko3X5wpTCfI",
         "name": "Tafallera",
         "type": "equippableItem",
@@ -13746,6 +13794,12 @@
       },
       {
         "id": "GN2lmhC75LItt0Nj",
+        "name": "Verónica",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "hfk1ejq51YWoQ2jb",
         "name": "Verónica",
         "type": "equippableItem",
         "effects": 0
@@ -16262,6 +16316,13 @@
         "type": "character",
         "items": [],
         "effects": 0
+      },
+      {
+        "id": "pcHYScMMc3iYzGL8",
+        "name": "BD Dummy Enemy",
+        "type": "character",
+        "items": [],
+        "effects": 1
       },
       {
         "id": "2U5MthxrDRMofSGl",
@@ -21111,7 +21172,7 @@
             "name": "Zero Trigger: Foresight"
           }
         ],
-        "effects": 1
+        "effects": 3
       },
       {
         "id": "tzXbVfDYPgvu5wml",

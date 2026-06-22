@@ -352,7 +352,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "tbtry6egID5MOcxv"
       },
@@ -563,7 +563,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "7oG8YvRYQBQAU025"
       },
@@ -991,7 +991,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "Ydbba6k0hFjWZvJv"
       },
@@ -1097,7 +1097,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "kOZ5DZYLKd3FxaAz"
       },
@@ -1373,7 +1373,7 @@
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "gNgDIXArTpdtUBpe"
       },
@@ -1978,7 +1978,7 @@
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.FBWC6v9hhDqMlIaZ"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "eTagzbuJWVfudChW"
       },
@@ -2093,7 +2093,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "eM7Q4WgXvjcLQaFc"
       },
@@ -2506,7 +2506,7 @@
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.gm2w1NLdaEI7SzaQ"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "ZySnR7edyoUvFZM3"
       },
@@ -2574,7 +2574,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": true,
         "uniqueId": "HjNImvzXOvZw1mGF"
       },
@@ -3247,7 +3247,7 @@
               "$deleted": false,
               "effect_kind": "grant",
               "effect_label": "drain_recover",
-              "grant_amount": "MP_DEALT / 2",
+              "grant_amount": "ceil(MP_DEALT / 2)",
               "grant_resource": "mp",
               "target_ref": "ds_self"
             },
@@ -3290,7 +3290,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "szPLoqRb8JELX4X7"
       },
@@ -3396,7 +3396,7 @@
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.Jfwp8uU0Ntyqhcjj"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "9jOBSPY17nxY6QCy"
       },
@@ -3525,7 +3525,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "loJVZKaVMt8VxzCI"
       },
@@ -3939,7 +3939,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "UF9js71VGFE9jB93"
       },
@@ -3967,7 +3967,7 @@
             "systemVersion": "4.8.5"
           },
           "changes": [],
-          "description": "<p><em>Acceleration:</em> at the start of each of your turns you may take one extra Attack or Spell. Ends after two extra actions.</p>",
+          "description": "<p><em>Acceleration:</em> at the end of each of your turns you may take one extra Attack or Spell. Ends after two extra actions.</p>",
           "disabled": false,
           "duration": {
             "combat": null,
@@ -3994,35 +3994,21 @@
                 "effect_table": {
                   "0": {
                     "$deleted": false,
-                    "chain_steps": "accel_consume,accel_freeact",
-                    "effect_kind": "chain",
-                    "effect_label": "accel_chain"
-                  },
-                  "1": {
-                    "$deleted": false,
-                    "charge_key": "acceleration",
-                    "count": "1",
-                    "effect_kind": "consume_charge",
-                    "effect_label": "accel_consume",
-                    "on_empty": "abort",
-                    "target_ref": "self"
-                  },
-                  "2": {
-                    "$deleted": false,
                     "action_ref": "Attack,Spell",
                     "effect_kind": "free_action",
-                    "effect_label": "accel_freeact"
+                    "effect_label": "accel_freeact",
+                    "max_mp_cost": "10"
                   }
                 },
                 "name": "Acceleration",
                 "reaction_config_table": {
                   "0": {
                     "$deleted": false,
-                    "reaction_effect_ref": "accel_chain",
+                    "reaction_effect_ref": "accel_freeact",
                     "reaction_passive_mode": "ask",
                     "reaction_passive_target": "self",
                     "reaction_source": "self",
-                    "reaction_trigger": "turn_start"
+                    "reaction_trigger": "turn_end"
                   }
                 }
               }
@@ -4120,7 +4106,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "jlPwgwAQkOBCNg6K"
       },
@@ -4193,7 +4179,7 @@
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.oe3OP8VmjHJpWJ41"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "WjrBIzz4zJvO4C4k"
       },
@@ -4261,7 +4247,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "VMu0aaKdIoi6qRi2"
       },
@@ -4533,7 +4519,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "QBLyfikwHBnhhcGf"
       },
@@ -4596,7 +4582,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "oqJkRZfgQD6frXjZ"
       },
@@ -5015,7 +5001,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "HhAK0qzO2jmsk0RX"
       },
@@ -5125,7 +5111,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "FQBpdrf04xuYhheF"
       },
@@ -5193,7 +5179,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "B0rR4DCijW1zC3SY"
       },
@@ -5289,7 +5275,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "Uo4iOf0EFG1z8AU2"
       },
@@ -5363,7 +5349,7 @@
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.Wtcdd42MQHwsOsSe"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": true,
         "uniqueId": "7ApZzLcwZfDZz0nE"
       },
@@ -5428,7 +5414,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "CMeM0siw1nq7rr1G"
       },
@@ -5637,7 +5623,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "5FJroVCi4rjKmXQO"
       },
@@ -5782,7 +5768,7 @@
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.z1GsqcJC8bh4TOAs"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "Xf6q7cCeuczSTfXp"
       },

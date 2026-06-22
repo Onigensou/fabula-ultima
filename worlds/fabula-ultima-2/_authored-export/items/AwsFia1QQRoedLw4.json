@@ -10,11 +10,11 @@
   },
   "effects": [
     {
-      "_id": "hyA9ISy581PqMhrY",
+      "_id": "tYPqRVsTENAr9lLC",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1781942751818,
+        "createdTime": 1782071754557,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -41,9 +41,9 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "hyA9ISy581PqMhrY",
-          "originalParentId": "AwsFia1QQRoedLw4",
-          "originalUuid": "Item.AwsFia1QQRoedLw4.ActiveEffect.hyA9ISy581PqMhrY"
+          "originalId": "kdHRrGkThEJu7isd",
+          "originalParentId": "BXrs9fsYHnpaFTun",
+          "originalUuid": "Actor.uJFaNQCSvwwsr2AW.Item.BXrs9fsYHnpaFTun.ActiveEffect.kdHRrGkThEJu7isd"
         },
         "fabula-ultima-companion": {
           "crossScene": false,
@@ -88,14 +88,27 @@
       "cost": "",
       "damage_bonus": "0",
       "description": "<p>You become completely <strong>immune</strong> to a single status effect of your choice (selected when you learn this Skill).</p><p><em>Engine note: per-actor status-immunity infrastructure pending — apply the immunity at the table for now.</em></p>",
+      "effect_table": {},
       "isCheck": false,
+      "isReaction": false,
       "level": 1,
       "max_level": 1,
       "name": "Status Immunity",
+      "on_activate_effect_ref": "",
+      "passive_check_bonus_formula": "",
+      "passive_damage_bonus_formula": "",
+      "passive_logic_action": "",
+      "post_damage_effect_ref": "",
+      "pre_activate_effect_ref": "",
+      "reaction_config_table": {},
+      "recipe": "",
+      "recipe_amount": "",
+      "recipe_resource": "",
+      "recipe_target": "",
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_range": "-",
-      "skill_target": "-",
+      "skill_target": "",
       "skill_type": "Passive",
       "type_damage": ""
     },

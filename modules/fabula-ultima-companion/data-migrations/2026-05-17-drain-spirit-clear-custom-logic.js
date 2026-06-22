@@ -4,7 +4,7 @@
  * Removes the user-authored `custom_logic_resolution` script from
  * Drain Spirit (world master + every actor-embedded copy), now that the
  * Phase D declarative path (`post_damage_effect_ref: "drain_recover"` +
- * `effect_table.drain_recover` with `grant_amount: "MP_DEALT / 2"`) is in
+ * `effect_table.drain_recover` with `grant_amount: "ceil(MP_DEALT / 2)"`) is in
  * place. Both running together would double-restore MP on a successful
  * Drain Spirit cast.
  *

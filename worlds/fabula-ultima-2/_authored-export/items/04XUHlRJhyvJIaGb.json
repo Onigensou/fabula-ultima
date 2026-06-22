@@ -10,11 +10,11 @@
   },
   "effects": [
     {
-      "_id": "hkQh8SjJJRnTDwwv",
+      "_id": "7VFs0yFvUb21WMQn",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1781408921822,
+        "createdTime": 1782071757069,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -34,16 +34,16 @@
         "rounds": null,
         "seconds": null,
         "startRound": null,
-        "startTime": null,
+        "startTime": 298800,
         "startTurn": null,
         "turns": null
       },
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "hkQh8SjJJRnTDwwv",
+          "originalId": "WLWFfxV0AePMiIQB",
           "originalParentId": "04XUHlRJhyvJIaGb",
-          "originalUuid": "Item.04XUHlRJhyvJIaGb.ActiveEffect.hkQh8SjJJRnTDwwv"
+          "originalUuid": "Item.04XUHlRJhyvJIaGb.ActiveEffect.WLWFfxV0AePMiIQB"
         },
         "fabula-ultima-companion": {
           "category": "buff"
@@ -91,10 +91,23 @@
       "cost": "",
       "damage_bonus": "0",
       "description": "<p>When you spend Inventory Points, you spend <strong>1 less Inventory Point</strong> (to a minimum of 1).</p>",
+      "effect_table": {},
       "isCheck": false,
+      "isReaction": false,
       "level": 1,
       "max_level": 1,
       "name": "Deep Pockets",
+      "on_activate_effect_ref": "",
+      "passive_check_bonus_formula": "",
+      "passive_damage_bonus_formula": "",
+      "passive_logic_action": "",
+      "post_damage_effect_ref": "",
+      "pre_activate_effect_ref": "",
+      "reaction_config_table": {},
+      "recipe": "",
+      "recipe_amount": "",
+      "recipe_resource": "",
+      "recipe_target": "",
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_range": "-",

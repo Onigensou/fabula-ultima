@@ -829,6 +829,9 @@ async function composeSkill({ director, snap, eligible, cancelSentinel, isSpell 
   // turn or an unrestricted free action.
   const grant = freeActions.get(snap.actorId);
   const allowedRefs = grant?.allowedSkillRefs ?? null;
+  // Free-action MP cap (Acceleration → spells ≤ 10 MP). Spell-only: a Skill/Active
+  // free action carries no spell-cost cap. Null on a normal turn or uncapped grant.
+  const maxMpCost = isSpell ? (grant?.maxMpCost ?? null) : null;
   const pick = await raceCancel(
     pickSkill({
       director,
@@ -841,6 +844,7 @@ async function composeSkill({ director, snap, eligible, cancelSentinel, isSpell 
       externalCancel: cancelSentinel,
       excludeIntents,
       allowedRefs,
+      maxMpCost,
     }),
     cancelSentinel,
   );

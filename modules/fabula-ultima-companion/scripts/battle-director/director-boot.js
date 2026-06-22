@@ -1238,6 +1238,32 @@ Hooks.once("ready", () => {
     if (!game.user?.isGM) {
       try { getIntentChannel().announceReady(); }
       catch (e) { warn("announceReady threw", e); }
+
+      // Re-announce on socket RECONNECT so the GM replays any MENU_OPEN we
+      // missed while our socket was down. A transient socket.io reconnect
+      // (network blip / laptop sleep-wake / Wi-Fi drop) auto-reconnects
+      // WITHOUT reloading the page, so the one-shot Hooks.once("ready")
+      // announceReady above never re-fires. Without this, a player whose
+      // connection dropped while (or just before) a menu was broadcast for
+      // them — e.g. their turn's compose-action or a pre_activate element
+      // pick — reconnects to NO menu and is stuck (the spec sits unreplayed
+      // in the GM's _recentBroadcasts cache). socket.io fires "connect" on
+      // every reconnection; the initial connect already happened before this
+      // listener is wired, so it only fires on genuine reconnects (no double
+      // announce). Defer briefly so Foundry finishes its own session/world
+      // resync first. Idempotent: same-requestId replays are de-duped on the
+      // player side (see registerRemotePickResponder), so a still-open picker
+      // is not duplicated when nothing was actually missed.
+      try {
+        game.socket?.on("connect", () => {
+          setTimeout(() => {
+            try {
+              log("IntentChannel: socket reconnected — re-announcing ready for menu resync");
+              getIntentChannel().announceReady();
+            } catch (e) { warn("announceReady (reconnect) threw", e); }
+          }, 750);
+        });
+      } catch (e) { warn("reconnect re-announce wiring threw", e); }
     }
   } catch (e) {
     warn("IntentChannel install on ready threw", e);

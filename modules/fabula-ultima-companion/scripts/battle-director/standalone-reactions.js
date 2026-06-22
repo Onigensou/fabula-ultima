@@ -432,11 +432,14 @@ export async function dispatchReactionMenu({
     //   - "off" — explicit player opt-out
     //   - "force" — engine-mandatory + UI-invisible per [[force-mode-canonical-rows]]
     //   - wasUsed — already fired/auto'd this scope
-    //   - isAutoMode && !c.available — auto-mode passive whose condition
-    //     failed; silence it rather than showing "CONDITIONS NOT MET" in
-    //     the menu. Manual / ask-mode rows still show disabled badges so
-    //     the player knows WHY their reaction didn't fire.
+    //   - unavailableKind === "condition" — the trigger fundamentally doesn't
+    //     apply right now (e.g. Agony with no Bond toward any damaged creature).
+    //     Surfacing it is noise / info-leak, matching findPassiveCandidates'
+    //     "condition → keep hidden" contract. COST unavailability is different —
+    //     "you could react but can't pay" is actionable, so cost-disabled rows
+    //     still show dimmed with a badge ("Low MP") so the player knows why.
     if (c.mode === "off" || c.mode === "force" || wasUsed) continue;
+    if (c.unavailableKind === "condition") continue;
     if (isAutoMode && !c.available) continue;
 
     // Harness override — auto-resolve without spawning the menu when the

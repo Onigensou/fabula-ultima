@@ -3370,7 +3370,7 @@
           "effect_label": "drain_recover",
           "effect_kind": "grant",
           "grant_resource": "mp",
-          "grant_amount": "MP_DEALT / 2",
+          "grant_amount": "ceil(MP_DEALT / 2)",
           "grant_target": "self",
           "target_source": ""
         }

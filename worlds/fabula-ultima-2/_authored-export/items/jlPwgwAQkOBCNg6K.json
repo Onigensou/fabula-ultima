@@ -20,7 +20,7 @@
         "systemVersion": "4.8.5"
       },
       "changes": [],
-      "description": "<p><em>Acceleration:</em> at the start of each of your turns you may take one extra Attack or Spell. Ends after two extra actions.</p>",
+      "description": "<p><em>Acceleration:</em> at the end of each of your turns you may take one extra Attack or Spell. Ends after two extra actions.</p>",
       "disabled": false,
       "duration": {
         "combat": null,
@@ -47,35 +47,21 @@
             "effect_table": {
               "0": {
                 "$deleted": false,
-                "chain_steps": "accel_consume,accel_freeact",
-                "effect_kind": "chain",
-                "effect_label": "accel_chain"
-              },
-              "1": {
-                "$deleted": false,
-                "charge_key": "acceleration",
-                "count": "1",
-                "effect_kind": "consume_charge",
-                "effect_label": "accel_consume",
-                "on_empty": "abort",
-                "target_ref": "self"
-              },
-              "2": {
-                "$deleted": false,
                 "action_ref": "Attack,Spell",
                 "effect_kind": "free_action",
-                "effect_label": "accel_freeact"
+                "effect_label": "accel_freeact",
+                "max_mp_cost": "10"
               }
             },
             "name": "Acceleration",
             "reaction_config_table": {
               "0": {
                 "$deleted": false,
-                "reaction_effect_ref": "accel_chain",
+                "reaction_effect_ref": "accel_freeact",
                 "reaction_passive_mode": "ask",
                 "reaction_passive_target": "self",
                 "reaction_source": "self",
-                "reaction_trigger": "turn_start"
+                "reaction_trigger": "turn_end"
               }
             }
           }

@@ -10,11 +10,11 @@
   },
   "effects": [
     {
-      "_id": "V9ssQGLjhO0i2yea",
+      "_id": "15Gew6Jyr5T4Zi6u",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": null,
+        "createdTime": 1782071755788,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -27,31 +27,45 @@
           "value": "${level}$"
         }
       ],
-      "description": "",
+      "description": "<p>You gain a bonus equal to <strong>【SL】</strong> to all Accuracy Checks with <strong>ranged</strong> weapons.</p>",
       "disabled": false,
       "duration": {
         "combat": null,
         "rounds": null,
         "seconds": null,
         "startRound": null,
-        "startTime": null,
+        "startTime": 298800,
         "startTurn": null,
         "turns": null
       },
       "flags": {
-        "fabula-ultima-companion": {
-          "crossScene": false,
-          "directorPermanent": false
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "UwJOW7DPw9XCGPsZ",
+          "originalParentId": "bRbJl1AxELZ0TLLo",
+          "originalUuid": "Item.bRbJl1AxELZ0TLLo.ActiveEffect.UwJOW7DPw9XCGPsZ"
+        },
+        "statuscounter": {
+          "config": {
+            "durationType": 0,
+            "modifyDuration": false,
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
         }
       },
-      "img": null,
+      "img": "icons/skills/ranged/target-bullseye-arrow-glowing.webp",
       "name": "Ranged Weapon Mastery",
       "origin": null,
       "sort": 0,
       "statuses": [],
       "system": {
         "tags": [
-          "buff"
+          "Class Skill",
+          "Passive",
+          "Sharpshooter"
         ]
       },
       "tint": "#ffffff",
@@ -95,7 +109,16 @@
       "max_level": "4",
       "name": "Ranged Weapon Mastery",
       "on_activate_effect_ref": "",
+      "passive_check_bonus_formula": "",
+      "passive_damage_bonus_formula": "",
+      "passive_logic_action": "",
+      "post_damage_effect_ref": "",
+      "pre_activate_effect_ref": "",
       "reaction_config_table": {},
+      "recipe": "",
+      "recipe_amount": "",
+      "recipe_resource": "",
+      "recipe_target": "",
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_range": "",

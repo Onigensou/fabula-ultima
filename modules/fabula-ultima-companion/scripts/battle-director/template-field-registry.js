@@ -53,6 +53,13 @@ const NOTIFY_VIS = `equalText(sameRow("effect_kind",''), "notify")`;
 // change_damage_element — override the in-flight attack's element (Tinkerer Infusions).
 const CHANGE_EL_VIS = `equalText(sameRow("effect_kind",''), "change_damage_element")`;
 const CHECK_DIE_SWAP_VIS = `equalText(sameRow("effect_kind",''), "check_die_swap")`;
+// adjust_accuracy — action-level accuracy override (Magical Artillery, Adversity,
+// Cognitive Focus, Crossfire). The DEFENDER twin (adjust_defense) reuses no fields.
+const ADJUST_ACC_VIS = `equalText(sameRow("effect_kind",''), "adjust_accuracy")`;
+// modify_turns — adjust a target's action count this round / next turn (Stop).
+const MODIFY_TURNS_VIS = `equalText(sameRow("effect_kind",''), "modify_turns")`;
+// create_bond — form an FU Bond (emotion) toward a creature (Heart of Darkness).
+const CREATE_BOND_VIS = `equalText(sameRow("effect_kind",''), "create_bond")`;
 
 function textCol(key, colName, { tooltip = "", vis = "" } = {}) {
   return {
@@ -125,6 +132,24 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
     { key: "outgoing", value: "Outgoing (attacker, pre-resolve)" },
     { key: "incoming", value: "Incoming (victim, at HP-write)" },
   ], { tooltip: "Which side adjust_damage modifies.", vis: ADJUST_VIS, defaultValue: "outgoing" }),
+  // adjust_accuracy config — action-level accuracy override (the accuracy twin of
+  // adjust_damage). Was added (Magical Artillery / Adversity / Cognitive Focus /
+  // Crossfire) without effect_table columns → its operand was data-only / strippable
+  // on a sheet save. Register so boot self-heals the columns. See [[feedback_csb_template_gating]].
+  textCol("accuracy_amount", "Accuracy Amount", { tooltip: "adjust_accuracy: the operand (number or formula) combined with the action's accuracy total. e.g. SL * 2, min(STATUS_COUNT,3).", vis: ADJUST_ACC_VIS }),
+  selectCol("accuracy_operation", "Accuracy Op", [
+    { key: "add",      value: "Add" },
+    { key: "subtract", value: "Subtract" },
+    { key: "set",      value: "Set (e.g. Crossfire → 0 = miss)" },
+  ], { tooltip: "adjust_accuracy: how Accuracy Amount combines with the in-flight accuracy total. Add raises the total (recomputes hit/miss); Set overrides it (Crossfire sets 0).", vis: ADJUST_ACC_VIS, defaultValue: "add" }),
+  // modify_turns config — adjust a target's remaining actions (Stop = -1, min 0).
+  // turns_delta lands this round; an unspendable reduction carries to the NEXT turn
+  // (combatant.flags.pendingTurnDebt). Was data-only until registered here.
+  textCol("turns_delta", "Turns Delta", { tooltip: "modify_turns: signed change to the target's action count (e.g. -1 = one fewer action; positive = grant an extra action). Lands this round, else carries one-time to the target's next turn.", vis: MODIFY_TURNS_VIS }),
+  textCol("turns_floor", "Turns Floor", { tooltip: "modify_turns: lower clamp on the target's remaining actions this round (default 0 — can't drop below 0).", vis: MODIFY_TURNS_VIS }),
+  // create_bond config — the Bond's emotion when no AE template supplies one
+  // (the AE template's flags.bondAE.emotions wins when present). Heart of Darkness.
+  textCol("bond_emotion", "Bond Emotion", { tooltip: "create_bond: the emotion for the formed Bond (e.g. hatred) when the ae_template_ref AE doesn't carry flags.bondAE.emotions. Default 'hatred'.", vis: CREATE_BOND_VIS }),
   // apply_action_keyword config — which keyword to tag the in-flight hit with.
   // Extensible: each new keyword = one option here + one branch in
   // recomputePerTargetDamages. Author via a creature_will_deal_damage reaction
@@ -179,6 +204,14 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   // default charges. Register so boot-3b self-heals the column. See Burning Grasp.
   textCol("ae_initial_charges", "Initial Charges", { tooltip: "apply_ae: charge count to grant (add_charges: amount to add per application; otherwise the new AE's starting charges). Blank = AE template's charges.", vis: APPLY_AE_VIS }),
   textCol("ae_initial_charges_max", "Charges Max", { tooltip: "apply_ae add_charges: cap on total charges. Blank = template chargesMax / uncapped.", vis: APPLY_AE_VIS }),
+  // apply_ae replace_family group id. When ae_duplicate_mode is replace_family
+  // (or replace_family_per_caster), only ONE AE carrying this family may exist
+  // on a creature — re-applying a sibling variant (e.g. Elemental Shroud Fire
+  // over Ice) replaces the prior one even though name + status differ. Blank =
+  // fall back to the AE template's own flags.fabula-ultima-companion.aeFamily.
+  // Data-only without a column → strippable on a sheet save; register so
+  // boot-3b self-heals it. See Elemental Shroud / Elemental Weapon (Hina).
+  textCol("ae_family", "AE Family", { tooltip: "apply_ae replace_family: group id for the 'one of its kind per creature' rule (e.g. elemental-shroud). Blank = use the AE template's aeFamily flag.", vis: APPLY_AE_VIS }),
   selectCol("auto_target", "Auto-target", [
     { key: "auto",    value: "Auto — GM skips, player confirms (default)" },
     { key: "skip",    value: "Always skip (no prompt)" },

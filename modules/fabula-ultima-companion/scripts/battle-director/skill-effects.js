@@ -173,7 +173,7 @@ export async function sweepTransientAEsAtSceneEnd() {
 //     if (ae) await ae.delete();
 //   }
 export async function resolveDamageReactions({ target, curHp, rawDamage, sourceActor = null } = {}) {
-  const result = { newHp: Math.max(0, curHp - rawDamage), dealtDamage: Math.max(0, rawDamage), consumedAeIds: [], fired: [] };
+  const result = { newHp: Math.max(0, curHp - rawDamage), dealtDamage: Math.max(0, rawDamage), consumedAeIds: [], fired: [], followUp: [] };
   if (!target || rawDamage <= 0) return result;
 
   // Running landed-damage value the incoming adjust_damage rows mutate.
@@ -192,7 +192,12 @@ export async function resolveDamageReactions({ target, curHp, rawDamage, sourceA
     return resolver;
   };
 
-  for (const ae of (target.effects?.contents ?? Array.from(target.effects ?? []))) {
+  // Walk `appliedEffects` (not `.effects`) so equipped-gear AEs are seen too:
+  // a `transfer:true` AE on an accessory surfaces here when worn and drops out
+  // when equipment-swap disables it on unequip. Direct actor AEs (Mercy) are
+  // a subset of appliedEffects, so no regression. appliedEffects already
+  // excludes disabled, but keep the guard for the rare direct-disabled case.
+  for (const ae of (target.appliedEffects ?? target.effects?.contents ?? Array.from(target.effects ?? []))) {
     if (ae.disabled) continue;
     const cfg = ae.flags?.[FLAG_NS]?.reactionConfig;
     if (!cfg || typeof cfg !== "object") continue;
@@ -205,14 +210,39 @@ export async function resolveDamageReactions({ target, curHp, rawDamage, sourceA
       const src = tRow.reaction_source ?? "self";
       if (src !== "self" && src !== "all" && src !== "") continue;
 
+      // Optional condition_formula gate, evaluated against the victim. Lets a
+      // once-per-conflict reducer (Ninja Log) refuse to re-fire while its
+      // wearer-side spent-marker is up ("HAS_STATUS_NINJA_LOG_SPENT == 0").
+      const condRaw = String(tRow.condition_formula ?? "").trim();
+      if (condRaw) {
+        try {
+          const { evaluateFormula } = await getSkillFormulas();
+          if (!Number(evaluateFormula(condRaw, await getResolver(), 0))) continue;
+        } catch (e) {
+          warn(`resolveDamageReactions: condition_formula "${condRaw}" threw on AE "${ae.name}"`, e);
+          continue;
+        }
+      }
+
       // Filter: damage_outcome (evaluated against the ORIGINAL incoming damage).
       const outcome = tRow.reaction_damage_outcome ?? "any";
       if (outcome === "would_reduce_to_zero" && (curHp - rawDamage) > 0) continue;
 
-      // Find effect row by label — must be an incoming adjust_damage row.
-      const effRow = Object.values(effectTable)
-        .find((r) => r.effect_label === tRow.reaction_effect_ref);
+      // `reaction_effect_ref` may point DIRECTLY at an incoming adjust_damage
+      // row, OR at a `chain` whose steps are exactly one adjust_damage (the
+      // reduction, run synchronously here) plus follow-ups (e.g. apply_ae a
+      // "spent" marker). The follow-ups are stashed on result.followUp and run
+      // by the caller through the normal executor AFTER the HP write.
+      let effRow = Object.values(effectTable).find((r) => r.effect_label === tRow.reaction_effect_ref && !r.$deleted);
       if (!effRow) continue;
+      let followUpRows = [];
+      if (String(effRow.effect_kind ?? "").toLowerCase() === "chain") {
+        const stepRows = String(effRow.chain_steps ?? "").split(/[,\n]/).map((s) => s.trim()).filter(Boolean)
+          .map((lbl) => Object.values(effectTable).find((r) => r.effect_label === lbl && !r.$deleted)).filter(Boolean);
+        effRow = stepRows.find((r) => String(r.effect_kind ?? "").toLowerCase() === "adjust_damage");
+        if (!effRow) continue;
+        followUpRows = stepRows.filter((r) => r !== effRow);
+      }
       if (String(effRow.effect_kind ?? "").toLowerCase() !== "adjust_damage") continue;
       const { op, amountFormula, stage } = readAdjustRow(effRow);
       if (stage !== "incoming" || !DAMAGE_OPS.has(op)) continue;
@@ -232,6 +262,11 @@ export async function resolveDamageReactions({ target, curHp, rawDamage, sourceA
         result.fired.push({ aeId: ae.id, aeName: ae.name, op, amount, from: before, to: dmg });
         if (effRow.consume_self && !result.consumedAeIds.includes(ae.id)) {
           result.consumedAeIds.push(ae.id);
+        }
+        // Stash chain follow-ups (e.g. apply_ae the "spent" marker) for the
+        // caller to run post-write through the normal executor.
+        if (followUpRows.length) {
+          result.followUp.push({ rows: followUpRows, effectTable, aeName: ae.name });
         }
       }
     }
@@ -423,7 +458,7 @@ export async function applyDamageToTarget({
     }
 
     // Overflow → HP, via the reaction AEs (Mercy clamp etc.).
-    const { newHp, dealtDamage, consumedAeIds, fired } = await resolveDamageReactions({ target, curHp, rawDamage: toHp });
+    const { newHp, dealtDamage, consumedAeIds, fired, followUp } = await resolveDamageReactions({ target, curHp, rawDamage: toHp });
     const update = { "system.props.current_hp": newHp };
     if (absorbed > 0) update["system.props.shield_value"] = newShield;
     await target.update(update);
@@ -432,6 +467,22 @@ export async function applyDamageToTarget({
       if (ae) {
         try { await ae.delete(); }
         catch (e) { warn("applyDamageToTarget: consume AE delete failed", e); }
+      }
+    }
+    // Run post-reduction follow-up effects (Ninja Log → apply "Ninja Log Spent"
+    // marker on the wearer) through the normal executor, AFTER the HP write.
+    // The marker is a direct actor AE independent of the gear, so the once-per-
+    // conflict gate survives unequip/re-equip.
+    if (Array.isArray(followUp) && followUp.length) {
+      const bdf = globalThis.FUCompanion?.api?.experimental?.battleDirector;
+      const dirf = bdf?.getActiveDirector?.() ?? null;
+      const tokf = target.getActiveTokens?.()?.[0]?.document ?? null;
+      for (const fu of followUp) {
+        const fctx = { director: dirf, reactorActor: target, reactorToken: tokf, skill: null, payload: {}, effect_table: fu.effectTable, dCombat: dirf?.dCombat ?? null };
+        for (const frow of (fu.rows ?? [])) {
+          try { await applyEffectRow(frow, fctx); }
+          catch (e) { warn(`applyDamageToTarget: follow-up "${frow.effect_label}" failed`, e); }
+        }
       }
     }
     const reactionNote = fired.length ? ` (reactions: ${fired.map((f) => f.aeName).join(", ")})` : "";
@@ -1208,10 +1259,31 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
   // which callers may SURFACE as a dimmed pill with the cost badge ("Low IP").
   // `unavailableKind` lets the UI distinguish: "cost" → show dimmed; "condition"
   // → keep hidden (trigger doesn't apply; surfacing it is noise / info-leak).
+  //
+  // The gate is checked in TWO places: the reaction_config_table row's own
+  // condition_formula AND the condition_formula on the EFFECT-CHAIN ENTRY row the
+  // reaction points to (reaction_effect_ref). Canon puts conditional behavior in
+  // effect_table rows, so authors commonly leave the reaction row blank and gate
+  // the linked chain instead (Agony's `agony_recover` chain carries
+  // "BOND_WITH_ANY_TARGET >= 1"). Without the second check that reaction always
+  // reads as available — surfacing a useless "react" blade (or auto-firing into a
+  // no-op chain) even when the gate can't pass. We gate on the ENTRY row only: a
+  // falsy entry-row condition skips the whole referenced effect at fire-time
+  // (applyEffectRow), so it maps 1:1 to "this reaction can't do anything now".
+  // Chain STEP conditions stay soft per-step skips, so they don't gate here.
   async function evaluateAvailability(row, effectTable, refLabel, carrierForFormula) {
     const cond = await evaluateConditionFormula(row, casterActor, payload, carrierForFormula);
     if (!cond.ok) {
       return { available: false, unavailableKind: "condition", unavailableReason: "Conditions not met" };
+    }
+    const entryRow = refLabel
+      ? Object.values(effectTable ?? {}).find((r) => r?.effect_label === refLabel && !r?.$deleted)
+      : null;
+    if (entryRow && entryRow !== row) {
+      const chainCond = await evaluateConditionFormula(entryRow, casterActor, payload, carrierForFormula);
+      if (!chainCond.ok) {
+        return { available: false, unavailableKind: "condition", unavailableReason: "Conditions not met" };
+      }
     }
     const cost = analyzeChainCost(effectTable, refLabel, casterActor, carrierForFormula);
     if (cost.ok && !cost.sufficient) {
@@ -2895,6 +2967,15 @@ const EFFECT_KIND_DISPATCH = {
 // migration ensures each has a dropdown option.
 export const SUPPORTED_EFFECT_KINDS = Object.keys(EFFECT_KIND_DISPATCH);
 
+// Publish for classic-script consumers that can't import ESM — chiefly the
+// reaction-config lint, which otherwise hardcodes (and drifts from) this list
+// and emits false EFFECT_KIND_UNKNOWN errors. Mirrors api.directorTriggers.
+try {
+  globalThis.FUCompanion = globalThis.FUCompanion ?? {};
+  globalThis.FUCompanion.api = globalThis.FUCompanion.api ?? {};
+  globalThis.FUCompanion.api.effectKinds = { all: new Set(SUPPORTED_EFFECT_KINDS) };
+} catch { /* non-fatal */ }
+
 // Human-readable dropdown labels for the CSB template `effect_kind` select.
 // One entry per SUPPORTED_EFFECT_KINDS key (the migration falls back to the key
 // itself if a label is missing, but keep this complete).
@@ -4253,6 +4334,30 @@ async function applyApplyAeEffect(row, ctx) {
       const existingSame = findSameStatusAe(actor, template);
       if (existingSame) { try { await existingSame.delete(); } catch (e) { warn("apply_ae replace_same_status delete failed", e); } }
       // fall through to create the fresh instance
+    } else if (baseMode === "replace_family") {
+      // "Only a single effect of its kind on a creature." Match by the AE's
+      // `aeFamily` flag (from the row's ae_family override or the template's
+      // own flag) so re-casting a DIFFERENT variant of the same effect
+      // (e.g. Elemental Shroud Fire over Ice) replaces the prior one even
+      // though name + status differ. DELETE every existing family member and
+      // fall through to a fresh create — NOT refresh-in-place: siblings carry
+      // different `statuses`/`name`/`changes`, and an in-place update merges
+      // (rather than replaces) the Set-typed `statuses`, leaving the old
+      // element's token icon behind. A clean delete+create guarantees the new
+      // variant fully supplants the old one.
+      const family = String(row.ae_family ?? template.flags?.[FLAG_NS]?.aeFamily ?? "").trim();
+      if (family) {
+        const fam = findFamilyAes(actor, family, isPerCaster ? casterUuid : null);
+        for (const ex of fam) {
+          try { await ex.delete(); } catch (e) { warn("apply_ae replace_family delete failed", e); }
+        }
+      } else {
+        // No family resolvable — degrade to a plain by-name replace so the row
+        // is never worse than the default.
+        warn(`skill-effects.apply_ae: replace_family on "${row.effect_label}" but no ae_family / template aeFamily — falling back to name replace`);
+        const existing = findDuplicateAe(actor, template, isPerCaster ? { casterActorUuid: casterUuid } : null);
+        if (existing) replaceTarget = existing;
+      }
     } else {
       const existing = findDuplicateAe(actor, template, isPerCaster ? { casterActorUuid: casterUuid } : null);
       if (existing) {
@@ -4466,6 +4571,15 @@ async function applyApplyAeEffect(row, ctx) {
 
     if (!data.flags) data.flags = {};
     data.flags[FLAG_NS] = data.flags[FLAG_NS] ?? {};
+    // Family tag (replace_family). Carry the resolved family onto the created
+    // AE so a FUTURE cast of a sibling variant can find + replace it. Prefer
+    // the row override; otherwise the template's own aeFamily (already cloned
+    // into data.flags) stands. Stamping here means a row-only ae_family works
+    // even on a template that doesn't declare the flag itself.
+    {
+      const familyTag = String(row.ae_family ?? data.flags[FLAG_NS].aeFamily ?? "").trim();
+      if (familyTag) data.flags[FLAG_NS].aeFamily = familyTag;
+    }
     // Per-AE duration counter (homebrew rule: default 3 turns, tick at
     // the start of the AE applier's turn; see [[ae-default-3-turn-duration]]).
     // Templates can override by setting `duration.rounds` to a positive
@@ -4700,6 +4814,32 @@ function findDuplicateAe(actor, template, scope = null) {
     return eff;
   }
   return null;
+}
+
+// `replace_family` matcher. An AE belongs to a "family" when it carries
+// `flags.fabula-ultima-companion.aeFamily === <family>`. Unlike findDuplicateAe
+// (name) / findSameStatusAe (status), this groups AEs that differ in name AND
+// status but represent ONE mutually-exclusive effect — e.g. all five
+// "Elemental Shroud (<element>)" AEs share `aeFamily: "elemental-shroud"`, so
+// re-casting with a different element replaces the prior one ("only a single
+// effect of its kind on a creature"). Returns ALL matches (in iteration order)
+// so the caller can refresh the first in place and delete the rest.
+// `casterFilter` (the per-caster variant) restricts to AEs this caster
+// applied, same as findDuplicateAe's scope.
+function findFamilyAes(actor, family, casterFilter = null) {
+  const fam = String(family ?? "").trim();
+  if (!actor?.effects || !fam) return [];
+  const out = [];
+  for (const eff of actor.effects) {
+    const aeFamily = String(eff.flags?.["fabula-ultima-companion"]?.aeFamily ?? "").trim();
+    if (aeFamily !== fam) continue;
+    if (casterFilter != null) {
+      const aeCaster = eff.flags?.["fabula-ultima-companion"]?.directorAppliedBy?.reactorActorUuid ?? null;
+      if (aeCaster !== casterFilter) continue;
+    }
+    out.push(eff);
+  }
+  return out;
 }
 
 // `replace_same_status` matcher (Hinder). An existing enabled AE is "the same
@@ -6240,6 +6380,31 @@ function collectBondedNames(actor) {
   }
   return taken;
 }
+
+// nameLower → Set(emotionsLower) of the actor's CURRENT bonds, mirroring
+// getBondSlots' AE-override (an AE bondAE replaces a same-name prop bond's
+// emotions). Lets create_bond skip only when the target already carries the
+// emotion it would apply — while still applying (and runtime-overriding) over
+// a DIFFERENT existing Bond.
+function collectBondEmotions(actor) {
+  const map = new Map();
+  const p = actor?.system?.props ?? {};
+  const toSet = (arr) => new Set(arr.map((e) => String(e ?? "").trim().toLowerCase()).filter(Boolean));
+  for (const n of FU_BOND_PROP_SLOTS) {
+    const nm = String(p[`bond_${n}`] ?? "").trim();
+    if (!nm) continue;
+    map.set(nm.toLowerCase(), toSet([p[`emotion_${n}_1`], p[`emotion_${n}_2`], p[`emotion_${n}_3`]]));
+  }
+  for (const eff of (actor?.appliedEffects ?? actor?.effects ?? [])) {
+    const b = eff?.flags?.[FLAG_NS]?.bondAE;
+    if (!b) continue;
+    const nm = String(b.bond_name ?? b.name ?? "").trim();
+    if (!nm) continue;
+    const emo = Array.isArray(b.emotions) ? b.emotions : [b.emotion_1, b.emotion_2, b.emotion_3];
+    map.set(nm.toLowerCase(), toSet(emo));   // AE overrides prop emotions
+  }
+  return map;
+}
 async function applyCreateBondEffect(row, ctx) {
   const caster = ctx.reactorActor;
   if (!caster) { warn(`skill-effects.create_bond: no reactorActor`); return { ok: false, kind: "create_bond", reason: "no-reactor" }; }
@@ -6248,7 +6413,6 @@ async function applyCreateBondEffect(row, ctx) {
 
   const sourceLabel = ctx.skill?.name ?? "Bond";
   const fallbackEmotion = String(row.bond_emotion ?? "hatred").trim().toLowerCase();
-  const taken = collectBondedNames(caster);
 
   // Resolve the configured AE template once (icon/name/description/statuses +
   // flags.bondAE.emotions + any lifetime opt-in). null → inline fallback below.
@@ -6256,13 +6420,29 @@ async function applyCreateBondEffect(row, ctx) {
   const template = aeRef ? await resolveAeTemplate(aeRef, ctx) : null;
   if (aeRef && !template) warn(`skill-effects.create_bond: ae_template_ref "${aeRef}" not found — using inline fallback`);
 
+  // The emotion(s) this effect applies (template's bondAE.emotions, else the
+  // row's bond_emotion). Skip a target only when it ALREADY carries ALL of
+  // these — applying over a DIFFERENT existing Bond is allowed; the AE bond
+  // runtime-overrides it (getBondSlots), non-destructively, reverting on removal.
+  const appliedEmotions = (() => {
+    const tplEmo = template?.flags?.[FLAG_NS]?.bondAE?.emotions;
+    const arr = Array.isArray(tplEmo) && tplEmo.length ? tplEmo : [fallbackEmotion];
+    return arr.map((e) => String(e).trim().toLowerCase()).filter(Boolean);
+  })();
+  const bondEmo = collectBondEmotions(caster);
+
   const toCreate = [];
   const applied = [];
   for (const token of tr.tokens) {
     const name = String(token.actor?.name ?? token.name ?? "").trim();
     if (!name) continue;
-    if (taken.has(name.toLowerCase())) { log(`create_bond: ${caster.name} already has a Bond toward ${name}; skipping`); continue; }
-    taken.add(name.toLowerCase());
+    const existing = bondEmo.get(name.toLowerCase());
+    if (existing && appliedEmotions.every((e) => existing.has(e))) {
+      log(`create_bond: ${caster.name} already has a ${appliedEmotions.join("/")} Bond toward ${name}; skipping`);
+      continue;
+    }
+    // Record so a 2nd same-name target in this call is also caught.
+    bondEmo.set(name.toLowerCase(), new Set([...(existing ?? []), ...appliedEmotions]));
 
     const emoSlug = (fallbackEmotion || "bond").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
     const data = template

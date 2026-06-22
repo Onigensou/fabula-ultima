@@ -60,6 +60,7 @@
   const AE_DUPLICATE_OPTIONS     = [
     "skip", "replace", "stack", "remove", "ask",
     "add_charges", "replace_same_status",
+    "replace_family", "replace_family_per_caster",
     "replace_per_caster", "skip_per_caster", "remove_per_caster",
   ];
   const ON_EMPTY_OPTIONS         = ["abort", "skip"];
@@ -184,6 +185,7 @@
       grant_target: "self",
       ae_template_ref: "",
       ae_duplicate_mode: "replace",
+      ae_family: "",
       charge_key: "",
       on_empty: "abort",
       count: "1",
@@ -223,7 +225,7 @@
   // ---------------------------------------------------------------------------
   const EFFECT_KIND_FIELDS = Object.freeze({
     grant:            ["grant_resource", "grant_amount", "grant_target"],
-    apply_ae:         ["ae_template_ref", "grant_target", "ae_duplicate_mode"],
+    apply_ae:         ["ae_template_ref", "grant_target", "ae_duplicate_mode", "ae_family"],
     consume_charge:   ["charge_key", "grant_target", "on_empty", "count"],
     redirect_target:  ["target_select", "rebuild_card"],
     chain:            ["chain_steps"],
@@ -368,6 +370,7 @@
 
         ${formRow("AE Template Ref", inputHtml("ae_template_ref", row.ae_template_ref ?? "", { placeholder: "AE name or Item.x.ActiveEffect.y UUID" }), "ae_template_ref")}
         ${formRow("Duplicate Mode", selectHtml("ae_duplicate_mode", row.ae_duplicate_mode ?? "replace", AE_DUPLICATE_OPTIONS), "ae_duplicate_mode")}
+        ${formRow("AE Family", inputHtml("ae_family", row.ae_family ?? "", { placeholder: "replace_family group id (e.g. elemental-shroud)" }), "ae_family", "Only one AE of this family per creature (replace_family).")}
 
         ${formRow("Charge Key", inputHtml("charge_key", row.charge_key ?? "", { placeholder: "e.g. protect" }), "charge_key")}
         ${formRow("On Empty", selectHtml("on_empty", row.on_empty ?? "abort", ON_EMPTY_OPTIONS), "on_empty")}
@@ -424,7 +427,7 @@
     // Label + kind are always visible.
     const allFields = new Set([
       "grant_resource", "grant_amount", "grant_target",
-      "ae_template_ref", "ae_duplicate_mode",
+      "ae_template_ref", "ae_duplicate_mode", "ae_family",
       "charge_key", "on_empty", "count",
       "target_select", "rebuild_card",
       "chain_steps",

@@ -473,6 +473,44 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         }
         return best;
       }
+      // 1 if the ACTING creature (payload source/subject — e.g. the Heart of
+      // Darkness caster) already holds a Bond toward THIS candidate (`actor`),
+      // matched by name across BOTH authored prop bonds and AE-carried bonds
+      // (getBondSlots unions them). Designed for a `target_filter` on a pick row:
+      // "SOURCE_BONDED_TO_ME == 0" excludes creatures the caster is already bonded
+      // to, so a HoD-style picker only offers valid (unbonded) targets instead of
+      // a creature whose create_bond would no-op. The candidate is `actor`; the
+      // caster comes from the trigger payload (self-reaction → source == reactor).
+      case "SOURCE_BONDED_TO_ME": {
+        if (!actor) return 0;
+        const srcRef = payload?.sourceActorUuid ?? payload?.subjectActorUuid ?? null;
+        const src = srcRef ? _resolveActorByUuidSync(String(srcRef)) : null;
+        if (!src) return 0;
+        const slots = getBondSlots(src);
+        if (!slots.length) return 0;
+        const myNames = [actor.name, actor.token?.name, actor.prototypeToken?.name]
+          .filter(Boolean).map((n) => String(n).toLowerCase());
+        return slots.some((s) => myNames.includes(String(s.name).toLowerCase())) ? 1 : 0;
+      }
+      // Like SOURCE_BONDED_TO_ME but only counts a bond that ALREADY carries the
+      // HATRED emotion (honoring getBondSlots' AE-override). Heart of Darkness's
+      // pick filter uses "SOURCE_HATRED_BOND_TO_ME == 0" so it excludes only
+      // creatures the caster already HATES (re-applying would be a no-op) while
+      // still offering creatures with a different Bond — whose bond the new
+      // Bond of Hatred AE then overrides at runtime.
+      case "SOURCE_HATRED_BOND_TO_ME": {
+        if (!actor) return 0;
+        const srcRef = payload?.sourceActorUuid ?? payload?.subjectActorUuid ?? null;
+        const src = srcRef ? _resolveActorByUuidSync(String(srcRef)) : null;
+        if (!src) return 0;
+        const slots = getBondSlots(src);
+        if (!slots.length) return 0;
+        const myNames = [actor.name, actor.token?.name, actor.prototypeToken?.name]
+          .filter(Boolean).map((n) => String(n).toLowerCase());
+        return slots.some((s) =>
+          myNames.includes(String(s.name).toLowerCase()) && s.emotions.includes("hatred")
+        ) ? 1 : 0;
+      }
       // Damage-card payload reads (per-target — payload is per-event)
       // RAW_DAMAGE: the PRE-affinity damage this hit WILL deal — available on the
       // pre-resolve creature_will_deal_damage payload (state-handlers stamps
@@ -576,6 +614,18 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         const k  = String(payload?.actionKind ?? "").toLowerCase();
         const st = String(payload?.actionSkillType ?? "").toLowerCase();
         return (k === "spell" || st === "spell") ? 1 : 0;
+      }
+      // 1 if the action is an OFFENSIVE spell — a Spell (see ACTION_IS_SPELL)
+      // that ALSO rolls a Check (the ⚡ offensive spell in FU; buff/heal spells
+      // are isCheck:false). Reads payload.actionIsCheck, stamped on the
+      // creature_performs_action payload. Powers Magical Artillery's "when you
+      // cast an offensive spell" gate — narrower than ACTION_IS_SPELL, which
+      // also matches non-Check utility spells.
+      case "ACTION_IS_OFFENSIVE_SPELL": {
+        const k  = String(payload?.actionKind ?? "").toLowerCase();
+        const st = String(payload?.actionSkillType ?? "").toLowerCase();
+        const isSpell = (k === "spell" || st === "spell");
+        return (isSpell && payload?.actionIsCheck === true) ? 1 : 0;
       }
       // 1 if the action targets EXACTLY ONE creature AND that creature carries MY
       // Focus (per-applier, status fud-focus), else 0. Powers Hypercognition's
@@ -681,6 +731,13 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         const wr = String(payload?.weaponRange ?? "").toLowerCase();
         return (wr.includes("mele") || String(payload?.weaponType ?? "").toLowerCase() === "melee") ? 1 : 0;
       }
+      // Resource of the action's pending damage (creature_will_deal_damage payload
+      // carries `valueType`). Lets a damage rider scope to HP vs MP/Shield — e.g.
+      // Adversity's "+2 damage" must NOT inflate Drain Spirit's MP burn (MP loss is
+      // not "damage" in FU). Absent valueType defaults to "hp" so legacy HP riders
+      // and contexts without the field still read DAMAGE_IS_HP == 1 (backward-safe).
+      case "DAMAGE_IS_HP": return String(payload?.valueType ?? "hp").toLowerCase() === "hp" ? 1 : 0;
+      case "DAMAGE_IS_MP": return String(payload?.valueType ?? "").toLowerCase() === "mp" ? 1 : 0;
       // How far an incoming attack fell SHORT of the defender's Defense
       // (DEF − accuracy total), threaded onto the creature_miss_action payload by
       // the §7d emit. Matador's Fancy Footwork gates on it: "if their Accuracy
@@ -1626,7 +1683,13 @@ function getBondSlots(actor) {
     ];
     out.push({ slot: n, name: String(name).trim(), emotions });
   }
-  // AE-carried temporary bonds (non-destructive).
+  // AE-carried temporary bonds (non-destructive). An AE bond OVERRIDES any
+  // same-name prop/earlier bond at RUNTIME: its emotions REPLACE that slot's,
+  // so e.g. Heart of Darkness's "Bond of Hatred" makes the bearer read as
+  // Hatred toward the target while the AE exists, and the original prop Bond
+  // returns automatically when the AE is removed (no prop is ever written —
+  // pure runtime override). A name with no existing slot is added fresh. This
+  // also means an AE bond never double-counts against a same-name prop bond.
   let aeIdx = 0;
   for (const eff of (actor.appliedEffects ?? actor.effects ?? [])) {
     const b = eff?.flags?.["fabula-ultima-companion"]?.bondAE;
@@ -1636,7 +1699,14 @@ function getBondSlots(actor) {
     const emotions = Array.isArray(b.emotions)
       ? b.emotions.map((e) => String(e ?? "").trim().toLowerCase()).filter(Boolean)
       : [b.emotion_1, b.emotion_2, b.emotion_3].map((e) => String(e ?? "").trim().toLowerCase());
-    out.push({ slot: `ae${aeIdx++}`, name, emotions, fromAE: true });
+    const existing = out.find((s) => s.name.toLowerCase() === name.toLowerCase());
+    if (existing) {
+      existing.emotions = emotions;     // override the prop bond's emotions
+      existing.fromAE = true;
+      existing.overrodeBond = true;
+    } else {
+      out.push({ slot: `ae${aeIdx++}`, name, emotions, fromAE: true });
+    }
   }
   return out;
 }

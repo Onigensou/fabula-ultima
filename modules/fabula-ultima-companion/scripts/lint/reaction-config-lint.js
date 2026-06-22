@@ -167,16 +167,27 @@
   const TARGETING_MODE_VALUES   = new Set(["exact", "up_to", "all"]);
   const TARGETING_CATEGORY_VALUES = new Set(["", "creature", "ally", "enemy"]);
   // Mirror of the engine's dispatch switch (skill-effects.js applyEffectRow) +
-  // the sidecar/pre-resolve kinds. Keep in sync when a new effect_kind ships.
-  const EFFECT_KIND_VALUES      = new Set([
+  // Prefer the engine's live kind registry (api.effectKinds, published by
+  // skill-effects.js = keys(EFFECT_KIND_DISPATCH)) so this never drifts; the
+  // hardcoded set is only a boot-order fallback. Drift here was the cause of
+  // false EFFECT_KIND_UNKNOWN errors on newer kinds (adjust_accuracy, etc.).
+  const EFFECT_KIND_VALUES_FALLBACK = new Set([
     "grant", "apply_ae", "consume_charge", "consume_resource",
-    "redirect_target", "chain", "open_action_menu", "targeting",
-    "remove_tagged_ae", "substitute_cost",
-    "set_resource", "roll_loot_table", "deal_damage", "equip_swap",
-    "encyclopedia_record",
-    // Unified damage adjustment (replaced add_damage + modify_damage_taken).
-    "adjust_damage",
+    "redirect_target", "shield_redirect", "chain", "chance", "open_action_menu", "targeting",
+    "remove_tagged_ae", "transfer_ae", "substitute_cost", "summon", "destroy_summon",
+    "set_resource", "roll_loot_table", "deal_damage", "equip_swap", "add_target",
+    "encyclopedia_record", "notify", "confirm", "leave_combat", "negate_action",
+    "free_action", "adjust_charges", "prompt_number", "prompt_element", "save_check",
+    "take_turn_next", "modify_turns", "create_bond", "change_damage_element",
+    "apply_action_keyword", "check_die_swap",
+    "adjust_damage", "adjust_accuracy", "adjust_defense", "adjust_grant", "adjust_cost",
+    "force_reroll",
   ]);
+  function getEffectKindValues() {
+    const reg = globalThis.FUCompanion?.api?.effectKinds;
+    if (reg?.all instanceof Set && reg.all.size) return reg.all;
+    return EFFECT_KIND_VALUES_FALLBACK;
+  }
   // Reserved target_ref words resolved by the targeting resolver
   // (skill-targeting.js RESERVED_REFS) — these are NOT effect_labels, so a
   // target_ref check must accept them without demanding a matching row.
@@ -372,7 +383,7 @@
         }));
         continue;
       }
-      if (!EFFECT_KIND_VALUES.has(kind)) {
+      if (!getEffectKindValues().has(kind)) {
         issues.push(mkIssue({
           code: "EFFECT_KIND_UNKNOWN",
           location: `${loc}.effect_kind`,
@@ -988,6 +999,7 @@
     "grant_target",
     "ae_template_ref",
     "ae_duplicate_mode",
+    "ae_family",
     "target_prompt",
     "chain_steps",
     "charge_key",

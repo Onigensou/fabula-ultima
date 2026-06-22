@@ -649,9 +649,9 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
-        "uniqueId": "UhJH8T9TEmsJnQVc"
+        "uniqueId": "4sTRuDSN47Q0T4Wj"
       },
       "type": "equippableItem"
     },
@@ -1717,9 +1717,9 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": true,
-        "uniqueId": "bRbJl1AxELZ0TLLo"
+        "uniqueId": "Q2T7Zz0lECrQ4win"
       },
       "type": "equippableItem"
     },
@@ -1894,9 +1894,9 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
-        "uniqueId": "pN90SZleopmB3PM1"
+        "uniqueId": "x7RoCErd12Udc8RZ"
       },
       "type": "equippableItem"
     },
@@ -2175,6 +2175,16 @@
           "max_level": "1",
           "name": "Zero Trigger: Strategy",
           "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "ENEMY_DISTINCT_STATUS_COUNT >= 2",
+              "reaction_effect_ref": "ZP Strategy",
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "self",
+              "reaction_source": "self",
+              "reaction_trigger": "turn_end"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
@@ -2188,9 +2198,9 @@
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.fIqMqHJBaoXfcJln"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
-        "uniqueId": "dkCavl0YcUWMPkRj"
+        "uniqueId": "yAEud7M3MV4edahv"
       },
       "type": "equippableItem"
     },
@@ -2316,9 +2326,9 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
-        "uniqueId": "5h2gvjbvw26dQSU4"
+        "uniqueId": "04XUHlRJhyvJIaGb"
       },
       "type": "equippableItem"
     },
@@ -2542,7 +2552,7 @@
           "skill_type": "Active"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": true,
         "uniqueId": "1w2LjUOVhlbLR8nn"
       },
@@ -2705,7 +2715,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "lmVVp510JjCT0H0c"
       },
@@ -2830,9 +2840,9 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
-        "uniqueId": "pGPOqWRyrAFLbHho"
+        "uniqueId": "FZX0P5HD6UfIIk9i"
       },
       "type": "equippableItem"
     },
@@ -2958,9 +2968,9 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
-        "uniqueId": "A68h8dHO8F75awX4"
+        "uniqueId": "7opUr817pDyJZsJt"
       },
       "type": "equippableItem"
     },
@@ -3212,9 +3222,9 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
-        "uniqueId": "P4dQ5Ms73YVs9gPv"
+        "uniqueId": "3Un5X30CM2z5J1pl"
       },
       "type": "equippableItem"
     },
@@ -3319,9 +3329,9 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
-        "uniqueId": "wVVluaGNDUiNVLUw"
+        "uniqueId": "yh4vm3wru6nAkkaN"
       },
       "type": "equippableItem"
     },
@@ -3446,9 +3456,9 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
-        "uniqueId": "vHU5RXkhcOoFrXtm"
+        "uniqueId": "tHqRjIhed3rEwo3q"
       },
       "type": "equippableItem"
     },
@@ -3700,7 +3710,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "hTb8c9ZREooiKs9k"
       },
@@ -3766,7 +3776,7 @@
           "max_level": "5",
           "name": "Cheap Shot",
           "optional_params": {},
-          "passive_logic_action": "<p>const TAG = \"[PASSIVE][CheapShot][MainAttack]\";</p><p>const norm = (v) =&gt; String(v ?? \"\").trim().toLowerCase();</p><p>const skipHidden = (reason = \"\") =&gt; {</p><p>__PAYLOAD.meta = __PAYLOAD.meta || {};</p><p>__PAYLOAD.meta.hidePassiveCard = true;</p><p>return context.skipPassive(reason, { notify: false });</p><p>};</p><p>// --------------------------------------------------</p><p>// 0) IMPORTANT:</p><p>// Cheap Shot should modify the ORIGINAL attack payload,</p><p>// not the separate autoPassive self-execution payload.</p><p>// So if this passive is currently running as autoPassive,</p><p>// skip here.</p><p>// --------------------------------------------------</p><p>const isAutoPassiveExecution =</p><p>__PAYLOAD?.meta?.isPassiveExecution === true ||</p><p>__PAYLOAD?.isPassiveExecution === true ||</p><p>norm(__PAYLOAD?.meta?.executionMode) === \"autopassive\" ||</p><p>norm(__PAYLOAD?.executionMode) === \"autopassive\";</p><p>if (isAutoPassiveExecution) {</p><p>return skipHidden(\"\");</p><p>}</p><p>// --------------------------------------------------</p><p>// 1) Owner / item</p><p>// --------------------------------------------------</p><p>const passiveOwner =</p><p>__PASSIVE_ACTOR ??</p><p>context.passiveOwner ??</p><p>null;</p><p>const passiveItem =</p><p>__PASSIVE_ITEM ??</p><p>context.passiveItem ??</p><p>null;</p><p>if (!passiveOwner || !passiveItem) {</p><p>return skipHidden(\"\");</p><p>}</p><p>// --------------------------------------------------</p><p>// 2) Resolve current action targets from the MAIN attack payload</p><p>// Cheap Shot only works if the attack only targeted 1 creature.</p><p>// --------------------------------------------------</p><p>const declaredTargets = [</p><p>...new Set(</p><p>(</p><p>(Array.isArray(__PAYLOAD?.originalTargetUUIDs) &amp;&amp; __PAYLOAD.originalTargetUUIDs.length)</p><p>? __PAYLOAD.originalTargetUUIDs</p><p>: (Array.isArray(__PAYLOAD?.targets) ? __PAYLOAD.targets : [])</p><p>)</p><p>.filter(Boolean)</p><p>.map(String)</p><p>)</p><p>];</p><p>if (declaredTargets.length !== 1) {</p><p>return skipHidden(\"\");</p><p>}</p><p>const targetUuid = declaredTargets[0];</p><p>const targetDoc = await fromUuid(targetUuid);</p><p>const targetActor = targetDoc?.actor ?? targetDoc;</p><p>if (!targetActor) {</p><p>return skipHidden(\"\");</p><p>}</p><p>// --------------------------------------------------</p><p>// 3) Detect whether the CURRENT action is an attack</p><p>// Valid when:</p><p>// - weapon branch</p><p>// - listType = Attack</p><p>// - skill_type / skillTypeRaw = attack</p><p>// --------------------------------------------------</p><p>const listType = norm(</p><p>__PAYLOAD?.meta?.listType ??</p><p>__PAYLOAD?.listType ??</p><p>\"\"</p><p>);</p><p>const skillTypeCandidates = [</p><p>__PAYLOAD?.core?.skillTypeRaw,</p><p>__PAYLOAD?.dataCore?.skillTypeRaw,</p><p>__PAYLOAD?.meta?.skillTypeRaw</p><p>].map(norm).filter(Boolean);</p><p>const detectedActionType = norm(</p><p>context.helpers?.getDetectedActionType?.() ?? \"\"</p><p>);</p><p>const weaponTypeHint = norm(</p><p>__PAYLOAD?.core?.weaponType ??</p><p>__PAYLOAD?.meta?.weaponTypeLabel ??</p><p>\"\"</p><p>);</p><p>const isAttackAction =</p><p>listType === \"attack\" ||</p><p>skillTypeCandidates.includes(\"attack\") ||</p><p>detectedActionType === \"weapon\" ||</p><p>!!weaponTypeHint;</p><p>if (!isAttackAction) {</p><p>return skipHidden(\"\");</p><p>}</p><p>// --------------------------------------------------</p><p>// 4) Count debuffs on the target</p><p>// Only Active Effects tagged \"debuff\" count.</p><p>// --------------------------------------------------</p><p>const toTagArray = (value) =&gt; {</p><p>if (value == null) return [];</p><p>if (Array.isArray(value)) return value.flatMap(toTagArray);</p><p>if (typeof value === \"string\") {</p><p>return value</p><p>.split(/[,\\n]/)</p><p>.map(s =&gt; s.trim())</p><p>.filter(Boolean);</p><p>}</p><p>if (typeof value === \"object\") {</p><p>return Object.values(value).flatMap(toTagArray);</p><p>}</p><p>return [];</p><p>};</p><p>const effectHasDebuffTag = (effect) =&gt; {</p><p>const candidates = [</p><p>effect?.tags,</p><p>effect?.system?.tags,</p><p>effect?.flags?.world?.tags,</p><p>effect?.flags?.[\"custom-system-builder\"]?.tags,</p><p>effect?.flags?.[\"fabula-ultima-companion\"]?.tags,</p><p>effect?.getFlag?.(\"world\", \"tags\"),</p><p>effect?.getFlag?.(\"custom-system-builder\", \"tags\"),</p><p>effect?.getFlag?.(\"fabula-ultima-companion\", \"tags\")</p><p>];</p><p>const tags = candidates.flatMap(toTagArray).map(norm).filter(Boolean);</p><p>return tags.includes(\"debuff\");</p><p>};</p><p>const debuffCount = Array.from(targetActor?.effects ?? []).filter(effect =&gt; {</p><p>if (!effect || effect.disabled) return false;</p><p>return effectHasDebuffTag(effect);</p><p>}).length;</p><p>if (debuffCount &lt;= 0) {</p><p>return skipHidden(\"\");</p><p>}</p><p>// --------------------------------------------------</p><p>// 5) Skill level</p><p>// --------------------------------------------------</p><p>const skillLevel = Math.max(</p><p>0,</p><p>Number(</p><p>passiveItem?.level ??</p><p>passiveItem?.system?.props?.level ??</p><p>passiveItem?.system?.level ??</p><p>0</p><p>) || 0</p><p>);</p><p>// --------------------------------------------------</p><p>// 6) Apply bonus to the REAL attack payload</p><p>// --------------------------------------------------</p><p>const bonusToAdd = skillLevel + debuffCount;</p><p>if (bonusToAdd &lt;= 0) {</p><p>return skipHidden(\"\");</p><p>}</p><p>__PAYLOAD.advPayload = __PAYLOAD.advPayload || {};</p><p>const bonusBefore = Number(__PAYLOAD.advPayload.bonus ?? 0) || 0;</p><p>__PAYLOAD.advPayload.bonus = bonusBefore + bonusToAdd;</p><p>__PAYLOAD.meta = __PAYLOAD.meta || {};</p><p>__PAYLOAD.meta.cheapShotDebug = {</p><p>mode: \"main-attack-payload\",</p><p>passiveOwner: passiveOwner?.name ?? null,</p><p>passiveItem: passiveItem?.name ?? null,</p><p>target: targetActor?.name ?? null,</p><p>targetUuid,</p><p>listType,</p><p>skillTypeCandidates,</p><p>detectedActionType,</p><p>weaponTypeHint,</p><p>skillLevel,</p><p>debuffCount,</p><p>bonusAdded: bonusToAdd,</p><p>bonusBefore,</p><p>bonusAfter: __PAYLOAD.advPayload.bonus</p><p>};</p><p>console.log(TAG, \"APPLIED\", __PAYLOAD.meta.cheapShotDebug);</p><p>context.log(\"Cheap Shot applied\", __PAYLOAD.meta.cheapShotDebug);</p>",
+          "passive_logic_action": "",
           "reaction_config_table": {
             "0": {
               "condition_formula": "SINGLE_TARGET_ATTACK && TARGET_STATUS_COUNT > 0",
@@ -3789,9 +3799,9 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
-        "uniqueId": "MTu5qi3M3S9M0CJw"
+        "uniqueId": "9cHSgi4ag97uKGW7"
       },
       "type": "equippableItem"
     },
@@ -3963,7 +3973,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "u2tHLEanQ7gWP4BS"
       },
@@ -4380,9 +4390,9 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
-        "uniqueId": "VdzUY6OaTy7vncGT"
+        "uniqueId": "3A2B1LrKT09AwCiL"
       },
       "type": "equippableItem"
     },
@@ -4957,9 +4967,9 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
-        "uniqueId": "uSfpUFshad2WnIiR"
+        "uniqueId": "YiQpn6s2FCSKUOmo"
       },
       "type": "equippableItem"
     },
@@ -5148,9 +5158,9 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
-        "uniqueId": "8aONdOoBQoSzz1wU"
+        "uniqueId": "aTce11W2dmw2lKtR"
       },
       "type": "equippableItem"
     },

@@ -117,6 +117,9 @@ async function applyPrePassivesToActionResult({ ar, attackerActor, prePassives, 
       hitTargets: hitTargetUuids,
       rawDamage: entry.rawDamage,
       damageType: ar.damageType ?? ar.damage?.element ?? null,
+      // Mirror CONFIRM: carry the pending-damage resource so DAMAGE_IS_HP gates
+      // (Adversity's HP-only damage rider) resolve in the harness too.
+      valueType: String(entry.resource ?? ar.valueType ?? ar.damage?.resource ?? "hp").toLowerCase(),
       weaponType: ar.weapon?.weaponType ?? null,
       weaponRange: ar.weapon?.range ?? ar.weapon?.weapon_range ?? null,
       affinity: entry.affinity,
@@ -438,14 +441,22 @@ async function runDirectorSkillCompute({
   const targetSnaps  = targetTokens.map((t) => buildTargetSnapshot(t, deps));
   if (!attackerSnap) return { ok: false, reason: "caster_snapshot_failed" };
 
-  const ar = buildInitialActionResult(skill, attackerSnap, targetSnaps, deps);
+  let ar = buildInitialActionResult(skill, attackerSnap, targetSnaps, deps);
   // Feed open_action_menu / prompt auto-picks to COMPUTE's pre_activate capture
   // pass too (line ~3314 reads ar._harnessPicks). Without this a skill with a
   // pre_activate_effect_ref menu (Nocebo / Elemental Weapon / Elemental Shroud)
   // would PROMPT for real at COMPUTE and hang the headless harness. RESOLVE gets
   // its own copy stamped in the simulate wrapper.
-  if (Array.isArray(picks)) ar._harnessPicks = [...picks];
-  if (harnessNumbers && typeof harnessNumbers === "object") ar._harnessNumbers = { ...harnessNumbers };
+  // `buildInitialActionResult` returns a frozen (non-extensible) ar, so re-wrap
+  // via freezeActionResult instead of mutating it in place.
+  const harnessPatch = {};
+  if (Array.isArray(picks)) harnessPatch._harnessPicks = [...picks];
+  if (harnessNumbers && typeof harnessNumbers === "object") harnessPatch._harnessNumbers = { ...harnessNumbers };
+  if (Object.keys(harnessPatch).length) {
+    ar = deps.freezeActionResult
+      ? deps.freezeActionResult({ ...ar, ...harnessPatch })
+      : Object.assign({ ...ar }, harnessPatch);
+  }
 
   // Synthetic director — COMPUTE reads ctx + dCombat, writes
   // ctx.actionResult, enqueues INTERNAL_DONE. We capture intents and

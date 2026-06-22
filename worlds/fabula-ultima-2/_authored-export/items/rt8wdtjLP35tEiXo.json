@@ -10,11 +10,11 @@
   },
   "effects": [
     {
-      "_id": "TSl2V4HExxryia2i",
+      "_id": "VrpUhHBu2TD9By4o",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1781893433225,
+        "createdTime": 1782071754594,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -23,8 +23,8 @@
         {
           "key": "bonus_defense",
           "mode": 2,
-          "priority": 20,
-          "value": "aeWhen(\"Crisis\", \"${level}$\")"
+          "priority": null,
+          "value": "aeWhen(\"Crisis\", \"${level * 2}$\")"
         }
       ],
       "description": "<p><em>Grace Under Pressure:</em> +SL Defense while in Crisis.</p>",
@@ -85,8 +85,22 @@
   "system": {
     "props": {
       "description": "<p>While you are in <strong>Crisis</strong>, you gain a bonus equal to your <strong>【SL】</strong> to your <strong>Defense</strong>.</p>",
+      "effect_table": {},
+      "isReaction": false,
       "level": 1,
       "max_level": "2",
+      "on_activate_effect_ref": "",
+      "passive_check_bonus_formula": "",
+      "passive_damage_bonus_formula": "",
+      "passive_logic_action": "",
+      "post_damage_effect_ref": "",
+      "pre_activate_effect_ref": "",
+      "reaction_config_table": {},
+      "recipe": "",
+      "recipe_amount": "",
+      "recipe_resource": "",
+      "recipe_target": "",
+      "skill_target": "",
       "skill_type": "Passive"
     },
     "template": "j0F5Msw5RZ8aIB3j",

@@ -370,7 +370,7 @@ function candidateToRow(c) {
   // badge: an intent block (Charm/Domination) OR an availability gate
   // (availability_formula false, e.g. "Numen already active"). Distinct from the
   // affordability dim, which keeps showing the cost badge.
-  const hardBlock = c._intentDisabled || c._unavailable || null;
+  const hardBlock = c._intentDisabled || c._unavailable || c._mpBlocked || null;
   return {
     value: { skillUuid: c.uuid, sourceItemUuid: c.sourceItemUuid || null },
     imageUrl: safeImg,
@@ -406,6 +406,13 @@ export async function pickSkill({
   // unrestricted. The reusable counterpart to the action-TYPE filter — lets a
   // free action offer a named SUBSET of skills without hardcoding which.
   allowedRefs = null,
+  // Free-action MP-cost cap (Acceleration → "a spell with total MP cost ≤ 10").
+  // Number | null. Candidates whose (minimum) MP cost exceeds the cap are shown
+  // DIMMED + red-stamped "Max N MP" (the same disabled+reason treatment as an
+  // availability block), not hidden — so the player sees WHY a pricey spell is
+  // off-limits. Variable-cost spells gate on their MINIMUM mp (resolveCost at
+  // variableAmount=0); the player can still keep the paid amount under the cap.
+  maxMpCost = null,
 }) {
   const all = await gatherSkillsForActor(actor);
   // Drop reaction-only items: they carry a skill_type label ("Active"/"Spell")
@@ -421,6 +428,16 @@ export async function pickSkill({
   if (excludeIntents && excludeIntents.size) {
     for (const c of candidates) {
       if (excludeIntents.has(c.intent)) c._intentDisabled = excludeIntents.get(c.intent) || "Disabled";
+    }
+  }
+  // Free-action MP-cost cap (Acceleration). Dim + block any candidate whose
+  // resolved MP cost exceeds the cap. costMap holds the gate cost (string + in-
+  // chain consume_resource debits), resolved at the minimum for variable costs.
+  const mpCap = Number(maxMpCost);
+  if (Number.isFinite(mpCap)) {
+    for (const c of candidates) {
+      const mp = Number(c.costMap?.get?.("mp") ?? 0) || 0;
+      if (mp > mpCap) c._mpBlocked = `Max ${mpCap} MP`;
     }
   }
   if (!candidates.length) {

@@ -48,23 +48,12 @@
           "prompt_var": "element"
         },
         "2": {
-          "allowed_types": "",
-          "check_bonus_formula": "",
-          "damage_bonus_formula": "",
           "effect_kind": "open_action_menu",
           "effect_label": "ms_pick_status",
-          "free_hr_as_zero": false,
-          "free_mode": false,
-          "max_mp_cost": "",
-          "menu_option_colors": "",
-          "menu_option_descriptions": "",
-          "menu_option_icons": "",
           "menu_option_labels": "Dazed|Shaken|Slow|Weak",
           "menu_option_refs": "ms_dazed,ms_shaken,ms_slow,ms_weak",
           "menu_pick_count": "2",
-          "menu_subtitle": "",
-          "menu_title": "Meteor Shower — choose two status effects",
-          "target_ref": ""
+          "menu_title": "Meteor Shower — choose two status effects"
         },
         "3": {
           "chain_steps": "ms_strike,ms_pick_status,ms_cost",
@@ -75,7 +64,6 @@
           "damage_amount": "30 + CHAR_LEVEL/2",
           "damage_cause": "damage",
           "damage_element": "VAR_ELEMENT",
-          "damage_ignore_affinity": false,
           "effect_kind": "deal_damage",
           "effect_label": "ms_strike",
           "target_ref": "enemy_action_targets"
@@ -85,15 +73,10 @@
           "consume_resource": "zero_power",
           "effect_kind": "consume_resource",
           "effect_label": "ms_cost",
-          "grant_amount": "",
-          "grant_resource": "",
           "on_empty": "abort",
           "target_ref": "self"
         },
         "6": {
-          "ae_duplicate_mode": "replace",
-          "ae_initial_charges": "",
-          "ae_initial_charges_max": "",
           "ae_template_ref": "Dazed",
           "effect_kind": "apply_ae",
           "effect_label": "ms_dazed",
@@ -101,9 +84,6 @@
           "target_ref": "enemy_action_targets"
         },
         "7": {
-          "ae_duplicate_mode": "replace",
-          "ae_initial_charges": "",
-          "ae_initial_charges_max": "",
           "ae_template_ref": "Shaken",
           "effect_kind": "apply_ae",
           "effect_label": "ms_shaken",
@@ -111,9 +91,6 @@
           "target_ref": "enemy_action_targets"
         },
         "8": {
-          "ae_duplicate_mode": "replace",
-          "ae_initial_charges": "",
-          "ae_initial_charges_max": "",
           "ae_template_ref": "Slow",
           "effect_kind": "apply_ae",
           "effect_label": "ms_slow",
@@ -121,9 +98,6 @@
           "target_ref": "enemy_action_targets"
         },
         "9": {
-          "ae_duplicate_mode": "replace",
-          "ae_initial_charges": "",
-          "ae_initial_charges_max": "",
           "ae_template_ref": "Weak",
           "effect_kind": "apply_ae",
           "effect_label": "ms_weak",
@@ -146,8 +120,16 @@
       "name": "Zero Power: Meteor Shower",
       "on_activate_effect_ref": "ms_root",
       "optional_params": {},
+      "passive_check_bonus_formula": "",
+      "passive_damage_bonus_formula": "",
+      "passive_logic_action": "",
+      "post_damage_effect_ref": "",
       "pre_activate_effect_ref": "ms_pre",
       "reaction_config_table": {},
+      "recipe": "",
+      "recipe_amount": "",
+      "recipe_resource": "",
+      "recipe_target": "",
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_default": "",

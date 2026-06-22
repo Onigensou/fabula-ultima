@@ -42,16 +42,26 @@
       "level": 1,
       "max_level": "5",
       "name": "Cheap Shot",
+      "on_activate_effect_ref": "",
+      "passive_check_bonus_formula": "",
+      "passive_damage_bonus_formula": "",
+      "passive_logic_action": "",
+      "post_damage_effect_ref": "",
+      "pre_activate_effect_ref": "",
       "reaction_config_table": {
         "0": {
           "condition_formula": "SINGLE_TARGET_ATTACK && TARGET_STATUS_COUNT > 0",
           "reaction_action_target": "enemy",
           "reaction_effect_ref": "cheap_shot_bonus",
-          "reaction_passive_mode": "ask",
+          "reaction_passive_mode": "on",
           "reaction_source": "self",
           "reaction_trigger": "creature_will_deal_damage"
         }
       },
+      "recipe": "",
+      "recipe_amount": "",
+      "recipe_resource": "",
+      "recipe_target": "",
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_range": "-",

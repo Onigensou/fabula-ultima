@@ -16,7 +16,7 @@
  *   system.props.post_damage_effect_ref = "drain_recover"
  *   system.props.effect_table = {
  *     "0": { effect_label: "drain_recover", effect_kind: "grant",
- *            grant_resource: "mp", grant_amount: "MP_DEALT / 2",
+ *            grant_resource: "mp", grant_amount: "ceil(MP_DEALT / 2)",
  *            grant_target: "self" }
  *   }
  *
@@ -43,7 +43,7 @@ const TARGET_EFFECT_ROW = Object.freeze({
   effect_label: "drain_recover",
   effect_kind: "grant",
   grant_resource: "mp",
-  grant_amount: "MP_DEALT / 2",
+  grant_amount: "ceil(MP_DEALT / 2)",
   grant_target: "self"
 });
 

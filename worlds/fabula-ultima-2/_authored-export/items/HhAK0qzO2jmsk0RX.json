@@ -46,6 +46,7 @@
           "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.TPnGoyaq70WSBzmj.ActiveEffect.S119a4YHctInL77I"
         },
         "fabula-ultima-companion": {
+          "aeFamily": "elemental-weapon",
           "lifetimeMode": "on_activation",
           "tags": [
             "buff"
@@ -109,6 +110,7 @@
           "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.TPnGoyaq70WSBzmj.ActiveEffect.4AlszqrfZgHsO8aw"
         },
         "fabula-ultima-companion": {
+          "aeFamily": "elemental-weapon",
           "lifetimeMode": "on_activation",
           "tags": [
             "buff"
@@ -172,6 +174,7 @@
           "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.TPnGoyaq70WSBzmj.ActiveEffect.BW8q9RVaXE2rw2gY"
         },
         "fabula-ultima-companion": {
+          "aeFamily": "elemental-weapon",
           "lifetimeMode": "on_activation",
           "tags": [
             "buff"
@@ -235,6 +238,7 @@
           "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.TPnGoyaq70WSBzmj.ActiveEffect.Dj7JaA6k08sH0vGE"
         },
         "fabula-ultima-companion": {
+          "aeFamily": "elemental-weapon",
           "lifetimeMode": "on_activation",
           "tags": [
             "buff"
@@ -298,6 +302,7 @@
           "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.TPnGoyaq70WSBzmj.ActiveEffect.mdblqbxkXqK2NP7x"
         },
         "fabula-ultima-companion": {
+          "aeFamily": "elemental-weapon",
           "lifetimeMode": "on_activation",
           "tags": [
             "buff"
@@ -393,7 +398,8 @@
         },
         "6": {
           "$deleted": false,
-          "ae_duplicate_mode": "replace",
+          "ae_duplicate_mode": "replace_family",
+          "ae_family": "elemental-weapon",
           "ae_template_ref": "Elemental Weapon (Air)",
           "effect_kind": "apply_ae",
           "effect_label": "ew_ae_air",
@@ -401,7 +407,8 @@
         },
         "7": {
           "$deleted": false,
-          "ae_duplicate_mode": "replace",
+          "ae_duplicate_mode": "replace_family",
+          "ae_family": "elemental-weapon",
           "ae_template_ref": "Elemental Weapon (Bolt)",
           "effect_kind": "apply_ae",
           "effect_label": "ew_ae_bolt",
@@ -409,7 +416,8 @@
         },
         "8": {
           "$deleted": false,
-          "ae_duplicate_mode": "replace",
+          "ae_duplicate_mode": "replace_family",
+          "ae_family": "elemental-weapon",
           "ae_template_ref": "Elemental Weapon (Earth)",
           "effect_kind": "apply_ae",
           "effect_label": "ew_ae_earth",
@@ -417,7 +425,8 @@
         },
         "9": {
           "$deleted": false,
-          "ae_duplicate_mode": "replace",
+          "ae_duplicate_mode": "replace_family",
+          "ae_family": "elemental-weapon",
           "ae_template_ref": "Elemental Weapon (Fire)",
           "effect_kind": "apply_ae",
           "effect_label": "ew_ae_fire",
@@ -425,7 +434,8 @@
         },
         "10": {
           "$deleted": false,
-          "ae_duplicate_mode": "replace",
+          "ae_duplicate_mode": "replace_family",
+          "ae_family": "elemental-weapon",
           "ae_template_ref": "Elemental Weapon (Ice)",
           "effect_kind": "apply_ae",
           "effect_label": "ew_ae_ice",

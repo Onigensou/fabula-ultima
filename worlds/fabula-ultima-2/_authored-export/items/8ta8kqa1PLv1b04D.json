@@ -147,7 +147,7 @@
       "max_level": "5",
       "name": "Cognitive Focus",
       "optional_params": {},
-      "passive_logic_action": "<p>[{\"id\":\"focus-outgoing-bonus\",\"label\":\"Cognitive Focus\",\"when\":{\"all\":[{\"actor\":{\"flagEquals\":{\"ns\":\"oni\",\"key\":\"focus.active\",\"equals\":true}}}]},\"effects\":[{\"type\":\"percent\",\"scope\":\"outgoing\",\"element\":\"all\",\"amount\":0.25}],\"options\":{\"recalcOnConfirm\":\"ifElementUnknown\"}}]</p>",
+      "passive_logic_action": "",
       "reaction_config_table": {
         "0": {
           "$deleted": false,

@@ -4757,6 +4757,20 @@ export async function postActionCard({ director, kind, payload }) {
             skillName: base?.skillName ?? null,
             skillType: payload?.skillType ?? null,
             defenseTargetType: payload?.defenseTargetType ?? null,
+            // Check + damage descriptor fields that the Skill/Spell recompute
+            // reads off the ar (describePrimary → ar.damageBonus; computeCheck →
+            // ar.isCheck/checkBonus/rolledA1/rolledA2). Omitting them made an
+            // OFFENSIVE SPELL recompute (e.g. Glacies + a force prePassive like
+            // Magical Artillery) lose `check.required` — so effectiveHr fell to 0
+            // AND the +N damage bonus dropped — collapsing the row to damage 0,
+            // which renders "NO EFFECT" despite the hit. The Attack path reads
+            // these from the weapon snapshot, so this only bit Skills/Spells.
+            isCheck: base?.isCheck ?? null,
+            hasDamage: base?.hasDamage ?? null,
+            damageBonus: base?.damageBonus ?? null,
+            checkBonus: base?.checkBonus ?? null,
+            rolledA1: base?.rolledA1 ?? null,
+            rolledA2: base?.rolledA2 ?? null,
             // Context the card-mutation layer needs to RE-DERIVE a redirected /
             // added target through buildPerTarget (computeActionProfile) — the
             // single per-target derivation. Without these the re-derive falls

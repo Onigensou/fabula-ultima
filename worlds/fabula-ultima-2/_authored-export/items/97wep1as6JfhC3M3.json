@@ -10,11 +10,11 @@
   },
   "effects": [
     {
-      "_id": "6Pu6fYSXnR7ShTlR",
+      "_id": "dbSHlIX2kyf9oT67",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1781956903834,
+        "createdTime": 1782090070874,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -41,11 +41,12 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "6Pu6fYSXnR7ShTlR",
+          "originalId": "dbSHlIX2kyf9oT67",
           "originalParentId": "97wep1as6JfhC3M3",
-          "originalUuid": "Item.97wep1as6JfhC3M3.ActiveEffect.6Pu6fYSXnR7ShTlR"
+          "originalUuid": "Item.97wep1as6JfhC3M3.ActiveEffect.dbSHlIX2kyf9oT67"
         },
         "fabula-ultima-companion": {
+          "aeFamily": "elemental-weapon",
           "lifetimeMode": "on_activation",
           "tags": [
             "buff"
@@ -73,11 +74,11 @@
       "type": "base"
     },
     {
-      "_id": "8LcDPAm9vsWDsdXk",
+      "_id": "JwnEC09QJnYItaRl",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1781956903834,
+        "createdTime": 1782090070874,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -104,11 +105,12 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "8LcDPAm9vsWDsdXk",
+          "originalId": "JwnEC09QJnYItaRl",
           "originalParentId": "97wep1as6JfhC3M3",
-          "originalUuid": "Item.97wep1as6JfhC3M3.ActiveEffect.8LcDPAm9vsWDsdXk"
+          "originalUuid": "Item.97wep1as6JfhC3M3.ActiveEffect.JwnEC09QJnYItaRl"
         },
         "fabula-ultima-companion": {
+          "aeFamily": "elemental-weapon",
           "lifetimeMode": "on_activation",
           "tags": [
             "buff"
@@ -136,11 +138,75 @@
       "type": "base"
     },
     {
-      "_id": "eDF97OfT5euj2PG4",
+      "_id": "kR0KdAuSSiBJN0cf",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1781956903834,
+        "createdTime": 1782090070874,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "override_damage_type",
+          "mode": 5,
+          "priority": 20,
+          "value": "Fire"
+        }
+      ],
+      "description": "<p><em>Elemental Weapon:</em> the weapon now deals Fire damage.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "kR0KdAuSSiBJN0cf",
+          "originalParentId": "97wep1as6JfhC3M3",
+          "originalUuid": "Item.97wep1as6JfhC3M3.ActiveEffect.kR0KdAuSSiBJN0cf"
+        },
+        "fabula-ultima-companion": {
+          "aeFamily": "elemental-weapon",
+          "lifetimeMode": "on_activation",
+          "tags": [
+            "buff"
+          ]
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/lightning/bolt-strike-blue.webp",
+      "name": "Elemental Weapon (Fire)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-elemental-weapon-fire"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "mxEIW9UQBhSOulef",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782090070874,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -167,11 +233,12 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "eDF97OfT5euj2PG4",
+          "originalId": "mxEIW9UQBhSOulef",
           "originalParentId": "97wep1as6JfhC3M3",
-          "originalUuid": "Item.97wep1as6JfhC3M3.ActiveEffect.eDF97OfT5euj2PG4"
+          "originalUuid": "Item.97wep1as6JfhC3M3.ActiveEffect.mxEIW9UQBhSOulef"
         },
         "fabula-ultima-companion": {
+          "aeFamily": "elemental-weapon",
           "lifetimeMode": "on_activation",
           "tags": [
             "buff"
@@ -199,11 +266,11 @@
       "type": "base"
     },
     {
-      "_id": "O5Wmz7EHOhw288ys",
+      "_id": "vRP7IpaFjdbBget0",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1781956903834,
+        "createdTime": 1782090070874,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -230,11 +297,12 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "O5Wmz7EHOhw288ys",
+          "originalId": "vRP7IpaFjdbBget0",
           "originalParentId": "97wep1as6JfhC3M3",
-          "originalUuid": "Item.97wep1as6JfhC3M3.ActiveEffect.O5Wmz7EHOhw288ys"
+          "originalUuid": "Item.97wep1as6JfhC3M3.ActiveEffect.vRP7IpaFjdbBget0"
         },
         "fabula-ultima-companion": {
+          "aeFamily": "elemental-weapon",
           "lifetimeMode": "on_activation",
           "tags": [
             "buff"
@@ -255,69 +323,6 @@
       "sort": 0,
       "statuses": [
         "fud-elemental-weapon-ice"
-      ],
-      "system": {},
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "WhwfTUFJQYudsGJm",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1781956903834,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [
-        {
-          "key": "override_damage_type",
-          "mode": 5,
-          "priority": 20,
-          "value": "Fire"
-        }
-      ],
-      "description": "<p><em>Elemental Weapon:</em> the weapon now deals Fire damage.</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": null,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "WhwfTUFJQYudsGJm",
-          "originalParentId": "97wep1as6JfhC3M3",
-          "originalUuid": "Item.97wep1as6JfhC3M3.ActiveEffect.WhwfTUFJQYudsGJm"
-        },
-        "fabula-ultima-companion": {
-          "lifetimeMode": "on_activation",
-          "tags": [
-            "buff"
-          ]
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "icons/magic/lightning/bolt-strike-blue.webp",
-      "name": "Elemental Weapon (Fire)",
-      "origin": null,
-      "sort": 0,
-      "statuses": [
-        "fud-elemental-weapon-fire"
       ],
       "system": {},
       "tint": "#ffffff",
@@ -394,7 +399,8 @@
         },
         "6": {
           "$deleted": false,
-          "ae_duplicate_mode": "replace",
+          "ae_duplicate_mode": "replace_family",
+          "ae_family": "elemental-weapon",
           "ae_template_ref": "Elemental Weapon (Air)",
           "effect_kind": "apply_ae",
           "effect_label": "ew_ae_air",
@@ -402,7 +408,8 @@
         },
         "7": {
           "$deleted": false,
-          "ae_duplicate_mode": "replace",
+          "ae_duplicate_mode": "replace_family",
+          "ae_family": "elemental-weapon",
           "ae_template_ref": "Elemental Weapon (Bolt)",
           "effect_kind": "apply_ae",
           "effect_label": "ew_ae_bolt",
@@ -410,7 +417,8 @@
         },
         "8": {
           "$deleted": false,
-          "ae_duplicate_mode": "replace",
+          "ae_duplicate_mode": "replace_family",
+          "ae_family": "elemental-weapon",
           "ae_template_ref": "Elemental Weapon (Earth)",
           "effect_kind": "apply_ae",
           "effect_label": "ew_ae_earth",
@@ -418,7 +426,8 @@
         },
         "9": {
           "$deleted": false,
-          "ae_duplicate_mode": "replace",
+          "ae_duplicate_mode": "replace_family",
+          "ae_family": "elemental-weapon",
           "ae_template_ref": "Elemental Weapon (Fire)",
           "effect_kind": "apply_ae",
           "effect_label": "ew_ae_fire",
@@ -426,7 +435,8 @@
         },
         "10": {
           "$deleted": false,
-          "ae_duplicate_mode": "replace",
+          "ae_duplicate_mode": "replace_family",
+          "ae_family": "elemental-weapon",
           "ae_template_ref": "Elemental Weapon (Ice)",
           "effect_kind": "apply_ae",
           "effect_label": "ew_ae_ice",

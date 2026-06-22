@@ -10,11 +10,11 @@
   },
   "effects": [
     {
-      "_id": "wduKJRAqPKxE8MLf",
+      "_id": "5jmv4FqdL5eL9Apn",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": null,
+        "createdTime": 1782071754583,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -99,6 +99,7 @@
       "damage_bonus": "0",
       "defense_target_type": "def",
       "description": "<p>You may now equip a <strong>shield</strong> in your <strong>main hand</strong> slot. As long as you have two shields equipped, you gain the benefits of both items and may treat them as the following combined two-handed melee brawling weapon:</p><blockquote><p><strong>Twin Shields</strong> — Accuracy: <strong>【MIG + MIG】</strong> — Damage: <strong>【HR + 5】 physical</strong></p><p>Deals extra damage equal to your <strong>SL</strong> in <em>Defensive Mastery</em>.</p></blockquote>",
+      "effect_table": {},
       "isCheck": false,
       "isHeroic": false,
       "isReaction": false,
@@ -106,10 +107,20 @@
       "max_level": "1",
       "name": "Dual Shieldbearer",
       "on_activate_effect_ref": "",
+      "passive_check_bonus_formula": "",
+      "passive_damage_bonus_formula": "",
+      "passive_logic_action": "",
+      "post_damage_effect_ref": "",
+      "pre_activate_effect_ref": "",
+      "reaction_config_table": {},
+      "recipe": "",
+      "recipe_amount": "",
+      "recipe_resource": "",
+      "recipe_target": "",
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_range": "-",
-      "skill_target": "-",
+      "skill_target": "One Creature",
       "skill_type": "Passive",
       "type_damage": ""
     },

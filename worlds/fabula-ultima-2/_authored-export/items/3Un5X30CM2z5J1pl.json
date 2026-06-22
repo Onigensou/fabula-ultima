@@ -10,11 +10,11 @@
   },
   "effects": [
     {
-      "_id": "tqKssXmnLkuWfX9O",
+      "_id": "2M7W2v3xzWHcEgKc",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": null,
+        "createdTime": 1782071757570,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -34,7 +34,7 @@
         "rounds": null,
         "seconds": null,
         "startRound": null,
-        "startTime": null,
+        "startTime": 298800,
         "startTurn": null,
         "turns": null
       },
@@ -112,7 +112,16 @@
       "name": "Dodge",
       "on_activate_effect_ref": "",
       "optional_params": {},
+      "passive_check_bonus_formula": "",
+      "passive_damage_bonus_formula": "",
+      "passive_logic_action": "",
+      "post_damage_effect_ref": "",
+      "pre_activate_effect_ref": "",
       "reaction_config_table": {},
+      "recipe": "",
+      "recipe_amount": "",
+      "recipe_resource": "",
+      "recipe_target": "",
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_default": "",

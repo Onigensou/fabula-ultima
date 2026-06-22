@@ -1,0 +1,134 @@
+{
+  "_id": "hfk1ejq51YWoQ2jb",
+  "_stats": {
+    "compendiumSource": "Item.GN2lmhC75LItt0Nj",
+    "coreVersion": "12.343",
+    "createdTime": 1782072259570,
+    "duplicateSource": "Item.8Vn4CZdcyrkTJKm3",
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "Lmz3zk1ikDBWqyf1",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215902.695.png",
+  "name": "Verónica",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "check_bonus": "0",
+      "class": "Matador",
+      "cost": "2 Adoration",
+      "damage_bonus": "",
+      "defense_target_type": "def",
+      "description": "<p>When a creature target you with an <strong>【⚔️Attack】</strong>, <strong>【💥Skill】</strong> or <strong>【📕Spell】</strong>, as a reaction, you may increase your <strong>Defense </strong>score by 2 for that action.</p>",
+      "details_roller": "Show",
+      "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "chain_steps": "ver_cost, ver_def",
+          "consume_self": false,
+          "effect_kind": "chain",
+          "effect_label": "ver_do",
+          "from_resource": "",
+          "menu_label": "",
+          "to_resource": ""
+        },
+        "1": {
+          "charge_key": "adoration",
+          "consume_self": false,
+          "count": "2",
+          "effect_kind": "consume_charge",
+          "effect_label": "ver_cost",
+          "from_resource": "",
+          "menu_label": "",
+          "on_empty": "abort",
+          "target_ref": "self",
+          "to_resource": ""
+        },
+        "2": {
+          "consume_self": false,
+          "defense_amount": "2",
+          "defense_operation": "add",
+          "effect_kind": "adjust_defense",
+          "effect_label": "ver_def",
+          "from_resource": "",
+          "menu_label": "",
+          "to_resource": ""
+        }
+      },
+      "gadget_alchemy_tier": "",
+      "gadget_infusion_tier": "",
+      "gadget_magitech_tier": "",
+      "heroic_requirement": "",
+      "id": "t778u8UkNMDq5a4E",
+      "ignore_hr": false,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215902.695.png",
+      "isCheck": false,
+      "isFacet": true,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": true,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Verónica",
+      "on_activate_effect_ref": "",
+      "optional_params": {},
+      "pre_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "",
+          "reaction_action_intent": "",
+          "reaction_action_kind": "Attack,Spell,Skill",
+          "reaction_action_target": "",
+          "reaction_cause_filter": "",
+          "reaction_damage_amount": "",
+          "reaction_damage_source": "",
+          "reaction_damage_type": "",
+          "reaction_debuff_count_min": "",
+          "reaction_debuff_count_target": "",
+          "reaction_effect_ref": "ver_do",
+          "reaction_isPassive": false,
+          "reaction_ownership": "",
+          "reaction_passive_mode": "ask",
+          "reaction_passive_target": "",
+          "reaction_resource_filter": "",
+          "reaction_responder": "",
+          "reaction_source": "self",
+          "reaction_source_skill": "",
+          "reaction_status_filter": "",
+          "reaction_subject_kind": "",
+          "reaction_trigger": "creature_targeted_by_action",
+          "requires_skill": ""
+        }
+      },
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "Any",
+      "skill_target": "Self",
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false,
+      "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.t778u8UkNMDq5a4E"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "hfk1ejq51YWoQ2jb"
+  },
+  "type": "equippableItem"
+}

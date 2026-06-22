@@ -1437,15 +1437,26 @@ const TurnStart = {
           // player). Pills appear over ALL eligible.
           const localPromise = TurnPicker.show({ director, eligible });
 
-          // Per-user broadcast: each online non-primary client gets MENU_OPEN.
+          // Per-user broadcast: each non-primary recipient gets MENU_OPEN.
           // Players see pills only over their own PCs (owner-filter). Secondary
           // GMs see ALL eligible combatants — same as the local GM picker, so
           // they can pick on behalf of any combatant just like the primary GM.
+          //
+          // Recipients = active secondary GMs + ALL non-GM players (even
+          // OFFLINE ones). We deliberately include offline players so the
+          // turn-picker spec is cached + the remote await armed before they
+          // connect: a player who logs in after their side's turn began gets
+          // the picker replayed via PLAYER_HELLO and their pick lands on the
+          // waiting await. Broadcasting to an offline socket is a harmless
+          // no-op beyond the cache write. Offline GMs are excluded — they
+          // need nothing replayed. The GM-local picker above stays as the
+          // fallback so an absent player never stalls the turn.
           const channel = director.intentChannel;
-          const onlineNonPrimary = (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id);
+          const nonPrimaryRecipients = (game.users?.contents ?? [])
+            .filter((u) => u.id !== game.user?.id && (u.active || !u.isGM));
           const sceneUuid = director.dCombat?.scene?.uuid ?? null;
           const broadcastedUserIds = [];
-          log(`TURN_START: ${onlineNonPrimary.length} online non-primary client(s); channel=${channel ? "attached" : "MISSING"}`);
+          log(`TURN_START: ${nonPrimaryRecipients.length} non-primary recipient(s) (incl. offline players); channel=${channel ? "attached" : "MISSING"}`);
           if (channel) {
             // Pre-build the serialized form once for secondary GMs (full list).
             const allEligibleSerialized = eligible.map((dc2) => ({
@@ -1455,7 +1466,7 @@ const TurnStart = {
               tokenUuid: dc2.tokenUuid ?? null,
               tokenId: dc2.tokenId ?? null,
             }));
-            for (const u of onlineNonPrimary) {
+            for (const u of nonPrimaryRecipients) {
               let eligibleForUser;
               if (u.isGM) {
                 // Secondary GM sees every eligible combatant.
@@ -1706,18 +1717,28 @@ const TurnStart = {
 };
 
 // Resolve the actor-owner user that should drive an interactive surface
-// for `actor`. Returns the userId of the first ACTIVE non-GM owner, or
-// null if no eligible owner is online. Deterministic on multi-owner
-// actors (sort by userId).
+// for `actor`. Returns the userId of the first non-GM owner, or null if
+// the actor has no non-GM owner. Deterministic on multi-owner actors
+// (sort by userId).
+//
+// `requireActive` (default true) restricts to owners currently online —
+// the right default for a pick that must be answered NOW (e.g. routing a
+// secondary picker only makes sense to a connected client). Pass false
+// when arming a menu/await that should survive the owner being offline at
+// state-entry: the broadcast is cached (IntentChannel._recentBroadcasts)
+// and the await is armed up-front, so a player who logs in mid-state gets
+// the menu replayed via PLAYER_HELLO and their reply lands on the waiting
+// await. Without this, a turn that begins while its owner is disconnected
+// never broadcasts/arms anything for them, so they re-enter to no menu.
 //
 // "Owner" means OWNER-level Foundry permission (level 3) — same threshold
 // Foundry uses for sheet-edit access. NPCs typically have no non-GM
 // owner; PCs have exactly one.
-function resolveActingOwnerForActor(actor) {
+function resolveActingOwnerForActor(actor, { requireActive = true } = {}) {
   if (!actor) return null;
   const candidates = (game.users?.contents ?? []).filter((u) => {
     if (u.isGM) return false;
-    if (!u.active) return false;
+    if (requireActive && !u.active) return false;
     try { return actor.testUserPermission?.(u, "OWNER"); }
     catch { return false; }
   });
@@ -1869,7 +1890,19 @@ const Declare = {
       }
     }
 
-    const ownerUserId = resolveActingOwnerForActor(actor);
+    // Resolve the owner IGNORING online status: we broadcast + arm the
+    // ACTION_COMPOSED await for them up-front even if they're disconnected
+    // right now. The compose-action spec is cached on the IntentChannel, so
+    // a player who logs in AFTER their turn began (the classic "turn started
+    // while I was away → I re-enter to no Action Menu" case) gets it replayed
+    // via PLAYER_HELLO, and their composed bundle lands on the already-armed
+    // await. The GM-local compose still runs in parallel as the fallback, so
+    // an absent player never stalls the turn — whoever finishes first wins the
+    // race below, and the loser is aborted. Prefer an ONLINE owner when one
+    // exists (multi-owner actors), falling back to an offline owner so the
+    // single-owner-currently-away case is still armed + cached.
+    const ownerUserId = resolveActingOwnerForActor(actor)
+      ?? resolveActingOwnerForActor(actor, { requireActive: false });
 
     // Pre-bake eligible target snapshots. We do this here (with full
     // dCombat access) so the player's client doesn't have to recompute —
@@ -2321,15 +2354,30 @@ async function resolveActionTargets(director, attackerSnap, opts = {}) {
   director.ctx.eligibleTargets = eligibleForPicker;
 
   // ── Route to picker ────────────────────────────────────────────────────
-  const isAutoPick = pickerMode === "self" || pickerMode === "all" || pickerMode === "random";
+  // Obvious target sets (self / all) no longer auto-resolve silently — they
+  // surface a LOCKED Confirm (every eligible token pre-selected, selection can't
+  // change; the actor only Confirms or Cancels) so nothing commits without an
+  // acknowledgement. Matches the effect-table auto_target="confirm" default.
+  // Random keeps its own roulette+Confirm pass; only genuine multi-target picks
+  // keep the usingPreComposed shortcut.
+  const isObviousTargetSet = pickerMode === "self" || pickerMode === "all";
+  const isAutoPick = isObviousTargetSet || pickerMode === "random";
   let result;
   if (!isAutoPick && usingPreComposed
       && Array.isArray(composedTargetUuids) && composedTargetUuids.length) {
     result = { ok: true, cancelled: false, tokenUuids: [...composedTargetUuids] };
+  } else if (isObviousTargetSet) {
+    const lockedTitle = forcedTitle
+      ?? `${attackerSnap.name}: confirm target${eligibleForPicker.length === 1 ? "" : "s"}`;
+    result = await requestTargeting({
+      director, eligible: eligibleForPicker,
+      mode: "exact", count: eligibleForPicker.length,
+      lockSelection: true,
+      titleText: lockedTitle, cancelLabel, secondaryAction,
+    });
   } else {
     const titleText = forcedTitle
-      ?? (pickerMode === "self" || pickerMode === "all" ? null
-        : pickerMode === "random"
+      ?? (pickerMode === "random"
           ? `${attackerSnap.name}: randomizing target`
           : `${attackerSnap.name}: pick target${count > 1 ? "s" : ""}`);
     result = await requestTargeting({
@@ -3306,12 +3354,25 @@ const Compute = {
           const casterActor = await fromUuid(attacker.actorUuid).catch(() => null);
           const capToken = canvas?.tokens?.get(attacker?.tokenId)?.document ?? null;
           const allUuids = (allTargets ?? []).map((t) => t.tokenUuid);
+          // Route the pre_activate pickers (prompt_element / open_action_menu /
+          // targeting) to the casting actor's owner so the PLAYER picks their
+          // element/status/target — not the GM on their behalf. Without this the
+          // capture menus render GM-local only (the player never sees them). When
+          // the GM owns/casts the actor (no active non-GM owner) → null = local.
+          // Mirrors the reaction/action-card remote-pick pattern (see remote-pick.js).
+          const preOwnerUserId = resolveActingOwnerForActor(casterActor);
+          const preRemotePrompt = (preOwnerUserId
+            && preOwnerUserId !== game.user?.id
+            && !game.users?.get(preOwnerUserId)?.isGM)
+            ? { channel: director.intentChannel, targetUserId: preOwnerUserId, combatId: director.combatId }
+            : null;
           const capCtx = makeChainContext({
             reactorActor: casterActor, reactorToken: capToken, skill, dCombat: director.dCombat,
             payload: { targets: allUuids, hitTargets: allUuids, actionIntent: ar.actionIntent },
             actionTargetUuids: allUuids, hitActionTargetUuids: allUuids,
             isPassive: false, runtimeEffectTable: view.effect_table, firePoints: view.fire_points,
             harnessPicks: ar?._harnessPicks ?? null, harnessNumbers: ar?._harnessNumbers ?? null,
+            remotePrompt: preRemotePrompt,
           });
           const pre = await fireActivationEffectPre(skill, capCtx);
           if (pre?.abort) {
@@ -3628,10 +3689,14 @@ const Confirm = {
     // aggregated candidate carries `appliesToTargetUuids` listing every
     // target for which the row matched; the sender-side accumulator
     // iterates that list on apply.
+    // Damage-dealing Spells fire this too (kind "Spell"): an offensive spell with
+    // an on-hit damage rider (Adversity, future Infusion-likes) was previously
+    // excluded, so NO spell could carry one. Resource-scoping (HP vs MP) is left to
+    // the row's condition_formula via DAMAGE_IS_HP, not this gate.
     const fireWillDealDamage =
       attackerActor &&
       Array.isArray(ar.perTargetResults) &&
-      (ar.kind === "Attack" || (ar.kind === "Skill" && ar.hasDamage));
+      (ar.kind === "Attack" || ((ar.kind === "Skill" || ar.kind === "Spell") && ar.hasDamage));
     if (fireWillDealDamage) {
       try {
         const { findPassiveCandidates } = await getSkillEffectsExtras();
@@ -3676,6 +3741,10 @@ const Confirm = {
             rawDamage: entry.rawDamage,
             hr: ar.roll?.hr ?? 0,
             damageType: ar.damageType ?? ar.damage?.element ?? null,
+            // Resource of the pending damage (hp | mp | shield) so a rider can
+            // scope via DAMAGE_IS_HP / DAMAGE_IS_MP. Per-target resource wins;
+            // falls back to the action-level value, then "hp".
+            valueType: String(entry.resource ?? ar.valueType ?? ar.damage?.resource ?? "hp").toLowerCase(),
             weaponType: ar.weapon?.weaponType ?? null,
             weaponRange: ar.weapon?.range ?? ar.weapon?.weapon_range ?? null,
             affinity: entry.affinity,
@@ -3770,6 +3839,11 @@ const Confirm = {
             // can't distinguish spell-vs-skill (both stamp ar.kind "Skill"), so
             // ACTION_IS_SPELL reads this for the precise gate (Hypercognition).
             actionSkillType: String(ar.skillType ?? "").toLowerCase(),
+            // Did this action roll a Check (accuracy/magic check)? An "offensive
+            // spell" in FU is precisely a Spell with a Check (⚡ icon); buff/heal
+            // spells are isCheck:false. ACTION_IS_OFFENSIVE_SPELL gates on this
+            // (Magical Artillery: bonus only on offensive spells).
+            actionIsCheck: !!ar.isCheck,
             actionName: ar.weapon?.name ?? ar.skillName ?? ar.kind ?? "Action",
             // Acting skill/weapon name for `reaction_source_skill` self-scoping.
             sourceSkillName: ar.skillName ?? ar.weapon?.name ?? null,

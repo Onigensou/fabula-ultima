@@ -3,7 +3,7 @@
  * ---------------------------------------------------------------------------
  * Phase D authoring: Drain Spirit's "you recover half the MP loss they
  * suffered" mechanic now ships as a declarative `post_damage_effect_ref`
- * + `effect_table` pair on the skill, with `grant_amount: "MP_DEALT / 2"`.
+ * + `effect_table` pair on the skill, with `grant_amount: "ceil(MP_DEALT / 2)"`.
  *
  * The post_damage hook in Create Damage Card fires this effect per affected
  * target after the MP burn resolves, with the per-target payload in hand —
@@ -24,7 +24,7 @@
 export const key = "2026-05-17-drain-spirit-declarative";
 export const description =
   "Author Drain Spirit's MP recovery declaratively (Phase D: " +
-  "post_damage_effect_ref + effect_table with MP_DEALT / 2).";
+  "post_damage_effect_ref + effect_table with ceil(MP_DEALT / 2)).";
 
 const ITEM_NAME = "Drain Spirit";
 const TARGET_REF = "drain_recover";
@@ -34,7 +34,7 @@ const TARGET_EFFECT_ROW = Object.freeze({
   effect_label: "drain_recover",
   effect_kind: "grant",
   grant_resource: "mp",
-  grant_amount: "MP_DEALT / 2",
+  grant_amount: "ceil(MP_DEALT / 2)",
   grant_target: "self"
 });
 

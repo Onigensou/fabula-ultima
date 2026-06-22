@@ -27,7 +27,7 @@
         "rounds": null,
         "seconds": null,
         "startRound": null,
-        "startTime": 298800,
+        "startTime": null,
         "startTurn": null,
         "turns": null
       },
@@ -47,7 +47,7 @@
             "appliedAtRound": 0,
             "effectLabel": "hod_refresh",
             "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.xPBmRV6eWoaOkFWI",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.XQZs3GqmIm32ZlsQ",
             "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF",
             "turnsRemaining": null
           },
@@ -70,6 +70,156 @@
         "fud-heart-of-darkness-ready"
       ],
       "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "M8BbdNyUkXBPXFbg",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782092604107,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "override_damage_type",
+          "mode": 5,
+          "priority": 20,
+          "value": "Fire"
+        }
+      ],
+      "description": "<p><em>Elemental Weapon:</em> the weapon now deals Fire damage.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "YrxdDwKWPKzALeUj",
+          "originalParentId": "TPnGoyaq70WSBzmj",
+          "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.TPnGoyaq70WSBzmj.ActiveEffect.YrxdDwKWPKzALeUj"
+        },
+        "fabula-ultima-companion": {
+          "aeFamily": "elemental-weapon",
+          "directorAppliedBy": {
+            "appliedAtRound": 21,
+            "effectLabel": "ew_ae_fire",
+            "lifetimeMode": "on_activation",
+            "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.XQZs3GqmIm32ZlsQ",
+            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.TPnGoyaq70WSBzmj",
+            "turnsRemaining": null
+          },
+          "lifetimeMode": "on_activation",
+          "tags": [
+            "buff"
+          ]
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/lightning/bolt-strike-blue.webp",
+      "name": "Elemental Weapon (Fire)",
+      "origin": "Actor.dafTLBUscCDNgq8H.Item.TPnGoyaq70WSBzmj",
+      "sort": 0,
+      "statuses": [
+        "fud-elemental-weapon-fire"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "u9gZxpy8dSWLo6dG",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782092576203,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_6",
+          "mode": 5,
+          "priority": 3,
+          "value": "aeAffinityFloor(\"RS\")"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "2l83PWjTsDT5Mbjd",
+          "originalParentId": "lWzQBQkKvZVg6mRL",
+          "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.lWzQBQkKvZVg6mRL.ActiveEffect.2l83PWjTsDT5Mbjd"
+        },
+        "fabula-ultima-companion": {
+          "aeFamily": "elemental-shroud",
+          "directorAppliedBy": {
+            "appliedAtRound": 19,
+            "effectLabel": "shroud_pick:Fire",
+            "lifetimeMode": "on_activation",
+            "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.XQZs3GqmIm32ZlsQ",
+            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.lWzQBQkKvZVg6mRL",
+            "turnsRemaining": null
+          },
+          "lifetimeMode": "on_activation",
+          "tags": [
+            "buff"
+          ]
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/fire/barrier-wall-flame-ring-yellow.webp",
+      "name": "Elemental Shroud (Fire)",
+      "origin": "Actor.dafTLBUscCDNgq8H.Item.lWzQBQkKvZVg6mRL",
+      "sort": 0,
+      "statuses": [
+        "fud-elemental-shroud-fire"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
       "tint": "#ffffff",
       "transfer": false,
       "type": "base"
@@ -470,7 +620,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "tbtry6egID5MOcxv"
       },
@@ -681,7 +831,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "7oG8YvRYQBQAU025"
       },
@@ -1109,7 +1259,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "Ydbba6k0hFjWZvJv"
       },
@@ -1527,7 +1677,7 @@
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "gNgDIXArTpdtUBpe"
       },
@@ -2132,7 +2282,7 @@
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.FBWC6v9hhDqMlIaZ"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "eTagzbuJWVfudChW"
       },
@@ -2247,7 +2397,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "eM7Q4WgXvjcLQaFc"
       },
@@ -2660,7 +2810,7 @@
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.gm2w1NLdaEI7SzaQ"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "ZySnR7edyoUvFZM3"
       },
@@ -2728,7 +2878,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": true,
         "uniqueId": "HjNImvzXOvZw1mGF"
       },
@@ -3455,7 +3605,7 @@
               "effect_kind": "grant",
               "effect_label": "drain_recover",
               "from_resource": "",
-              "grant_amount": "MP_DEALT / 2",
+              "grant_amount": "ceil(MP_DEALT / 2)",
               "grant_operation": "",
               "grant_resource": "mp",
               "grant_round": "",
@@ -3509,7 +3659,7 @@
           "pre_activate_effect_ref": "",
           "reaction_config_table": {},
           "recipe": "drain",
-          "recipe_amount": "MP_DEALT / 2",
+          "recipe_amount": "ceil(MP_DEALT / 2)",
           "recipe_resource": "mp",
           "recipe_target": "self",
           "rolled_atr1": "INS",
@@ -3632,7 +3782,7 @@
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.Jfwp8uU0Ntyqhcjj"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "9jOBSPY17nxY6QCy"
       },
@@ -3761,7 +3911,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "loJVZKaVMt8VxzCI"
       },
@@ -3815,6 +3965,7 @@
               "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.lWzQBQkKvZVg6mRL.ActiveEffect.2l83PWjTsDT5Mbjd"
             },
             "fabula-ultima-companion": {
+              "aeFamily": "elemental-shroud",
               "lifetimeMode": "on_activation",
               "tags": [
                 "buff"
@@ -3882,6 +4033,7 @@
               "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.lWzQBQkKvZVg6mRL.ActiveEffect.HFW3Z8ld0HqutpcO"
             },
             "fabula-ultima-companion": {
+              "aeFamily": "elemental-shroud",
               "lifetimeMode": "on_activation",
               "tags": [
                 "buff"
@@ -3949,6 +4101,7 @@
               "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.lWzQBQkKvZVg6mRL.ActiveEffect.Kw1vSkjyF4RgjY72"
             },
             "fabula-ultima-companion": {
+              "aeFamily": "elemental-shroud",
               "lifetimeMode": "on_activation",
               "tags": [
                 "buff"
@@ -4016,6 +4169,7 @@
               "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.lWzQBQkKvZVg6mRL.ActiveEffect.Q2KPJAPkkX9pKdOv"
             },
             "fabula-ultima-companion": {
+              "aeFamily": "elemental-shroud",
               "lifetimeMode": "on_activation",
               "tags": [
                 "buff"
@@ -4083,6 +4237,7 @@
               "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.lWzQBQkKvZVg6mRL.ActiveEffect.X59fRjMm9ioZtaEy"
             },
             "fabula-ultima-companion": {
+              "aeFamily": "elemental-shroud",
               "lifetimeMode": "on_activation",
               "tags": [
                 "buff"
@@ -4152,7 +4307,8 @@
             },
             "1": {
               "$deleted": false,
-              "ae_duplicate_mode": "replace_per_caster",
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "elemental-shroud",
               "ae_template_ref": "Elemental Shroud (Air)",
               "effect_kind": "apply_ae",
               "effect_label": "shroud_air",
@@ -4160,7 +4316,8 @@
             },
             "2": {
               "$deleted": false,
-              "ae_duplicate_mode": "replace_per_caster",
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "elemental-shroud",
               "ae_template_ref": "Elemental Shroud (Bolt)",
               "effect_kind": "apply_ae",
               "effect_label": "shroud_bolt",
@@ -4168,7 +4325,8 @@
             },
             "3": {
               "$deleted": false,
-              "ae_duplicate_mode": "replace_per_caster",
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "elemental-shroud",
               "ae_template_ref": "Elemental Shroud (Earth)",
               "effect_kind": "apply_ae",
               "effect_label": "shroud_earth",
@@ -4176,7 +4334,8 @@
             },
             "4": {
               "$deleted": false,
-              "ae_duplicate_mode": "replace_per_caster",
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "elemental-shroud",
               "ae_template_ref": "Elemental Shroud (Fire)",
               "effect_kind": "apply_ae",
               "effect_label": "shroud_fire",
@@ -4184,7 +4343,8 @@
             },
             "5": {
               "$deleted": false,
-              "ae_duplicate_mode": "replace_per_caster",
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "elemental-shroud",
               "ae_template_ref": "Elemental Shroud (Ice)",
               "effect_kind": "apply_ae",
               "effect_label": "shroud_ice",
@@ -4216,7 +4376,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "UF9js71VGFE9jB93"
       },
@@ -4244,7 +4404,7 @@
             "systemVersion": "4.8.5"
           },
           "changes": [],
-          "description": "<p><em>Acceleration:</em> at the start of each of your turns you may take one extra Attack or Spell. Ends after two extra actions.</p>",
+          "description": "<p><em>Acceleration:</em> at the end of each of your turns you may take one extra Attack or Spell. Ends after two extra actions.</p>",
           "disabled": false,
           "duration": {
             "combat": null,
@@ -4271,35 +4431,21 @@
                 "effect_table": {
                   "0": {
                     "$deleted": false,
-                    "chain_steps": "accel_consume,accel_freeact",
-                    "effect_kind": "chain",
-                    "effect_label": "accel_chain"
-                  },
-                  "1": {
-                    "$deleted": false,
-                    "charge_key": "acceleration",
-                    "count": "1",
-                    "effect_kind": "consume_charge",
-                    "effect_label": "accel_consume",
-                    "on_empty": "abort",
-                    "target_ref": "self"
-                  },
-                  "2": {
-                    "$deleted": false,
                     "action_ref": "Attack,Spell",
                     "effect_kind": "free_action",
-                    "effect_label": "accel_freeact"
+                    "effect_label": "accel_freeact",
+                    "max_mp_cost": "10"
                   }
                 },
                 "name": "Acceleration",
                 "reaction_config_table": {
                   "0": {
                     "$deleted": false,
-                    "reaction_effect_ref": "accel_chain",
+                    "reaction_effect_ref": "accel_freeact",
                     "reaction_passive_mode": "ask",
                     "reaction_passive_target": "self",
                     "reaction_source": "self",
-                    "reaction_trigger": "turn_start"
+                    "reaction_trigger": "turn_end"
                   }
                 }
               }
@@ -4397,7 +4543,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "jlPwgwAQkOBCNg6K"
       },
@@ -4470,7 +4616,7 @@
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.oe3OP8VmjHJpWJ41"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "WjrBIzz4zJvO4C4k"
       },
@@ -4538,7 +4684,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "VMu0aaKdIoi6qRi2"
       },
@@ -4885,7 +5031,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "oqJkRZfgQD6frXjZ"
       },
@@ -5255,11 +5401,11 @@
       },
       "effects": [
         {
-          "_id": "4AlszqrfZgHsO8aw",
+          "_id": "QVacE48Clu6wKEmR",
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1781956904331,
+            "createdTime": 1782090071778,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -5286,11 +5432,12 @@
           "flags": {
             "custom-system-builder": {
               "isFromTemplate": false,
-              "originalId": "4AlszqrfZgHsO8aw",
+              "originalId": "QVacE48Clu6wKEmR",
               "originalParentId": "TPnGoyaq70WSBzmj",
-              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.TPnGoyaq70WSBzmj.ActiveEffect.4AlszqrfZgHsO8aw"
+              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.TPnGoyaq70WSBzmj.ActiveEffect.QVacE48Clu6wKEmR"
             },
             "fabula-ultima-companion": {
+              "aeFamily": "elemental-weapon",
               "lifetimeMode": "on_activation",
               "tags": [
                 "buff"
@@ -5318,11 +5465,11 @@
           "type": "base"
         },
         {
-          "_id": "BW8q9RVaXE2rw2gY",
+          "_id": "TjsDB4jiFPD1MyKa",
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1781956904331,
+            "createdTime": 1782090071778,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -5349,11 +5496,12 @@
           "flags": {
             "custom-system-builder": {
               "isFromTemplate": false,
-              "originalId": "BW8q9RVaXE2rw2gY",
+              "originalId": "TjsDB4jiFPD1MyKa",
               "originalParentId": "TPnGoyaq70WSBzmj",
-              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.TPnGoyaq70WSBzmj.ActiveEffect.BW8q9RVaXE2rw2gY"
+              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.TPnGoyaq70WSBzmj.ActiveEffect.TjsDB4jiFPD1MyKa"
             },
             "fabula-ultima-companion": {
+              "aeFamily": "elemental-weapon",
               "lifetimeMode": "on_activation",
               "tags": [
                 "buff"
@@ -5381,74 +5529,11 @@
           "type": "base"
         },
         {
-          "_id": "Dj7JaA6k08sH0vGE",
+          "_id": "UGUySyAArAdgLaf6",
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1781956904331,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.8.5"
-          },
-          "changes": [
-            {
-              "key": "override_damage_type",
-              "mode": 5,
-              "priority": 20,
-              "value": "Ice"
-            }
-          ],
-          "description": "<p><em>Elemental Weapon:</em> the weapon now deals Ice damage.</p>",
-          "disabled": false,
-          "duration": {
-            "combat": null,
-            "rounds": null,
-            "seconds": null,
-            "startRound": null,
-            "startTime": null,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "originalId": "Dj7JaA6k08sH0vGE",
-              "originalParentId": "TPnGoyaq70WSBzmj",
-              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.TPnGoyaq70WSBzmj.ActiveEffect.Dj7JaA6k08sH0vGE"
-            },
-            "fabula-ultima-companion": {
-              "lifetimeMode": "on_activation",
-              "tags": [
-                "buff"
-              ]
-            },
-            "statuscounter": {
-              "config": {
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "icons/magic/lightning/bolt-strike-blue.webp",
-          "name": "Elemental Weapon (Ice)",
-          "origin": null,
-          "sort": 0,
-          "statuses": [
-            "fud-elemental-weapon-ice"
-          ],
-          "system": {},
-          "tint": "#ffffff",
-          "transfer": false,
-          "type": "base"
-        },
-        {
-          "_id": "mdblqbxkXqK2NP7x",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": 1781956904331,
+            "createdTime": 1782090071778,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -5475,11 +5560,12 @@
           "flags": {
             "custom-system-builder": {
               "isFromTemplate": false,
-              "originalId": "mdblqbxkXqK2NP7x",
+              "originalId": "UGUySyAArAdgLaf6",
               "originalParentId": "TPnGoyaq70WSBzmj",
-              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.TPnGoyaq70WSBzmj.ActiveEffect.mdblqbxkXqK2NP7x"
+              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.TPnGoyaq70WSBzmj.ActiveEffect.UGUySyAArAdgLaf6"
             },
             "fabula-ultima-companion": {
+              "aeFamily": "elemental-weapon",
               "lifetimeMode": "on_activation",
               "tags": [
                 "buff"
@@ -5507,11 +5593,11 @@
           "type": "base"
         },
         {
-          "_id": "S119a4YHctInL77I",
+          "_id": "YrxdDwKWPKzALeUj",
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1781956904331,
+            "createdTime": 1782090071778,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -5538,11 +5624,12 @@
           "flags": {
             "custom-system-builder": {
               "isFromTemplate": false,
-              "originalId": "S119a4YHctInL77I",
+              "originalId": "YrxdDwKWPKzALeUj",
               "originalParentId": "TPnGoyaq70WSBzmj",
-              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.TPnGoyaq70WSBzmj.ActiveEffect.S119a4YHctInL77I"
+              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.TPnGoyaq70WSBzmj.ActiveEffect.YrxdDwKWPKzALeUj"
             },
             "fabula-ultima-companion": {
+              "aeFamily": "elemental-weapon",
               "lifetimeMode": "on_activation",
               "tags": [
                 "buff"
@@ -5563,6 +5650,70 @@
           "sort": 0,
           "statuses": [
             "fud-elemental-weapon-fire"
+          ],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "ZrExTmNc7QSszuQk",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1782090071778,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "override_damage_type",
+              "mode": 5,
+              "priority": 20,
+              "value": "Ice"
+            }
+          ],
+          "description": "<p><em>Elemental Weapon:</em> the weapon now deals Ice damage.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "ZrExTmNc7QSszuQk",
+              "originalParentId": "TPnGoyaq70WSBzmj",
+              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.TPnGoyaq70WSBzmj.ActiveEffect.ZrExTmNc7QSszuQk"
+            },
+            "fabula-ultima-companion": {
+              "aeFamily": "elemental-weapon",
+              "lifetimeMode": "on_activation",
+              "tags": [
+                "buff"
+              ]
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/magic/lightning/bolt-strike-blue.webp",
+          "name": "Elemental Weapon (Ice)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-elemental-weapon-ice"
           ],
           "system": {},
           "tint": "#ffffff",
@@ -5595,6 +5746,7 @@
           "damage_bonus": "",
           "defense_target_type": "def",
           "description": "<p>You imbue a weapon with elemental energy. Choose a damage type: <strong>air, bolt, earth, fire, or ice.</strong> Until this spell ends, all damage dealt by the weapon becomes of the chosen damage type. If you have that weapon equipped while you cast this spell, you may perform a <strong>free attack</strong> with it as part of the same action.</p><p> This spell can only be cast on a weapon equipped by a willing creature</p>",
+          "details_roller": "Show",
           "duration": "Scene",
           "effect_table": {
             "0": {
@@ -5638,7 +5790,8 @@
             },
             "6": {
               "$deleted": false,
-              "ae_duplicate_mode": "replace",
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "elemental-weapon",
               "ae_template_ref": "Elemental Weapon (Air)",
               "effect_kind": "apply_ae",
               "effect_label": "ew_ae_air",
@@ -5646,7 +5799,8 @@
             },
             "7": {
               "$deleted": false,
-              "ae_duplicate_mode": "replace",
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "elemental-weapon",
               "ae_template_ref": "Elemental Weapon (Bolt)",
               "effect_kind": "apply_ae",
               "effect_label": "ew_ae_bolt",
@@ -5654,7 +5808,8 @@
             },
             "8": {
               "$deleted": false,
-              "ae_duplicate_mode": "replace",
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "elemental-weapon",
               "ae_template_ref": "Elemental Weapon (Earth)",
               "effect_kind": "apply_ae",
               "effect_label": "ew_ae_earth",
@@ -5662,7 +5817,8 @@
             },
             "9": {
               "$deleted": false,
-              "ae_duplicate_mode": "replace",
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "elemental-weapon",
               "ae_template_ref": "Elemental Weapon (Fire)",
               "effect_kind": "apply_ae",
               "effect_label": "ew_ae_fire",
@@ -5670,7 +5826,8 @@
             },
             "10": {
               "$deleted": false,
-              "ae_duplicate_mode": "replace",
+              "ae_duplicate_mode": "replace_family",
+              "ae_family": "elemental-weapon",
               "ae_template_ref": "Elemental Weapon (Ice)",
               "effect_kind": "apply_ae",
               "effect_label": "ew_ae_ice",
@@ -5686,7 +5843,9 @@
             }
           },
           "heroic_requirement": "",
+          "id": "TPnGoyaq70WSBzmj",
           "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/EMTrans1.png",
           "isCheck": false,
           "isFacet": true,
           "isHeroic": false,
@@ -5700,6 +5859,7 @@
           "optional_params": {},
           "pre_activate_effect_ref": "ew_menu",
           "reaction_config_table": {},
+          "reaction_effect_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
@@ -5709,10 +5869,11 @@
           "skill_target": "One Weapon",
           "skill_type": "Spell",
           "type_damage": "",
-          "use_optional_params": false
+          "use_optional_params": false,
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.TPnGoyaq70WSBzmj"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "HhAK0qzO2jmsk0RX"
       },
@@ -5816,8 +5977,8 @@
               "reaction_effect_ref": "adv_acc",
               "reaction_isPassive": false,
               "reaction_ownership": "",
-              "reaction_passive_mode": "off",
-              "reaction_passive_target": "self",
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "",
               "reaction_resource_filter": "",
               "reaction_responder": "",
               "reaction_source": "self",
@@ -5829,15 +5990,15 @@
             },
             "1": {
               "$deleted": false,
-              "condition_formula": "STATUS_COUNT > 0 && DAMAGE_IS_HP == 1",
+              "condition_formula": "STATUS_COUNT > 0",
               "reaction_action_kind": "",
               "reaction_cause_filter": "",
               "reaction_damage_amount": "",
               "reaction_damage_type": "",
               "reaction_effect_ref": "adv_dmg",
               "reaction_isPassive": false,
-              "reaction_passive_mode": "on",
-              "reaction_passive_target": "self",
+              "reaction_passive_mode": "force",
+              "reaction_passive_target": "",
               "reaction_resource_filter": "",
               "reaction_responder": "",
               "reaction_source": "self",
@@ -5929,7 +6090,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "B0rR4DCijW1zC3SY"
       },
@@ -6025,7 +6186,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "Uo4iOf0EFG1z8AU2"
       },
@@ -6099,7 +6260,7 @@
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.Wtcdd42MQHwsOsSe"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": true,
         "uniqueId": "7ApZzLcwZfDZz0nE"
       },
@@ -6216,7 +6377,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "CMeM0siw1nq7rr1G"
       },
@@ -6425,7 +6586,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "5FJroVCi4rjKmXQO"
       },
@@ -6522,7 +6683,7 @@
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.z1GsqcJC8bh4TOAs"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163372,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "Xf6q7cCeuczSTfXp"
       },
@@ -6944,7 +7105,7 @@
       "bond_temp": "Training Dummy C",
       "bonus_defense": 0,
       "bonus_dex": 0,
-      "bonus_hp": 3324,
+      "bonus_hp": 3588,
       "bonus_ins": 0,
       "bonus_magic_defense": 0,
       "bonus_mig": 0,
@@ -7278,7 +7439,7 @@
       "critical_dice_range": 0,
       "current_hp": "95",
       "current_ip": "6",
-      "current_mp": "75",
+      "current_mp": 60,
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/hina_Cut-in002.png",
       "cut_in_fumble": "",

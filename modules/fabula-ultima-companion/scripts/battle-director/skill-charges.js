@@ -57,6 +57,23 @@ export function findOnActor(actor, { key = null, includeDisabled = false } = {})
   return out;
 }
 
+// Add a statuscounter-badge sync to a charge update — but ONLY when the AE's
+// author opted into a VISIBLE badge (`flags.statuscounter.visible === true`).
+//
+// The 3rd-party "statuscounter" module renders a number badge from
+// `flags.statuscounter.value`. BD's convention is to author charge AEs with
+// `statuscounter.visible: false` (the count, when surfaced at all, shows via the
+// director status HUD — NOT the module badge). The old code FORCE-wrote
+// `visible: true` on every charge tick, which stamped an unwanted blue number on
+// the token (e.g. Acceleration ticking 2→1). Honor the authored visibility
+// instead: sync `value` for AEs that asked to show a badge, leave everything else
+// untouched (no badge created, none forced visible).
+function withBadgeSync(effect, update, value) {
+  const sc = effect?.flags?.statuscounter;
+  if (sc && sc.visible === true) update["flags.statuscounter.value"] = value;
+  return update;
+}
+
 // Consume `count` charges from a single AE. When charges reach 0 AND
 // `deleteWhenEmpty` is true (the default), the AE is deleted —
 // once-per-X "ready" AEs vanish on use; the next refresh re-applies a
@@ -82,17 +99,7 @@ export async function consume(effect, { count = 1, deleteWhenEmpty = true } = {}
       log(`charges.consume: ${effect.name} drained (${n}/${c.charges}) → deleted`);
       return { ok: true, consumed: n, remaining: 0, deleted: true };
     }
-    await effect.update({
-      [`flags.${FLAG_NS}.charges`]: remaining,
-      // Keep the visible token badge in sync. The 3rd-party statuscounter module
-      // renders `flags.statuscounter.value`, which is DECOUPLED from our charges
-      // flag — so without this the on-token count never moves when a charge is
-      // spent (the cost IS consumed; only the badge looked stale). Reached only on
-      // the remaining>0 path, so it affects persisting multi-charge clocks
-      // (Adoration, Grave Points, Brainwave, Bleed) — exactly the ones that show a count.
-      "flags.statuscounter.value": remaining,
-      "flags.statuscounter.visible": true,
-    });
+    await effect.update(withBadgeSync(effect, { [`flags.${FLAG_NS}.charges`]: remaining }, remaining));
     log(`charges.consume: ${effect.name} ${c.charges} → ${remaining} (consumed ${n})`);
     return { ok: true, consumed: n, remaining, deleted: false };
   } catch (e) {
@@ -113,12 +120,7 @@ export async function set(effect, value, { deleteWhenEmpty = true } = {}) {
       await effect.delete();
       return { ok: true, newValue: 0, deleted: true };
     }
-    await effect.update({
-      [`flags.${FLAG_NS}.charges`]: next,
-      // Mirror the visible badge (see consume() note) so refreshes/resets show too.
-      "flags.statuscounter.value": next,
-      "flags.statuscounter.visible": true,
-    });
+    await effect.update(withBadgeSync(effect, { [`flags.${FLAG_NS}.charges`]: next }, next));
     return { ok: true, newValue: next, deleted: false };
   } catch (e) {
     warn("charges.set: write failed", e);

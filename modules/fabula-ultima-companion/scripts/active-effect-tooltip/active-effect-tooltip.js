@@ -3,7 +3,14 @@ const FU_EFFECT_TOOLTIP = (() => {
   const KEY = "__ONI_EFFECT_TOOLTIP__";
 
   function normalizePath(p) {
-    return String(p ?? "").replace(/^https?:\/\/[^/]+/i, "").trim();
+    const s = String(p ?? "").replace(/^https?:\/\/[^/]+/i, "").trim();
+    // An AE stores img as a RELATIVE path ("icons/foo.webp") but the rendered
+    // sprite's texture src is the ABSOLUTE server URL ("/icons/foo.webp"). After
+    // stripping the host they differ only by a leading slash, so a core/local
+    // icon (Heart of Darkness Ready, Grave Points) never matched its sprite while
+    // a remote absolute-URL icon did. Drop leading slashes so both forms reduce
+    // to the same key. (Mirrors ActiveEffectManager-charges-badge.normalizePath.)
+    return s.replace(/^\/+/, "");
   }
 
   function extractTexturePath(obj) {

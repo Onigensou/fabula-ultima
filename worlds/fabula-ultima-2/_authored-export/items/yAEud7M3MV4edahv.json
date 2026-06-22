@@ -49,11 +49,16 @@
       },
       "isCheck": false,
       "isHeroic": false,
-      "isReaction": false,
+      "isReaction": true,
       "level": 1,
       "max_level": "1",
       "name": "Zero Trigger: Strategy",
       "on_activate_effect_ref": "",
+      "passive_check_bonus_formula": "",
+      "passive_damage_bonus_formula": "",
+      "passive_logic_action": "",
+      "post_damage_effect_ref": "",
+      "pre_activate_effect_ref": "",
       "reaction_config_table": {
         "0": {
           "condition_formula": "ENEMY_DISTINCT_STATUS_COUNT >= 2",
@@ -64,6 +69,10 @@
           "reaction_trigger": "turn_end"
         }
       },
+      "recipe": "",
+      "recipe_amount": "",
+      "recipe_resource": "",
+      "recipe_target": "",
       "skill_range": "-",
       "skill_target": "-",
       "skill_type": "Passive"

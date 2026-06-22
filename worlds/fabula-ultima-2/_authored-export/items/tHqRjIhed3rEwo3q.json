@@ -1,0 +1,126 @@
+{
+  "_id": "tHqRjIhed3rEwo3q",
+  "_stats": {
+    "compendiumSource": "Item.vHU5RXkhcOoFrXtm",
+    "coreVersion": "12.343",
+    "createdTime": 1782072264644,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "jWqolKUUmjhkqhhg",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "extra_damage_mod_item",
+          "mode": 2,
+          "priority": 20,
+          "value": "4"
+        },
+        {
+          "key": "item_restore_mod",
+          "mode": 2,
+          "priority": 20,
+          "value": "20"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "jWqolKUUmjhkqhhg",
+          "originalParentId": "n6K5lij1haM9QRsm",
+          "originalUuid": "Actor.Z4CFy505cD3nzl1W.Item.n6K5lij1haM9QRsm.ActiveEffect.jWqolKUUmjhkqhhg"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Gatherer-Crafter/04_ALC/careful_synthesis_iii.png",
+      "name": "Secret Formula",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "vE96q7FVLmhb7wDD",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Gatherer-Crafter/04_ALC/careful_synthesis_iii.png",
+  "name": "Secret Formula",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "active_effect_config_table": {},
+      "check_bonus": "0",
+      "class": "Tinkerer",
+      "cost": "",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>When you create a <strong>potion</strong> or <strong>magisphere</strong> whose effects restore HP and/or MP, each restored amount is increased by <strong>【SL × 5】.</strong></p><p> When you create an <strong>elemental shard, potion</strong> or <strong>magisphere</strong> that deals damage, that item deals <strong>【SL】</strong> extra damage.</p>",
+      "duration": "",
+      "heroic_requirement": "",
+      "ignore_hr": false,
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "isZeroPower": false,
+      "level": "4",
+      "max_level": "5",
+      "name": "Secret Formula",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "tHqRjIhed3rEwo3q"
+  },
+  "type": "equippableItem"
+}

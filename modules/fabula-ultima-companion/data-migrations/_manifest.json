@@ -567,6 +567,10 @@
     {
       "key": "2026-06-15-reaction-self-scope-source-skill",
       "path": "data-migrations/2026-06-15-reaction-self-scope-source-skill.js"
+    },
+    {
+      "key": "2026-06-22-template-options-ae-duplicate-replace-family",
+      "path": "data-migrations/2026-06-22-template-options-ae-duplicate-replace-family.js"
     }
   ]
 }

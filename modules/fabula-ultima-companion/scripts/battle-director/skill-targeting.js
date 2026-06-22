@@ -38,10 +38,16 @@ import { getAllegianceOverrides, applyAllegianceOverride } from "./snapshot.js";
 const RESERVED_REFS = {
   self:                  { candidate_source: "self" },
   self_or_my_focus:      { candidate_source: "self_or_my_focus", mode: "exact", count: 1 },
-  action_targets:        { candidate_source: "action_targets", mode: "all" },
-  hit_action_targets:    { candidate_source: "hit_action_targets", mode: "all" },
-  ally_action_targets:   { candidate_source: "action_targets", category: "ally", mode: "all" },
-  enemy_action_targets:  { candidate_source: "action_targets", category: "enemy", mode: "all" },
+  // The action-target family references tokens the player ALREADY picked + confirmed
+  // at the card's TARGET state. Re-surfacing a locked-confirm when an effect row
+  // (apply_ae / status rider) later resolves them is a redundant second targeting
+  // prompt post-card — so these resolve silently (auto_target: "skip"). Without it
+  // the default ("confirm") double-prompts a pure status-on-action_targets skill
+  // like Elemental Shroud (no deal_damage to prime the resolveTargetRef cache).
+  action_targets:        { candidate_source: "action_targets", mode: "all", auto_target: "skip" },
+  hit_action_targets:    { candidate_source: "hit_action_targets", mode: "all", auto_target: "skip" },
+  ally_action_targets:   { candidate_source: "action_targets", category: "ally", mode: "all", auto_target: "skip" },
+  enemy_action_targets:  { candidate_source: "action_targets", category: "enemy", mode: "all", auto_target: "skip" },
   trigger_actor:         { candidate_source: "trigger_actor", mode: "exact", count: 1 },
   trigger_attacker:      { candidate_source: "trigger_attacker", mode: "exact", count: 1 },
   trigger_subject:       { candidate_source: "trigger_subject", mode: "exact", count: 1 },
@@ -198,15 +204,21 @@ async function resolveTargetingRow(row, ctx) {
   // Auto-target mode — what happens on an ASSURED target (self / all / single):
   //   "skip"    → resolve silently, never prompt
   //   "confirm" → always show a locked Confirm (pre-selected, can't change)
-  //   "auto" / absent → ROLE-BASED: the GM resolves silently (better pace when
-  //                     running NPCs), but a PLAYER gets the locked Confirm so they
-  //                     see what their action is committing to.
+  //   "auto"    → ROLE-BASED: the GM resolves silently (better pace when running
+  //               NPCs), but a PLAYER gets the locked Confirm so they see what
+  //               their action is committing to.
+  //   absent    → DEFAULT is "confirm": even an obvious target gets a locked
+  //               Confirm pass so nothing commits silently. A row opts back into
+  //               silent resolution with auto_target:"skip" (or the old role-based
+  //               behavior with auto_target:"auto").
   // Legacy boolean tolerated (true = skip, false = confirm).
   const _at = row.auto_target;
   const autoMode = _at === true ? "skip" : _at === false ? "confirm"
-    : String(_at ?? "auto").trim().toLowerCase();
+    : String(_at ?? "confirm").trim().toLowerCase();
   const isGM = !!game.user?.isGM;
-  const autoTarget = autoMode === "skip" ? true : (autoMode === "confirm" ? false : isGM);
+  const autoTarget = autoMode === "skip" ? true
+    : autoMode === "auto" ? isGM
+    : false;   // "confirm" (and the absent default) → always locked-confirm
 
   // 1. Build candidate pool.
   let pool = await buildCandidatePool(candidateSource, ctx);

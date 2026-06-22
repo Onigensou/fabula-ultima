@@ -46,6 +46,7 @@
           "originalUuid": "Item.UF9js71VGFE9jB93.ActiveEffect.59y1KOVICharAnZO"
         },
         "fabula-ultima-companion": {
+          "aeFamily": "elemental-shroud",
           "lifetimeMode": "on_activation",
           "tags": [
             "buff"
@@ -113,6 +114,7 @@
           "originalUuid": "Item.UF9js71VGFE9jB93.ActiveEffect.e0N8wokGcstyoZDw"
         },
         "fabula-ultima-companion": {
+          "aeFamily": "elemental-shroud",
           "lifetimeMode": "on_activation",
           "tags": [
             "buff"
@@ -180,6 +182,7 @@
           "originalUuid": "Item.UF9js71VGFE9jB93.ActiveEffect.FmqepRBudo13YUdZ"
         },
         "fabula-ultima-companion": {
+          "aeFamily": "elemental-shroud",
           "lifetimeMode": "on_activation",
           "tags": [
             "buff"
@@ -247,6 +250,7 @@
           "originalUuid": "Item.UF9js71VGFE9jB93.ActiveEffect.n4UwdPgPGde4aHbe"
         },
         "fabula-ultima-companion": {
+          "aeFamily": "elemental-shroud",
           "lifetimeMode": "on_activation",
           "tags": [
             "buff"
@@ -314,6 +318,7 @@
           "originalUuid": "Item.UF9js71VGFE9jB93.ActiveEffect.OCqoOMT9jSKApPXR"
         },
         "fabula-ultima-companion": {
+          "aeFamily": "elemental-shroud",
           "lifetimeMode": "on_activation",
           "tags": [
             "buff"
@@ -383,7 +388,8 @@
         },
         "1": {
           "$deleted": false,
-          "ae_duplicate_mode": "replace_per_caster",
+          "ae_duplicate_mode": "replace_family",
+          "ae_family": "elemental-shroud",
           "ae_template_ref": "Elemental Shroud (Air)",
           "effect_kind": "apply_ae",
           "effect_label": "shroud_air",
@@ -391,7 +397,8 @@
         },
         "2": {
           "$deleted": false,
-          "ae_duplicate_mode": "replace_per_caster",
+          "ae_duplicate_mode": "replace_family",
+          "ae_family": "elemental-shroud",
           "ae_template_ref": "Elemental Shroud (Bolt)",
           "effect_kind": "apply_ae",
           "effect_label": "shroud_bolt",
@@ -399,7 +406,8 @@
         },
         "3": {
           "$deleted": false,
-          "ae_duplicate_mode": "replace_per_caster",
+          "ae_duplicate_mode": "replace_family",
+          "ae_family": "elemental-shroud",
           "ae_template_ref": "Elemental Shroud (Earth)",
           "effect_kind": "apply_ae",
           "effect_label": "shroud_earth",
@@ -407,7 +415,8 @@
         },
         "4": {
           "$deleted": false,
-          "ae_duplicate_mode": "replace_per_caster",
+          "ae_duplicate_mode": "replace_family",
+          "ae_family": "elemental-shroud",
           "ae_template_ref": "Elemental Shroud (Fire)",
           "effect_kind": "apply_ae",
           "effect_label": "shroud_fire",
@@ -415,7 +424,8 @@
         },
         "5": {
           "$deleted": false,
-          "ae_duplicate_mode": "replace_per_caster",
+          "ae_duplicate_mode": "replace_family",
+          "ae_family": "elemental-shroud",
           "ae_template_ref": "Elemental Shroud (Ice)",
           "effect_kind": "apply_ae",
           "effect_label": "shroud_ice",
