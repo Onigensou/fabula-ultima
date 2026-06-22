@@ -40,6 +40,8 @@ import { initIconFocusTuner } from "./icon-focus-tuner.js";
 import { stopBattleBgm, preloadDirectorSfx } from "./director-vfx.js";
 import { initDirectorSfx, collapseSidebarLocal } from "./director-sfx.js";
 import { initSfxAudition } from "./sfx-audition.js";
+import { initDamageNumbers, emitDamageNumber, renderDamageNumberLocal } from "./damage-numbers/director-damage-numbers.js";
+import { initDamageNumberAudition } from "./damage-numbers/damage-number-audition.js";
 import { initBattleStateTool } from "./battle-state-tool.js";
 import { initTestBattleTool } from "./test-battle-tool.js";
 import { registerBuiltinReactor, clearBuiltinReactors } from "./instance-settle.js";
@@ -906,6 +908,15 @@ Hooks.once("ready", () => {
       count: (kind) => countSurfaces(kind),
       clear: () => clearAllSurfaces(),
     },
+    // Floating damage numbers (DOM screen-space subsystem). `emit` is the
+    // GM-side entry — renders locally + broadcasts to all clients — and is the
+    // drop-in replacement for the Sequencer scrollingText VFX (wired in Phase 1).
+    // `renderLocal` renders on THIS client only (no broadcast) — used by the
+    // audition tool. See damage-numbers/director-damage-numbers.js.
+    damageNumbers: {
+      emit: (payload) => emitDamageNumber(payload),
+      renderLocal: (payload) => renderDamageNumberLocal(payload),
+    },
     // Re-broadcast the turn-action tracker from the live dCombat. Used by the
     // icon focal-point tuner to reflect a saved focus immediately mid-battle.
     refreshTurnActions: () => {
@@ -1303,6 +1314,17 @@ Hooks.once("ready", () => {
   // SFX audition tool — registers into the Developer Tools launcher.
   try { initSfxAudition(); }
   catch (e) { warn("initSfxAudition on ready threw", e); }
+
+  // Floating damage-number subsystem — registers its socketlib handler on every
+  // client so the GM-side director can broadcast a hit/heal/miss number that
+  // renders on all screens. (Phase 0: engine + audition only; the skill-effects
+  // call sites still fire the legacy Sequencer VFX until Phase 1 repoints them.)
+  try { initDamageNumbers(); }
+  catch (e) { warn("initDamageNumbers on ready threw", e); }
+
+  // Damage-number audition tool — registers into the Developer Tools launcher.
+  try { initDamageNumberAudition(); }
+  catch (e) { warn("initDamageNumberAudition on ready threw", e); }
 
   // Director UI sound layer — delegated hover/click cues on all interactive
   // director surfaces (Legacy parity: BattleCursor_4 hover + switch_mode click).
