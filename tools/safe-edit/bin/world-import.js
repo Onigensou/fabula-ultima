@@ -101,17 +101,20 @@ async function bridgeEval(world, code, args) {
   const reqPath = path.join(dir, "inbox", `req-${id}.json`);
   const resPath = path.join(dir, "outbox", `res-${id}.json`);
   const wrapped = `const ARGS = ${JSON.stringify(args)};\n${code}`;
-  fs.writeFileSync(reqPath, JSON.stringify({ id, kind: "evalGM", auth: secret, args: { code: wrapped } }));
+  // Bulk imports (many actors / embedded skills + per-item CSB reload) exceed
+  // the bridge's 30s default. Ask for the bridge max (clamped to 5min there) and
+  // wait a touch longer on this side so we read the result rather than racing it.
+  fs.writeFileSync(reqPath, JSON.stringify({ id, kind: "evalGM", auth: secret, timeoutMs: 300000, args: { code: wrapped } }));
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   const started = Date.now();
   let res = null;
-  while (Date.now() - started < 180000) {
+  while (Date.now() - started < 320000) {
     if (fs.existsSync(resPath)) { res = JSON.parse(fs.readFileSync(resPath, "utf8")); break; }
     await sleep(200);
   }
   try { fs.existsSync(reqPath) && fs.unlinkSync(reqPath); } catch { /* ignore */ }
   try { fs.existsSync(resPath) && fs.unlinkSync(resPath); } catch { /* ignore */ }
-  if (!res) throw new Error("No bridge response after 180s — is Foundry open and the bridge running?");
+  if (!res) throw new Error("No bridge response after 320s — is Foundry open and the bridge running?");
   if (!res.ok) throw new Error(`bridge eval error: ${res.error}\n${res.errorStack || ""}`);
   return res.result;
 }

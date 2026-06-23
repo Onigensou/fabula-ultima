@@ -87,7 +87,10 @@
   // Cap the dedup Map so a long session (or churning request IDs) can't grow
   // it unbounded. 200 entries is far more than any realistic concurrent batch.
   const PROCESSED_MAX = 200;
-  const MAX_REQUEST_BYTES = 256 * 1024;
+  // Bumped from 256 KiB: authored actors (with embedded skills + effects) run
+  // 300 KB–1 MB, which the old cap silently dropped (request discarded, no
+  // response written). 16 MiB comfortably covers a full actor import payload.
+  const MAX_REQUEST_BYTES = 16 * 1024 * 1024;
   const DEFAULT_TIMEOUT_MS = 30000;
   const MAX_TIMEOUT_MS = 5 * 60 * 1000;
 
