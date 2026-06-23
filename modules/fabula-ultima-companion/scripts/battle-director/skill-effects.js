@@ -751,7 +751,14 @@ async function evaluateConditionFormula(row, reactorActor, payload, item) {
   const condRaw = String(row.condition_formula ?? "").trim();
   if (!condRaw) return { ok: true, raw: "", value: null };
   const { evaluateFormula, buildSkillResolver } = await getSkillFormulas();
-  const resolver = buildSkillResolver({ actor: reactorActor, payload, skill: item, round: 0 });
+  // ROUND-aware conditions (e.g. Prophetic Defender's even-round Prophecy gain
+  // "ROUND % 2 == 0 && ROUND > 0") read the BD round from the trigger payload.
+  // The lifecycle dispatch stamps payload.round = director.dCombat.round
+  // (buildStandalonePayload); hardcoding round:0 here made every ROUND condition
+  // evaluate against 0 (so "ROUND > 0" never passed). Falls back to 0 for
+  // payloads that don't carry a round (no regression — those don't use ROUND).
+  const round = Number(payload?.round ?? 0) || 0;
+  const resolver = buildSkillResolver({ actor: reactorActor, payload, skill: item, round });
   const val = evaluateFormula(condRaw, resolver, 0);
   if (!val) log(`passive ${item?.name ?? "?"}: condition_formula="${condRaw}" → ${val} (falsy)`);
   return { ok: !!val, raw: condRaw, value: val };
@@ -6539,6 +6546,14 @@ async function applyRemoveTaggedAeEffect(row, ctx) {
     // applied from those sources. chargeKey is the same identity the cost
     // walker (findChargeAEsOnActor) keys on, so this keeps the two aligned.
     const matches = Array.from(actor.effects ?? []).filter((eff) => {
+      // Clocks / points pools (lifetimeMode "persistent_counter" — Prophecy
+      // Points, Adoration/Grave/Brainwave clocks) are resource trackers, NOT
+      // buffs/debuffs: they are NEVER removable by a tag-filter effect
+      // (Dispel/Cleanse), regardless of how they happen to be tagged or what
+      // chargeKey they carry. persistent_counter is the canonical "clock"
+      // marker, so guarding on it makes every clock dispel-immune by construction.
+      const lifetimeMode = String(eff?.flags?.[FLAG_NS]?.lifetimeMode ?? "").trim().toLowerCase();
+      if (lifetimeMode === "persistent_counter") return false;
       const tags = eff?.system?.tags;
       if (Array.isArray(tags) && tags.includes(filterTag)) return true;
       const chargeKey = String(eff?.flags?.[FLAG_NS]?.chargeKey ?? "").trim().toLowerCase();

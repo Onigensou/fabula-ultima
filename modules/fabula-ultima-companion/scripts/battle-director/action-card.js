@@ -1577,7 +1577,16 @@ function buildAttackerHTML({ attacker, targets }) {
         const c = dispositionColor(t.disposition ?? 0);
         const sep = i > 0 ? `<span class="t-sep">, </span>` : "";
         const uuidAttr = ` data-fud-target-actor-uuid="${escapeHtml(String(t.actorUuid ?? ""))}"`;
-        return `${sep}<span class="t-name"${uuidAttr} style="color:${c}">${escapeHtml(t.name)}</span>`;
+        // Redirected target (Protect / Prophetic Defender) — name reads as the
+        // reactor with a 🔄 naming whom it took the place of. Rendered here so a
+        // rebuild from the post-mutation target list shows the right names on the
+        // Engagement line without any per-surface DOM patching.
+        const rf = t.redirectedFrom;
+        const marker = rf
+          ? ` <small class="t-redirect-from" title="Redirected from ${escapeHtml(String(rf.name ?? "?"))}">🔄</small>`
+          : "";
+        const rcls = rf ? " is-redirected" : "";
+        return `${sep}<span class="t-name${rcls}"${uuidAttr} style="color:${c}">${escapeHtml(t.name)}${marker}</span>`;
       }).join("")
     : `<span style="opacity:0.6;">—</span>`;
 
@@ -1997,7 +2006,7 @@ function buildPerTargetHTML({ perTargetResults, legendSuffix = "", weapon = null
   // COMPUTE — show "MDEF" instead of "DEF" so the per-target row
   // matches what's actually being checked.
   const defLabelTag = isSpellish ? "MDEF" : "DEF";
-  const rows = (perTargetResults ?? []).map((r) => {
+  const rows = (perTargetResults ?? []).map((r, _slotIdx) => {
     // Player attacker hasn't Studied this enemy → mask EVERYTHING that
     // requires Identity-tier knowledge to compute:
     //   - DEF (need DEF number to decide hit)
@@ -2095,12 +2104,25 @@ function buildPerTargetHTML({ perTargetResults, legendSuffix = "", weapon = null
     // Stable hooks for the live preview update (Phase 3 of Cheap Shot): the
     // recompute helper finds the row to patch its result span. tokenUuid is the
     // primary hook (unique per token — disambiguates linked tokens sharing one
-    // actor); actorUuid stays for back-compat / older queries.
+    // actor); actorUuid stays for back-compat / older queries. slot-index
+    // disambiguates DUPLICATE rows that share a token — e.g. Prophetic Defender
+    // redirects N threatened allies onto one reactor (Hina), so N rows carry the
+    // SAME tokenUuid; without a per-slot key the patcher/dedup collapse them.
     const rowDataAttrs =
       ` data-fud-target-token-uuid="${escapeHtml(String(r.tokenUuid ?? ""))}"`
-      + ` data-fud-target-actor-uuid="${escapeHtml(String(r.actorUuid ?? ""))}"`;
-    return `<div class="fud-bf-target-row"${rowDataAttrs}${tipAttrs}>
-      <span class="t-name">${escapeHtml(r.name)}${aff ? ` ${aff}` : ""}</span>
+      + ` data-fud-target-actor-uuid="${escapeHtml(String(r.actorUuid ?? ""))}"`
+      + ` data-fud-target-slot-index="${_slotIdx}"`;
+    // Redirected slot (Protect / Prophetic Defender) — tint the row + append the
+    // 🔄 marker naming the creature whose place this row now takes. Rendered
+    // through this same pipeline so a multi-target redirect shows one row per
+    // covered ally, all reading as the reactor.
+    const rf = r.redirectedFrom;
+    const rowClass = rf ? "fud-bf-target-row is-redirected" : "fud-bf-target-row";
+    const redirectMarker = rf
+      ? ` <small class="t-redirect-from" title="Redirected from ${escapeHtml(String(rf.name ?? "?"))}">🔄</small>`
+      : "";
+    return `<div class="${rowClass}"${rowDataAttrs}${tipAttrs}>
+      <span class="t-name">${escapeHtml(r.name)}${redirectMarker}${aff ? ` ${aff}` : ""}</span>
       <span class="t-def">${defLabel}</span>
       <span class="t-result ${cls}">${label}</span>
     </div>`;
@@ -2365,6 +2387,59 @@ function maskedGridHTML(slots) {
 // extend this delta with additional fields; the patcher gains a new
 // surface-update block for each surface that needs to reflect the
 // change.
+// ── Future-proof target-surface rerender ─────────────────────────────────────
+// When a card mutation CHANGES THE TARGET SET (redirect today; add_target /
+// change_target / split tomorrow), regenerate EVERY target-displaying surface —
+// the Engagement row, the corner portraits, and the per-target Result list —
+// from the post-mutation target list using the SAME canonical builders the
+// initial card render uses (buildAttackerHTML / buildPortraitsHTML /
+// buildPerTargetHTML).
+//
+// This replaces per-surface, per-original-uuid DOM patching, which silently
+// breaks whenever the set changes in a non-1:1 way: a multi-target redirect
+// collapses N covered allies onto ONE reactor (N slots share a token), so a
+// patch keyed by original uuid half-updates names and leaves portraits/headers
+// stale (the PDS "take the place of ALL allies" bug). Rendering from the data
+// keeps all surfaces correct BY CONSTRUCTION — a new target-mutation kind needs
+// zero new surface-patch code, just a correct post-mutation target list.
+//
+// `targets` rows carry { name, actorUuid, disposition, redirectedFrom? };
+// `perTargetResults` rows carry the flattened outcome (+ redirectedFrom merged
+// in by the caller, since projectProfileToActionResult drops it from flat rows).
+export function rerenderCardTargetSurfaces(rootEl, { attacker, targets, perTargetResults, element = null, roll = null, vsMDef = false, hasDamage = true }) {
+  if (!rootEl) return;
+  // 1. Engagement row (Attacker ⚔ Targets).
+  try {
+    const row = rootEl.querySelector(".fud-bf-attacker-row");
+    if (row && attacker) {
+      const tmp = document.createElement("div");
+      tmp.innerHTML = buildAttackerHTML({ attacker, targets });
+      const fresh = tmp.querySelector(".fud-bf-attacker-row");
+      if (fresh) row.replaceWith(fresh);
+    }
+  } catch (e) { warn("rerenderCardTargetSurfaces: engagement row threw", e); }
+  // 2. Corner portraits (left/right slots).
+  try {
+    if (attacker) {
+      const portraits = buildPortraitsHTML({ attacker, perTargetResults });
+      const leftSlot = rootEl.querySelector(".fud-bf-portrait-slot.left");
+      const rightSlot = rootEl.querySelector(".fud-bf-portrait-slot.right");
+      if (leftSlot) leftSlot.innerHTML = portraits.left ?? "";
+      if (rightSlot) rightSlot.innerHTML = portraits.right ?? "";
+    }
+  } catch (e) { warn("rerenderCardTargetSurfaces: portraits threw", e); }
+  // 3. Per-target Result list.
+  try {
+    const listEl = rootEl.querySelector(".fud-bf-target-list");
+    if (listEl && Array.isArray(perTargetResults) && perTargetResults.length) {
+      const tmp = document.createElement("div");
+      tmp.innerHTML = buildPerTargetHTML({ perTargetResults, weapon: null, element, roll, isSpellish: vsMDef, hasDamage });
+      const newList = tmp.querySelector(".fud-bf-target-list");
+      if (newList) listEl.innerHTML = newList.innerHTML;
+    }
+  } catch (e) { warn("rerenderCardTargetSurfaces: target list threw", e); }
+}
+
 export function applyCardTargetMutationDelta(rootEl, delta) {
   if (!rootEl || !delta || !Array.isArray(delta.redirects)) return;
   const { redirects, hasDamageRows, rollTotal, element } = delta;
@@ -4930,6 +5005,32 @@ export async function postActionCard({ director, kind, payload }) {
             healHeadlineRoll: (grantHeadline != null && payload?.roll) ? payload.roll : null,
           };
           applyCardTargetMutationDelta(root, delta);
+
+          // Unified target-surface render — when a mutation CHANGED THE TARGET
+          // SET (redirect; future add_target / change_target), regenerate ALL
+          // target-displaying surfaces (Engagement row, portraits, Result list)
+          // from the post-mutation target list via the canonical builders. This
+          // supersedes applyCardTargetMutationDelta's per-surface, per-uuid
+          // redirect patching (above) — which half-renders a multi-target
+          // redirect onto one reactor — and is correct by construction for any
+          // future target-mutation kind. `redirectedFrom` is merged onto the flat
+          // perTargetResults rows (projectProfileToActionResult drops it). Gated
+          // on damage rows; the helper is internally try/caught per surface.
+          if (Array.isArray(delta.redirects) && delta.redirects.length && hasDamageRows && recomputed.length) {
+            const rowsSrc = recomputed.map((r, i) => ({
+              ...r,
+              redirectedFrom: mutTargets[i]?.redirectedFrom ?? r.redirectedFrom ?? null,
+            }));
+            rerenderCardTargetSurfaces(root, {
+              attacker: payload?.attacker ?? arSnapshot.attacker ?? null,
+              targets: mutTargets,
+              perTargetResults: rowsSrc,
+              element: arSnapshot.damage?.element ?? null,
+              roll: arSnapshot.roll ?? null,
+              vsMDef: redirectVsMDef,
+              hasDamage: hasDamageRows,
+            });
+          }
 
           // Creatures dragged into the target set by this mutation (redirect
           // destination / add_target splash) can now use their own "when I'm
