@@ -2917,11 +2917,10 @@
               "reaction_config_table": {
                 "0": {
                   "$deleted": false,
-                  "reaction_trigger": "creature_targeted_by_action",
-                  "reaction_source": "self",
-                  "reaction_action_intent": "harmful",
+                  "reaction_trigger": "creature_performs_action",
+                  "reaction_source": "all",
                   "reaction_passive_mode": "ask",
-                  "condition_formula": "ATTACK_IS_CRIT == 0 && ATTACK_IS_FUMBLE == 0",
+                  "condition_formula": "ACTION_ROLLS_ACCURACY == 1 && ATTACK_IS_CRIT == 0 && ATTACK_IS_FUMBLE == 0",
                   "reaction_effect_ref": "div_reroll"
                 }
               },
@@ -2929,9 +2928,7 @@
                 "0": {
                   "$deleted": false,
                   "effect_label": "div_reroll",
-                  "effect_kind": "force_reroll",
-                  "charge_key": "divination",
-                  "count": "1"
+                  "effect_kind": "check_reroll"
                 }
               }
             }

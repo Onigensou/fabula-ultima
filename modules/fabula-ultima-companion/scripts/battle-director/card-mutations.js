@@ -704,87 +704,96 @@ async function applyAdjustAccuracyMutation(ctx, cand, row) {
   return "applied";
 }
 
-// ── Force reroll (effect_kind: "force_reroll") ───────────────────────────
+// Memoized reroll results. check_reroll's rerollDice is RANDOM, and the mutation
+// runs at least twice for one reaction — once for the card PREVIEW (each pill
+// toggle) and again at the CONFIRM COMMIT. Rolling fresh each time makes the card
+// show one result and the target take another. We cache the first rolled result
+// per (action-instance, reaction) and reuse it for every later pass, so preview ==
+// commit == applied. Key = actionResult._instanceId (stable across re-freezes) +
+// the reaction's identity. Entries are self-retiring (a resolved card's _instanceId
+// never recurs); a hard cap bounds the map as a backstop. Reusing it on a
+// decline→re-accept is also correct RAW — one reroll yields one result, no
+// re-rolling until you like it.
+// Stored on globalThis so it is SHARED across module instances: the preview and the
+// commit each dynamic-import card-mutations.js with a different `?cb=<Date.now()>`
+// (the BD live-edit cache-bust pattern), so a plain module-scoped Map would give each
+// pass its OWN cache and defeat the memo. The global survives the re-imports.
+const _checkRerollCache = (globalThis.__fudCheckRerollCache ??= new Map());
+const CHECK_REROLL_CACHE_CAP = 128;
+function checkRerollKey(ctx, cand) {
+  const inst = ctx?.ar?._instanceId ?? "";
+  return `${inst}::${cand?.rowKey ?? ""}::${cand?.carrierUuid ?? ""}::${cand?.reactorActorUuid ?? ""}`;
+}
+
+// ── Check reroll (effect_kind: "check_reroll") ───────────────────────────
 // Divination (Entropist): a reactor forces the ACTION-TAKER to reroll BOTH
-// accuracy dice; the new total is applied via the same accuracyOverride channel
-// as adjust_accuracy, and every target's hit/miss recomputes against it. RAW
-// gate: cannot reroll a Critical or a Fumble — self-guarded here so the row is
-// safe even if the pill's condition_formula doesn't resolve. Returns "failed"
-// (no charge should be spent) when there's no rerollable roll or it's a crit/
-// fumble. NB: damage/HR is NOT recomputed from the new dice (the hit→miss flip
-// is the meaningful effect for a defender); a still-hitting reroll keeps the
-// original HR. Promote to a full recompute if a skill needs reroll-for-damage.
-async function applyForceRerollMutation(ctx, cand, row) {
+// accuracy dice. Its ONE job is to reroll the Check and reflect the new result —
+// it swaps the action's roll, recomputes each target's hit/miss against the new
+// total, and reports the change through the SAME `accuracyOverride` channel as
+// adjust_accuracy (so the card re-renders identically — now showing the REAL new
+// dice, carried on `newRoll`). It deliberately does NOTHING else: charges are the
+// carrier AE's concern (its lifetimeMode "on_activation" tick in
+// firePreAcceptedCandidate is the sole consumer — one tick per accepted reroll),
+// not this mutation's. RAW gate: cannot reroll a Critical or a Fumble (self-guarded
+// → "failed"; the pill's condition also hides it, so it's never accepted there). NB:
+// damage/HR is NOT recomputed from the new dice (the hit→miss flip is the meaningful
+// effect); a still-hitting reroll keeps the original HR.
+async function applyCheckRerollMutation(ctx, cand, row) {
   const roll = ctx.ar?.roll;
-  if (!roll) { warn("force_reroll: no accuracy roll on this action — skipping"); return "failed"; }
-  if (roll.isCrit || roll.isFumble) { log("force_reroll: roll is a Critical/Fumble — cannot reroll (RAW)"); return "failed"; }
+  if (!roll) { warn("check_reroll: no accuracy roll on this action — skipping"); return "failed"; }
+  if (roll.isCrit || roll.isFumble) { log("check_reroll: roll is a Critical/Fumble — cannot reroll (RAW)"); return "failed"; }
 
   // The action-taker owns the dice being rerolled (fumble threshold etc.).
   const attackerUuid = ctx.ar?.attackerActorRef ?? ctx.ar?.attacker?.actorUuid ?? null;
   let attacker = null;
   try { attacker = attackerUuid ? await fromUuid(attackerUuid) : null; } catch {}
 
-  let newRoll;
-  try {
-    const { rerollDice } = await import("./invoke/invoke-core.js");
-    newRoll = await rerollDice({ roll, choice: "AB", actor: attacker });
-  } catch (e) {
-    warn("force_reroll: rerollDice threw — skipping", e);
-    return "failed";
+  // Roll ONCE per (action-instance, reaction) and reuse — see _checkRerollCache.
+  // The preview and the commit are separate calls; a fresh random roll in each
+  // would desync the card from what's applied.
+  const cacheKey = checkRerollKey(ctx, cand);
+  const haveInstance = !!ctx?.ar?._instanceId;
+  let newRoll = haveInstance ? _checkRerollCache.get(cacheKey) : null;
+  if (!newRoll) {
+    try {
+      const { rerollDice } = await import("./invoke/invoke-core.js");
+      newRoll = await rerollDice({ roll, choice: "AB", actor: attacker });
+    } catch (e) {
+      warn("check_reroll: rerollDice threw — skipping", e);
+      return "failed";
+    }
+    if (haveInstance) {
+      if (_checkRerollCache.size >= CHECK_REROLL_CACHE_CAP) {
+        const oldest = _checkRerollCache.keys().next().value;
+        if (oldest !== undefined) _checkRerollCache.delete(oldest);
+      }
+      _checkRerollCache.set(cacheKey, newRoll);
+    }
   }
 
   const newTotal = Number(newRoll?.total ?? 0);
-  const isCrit   = !!newRoll?.isCrit;
-  const isFumble = !!newRoll?.isFumble;
   const via      = cand?.carrierName ?? cand?.reactorActorName ?? "Divination";
 
-  for (let i = 0; i < ctx.perTargets.length; i++) {
-    const pt = ctx.perTargets[i];
-    if (!pt) continue;
-    const def = Number(pt.defense ?? 10);
-    const newHit = isCrit ? true : (!isFumble && newTotal >= def);
-    ctx.perTargets[i] = {
-      ...pt,
-      hit: newHit,
-      crit: isCrit && newHit,
-      rawDamage: newHit ? pt.rawDamage : 0,
-      damage: newHit ? pt.damage : 0,
-      accuracyBlocked: !newHit,
-    };
-  }
-
-  // Persist the rerolled roll so any later mutation / display reads the new dice.
+  // Swap the action's roll to the rerolled one — and stop there. applyTargetSetMutation
+  // feeds THIS roll into recomputeActionProfile (the shared, built-in recalc), which
+  // re-derives total / HR / crit / fumble / hit / damage for EVERY target from the new
+  // dice. So we deliberately do NOT touch ctx.perTargets here — the recompute owns the
+  // result, exactly like an accuracy adjustment; a reroll just hands it different dice.
+  // accuracyOverride carries `newRoll` for the accuracy fieldset display + `to` for the
+  // blocked/negated check. A reroll REPLACES the dice (not an additive modifier), so it
+  // has no `parts`.
   ctx.ar = { ...ctx.ar, roll: newRoll };
-  const baseTotal = Number(ctx.accuracyOverride?.from ?? roll.total ?? 0);
   ctx.accuracyOverride = {
-    from: baseTotal,
+    from: Number(roll.total ?? 0),
     to: newTotal,
     blocked: newTotal <= 0,
     via,
     reactorName: cand?.reactorActorName ?? null,
-    parts: [{ source: `${via} (reroll)`, amount: newTotal - baseTotal }],
     rerolled: true,
+    newRoll,
   };
 
-  // Spend the reactor's charge HERE — tied to an actual reroll, so a declined
-  // pill or a crit/fumble no-op (returned above) never costs a charge. `charge_key`
-  // empty → no cost. The reactor's charge-AE self-deletes at 0 (= spell ends after
-  // its 2 rerolls). Done in the mutation (not a separate consume_charge row) so it
-  // doesn't depend on the reaction's effect chain running a second pass.
-  const chargeKey = String(row?.charge_key ?? "").trim();
-  if (chargeKey) {
-    try {
-      const { reactor } = await resolveReactionReactorSkill(ctx, cand);
-      if (reactor) {
-        const charges = await import("./skill-charges.js");
-        const found = charges.findOnActor(reactor, { key: chargeKey });
-        const hit = found.find((f) => f.charges > 0);
-        if (hit) await charges.consume(hit.effect, { count: Math.max(1, Number(row?.count) || 1) });
-      }
-    } catch (e) { warn("force_reroll: charge consume failed", e); }
-  }
-
-  log(`force_reroll: ${roll.rA}+${roll.rB}=${roll.total} → ${newRoll.rA}+${newRoll.rB}=${newTotal} (via ${via})`);
+  log(`check_reroll: ${roll.rA}+${roll.rB}=${roll.total} → ${newRoll.rA}+${newRoll.rB}=${newTotal} (via ${via})`);
   return "applied";
 }
 
@@ -1179,8 +1188,21 @@ export async function applyTargetSetMutation({ ar, accepted, attackerActor = nul
     .filter((p) => p?.defenseOverride)
     .map((p) => ({ tokenUuid: p.tokenUuid, actorUuid: p.actorUuid, ...p.defenseOverride }));
   let hitTokenUuids = null;
+  // The recomputed action-level (headline) damage. When a mutation changed the roll
+  // (check_reroll), the COMPUTE-time payload.damage has the STALE HR baked into
+  // finalIfHit — the card must show THIS instead, sourced from the same recompute as
+  // the per-target rows so headline + per-target agree.
+  let recomputedDamage = null;
   try {
-    const mutatedAr = { ...ar, targets: mutatedTargets, perTargetResults };
+    // GUARDRAIL: recompute from the POST-mutation action state, never the raw input.
+    // Targets + perTargets already come from `mut`; the ROLL must too — otherwise a
+    // mutation that changed the dice (check_reroll) would re-derive the whole card
+    // (total / HR / crit / hit / damage) from the STALE original dice, so the value
+    // updates but the result doesn't. Sourcing the roll from `mut.roll` makes the
+    // single shared recompute (recomputeActionProfile) honor any roll change by
+    // construction — a new roll-mutating effect just writes ctx.ar and gets correct
+    // recalculation for free, no per-effect recompute logic.
+    const mutatedAr = { ...ar, roll: mut.roll ?? ar.roll, targets: mutatedTargets, perTargetResults };
     if (attackerActor) {
       const { refreshReactionSubjects } = await import("./skill-effects.js" + sfx);
       try { await refreshReactionSubjects({ acceptedPrePassives: accepted, ar: mutatedAr, attackerActor }); }
@@ -1194,6 +1216,9 @@ export async function applyTargetSetMutation({ ar, accepted, attackerActor = nul
       perTargetResults = delta.perTargetResults;
       hitTokenUuids = delta.hitTokenUuids ?? null;
     }
+    // Forward the recomputed headline damage (new HR + reactions + element folded
+    // in by projectProfileToActionResult). The card uses it when the roll changed.
+    recomputedDamage = delta?.damage ?? null;
   } catch (e) { warn("applyTargetSetMutation: recompute threw", e); }
   // Illusory Shield PV-split — applied AFTER the recompute because it depends on
   // the recomputed phantasm damage (its affinity/DR). Caps each interposing
@@ -1215,7 +1240,13 @@ export async function applyTargetSetMutation({ ar, accepted, attackerActor = nul
   // via the SAME builder the initial card uses. Blocking overrides (Crossfire)
   // carry no parts → null → the "Negated" treatment owns the display.
   let accuracyRoll = null;
-  if (accuracyOverride && !accuracyOverride.blocked
+  if (accuracyOverride?.rerolled && accuracyOverride.newRoll) {
+    // check_reroll REPLACES the dice — render the new roll directly (new rA/rB +
+    // total), keeping its modifier breakdown (a reroll leaves checkBonus untouched).
+    // The SAME builder the initial card uses then repaints the fieldset, so a reroll
+    // displays exactly like an accuracy adjustment, only with the real new dice.
+    accuracyRoll = { ...accuracyOverride.newRoll };
+  } else if (accuracyOverride && !accuracyOverride.blocked
       && Array.isArray(accuracyOverride.parts) && accuracyOverride.parts.length && ar?.roll) {
     const sumParts = accuracyOverride.parts.reduce((s, p) => s + (Number(p.amount) || 0), 0);
     accuracyRoll = {
@@ -1237,6 +1268,9 @@ export async function applyTargetSetMutation({ ar, accepted, attackerActor = nul
     targets: mutatedTargets,
     perTargetResults,
     accuracyRoll, accuracyIsSpellish,
+    // Recomputed headline damage (used by the card when the roll changed — reroll).
+    // `mut.roll` (post-mutation roll) rides through the `...mut` spread for HR.
+    recomputedDamage,
     hitTokenUuids,
     negated: false, cancelled: false,
   };
@@ -1330,9 +1364,9 @@ export async function applyAcceptedCardMutations(arSnapshot, acceptedPrePassives
       if (kind === "adjust_accuracy") {
         const result = await applyAdjustAccuracyMutation(ctx, cand, row);
         if (result === "applied") mutationsApplied += 1;
-      } else if (kind === "force_reroll") {
+      } else if (kind === "check_reroll") {
         // Divination: reroll the action-taker's accuracy dice, recompute hits.
-        const result = await applyForceRerollMutation(ctx, cand, row);
+        const result = await applyCheckRerollMutation(ctx, cand, row);
         if (result === "applied") mutationsApplied += 1;
       } else if (kind === "adjust_defense") {
         // Defender-side: the targeted creature raises its own DEF for this action
@@ -1371,6 +1405,13 @@ export async function applyAcceptedCardMutations(arSnapshot, acceptedPrePassives
     grantOverride: ctx.grantOverride ?? null,
     costOverride: ctx.costOverride ?? null,
     shieldLinks: ctx.shieldLinks ?? null,
+    // The POST-mutation roll. A mutation that changes the dice (check_reroll)
+    // reassigns ctx.ar, so this is the authoritative roll the recompute must read
+    // — NOT the caller's original `ar`. Surfacing it here is what lets
+    // applyTargetSetMutation re-derive total/HR/crit/hit/damage from the new dice
+    // via the SAME recomputeActionProfile every other mutation uses. Any future
+    // roll-changing mutation is reflected automatically by writing ctx.ar.
+    roll: ctx.ar?.roll ?? null,
     negated: false,
   };
 }

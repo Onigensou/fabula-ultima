@@ -1423,6 +1423,14 @@ export function freezeActionResult(obj, _depth = 0) {
     const rolls = out.kind === "Attack" || !!out.isCheck;
     out.rollsAccuracy = rolls;
     out.canMiss = rolls;
+    // Stable per-action-instance id. Generated once for a given card's
+    // actionResult and PRESERVED across every re-freeze (each re-freeze spreads
+    // `...ar`, so the field is copied in the loop above before we reach here). It
+    // lets a NON-DETERMINISTIC card mutation (check_reroll's random rerollDice)
+    // memoize its rolled result across the SEPARATE preview + commit passes —
+    // without it the two passes roll different dice and the target takes a value
+    // that doesn't match the card. Non-actionResult objects never get one.
+    if (!out._instanceId) out._instanceId = foundry.utils.randomID();
   }
   return Object.freeze(out);
 }

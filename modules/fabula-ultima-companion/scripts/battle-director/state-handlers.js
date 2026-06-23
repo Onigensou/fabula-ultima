@@ -2423,9 +2423,16 @@ async function resolveActionTargets(director, attackerSnap, opts = {}) {
   // Random keeps its own roulette+Confirm pass; only genuine multi-target picks
   // keep the usingPreComposed shortcut.
   const isObviousTargetSet = pickerMode === "self" || pickerMode === "all";
-  const isAutoPick = isObviousTargetSet || pickerMode === "random";
   let result;
-  if (!isAutoPick && usingPreComposed
+  // Pre-composed by the player — they ALREADY picked + acknowledged the target
+  // on their own client during compose (e.g. the self-confirm a Self spell shows
+  // in compose-action's resolveTargetsForSource). Trust that pick and DON'T
+  // re-prompt, even for an "obvious" self/all set — otherwise a player casting a
+  // Self spell sees the confirm twice. `random` is excluded: it pre-composes no
+  // target (composedTargetUuids is empty) and is rolled GM-side by the roulette
+  // path below. A GM-driven action with no pre-compose still falls through to the
+  // locked Confirm, so a directly-run obvious target keeps its acknowledgement.
+  if (pickerMode !== "random" && usingPreComposed
       && Array.isArray(composedTargetUuids) && composedTargetUuids.length) {
     result = { ok: true, cancelled: false, tokenUuids: [...composedTargetUuids] };
   } else if (isObviousTargetSet) {
@@ -3935,6 +3942,11 @@ const Confirm = {
             // this (Adversity: accuracy bonus only on actions that roll a check — attacks
             // + offensive spells + opposed/Hinder checks, NOT Heal/buff/utility).
             actionCanMiss: !!ar.canMiss,
+            // Roll result — crit/fumble gate for performer-side reactions (e.g.
+            // Divination on the actor's OWN Check: RAW can't reroll a crit/fumble,
+            // so its condition reads ATTACK_IS_CRIT/FUMBLE). Post-roll at CONFIRM.
+            isCrit: !!ar.roll?.isCrit,
+            isFumble: !!ar.roll?.isFumble,
             actionName: ar.weapon?.name ?? ar.skillName ?? ar.kind ?? "Action",
             // Acting skill/weapon name for `reaction_source_skill` self-scoping.
             sourceSkillName: ar.skillName ?? ar.weapon?.name ?? null,
@@ -3967,6 +3979,103 @@ const Confirm = {
         }
       } catch (e) {
         warn("CONFIRM: creature_performs_action dispatch threw", e);
+      }
+    }
+
+    // Observer scan — creature_performs_action by ANY creature. A reaction whose
+    // REACTOR is a BYSTANDER: neither the performer (the performer-side scan above
+    // handles the actor's OWN action) nor a target (creature_targeted_by_action
+    // below). RAW Divination is the canonical user — "after a creature you can see
+    // performs a Check, you may force that creature to reroll". `reaction_source`
+    // does the filtering exactly as it does target-side: `all` (Divination) fires
+    // for every performer; `ally`/`enemy` scope by the performer's disposition vs
+    // the reactor; `self` can NEVER match here (subject = performer ≠ reactor) so
+    // self-riders (Magical Artillery / Adversity / Cognitive Focus) are not
+    // re-surfaced and never double-fire. The performer is excluded from the walk,
+    // so the actor's own `all` reaction fires once (performer-side) — not twice.
+    // Gated to accuracy-rolling actions (ar.canMiss) so it only offers on Checks /
+    // attacks. The matched candidate carries reactorActorUuid = the bystander; the
+    // card-mutation phase reads it (check_reroll rerolls the action-taker's dice,
+    // charge consumed from the reactor). Rows with no effect ref are skipped — a
+    // reaction that can't do anything must never surface a pill (e.g. Prophetic
+    // Defender's vestigial creature_performs_action/enemy row).
+    const fireObserverPerforms = attackerActor && (ar.passIndex ?? 1) <= 1 && !!ar.canMiss;
+    if (fireObserverPerforms) {
+      try {
+        const { findPassiveCandidates } = await getSkillEffectsExtras();
+        const combatants = Array.isArray(director?.dCombat?.combatants)
+          ? director.dCombat.combatants : [];
+        const attackerActorUuid = attackerActor.uuid;
+        const allTargetUuids = (ar.targets ?? []).map((t) => t.tokenUuid);
+        const observerPayload = {
+          // Subject = the performer. reaction_source (all/ally/enemy) keys off this;
+          // check_reroll rerolls the action-taker, who IS the subject here.
+          sourceActorUuid: attackerActorUuid,
+          subjectActorUuid: attackerActorUuid,
+          sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
+          targets: allTargetUuids,
+          targetTokenUuids: allTargetUuids,
+          actionIntent: ar.actionIntent ?? "harmful",
+          actionKind: ar.kind ?? "Attack",
+          actionSkillType: String(ar.skillType ?? "").toLowerCase(),
+          actionIsCheck: !!ar.isCheck,
+          actionCanMiss: !!ar.canMiss,
+          actionName: ar.weapon?.name ?? ar.skillName ?? ar.kind ?? "Action",
+          sourceSkillName: ar.skillName ?? ar.weapon?.name ?? null,
+          // Roll result so the reaction can gate on crit/fumble (RAW Divination
+          // cannot reroll a Critical or a Fumble — the condition_formula reads these).
+          checkTotal: Number(ar.roll?.total ?? 0) || 0,
+          isCrit: !!ar.roll?.isCrit,
+          isFumble: !!ar.roll?.isFumble,
+          weaponRange: ar.weapon?.range ?? ar.weapon?.weapon_range ?? null,
+          skillUuid: ar.skillUuid ?? null,
+          weaponUuid: ar.weapon?.uuid ?? null,
+        };
+        const seenObs = new Set();
+        for (const c of combatants) {
+          if (c?.defeated) continue;
+          const reactor = c?.actorDoc ?? null;
+          if (!reactor) continue;
+          if (reactor.uuid === attackerActorUuid) continue;   // performer handled by the performer-side scan
+          let cands;
+          try {
+            cands = await findPassiveCandidates({
+              casterActor: reactor,
+              trigger: "creature_performs_action",
+              payload: observerPayload,
+              includeUnavailable: true,   // surface unaffordable reactions dimmed (cost only)
+            });
+          } catch (e) {
+            warn(`CONFIRM: observer creature_performs_action findPassiveCandidates threw for ${reactor.name}`, e);
+            continue;
+          }
+          for (const cand of cands ?? []) {
+            if (cand.kind === "passive" && cand.mode === "off") continue;
+            // DEFAULT = self: a row with no explicit source is a self-rider, NOT a
+            // bystander reaction, so it must not surface here. Only an explicit
+            // all/ally/enemy opts into observing others. (Explicit `self` never
+            // reaches this loop — the matcher drops it since subject ≠ reactor.)
+            if (!cand.reactionSource) continue;
+            if (!cand.ref) continue;            // no effect ref → can't do anything; never surface
+            if (cand.usesAddTarget) continue;   // add_target belongs to the performer-side path
+            const dedup = `${cand.rowKey}::${cand.carrierUuid}::${reactor.uuid}`;
+            if (seenObs.has(dedup)) continue;
+            seenObs.add(dedup);
+            log(`CONFIRM: observer reaction matched — reactor=${reactor.name} skill=${cand.carrierName} (performer=${ar.attacker?.name ?? attackerActorUuid})`);
+            prePassives.push({
+              ...cand,
+              reactorActorUuid: reactor.uuid,
+              reactorActorName: reactor.name,
+              reactorActorImg:  reactor.img ?? cand.carrierImg,
+              reactorIsPlayer:  !!reactor.hasPlayerOwner,
+              subjectActorUuid: attackerActorUuid,
+              subjectTokenUuid: ar.attacker?.tokenUuid ?? null,
+              payloadAtFire:    observerPayload,
+            });
+          }
+        }
+      } catch (e) {
+        warn("CONFIRM: observer creature_performs_action dispatch threw", e);
       }
     }
 
@@ -4481,6 +4590,11 @@ const Confirm = {
       // lands on the ORIGINAL target. Default to the live list; override below
       // only when the recompute produced a fresh one.
       let recomputedHitTokenUuids = liveAr.hitTokenUuids ?? null;
+      // A roll-changing mutation (check_reroll) must commit its NEW roll + headline
+      // damage too — otherwise RESOLVE / crit / opportunities and the post-commit
+      // card read the stale dice while the per-target rows carry the rerolled value.
+      let recomputedRoll = liveAr.roll ?? null;
+      let recomputedHeadlineDamage = null;
       let accuracyOverride = null;
       let costOverride = null;
       let negated = false;
@@ -4496,6 +4610,12 @@ const Confirm = {
           // Only adopt a non-null recomputed hit list — a negated action returns
           // hitTokenUuids: null (hits zeroed separately) and must keep the original.
           if (Array.isArray(r.hitTokenUuids)) recomputedHitTokenUuids = r.hitTokenUuids;
+          recomputedRoll = r.roll ?? recomputedRoll;
+          // Only override the headline damage when the ROLL actually changed (reroll);
+          // other mutations keep their existing payload-derived headline path.
+          const rollChanged = !!(r.roll && liveAr.roll
+            && (r.roll.rA !== liveAr.roll.rA || r.roll.rB !== liveAr.roll.rB || r.roll.total !== liveAr.roll.total));
+          if (rollChanged && r.recomputedDamage) recomputedHeadlineDamage = r.recomputedDamage;
           accuracyOverride = r.accuracyOverride ?? null;
           costOverride = r.costOverride ?? null;
           if (r.mutationsApplied > 0 || negated) {
@@ -4518,6 +4638,8 @@ const Confirm = {
         targets: mutatedTargets,
         perTargetResults: recomputedPerTargets,
         hitTokenUuids: recomputedHitTokenUuids,
+        roll: recomputedRoll,
+        ...(recomputedHeadlineDamage ? { damage: recomputedHeadlineDamage } : {}),
         ...(newDamageType ? { damageType: newDamageType } : {}),
         acceptedPrePassives: applied,
         evaluatedPrePassives: evaluated,

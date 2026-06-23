@@ -1323,6 +1323,10 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
         kind: kindForMode(mode),
         mode,
         ref: refLabel,
+        // The row's disposition scope (self/ally/enemy/all/""). Lets a dispatch
+        // path distinguish self-riders from bystander reactions — the observer
+        // creature_performs_action scan surfaces only explicit all/ally/enemy.
+        reactionSource: String(row.reaction_source ?? "").trim().toLowerCase(),
         usesAddTarget: effectRefUsesAddTarget(effectTable, refLabel),
         available,
         unavailableKind,
@@ -1362,6 +1366,8 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
         kind: kindForMode(mode),
         mode,
         ref: refLabel,
+        // See item path above — disposition scope for observer-scan filtering.
+        reactionSource: String(row.reaction_source ?? "").trim().toLowerCase(),
         usesAddTarget: effectRefUsesAddTarget(effectTable, refLabel),
         available,
         unavailableKind,
@@ -2937,10 +2943,10 @@ const EFFECT_KIND_DISPATCH = {
   // chain step itself is a no-op here — exactly like redirect_target.
   shield_redirect:     (row) => ({ ok: true, kind: "shield_redirect", applied: [], reason: "applied-at-card-mutation-phase" }),
   adjust_accuracy:     (row) => ({ ok: true, kind: "adjust_accuracy", applied: [], reason: "applied-at-card-mutation-phase" }),
-  // force_reroll: Divination — reroll the action-taker's accuracy dice. Data-only
+  // check_reroll: Divination — reroll the action-taker's accuracy dice. Data-only
   // here; the real work runs at the card-mutation phase
-  // (card-mutations.applyForceRerollMutation), exactly like adjust_accuracy.
-  force_reroll:        (row) => ({ ok: true, kind: "force_reroll", applied: [], reason: "applied-at-card-mutation-phase" }),
+  // (card-mutations.applyCheckRerollMutation), exactly like adjust_accuracy.
+  check_reroll:        (row) => ({ ok: true, kind: "check_reroll", applied: [], reason: "applied-at-card-mutation-phase" }),
   // adjust_defense: the DEFENDER-side twin of adjust_accuracy. A
   // creature_targeted_by_action reaction on the TARGET raises its OWN effective
   // defense for the in-flight action (Matador Verónica: +2 DEF when targeted).
@@ -3025,7 +3031,7 @@ export const EFFECT_KIND_LABELS = {
   redirect_target:     "Redirect Target",
   shield_redirect:     "Shield Redirect (Phantasm interposes; PV-capped soak, overflow to ally)",
   adjust_accuracy:     "Adjust Accuracy",
-  force_reroll:        "Force Reroll (reroll the action's accuracy dice — Divination)",
+  check_reroll:        "Check Reroll (reroll the action's accuracy dice — Divination)",
   adjust_defense:      "Adjust Defense (defender raises own DEF for the action)",
   negate_action:       "Negate Action (block — no outcome/reactions)",
 };
@@ -3167,7 +3173,7 @@ const EFFECT_KIND_PREVIEW = {
   redirect_target: () => null,
   shield_redirect: () => null,
   adjust_accuracy: () => null,
-  force_reroll: () => null,
+  check_reroll: () => null,
   negate_action: () => null,
 };
 

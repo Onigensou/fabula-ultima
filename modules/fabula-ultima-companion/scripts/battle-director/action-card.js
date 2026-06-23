@@ -4743,6 +4743,11 @@ export async function postActionCard({ director, kind, payload }) {
           const base   = liveAr ?? payload;
           const arSnapshot = {
             kind,
+            // Carry the stable action-instance id so a non-deterministic mutation
+            // (check_reroll) memoizes the SAME rolled result here (preview) as at
+            // the CONFIRM commit — keyed off this id. Without it the preview would
+            // key on "" and roll different dice than the commit.
+            _instanceId: base?._instanceId ?? null,
             targets: Array.isArray(base?.targets) ? base.targets : [],
             perTargetResults: Array.isArray(base?.perTargetResults) ? base.perTargetResults : [],
             roll: base?.roll ?? null,
@@ -5085,9 +5090,20 @@ export async function postActionCard({ director, kind, payload }) {
                     finalIfHit: (Number(baseDamage.finalIfHit) || 0) + reactionDelta,
                   }
                 : baseDamage;
+              // If the ROLL itself changed (check_reroll), payload.damage carries the
+              // STALE HR baked into finalIfHit — take the recompute's headline damage
+              // WHOLESALE (projectProfileToActionResult already folded the new HR +
+              // reactions + element) and render it against the new roll, so the headline
+              // agrees with the recomputed per-target rows. This sources the entire
+              // headline from the single recompute instead of patching numbers piecemeal.
+              const mutRoll = mutationResult.roll ?? null;
+              const rollChanged = !!(mutationResult.recomputedDamage && mutRoll && payload?.roll
+                && (mutRoll.rA !== payload.roll.rA || mutRoll.rB !== payload.roll.rB || mutRoll.total !== payload.roll.total));
+              const headlineDamage = rollChanged ? mutationResult.recomputedDamage : patchedDamage;
+              const headlineRoll = rollChanged ? mutRoll : (payload?.roll ?? null);
               const wasBlocked = dmgFieldset.classList.contains("is-blocked-dmg");
               const oldShown = Number(baseDamage?.finalIfHit);
-              const newHTML = buildDamagePreviewHTML({ damage: patchedDamage, roll: payload?.roll ?? null });
+              const newHTML = buildDamagePreviewHTML({ damage: headlineDamage, roll: headlineRoll });
               if (newHTML) {
                 dmgFieldset.outerHTML = newHTML;
                 const refreshed = root.querySelector(".fud-bf-dmg");
@@ -5095,9 +5111,9 @@ export async function postActionCard({ director, kind, payload }) {
                 // Running-number tween on the headline (skip fumbles — they show
                 // "—", not a number). Per-client + cosmetic; the broadcast HTML
                 // already carries the final value for late-joining mirrors.
-                if (refreshed && !payload?.roll?.isFumble) {
+                if (refreshed && !headlineRoll?.isFumble) {
                   const numEl = refreshed.querySelector(".fud-bf-dmg-number");
-                  if (numEl) animateCardNumber(numEl, oldShown, Number(patchedDamage?.finalIfHit), (v) => setLeadingNumberText(numEl, v));
+                  if (numEl) animateCardNumber(numEl, oldShown, Number(headlineDamage?.finalIfHit), (v) => setLeadingNumberText(numEl, v));
                 }
                 // Headline number is left as buildDamagePreviewHTML rendered it:
                 // damage.finalIfHit = base + attacker-side reaction bonuses, BEFORE

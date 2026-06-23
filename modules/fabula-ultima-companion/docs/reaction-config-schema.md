@@ -298,6 +298,24 @@ the `action_intent` prop override.
 | `neutral` | Subject has disposition 0 (treated as Neutral; -2 / Secret normalizes to 0). |
 | `all` | Any subject. |
 
+#### `creature_performs_action` — `reaction_source` is the *scope* knob
+
+`reaction_source` answers **"whose action do I react to?"** for this trigger, and
+that choice selects which dispatch the row participates in:
+
+| Value | Behaviour | Example |
+|-------|-----------|---------|
+| `self` *(default)* | **Self-rider** — fires only on the reactor's OWN action. A row with **no source set behaves as `self`** (the trigger's default), so picking `creature_performs_action` and touching nothing else gives the common, least-surprising case. | Magical Artillery, Adversity, Cognitive Focus |
+| `ally` / `enemy` | **Observer (scoped)** — fires when an ally / enemy performs, never the reactor. | (defensive "when an enemy acts" reactions) |
+| `all` | **Observer (any)** — fires for the reactor's own action AND any other creature's. | Divination ("force any creature you can see to reroll") |
+
+The reactor's own action is dispatched by the performer-side scan; **other**
+creatures' actions reach `ally`/`enemy`/`all` rows via the *observer scan*, which
+stamps `reactorActorUuid` = the bystander so card-mutation effects (e.g.
+`force_reroll`) act on the performer while costs come from the reactor. `self`
+rows never appear in the observer scan (subject ≠ reactor), so self-riders cannot
+double-fire. A row with no `reaction_effect_ref` (nothing to do) never surfaces.
+
 ---
 
 ## `effect_table` — effect row fields
