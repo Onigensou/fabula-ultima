@@ -10,6 +10,71 @@
   },
   "effects": [
     {
+      "_id": "F18Xy6Vx88Z4xjVl",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782244393570,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>A reserve of foresight Hina spends to take the place of all creatures threatened by a single danger.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "propheticPoint01",
+          "originalParentId": "Lmzs6VllFRo44jZq",
+          "originalUuid": "Item.Lmzs6VllFRo44jZq.ActiveEffect.propheticPoint01"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "chargeKey": "prophecy",
+          "charges": 3,
+          "chargesMax": 99,
+          "directorAppliedBy": {
+            "appliedAtRound": 0,
+            "effectLabel": "pds_gain",
+            "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.1xLltSAF28BfIpBU",
+            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.gm2w1NLdaEI7SzaQ",
+            "turnsRemaining": null
+          },
+          "directorPermanent": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/nocturnal_sect.png",
+      "name": "Prophecy Point",
+      "origin": "Actor.dafTLBUscCDNgq8H.Item.gm2w1NLdaEI7SzaQ",
+      "sort": 0,
+      "statuses": [
+        "fud-prophecy-point"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
       "_id": "l1k8ruMvfQH9MO4d",
       "_stats": {
         "compendiumSource": null,
@@ -47,7 +112,7 @@
             "appliedAtRound": 0,
             "effectLabel": "hod_refresh",
             "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.0GDH3vCdnmV6AgIE",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.1xLltSAF28BfIpBU",
             "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF",
             "turnsRemaining": null
           },
@@ -75,17 +140,17 @@
       "type": "base"
     },
     {
-      "_id": "pLuyCtTQjyUjb58U",
+      "_id": "YALCGgF8D8ApfVKE",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782223387530,
+        "createdTime": 1782243037229,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
       "changes": [],
-      "description": "<p><em>Divination:</em> after a creature performs a non-critical, non-fumble Check, you may force it to reroll both dice. Ends after two rerolls.</p>",
+      "description": "<p>This creature has less than 50% HP</p>",
       "disabled": false,
       "duration": {
         "combat": null,
@@ -99,44 +164,21 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "6lWZxCMcLkmOuVML",
-          "originalParentId": "BmgIHS4DdDAT1rUc",
-          "originalUuid": "Item.BmgIHS4DdDAT1rUc.ActiveEffect.6lWZxCMcLkmOuVML"
+          "isPredefined": true,
+          "originalId": "4ldx00srGNv5AJBr",
+          "originalParentId": "0gIBYzSpjdXS6f25",
+          "originalUuid": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-crisis",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": false
         },
         "fabula-ultima-companion": {
-          "chargeKey": "divination",
-          "charges": 1,
-          "chargesMax": 2,
-          "directorAppliedBy": {
-            "appliedAtRound": 1,
-            "effectLabel": "div_apply",
-            "lifetimeMode": "on_activation",
-            "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.0GDH3vCdnmV6AgIE",
-            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.FBWC6v9hhDqMlIaZ",
-            "turnsRemaining": null
-          },
-          "lifetimeMode": "on_activation",
-          "reactionConfig": {
-            "effect_table": {
-              "0": {
-                "$deleted": false,
-                "effect_kind": "check_reroll",
-                "effect_label": "div_reroll"
-              }
-            },
-            "name": "Divination",
-            "reaction_config_table": {
-              "0": {
-                "$deleted": false,
-                "condition_formula": "ACTION_ROLLS_ACCURACY == 1 && ATTACK_IS_CRIT == 0 && ATTACK_IS_FUMBLE == 0",
-                "reaction_effect_ref": "div_reroll",
-                "reaction_passive_mode": "ask",
-                "reaction_source": "all",
-                "reaction_trigger": "creature_performs_action"
-              }
-            }
-          }
+          "bdCrisis": true
         },
         "statuscounter": {
           "config": {
@@ -147,17 +189,15 @@
           "visible": false
         }
       },
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/divination.png",
-      "name": "Divination",
-      "origin": "Actor.dafTLBUscCDNgq8H.Item.FBWC6v9hhDqMlIaZ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/08_DRG/blood_for_blood.png",
+      "name": "Crisis",
+      "origin": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr",
       "sort": 0,
       "statuses": [
-        "fud-divination"
+        "5jkr80zqdzaR003d"
       ],
       "system": {
-        "tags": [
-          "dispellable"
-        ]
+        "tags": []
       },
       "tint": "#ffffff",
       "transfer": false,
@@ -2476,10 +2516,10 @@
           },
           "changes": [
             {
-              "key": "bonus_hp",
+              "key": "max_hp",
               "mode": 2,
               "priority": 20,
-              "value": "${fetchFromParent('ins_current')}$"
+              "value": "${fetchFromParent('ins_base')}$"
             }
           ],
           "description": "<p>Permanent bonus_hp increase equal to the bearer's INS die size. Max HP's label formula reads bonus_hp, so the bump shows up there. <code>target.ins_current</code> re-evaluates on every prepareDerivedData pass — live INS buffs/debuffs flow through automatically.</p>",
@@ -2488,9 +2528,9 @@
             "combat": null,
             "rounds": null,
             "seconds": null,
-            "startRound": 2,
-            "startTime": 298800,
-            "startTurn": 2,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
             "turns": null
           },
           "flags": {
@@ -2501,6 +2541,7 @@
               "originalUuid": "Item.Lmzs6VllFRo44jZq.ActiveEffect.propheticMaxHp01"
             },
             "fabula-ultima-companion": {
+              "category": "buff",
               "sourceSkillUniqueId": "propheticDefStyle"
             },
             "statuscounter": {
@@ -2512,8 +2553,8 @@
               "visible": false
             }
           },
-          "img": "icons/svg/aura.svg",
-          "name": "Prophetic Defender Style (Bonus HP)",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/nocturnal_sect.png",
+          "name": "Prophetic Defender",
           "origin": null,
           "sort": 0,
           "statuses": [],
@@ -2552,9 +2593,12 @@
               "originalUuid": "Item.Lmzs6VllFRo44jZq.ActiveEffect.propheticPoint01"
             },
             "fabula-ultima-companion": {
+              "category": "buff",
               "chargeKey": "prophecy",
               "charges": 1,
-              "chargesMax": 1
+              "chargesMax": 99,
+              "directorPermanent": false,
+              "lifetimeMode": "persistent_counter"
             },
             "statuscounter": {
               "config": {
@@ -2565,11 +2609,13 @@
               "visible": false
             }
           },
-          "img": "icons/svg/aura.svg",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/nocturnal_sect.png",
           "name": "Prophecy Point",
           "origin": null,
           "sort": 0,
-          "statuses": [],
+          "statuses": [
+            "fud-prophecy-point"
+          ],
           "system": {},
           "tint": "#ffffff",
           "transfer": false,
@@ -2583,7 +2629,7 @@
       },
       "folder": "ft3358qUh5ZDldYQ",
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/nocturnal_sect.png",
-      "name": "PROPHETIC DEFENDER STYLE",
+      "name": "Prophetic Defender",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
         "default": 0
@@ -2606,8 +2652,8 @@
           "effect_table": {
             "0": {
               "auto_confirm_when_obvious": true,
+              "auto_target": "skip",
               "candidate_source": "self",
-              "category": "",
               "count": "1",
               "effect_kind": "targeting",
               "effect_label": "pds_self",
@@ -2618,8 +2664,8 @@
             },
             "1": {
               "auto_confirm_when_obvious": true,
+              "auto_target": "confirm",
               "candidate_source": "action_targets",
-              "category": "",
               "effect_kind": "targeting",
               "effect_label": "pds_threatened",
               "exclude_self": false,
@@ -2628,7 +2674,9 @@
               "skip_when_passive": true
             },
             "2": {
-              "ae_duplicate_mode": "stack",
+              "ae_duplicate_mode": "add_charges",
+              "ae_initial_charges": "1",
+              "ae_initial_charges_max": "99",
               "ae_template_ref": "Prophecy Point",
               "effect_kind": "apply_ae",
               "effect_label": "pds_gain",
@@ -2643,8 +2691,6 @@
               "target_ref": "pds_self"
             },
             "4": {
-              "ae_duplicate_mode": "remove",
-              "ae_template_ref": "Prophecy Point",
               "destination_ref": "pds_self",
               "effect_kind": "redirect_target",
               "effect_label": "pds_redirect",
@@ -2653,13 +2699,13 @@
             },
             "5": {
               "chain_steps": "pds_consume,pds_redirect",
-              "destination_ref": "pds_self",
               "effect_kind": "chain",
-              "effect_label": "pds_reaction",
-              "rebuild_card": true,
-              "target_ref": "pds_threatened"
+              "effect_label": "pds_reaction"
             }
           },
+          "gadget_alchemy_tier": "",
+          "gadget_infusion_tier": "",
+          "gadget_magitech_tier": "",
           "heroic_requirement": "You must have mastered one or more Classes among Entropist and Guardian.",
           "id": "gm2w1NLdaEI7SzaQ",
           "ignore_hr": false,
@@ -2675,63 +2721,31 @@
           "name": "Prophetic Defender",
           "on_activate_effect_ref": "",
           "optional_params": {},
+          "pre_activate_effect_ref": "",
           "reaction_config_table": {
             "0": {
               "condition_formula": "HAS_SKILL_DIVINATION == 1",
-              "reaction_damage_amount": "",
-              "reaction_damage_type": "",
-              "reaction_debuff_count_min": "",
-              "reaction_debuff_count_target": "",
               "reaction_effect_ref": "pds_gain",
               "reaction_passive_mode": "force",
-              "reaction_passive_target": "self",
               "reaction_source": "",
-              "reaction_trigger": "conflict_start",
-              "requires_skill": ""
+              "reaction_trigger": "conflict_start"
             },
             "1": {
               "condition_formula": "ROUND % 2 == 0 && ROUND > 0",
-              "reaction_damage_amount": "",
-              "reaction_damage_type": "",
-              "reaction_debuff_count_min": "",
-              "reaction_debuff_count_target": "",
               "reaction_effect_ref": "pds_gain",
               "reaction_passive_mode": "force",
-              "reaction_passive_target": "self",
               "reaction_source": "",
-              "reaction_trigger": "round_start",
-              "requires_skill": "BmgIHS4DdDAT1rUc"
+              "reaction_trigger": "round_start"
             },
             "2": {
               "condition_formula": "",
               "reaction_action_intent": "harmful",
-              "reaction_damage_amount": "",
-              "reaction_damage_type": "",
-              "reaction_debuff_count_min": "",
-              "reaction_debuff_count_target": "",
               "reaction_effect_ref": "pds_reaction",
               "reaction_passive_mode": "ask",
-              "reaction_passive_target": "self",
               "reaction_source": "ally",
-              "reaction_trigger": "creature_targeted_by_action",
-              "requires_skill": ""
-            },
-            "3": {
-              "condition_formula": "ACTION_TARGET_COUNT >= 2",
-              "reaction_action_intent": "harmful",
-              "reaction_damage_amount": "",
-              "reaction_damage_type": "",
-              "reaction_debuff_count_min": "",
-              "reaction_debuff_count_target": "",
-              "reaction_effect_ref": "",
-              "reaction_passive_mode": "ask",
-              "reaction_passive_target": "",
-              "reaction_source": "enemy",
-              "reaction_trigger": "creature_performs_action",
-              "requires_skill": ""
+              "reaction_trigger": "creature_targeted_by_action"
             }
           },
-          "reaction_effect_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
@@ -2740,6 +2754,7 @@
           "skill_range": "-",
           "skill_target": "-",
           "skill_type": "Passive",
+          "target_eligibility": "",
           "type_damage": "",
           "use_optional_params": false,
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.gm2w1NLdaEI7SzaQ"
@@ -7040,12 +7055,12 @@
       "affinity_1": "NA",
       "affinity_2": "NA",
       "affinity_3": "NA",
-      "affinity_4": "NA",
+      "affinity_4": "RS",
       "affinity_5": "NA",
       "affinity_6": "NA",
       "affinity_7": "NA",
       "affinity_8": "NA",
-      "affinity_9": "NA",
+      "affinity_9": "RS",
       "animation_table": {},
       "anomaly_status": 0,
       "arcane_ef": "100",
@@ -7074,7 +7089,7 @@
       "bond_temp": "Training Dummy C",
       "bonus_defense": 0,
       "bonus_dex": 0,
-      "bonus_hp": 3942,
+      "bonus_hp": 0,
       "bonus_ins": 0,
       "bonus_magic_defense": 0,
       "bonus_mig": 0,
@@ -7406,9 +7421,9 @@
       "critical_damage_bonus": 0,
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
-      "current_hp": "86",
+      "current_hp": "11",
       "current_ip": "6",
-      "current_mp": 45,
+      "current_mp": "63",
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/hina_Cut-in002.png",
       "cut_in_fumble": "",
@@ -8243,7 +8258,7 @@
       "main_hand_attack": "",
       "manadrain_percentage": 0,
       "manadrain_value": 0,
-      "max_hp": 95,
+      "max_hp": 107,
       "max_ip": 6,
       "max_mp": 90,
       "memories_list": {
@@ -9262,7 +9277,7 @@
           "active_level": 1,
           "active_target": "-",
           "id": "${item.id}",
-          "name": "PROPHETIC DEFENDER STYLE",
+          "name": "Prophetic Defender",
           "roll": "",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.gm2w1NLdaEI7SzaQ"
         },

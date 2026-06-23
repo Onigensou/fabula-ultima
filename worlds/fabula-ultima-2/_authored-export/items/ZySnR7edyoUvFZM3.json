@@ -21,7 +21,7 @@
       },
       "changes": [
         {
-          "key": "bonus_hp",
+          "key": "max_hp",
           "mode": 2,
           "priority": 20,
           "value": "${fetchFromParent('ins_base')}$"
@@ -104,8 +104,9 @@
           "category": "buff",
           "chargeKey": "prophecy",
           "charges": 1,
-          "chargesMax": 1,
-          "directorPermanent": true
+          "chargesMax": 99,
+          "directorPermanent": false,
+          "lifetimeMode": "persistent_counter"
         },
         "statuscounter": {
           "config": {
@@ -153,6 +154,7 @@
       "effect_table": {
         "0": {
           "auto_confirm_when_obvious": true,
+          "auto_target": "skip",
           "candidate_source": "self",
           "count": "1",
           "effect_kind": "targeting",
@@ -164,6 +166,7 @@
         },
         "1": {
           "auto_confirm_when_obvious": true,
+          "auto_target": "confirm",
           "candidate_source": "action_targets",
           "effect_kind": "targeting",
           "effect_label": "pds_threatened",
@@ -173,7 +176,9 @@
           "skip_when_passive": true
         },
         "2": {
-          "ae_duplicate_mode": "stack",
+          "ae_duplicate_mode": "add_charges",
+          "ae_initial_charges": "1",
+          "ae_initial_charges_max": "99",
           "ae_template_ref": "Prophecy Point",
           "effect_kind": "apply_ae",
           "effect_label": "pds_gain",

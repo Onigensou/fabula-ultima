@@ -16355,6 +16355,13 @@
         "effects": 0
       },
       {
+        "id": "gqk36cjGWyoM6zOn",
+        "name": "BD Dummy Enemy",
+        "type": "character",
+        "items": [],
+        "effects": 1
+      },
+      {
         "id": "2U5MthxrDRMofSGl",
         "name": "Beary Goods",
         "type": "character",
@@ -21175,7 +21182,7 @@
           },
           {
             "id": "gm2w1NLdaEI7SzaQ",
-            "name": "PROPHETIC DEFENDER STYLE"
+            "name": "Prophetic Defender"
           },
           {
             "id": "2QV4dfxKeibAejia",
@@ -21202,7 +21209,7 @@
             "name": "Zero Trigger: Foresight"
           }
         ],
-        "effects": 2
+        "effects": 3
       },
       {
         "id": "tzXbVfDYPgvu5wml",
