@@ -103,10 +103,12 @@
         confirmBtn.textContent = iAmConfirmed ? "✓ Confirmed — click to change" : "Confirm Selection";
       }
 
-      // Lobby dots — show which active players have confirmed
+      // Lobby dots — show which active players have confirmed. Only count
+      // active players who own a party member; spectators have no party entry.
       const dotsEl = document.getElementById("oni-camp-act-lobby-dots");
       if (dotsEl) {
-        const activeUsers = (game.users?.contents ?? []).filter(u => u.active && !u.isGM);
+        const activeUsers = (game.users?.contents ?? [])
+          .filter(u => u.active && !u.isGM && this._party.some(e => e.userId === u.id));
         if (activeUsers.length > 0) {
           dotsEl.innerHTML = activeUsers.map(u => {
             const r = !!readyMap[u.id];
@@ -121,7 +123,8 @@
       const status = document.getElementById("oni-camp-act-status");
       if (status) {
         const confirmedCount = Object.keys(readyMap).length;
-        const activeUsers = (game.users?.contents ?? []).filter(u => u.active && !u.isGM);
+        const activeUsers = (game.users?.contents ?? [])
+          .filter(u => u.active && !u.isGM && this._party.some(e => e.userId === u.id));
         const total = activeUsers.length || this._party.length || 1;
         status.textContent = `${confirmedCount} / ${total} confirmed`;
       }

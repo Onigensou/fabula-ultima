@@ -696,11 +696,13 @@
     if (!userId) return;
     await CAMP.State.toggleReady(userId);
 
-    // In ACTIVITY_SELECT: auto-advance when all active players have confirmed
+    // In ACTIVITY_SELECT: auto-advance when all active players have confirmed.
+    // Only count active players who actually own a party member — spectator
+    // clients are active non-GM users but must not gate the proceed check.
     if (CAMP.State.getPhase() === CAMP.PHASE.ACTIVITY_SELECT) {
-      const activeUsers = (game.users?.contents ?? []).filter(u => u.active && !u.isGM);
-      const readyMap    = CAMP.State.getReady();
-      if (activeUsers.length > 0 && activeUsers.every(u => readyMap[u.id])) {
+      const partyUserIds = await CAMP.Party.getActiveUserIds();
+      const readyMap     = CAMP.State.getReady();
+      if (partyUserIds.length > 0 && partyUserIds.every(id => readyMap[id])) {
         await CAMP.State.clearReady();
         await CAMP.State.setPhase(CAMP.PHASE.ACTIVITY_RESOLVE);
       }
@@ -731,7 +733,8 @@
     const dots = document.getElementById("oni-camp-bond-wait-dots");
     if (dots) {
       const confirmed   = CAMP.State.getBondConfirmed();
-      const activeUsers = (game.users?.contents ?? []).filter(u => u.active && !u.isGM);
+      const partyIds    = await CAMP.Party.getActiveUserIds();
+      const activeUsers = (game.users?.contents ?? []).filter(u => u.active && !u.isGM && partyIds.includes(u.id));
       dots.innerHTML = activeUsers.map(u => {
         const r = !!confirmed[u.id];
         return `<div class="oni-camp-lobby-dot ${r ? "ready" : ""}" title="${u.name}"></div>`;
@@ -743,11 +746,15 @@
     if (!userId) return;
     await CAMP.State.setBondConfirmed(userId, summary);
 
+    // Only count active players who own a party member — spectator clients
+    // are active non-GM users but must not gate the bond-confirm proceed check.
+    const partyUserIds = await CAMP.Party.getActiveUserIds();
+
     // Refresh the GM lobby dots if the wait overlay is showing
     const dots = document.getElementById("oni-camp-bond-wait-dots");
     if (dots) {
       const confirmed   = CAMP.State.getBondConfirmed?.() ?? {};
-      const activeUsers = (game.users?.contents ?? []).filter(u => u.active && !u.isGM);
+      const activeUsers = (game.users?.contents ?? []).filter(u => u.active && !u.isGM && partyUserIds.includes(u.id));
       dots.innerHTML = activeUsers.map(u => {
         const r = !!confirmed[u.id];
         return `<div class="oni-camp-lobby-dot ${r ? "ready" : ""}" title="${u.name}"></div>`;
@@ -755,8 +762,7 @@
     }
 
     // Auto-advance when all active players have confirmed
-    const activeUsers = (game.users?.contents ?? []).filter(u => u.active && !u.isGM);
-    if (activeUsers.length === 0 || CAMP.State.isAllBondConfirmed(activeUsers.map(u => u.id))) {
+    if (partyUserIds.length === 0 || CAMP.State.isAllBondConfirmed(partyUserIds)) {
       await CAMP.State.setPhase(CAMP.PHASE.BOND_SUMMARY);
     }
   }
