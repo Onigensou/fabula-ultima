@@ -457,6 +457,21 @@ export class RefineWindowApp {
         if (!result?.ok) ui.notifications?.warn(result?.reason ?? "Refinement could not proceed.");
       }
 
+      // Spectator banner: let the rest of the party share in the result. Only a
+      // real success/break/fail (an actual roll) broadcasts — a blocked/failed
+      // request that never rolled does not. emit() doesn't echo, so this client
+      // (which already showed the window animation + SFX) is excluded.
+      if (result?.ok && ["success", "break", "fail"].includes(outcome)) {
+        const r = result.result;
+        api.broadcastFeedback?.({
+          playerName: this._playerActor?.name ?? "Someone",
+          outcome,
+          oldName:    api.buildDisplayName?.(r.baseName, r.oldRefineLevel) ?? r.itemName,
+          newName:    r.displayName,
+          itemType:   r.itemType,
+        });
+      }
+
       // Refresh live references
       this._playerActor = game.actors?.get(this._playerActor.id) ?? this._playerActor;
       if (this._selectedItem) {

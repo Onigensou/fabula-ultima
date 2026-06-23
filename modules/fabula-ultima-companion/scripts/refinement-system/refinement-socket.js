@@ -2,8 +2,9 @@
 
 const REFINEMENT_CHANNEL = "module.fabula-ultima-companion";
 const REFINE_MSG = {
-  REQ:    "refine:req",
-  RESULT: "refine:result",
+  REQ:      "refine:req",
+  RESULT:   "refine:result",
+  FEEDBACK: "refine:feedback",   // operator → all OTHER clients (spectator banner)
 };
 
 class RefinementSocketHandler {
@@ -165,6 +166,18 @@ class RefinementSocketHandler {
   // Both sides: resolve a pending promise on result
   // ─────────────────────────────────────────────
 
+  // ─────────────────────────────────────────────
+  // Spectator banner: operator → all OTHER clients
+  // ─────────────────────────────────────────────
+
+  // Called on the operator's client after a refine resolves. emit() does not
+  // echo to the sender, so the operator (who already saw the window animation +
+  // SFX) is naturally excluded; every other client shows the banner + SFX.
+  broadcastRefineFeedback(payload) {
+    try { game.socket.emit(REFINEMENT_CHANNEL, { type: REFINE_MSG.FEEDBACK, payload }); }
+    catch (e) { console.warn("[Refinement] broadcastRefineFeedback failed:", e); }
+  }
+
   onRefineResult(payload) {
     const { refineId, ...rest } = payload ?? {};
     if (!refineId) return;
@@ -199,6 +212,14 @@ class RefinementSocketHandler {
 
       if (msg.type === REFINE_MSG.RESULT) {
         this.onRefineResult(msg.payload ?? {});
+        return;
+      }
+
+      if (msg.type === REFINE_MSG.FEEDBACK) {
+        // Spectator banner — shown on every client EXCEPT the operator (emit
+        // doesn't echo to the sender).
+        try { window["oni.RefinementFeedback"]?.enqueue(msg.payload ?? {}); }
+        catch (e) { console.warn("[Refinement] feedback enqueue failed:", e); }
       }
     } catch (e) {
       console.error("[Refinement] _onSocket error:", e);

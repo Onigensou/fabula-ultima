@@ -87,6 +87,7 @@
     "scripts/passive-system/passive-rules-setup.js",
     "scripts/refinement-system/refinement-config.js",
     "scripts/refinement-system/refinement-core.js",
+    "scripts/refinement-system/refinement-feedback.js",
     "scripts/refinement-system/refinement-socket.js",
     "scripts/refinement-system/refinement-bootstrap.js",
     "scripts/applyDamage-button.js",

@@ -12,6 +12,7 @@ Hooks.once("ready", () => {
     mod.api.refinement = {
       refine:             ({ itemUuid, actorUuid, refinerActorUuid = null }) =>
                             handler.requestRefine({ itemUuid, actorUuid, refinerActorUuid }),
+      broadcastFeedback:  (payload) => handler.broadcastRefineFeedback(payload),
       canRefine:          rfCanRefine,
       getRefineLevel:     rfGetRefineLevel,
       getMaxRefineLevel:  rfGetMaxRefineLevel,
