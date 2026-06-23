@@ -45,7 +45,7 @@ import { buildSkillResolver, evaluateFormula } from "./skill-formulas.js";
 import { resolveTargetPlan } from "./state-handlers.js";
 import { freeActions } from "./free-actions.js";
 import { getNpcAttackItems } from "./actor-shape.js";
-import { applyAttackRangeGate } from "./snapshot.js";
+import { applyAttackRangeGate, snapshotEligibleTargetsFromDCombat } from "./snapshot.js";
 
 // Race-cancellation token. Returns { promise, cancel }. The promise
 // resolves with the cancellation reason when cancel() is called.
@@ -142,6 +142,27 @@ export async function composeAction({
     if (externallyCancelled || command === null) break;
 
     log(`composeAction: command picked = ${command}`);
+
+    // GM-side live recompute of the eligible pool. The `eligible` arg is
+    // baked ONCE at DECLARE (turn start); a creature spawned mid-turn (dev
+    // tools addCombatant, summons, etc.) is absent from that frozen list, so
+    // the target picker can't see it until an F5 re-bakes DECLARE. The GM
+    // client has full dCombat access, so we recompute here — AFTER the
+    // interactive Octopath click, i.e. the latest point before any picker
+    // opens — to pick up roster changes made while the menu was up. Players
+    // (director === null) keep the broadcast bake; they don't add combatants.
+    // Honors the documented contract: `eligible` is "Optional on GM (we
+    // compute from dCombat directly)".
+    if (director?.dCombat?.combatants?.length) {
+      try {
+        eligible = {
+          enemies: snapshotEligibleTargetsFromDCombat(director.dCombat, snap, { category: "enemy" }),
+          allies:  snapshotEligibleTargetsFromDCombat(director.dCombat, snap, { category: "ally"  }),
+        };
+      } catch (e) {
+        warn("composeAction: GM live-eligible recompute threw — using baked list", e);
+      }
+    }
 
     let result;
     switch (command) {
