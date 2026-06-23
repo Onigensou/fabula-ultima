@@ -14982,7 +14982,44 @@
         "id": "KygETN50UthluNPl",
         "name": "⭐️ Wandering Flame",
         "type": "character",
-        "items": [],
+        "items": [
+          {
+            "id": "IUa5IUQecnuw4yPN",
+            "name": "Diving Blaze Kick"
+          },
+          {
+            "id": "rFHHUi8udeJEjsrE",
+            "name": "Explosive Entrance"
+          },
+          {
+            "id": "IEfncNRWnHWqxLdE",
+            "name": "Flame Claw"
+          },
+          {
+            "id": "Q0jlnWDfOkBD8dcR",
+            "name": "Flamethrower"
+          },
+          {
+            "id": "PwBU6PfllTE0ECsF",
+            "name": "Overblaze"
+          },
+          {
+            "id": "v9G1T3ocySQN6743",
+            "name": "Rising Fire"
+          },
+          {
+            "id": "qgiCnRUN8R7EfQwE",
+            "name": "Spitblaze"
+          },
+          {
+            "id": "f54JuNP2mWVy6Qd2",
+            "name": "Zero Power: Meteor Impact"
+          },
+          {
+            "id": "gEj9JZdzFWJYPMa2",
+            "name": "Zero Trigger: Ignition"
+          }
+        ],
         "effects": 0
       },
       {
