@@ -98,6 +98,70 @@ const DATA = [
   ["Zombie",      "RZIAnKw95vY6yh2W", BF + "Zombie.png",                 "status"],
 ];
 
+// ── Damage Types (Damage Type section) ──────────────────────────────────────
+// These resolve to Item documents (not JournalEntry), so they carry a full
+// "Item.<id>" key. Rendered inline (kind "status") when they appear as a link.
+// [ name, itemIdTail, iconFile (under BF) ]
+const DAMAGE = [
+  ["Physical", "XpKZuGo3VmT0TlTu", "Bludgeon.png"],
+  ["Air",      "imkMQLnCLaFbaS6Y", "Wind.png"],
+  ["Bolt",     "5XAuMMbDPlLzhJLw", "Paralyze.png"],
+  ["Dark",     "vKU8UYT6DBhgOjtE", "Zombie.png"],
+  ["Earth",    "ZyOMe6IkUTlBzfjw", "Earth.png"],
+  ["Fire",     "0sFCVCoM6FRrQP2f", "Burn.png"],
+  ["Ice",      "Osq3NN3QCtiW7otU", "Freeze.png"],
+  ["Light",    "IQaK3IzvfFp4I1xB", "Holy.png"],
+  ["Poison",   "tDcCWc67Ary9nVxe", "Poison.png"],
+];
+
+// ── Additional Action Keywords (new Keyword-section terms) ───────────────────
+// [ name, journalIdTail, iconFile (under SK) | null ]
+const KW_EXTRA = [
+  ["Channel",       "1jxZfHZ3dh5grylN", "13_BLM/manafont.png"],
+  ["Conquer",       "Cz6U0ps98sYN8jMH", "03_DRK/unleash.png"],
+  ["Cripple",       "qXBYN6c9FMZzmS2n", "10_VPR/Reaving_Fangs.png"],
+  ["Execute",       "KHCaZjNmClkp7yfM", "10_VPR/Swiftskin%27s_Sting.png"],
+  ["Exploit",       "YojfVwJv8ABa45c6", "10_VPR/Flanksbane_Fang.png"],
+  ["Feint",         "OMu8IfxHBIMXJseJ", "10_VPR/Steel_Fangs.png"],
+  ["Homing",        "tQE9WGDt0bNhgxXw", "12_MCH/spread_shot.png"],
+  ["Thievery",      "KjziTkOpdzd99KZa", "09_NIN/mug.png"],
+  ["Snipe",         "2JlZwoTU5Ql7sUyS", "12_MCH/heartbreak.png"],
+  ["Trick",         "1v5xrozP0fHlnjQj", "09_NIN/trick_attack.png"],
+  ["Strike Damage", "ZunRGiMDSgAapm5G", null],
+  ["Magic Damage",  "XYQUsuXPU0CQjEYa", null],
+  ["Melee",         "10LjF01NAYNKpRvn", null],
+  ["Range",         "Fcq1HgCEh3jxxELa", null],
+];
+
+// ── Equipment Keywords (Equipment Keyword section) ──────────────────────────
+// [ name, journalIdTail, iconFile (under SK) ]
+const EQUIP = [
+  ["Double Strike", "T8FOTz5J8Ys7sbya", "10_VPR/Twinfang.png"],
+  ["Transform",     "EYcZ6QkAqiGBAxLB", "GNB/lightning_shot.png"],
+  ["Versatile",     "RJqcUnjSTQeMiA7Z", "09_NIN/throwing_dagger.png"],
+  ["Quickchange",   "scBCSpHipSeXcOYa", "10_VPR/Second_Generation.png"],
+  ["Weighted",      "ljKBtlzPVvhhmdHW", "02_WAR/butcher%27s_block.png"],
+];
+
+// ── Action Types (System → Action Type section) ─────────────────────────────
+// These are NOT content-links — they're plain bracketed dev-syntax the GM types
+// constantly (e.g. 【⚔️Attack】). Accepting one inserts that literal text, and
+// the emoji is its dropdown icon. [ name, emoji ]
+const ACTION_TYPES = [
+  ["Attack",              "⚔️"],
+  ["Skill",               "💥"],
+  ["Passive",             "📜"],
+  ["Guard",               "🛡️"],
+  ["Spell",               "📕"],
+  ["Offensive Spell",     "⚡"],
+  ["Non-Offensive Spell", "✨"],
+  ["Inventory",           "⚗️"],
+  ["Equipment",           "🥋"],
+  ["Study",               "🔎"],
+  ["Hinder",              "🚫"],
+  ["Objective",           "❗️"],
+];
+
 // Rules text per term, keyed by uuid tail. Harvested from each term journal's
 // text page (leading icon stripped). Filled by the harvest; terms missing here
 // show a graceful "No description available." in the tooltip.
@@ -166,47 +230,109 @@ const DESC = {
   "2rh5lyMNU5yL8Btk": "<p>Gain vulnerability to <strong>Bolt</strong> damage</p><p><em>(This debuff cannot overrides Immunity or Absorption)</em></p>",
   "7nqnFPcHG5ZzNfC0": "<p>Reduce effectiveness of Mana gaining effects by <strong>50%</strong></p><p><strong>Basic Condition:</strong></p><p>Shaken</p>",
   "RZIAnKw95vY6yh2W": "<ul><li><p>Convert any healing effects on this creature into damage instead.</p></li><li><p>Gain vulnerability to <strong>light</strong> damage</p></li><li><p>The spell <strong>Hope </strong>or other Revive effects kills you instead.</p></li></ul>",
+  // New Action Keywords
+  "1jxZfHZ3dh5grylN": "<ul><li><p>This Ability effects only trigger after a certain amounts of time has passed.</p></li><li><p>If Channeling in <strong>Rounds.</strong> The Ability triggers at the beginning of the creature next turn after the number of rounds have passed.</p></li><li><p>If Channeling in <strong>Turns.</strong> The Ability triggers immediately upon the countdown finish. Countdown go down each turns.</p></li><li>Channeling consumes the user <strong>Action</strong> when it activates.</li></ul>",
+  "Cz6U0ps98sYN8jMH": "<ul><li>This action triggers additional effects when its Accuracy check exceed the target Defense by <strong>X</strong></li></ul>",
+  "qXBYN6c9FMZzmS2n": "<p>This attack deals 200% damage to creature who are not in <strong>Crisis</strong></p>",
+  "KHCaZjNmClkp7yfM": "<p>This attack deals 200% damage to creature who are in <strong>Crisis</strong></p>",
+  "YojfVwJv8ABa45c6": "<p>This action <strong>Accuracy Check</strong> will target whichever is lower between <strong>DEF</strong> or <strong>MDEF</strong></p>",
+  "OMu8IfxHBIMXJseJ": "<ul><li>When you <strong>misses</strong> with this attack, you may perform it again on the <strong>original target.</strong></li><li>If the attack targets multiple enemies and at least one target is missed, you may perform <strong>Feint</strong> as a <strong>single-target attack</strong> against each of the missed targets.</li></ul>",
+  "tQE9WGDt0bNhgxXw": "<ul><li><p>This attack ignores <strong>【Protect】</strong> and <strong>【Cover】</strong> or any similar effects.</p></li></ul>",
+  "KjziTkOpdzd99KZa": "<ul><li>This Action reduce the target <strong>Inventory Point</strong> by X on hit</li><li>If your Max IP is more than 0, you also gain Inventory Points equal to the amount the target loss as well (You cannot gain more IP than your max IP)</li></ul>",
+  "2JlZwoTU5Ql7sUyS": "<p>This <strong>Action</strong> grant additional effects when the Accuracy check is equal to or more than X.</p>",
+  "1v5xrozP0fHlnjQj": "<ul><li><p><strong>Actions</strong> with this keyword will have their success conditions reversed: an accuracy check result <strong>lower</strong> than the target's defense counts as a <strong>hit</strong>, while a result <strong>higher</strong> than the target's defense counts as a <strong>miss</strong>.</p></li></ul>",
+  "ZunRGiMDSgAapm5G": "<ul><li>Any damage that targeted the target's Defense is consider \"Strike Damage\"</li></ul>",
+  "XYQUsuXPU0CQjEYa": "<ul><li>Any damage that targeted the target Magic Defense is considered <strong>\"Magic Damage\"</strong></li></ul>",
+  "10LjF01NAYNKpRvn": "<p>Melee Attacks are closed ranged attacks, it lacks the ability to target Flying creature but are often more powerful than range attacks</p>",
+  "Fcq1HgCEh3jxxELa": "<p>Range Attacks are attacks from a greater distance, they can target Flying or Elusive creatures, but are often weaker than Melee Attacks</p>",
+  // Equipment Keywords
+  "T8FOTz5J8Ys7sbya": "<ul><li>You may perform <strong>Two-weapon Fighting</strong> with this weapon</li><li>This effect does not stack with other source of <strong>Two-weapon Fighting</strong> (Dual wielding two Double Strike weapon do not allows you to attack four times)</li></ul>",
+  "EYcZ6QkAqiGBAxLB": "<ul><li>This Equipment has a two form</li><li>While you have one of the two forms equipped, you can equip the other form whenever you want; during a conflict scene, you can only do so during your turn, <strong>before or after an action</strong>, and only <strong>once per turn</strong>. If one or both the forms are <strong>martial</strong>, remember that you must have the appropriate Classes to equip them</li></ul>",
+  "RJqcUnjSTQeMiA7Z": "<p>This ability can be used even if you don't have this item equipped</p><p><em>*This keyword is only use for Equipment only</em></p>",
+  "scBCSpHipSeXcOYa": "<p>This effects triggers immediately when this Equipment become equipped</p><p><em>*This keyword is only use for Equipment only</em></p>",
+  "ljKBtlzPVvhhmdHW": "<ul><li>You can only perform one attack per turn with this weapon</li><li>You cannot perform attacks without <strong>HR</strong> with this weapon</li></ul><p><em>*This keyword is only use for Equipment only</em></p>",
 };
 
-// ── Build lookup maps ──────────────────────────────────────────────────────
+// ── Category metadata ───────────────────────────────────────────────────────
+// `category` is the fine-grained classification (drives the suggest-dropdown
+// badge); `kind` is the back-compat render hint the Action Card already keys on
+// (only "keyword" → headline badge and "status" → inline chip are special-cased
+// there, everything else flattens to text). Each new category maps to one of
+// those two render kinds.
+export const CATEGORY_META = {
+  keyword:    { label: "Keyword",   kind: "keyword", bg: "rgba(201,138,42,.22)",  fg: "#7a4e12" },
+  status:     { label: "Status",    kind: "status",  bg: "rgba(154,59,143,.18)",  fg: "#6e1f66" },
+  damage:     { label: "Damage",    kind: "status",  bg: "rgba(176,58,46,.18)",   fg: "#8a2d22" },
+  equipment:  { label: "Equipment", kind: "keyword", bg: "rgba(36,118,128,.18)",  fg: "#185a62" },
+  actionType: { label: "Action",    kind: "keyword", bg: "rgba(70,92,60,.18)",    fg: "#33502f" },
+};
+
+// ── Build the unified term list ─────────────────────────────────────────────
+// One entry per row: { key, label, icon, category, kind, descHtml, insert?,
+// emoji? }. `insert` (action types) overrides content-link insertion with
+// literal text; `emoji` is a text-glyph icon for terms without an image URL.
+function _mk(key, label, icon, category, tail, extra = {}) {
+  const meta = CATEGORY_META[category] ?? CATEGORY_META.keyword;
+  return {
+    key, label, icon,
+    category,
+    kind: meta.kind,                       // back-compat render hint
+    descHtml: tail ? (DESC[tail] ?? "") : "",
+    ...extra,
+  };
+}
+
+const _allEntries = [
+  // Existing keywords + statuses (category === kind for these).
+  ...DATA.map(([name, tail, icon, kind]) =>
+    _mk("JournalEntry." + tail, name, icon, kind, tail)),
+  // Damage types — Item documents.
+  ...DAMAGE.map(([name, tail, file]) =>
+    _mk("Item." + tail, name, BF + file, "damage", tail)),
+  // Additional action keywords.
+  ...KW_EXTRA.map(([name, tail, file]) =>
+    _mk("JournalEntry." + tail, name, file ? SK + file : null, "keyword", tail)),
+  // Equipment keywords.
+  ...EQUIP.map(([name, tail, file]) =>
+    _mk("JournalEntry." + tail, name, SK + file, "equipment", tail)),
+  // Action types — plain-text dev syntax, emoji icon, no journal/desc.
+  ...ACTION_TYPES.map(([name, emoji]) =>
+    _mk("ActionType." + name, name, null, "actionType", null,
+        { emoji, insert: `【${emoji}${name}】` })),
+];
+
+// ── Lookup maps ─────────────────────────────────────────────────────────────
 const _byUuid = Object.create(null);
 const _byName = Object.create(null);
-
-for (const [name, tail, icon, kind] of DATA) {
-  const uuid = "JournalEntry." + tail;
-  const entry = { key: uuid, label: name, icon, kind, descHtml: DESC[tail] ?? "" };
+for (const entry of _allEntries) {
   // First write wins for a shared uuid (e.g. the elemental Shields all point at
   // the base Shield journal) so byUuid resolves to the canonical term; the
   // variant icons/labels stay reachable by name.
-  if (!_byUuid[uuid]) _byUuid[uuid] = entry;
-  _byName[name.toLowerCase()] = entry;
+  if (!_byUuid[entry.key]) _byUuid[entry.key] = entry;
+  _byName[entry.label.toLowerCase()] = entry;
 }
 
-// Resolve a term by JournalEntry UUID (preferred — exact) or by display name
+// Resolve a term by document UUID (preferred — exact) or by display name
 // (fallback for keywords authored as plain bold text). Returns the registry
-// entry { key, label, icon, kind, descHtml } or null.
+// entry { key, label, icon, category, kind, descHtml, … } or null.
 export function lookupTerm(uuidOrName) {
   if (!uuidOrName) return null;
   const s = String(uuidOrName).trim();
   return _byUuid[s] ?? _byName[s.toLowerCase()] ?? null;
 }
 
-// Flat list of every term (one per name, so Shield variants are each searchable
-// with their own icon/label). Used by the keyword smart-suggestion editor tool.
-const _allEntries = DATA.map(([name, tail, icon, kind]) => ({
-  key: "JournalEntry." + tail, label: name, icon, kind, descHtml: DESC[tail] ?? "",
-}));
-
 // Rank-search terms by display name for the editor autocomplete. Returns up to
-// `limit` entries { key, label, icon, kind }. With `prefixOnly` (the default for
-// the suggestion tool), only exact/prefix name matches qualify — so ordinary
-// prose words don't trigger the dropdown. Without it, substring matches are
-// included (looser).
-export function searchTerms(query, { limit = 8, prefixOnly = false } = {}) {
+// `limit` entries. With `prefixOnly` (the default for the suggestion tool), only
+// exact/prefix name matches qualify — so ordinary prose words don't trigger the
+// dropdown. Without it, substring matches are included (looser). `categories`
+// (optional Set/array) restricts the result to those categories.
+export function searchTerms(query, { limit = 8, prefixOnly = false, categories = null } = {}) {
   const q = String(query ?? "").trim().toLowerCase();
   if (q.length < 2) return [];
+  const catSet = categories ? new Set(categories) : null;
   const scored = [];
   for (const e of _allEntries) {
+    if (catSet && !catSet.has(e.category)) continue;
     const name = e.label.toLowerCase();
     let score = 0;
     if (name === q) score = 100;

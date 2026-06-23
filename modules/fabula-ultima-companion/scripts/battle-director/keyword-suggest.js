@@ -24,7 +24,7 @@
 // stays silent on ordinary prose.
 
 import { log, warn } from "./logger.js";
-import { searchTerms } from "./keyword-registry.js";
+import { searchTerms, CATEGORY_META } from "./keyword-registry.js";
 
 const DROPDOWN_CLASS = "fu-kw-suggest-dropdown";
 const STYLE_ID = "fu-kw-suggest-style";
@@ -33,6 +33,10 @@ const DROPDOWN_W = 280;
 let _installed = false;
 let _enabled = true;
 let _plugin = null;
+// Minimum trailing-word length before the dropdown appears. Raised from 2 so the
+// (now much larger) term set stays quiet on short common fragments. Tunable via
+// the keywordSuggest API.
+let _minChars = 3;
 
 // Per-EditorView → SuggestView, so the shared plugin's keydown prop can find the
 // right instance. WeakMap so destroyed editors don't leak.
@@ -73,6 +77,8 @@ function ensureStyles() {
     .${DROPDOWN_CLASS} .fu-kw-suggest-icon {
       width: 18px; height: 18px; object-fit: contain; flex-shrink: 0;
       border: none; background: transparent; box-shadow: none; border-radius: 0;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 15px; line-height: 1;
     }
     .${DROPDOWN_CLASS} .fu-kw-suggest-name {
       font-weight: 800; font-size: 13px; flex: 1;
@@ -82,28 +88,44 @@ function ensureStyles() {
       font-size: 9px; font-weight: 800; text-transform: uppercase;
       letter-spacing: .03em; padding: 1px 6px; border-radius: 8px; flex-shrink: 0;
     }
-    .${DROPDOWN_CLASS} .fu-kw-suggest-kind.is-keyword { background: rgba(201,138,42,.22); color: #7a4e12; }
-    .${DROPDOWN_CLASS} .fu-kw-suggest-kind.is-status  { background: rgba(154,59,143,.18); color: #6e1f66; }
+    /* The hint tells the user the list is inert until they arrow into it. It
+       shows while passive and hides once engaged (a row is then highlighted). */
+    .${DROPDOWN_CLASS} .fu-kw-suggest-hint {
+      font-size: 9px; font-weight: 700; text-transform: none;
+      letter-spacing: 0; margin-left: 6px; opacity: 0;
+    }
+    .${DROPDOWN_CLASS}.is-passive .fu-kw-suggest-hint { opacity: .6; }
   `;
   document.head.appendChild(s);
 }
 
 // ── Insertion ─────────────────────────────────────────────────────────────────
 
-// Replace [from,to) with a content-link to the term's JournalEntry. Primary:
-// parse the same enriched anchor Foundry stores/round-trips, so it renders as a
-// styled link immediately. Fallback: insert `@UUID[…]{Label}` text (always
+// Replace [from,to) with the term. Two insertion modes:
+//   - `entry.insert` set (action types): literal dev-syntax text (e.g.
+//     "【⚔️Attack】"), inserted verbatim — these aren't content-links.
+//   - otherwise: a content-link to the term's document. The document type is
+//     derived from the key prefix ("Item." → Item, else JournalEntry), so both
+//     damage-type Items and keyword/status JournalEntries link correctly.
+// Primary path parses the same enriched anchor Foundry round-trips (renders as a
+// styled link immediately); fallback inserts `@UUID[…]{Label}` text (always
 // persists; enriches on display).
-function insertContentLink(view, from, to, entry) {
-  const id = String(entry.key).split(".").pop();
+function insertTerm(view, from, to, entry) {
+  if (entry.insert) {
+    view.dispatch(view.state.tr.insertText(entry.insert + " ", from, to).scrollIntoView());
+    return;
+  }
+  const parts = String(entry.key).split(".");
+  const docType = parts.length >= 2 ? parts[0] : "JournalEntry";
+  const id = parts[parts.length - 1];
   try {
     const div = document.createElement("div");
     const a = document.createElement("a");
     a.className = "content-link";
     a.setAttribute("data-uuid", entry.key);
     a.setAttribute("data-id", id);
-    a.setAttribute("data-type", "JournalEntry");
-    a.setAttribute("data-tooltip", "Journal Entry");
+    a.setAttribute("data-type", docType);
+    a.setAttribute("data-tooltip", docType === "Item" ? "Item" : "Journal Entry");
     a.textContent = entry.label;
     div.appendChild(a);
     div.appendChild(document.createTextNode(" "));
@@ -126,6 +148,10 @@ class SuggestView {
     this.rows = [];
     this.index = 0;
     this.range = null;
+    // Passive until the user arrows into the list. While passive the dropdown is
+    // shown but inert — Enter/Tab pass through to the editor as normal typing;
+    // only once `engaged` (via ↑/↓) does Enter/Tab insert the highlighted term.
+    this.engaged = false;
     VIEWS.set(view, this);
     this._onBlur = () => this.hide();
     try { view.dom.addEventListener("blur", this._onBlur, true); } catch {}
@@ -159,7 +185,7 @@ class SuggestView {
 
     let query = null, results = [];
     for (const c of cands) {
-      if (c && c.length >= 2) {
+      if (c && c.length >= _minChars) {
         const r = searchTerms(c, { prefixOnly: true, limit: 8 });
         if (r.length) { query = c; results = r; break; }
       }
@@ -168,6 +194,9 @@ class SuggestView {
 
     this.rows = results;
     this.index = 0;
+    // Any state change that rebuilds the suggestion (i.e. the user kept typing)
+    // drops back to passive, so a stray Enter never inserts mid-compose.
+    this.engaged = false;
     this.range = { from: sel.from - query.length, to: sel.from };
     this.show(sel.from);
   }
@@ -205,22 +234,36 @@ class SuggestView {
   render() {
     const dd = this.dropdown;
     if (!dd) return;
-    dd.innerHTML = `<div class="fu-kw-suggest-head">Keyword / Status</div>` +
+    // Passive vs engaged drives both the header hint and whether a row highlights.
+    dd.classList.toggle("is-passive", !this.engaged);
+    dd.innerHTML = `<div class="fu-kw-suggest-head">Insert term<span class="fu-kw-suggest-hint">↑↓ to navigate · ↵ insert</span></div>` +
       this.rows.map((r, i) => {
         const iconSafe = r.icon && !/['"<>\n\r]/.test(String(r.icon)) ? String(r.icon) : null;
-        const icon = iconSafe
-          ? `<img class="fu-kw-suggest-icon" src="${esc(iconSafe)}" alt="">`
-          : `<span class="fu-kw-suggest-icon"></span>`;
-        const kindCls = r.kind === "keyword" ? "is-keyword" : "is-status";
-        const kindLabel = r.kind === "keyword" ? "Keyword" : "Status";
-        return `<div class="fu-kw-suggest-row ${i === this.index ? "active" : ""}" data-fu-kw-idx="${i}">`
-          + `${icon}<span class="fu-kw-suggest-name">${esc(r.label)}</span>`
-          + `<span class="fu-kw-suggest-kind ${kindCls}">${kindLabel}</span></div>`;
+        const icon = r.emoji
+          ? `<span class="fu-kw-suggest-icon">${esc(r.emoji)}</span>`
+          : iconSafe
+            ? `<img class="fu-kw-suggest-icon" src="${esc(iconSafe)}" alt="">`
+            : `<span class="fu-kw-suggest-icon"></span>`;
+        const meta = CATEGORY_META[r.category] || CATEGORY_META.keyword;
+        const badge = `<span class="fu-kw-suggest-kind" style="background:${meta.bg};color:${meta.fg}">${esc(meta.label)}</span>`;
+        const active = this.engaged && i === this.index ? "active" : "";
+        return `<div class="fu-kw-suggest-row ${active}" data-fu-kw-idx="${i}">`
+          + `${icon}<span class="fu-kw-suggest-name">${esc(r.label)}</span>${badge}</div>`;
       }).join("");
+  }
+
+  // First ↑/↓ engages the list and highlights a row; subsequent presses move.
+  engage(index) {
+    if (!this.rows.length) return;
+    this.engaged = true;
+    this.index = ((index % this.rows.length) + this.rows.length) % this.rows.length;
+    this.render();
+    this.dropdown?.querySelector(".fu-kw-suggest-row.active")?.scrollIntoView?.({ block: "nearest" });
   }
 
   move(dir) {
     if (!this.rows.length) return;
+    this.engaged = true;
     this.index = (this.index + dir + this.rows.length) % this.rows.length;
     this.render();
     this.dropdown?.querySelector(".fu-kw-suggest-row.active")?.scrollIntoView?.({ block: "nearest" });
@@ -231,20 +274,24 @@ class SuggestView {
     const range = this.range;
     this.hide();
     if (!entry || !range) return;
-    insertContentLink(this.view, range.from, range.to, entry);
+    insertTerm(this.view, range.from, range.to, entry);
     try { this.view.focus(); } catch {}
   }
 
   isOpen() { return !!this.dropdown && this.dropdown.style.display === "block"; }
 
-  // Returns true when it consumed the key (so the editor ignores it).
+  // Returns true when it consumed the key (so the editor ignores it). While
+  // passive, Enter/Tab return false so the editor handles them as normal typing
+  // — the dropdown only captures keys once engaged via ↑/↓.
   handleKeyDown(event) {
     if (!this.isOpen()) return false;
     switch (event.key) {
-      case "ArrowDown": this.move(1); return true;
-      case "ArrowUp":   this.move(-1); return true;
+      case "ArrowDown": this.engaged ? this.move(1) : this.engage(0); return true;
+      case "ArrowUp":   this.engaged ? this.move(-1) : this.engage(this.rows.length - 1); return true;
       case "Enter":
-      case "Tab":       this.accept(); return true;
+      case "Tab":
+        if (!this.engaged) return false;
+        this.accept(); return true;
       case "Escape":    this.hide(); return true;
       default:          return false;
     }
@@ -252,7 +299,7 @@ class SuggestView {
 
   hide() {
     if (this.dropdown) { this.dropdown.style.display = "none"; this.dropdown.innerHTML = ""; }
-    this.rows = []; this.index = 0; this.range = null;
+    this.rows = []; this.index = 0; this.range = null; this.engaged = false;
   }
 
   destroy() {
@@ -288,7 +335,17 @@ export function initKeywordSuggest() {
   Hooks.on("createProseMirrorEditor", (uuid, plugins) => {
     try {
       if (!_enabled || !game.user?.isGM || !plugins) return;
+      // Insert our plugin FIRST. ProseMirror consults each plugin's
+      // handleKeyDown in plugin-array order and stops at the first that returns
+      // true; Foundry builds that array from this object's insertion order. If
+      // we're appended last, the core keymap (which owns Enter → split block)
+      // consumes Enter before our handler runs — that's why Tab worked (not in
+      // the core keymap) but Enter did not. Re-front our key so engaged Enter
+      // inserts the term and only falls through to a newline when passive.
+      const existing = Object.entries(plugins).filter(([k]) => k !== "fuKeywordSuggest");
+      for (const k of Object.keys(plugins)) delete plugins[k];
       plugins.fuKeywordSuggest = getPlugin();
+      for (const [k, v] of existing) plugins[k] = v;
     } catch (e) {
       warn("keyword-suggest: createProseMirrorEditor hook threw", e);
     }
@@ -300,6 +357,9 @@ export function initKeywordSuggest() {
   globalThis.FUCompanion.api.keywordSuggest = {
     setEnabled: (v) => { _enabled = !!v; return _enabled; },
     isEnabled: () => _enabled,
+    // Minimum trailing-word length before the dropdown appears (clamped ≥ 2).
+    setMinChars: (n) => { _minChars = Math.max(2, Number(n) || 3); return _minChars; },
+    getMinChars: () => _minChars,
   };
 
   _installed = true;
