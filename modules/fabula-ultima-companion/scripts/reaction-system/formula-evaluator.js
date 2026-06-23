@@ -422,6 +422,10 @@ Hooks.once("ready", () => {
       // Magical Artillery: HAS_ARCANE_WEAPON * ACTION_IS_SPELL * SL * 2.
       case "ACTION_IS_SPELL":           return Number(payload?._isSpell ?? 0) || 0;
       case "ACTION_IS_OFFENSIVE_SPELL": return Number(payload?._isOffensiveSpell ?? 0) || 0;
+      // Parity with the BD evaluator's ACTION_ROLLS_ACCURACY (= an attack OR a
+      // check — the canonical canMiss capability). Pre-computed on actionCtx by
+      // the passive-modifier-engine (attack-type OR the skill's isCheck prop).
+      case "ACTION_ROLLS_ACCURACY":     return Number(payload?._rollsAccuracy ?? 0) || 0;
       case "HAS_ARCANE_WEAPON":         return Number(payload?._hasArcaneWeapon ?? 0) || 0;
     }
 
@@ -475,6 +479,7 @@ Hooks.once("ready", () => {
       { name: "ACTION_TARGET_COUNT", description: "Number of tokens targeted by the triggering action (payload.targets.length). 0 when the payload carries no target list." },
       { name: "ACTION_IS_SPELL", description: "1 if the action that triggered this passive is a Spell, else 0. Pre-computed by the passive-modifier-engine; 0 outside the passive-formula path." },
       { name: "ACTION_IS_OFFENSIVE_SPELL", description: "1 if the action is an Offensive Spell (isOffensiveSpell), else 0. Pre-computed by the passive-modifier-engine." },
+      { name: "ACTION_ROLLS_ACCURACY", description: "1 if the action rolls an accuracy/Magic Check — an attack OR a Check (the canMiss capability), else 0. Pre-computed by the passive-modifier-engine (attack-type OR the skill's isCheck prop); 0 outside the passive-formula path." },
       { name: "HAS_ARCANE_WEAPON", description: "1 if the reactor has an equipped arcane-category weapon, else 0. Pre-computed by the passive-modifier-engine." },
     ];
   }

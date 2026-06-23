@@ -210,6 +210,7 @@
       phase_actionContext_sourceType: phase?.actionContext?.sourceType ?? null,
       phase_sourceItem_skill_type: sourceItem?.system?.props?.skill_type ?? null,
       phase_sourceItem_isOffensiveSpell: sourceItem?.system?.props?.isOffensiveSpell ?? null,
+      phase_sourceItem_isCheck: sourceItem?.system?.props?.isCheck ?? null,
       phase_sourceItem_name: sourceItem?.name ?? null
     };
 
@@ -515,6 +516,14 @@
     actionCtx._isSpell = actionTypeDebug.isSpell ? 1 : 0;
     actionCtx._isOffensiveSpell =
       (actionTypeDebug.isSpell && actionTypeDebug.raw?.phase_sourceItem_isOffensiveSpell === true) ? 1 : 0;
+    // ACTION_ROLLS_ACCURACY (= the BD canMiss capability): an attack OR a Check.
+    // Mirrors freezeActionResult's `kind === "Attack" || isCheck` using the legacy
+    // path's signals — attack-type detection OR the skill's own isCheck prop (the
+    // same prop the BD's ar.isCheck derives from), so attacks + offensive spells +
+    // non-spell Check skills all read 1.
+    actionCtx._rollsAccuracy =
+      (["attack", "weapon"].includes(actionTypeDebug.detectedActionType)
+        || actionTypeDebug.raw?.phase_sourceItem_isCheck === true) ? 1 : 0;
     actionCtx._hasArcaneWeapon = (() => {
       for (const it of (actor.items ?? [])) {
         if (getItemTypeNormalized(it) !== "weapon") continue;
