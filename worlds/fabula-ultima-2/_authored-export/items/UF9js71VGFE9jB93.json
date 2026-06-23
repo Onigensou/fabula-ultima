@@ -70,7 +70,8 @@
       ],
       "system": {
         "tags": [
-          "buff"
+          "buff",
+          "dispellable"
         ]
       },
       "tint": "#ffffff",
@@ -138,7 +139,8 @@
       ],
       "system": {
         "tags": [
-          "buff"
+          "buff",
+          "dispellable"
         ]
       },
       "tint": "#ffffff",
@@ -206,7 +208,8 @@
       ],
       "system": {
         "tags": [
-          "buff"
+          "buff",
+          "dispellable"
         ]
       },
       "tint": "#ffffff",
@@ -274,7 +277,8 @@
       ],
       "system": {
         "tags": [
-          "buff"
+          "buff",
+          "dispellable"
         ]
       },
       "tint": "#ffffff",
@@ -342,7 +346,8 @@
       ],
       "system": {
         "tags": [
-          "buff"
+          "buff",
+          "dispellable"
         ]
       },
       "tint": "#ffffff",

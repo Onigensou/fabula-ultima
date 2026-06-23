@@ -68,7 +68,11 @@
       "statuses": [
         "fud-elemental-weapon-air"
       ],
-      "system": {},
+      "system": {
+        "tags": [
+          "dispellable"
+        ]
+      },
       "tint": "#ffffff",
       "transfer": false,
       "type": "base"
@@ -132,7 +136,11 @@
       "statuses": [
         "fud-elemental-weapon-bolt"
       ],
-      "system": {},
+      "system": {
+        "tags": [
+          "dispellable"
+        ]
+      },
       "tint": "#ffffff",
       "transfer": false,
       "type": "base"
@@ -196,7 +204,11 @@
       "statuses": [
         "fud-elemental-weapon-fire"
       ],
-      "system": {},
+      "system": {
+        "tags": [
+          "dispellable"
+        ]
+      },
       "tint": "#ffffff",
       "transfer": false,
       "type": "base"
@@ -260,7 +272,11 @@
       "statuses": [
         "fud-elemental-weapon-earth"
       ],
-      "system": {},
+      "system": {
+        "tags": [
+          "dispellable"
+        ]
+      },
       "tint": "#ffffff",
       "transfer": false,
       "type": "base"
@@ -324,7 +340,11 @@
       "statuses": [
         "fud-elemental-weapon-ice"
       ],
-      "system": {},
+      "system": {
+        "tags": [
+          "dispellable"
+        ]
+      },
       "tint": "#ffffff",
       "transfer": false,
       "type": "base"

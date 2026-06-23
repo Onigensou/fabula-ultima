@@ -16355,13 +16355,6 @@
         "effects": 0
       },
       {
-        "id": "ZyigkMnOvgx5xbPi",
-        "name": "BD Dummy Enemy",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "2U5MthxrDRMofSGl",
         "name": "Beary Goods",
         "type": "character",
@@ -21209,7 +21202,7 @@
             "name": "Zero Trigger: Foresight"
           }
         ],
-        "effects": 3
+        "effects": 2
       },
       {
         "id": "tzXbVfDYPgvu5wml",
@@ -21383,166 +21376,6 @@
           {
             "id": "Jfwp8uU0Ntyqhcjj",
             "name": "Zero Trigger: Foresight"
-          }
-        ],
-        "effects": 0
-      },
-      {
-        "id": "j3YBfBG9lrnsUmJW",
-        "name": "Hina (New Action System)",
-        "type": "character",
-        "items": [
-          {
-            "id": "boDVDHvlhYwlW4hr",
-            "name": "Absorb MP"
-          },
-          {
-            "id": "mNOQFKdgnyhiGTBx",
-            "name": "Acceleration"
-          },
-          {
-            "id": "GmzX0K6arzrw96b4",
-            "name": "Adrenaline Endure"
-          },
-          {
-            "id": "zpGMEcYsa3H3VLe3",
-            "name": "Adrenaline Potion"
-          },
-          {
-            "id": "xiVCASkFNVnbThAM",
-            "name": "Adrenaline Rush"
-          },
-          {
-            "id": "zB7gLs0kgNIzmzHP",
-            "name": "Apple Juice"
-          },
-          {
-            "id": "E0IY0WeUNrQO2Qrm",
-            "name": "ARCANE SOLDIER"
-          },
-          {
-            "id": "DocjpuhGjb4NQ2yd",
-            "name": "Behemoth Horn"
-          },
-          {
-            "id": "52nRuMN0X58BZCm9",
-            "name": "Cataclysm"
-          },
-          {
-            "id": "Bc61lFHX6WUDIKug",
-            "name": "Derringer"
-          },
-          {
-            "id": "SXPJghm0XlFLPqZW",
-            "name": "Divination"
-          },
-          {
-            "id": "AoGZxRvvTrFe6Jr9",
-            "name": "Draconic Roar"
-          },
-          {
-            "id": "qK30knMoMl1eqTTU",
-            "name": "Dragonskull Helm"
-          },
-          {
-            "id": "jb0jobWNa9rlKKjN",
-            "name": "Drain Spirit"
-          },
-          {
-            "id": "RRTO6uRQtUQ2o4Er",
-            "name": "Elemental Magic"
-          },
-          {
-            "id": "lWzQBQkKvZVg6mRL",
-            "name": "Elemental Shroud"
-          },
-          {
-            "id": "TPnGoyaq70WSBzmj",
-            "name": "Elemental Weapon"
-          },
-          {
-            "id": "oiLncUo20sMdYn5t",
-            "name": "Encyclopedia"
-          },
-          {
-            "id": "xmLeuCQNdswv14Zi",
-            "name": "Entropic Magic"
-          },
-          {
-            "id": "bAAa1xgx3IWt4ZW6",
-            "name": "Fulgur (New Action System)"
-          },
-          {
-            "id": "yKqv5PofnFTTRRMI",
-            "name": "Glacies"
-          },
-          {
-            "id": "YrHPVPiRr2wFXfC7",
-            "name": "Golden Apple"
-          },
-          {
-            "id": "Wtcdd42MQHwsOsSe",
-            "name": "Heal"
-          },
-          {
-            "id": "pcCBP65FqbsMOF0h",
-            "name": "Iceberg"
-          },
-          {
-            "id": "v56GvN63nvIYV4iJ",
-            "name": "Lucky Seven"
-          },
-          {
-            "id": "efq8qACXhPp85WmM",
-            "name": "Lunar Bow"
-          },
-          {
-            "id": "A3BWX8ZeKRGzZNUm",
-            "name": "Magical Artillery"
-          },
-          {
-            "id": "f9BHZe3zes5udxTI",
-            "name": "Morrigan"
-          },
-          {
-            "id": "6AEo7chjLAviZ5Q0",
-            "name": "Omega"
-          },
-          {
-            "id": "ppFbuXgfuFDo5f2U",
-            "name": "Orb"
-          },
-          {
-            "id": "gxhrLIGVxzSJCc7H",
-            "name": "Prophetic Defender Style"
-          },
-          {
-            "id": "2QV4dfxKeibAejia",
-            "name": "Ritual Entropism"
-          },
-          {
-            "id": "E92hn4b51ixSd2zH",
-            "name": "Sage Robe"
-          },
-          {
-            "id": "5eKHapUEvp2qDsej",
-            "name": "Shotgun"
-          },
-          {
-            "id": "8wuaefpdhdk46c5S",
-            "name": "Spiritual Magic"
-          },
-          {
-            "id": "z1GsqcJC8bh4TOAs",
-            "name": "Stop"
-          },
-          {
-            "id": "e6XdxOZUolmiHaVv",
-            "name": "Windpiercer"
-          },
-          {
-            "id": "oe3OP8VmjHJpWJ41",
-            "name": "Zero Power: A Million Possibility"
           }
         ],
         "effects": 0

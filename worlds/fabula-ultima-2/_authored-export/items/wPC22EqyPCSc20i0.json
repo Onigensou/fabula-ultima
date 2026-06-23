@@ -41,7 +41,7 @@
           "$deleted": false,
           "effect_kind": "grant",
           "effect_label": "heal_hp",
-          "grant_amount": "40",
+          "grant_amount": "40 + 10 * floor(min(CHAR_LEVEL, 40) / 20)",
           "grant_resource": "hp",
           "target_ref": "action_targets"
         }

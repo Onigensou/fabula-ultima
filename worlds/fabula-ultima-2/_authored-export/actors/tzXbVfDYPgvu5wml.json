@@ -960,10 +960,12 @@
           "effect_table": {
             "0": {
               "$deleted": false,
-              "count": "all",
+              "count": "1",
               "effect_kind": "remove_tagged_ae",
               "effect_label": "dispel_cleanse",
               "filter_tag": "dispellable",
+              "menu_subtitle": "Choose one dispellable effect to remove",
+              "menu_title": "Dispel — Remove an Effect",
               "target_ref": "action_targets"
             }
           },
@@ -980,6 +982,7 @@
           "name": "Dispel",
           "on_activate_effect_ref": "dispel_cleanse",
           "optional_params": {},
+          "pre_activate_effect_ref": "dispel_cleanse",
           "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
@@ -1860,9 +1863,7 @@
                 "effect_table": {
                   "0": {
                     "$deleted": false,
-                    "charge_key": "divination",
-                    "count": "1",
-                    "effect_kind": "force_reroll",
+                    "effect_kind": "check_reroll",
                     "effect_label": "div_reroll"
                   }
                 },
@@ -1870,12 +1871,11 @@
                 "reaction_config_table": {
                   "0": {
                     "$deleted": false,
-                    "condition_formula": "ATTACK_IS_CRIT == 0 && ATTACK_IS_FUMBLE == 0",
-                    "reaction_action_intent": "harmful",
+                    "condition_formula": "ACTION_ROLLS_ACCURACY == 1 && ATTACK_IS_CRIT == 0 && ATTACK_IS_FUMBLE == 0",
                     "reaction_effect_ref": "div_reroll",
                     "reaction_passive_mode": "ask",
-                    "reaction_source": "self",
-                    "reaction_trigger": "creature_targeted_by_action"
+                    "reaction_source": "all",
+                    "reaction_trigger": "creature_performs_action"
                   }
                 }
               }

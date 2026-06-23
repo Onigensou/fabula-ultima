@@ -35,10 +35,12 @@
       "effect_table": {
         "0": {
           "$deleted": false,
-          "count": "all",
+          "count": "1",
           "effect_kind": "remove_tagged_ae",
           "effect_label": "dispel_cleanse",
           "filter_tag": "dispellable",
+          "menu_subtitle": "Choose one dispellable effect to remove",
+          "menu_title": "Dispel — Remove an Effect",
           "target_ref": "action_targets"
         }
       },
@@ -55,6 +57,7 @@
       "name": "Dispel",
       "on_activate_effect_ref": "dispel_cleanse",
       "optional_params": {},
+      "pre_activate_effect_ref": "dispel_cleanse",
       "reaction_config_table": {},
       "rolled_atr1": "-",
       "rolled_atr2": "-",
