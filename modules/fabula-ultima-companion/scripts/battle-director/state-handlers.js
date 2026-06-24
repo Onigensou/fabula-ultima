@@ -3828,6 +3828,13 @@ const Confirm = {
             // will_deal_damage reaction can scope itself via reaction_action_kind
             // (Tinkerer Infusions: "Attack" only — RAW "hit with an attack").
             actionKind: ar.kind ?? null,
+            // Spell-type identity (mirrors the creature_performs_action payload) so
+            // ACTION_IS_SPELL / ACTION_IS_OFFENSIVE_SPELL gates resolve at the damage
+            // window too — Cataclysm's "when you cast a damaging spell" overcharge,
+            // and any future spell-scoped damage rider. Absent before → those gates
+            // read 0 here, so a spell-gated damage reaction could never surface.
+            actionSkillType: String(ar.skillType ?? "").toLowerCase(),
+            actionIsCheck: !!ar.isCheck,
             targets: allTargetUuids,
             hitTargets: hitTargetUuids,
             rawDamage: entry.rawDamage,

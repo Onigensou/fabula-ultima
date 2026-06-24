@@ -102,7 +102,9 @@ function describePrimary({ view, ar, weapon, liveAttacker, resolver, grant = nul
       damageBonus: (Number(weapon?.damageBonus ?? 0) || 0) + grantDb,
       outgoingParts, outgoingTotal: outgoingParts.reduce((s, p) => s + p.amount, 0),
       rangeKind, weaponKey, nativeElement: native, overriddenElement: overridden,
-      pierce: !!weapon?.hasPierce,
+      // Pierce is a property of the action (weapon flag OR a `pierce` action keyword),
+      // not of being an Attack — unified so a pierce SPELL (Iceberg) behaves identically.
+      pierce: !!weapon?.hasPierce || keywords.includes("pierce"),
       keywords,
     };
   }
@@ -147,14 +149,22 @@ function describePrimary({ view, ar, weapon, liveAttacker, resolver, grant = nul
   // created items (e.g. Elemental Shard) but NOT to normal attacks/spells.
   const isItem = String(ar?.kind ?? "").toLowerCase() === "item";
   const dmgKind = isItem ? "item" : (isSpell ? "spell" : null);
+  // Spell = Arcane weapon type by default. Routes spells through the SAME weaponKey
+  // machinery as a weapon strike: the caster's `extra_damage_mod_arcane` adds here
+  // (offensive), and buildPerTarget's efficiency block reduces by the target's arcane
+  // weapon efficiency (defensive). MP damage and non-spell skills carry no weapon type.
+  // rangeKind stays null: "Arcane" is the weapon TYPE, not a range — a spell is neither
+  // melee nor ranged, so range-keyed incoming DR (resolveIncomingReduction) won't apply.
+  const weaponKey = (isSpell && !isMpDamage) ? "arcane" : null;
   const outgoingParts = isMpDamage ? [] : resolveOutgoingDamageParts({
-    actor: liveAttacker, props, kind: dmgKind, elementType: element, weaponKey: null,
+    actor: liveAttacker, props, kind: dmgKind, elementType: element, weaponKey,
   });
   return {
     mode: "damage", element, resource: isMpDamage ? "mp" : "hp", isMpDamage,
     damageBonus,
     outgoingParts, outgoingTotal: outgoingParts.reduce((s, p) => s + p.amount, 0),
-    rangeKind: null, weaponKey: null,
+    rangeKind: null, weaponKey,
+    pierce: keywords.includes("pierce"),
     keywords,
   };
 }
@@ -267,7 +277,9 @@ function resolveTargetOutcome({ check, kind, primary, defStat, rolled, isPreRoll
     if (check.isFumble) hit = false;
     else if (check.isCrit) hit = true;
     else hit = check.total >= defStat;
-    if (!hit && kind === "Attack" && primary.pierce) pierceMiss = true;
+    // Pierce-miss (deal half on a miss) applies to ANY pierce action — attack OR a
+    // pierce spell (Iceberg). `primary.pierce` is now set kind-agnostically.
+    if (!hit && primary.pierce) pierceMiss = true;
   }
   const outcome = {
     kind: isPreRoll ? "pending" : (!rolled ? "auto" : (hit ? "hit" : "miss")),
@@ -335,10 +347,10 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
     const computeAffinity = () => {
       if (primary.isMpDamage) return "NE";
       let aff = e.affinities?.[primary.element] ?? "NE";
-      if (kind === "Attack") {
-        for (const cond of (e.conditions ?? [])) {
-          if (FORCED_VU_BY_STATUS[cond] === primary.element) { aff = "VU"; break; }
-        }
+      // Status-forced vulnerability is a property of the TARGET + the incoming element,
+      // not of the action kind — applies to a spell of that element as well as an attack.
+      for (const cond of (e.conditions ?? [])) {
+        if (FORCED_VU_BY_STATUS[cond] === primary.element) { aff = "VU"; break; }
       }
       // Inherent Pierce keyword: ignore Resistance (RS → NE) — VU/IM/AB are
       // left untouched. Mirrors the reaction-side pierce in
@@ -364,14 +376,14 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
       affinityCode = computeAffinity();
       effects.push({
         id: `primary-damage:${e.tokenUuid}`,
-        type: "resource_delta", valence: "harmful", actionKind: kind, source: kind === "Attack" ? "weapon" : "spell",
+        type: "resource_delta", valence: "harmful", actionKind: kind, source: primary.weaponKey ?? (kind === "Attack" ? "weapon" : "spell"),
         targetRef: e.tokenUuid,
         element: primary.element, resource: primary.resource, damageClass: "primary",
         breakdown: [], preAffinity: null, affinity: affinityCode, range: damageRange,
       });
     } else if (primary.mode === "damage" && (hit || pierceMiss)) {
       const outBase = effectiveHr + primary.damageBonus + primary.outgoingTotal;
-      rawDamage = (kind === "Attack" && pierceMiss) ? Math.ceil(outBase / 2) : outBase;
+      rawDamage = pierceMiss ? Math.ceil(outBase / 2) : outBase;
 
       // Target actor for the incoming layer (DR + weapon efficiency), fetched
       // once and reused (null for MP damage, which skips the incoming layer).
@@ -394,8 +406,9 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
       // INCOMING twin of element affinity). Applied BEFORE the reaction ops +
       // affinity so the fold order matches the post-decision recompute (which
       // folds reaction ops over the stored rawDamage that already includes
-      // efficiency): DR → crit → efficiency → reaction ops → affinity. Weapon
-      // attacks only (`primary.weaponKey` is null for spells / skills / MP).
+      // efficiency): DR → crit → efficiency → reaction ops → affinity. Applies to
+      // any weapon-typed action — weapon attacks AND spells (weaponKey "arcane" by
+      // default); null only for non-spell skills / MP damage, which skip it.
       // Shares the readWeaponEfficiency resolver with the effect ruleset — one
       // source of truth for the weapon-affinity axis.
       if (primary.weaponKey && liveTarget) {
@@ -449,7 +462,7 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
 
       effects.push({
         id: `primary-damage:${e.tokenUuid}`,
-        type: "resource_delta", valence: "harmful", actionKind: kind, source: kind === "Attack" ? "weapon" : "spell",
+        type: "resource_delta", valence: "harmful", actionKind: kind, source: primary.weaponKey ?? (kind === "Attack" ? "weapon" : "spell"),
         targetRef: e.tokenUuid,
         element: reactionElement ?? primary.element, resource: primary.resource, damageClass: "primary",
         breakdown: damageModParts, preAffinity: rawDamage, affinity: affinityCode,
@@ -618,7 +631,7 @@ function gatherEffectPreviews({ view, resolver, chainVars = null }) {
 export async function computeActionProfile(input) {
   const {
     view, ar = null, attacker, weapon = null, targets = [], dice = null, ctx = {},
-    acceptedReactions = null,
+    acceptedReactions = null, accuracyOverride = null,
   } = input;
   const kind = view?.kind ?? ar?.kind ?? "Skill";
 
@@ -648,6 +661,20 @@ export async function computeActionProfile(input) {
     }
   }
   const check = computeCheck({ view, ar, attacker, weapon, primary, liveAttacker, dice, ctx });
+
+  // Accuracy override from an accepted adjust_accuracy reaction (Magical Artillery,
+  // Cognitive Focus). Fold the effective to-hit total INTO check.total BEFORE the
+  // per-target pass so hit/miss AND damage are derived together: buildPerTarget
+  // computes damage only for hit targets, so a miss→hit flip applied AFTER the fact
+  // (the post-hoc re-apply loop in recomputeActionProfile) left damage stuck at 0 —
+  // the "accuracy boosts the UI but the hit deals no damage" bug. Only the to-hit
+  // total moves; check.hr (which drives damage AMOUNT) is untouched, so a flipped
+  // hit deals its normal damage. A `blocked` override (Crossfire "deal no damage")
+  // must NOT raise the total here — it's enforced as all-miss by the post-hoc loop.
+  if (accuracyOverride && !accuracyOverride.blocked && check.required && check.total != null
+      && Number.isFinite(Number(accuracyOverride.to))) {
+    check.total = Number(accuracyOverride.to);
+  }
 
   // Accepted-reaction outgoing damage ops (Hawkeye take-aim, Cheap Shot…). At
   // pre-roll the caller passes the auto-fired on/force candidates so the preview
@@ -872,7 +899,10 @@ export function projectProfileToActionResult(profile, baseAr = {}, targets = nul
   } : {
     base: prim.damageBonus + prim.outgoingTotal + reactionDelta,
     baseParts: [...(prim.outgoingParts ?? []), ...repReactionParts],
-    element: repOverrideElement ?? prim.element, resource: prim.resource,
+    // Same element-read ladder as the Attack arm (overridden/native are undefined for
+    // a spell → falls through to prim.element); aligned so the two arms can't drift.
+    element: repOverrideElement ?? prim.overriddenElement ?? prim.nativeElement ?? prim.element,
+    resource: prim.resource,
     ignoreHR: !roll,
     finalIfHit: effectiveHr + prim.damageBonus + prim.outgoingTotal + reactionDelta,
   }) : null;
@@ -992,7 +1022,7 @@ export async function recomputeActionProfile({ ar, targets = null, acceptedReact
       view, ar, attacker: ar.attacker, weapon: ar.weapon ?? null,
       targets: snaps, dice,
       ctx: { round: ar.round ?? round ?? 0, attackMode: attackMode ?? ar.attackMode ?? null },
-      acceptedReactions,
+      acceptedReactions, accuracyOverride,
     });
     const delta = projectProfileToActionResult(profile, ar, snaps);
     if (Array.isArray(delta?.perTargetResults)) {

@@ -51,6 +51,12 @@ const RESERVED_REFS = {
   trigger_actor:         { candidate_source: "trigger_actor", mode: "exact", count: 1 },
   trigger_attacker:      { candidate_source: "trigger_attacker", mode: "exact", count: 1 },
   trigger_subject:       { candidate_source: "trigger_subject", mode: "exact", count: 1 },
+  // The creature that CAUSED the reactor's resource change — DISTINCT from
+  // trigger_actor, which for a creature_lose_resource event reads the SUBJECT
+  // (= the reactor itself, the creature whose resource changed). Reads
+  // payload.causeTokenUuid (the attacker/source stamped by fireResourceChangeTrigger).
+  // Painful Lesson reacts to "you lost HP" (subject = self) but Studies the CAUSE.
+  cause_actor:           { candidate_source: "cause_actor", mode: "exact", count: 1 },
   // Guard's optional covered ally (resolveAction-unification). mode "all" takes
   // the (0 or 1) token collectCoverTarget yields without prompting.
   cover_target:          { candidate_source: "cover_target", mode: "all" },
@@ -450,6 +456,7 @@ async function buildCandidatePool(source, ctx) {
     case "trigger_actor":       return collectTriggerActor(ctx);
     case "trigger_attacker":    return collectTriggerAttacker(ctx);
     case "trigger_subject":     return collectTriggerSubject(ctx);
+    case "cause_actor":         return collectCauseActor(ctx);
     case "cover_target":        return collectCoverTarget(ctx);
     case "grappled_by_self":    return collectGrappledBySelf(ctx);
     case "save_failed_targets": return collectSaveFailedTargets(ctx);
@@ -564,6 +571,19 @@ async function collectHitActionTargets(ctx) {
 
 async function collectTriggerActor(ctx) {
   const uuid = ctx.payload?.sourceTokenUuid ?? ctx.payload?.attackerTokenUuid ?? null;
+  return await uuidsToTokens(uuid ? [uuid] : []);
+}
+
+// The creature that CAUSED a resource-change event (creature_lose_resource /
+// creature_gain_resource): the attacker/source carried as payload.causeTokenUuid
+// by fireResourceChangeTrigger. DISTINCT from trigger_actor — for a resource-loss
+// event sourceTokenUuid is the SUBJECT (the creature whose resource changed = the
+// reactor itself), so trigger_actor would resolve the reactor, not the attacker.
+// Painful Lesson reacts to "you lost HP" (subject = self) but Studies the CAUSE.
+// Empty (impersonal loss — a tick with no source) → no token, so the consuming
+// effect (free_action Study) no-ops cleanly.
+async function collectCauseActor(ctx) {
+  const uuid = ctx.payload?.causeTokenUuid ?? null;
   return await uuidsToTokens(uuid ? [uuid] : []);
 }
 
