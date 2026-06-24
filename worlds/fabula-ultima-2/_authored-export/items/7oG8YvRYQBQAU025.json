@@ -32,6 +32,93 @@
       "defense_target_type": "def",
       "description": "<p>When you cast an <strong>instantaneous</strong> spell, if you have an <strong>arcane</strong> weapon equipped, <strong>you may increase the spell's total MP cost</strong> by up to <strong>【SL × 10】</strong> Mind Points. If you do so and the spell deals damage to one or more creatures, it will deal 5 extra damage to each creature for every 10 Mind Points by which you increased its total MP cost.</p>",
       "duration": "",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "effect_kind": "open_action_menu",
+          "effect_label": "cat_menu",
+          "menu_option_descriptions": "Spend 10 MP for +5 damage to each creature|Spend 20 MP for +10 damage to each creature|Spend 30 MP for +15 damage to each creature",
+          "menu_option_labels": "+10 MP → +5 damage|+20 MP → +10 damage|+30 MP → +15 damage",
+          "menu_option_refs": "cat_10, cat_20, cat_30",
+          "menu_subtitle": "Increase the spell's MP cost for extra damage",
+          "menu_title": "Cataclysm — Overcharge"
+        },
+        "1": {
+          "$deleted": false,
+          "chain_steps": "cat_10_mp, cat_10_dmg",
+          "condition_formula": "SL >= 1 && CUR_MP >= 10",
+          "disable_ui_type": "dim",
+          "disabled_reason": "Not enough MP",
+          "effect_kind": "chain",
+          "effect_label": "cat_10"
+        },
+        "2": {
+          "$deleted": false,
+          "consume_amount": "10",
+          "consume_resource": "mp",
+          "effect_kind": "consume_resource",
+          "effect_label": "cat_10_mp",
+          "target_ref": "self"
+        },
+        "3": {
+          "$deleted": false,
+          "damage_amount": "5",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "cat_10_dmg"
+        },
+        "4": {
+          "$deleted": false,
+          "chain_steps": "cat_20_mp, cat_20_dmg",
+          "condition_formula": "SL >= 2 && CUR_MP >= 20",
+          "disable_ui_type": "dim",
+          "disabled_reason": "Not enough MP",
+          "effect_kind": "chain",
+          "effect_label": "cat_20"
+        },
+        "5": {
+          "$deleted": false,
+          "consume_amount": "20",
+          "consume_resource": "mp",
+          "effect_kind": "consume_resource",
+          "effect_label": "cat_20_mp",
+          "target_ref": "self"
+        },
+        "6": {
+          "$deleted": false,
+          "damage_amount": "10",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "cat_20_dmg"
+        },
+        "7": {
+          "$deleted": false,
+          "chain_steps": "cat_30_mp, cat_30_dmg",
+          "condition_formula": "SL >= 3 && CUR_MP >= 30",
+          "disable_ui_type": "dim",
+          "disabled_reason": "Not enough MP",
+          "effect_kind": "chain",
+          "effect_label": "cat_30"
+        },
+        "8": {
+          "$deleted": false,
+          "consume_amount": "30",
+          "consume_resource": "mp",
+          "effect_kind": "consume_resource",
+          "effect_label": "cat_30_mp",
+          "target_ref": "self"
+        },
+        "9": {
+          "$deleted": false,
+          "damage_amount": "15",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "cat_30_dmg"
+        }
+      },
       "heroic_requirement": "",
       "isCheck": false,
       "isFacet": false,
@@ -42,7 +129,16 @@
       "max_level": "3",
       "name": "Cataclysm",
       "optional_params": {},
-      "reaction_config_table": {},
+      "reaction_config_table": {
+        "0": {
+          "$deleted": false,
+          "condition_formula": "HAS_ARCANE_WEAPON == 1 && ACTION_IS_SPELL == 1",
+          "reaction_effect_ref": "cat_menu",
+          "reaction_passive_mode": "ask",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        }
+      },
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_default": "",

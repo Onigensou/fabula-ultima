@@ -41,7 +41,7 @@
         "fabula-ultima-companion": {
           "category": "buff",
           "chargeKey": "prophecy",
-          "charges": 3,
+          "charges": 10,
           "chargesMax": 99,
           "directorAppliedBy": {
             "appliedAtRound": 0,
@@ -135,70 +135,6 @@
         "fud-heart-of-darkness-ready"
       ],
       "system": {},
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "YALCGgF8D8ApfVKE",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1782243037229,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [],
-      "description": "<p>This creature has less than 50% HP</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": 298800,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "isPredefined": true,
-          "originalId": "4ldx00srGNv5AJBr",
-          "originalParentId": "0gIBYzSpjdXS6f25",
-          "originalUuid": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr"
-        },
-        "dfreds-convenient-effects": {
-          "ceEffectId": "ce-crisis",
-          "isBackup": false,
-          "isConvenient": true,
-          "isDynamic": false,
-          "isTemporary": false,
-          "isViewable": false
-        },
-        "fabula-ultima-companion": {
-          "bdCrisis": true
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/08_DRG/blood_for_blood.png",
-      "name": "Crisis",
-      "origin": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr",
-      "sort": 0,
-      "statuses": [
-        "5jkr80zqdzaR003d"
-      ],
-      "system": {
-        "tags": []
-      },
       "tint": "#ffffff",
       "transfer": false,
       "type": "base"
@@ -787,6 +723,93 @@
           "defense_target_type": "def",
           "description": "<p>When you cast an <strong>instantaneous</strong> spell, if you have an <strong>arcane</strong> weapon equipped, <strong>you may increase the spell's total MP cost</strong> by up to <strong>【SL × 10】</strong> Mind Points. If you do so and the spell deals damage to one or more creatures, it will deal 5 extra damage to each creature for every 10 Mind Points by which you increased its total MP cost.</p>",
           "duration": "",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "effect_kind": "open_action_menu",
+              "effect_label": "cat_menu",
+              "menu_option_descriptions": "Spend 10 MP for +5 damage to each creature|Spend 20 MP for +10 damage to each creature|Spend 30 MP for +15 damage to each creature",
+              "menu_option_labels": "+10 MP → +5 damage|+20 MP → +10 damage|+30 MP → +15 damage",
+              "menu_option_refs": "cat_10, cat_20, cat_30",
+              "menu_subtitle": "Increase the spell's MP cost for extra damage",
+              "menu_title": "Cataclysm — Overcharge"
+            },
+            "1": {
+              "$deleted": false,
+              "chain_steps": "cat_10_mp, cat_10_dmg",
+              "condition_formula": "SL >= 1 && CUR_MP >= 10",
+              "disable_ui_type": "dim",
+              "disabled_reason": "Not enough MP",
+              "effect_kind": "chain",
+              "effect_label": "cat_10"
+            },
+            "2": {
+              "$deleted": false,
+              "consume_amount": "10",
+              "consume_resource": "mp",
+              "effect_kind": "consume_resource",
+              "effect_label": "cat_10_mp",
+              "target_ref": "self"
+            },
+            "3": {
+              "$deleted": false,
+              "damage_amount": "5",
+              "damage_operation": "add",
+              "damage_stage": "outgoing",
+              "effect_kind": "adjust_damage",
+              "effect_label": "cat_10_dmg"
+            },
+            "4": {
+              "$deleted": false,
+              "chain_steps": "cat_20_mp, cat_20_dmg",
+              "condition_formula": "SL >= 2 && CUR_MP >= 20",
+              "disable_ui_type": "dim",
+              "disabled_reason": "Not enough MP",
+              "effect_kind": "chain",
+              "effect_label": "cat_20"
+            },
+            "5": {
+              "$deleted": false,
+              "consume_amount": "20",
+              "consume_resource": "mp",
+              "effect_kind": "consume_resource",
+              "effect_label": "cat_20_mp",
+              "target_ref": "self"
+            },
+            "6": {
+              "$deleted": false,
+              "damage_amount": "10",
+              "damage_operation": "add",
+              "damage_stage": "outgoing",
+              "effect_kind": "adjust_damage",
+              "effect_label": "cat_20_dmg"
+            },
+            "7": {
+              "$deleted": false,
+              "chain_steps": "cat_30_mp, cat_30_dmg",
+              "condition_formula": "SL >= 3 && CUR_MP >= 30",
+              "disable_ui_type": "dim",
+              "disabled_reason": "Not enough MP",
+              "effect_kind": "chain",
+              "effect_label": "cat_30"
+            },
+            "8": {
+              "$deleted": false,
+              "consume_amount": "30",
+              "consume_resource": "mp",
+              "effect_kind": "consume_resource",
+              "effect_label": "cat_30_mp",
+              "target_ref": "self"
+            },
+            "9": {
+              "$deleted": false,
+              "damage_amount": "15",
+              "damage_operation": "add",
+              "damage_stage": "outgoing",
+              "effect_kind": "adjust_damage",
+              "effect_label": "cat_30_dmg"
+            }
+          },
           "heroic_requirement": "",
           "isCheck": false,
           "isFacet": false,
@@ -797,7 +820,16 @@
           "max_level": "3",
           "name": "Cataclysm",
           "optional_params": {},
-          "reaction_config_table": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "HAS_ARCANE_WEAPON == 1 && ACTION_IS_SPELL == 1",
+              "reaction_effect_ref": "cat_menu",
+              "reaction_passive_mode": "ask",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_will_deal_damage"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
@@ -3571,7 +3603,7 @@
               "candidate_source": "self",
               "category": "",
               "consume_self": false,
-              "count": 1,
+              "count": "1",
               "effect_kind": "targeting",
               "effect_label": "ds_self",
               "exclude": "",
@@ -3605,13 +3637,8 @@
           "name": "Drain Spirit",
           "on_activate_effect_ref": "",
           "optional_params": {},
-          "post_damage_effect_ref": "drain_recover",
           "pre_activate_effect_ref": "",
           "reaction_config_table": {},
-          "recipe": "drain",
-          "recipe_amount": "MP_DEALT / 2",
-          "recipe_resource": "mp",
-          "recipe_target": "self",
           "rolled_atr1": "INS",
           "rolled_atr2": "WLP",
           "skill_animation_default": "",
@@ -6107,24 +6134,11 @@
           "effect_table": {
             "0": {
               "$deleted": false,
-              "allowed_types": "Study",
+              "action_ref": "Study",
               "check_bonus_formula": "SL",
-              "effect_kind": "open_action_menu",
+              "effect_kind": "free_action",
               "effect_label": "pl_free_study",
-              "free_mode": true,
-              "target_ref": "pl_attacker"
-            },
-            "1": {
-              "$deleted": false,
-              "auto_confirm_when_obvious": true,
-              "candidate_source": "trigger_actor",
-              "category": "",
-              "count": 1,
-              "effect_kind": "targeting",
-              "effect_label": "pl_attacker",
-              "iteration_mode": "together",
-              "mode": "exact",
-              "skip_when_passive": true
+              "target_ref": "cause_actor"
             }
           },
           "heroic_requirement": "",
@@ -6142,12 +6156,11 @@
           "reaction_config_table": {
             "0": {
               "$deleted": false,
-              "reaction_action_intent": "harmful",
-              "reaction_damage_source": "enemy",
               "reaction_effect_ref": "pl_free_study",
               "reaction_passive_mode": "ask",
+              "reaction_resource_filter": "hp",
               "reaction_source": "self",
-              "reaction_trigger": "creature_takes_damage"
+              "reaction_trigger": "creature_lose_resource"
             }
           },
           "rolled_atr1": "-",
@@ -6532,6 +6545,7 @@
           "damage_bonus": "15",
           "defense_target_type": "def",
           "description": "<p>You coat your foes under a thick layer of frost. Each target hit by this spell suffers <strong>【HR + 15】</strong><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(166, 227, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span> damage.</p><p><strong>Opportunity:</strong> Each target hit by this spell suffers <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span></p>",
+          "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
@@ -6545,7 +6559,9 @@
             }
           },
           "heroic_requirement": "",
+          "id": "yKqv5PofnFTTRRMI",
           "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/AishaS9.png",
           "isCheck": true,
           "isFacet": true,
           "isHeroic": false,
@@ -6558,6 +6574,7 @@
           "on_activate_effect_ref": "glacies_opportunity",
           "optional_params": {},
           "reaction_config_table": {},
+          "reaction_effect_table": {},
           "rolled_atr1": "INS",
           "rolled_atr2": "WLP",
           "skill_animation_default": "",
@@ -6567,7 +6584,8 @@
           "skill_target": "Up to three creatures",
           "skill_type": "Spell",
           "type_damage": "Ice",
-          "use_optional_params": false
+          "use_optional_params": false,
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.yKqv5PofnFTTRRMI"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -7055,12 +7073,12 @@
       "affinity_1": "NA",
       "affinity_2": "NA",
       "affinity_3": "NA",
-      "affinity_4": "RS",
+      "affinity_4": "NA",
       "affinity_5": "NA",
       "affinity_6": "NA",
       "affinity_7": "NA",
       "affinity_8": "NA",
-      "affinity_9": "RS",
+      "affinity_9": "NA",
       "animation_table": {},
       "anomaly_status": 0,
       "arcane_ef": "100",
@@ -7421,9 +7439,9 @@
       "critical_damage_bonus": 0,
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
-      "current_hp": "11",
+      "current_hp": "100",
       "current_ip": "6",
-      "current_mp": "63",
+      "current_mp": "78",
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/hina_Cut-in002.png",
       "cut_in_fumble": "",
