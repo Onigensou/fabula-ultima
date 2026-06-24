@@ -19,10 +19,12 @@
  *   } from "./actionReader-matchAndPickAction.js";
  * ========================================================================== */
 
-import { ActionReaderCore as AR } from "./actionReader-core.js";
+import { ActionReaderCore as AR, FU_MODULE_ID } from "./actionReader-core.js";
 import { ActionReaderDebug as ARD } from "./actionReader-debug.js";
 
 export const ACTION_READER_MATCH_AND_PICK_ACTION_VERSION = "1.0.0";
+
+const ACTION_MEMORY_FLAG = "actionReaderMemory";
 export const ACTION_READER_MATCH_AND_PICK_ACTION_STAGE = "MatchAndPickAction";
 
 function getModuleApiContainer(moduleId) {
@@ -118,6 +120,139 @@ function getPriorityWeight(priorityGap) {
     case 1: return 2;
     case 2: return 1;
     default: return 0;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Feasibility (#1): can the actor actually perform this action right now?    */
+/* -------------------------------------------------------------------------- */
+
+function getCandidateProps(candidate) {
+  return candidate?.itemSnapshot?.props ?? candidate?.item?.system?.props ?? {};
+}
+
+function isCandidateFree(candidate) {
+  const cost = AR.parseActionCost(getCandidateProps(candidate)?.[AR.keys.cost]);
+  return Boolean(cost.free);
+}
+
+/*
+ * Returns { feasible, reasons[] }. Checks:
+ *   - resource cost (MP/IP) vs the performer's current pools
+ *   - at least one legal target exists on the scene for the action's relation
+ * Unknown/blank data never blocks (degrades to legacy "always feasible").
+ */
+function assessCandidateFeasibility(candidate, context) {
+  const props = getCandidateProps(candidate);
+  const reasons = [];
+
+  // Resource cost. For "x T" (per-target) costs, require at least one target's worth.
+  const cost = AR.parseActionCost(props?.[AR.keys.cost]);
+  if (!cost.free && (cost.resource === "mp" || cost.resource === "ip")) {
+    const pool = cost.resource === "mp"
+      ? context?.actorData?.resources?.mp
+      : context?.actorData?.resources?.ip;
+    const current = AR.toNumber(pool?.current, 0);
+    if (current < cost.amount) {
+      reasons.push(`Needs ${cost.amount} ${cost.resource.toUpperCase()}, has ${current}.`);
+    }
+  }
+
+  // Target existence (skip self-targeted / relation-less actions).
+  const relation = AR.quickTargetRelation(candidate?.skillTarget);
+  if (relation && relation !== "self") {
+    const performerActor = context?.performer?.actor ?? context?.actorData?.actor ?? null;
+    const performerTokenDoc = context?.performer?.tokenDocument ?? null;
+    const available = AR.countSceneTargetsForRelation(performerActor, performerTokenDoc, relation);
+    if (available < 1) {
+      reasons.push(`No legal ${relation} target on the scene.`);
+    }
+  }
+
+  return { feasible: reasons.length === 0, reasons };
+}
+
+/* -------------------------------------------------------------------------- */
+/* Anti-repeat memory (#4): per-combatant last-used / cooldown tracking       */
+/* -------------------------------------------------------------------------- */
+
+function getMemoryCombatant(context) {
+  return context?.performer?.combatant ?? context?.actorData?.combat?.combatant ?? null;
+}
+
+function getCurrentRound(context) {
+  return AR.toInteger(context?.combat?.round ?? context?.actorData?.combat?.round, 0);
+}
+
+function readActionMemory(context) {
+  const combatant = getMemoryCombatant(context);
+  if (!combatant) return { lastActionName: "", usedRounds: {} };
+
+  let mem;
+  try {
+    mem = combatant.getFlag?.(FU_MODULE_ID, ACTION_MEMORY_FLAG);
+  } catch (_e) {
+    mem = undefined;
+  }
+  mem = mem ?? combatant?.flags?.[FU_MODULE_ID]?.[ACTION_MEMORY_FLAG];
+
+  return {
+    lastActionName: AR.normalizeText(mem?.lastActionName ?? ""),
+    usedRounds: (mem && typeof mem.usedRounds === "object") ? mem.usedRounds : {}
+  };
+}
+
+/*
+ * Apply cooldown/anti-repeat to retained candidates.
+ *   - explicit action_pattern_cooldown column (turns) => hard-block while on CD
+ *   - otherwise the action used last turn is softly de-weighted (x0.3)
+ * If everything ends up blocked, fall back to the unadjusted weights so the
+ * actor still acts.
+ */
+function applyAntiRepeat(retained, context) {
+  const memory = readActionMemory(context);
+  const currentRound = getCurrentRound(context);
+
+  const adjusted = retained.map(candidate => {
+    const nameNorm = candidate.actionNameNormalized;
+    const cooldown = AR.toInteger(getCandidateProps(candidate)?.[AR.keys.actionPatternCooldownKey], 0);
+    const lastUsedRound = AR.toInteger(memory.usedRounds?.[nameNorm], NaN);
+
+    let weight = candidate.selectionWeight;
+    let blocked = false;
+
+    if (cooldown > 0 && Number.isFinite(lastUsedRound) && (currentRound - lastUsedRound) < cooldown) {
+      weight = 0;
+      blocked = true;
+    } else if (memory.lastActionName && memory.lastActionName === nameNorm) {
+      weight *= 0.3;
+    }
+
+    return { ...candidate, cooldownWeight: weight, cooldownBlocked: blocked };
+  });
+
+  const live = adjusted.filter(candidate => candidate.cooldownWeight > 0);
+  if (live.length) return { pool: live, memory, currentRound, fallback: false };
+
+  // All blocked — ignore cooldown this turn rather than freeze.
+  const fallbackPool = retained.map(candidate => ({ ...candidate, cooldownWeight: candidate.selectionWeight }));
+  return { pool: fallbackPool, memory, currentRound, fallback: true };
+}
+
+async function recordActionMemory(context, chosenCandidate, memory, currentRound) {
+  const combatant = getMemoryCombatant(context);
+  if (!combatant?.setFlag || !chosenCandidate) return;
+
+  const nameNorm = chosenCandidate.actionNameNormalized;
+  const usedRounds = { ...(memory?.usedRounds ?? {}), [nameNorm]: currentRound };
+
+  try {
+    await combatant.setFlag(FU_MODULE_ID, ACTION_MEMORY_FLAG, {
+      lastActionName: nameNorm,
+      usedRounds
+    });
+  } catch (_e) {
+    /* non-fatal */
   }
 }
 
@@ -380,8 +515,41 @@ export async function matchAndPickActionReaderAction(context, options = {}) {
       .filter(result => result?.matched)
       .map(result => result.candidate);
 
-    const { topPriority, retained } = applyPriorityWindow(matchedCandidates);
-    const chosenCandidate = AR.weightedPick(retained, candidate => candidate.selectionWeight);
+    // --- Feasibility filter (#1) ---------------------------------------- //
+    const feasibility = new Map();
+    const feasibleCandidates = matchedCandidates.filter(candidate => {
+      const result = assessCandidateFeasibility(candidate, context);
+      feasibility.set(candidate, result);
+      candidate.feasible = result.feasible;
+      candidate.feasibilityReasons = result.reasons;
+      return result.feasible;
+    });
+
+    let workingCandidates = feasibleCandidates;
+    let feasibilityFallbackUsed = false;
+
+    if (!workingCandidates.length && matchedCandidates.length) {
+      // Graceful fallback: prefer no-cost actions so the actor still does
+      // *something* (e.g. a basic attack) instead of erroring out.
+      const freeCandidates = matchedCandidates.filter(isCandidateFree);
+      workingCandidates = freeCandidates.length ? freeCandidates : matchedCandidates;
+      feasibilityFallbackUsed = true;
+
+      ARD.addWarning(context, stage, "No fully-feasible action; using graceful fallback.", {
+        matchedCandidates: matchedCandidates.length,
+        freeFallbackCount: freeCandidates.length
+      });
+    }
+
+    const { topPriority, retained } = applyPriorityWindow(workingCandidates);
+
+    // --- Anti-repeat / cooldown (#4) ------------------------------------ //
+    const antiRepeat = applyAntiRepeat(retained, context);
+    const chosenCandidate = AR.weightedPick(antiRepeat.pool, candidate => candidate.cooldownWeight);
+
+    if (chosenCandidate && options?.recordMemory !== false) {
+      await recordActionMemory(context, chosenCandidate, antiRepeat.memory, antiRepeat.currentRound);
+    }
 
     context.actionCandidatesAll = matchedCandidates;
     context.actionCandidates = retained;
@@ -411,6 +579,11 @@ export async function matchAndPickActionReaderAction(context, options = {}) {
       chosenCandidate,
       topPriority
     );
+    context.actionMatchMeta.feasibleCandidates = feasibleCandidates.length;
+    context.actionMatchMeta.infeasibleCandidates = matchedCandidates.length - feasibleCandidates.length;
+    context.actionMatchMeta.feasibilityFallbackUsed = feasibilityFallbackUsed;
+    context.actionMatchMeta.antiRepeatLastAction = antiRepeat.memory.lastActionName || null;
+    context.actionMatchMeta.antiRepeatFallbackUsed = antiRepeat.fallback;
 
     ARD.recordStage(context, stage, context.actionMatchMeta);
 

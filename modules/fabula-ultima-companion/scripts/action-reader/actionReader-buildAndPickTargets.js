@@ -71,6 +71,8 @@ function normalizeSceneToken(tokenLike) {
   if (!tokenDocument || !actor) return null;
 
   const disposition = AR.getTokenDisposition(tokenDocument);
+  const hp = AR.getResourcePair(actor, AR.keys.hpCurrent, AR.keys.hpMax);
+  const defenses = AR.getActorDefenses(actor);
 
   return {
     token: token ?? tokenDocument?.object ?? null,
@@ -83,6 +85,14 @@ function normalizeSceneToken(tokenLike) {
     disposition,
     side: AR.getDispositionSide(disposition),
     enmity: AR.getActorEnmity(actor, 100),
+    // Targeting-intelligence fields (used by focus weighting)
+    hpPercent: AR.toInteger(hp?.percent, 100),
+    hpCurrent: AR.toInteger(hp?.current, 0),
+    hpMax: AR.toInteger(hp?.max, 0),
+    def: AR.toNumber(defenses?.def, 0),
+    mdef: AR.toNumber(defenses?.mdef, 0),
+    statusNames: AR.getEffectNames(actor).map(n => AR.normalizeText(n)).filter(Boolean),
+    affinityMap: AR.getActorAffinityMap(actor),
     uuid: tokenDocument.uuid ?? actor.uuid ?? null
   };
 }
@@ -175,7 +185,115 @@ function filterCandidatesByRule(context, candidates, targetRule, options = {}) {
   }
 }
 
-function chooseTargetsFromCandidates(candidates, targetRule) {
+/* -------------------------------------------------------------------------- */
+/* Target focus (#2): affinity / HP / defense-aware weighting                 */
+/* -------------------------------------------------------------------------- */
+
+/*
+ * Build the focus context from the chosen action:
+ *   - damageType    ("fire", "ice", ...) from the item's type_damage
+ *   - defenseTarget ("def" | "mdef")
+ *   - focus mode    from the optional action_pattern_target_focus column on
+ *                   the chosen pattern row ("" => "auto")
+ */
+function getFocusContext(context) {
+  const chosen = context?.chosenAction ?? null;
+  const props = chosen?.itemSnapshot?.props ?? chosen?.item?.system?.props ?? {};
+  const focusRaw = AR.normalizeText(chosen?.row?.raw?.[AR.keys.actionPatternTargetFocusKey] ?? "");
+
+  return {
+    damageType: AR.normalizeDamageType(props?.[AR.keys.typeDamage]),
+    defenseTarget: AR.getItemDefenseTarget(props),
+    focus: focusRaw || "auto"
+  };
+}
+
+function affinityMultiplier(candidate, damageType) {
+  if (!damageType) return 1;
+  const code = AR.toString(candidate?.affinityMap?.[damageType], "NA").toUpperCase();
+  switch (code) {
+    case "VU": return 2.0;   // vulnerable -> strongly prefer
+    case "RS": return 0.5;   // resistant -> avoid
+    case "IM": return 0.05;  // immune -> almost never
+    case "AB": return 0.02;  // absorb (heals them) -> effectively never
+    default: return 1.0;     // normal
+  }
+}
+
+function hpBias(candidate, kind) {
+  const pct = AR.clamp(AR.toNumber(candidate?.hpPercent, 100), 0, 100) / 100;
+  switch (kind) {
+    case "low": return 0.2 + (1 - pct) * 1.8;   // 0.2 .. 2.0, favor wounded
+    case "high": return 0.2 + pct * 1.8;        // favor healthy
+    case "mildLow": return 0.8 + (1 - pct) * 0.6; // 0.8 .. 1.4, gentle finish bias
+    default: return 1;
+  }
+}
+
+function squishyBias(candidate, defenseTarget) {
+  const value = defenseTarget === "mdef"
+    ? AR.toNumber(candidate?.mdef, 10)
+    : AR.toNumber(candidate?.def, 10);
+  // Lower defense -> higher weight. Clamped to a sane band.
+  return AR.clamp(20 / (value + 5), 0.3, 2.5);
+}
+
+/* Combined per-candidate selection weight, blended onto the enmity base. */
+function focusWeightFor(candidate, focusCtx) {
+  const mode = focusCtx?.focus || "auto";
+  let weight = Math.max(0.01, AR.toNumber(candidate?.enmity, 1));
+
+  const useAffinity = mode === "auto" || mode === "by_affinity";
+  if (useAffinity && focusCtx?.damageType) {
+    let mult = affinityMultiplier(candidate, focusCtx.damageType);
+    if (mode === "by_affinity") mult = Math.pow(mult, 1.5); // sharper emphasis
+    weight *= mult;
+  }
+
+  if (mode === "lowest_hp") weight *= hpBias(candidate, "low");
+  else if (mode === "highest_hp") weight *= hpBias(candidate, "high");
+  else if (mode === "auto") weight *= hpBias(candidate, "mildLow");
+
+  if (mode === "squishy") weight *= squishyBias(candidate, focusCtx?.defenseTarget);
+
+  return Math.max(0.001, weight);
+}
+
+/*
+ * Creature-wide, Burn-aware target selection (overrides relation filtering).
+ *   - "burn_spread": pick at random among creatures (excl. self) that have Burn.
+ *   - "burn_focus":  pick the creature(s) (excl. self) with the most Burn stacks
+ *                    (random tiebreak among the top).
+ * Pool is ALL dispositions except the performer (ally + enemy + neutral).
+ */
+function selectBurnFocusTargets(allCandidates, mode, targetRule) {
+  const pool = (Array.isArray(allCandidates) ? allCandidates : []).filter(c => !c.isSelf);
+  if (!pool.length) {
+    return { ok: false, chosenTargets: [], reason: "No creature (other than self) to target." };
+  }
+
+  const count = Math.max(1, AR.toInteger(targetRule?.count, 1));
+  const withStacks = pool.map(c => ({ c, stacks: AR.getEffectStackCount(c.actor, "Burn") }));
+
+  if (mode === "burn_spread") {
+    const holders = withStacks.filter(x => x.stacks >= 1).map(x => x.c);
+    if (!holders.length) {
+      return { ok: false, chosenTargets: [], reason: "No creature has Burn for burn_spread." };
+    }
+    const chosen = AR.weightedPickMany(holders, Math.min(count, holders.length), () => 1);
+    return { ok: chosen.length > 0, chosenTargets: chosen,
+      reason: `burn_spread selected ${chosen.length} Burn-holder(s) of ${holders.length}.` };
+  }
+
+  // burn_focus
+  const maxStacks = Math.max(...withStacks.map(x => x.stacks));
+  const top = withStacks.filter(x => x.stacks === maxStacks).map(x => x.c);
+  const chosen = AR.weightedPickMany(top, Math.min(count, top.length), () => 1);
+  return { ok: chosen.length > 0, chosenTargets: chosen,
+    reason: `burn_focus picked among ${top.length} creature(s) with ${maxStacks} Burn.` };
+}
+
+function chooseTargetsFromCandidates(candidates, targetRule, focusCtx = null) {
   if (!Array.isArray(candidates) || !candidates.length) {
     return {
       ok: false,
@@ -208,7 +326,7 @@ function chooseTargetsFromCandidates(candidates, targetRule) {
 
   if (targetRule?.isUpTo) {
     const wanted = Math.min(maxCount, candidates.length);
-    const chosen = AR.weightedPickMany(candidates, wanted, candidate => candidate.enmity);
+    const chosen = AR.weightedPickMany(candidates, wanted, candidate => focusWeightFor(candidate, focusCtx));
 
     return {
       ok: chosen.length > 0,
@@ -227,7 +345,7 @@ function chooseTargetsFromCandidates(candidates, targetRule) {
     };
   }
 
-  const chosen = AR.weightedPickMany(candidates, exactCount, candidate => candidate.enmity);
+  const chosen = AR.weightedPickMany(candidates, exactCount, candidate => focusWeightFor(candidate, focusCtx));
   const ok = chosen.length === exactCount;
 
   return {
@@ -239,7 +357,7 @@ function chooseTargetsFromCandidates(candidates, targetRule) {
   };
 }
 
-function summarizeCandidates(candidates) {
+function summarizeCandidates(candidates, focusCtx = null) {
   return candidates.map(candidate => ({
     tokenName: candidate.tokenName,
     actorName: candidate.actorName,
@@ -248,17 +366,22 @@ function summarizeCandidates(candidates) {
     side: candidate.side,
     relationToPerformer: candidate.relationToPerformer,
     enmity: candidate.enmity,
+    hpPercent: candidate.hpPercent,
+    affinity: focusCtx?.damageType ? candidate.affinityMap?.[focusCtx.damageType] : null,
+    focusWeight: focusCtx ? Number(focusWeightFor(candidate, focusCtx).toFixed(2)) : null,
     isSelf: candidate.isSelf
   }));
 }
 
-function summarizeChosenTargets(targets) {
+function summarizeChosenTargets(targets, focusCtx = null) {
   return targets.map(target => ({
     tokenName: target.tokenName,
     actorName: target.actorName,
     tokenId: target.tokenId,
     relationToPerformer: target.relationToPerformer,
     enmity: target.enmity,
+    hpPercent: target.hpPercent,
+    affinity: focusCtx?.damageType ? target.affinityMap?.[focusCtx.damageType] : null,
     isSelf: target.isSelf
   }));
 }
@@ -303,12 +426,20 @@ export async function buildAndPickActionReaderTargets(context, options = {}) {
     }
 
     const allCandidates = buildDecoratedCandidates(context, options);
-    const legalCandidates = filterCandidatesByRule(context, allCandidates, targetRule, options);
+    const focusCtx = getFocusContext(context);
+    const creatureWide = focusCtx.focus === "burn_spread" || focusCtx.focus === "burn_focus";
+
+    // Creature-wide focus modes ignore relation filtering (ally+enemy, excl. self).
+    const legalCandidates = creatureWide
+      ? allCandidates.filter(c => !c.isSelf)
+      : filterCandidatesByRule(context, allCandidates, targetRule, options);
 
     context.targetCandidatesAll = allCandidates;
     context.targetCandidates = legalCandidates;
 
-    const pickResult = chooseTargetsFromCandidates(legalCandidates, targetRule);
+    const pickResult = creatureWide
+      ? selectBurnFocusTargets(legalCandidates, focusCtx.focus, targetRule)
+      : chooseTargetsFromCandidates(legalCandidates, targetRule, focusCtx);
     context.chosenTargets = pickResult.chosenTargets ?? [];
 
     context.targetPickMeta = {
@@ -320,15 +451,18 @@ export async function buildAndPickActionReaderTargets(context, options = {}) {
       candidatePoolCount: allCandidates.length,
       legalCandidateCount: legalCandidates.length,
       chosenCount: context.chosenTargets.length,
+      focusMode: focusCtx.focus,
+      focusDamageType: focusCtx.damageType || null,
+      focusDefenseTarget: focusCtx.defenseTarget || null,
       reason: pickResult.reason
     };
 
     ARD.recordStage(context, stage, context.targetPickMeta);
 
     if (ARD.isVerbose(context)) {
-      ARD.table(stage, "All scene candidates", summarizeCandidates(allCandidates), context);
-      ARD.table(stage, "Legal target candidates", summarizeCandidates(legalCandidates), context);
-      ARD.table(stage, "Chosen targets", summarizeChosenTargets(context.chosenTargets), context);
+      ARD.table(stage, "All scene candidates", summarizeCandidates(allCandidates, focusCtx), context);
+      ARD.table(stage, "Legal target candidates", summarizeCandidates(legalCandidates, focusCtx), context);
+      ARD.table(stage, "Chosen targets", summarizeChosenTargets(context.chosenTargets, focusCtx), context);
     }
 
     if (!legalCandidates.length) {
