@@ -1107,7 +1107,10 @@
         }
       },
       "npc_rank": "champion",
+      "override_all_damage_type": "None",
+      "override_attack_damage_type": "None",
       "override_damage_type": "None",
+      "override_spell_damage_type": "None",
       "rare": false,
       "resource_maxValue_1": "0",
       "resource_maxValue_2": "0",
@@ -1226,7 +1229,7 @@
     },
     "statusEffects": {},
     "template": "yegF6R8aaymhrvCg",
-    "templateSystemUniqueVersion": 3550575095
+    "templateSystemUniqueVersion": 2114752673
   },
   "type": "character"
 }

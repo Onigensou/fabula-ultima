@@ -132,6 +132,7 @@
       "beast_ef": "100",
       "category": "Dagger",
       "celestial_ef": "100",
+      "check": "Check",
       "check_bonus": "0",
       "construct_ef": "100",
       "damage_bonus": "4",
@@ -158,6 +159,8 @@
       "hand_slots": "One-handed",
       "human_ef": "100",
       "humanoid_ef": "100",
+      "id": "UUWalUbZ5HIZyRnQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/13039.gif",
       "insect_ef": "100",
       "ip_cost": "",
       "isEquipped": false,
@@ -183,12 +186,22 @@
       "reaction_config_table": {
         "0": {
           "condition_formula": "chance(50)",
+          "reaction_action_intent": "",
+          "reaction_action_target": "",
+          "reaction_damage_amount": "",
+          "reaction_damage_source": "",
+          "reaction_damage_type": "",
           "reaction_effect_ref": "onhit_envenomed_p50",
+          "reaction_ownership": "",
           "reaction_passive_mode": "on",
           "reaction_source": "self",
-          "reaction_trigger": "creature_deals_damage"
+          "reaction_subject_kind": "",
+          "reaction_trigger": "creature_deals_damage",
+          "requires_skill": ""
         }
       },
+      "refine_count": "0",
+      "refine_level": "0",
       "reptilian_ef": "100",
       "rolled_atr1": "DEX",
       "rolled_atr2": "INS",
@@ -198,6 +211,7 @@
       "spirit_ef": "100",
       "type_damage": "Poison",
       "undead_ef": "100",
+      "uuid": "Item.UUWalUbZ5HIZyRnQ",
       "vehicle_ef": "100",
       "weapon_range": "Melee"
     },

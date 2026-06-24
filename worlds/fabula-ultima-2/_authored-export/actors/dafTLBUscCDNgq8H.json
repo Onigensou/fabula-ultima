@@ -41,7 +41,7 @@
         "fabula-ultima-companion": {
           "category": "buff",
           "chargeKey": "prophecy",
-          "charges": 3,
+          "charges": 4,
           "chargesMax": 99,
           "directorAppliedBy": {
             "appliedAtRound": 0,
@@ -112,7 +112,7 @@
             "appliedAtRound": 0,
             "effectLabel": "hod_refresh",
             "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.1xLltSAF28BfIpBU",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.iH6vdqmc2JUNhPEw",
             "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF",
             "turnsRemaining": null
           },

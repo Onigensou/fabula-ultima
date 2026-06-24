@@ -5189,6 +5189,12 @@
         "effects": 0
       },
       {
+        "id": "4Ew4B2v0hxhzGnpE",
+        "name": "Charred Bone",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "9cHSgi4ag97uKGW7",
         "name": "Cheap Shot",
         "type": "equippableItem",
@@ -5595,6 +5601,12 @@
         "name": "Cupid Bow",
         "type": "equippableItem",
         "effects": 1
+      },
+      {
+        "id": "rr2SfVdaG26UTJhd",
+        "name": "Curse",
+        "type": "equippableItem",
+        "effects": 0
       },
       {
         "id": "3QBrbZe41Yx2UAWD",
@@ -6425,6 +6437,12 @@
         "effects": 0
       },
       {
+        "id": "UI9WP1hyxQomHxJb",
+        "name": "Ember Petal",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "Q5UDJVTGRDxoLCGQ",
         "name": "Ember Toast",
         "type": "equippableItem",
@@ -6803,8 +6821,20 @@
         "effects": 0
       },
       {
+        "id": "SkgnxeQnq4DVhVVU",
+        "name": "Flame Essence",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "lT1zVPGpXJyYznGM",
         "name": "Flame Grenade",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "YwHqPwrBMjmwVilg",
+        "name": "Flame Orb",
         "type": "equippableItem",
         "effects": 0
       },
@@ -7015,6 +7045,12 @@
       {
         "id": "WVzJsv1czGiuHhmo",
         "name": "Freyr (Light)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "GrqpyWbTlji23uD5",
+        "name": "Frill",
         "type": "equippableItem",
         "effects": 0
       },
@@ -8461,6 +8497,12 @@
       {
         "id": "UFZJI9rL2wImnHoh",
         "name": "Inner Wellspring",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "IXjVrp7Lp60nMmAR",
+        "name": "Insect Stinger",
         "type": "equippableItem",
         "effects": 0
       },
@@ -11239,6 +11281,12 @@
       {
         "id": "OmWE7jRa80TMTc1x",
         "name": "Regen",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "D1UEXDIcjCsAs85o",
+        "name": "Regret",
         "type": "equippableItem",
         "effects": 0
       },
@@ -16355,13 +16403,6 @@
         "effects": 0
       },
       {
-        "id": "gqk36cjGWyoM6zOn",
-        "name": "BD Dummy Enemy",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
         "id": "2U5MthxrDRMofSGl",
         "name": "Beary Goods",
         "type": "character",
@@ -16785,12 +16826,24 @@
         "type": "character",
         "items": [
           {
+            "id": "unCcRWs8dFDCxc7p",
+            "name": "(Empty)"
+          },
+          {
             "id": "J7SuqtO4osJftpVT",
             "name": "Burning Grasp"
           },
           {
+            "id": "jPgPfz2D7O4ToPo0",
+            "name": "Crimson Gloves"
+          },
+          {
             "id": "T58xbs00Ny4ntMQW",
             "name": "Exploders Hand"
+          },
+          {
+            "id": "e2p54GV0u30mV9Od",
+            "name": "Flame Essence"
           },
           {
             "id": "1Cx75N1aelEUmVTF",
@@ -16803,6 +16856,14 @@
           {
             "id": "WlqisSiPzwZAQr1x",
             "name": "Grabby Hand"
+          },
+          {
+            "id": "UULbMTwfoFzepIv5",
+            "name": "Spicy Cocktail"
+          },
+          {
+            "id": "ztT4hkCiw9BU3Tdm",
+            "name": "Spicy Cocktail"
           }
         ],
         "effects": 0
@@ -17011,6 +17072,10 @@
         "type": "character",
         "items": [
           {
+            "id": "dVjNEncl0phgkyvw",
+            "name": "(Empty)"
+          },
+          {
             "id": "ReBnAu6qGVMQHoR6",
             "name": "⚔️ Bite"
           },
@@ -17025,6 +17090,18 @@
           {
             "id": "ETx8oP7z2DQutxN3",
             "name": "Hellfire"
+          },
+          {
+            "id": "Ldiu0g8LJE0ltaKc",
+            "name": "Insect Stinger"
+          },
+          {
+            "id": "ZKGWgGXR5uU0ZF5W",
+            "name": "Poison"
+          },
+          {
+            "id": "wXNXt3PGpJWMzRot",
+            "name": "Poisoned Dagger"
           }
         ],
         "effects": 0
@@ -17039,7 +17116,7 @@
             "name": "(Empty)"
           },
           {
-            "id": "BuDTOuIfC6yRAom5",
+            "id": "Au1ctPapjISWddBL",
             "name": "Animal Fur"
           },
           {
@@ -17746,8 +17823,32 @@
         "type": "character",
         "items": [
           {
+            "id": "68L1VgdwSlI2toDA",
+            "name": "(Empty)"
+          },
+          {
+            "id": "WElsRrkCJQeqfxWt",
+            "name": "Curse"
+          },
+          {
+            "id": "kStusVaEZeFoJsCs",
+            "name": "Dead Branch"
+          },
+          {
+            "id": "AnIQBrcs4kK0DhqR",
+            "name": "Regret"
+          },
+          {
             "id": "nfgaJsrDB7MzmoI7",
             "name": "Shadow Possession"
+          },
+          {
+            "id": "CNFSNELfdnVUVim1",
+            "name": "Shadow Sneak"
+          },
+          {
+            "id": "Nc1GEFqrF6PbzSfn",
+            "name": "Shadow Tunic"
           }
         ],
         "effects": 0
@@ -18229,6 +18330,14 @@
         "type": "character",
         "items": [
           {
+            "id": "VN59JLA6ldxPPDos",
+            "name": "(Empty)"
+          },
+          {
+            "id": "ZCN8sP4uCDOx71xY",
+            "name": "Dead Branch"
+          },
+          {
             "id": "OB9H6LpJArQP8e5N",
             "name": "Dispel"
           },
@@ -18237,12 +18346,20 @@
             "name": "Enkindle"
           },
           {
+            "id": "RpenhO8dK7MKoxRf",
+            "name": "Fairy Ring"
+          },
+          {
             "id": "YClTOeSsVFm0ngyO",
             "name": "Ignis Finis"
           },
           {
             "id": "5GOsf7rPolHWnDsX",
             "name": "Mustard Bomb"
+          },
+          {
+            "id": "VjZ3VFkjtpqpgQan",
+            "name": "Starfruit"
           }
         ],
         "effects": 0
@@ -19172,8 +19289,16 @@
             "name": "Flame Burst"
           },
           {
+            "id": "0RK4SWuKCQhc5zEy",
+            "name": "Ignium Jelly"
+          },
+          {
             "id": "oyaaW9A1V2OUuwN8",
             "name": "Jellopy"
+          },
+          {
+            "id": "fD0nqTnAWzQvkUOk",
+            "name": "Slime Hat"
           },
           {
             "id": "Jm8zStHxlN560HcV",
@@ -20903,6 +21028,18 @@
         "type": "character",
         "items": [
           {
+            "id": "weOyBRmuXnvzycl9",
+            "name": "(Empty)"
+          },
+          {
+            "id": "lV74fYrlQPN2CeGd",
+            "name": "Animal Fang"
+          },
+          {
+            "id": "3pOyST3Pn3p18oSb",
+            "name": "Animal Fur"
+          },
+          {
             "id": "SZc2mYVhrmtOMSVm",
             "name": "Bite"
           },
@@ -20917,6 +21054,10 @@
           {
             "id": "0v5EYWSTa4pdAU8U",
             "name": "Pounce"
+          },
+          {
+            "id": "GB635ePiYtaBczld",
+            "name": "Warrior Seal"
           }
         ],
         "effects": 0
@@ -21650,12 +21791,56 @@
             "name": "(Empty)"
           },
           {
-            "id": "ptKCKyzCyrXgidkR",
-            "name": "Animal Fang"
+            "id": "X9puyEPw6tszEmZ9",
+            "name": "Blast Breath"
+          },
+          {
+            "id": "tS917pzU8Wapqkv9",
+            "name": "Charred Bone"
+          },
+          {
+            "id": "msdUrwq2F4LO3xy4",
+            "name": "Chomp"
+          },
+          {
+            "id": "nh7ztiCLe2CtYdu9",
+            "name": "Dead Branch"
+          },
+          {
+            "id": "u3oouZ93UHsyGpZd",
+            "name": "Flamethrower"
+          },
+          {
+            "id": "AK9s8WPheeGfYPn5",
+            "name": "Polymorph Potion: Inferex"
+          },
+          {
+            "id": "R2LF5ZqUDyRNT2pG",
+            "name": "Undead"
+          },
+          {
+            "id": "mPvukNO6W1XVqHxr",
+            "name": "Voracious"
+          }
+        ],
+        "effects": 0
+      },
+      {
+        "id": "5Z5xAaC7YVGRCDoL",
+        "name": "Inferex (Backup)",
+        "type": "character",
+        "items": [
+          {
+            "id": "YkxXYCZHlJdbztS5",
+            "name": "(Empty)"
           },
           {
             "id": "X9puyEPw6tszEmZ9",
             "name": "Blast Breath"
+          },
+          {
+            "id": "tS917pzU8Wapqkv9",
+            "name": "Charred Bone"
           },
           {
             "id": "msdUrwq2F4LO3xy4",
@@ -22995,8 +23180,24 @@
         "type": "character",
         "items": [
           {
+            "id": "VV108r9lpl6zwH6Q",
+            "name": "(Empty)"
+          },
+          {
+            "id": "a6t8Wue7XZXoa36E",
+            "name": "Apple Bomb"
+          },
+          {
             "id": "Y5gq49nVcmSPgyXi",
             "name": "Blazing Tether"
+          },
+          {
+            "id": "qWnoRGs8iEpFQuuX",
+            "name": "Ember Petal"
+          },
+          {
+            "id": "vIRpMy36tjGwus5f",
+            "name": "Flame Orb"
           },
           {
             "id": "ejw74ndyGDp1NoVn",
@@ -25007,6 +25208,14 @@
         "type": "character",
         "items": [
           {
+            "id": "1Mq7aU4ZcmTlHcnh",
+            "name": "(Empty)"
+          },
+          {
+            "id": "fg54rvzP6HP2s6gJ",
+            "name": "Frill"
+          },
+          {
             "id": "DTMAzmjNVVDT9JJZ",
             "name": "Heat Up"
           },
@@ -25015,8 +25224,20 @@
             "name": "Pyrophagy"
           },
           {
+            "id": "NwAqYJ4blm7tWXQu",
+            "name": "Salamander"
+          },
+          {
             "id": "XQ8GscSaeMyoOwSL",
             "name": "Salamander Breath"
+          },
+          {
+            "id": "ONBDXV8q0YuqAUmD",
+            "name": "Spicy Cocktail"
+          },
+          {
+            "id": "pDqIklWQKlWcJZzR",
+            "name": "Spicy Cocktail"
           },
           {
             "id": "umq39LQRh7HuQwNI",
