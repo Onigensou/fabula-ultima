@@ -3605,6 +3605,28 @@ async function applyAdjustGrantEffect(row, ctx) {
 // caster to read the restore parts from (ctx.reactorActor at apply, or a threaded
 // ctx.liveAttacker at preview), and a positive HP/MP restore. Without a caster
 // (e.g. a bare effect-table audit) it degrades to the raw formula amount.
+// Surface a value-bearing effect row whose AMOUNT field is missing — the other
+// half of the silent-0 trap. A misnamed/omitted amount (e.g. `grant_amonut`)
+// makes evaluateFormula fold to 0, so the row returns ok:true "zero-amount" and
+// silently does nothing. We can only tell "field omitted" (== null) from a
+// deliberate 0 at the read site, so the check lives beside each kind's read.
+// Deduped per (kind+label) so the per-render re-eval of card pills doesn't
+// flood. Warn-only — the fold-to-0 behavior is unchanged; this just makes the
+// typo / wrong-field-name visible instead of a no-op that reports success.
+const _MISSING_AMOUNT_WARNED = new Set();
+function warnMissingAmount(kind, row, fieldLabel, value) {
+  if (value != null && String(value).trim() !== "") return;
+  const label = row?.effect_label || "(unlabeled)";
+  const key = `${kind}:${label}`;
+  if (_MISSING_AMOUNT_WARNED.has(key)) return;
+  _MISSING_AMOUNT_WARNED.add(key);
+  warn(
+    `skill-effects.${kind}: row "${label}" has no amount (expected "${fieldLabel}") ` +
+    `→ evaluates to 0 and silently does nothing. Check for a typo or a field ` +
+    `name that doesn't belong to this effect_kind.`,
+  );
+}
+
 export function describeGrant(row, ctx = {}) {
   const resource = String(row.grant_resource ?? "").trim().toLowerCase();
   const targetRef = row.target_ref ?? null;
@@ -3616,6 +3638,7 @@ export function describeGrant(row, ctx = {}) {
   let amount = resolver != null
     ? evaluateFormula(row.grant_amount, resolver, 0)
     : _previewAmount(row.grant_amount, ctx);
+  warnMissingAmount("grant", row, "grant_amount", row.grant_amount);
   // Itemized restore-modifier parts (e.g. "Secret Formula: +20") — returned so the
   // heal headline's tooltip and the applied heal read ONE list. Positive HP/MP only.
   let restoreParts = [];
@@ -3744,6 +3767,7 @@ async function grantApply(row, ctx, { resource, targetRef, amount }) {
 // evaluated PER TARGET at apply (reads the victim's sheet), so describe carries
 // the formula; the preview chip shows _previewAmount of the same formula.
 function describeSetResource(row) {
+  warnMissingAmount("set_resource", row, "grant_amount/set_amount", row.grant_amount ?? row.set_amount);
   return {
     resource: String(row.grant_resource ?? row.set_resource ?? "").trim().toLowerCase(),
     amountFormula: row.grant_amount ?? row.set_amount,
@@ -4026,6 +4050,7 @@ function describeConsumeResource(row, ctx = {}) {
   const amount = resolver != null
     ? evaluateFormula(row.consume_amount ?? row.grant_amount, resolver, 0)
     : _previewAmount(row.consume_amount ?? row.grant_amount, ctx);
+  warnMissingAmount("consume_resource", row, "consume_amount/grant_amount", row.consume_amount ?? row.grant_amount);
   return { resource, targetRef, amount };
 }
 

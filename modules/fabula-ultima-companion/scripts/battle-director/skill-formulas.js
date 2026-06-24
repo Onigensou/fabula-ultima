@@ -222,6 +222,25 @@ const FUNCTIONS = {
   chance: (n) => (Math.random() * 100 < Number(n) ? 1 : 0),
 };
 
+// Surface unknown-identifier typos / wrong-evaluator mistakes instead of
+// silently folding them to 0 (the dual-evaluator "silent-0 trap": an
+// identifier that exists only in the BD evaluator returns 0 with no trace if
+// reused in a passive *_formula, and vice-versa). Deduped per identifier name
+// so the per-render re-eval of card pills doesn't flood the console. Mirrors
+// the warn the legacy oni.ReactionFormula evaluator already emits — the BD
+// side was the only one staying silent.
+const _UNKNOWN_IDENT_WARNED = new Set();
+function warnUnknownIdentifier(name) {
+  const key = String(name ?? "");
+  if (_UNKNOWN_IDENT_WARNED.has(key)) return;
+  _UNKNOWN_IDENT_WARNED.add(key);
+  console.warn(
+    `[skill-formulas] unknown identifier "${key}" → evaluated as 0. ` +
+    `Likely a typo, or an identifier that only exists in the other ` +
+    `(passive *_formula / reaction-system) evaluator.`,
+  );
+}
+
 function evalNode(node, resolver) {
   switch (node.kind) {
     case "num":   return node.value;
@@ -1174,6 +1193,7 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
           }
           return 0;
         }
+        warnUnknownIdentifier(name);
         return null;  // unknown → fold to 0 in evalNode
     }
   };
