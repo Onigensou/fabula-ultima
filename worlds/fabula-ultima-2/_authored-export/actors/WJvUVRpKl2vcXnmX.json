@@ -43,7 +43,14 @@
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
           },
-          "changes": [],
+          "changes": [
+            {
+              "key": "affinity_6",
+              "mode": 0,
+              "priority": 1,
+              "value": "VU"
+            }
+          ],
           "description": "<p>Gain <strong>Fire </strong>vulnerability</p>",
           "disabled": false,
           "duration": {
@@ -73,6 +80,12 @@
               "isDynamic": false,
               "isTemporary": false,
               "isViewable": true
+            },
+            "fabula-ultima-companion": {
+              "chargeKey": "oil",
+              "charges": 3,
+              "chargesMax": 3,
+              "lifetimeMode": "target_turn_end"
             },
             "statuscounter": {
               "config": {

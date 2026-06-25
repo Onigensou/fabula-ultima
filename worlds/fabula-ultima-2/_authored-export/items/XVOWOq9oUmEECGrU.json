@@ -754,9 +754,6 @@
           },
           "onEnable": {
             "script": "await TokenMagic.addUpdateFiltersOnSelected(\"Burns\");\nnew Sequence()\n  .sound(\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Condition_Burn.ogg\")\n  .volume(0.5)\n  .play()"
-          },
-          "onTurnStart": {
-            "script": "// === Burn DOT v2 (Effect Macro → On Combat Turn Starting) ==================\n// Deals % Max HP fire damage via your Advance Damage macro, *without* UI\n// targeting flicker (uses headless targetIds override).\n//\n// • Default: 10% of max HP\n// • Champion rank (NPC): 5%\n// • PCs (no rank field): 10%\n// • Element: \"fire\", Weapon type: \"none_ef\"\n//\n// Requires: AdvanceDamage patched to accept __PAYLOAD.targetIds when __AUTO=true.\n// Macro name below must match your macro exactly.\n// ===========================================================================\n\n(async () => {\n  const ADV_DMG_MACRO_NAME = \"AdvanceDamage\"; // <-- change if yours is named differently\n\n  // --- Guard: must be owner’s actual turn ----------------------------------\n  if (!actor || !game.combat) return;\n  const isOwnersTurn = game.combat?.combatant?.actor?.id === actor.id;\n  if (!isOwnersTurn) return;\n\n  // --- Resolve the correct token id for this actor on this turn ------------\n  function pickTokenIdForActor(a) {\n    // Prefer the current combatant token if it belongs to this actor\n    const ct = game.combat?.combatant;\n    if (ct?.actor?.id === a.id && ct.token?.id) return ct.token.id;\n\n    // Else use module helper `token` if provided\n    if (token?.id) return token.id;\n\n    // Else first active token on the viewed scene\n    const t = a.getActiveTokens()?.[0];\n    return t?.id ?? t?.document?.id ?? null;\n  }\n  const tokenId = pickTokenIdForActor(actor);\n  if (!tokenId) return ui.notifications.warn(\"[Burn] No active token for effect owner.\");\n\n  // --- Determine DOT percent from NPC rank ---------------------------------\n  // NPC sheet sample uses system.props.npc_rank with values like \"sol\",\"eli\",\"cha\"\n  const props = actor.system?.props ?? {};\n  const rank  = String(props.npc_rank ?? \"\").toLowerCase();\n  const percent = (rank === \"cha\") ? 5 : 10;  // PCs or missing rank → 10%\n\n  // --- Build headless payload for AdvanceDamage ----------------------------\n  const payload = {\n    // magnitude as a percent number (no % sign)\n    baseValue: String(percent),\n    valueType: \"hp\",\n    targetAffinity: \"percentMax\",   // make ADV compute % of target's max HP\n    elementType: \"fire\",\n    weaponType: \"none_ef\",\n    ignoreDamageReduction: false,\n    ignoreShield: false,\n\n    // nice-to-have context for your logs/cards\n    attackerName: \"Burn\",\n    attackRange: \"DOT\",\n    sourceType : \"Effect: Burn\",\n\n    // HEADLESS target override (prevents crosshair UI)\n    targetIds: [tokenId]\n  };\n\n  // --- Execute your universal damage macro ---------------------------------\n  const ADV = game.macros.getName(ADV_DMG_MACRO_NAME);\n  if (!ADV) return ui.notifications.error(`[Burn] Macro \"${ADV_DMG_MACRO_NAME}\" not found.`);\n\n  await ADV.execute({ __AUTO: true, __PAYLOAD: payload });\n})();\n"
           }
         },
         "fabula-ultima-companion": {
@@ -766,7 +763,7 @@
           "reactionConfig": {
             "effect_table": {
               "0": {
-                "damage_amount": "MAX_HP * 0.1",
+                "damage_amount": "ceil(MAX_HP * 0.1)",
                 "damage_element": "fire",
                 "damage_verbosity": "full",
                 "effect_kind": "deal_damage",
@@ -3317,6 +3314,12 @@
           "isDynamic": false,
           "isTemporary": false,
           "isViewable": true
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "oil",
+          "charges": 3,
+          "chargesMax": 3,
+          "lifetimeMode": "target_turn_end"
         },
         "statuscounter": {
           "config": {

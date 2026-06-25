@@ -10,17 +10,17 @@
   },
   "effects": [
     {
-      "_id": "8037eBwvd9RIyFex",
+      "_id": "73EOKayjM4tMBut2",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782377272282,
+        "createdTime": 1782394323640,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
       "changes": [],
-      "description": "<p>A reserve of foresight Hina spends to take the place of all creatures threatened by a single danger.</p>",
+      "description": "<p>This creature has less than 50% HP</p>",
       "disabled": false,
       "duration": {
         "combat": null,
@@ -34,26 +34,21 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "propheticPoint01",
-          "originalParentId": "Lmzs6VllFRo44jZq",
-          "originalUuid": "Item.Lmzs6VllFRo44jZq.ActiveEffect.propheticPoint01"
+          "isPredefined": true,
+          "originalId": "4ldx00srGNv5AJBr",
+          "originalParentId": "0gIBYzSpjdXS6f25",
+          "originalUuid": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-crisis",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": false
         },
         "fabula-ultima-companion": {
-          "category": "buff",
-          "chargeKey": "prophecy",
-          "charges": 4,
-          "chargesMax": 99,
-          "directorAppliedBy": {
-            "appliedAtRound": 0,
-            "effectLabel": "pds_gain",
-            "lifetimeMode": "persistent_counter",
-            "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.lCIoGqt9VFyLMSFT",
-            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.gm2w1NLdaEI7SzaQ",
-            "turnsRemaining": null
-          },
-          "directorPermanent": false,
-          "lifetimeMode": "persistent_counter"
+          "bdCrisis": true
         },
         "statuscounter": {
           "config": {
@@ -64,79 +59,16 @@
           "visible": false
         }
       },
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/nocturnal_sect.png",
-      "name": "Prophecy Point",
-      "origin": "Actor.dafTLBUscCDNgq8H.Item.gm2w1NLdaEI7SzaQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/08_DRG/blood_for_blood.png",
+      "name": "Crisis",
+      "origin": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr",
       "sort": 0,
       "statuses": [
-        "fud-prophecy-point"
+        "5jkr80zqdzaR003d"
       ],
-      "system": {},
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "iBMhBfcDS2U9t5B5",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1782360567252,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
+      "system": {
+        "tags": []
       },
-      "changes": [],
-      "description": "<p><em>Heart of Darkness:</em> armed for this scene.</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": null,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "TQINaXFTRwWZBJvx",
-          "originalParentId": "EGYilCNAGvl2BldF",
-          "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF.ActiveEffect.TQINaXFTRwWZBJvx"
-        },
-        "fabula-ultima-companion": {
-          "category": "buff",
-          "chargeKey": "hod_ready",
-          "charges": 1,
-          "chargesMax": 1,
-          "directorAppliedBy": {
-            "appliedAtRound": 0,
-            "effectLabel": "hod_refresh",
-            "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.lCIoGqt9VFyLMSFT",
-            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF",
-            "turnsRemaining": null
-          },
-          "directorPermanent": true
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "icons/magic/unholy/silhouette-evil-horned-giant.webp",
-      "name": "Heart of Darkness Ready",
-      "origin": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF",
-      "sort": 0,
-      "statuses": [
-        "fud-heart-of-darkness-ready"
-      ],
-      "system": {},
       "tint": "#ffffff",
       "transfer": false,
       "type": "base"
@@ -7466,9 +7398,9 @@
       "critical_damage_bonus": 0,
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
-      "current_hp": "107",
+      "current_hp": 52,
       "current_ip": "6",
-      "current_mp": "30",
+      "current_mp": 48,
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/hina_Cut-in002.png",
       "cut_in_fumble": "",

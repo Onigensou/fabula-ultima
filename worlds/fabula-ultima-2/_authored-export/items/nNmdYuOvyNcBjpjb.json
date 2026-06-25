@@ -233,6 +233,7 @@
         },
         "1": {
           "ae_duplicate_mode": "replace",
+          "ae_family": "",
           "ae_initial_charges": "",
           "ae_initial_charges_max": "",
           "ae_template_ref": "Guard",
@@ -246,6 +247,7 @@
         },
         "2": {
           "ae_duplicate_mode": "replace",
+          "ae_family": "",
           "ae_initial_charges": "",
           "ae_initial_charges_max": "",
           "ae_template_ref": "Covered",

@@ -219,7 +219,31 @@
           "defense_target_type": "def",
           "description": "<p><strong>Blaze ―　</strong>On <strong>hit, consumed 1 </strong><a class=\"content-link\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Burn</a>&nbsp;stack from the target and triggers its <a class=\"content-link\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Burn</a>&nbsp;effect</p>",
           "duration": "Instantaneous",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "chain_steps": "flameclaw_trigger_burn,flameclaw_consume_burn",
+              "effect_kind": "chain",
+              "effect_label": "flameclaw_blaze"
+            },
+            "1": {
+              "attacker_name": "Flame Claw",
+              "damage_amount": "ceil(MAX_HP * 0.1)",
+              "damage_cause": "damage",
+              "damage_element": "fire",
+              "damage_verbosity": "full",
+              "effect_kind": "deal_damage",
+              "effect_label": "flameclaw_trigger_burn",
+              "target_ref": "hit_action_targets"
+            },
+            "2": {
+              "charge_ae_name": "Burn",
+              "charge_amount": "1",
+              "charge_operation": "subtract",
+              "effect_kind": "adjust_charges",
+              "effect_label": "flameclaw_consume_burn",
+              "target_ref": "hit_action_targets"
+            }
+          },
           "heroic_requirement": "",
           "ignore_hr": false,
           "isCheck": true,
@@ -233,7 +257,16 @@
           "name": "Flame Claw",
           "on_activate_effect_ref": "",
           "optional_params": {},
-          "reaction_config_table": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "TRIGGER_IS_SELF == 1 && TARGET_AE_CHARGES_BURN >= 1",
+              "reaction_effect_ref": "flameclaw_blaze",
+              "reaction_passive_mode": "on",
+              "reaction_source": "self",
+              "reaction_source_skill": "Flame Claw",
+              "reaction_trigger": "creature_deals_damage"
+            }
+          },
           "rolled_atr1": "DEX",
           "rolled_atr2": "MIG",
           "skill_animation_default": "",
@@ -357,7 +390,16 @@
           "defense_target_type": "def",
           "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Overflow</a></p></li></ul><p>Deal <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\">Fire</a>&nbsp;damage to all creature, <strong>Double all </strong><a class=\"content-link\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Burn</a>&nbsp;stack on each target</p>",
           "duration": "Instantaneous",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "charge_ae_name": "Burn",
+              "charge_amount": "2",
+              "charge_operation": "multiply",
+              "effect_kind": "adjust_charges",
+              "effect_label": "overblaze_double_burn",
+              "target_ref": "action_targets"
+            }
+          },
           "heroic_requirement": "",
           "ignore_hr": false,
           "isCheck": false,
@@ -369,7 +411,7 @@
           "level": "1",
           "max_level": "1",
           "name": "Overblaze",
-          "on_activate_effect_ref": "",
+          "on_activate_effect_ref": "overblaze_double_burn",
           "optional_params": {},
           "reaction_config_table": {},
           "rolled_atr1": "-",
@@ -426,7 +468,16 @@
           "defense_target_type": "mdef",
           "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Multi</a>&nbsp;<strong>3</strong></p></li></ul><p>On <strong>hit, </strong>inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Burn</a>&nbsp;to the target, if the target is already inflicted with <a class=\"content-link\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Burn</a>&nbsp;increase their stack by 3 instead</p>",
           "duration": "Instantaneous",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "add_charges",
+              "ae_initial_charges": "3",
+              "ae_template_ref": "Burn",
+              "effect_kind": "apply_ae",
+              "effect_label": "apply_burn",
+              "target_ref": "hit_action_targets"
+            }
+          },
           "heroic_requirement": "",
           "ignore_hr": false,
           "isCheck": true,
@@ -440,7 +491,16 @@
           "name": "Flamethrower",
           "on_activate_effect_ref": "",
           "optional_params": {},
-          "reaction_config_table": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "TRIGGER_IS_SELF == 1",
+              "reaction_effect_ref": "apply_burn",
+              "reaction_passive_mode": "on",
+              "reaction_source": "self",
+              "reaction_source_skill": "Flamethrower",
+              "reaction_trigger": "creature_deals_damage"
+            }
+          },
           "rolled_atr1": "DEX",
           "rolled_atr2": "INS",
           "skill_animation_default": "",
@@ -495,7 +555,15 @@
           "defense_target_type": "mdef",
           "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Multi</a>&nbsp;<strong>2</strong></p></li></ul><p>On hit, inflict <a class=\"content-link\" data-uuid=\"JournalEntry.Vnd1QB9lYQMYvIDF\" data-id=\"Vnd1QB9lYQMYvIDF\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Oil</a>&nbsp;to the target</p>",
           "duration": "Instantaneous",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Oil",
+              "effect_kind": "apply_ae",
+              "effect_label": "apply_oil",
+              "target_ref": "hit_action_targets"
+            }
+          },
           "heroic_requirement": "",
           "ignore_hr": false,
           "isCheck": true,
@@ -509,7 +577,16 @@
           "name": "Spitblaze",
           "on_activate_effect_ref": "",
           "optional_params": {},
-          "reaction_config_table": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "TRIGGER_IS_SELF == 1",
+              "reaction_effect_ref": "apply_oil",
+              "reaction_passive_mode": "on",
+              "reaction_source": "self",
+              "reaction_source_skill": "Spitblaze",
+              "reaction_trigger": "creature_deals_damage"
+            }
+          },
           "rolled_atr1": "DEX",
           "rolled_atr2": "INS",
           "skill_animation_default": "",
@@ -564,7 +641,45 @@
           "defense_target_type": "def",
           "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.UqXGUQM31kWc7BTc\" data-id=\"UqXGUQM31kWc7BTc\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Unleash</a></p></li></ul><p>At the start of conflict, all enemy roll a <strong>DL 13 【DEX】+【MIG】check, </strong>on a <strong>failure, </strong>they take <strong>30 </strong><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(226, 88, 34) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span>damage and suffers <a class=\"content-link\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Burn</a></p>",
           "duration": "-",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "chain_steps": "explosive_save,explosive_damage,explosive_burn",
+              "effect_kind": "chain",
+              "effect_label": "explosive_unleash"
+            },
+            "1": {
+              "action_ref": "self",
+              "chain": false,
+              "effect_kind": "free_action",
+              "effect_label": "explosive_autocast"
+            },
+            "2": {
+              "effect_kind": "save_check",
+              "effect_label": "explosive_save",
+              "save_attr1": "dex",
+              "save_attr2": "mig",
+              "save_dl": "13",
+              "target_ref": "action_targets"
+            },
+            "3": {
+              "attacker_name": "Explosive Entrance",
+              "damage_amount": "30",
+              "damage_cause": "damage",
+              "damage_element": "fire",
+              "damage_verbosity": "full",
+              "effect_kind": "deal_damage",
+              "effect_label": "explosive_damage",
+              "target_ref": "save_failed_targets"
+            },
+            "4": {
+              "ae_duplicate_mode": "add_charges",
+              "ae_initial_charges": "3",
+              "ae_template_ref": "Burn",
+              "effect_kind": "apply_ae",
+              "effect_label": "explosive_burn",
+              "target_ref": "save_failed_targets"
+            }
+          },
           "heroic_requirement": "",
           "ignore_hr": false,
           "isCheck": false,
@@ -576,16 +691,23 @@
           "level": "1",
           "max_level": "1",
           "name": "Explosive Entrance",
-          "on_activate_effect_ref": "",
+          "on_activate_effect_ref": "explosive_unleash",
           "optional_params": {},
-          "reaction_config_table": {},
+          "reaction_config_table": {
+            "0": {
+              "reaction_effect_ref": "explosive_autocast",
+              "reaction_passive_mode": "force",
+              "reaction_source": "",
+              "reaction_trigger": "conflict_start"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
           "skill_animation_mode": "default",
           "skill_information": "",
           "skill_range": "",
-          "skill_target": "-",
+          "skill_target": "All Enemy",
           "skill_type": "Passive",
           "type_damage": "",
           "use_optional_params": false
@@ -633,7 +755,31 @@
           "defense_target_type": "def",
           "description": "<p>At the beginning of each <strong>round, </strong>inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Burn</a>&nbsp;to all creature&nbsp;or increase their <a class=\"content-link\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Burn</a>&nbsp;stack by <strong>3 </strong>if they're already inflicted with Burn</p><p>The <strong>Wandering Flame </strong>gain <strong>+5 bonus damage</strong> to all action for each <a class=\"content-link\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Burn</a>&nbsp;stack it has</p>",
           "duration": "-",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "candidate_source": "combat",
+              "effect_kind": "targeting",
+              "effect_label": "rising_targets",
+              "exclude_self": false,
+              "mode": "all",
+              "skip_when_passive": true
+            },
+            "1": {
+              "ae_duplicate_mode": "add_charges",
+              "ae_initial_charges": "3",
+              "ae_template_ref": "Burn",
+              "effect_kind": "apply_ae",
+              "effect_label": "rising_apply_burn",
+              "target_ref": "rising_targets"
+            },
+            "2": {
+              "damage_amount": "AE_CHARGES_BURN * 5",
+              "damage_operation": "add",
+              "damage_stage": "outgoing",
+              "effect_kind": "adjust_damage",
+              "effect_label": "rising_self_bonus"
+            }
+          },
           "heroic_requirement": "",
           "ignore_hr": false,
           "isCheck": false,
@@ -647,7 +793,20 @@
           "name": "Rising Fire",
           "on_activate_effect_ref": "",
           "optional_params": {},
-          "reaction_config_table": {},
+          "reaction_config_table": {
+            "0": {
+              "reaction_effect_ref": "rising_apply_burn",
+              "reaction_passive_mode": "force",
+              "reaction_source": "",
+              "reaction_trigger": "round_start"
+            },
+            "1": {
+              "reaction_effect_ref": "rising_self_bonus",
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_will_deal_damage"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",

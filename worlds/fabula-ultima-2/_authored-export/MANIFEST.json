@@ -16397,11 +16397,160 @@
         "effects": 0
       },
       {
-        "id": "BRVLt8eUwQBFb2p2",
-        "name": "BD Dummy Enemy",
+        "id": "cKyz6P2cJx5JVEtr",
+        "name": "BD Test — Guardian",
         "type": "character",
-        "items": [],
-        "effects": 1
+        "items": [
+          {
+            "id": "ZNljOmQphOcdlPwN",
+            "name": "Bodyguard"
+          },
+          {
+            "id": "pNYGens9nZ8r3mm3",
+            "name": "Broadaxe"
+          },
+          {
+            "id": "3mddjAlShKst4Y4x",
+            "name": "Bronze Shield"
+          },
+          {
+            "id": "rPFLPJi33mDrHf67",
+            "name": "Bronze Sword"
+          },
+          {
+            "id": "IMuN1gorA0H2XTip",
+            "name": "Chain Whip"
+          },
+          {
+            "id": "H0p7jQg9E4fOK8ba",
+            "name": "Crossbow"
+          },
+          {
+            "id": "CaFP2Mv2xn2emA9c",
+            "name": "Defensive Mastery"
+          },
+          {
+            "id": "O5B1CHqLpNvRb5Ur",
+            "name": "Dual Shieldbearer"
+          },
+          {
+            "id": "jy9cG8RJvtj0MuWI",
+            "name": "Fortress"
+          },
+          {
+            "id": "0QpLyZH5NgAej4u5",
+            "name": "Greatsword"
+          },
+          {
+            "id": "DfrWPjJELJdKQW7J",
+            "name": "Heavy Spear"
+          },
+          {
+            "id": "70gfIyaOmrk70ZBg",
+            "name": "Hoplite"
+          },
+          {
+            "id": "rhE4fPm0ifOyEHru",
+            "name": "Improvised (Melee)"
+          },
+          {
+            "id": "SlZ7vhBdE2Vv6V96",
+            "name": "Improvised (Ranged)"
+          },
+          {
+            "id": "qXcqTRyicUnFbIq1",
+            "name": "Iron Hammer"
+          },
+          {
+            "id": "Sy8DIYuyA23gygWU",
+            "name": "Iron Knuckle"
+          },
+          {
+            "id": "I2Nnsmu9CwO3gXHc",
+            "name": "Katana"
+          },
+          {
+            "id": "2tdL2Ro0ONoVsNrP",
+            "name": "Light Spear"
+          },
+          {
+            "id": "xgLgvTy4OoOmxO2Q",
+            "name": "Longsword"
+          },
+          {
+            "id": "5Ft0GJQRrEy9yp7w",
+            "name": "Magicannon"
+          },
+          {
+            "id": "P3KDs5Bsu1jKtVrs",
+            "name": "Pistol"
+          },
+          {
+            "id": "UcmHloCttjQVOEAH",
+            "name": "Prophetic Defender"
+          },
+          {
+            "id": "QoREaIpKOjgHkLim",
+            "name": "Protect"
+          },
+          {
+            "id": "2jv6P9fO9nIh3r9V",
+            "name": "Quaking Titan"
+          },
+          {
+            "id": "I8HXaTtzTXGBxkoP",
+            "name": "Rampart"
+          },
+          {
+            "id": "BmE9CD9dKBmvzO1e",
+            "name": "Rapier"
+          },
+          {
+            "id": "ye951TDHxtEyk8jB",
+            "name": "Runic Shield"
+          },
+          {
+            "id": "b0SGfVPyR8y8cqFo",
+            "name": "Shortbow"
+          },
+          {
+            "id": "XwuKsc09WQFhBeJ3",
+            "name": "Shuriken"
+          },
+          {
+            "id": "ZMPVAuc4Fjz9Wl5g",
+            "name": "Staff"
+          },
+          {
+            "id": "CwFOZXUGuTPCW31p",
+            "name": "Steel Dagger"
+          },
+          {
+            "id": "AOh9EtuOslFF3bjQ",
+            "name": "Tome"
+          },
+          {
+            "id": "u7o0G7hYpirNwzI2",
+            "name": "Twin Runic Shield"
+          },
+          {
+            "id": "myRflhMB8nt2KchO",
+            "name": "Twin Shield"
+          },
+          {
+            "id": "zMyiZVaPLczshfxk",
+            "name": "Unarmed Strike"
+          },
+          {
+            "id": "qGr0wJFAWih1boqd",
+            "name": "Unbreakable"
+          },
+          {
+            "id": "TyLlxam4LurhRGFq",
+            "name": "Waraxe"
+          }
+        ],
+        "effects": 4
       },
       {
         "id": "2U5MthxrDRMofSGl",
@@ -21343,7 +21492,7 @@
             "name": "Zero Trigger: Foresight"
           }
         ],
-        "effects": 2
+        "effects": 1
       },
       {
         "id": "tzXbVfDYPgvu5wml",

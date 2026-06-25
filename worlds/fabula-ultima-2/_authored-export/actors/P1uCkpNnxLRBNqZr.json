@@ -1027,7 +1027,7 @@
               "active_effect_dice_1": "wlp",
               "active_effect_dice_2": "mig",
               "active_effect_dl": "15",
-              "active_effect_id": "952hVVfrHOoUaVhg",
+              "active_effect_id": "",
               "active_effect_percent": "0",
               "active_effect_target": "enemy",
               "active_effect_trigger": "on_attack"
@@ -1039,7 +1039,7 @@
               "active_effect_dice_1": "wlp",
               "active_effect_dice_2": "mig",
               "active_effect_dl": "15",
-              "active_effect_id": "NitHvCFQ3b6vRdyY",
+              "active_effect_id": "",
               "active_effect_percent": "0",
               "active_effect_target": "enemy",
               "active_effect_trigger": "on_attack"
@@ -1051,7 +1051,7 @@
               "active_effect_dice_1": "wlp",
               "active_effect_dice_2": "mig",
               "active_effect_dl": "15",
-              "active_effect_id": "tLyHR6RhLcpb7U1R",
+              "active_effect_id": "",
               "active_effect_percent": "0",
               "active_effect_target": "enemy",
               "active_effect_trigger": "on_attack"
@@ -1066,65 +1066,114 @@
           "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.UqXGUQM31kWc7BTc\" data-id=\"UqXGUQM31kWc7BTc\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Unleash</span></strong></a></span></span></p></li></ul><p>All enemy roll a <strong>DL 15 【MIG】+【WLP】</strong>Check, on a failure, they suffers <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.TOF8epes1eGHwx5J\" data-id=\"TOF8epes1eGHwx5J\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Frightened</span></strong></a><strong><span style=\"text-decoration: underline;\">, </span></strong><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GqqgHkKOs0hkghdG\" data-id=\"GqqgHkKOs0hkghdG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Paralyzed</span></strong></a></span></span> and<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><strong><span style=\"text-decoration: underline;\"> </span></strong><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Q8FTFPsXVpNj2zxT\" data-id=\"Q8FTFPsXVpNj2zxT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Silence</span></strong></a></span></span>&nbsp;</p>",
+          "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
               "chain_steps": "dd_save,dd_frightened,dd_paralyzed,dd_silence",
+              "consume_self": false,
               "effect_kind": "chain",
-              "effect_label": "dd_unleash"
+              "effect_label": "dd_unleash",
+              "from_resource": "",
+              "menu_label": "",
+              "to_resource": ""
             },
             "1": {
               "ae_duplicate_mode": "replace",
+              "ae_initial_charges": "",
+              "ae_initial_charges_max": "",
               "ae_template_ref": "Frightened",
+              "consume_self": false,
               "effect_kind": "apply_ae",
               "effect_label": "dd_frightened",
-              "target_ref": "save_failed_targets"
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "save_failed_targets",
+              "to_resource": ""
             },
             "2": {
               "ae_duplicate_mode": "replace",
+              "ae_initial_charges": "",
+              "ae_initial_charges_max": "",
               "ae_template_ref": "Paralyzed",
+              "consume_self": false,
               "effect_kind": "apply_ae",
               "effect_label": "dd_paralyzed",
-              "target_ref": "save_failed_targets"
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "save_failed_targets",
+              "to_resource": ""
             },
             "3": {
               "ae_duplicate_mode": "replace",
+              "ae_initial_charges": "",
+              "ae_initial_charges_max": "",
               "ae_template_ref": "Silence",
+              "consume_self": false,
               "effect_kind": "apply_ae",
               "effect_label": "dd_silence",
-              "target_ref": "save_failed_targets"
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "save_failed_targets",
+              "to_resource": ""
             },
             "4": {
               "action_ref": "self",
+              "chain": false,
+              "consume_self": false,
               "effect_kind": "free_action",
-              "effect_label": "dd_autocast"
+              "effect_label": "dd_autocast",
+              "from_resource": "",
+              "menu_label": "",
+              "to_resource": ""
             },
             "5": {
+              "consume_self": false,
               "effect_kind": "save_check",
               "effect_label": "dd_save",
+              "from_resource": "",
+              "menu_label": "",
               "save_attr1": "mig",
               "save_attr2": "wlp",
               "save_dl": "15",
-              "target_ref": "action_targets"
+              "save_mode": "",
+              "target_ref": "action_targets",
+              "to_resource": ""
             }
           },
+          "gadget_alchemy_tier": "",
+          "gadget_infusion_tier": "",
+          "gadget_magitech_tier": "",
           "heroic_requirement": "",
+          "id": "PTmYIP52JtFcOHua",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/dreadwyrm_trance.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
           "isReaction": false,
+          "isZeroPower": false,
           "level": "1",
           "max_level": "1",
           "name": "Dreadwyrm Descent",
           "on_activate_effect_ref": "dd_unleash",
           "optional_params": {},
+          "pre_activate_effect_ref": "",
           "reaction_config_table": {
             "0": {
+              "condition_formula": "",
+              "reaction_action_kind": "",
+              "reaction_cause_filter": "",
               "reaction_effect_ref": "dd_autocast",
               "reaction_passive_mode": "force",
+              "reaction_resource_filter": "",
+              "reaction_responder": "",
               "reaction_source": "",
-              "reaction_trigger": "conflict_start"
+              "reaction_source_skill": "",
+              "reaction_status_filter": "",
+              "reaction_trigger": "conflict_start",
+              "requires_skill": ""
             }
           },
           "rolled_atr1": "-",
@@ -1135,8 +1184,10 @@
           "skill_range": "Any",
           "skill_target": "All Enemy",
           "skill_type": "Passive",
+          "target_eligibility": "",
           "type_damage": "",
-          "use_optional_params": false
+          "use_optional_params": false,
+          "uuid": "Actor.P1uCkpNnxLRBNqZr.Item.PTmYIP52JtFcOHua"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
