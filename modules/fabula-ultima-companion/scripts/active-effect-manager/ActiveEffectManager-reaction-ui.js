@@ -64,6 +64,7 @@
     "replace_per_caster", "skip_per_caster", "remove_per_caster",
   ];
   const ON_EMPTY_OPTIONS         = ["abort", "skip"];
+  const DAMAGE_CAUSE_OPTIONS     = ["", "hazard", "damage"];
   const TARGET_SELECT_OPTIONS    = ["first"];
   // Single 4-state firing mode (reaction_isPassive retired 2026-06-07).
   const REACTION_PASSIVE_MODE_OPTIONS = ["ask", "on", "off", "force"];
@@ -214,9 +215,18 @@
     try { return (window["oni.ReactionTriggers"]?.filtersFor?.(key) ?? []).includes(filter); }
     catch (_) { return false; }
   }
+  // effect_kinds the BD director engine (skill-effects.js) handles in
+  // effect_table but the legacy reaction-grant.js dispatcher (the source of
+  // `oni.ReactionEffectKinds`) does NOT — so they're absent from that registry.
+  // Union them here so AEs that route through the BD path (e.g. Burn's
+  // turn_start force `deal_damage` tick) render + edit their kind correctly
+  // instead of silently falling back to the first dropdown entry.
+  const EDITOR_EXTRA_EFFECT_KINDS = Object.freeze(["deal_damage"]);
   function listEffectKinds() {
-    try { return window["oni.ReactionEffectKinds"]?.list?.() ?? ["grant"]; }
-    catch (_) { return ["grant"]; }
+    let base;
+    try { base = window["oni.ReactionEffectKinds"]?.list?.() ?? ["grant"]; }
+    catch (_) { base = ["grant"]; }
+    return [...base, ...EDITOR_EXTRA_EFFECT_KINDS.filter(k => !base.includes(k))];
   }
 
   // ---------------------------------------------------------------------------
@@ -232,6 +242,10 @@
     open_action_menu: ["allowed_types", "free_mode", "free_hr_as_zero", "max_mp_cost"],
     // Unified damage adjustment (replaced add_damage + modify_damage_taken).
     adjust_damage:    ["damage_operation", "damage_amount", "damage_stage"],
+    // Direct damage (BD engine). damage_amount is a FORMULA (e.g. "MAX_HP * 0.1"),
+    // resolved per-victim. damage_cause defaults to "hazard" when blank (DoT ticks
+    // like Burn); set "damage" to count as attacker-inflicted.
+    deal_damage:      ["damage_element", "damage_amount", "target_ref", "damage_cause"],
   });
 
   function effectKindFields(kind) {
@@ -381,6 +395,11 @@
 
         ${formRow("Chain Steps", inputHtml("chain_steps", row.chain_steps ?? "", { placeholder: "label1, label2, label3" }), "chain_steps", "Comma-separated effect_labels")}
 
+        ${formRow("Damage Element", selectHtml("damage_element", row.damage_element ?? "", DAMAGE_TYPE_OPTIONS, { includeBlank: true, labelForBlank: "(none)" }), "damage_element")}
+        ${formRow("Damage Amount", inputHtml("damage_amount", row.damage_amount ?? "", { placeholder: "formula — e.g. MAX_HP * 0.1" }), "damage_amount", "Formula resolved per victim (MAX_HP/CUR_HP = the target's).")}
+        ${formRow("Damage Target", inputHtml("target_ref", row.target_ref ?? "self", { placeholder: "self / hit_action_targets / action_targets" }), "target_ref")}
+        ${formRow("Damage Cause", selectHtml("damage_cause", row.damage_cause ?? "", DAMAGE_CAUSE_OPTIONS, { labels: { "": "(default: hazard)", "hazard": "Hazard (DoT/environment)", "damage": "Damage (attacker-inflicted)" } }), "damage_cause")}
+
         ${formRow("Allowed Action Types", inputHtml("allowed_types", row.allowed_types ?? "", { placeholder: "Attack,Spell" }), "allowed_types", "Comma-separated TurnUI labels")}
         ${formRow("Free Mode", checkboxHtml("free_mode", !!row.free_mode), "free_mode")}
         ${formRow("Free: HR as 0", checkboxHtml("free_hr_as_zero", !!row.free_hr_as_zero), "free_hr_as_zero", "Granted free attack treats High Roll as 0 for damage (Hawkeye option b).")}
@@ -431,7 +450,8 @@
       "charge_key", "on_empty", "count",
       "target_select", "rebuild_card",
       "chain_steps",
-      "allowed_types", "free_mode", "free_hr_as_zero", "max_mp_cost"
+      "allowed_types", "free_mode", "free_hr_as_zero", "max_mp_cost",
+      "damage_element", "damage_amount", "target_ref", "damage_cause"
     ]);
     for (const f of allFields) {
       const cell = rowEl.querySelector(`[data-row-field="${f}"]`);
