@@ -222,7 +222,14 @@ async function resolveTargetingRow(row, ctx) {
   const autoMode = _at === true ? "skip" : _at === false ? "confirm"
     : String(_at ?? "confirm").trim().toLowerCase();
   const isGM = !!game.user?.isGM;
-  const autoTarget = autoMode === "skip" ? true
+  // A caller may suppress the locked-confirm for ASSURED sets via
+  // ctx._skipTargetConfirm. applyEffectRow sets it for every consequence effect
+  // kind (everything except `targeting` / `add_target`), so an effect lands on its
+  // already-decided target (self / cover ally / action targets) without a
+  // redundant second acknowledgement post-card. This only affects the assured
+  // path; a genuine multi-candidate PICK (pool > count) still prompts below.
+  const autoTarget = ctx?._skipTargetConfirm ? true
+    : autoMode === "skip" ? true
     : autoMode === "auto" ? isGM
     : false;   // "confirm" (and the absent default) → always locked-confirm
 

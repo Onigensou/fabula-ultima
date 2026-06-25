@@ -3301,6 +3301,12 @@ export { EFFECT_KIND_PREVIEW };
 // always skip a row whose dispatch is a data-only no-op anyway.
 const DISPATCH_CONDITION_EXEMPT_KINDS = new Set(["apply_action_keyword"]);
 
+// The only effect kinds permitted to surface targeting-SELECTION UI: the
+// targeting picker itself, and add_target (Barrage's "pick an extra enemy").
+// Every other kind resolves its target_ref as a silent consequence — see the
+// _skipTargetConfirm gate in applyEffectRow + resolveTargetingRow.
+const OWNS_TARGETING_UI = new Set(["targeting", "add_target"]);
+
 export async function applyEffectRow(row, ctx) {
   if (!row) return { ok: false, reason: "no-row" };
   const kind = String(row.effect_kind ?? "").trim().toLowerCase();
@@ -3346,7 +3352,19 @@ export async function applyEffectRow(row, ctx) {
     }
   }
 
-  return runEffectKind(kind, row, ctx, "apply");
+  // Suppress the redundant targeting CONFIRMATION overlay for consequence
+  // effects. A consequence (apply_ae / deal_damage / adjust_charges / grant /
+  // save_check / …) resolves its `target_ref` inline; for an ASSURED set (self /
+  // cover ally / the action's targets) the engine already knows the target, so a
+  // locked-confirm at RESOLVE is pure noise. resolveTargetingRow reads this flag
+  // and skips the confirm for assured sets only — a genuine multi-candidate PICK
+  // (pool > count) still prompts. EXCLUDED: the two kinds that legitimately own
+  // targeting UI — `targeting` (the picker itself) and `add_target` (Barrage's
+  // "pick an extra enemy"). Restored in finally so nested dispatch is unaffected.
+  const _prevSkipConfirm = ctx._skipTargetConfirm;
+  ctx._skipTargetConfirm = !OWNS_TARGETING_UI.has(kind);
+  try { return await runEffectKind(kind, row, ctx, "apply"); }
+  finally { ctx._skipTargetConfirm = _prevSkipConfirm; }
 }
 
 // Fire the skill's `on_activate_effect_ref` hook — runs after the skill
