@@ -408,6 +408,9 @@ async function stop({ reason = "manual", clearFlags = true, cleanupTokens = true
     warn("LegacySuppressor.restore threw", e);
   }
   _instance = null;
+  // Drop the ambient active-dCombat global (MP_SPENT_THIS_TURN reads it) — the
+  // combat is over, so any later formula eval correctly sees 0 spent.
+  try { if (globalThis.__fudActiveDCombat) globalThis.__fudActiveDCombat = null; } catch { /* sandbox */ }
   // Clear any persisted director-state flag — the combat is over, no
   // resume is possible. Defensive `clearAll` (not scoped to the battle
   // scene) so that any orphaned flag from an earlier crash is also
@@ -445,6 +448,11 @@ async function resumeFromSavedState({ scene, state, animateBanner = true }) {
   // Reconstruct dCombat from the saved snapshot. Token UUIDs are
   // re-resolved; missing combatants are dropped with a warning toast.
   const dCombat = await reconstructDirectorCombat(state, scene);
+  // Mirror the reconstructed combat into the ambient active-dCombat global so
+  // MP_SPENT_THIS_TURN (Bimagus) resolves after a reload-resume too. The
+  // per-turn tally itself is not serialized (resets on reload — documented),
+  // but new spends this session must read the live instance.
+  if (dCombat) { try { globalThis.__fudActiveDCombat = dCombat; } catch { /* sandbox */ } }
   if (!dCombat) {
     warn("resume: reconstruction failed (no combatants survived)");
     await clearDirectorStateFlag(scene);

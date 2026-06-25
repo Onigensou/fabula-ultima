@@ -4124,6 +4124,15 @@ async function consumeResourceApply(row, ctx, { resource, targetRef, amount }) {
       // a debit; the VFX shows its magnitude as `−N`.
       const spent = Math.abs(result.applied);
       if (spent > 0) fireResourceSpendVfx({ tokenUuid: token.uuid, resource, amount: spent });
+      // Bimagus — when this MP debit is part of a SPELL action (e.g. Cataclysm
+      // raising the spell's cost at the damage window), count it toward the
+      // payer's per-turn spell-MP tally so MP_SPENT_THIS_TURN includes it.
+      // Gated on the originating action being a spell (actionSkillType stamp).
+      if (resource === "mp" && spent > 0
+          && String(ctx?.payload?.actionSkillType ?? "").toLowerCase() === "spell"
+          && ctx?.dCombat && actor?.id) {
+        ctx.dCombat.addSpellMpSpent(actor.id, spent);
+      }
     }
   }
   log(`skill-effects.consume_resource: row "${row.effect_label}" debited ${amount} ${resource} from ${applied.length} actor(s)`);
@@ -5780,8 +5789,21 @@ async function applyFreeActionEffect(row, ctx) {
   const checkBonus  = evaluateFormula(row.check_bonus_formula  ?? "", resolver, 0) || 0;
   const damageBonus = evaluateFormula(row.damage_bonus_formula ?? "", resolver, 0) || 0;
   const hrAsZero = row.free_hr_as_zero === true || String(row.free_hr_as_zero ?? "").toLowerCase() === "true";
+  // max_mp_cost is a FORMULA (Bimagus #1: "20 + MP_SPENT_THIS_TURN"; Bimagus #2:
+  // "AE_CHARGES_BIMAGUS" — the half-of-first cap stashed in the AE charge). A
+  // bare number still parses (a constant evaluates to itself). Empty = no cap;
+  // a parse failure also degrades to no cap. Floored at 0.
   const mpRaw = String(row.max_mp_cost ?? "").trim();
-  const maxMpCost = mpRaw === "" ? null : (Number.isFinite(Number(mpRaw)) ? Number(mpRaw) : null);
+  let maxMpCost = null;
+  if (mpRaw !== "") {
+    const evald = Number(evaluateFormula(mpRaw, resolver, NaN));
+    maxMpCost = Number.isFinite(evald) ? Math.max(0, Math.floor(evald)) : null;
+  }
+  // free_of_cost — the granted action pays NO resource cost (RAW Bimagus:
+  // "perform Spell action FREE … spells cost no MP"). Threaded onto the grant;
+  // the Skill/Spell RESOLVE branch passes skipCost when it's set. The
+  // max_mp_cost cap still gates WHICH spell is eligible (by printed cost).
+  const freeOfCost = row.free_of_cost === true || String(row.free_of_cost ?? "").trim().toLowerCase() === "true";
 
   // Optional locked targets.
   let presetTargetTokenUuids = null;
@@ -5849,7 +5871,7 @@ async function applyFreeActionEffect(row, ctx) {
     reactorActorId:   reactor.id,
     reactorActorUuid: reactor.uuid,
     reactorTokenUuid: ctx.reactorToken?.uuid ?? null,
-    enabledLabels, checkBonus, damageBonus, hrAsZero,
+    enabledLabels, checkBonus, damageBonus, hrAsZero, freeOfCost,
     sourceLabel,
     sourceItemUuid: ctx.skill?.uuid ?? null,
     maxMpCost,

@@ -1299,6 +1299,52 @@ export function applyAttackRangeGate(eligible, weapon) {
   return out;
 }
 
+// Apply the Study guard to an eligible-targets array, preserving the
+// `excluded` side-channel that target-picker reads to render the
+// "🚫 <reason>" overlay (same path as Vanish / Provoked).
+//
+// `studiedTokenUuids` is the set of target tokens the studier has already
+// Studied this fight (DirectorCombat.studiedTokensFor). Each matching target
+// MOVES from the selectable pool into `.excluded` with the reason
+// "Already studied" — so the token stays VISIBLE in the picker but greyed +
+// labeled, exactly like a Provoked target, rather than vanishing. RAW Core
+// p.74: "you can study the same aspect of a creature only once."
+//
+// IMPORTANT: like applyAttackRangeGate, this exists because
+// Array.prototype.filter() returns a fresh array WITHOUT custom properties —
+// inlining a filter at the call site would silently drop `.excluded`. Both
+// the GM-side Study TARGET branch and the player-side composeStudy route
+// through this one helper so the overlay contract holds uniformly.
+export function applyStudyGuardExclusion(eligible, studiedTokenUuids) {
+  if (!Array.isArray(eligible)) return eligible;
+  const studied = new Set(Array.isArray(studiedTokenUuids) ? studiedTokenUuids : []);
+  if (!studied.size) return eligible;   // nothing studied yet → untouched
+  const out = [];
+  const newlyExcluded = [];
+  for (const e of eligible) {
+    if (studied.has(e.tokenUuid)) {
+      newlyExcluded.push(Object.freeze({
+        combatantId: e.combatantId,
+        tokenId: e.tokenId,
+        tokenUuid: e.tokenUuid,
+        actorId: e.actorId,
+        actorUuid: e.actorUuid,
+        name: e.name,
+        tokenImg: e.tokenImg,
+        disposition: e.disposition,
+        reasons: Object.freeze(["Already studied"]),
+      }));
+    } else {
+      out.push(e);
+    }
+  }
+  // Union with any existing AE-driven exclusions (Vanish / Provoked). Both
+  // groups render identically — the overlay code doesn't care WHY.
+  const priorExcluded = Array.isArray(eligible.excluded) ? eligible.excluded : [];
+  out.excluded = Object.freeze([...priorExcluded, ...newlyExcluded]);
+  return out;
+}
+
 // Snapshot eligible targets for a given action category.
 // `category`: "any" | "ally" | "enemy" | "self".
 // For the prototype we keep this simple — token UUIDs + name + disposition.

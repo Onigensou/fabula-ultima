@@ -195,6 +195,70 @@ export class DirectorCombat {
     //     appliedAtRound:   number,
     //   }
     this.activeGuards = [];
+
+    // Study guard (RAW Core p.74: "you can study the same aspect of a creature
+    // only once"). Tracks which target TOKENS each studier ACTOR has
+    // successfully (non-fumbled) Studied this fight, so a second Study by the
+    // same person on the same enemy token is shown as not-targetable in the
+    // Study target picker (mirrors the Provoked / cannot_target overlay).
+    // Keyed by studier actor id → Set<target token uuid>. In-memory and
+    // fight-scoped: a fresh DirectorCombat (new fight) starts empty, and the
+    // scene-end teardown discards it. NOT serialized, so a mid-fight reload
+    // resets it — acceptable, since the encyclopedia already prevents a
+    // re-study from revealing anything new. See markStudied / hasStudied.
+    this.studyLog = new Map();
+
+    // Per-turn SPELL MP-spend tally (Bimagus). actorId → MP spent on Spell
+    // actions this turn. Reset at the actor's TURN_START. See addSpellMpSpent /
+    // spellMpSpentThisTurn / resetSpellMpSpent and the MP_SPENT_THIS_TURN
+    // formula identifier.
+    this.mpSpentOnSpells = new Map();
+  }
+
+  // Record that `studierActorId` has Studied the token `targetTokenUuid` this
+  // fight (called from RESOLVE on a non-fumbled Study). Idempotent.
+  markStudied(studierActorId, targetTokenUuid) {
+    if (!studierActorId || !targetTokenUuid) return;
+    let set = this.studyLog.get(studierActorId);
+    if (!set) { set = new Set(); this.studyLog.set(studierActorId, set); }
+    set.add(targetTokenUuid);
+  }
+
+  // Has `studierActorId` already Studied this exact token this fight?
+  hasStudied(studierActorId, targetTokenUuid) {
+    if (!studierActorId || !targetTokenUuid) return false;
+    return this.studyLog.get(studierActorId)?.has(targetTokenUuid) ?? false;
+  }
+
+  // The token uuids `studierActorId` has already Studied this fight (array,
+  // never null) — used to build the Study target-picker exclusion overlay.
+  studiedTokensFor(studierActorId) {
+    const set = studierActorId ? this.studyLog.get(studierActorId) : null;
+    return set ? [...set] : [];
+  }
+
+  // Per-turn SPELL MP-spend accumulator (Bimagus). Sums the MP an actor spends
+  // on Spell actions during their CURRENT turn — the native spell cost PLUS any
+  // in-chain `consume_resource` MP that is part of the spell's cost (e.g.
+  // Cataclysm's cost-raise). Reset at the actor's TURN_START. Read via the
+  // `MP_SPENT_THIS_TURN` formula identifier so a `turn_end` reaction can size a
+  // free-cast budget. Keyed by actor id. In-memory + turn-scoped (NOT
+  // serialized — a mid-turn reload resets it, same trade-off as studyLog).
+  addSpellMpSpent(actorId, amount) {
+    const n = Number(amount) || 0;
+    if (!actorId || n <= 0) return;
+    this.mpSpentOnSpells.set(actorId, (this.mpSpentOnSpells.get(actorId) ?? 0) + n);
+  }
+
+  // MP this actor has spent on Spell actions so far THIS turn (0 if none).
+  spellMpSpentThisTurn(actorId) {
+    return actorId ? (this.mpSpentOnSpells.get(actorId) ?? 0) : 0;
+  }
+
+  // Clear the actor's spell-MP tally — called at their TURN_START so the
+  // budget only ever reflects the current turn.
+  resetSpellMpSpent(actorId) {
+    if (actorId) this.mpSpentOnSpells.delete(actorId);
   }
 
   // Append a new Guard entry. Caller is responsible for the AE create on
@@ -363,6 +427,11 @@ export class DirectorCombat {
       warn("DirectorCombat.start: no combatants");
     }
     this.started = true;
+    // Expose the live combat as the ambient active dCombat so formula
+    // identifiers that need combat-scoped, per-actor state (MP_SPENT_THIS_TURN —
+    // Bimagus) can read it from the sync resolver, which only carries `actor`.
+    // Cleared by director-boot.stop(); re-set by the resume reconstruct.
+    try { globalThis.__fudActiveDCombat = this; } catch { /* sandbox */ }
     // Round 0 is the pre-combat phase (PREP + conflict_start reactions).
     // ROUND_START.onEnter bumps to 1 when entering the first real round,
     // and nextTurn() bumps further on wraps. The resume-routing layer

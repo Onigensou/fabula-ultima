@@ -45,7 +45,7 @@ import { buildSkillResolver, evaluateFormula } from "./skill-formulas.js";
 import { resolveTargetPlan } from "./state-handlers.js";
 import { freeActions } from "./free-actions.js";
 import { getNpcAttackItems } from "./actor-shape.js";
-import { applyAttackRangeGate, snapshotEligibleTargetsFromDCombat } from "./snapshot.js";
+import { applyAttackRangeGate, applyStudyGuardExclusion, snapshotEligibleTargetsFromDCombat } from "./snapshot.js";
 
 // Race-cancellation token. Returns { promise, cancel }. The promise
 // resolves with the cancellation reason when cancel() is called.
@@ -158,6 +158,10 @@ export async function composeAction({
         eligible = {
           enemies: snapshotEligibleTargetsFromDCombat(director.dCombat, snap, { category: "enemy" }),
           allies:  snapshotEligibleTargetsFromDCombat(director.dCombat, snap, { category: "ally"  }),
+          // Study guard (RAW p.74) — recompute live from dCombat too, else the
+          // rebuild would drop the baked value and the GM-side Study picker
+          // wouldn't grey out tokens this actor already studied this fight.
+          studiedTokenUuids: director.dCombat?.studiedTokensFor?.(snap.actorId) ?? [],
         };
       } catch (e) {
         warn("composeAction: GM live-eligible recompute threw — using baked list", e);
@@ -561,9 +565,18 @@ async function composeAttackNpc({ director, snap, eligible, cancelSentinel }) {
 // Pick one enemy creature. Open Check is rolled later on GM (INS + INS
 // default). RAW Core p.74.
 async function composeStudy({ director, snap, eligible, cancelSentinel }) {
-  const enemies = eligible?.enemies ?? [];
-  if (!enemies.length) {
-    ui.notifications?.warn("No creatures to Study.");
+  // Study guard (RAW Core p.74): tokens this actor already Studied this fight
+  // (plumbed in via eligible.studiedTokenUuids — GM-side memory) are MOVED into
+  // the picker's `.excluded` side-channel, so they render greyed-out + labeled
+  // "Already studied" rather than being selectable. Same overlay path as the
+  // Provoked / Vanish exclusions; applyStudyGuardExclusion preserves `.excluded`.
+  const enemies = applyStudyGuardExclusion(eligible?.enemies ?? [], eligible?.studiedTokenUuids ?? []);
+  const selectableCount = enemies.length;
+  const excludedCount = Array.isArray(enemies.excluded) ? enemies.excluded.length : 0;
+  if (!selectableCount) {
+    ui.notifications?.warn(excludedCount
+      ? "No new creatures to Study — you've already studied everyone here this fight."
+      : "No creatures to Study.");
     return { cancelled: true, reason: "no targets" };
   }
   const result = await raceCancel(

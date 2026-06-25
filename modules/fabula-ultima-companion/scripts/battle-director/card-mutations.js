@@ -94,6 +94,57 @@ function expandEffectChain(effectTable, startLabel) {
   return out;
 }
 
+// Like expandEffectChain, but ALSO descends into the player's CHOSEN
+// open_action_menu option(s), matched by display label from `picks`
+// (cand.chosenMenuPicks). Mirrors the menu-follow in
+// skill-effects.computeSenderDamageBonuses so a picked menu OPTION's effect is
+// reachable at the card-mutation phase — used to fold an overcharge tier's
+// adjust_cost into the spell's cost (Cataclysm). With no picks it descends into
+// no menus, so the menu-only rows are exactly the chosen option's chain.
+function expandEffectChainWithPicks(effectTable, startLabel, picks) {
+  const out = [];
+  const byLabel = new Map();
+  for (const r of Object.values(effectTable ?? {})) {
+    if (!r || r.$deleted) continue;
+    const lbl = String(r.effect_label ?? "").trim();
+    if (lbl) byLabel.set(lbl, r);
+  }
+  const pickSet = (Array.isArray(picks) ? picks : []).map((p) => String(p).trim().toLowerCase());
+  const splitRefs = (raw) => String(raw ?? "").split(/[,\n]/).map((s) => s.trim()).filter(Boolean);
+  const seen = new Set();
+  (function walk(label) {
+    if (!label || seen.has(label)) return;
+    seen.add(label);
+    const row = byLabel.get(label);
+    if (!row) return;
+    const kind = String(row.effect_kind ?? "").trim().toLowerCase();
+    if (kind === "chain") {
+      for (const s of splitRefs(row.chain_steps)) walk(s);
+      return;
+    }
+    if (kind === "open_action_menu" && pickSet.length) {
+      const optRefs = splitRefs(row.menu_option_refs);
+      const optLabels = (row.menu_option_labels == null || String(row.menu_option_labels).trim() === "")
+        ? [] : String(row.menu_option_labels).split("|").map((s) => s.trim());
+      const labelToRef = new Map();
+      for (let oi = 0; oi < optRefs.length; oi++) {
+        const oref = optRefs[oi];
+        const orow = byLabel.get(oref);
+        const lbl = (optLabels[oi] && optLabels[oi] !== "")
+          ? optLabels[oi] : String(orow?.menu_label ?? orow?.effect_label ?? oref);
+        labelToRef.set(String(lbl).trim().toLowerCase(), oref);
+      }
+      for (const pk of pickSet) {
+        const oref = labelToRef.get(pk);
+        if (oref) walk(oref);
+      }
+      return;
+    }
+    out.push(row);
+  })(startLabel);
+  return out;
+}
+
 // Map damage element names → affinity slot index on PC/NPC templates.
 // PC v3 + NPC v.2 templates store affinities as `affinity_1` (Physical)
 // through `affinity_9` (Poison). Mirrors the order used by every other
@@ -1386,6 +1437,29 @@ export async function applyAcceptedCardMutations(arSnapshot, acceptedPrePassives
         const result = await applyAdjustCostMutation(ctx, cand, row);
         if (result === "applied") mutationsApplied += 1;
       }
+    }
+  }
+
+  // Phase 2b: menu-option cost adjustment (Cataclysm-style overcharge). A picked
+  // open_action_menu option's adjust_cost is NOT reached by Phase 2 above
+  // (expandEffectChain stops at the menu row), so walk the player's CHOSEN
+  // option(s) and fold the surcharge into ctx.costOverride — the same override
+  // Hypercognition's discount writes, applied to the spell's single cost debit at
+  // RESOLVE (so the overcharge becomes part of the spell's MP cost, not a side
+  // debit). ONLY adjust_cost is taken from the menu expansion — the picked
+  // option's adjust_damage is handled by computeSenderDamageBonuses, and rows
+  // already reachable via the plain chain were handled in Phase 2 (skipped here).
+  for (const cand of acceptedPrePassives ?? []) {
+    if (!Array.isArray(cand?.chosenMenuPicks) || !cand.chosenMenuPicks.length) continue;
+    const effectTable = await readEffectTableForCandidate(cand);
+    if (!effectTable) continue;
+    const plainLabels = new Set(expandEffectChain(effectTable, cand.ref).map((r) => r.effect_label));
+    const rows = expandEffectChainWithPicks(effectTable, cand.ref, cand.chosenMenuPicks);
+    for (const row of rows) {
+      if (plainLabels.has(row.effect_label)) continue;   // already handled in Phase 2
+      if (String(row.effect_kind ?? "").trim().toLowerCase() !== "adjust_cost") continue;
+      const result = await applyAdjustCostMutation(ctx, cand, row);
+      if (result === "applied") mutationsApplied += 1;
     }
   }
 

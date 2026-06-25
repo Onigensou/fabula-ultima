@@ -12,7 +12,7 @@ import { log, warn, err } from "./logger.js";
 import { runBattleEndSequence } from "./battle-end/battle-end-orchestrator.js";
 import { STATES } from "./states.js";
 import { INTENTS } from "./intents.js";
-import { snapshotCombatant, snapshotDirectorCombatant, snapshotEligibleTargets, snapshotEligibleTargetsFromDCombat, readPropNum, attrDieSize, freezeActionResult, applyAffinityToDamage, applyAttackRangeGate, resolvePrimaryAttackWeapon } from "./snapshot.js";
+import { snapshotCombatant, snapshotDirectorCombatant, snapshotEligibleTargets, snapshotEligibleTargetsFromDCombat, readPropNum, attrDieSize, freezeActionResult, applyAffinityToDamage, applyAttackRangeGate, applyStudyGuardExclusion, resolvePrimaryAttackWeapon } from "./snapshot.js";
 import { TurnUI } from "./turn-ui.js";
 import { TurnPicker } from "./turn-picker.js";
 import { requestTargeting } from "./target-picker.js";
@@ -313,6 +313,17 @@ async function resolveAction(director, ar, opts = {}) {
           const payerTokenUuid = ar.attacker?.tokenUuid;
           for (const [resource, amount] of Object.entries(debitRes.debited ?? {})) {
             if (Number(amount) > 0) playResourceSpendVfx({ tokenUuid: payerTokenUuid, resource, amount: Number(amount) });
+          }
+          // Bimagus — count the native MP cost of a SPELL action toward the
+          // caster's per-turn spell-MP tally (MP_SPENT_THIS_TURN). Gated on
+          // skill_type=spell (Skill/Attack costs don't count). Bimagus's own
+          // free casts pay no MP (skipCost) so they never reach here, and thus
+          // never inflate the budget. In-chain consume_resource MP (Cataclysm's
+          // cost-raise) is tallied separately at its debit site.
+          const isSpellCast = String(skill?.system?.props?.skill_type ?? "").toLowerCase() === "spell";
+          const mpDebited = Number(debitRes.debited?.mp ?? 0) || 0;
+          if (isSpellCast && mpDebited > 0 && director.dCombat && casterActor?.id) {
+            director.dCombat.addSpellMpSpent(casterActor.id, mpDebited);
           }
         }
       }
@@ -723,6 +734,12 @@ async function resolveAction(director, ar, opts = {}) {
     // actionKind already carried on the pre-resolve creature_targeted_by_action
     // payload. Item-use reactions read this off creature_completes_item (§8b).
     actionKind: ar.kind ?? null,
+    // Printed MP cost of the spell/skill that just resolved — read by the
+    // LAST_SPELL_MP formula identifier so a `creature_completes_spell` reaction
+    // can size a follow-up off the cast's cost (Bimagus's "2nd spell ≤ ½ the
+    // first"). The PRINTED cost (costSerialized), so it's correct even for a
+    // free cast that paid nothing (skipCost).
+    lastSpellMp: Number(ar.costSerialized?.mp ?? 0) || 0,
     // Acting skill/weapon name for `reaction_source_skill` self-scoping
     // (replaces the removed skill_type item-gate).
     sourceSkillName: skill?.name ?? ar.skillName ?? ar.weapon?.name ?? null,
@@ -1756,6 +1773,9 @@ const TurnStart = {
     // starts un-resolved; the RESOLVE checkpoint flips this true after
     // the action commits to actor docs.
     if (director.dCombat) director.dCombat.currentTurnResolved = false;
+    // Bimagus — a fresh turn starts the spell-MP tally at zero, so
+    // MP_SPENT_THIS_TURN only ever reflects spells cast during THIS turn.
+    if (director.dCombat && snap?.actorId) director.dCombat.resetSpellMpSpent(snap.actorId);
     // Label describes what the GM lands at on rewind: this combatant's
     // DECLARE menu (TURN_START re-auto-picks the saved id and routes
     // through to DECLARE). Subtitle records the situational context.
@@ -1986,6 +2006,11 @@ const Declare = {
     const eligibleAllies = director.dCombat
       ? snapshotEligibleTargetsFromDCombat(director.dCombat, snap, { category: "ally" })
       : snapshotEligibleTargets(director.combat, snap, { category: "ally" });
+    // Study guard — the tokens THIS actor already Studied this fight. Plumbed
+    // into the compose payload so composeStudy (player or GM) can grey them out
+    // + label them in the Study target picker. GM-side memory, so it travels
+    // with the broadcast (the player client has no DirectorCombat). RAW p.74.
+    const studiedTokenUuids = director.dCombat?.studiedTokensFor?.(snap.actorId) ?? [];
 
     // GM-local compose chain. The cancel token lets us tear it down when
     // the player wins the race.
@@ -1995,7 +2020,7 @@ const Declare = {
       director,
       snap,
       token,
-      eligible: { enemies: eligibleEnemies, allies: eligibleAllies },
+      eligible: { enemies: eligibleEnemies, allies: eligibleAllies, studiedTokenUuids },
       cancelSentinel: cancelToken.promise,
       combatId: director.combatId,
       actorUuid: snap.actorUuid,
@@ -2034,7 +2059,7 @@ const Declare = {
             tokenUuid: token.document.uuid,
             actorUuid: snap.actorUuid,
             snap,
-            eligible: { enemies: eligibleEnemies, allies: eligibleAllies },
+            eligible: { enemies: eligibleEnemies, allies: eligibleAllies, studiedTokenUuids },
             freeActionGrant,
           },
         });
@@ -2063,7 +2088,7 @@ const Declare = {
             tokenUuid: token.document.uuid,
             actorUuid: snap.actorUuid,
             snap,
-            eligible: { enemies: eligibleEnemies, allies: eligibleAllies },
+            eligible: { enemies: eligibleEnemies, allies: eligibleAllies, studiedTokenUuids },
             freeActionGrant,
           },
         });
@@ -2568,10 +2593,15 @@ const Target = {
     // future scope decision.
     if (command === "Study") {
       const attackerSnap = director.ctx.turnSnapshot;
+      // Study guard: tokens this actor already Studied this fight are shown in
+      // the picker but greyed-out + labeled "Already studied" (not hidden) —
+      // same overlay path as Vanish / Provoked. RAW Core p.74.
+      const studiedTokenUuids = director.dCombat?.studiedTokensFor?.(attackerSnap.actorId) ?? [];
       const studyTargeting = await resolveActionTargets(director, attackerSnap, {
         skillTargetText:    "One Enemy",
         usingPreComposed:   !!director.ctx.pickedTargetUuids?.length,
         composedTargetUuids: director.ctx.pickedTargetUuids,
+        eligiblePostFilter: (pool) => applyStudyGuardExclusion(pool, studiedTokenUuids),
         titleText:          `${attackerSnap.name}: pick a creature to Study`,
       });
       if (!studyTargeting.ok) {
@@ -3320,11 +3350,50 @@ async function computeHinder(director, { attacker, tokenUuids }) {
 // tiers (Identity >=7 / Stats >=8 / Details >=13).
 async function computeStudy(director, { attacker, tokenUuids }) {
   const targetUuid = tokenUuids[0];
+  const studierActorId = attacker?.actorId ?? null;
   const targetSnap = (director.ctx.eligibleTargets ?? []).find((e) => e.tokenUuid === targetUuid);
+
+  // Study guard (RAW Core p.74 — "you can study the same aspect of a creature
+  // only once"): a studier can't re-Study a token they already Studied this
+  // fight. The interactive pickers grey these out + label them (see
+  // applyStudyGuardExclusion); THIS is the backstop for the only path with no
+  // picker — a target-LOCKED free Study (e.g. Painful Lesson, locked to the
+  // creature that damaged you). The studied target is excluded from the picker
+  // pool, so targetSnap may be null here; resolve a display name defensively.
+  // Checked BEFORE the not-found guard so the player sees the real reason
+  // (forfeited free Study) rather than a generic abort.
+  if (director.dCombat?.hasStudied?.(studierActorId, targetUuid)) {
+    let tName = targetSnap?.name;
+    if (!tName) { try { tName = (await fromUuid(targetUuid))?.name; } catch { /* best-effort */ } }
+    ui.notifications?.info(`${attacker?.name ?? "You"} already studied ${tName ?? "that creature"} this fight.`);
+    if (studierActorId) freeActions.clear(studierActorId);
+    director.enqueue({ type: INTENTS.ABORT });
+    return;
+  }
+
   if (!targetSnap) {
     warn("COMPUTE Study: target not found in eligibleTargets", targetUuid);
     director.enqueue({ type: INTENTS.ABORT });
     return;
+  }
+
+  // Free-action grant — Painful Lesson grants a free Study with a +SL bonus to
+  // the Check (check_bonus_formula:"SL"). Consume the pending grant here, the
+  // same way Hinder/Attack COMPUTE do. Without this, the +SL was evaluated,
+  // queued onto the grant, and then silently dropped (computeStudy used to
+  // hardcode checkBonus:0), so the bonus never reached the roll.
+  const studyGrant = studierActorId ? freeActions.get(studierActorId) : null;
+  const studyCheckBonus = studyGrant ? Number(studyGrant.checkBonus) || 0 : 0;
+  const studyCheckBonusParts = [];
+  if (studyGrant && studyCheckBonus !== 0) {
+    studyCheckBonusParts.push({
+      source: studyGrant.sourceLabel || "Free Action",
+      amount: studyCheckBonus,
+    });
+  }
+  if (studyGrant) {
+    log(`Study COMPUTE: applied ${studyGrant.sourceLabel} grant (+${studyGrant.checkBonus ?? 0} check)`);
+    freeActions.clear(studierActorId);
   }
 
   // Check config — read attrs FROM the Study Common item (authored data, like
@@ -3333,7 +3402,7 @@ async function computeStudy(director, { attacker, tokenUuids }) {
   const A1 = String(studyProps.rolled_atr1 ?? "INS").toUpperCase();
   const A2 = String(studyProps.rolled_atr2 ?? "INS").toUpperCase();
   const liveActor = await fromUuid(attacker.actorUuid).catch(() => null);
-  const check = await rollCheck({ actor: liveActor, A1, A2 });
+  const check = await rollCheck({ actor: liveActor, A1, A2, checkBonus: studyCheckBonus });
   const { rA, rB, dA, dB, total, hr, isFumble, isCrit } = check;
 
   // Encyclopedia tier classification — the SINGLE source of truth lives in the
@@ -3372,10 +3441,11 @@ async function computeStudy(director, { attacker, tokenUuids }) {
     targets: [targetSnap],
     roll: {
       A1, A2,
-      dA, dB, rA, rB, checkBonus: 0, total, hr,
+      dA, dB, rA, rB, checkBonus: studyCheckBonus, checkBonusParts: studyCheckBonusParts, total, hr,
       isCrit, isFumble,
       opportunities: isCrit && !isFumble,
     },
+    ...(studyGrant ? { freeActionGrant: { sourceLabel: studyGrant.sourceLabel, checkBonus: studyGrant.checkBonus ?? 0, damageBonus: 0 } } : {}),
     tier,
     previousBest,
     // Compare the crit-promoted effective total (what recordResult stores), so a
@@ -3835,6 +3905,12 @@ const Confirm = {
             // read 0 here, so a spell-gated damage reaction could never surface.
             actionSkillType: String(ar.skillType ?? "").toLowerCase(),
             actionIsCheck: !!ar.isCheck,
+            // The spell's native MP cost + whether this is a FREE cast — read by
+            // ACTION_MP_COST / ACTION_IS_FREE_CAST so a damage-window cost reaction
+            // (Cataclysm's overcharge → adjust_cost) can gate affordability against
+            // the full resulting cost and exclude free casts.
+            actionMpCost: Number(ar.costSerialized?.mp ?? 0) || 0,
+            actionIsFreeCast: !!freeActions.get(ar.attacker?.actorId)?.freeOfCost,
             targets: allTargetUuids,
             hitTargets: hitTargetUuids,
             rawDamage: entry.rawDamage,
@@ -4818,7 +4894,13 @@ const Resolve = {
       // skill-shaped sources. resolveAction debits cost (incl. the item cost:
       // consume the consumable for "use", IP for "create"), fires on_activate /
       // per-target damage / post_damage / effect_table. No Item-specific branch.
-      await resolveAction(director, ar);
+      // free_of_cost grant (Bimagus's free spells) → skip the cost debit so the
+      // cast truly costs no MP. Gated on actually being inside a free action so
+      // a stale grant can't zero a normal turn's cost. The printed cost still
+      // lives on ar.costSerialized (read for LAST_SPELL_MP in resolveAction §7).
+      const skillGrant = freeActions.get(ar.attacker?.actorId ?? null);
+      const freeCast = !!(skillGrant?.freeOfCost && topIsFreeAction(director.ctx));
+      await resolveAction(director, ar, freeCast ? { skipCost: true } : {});
     } else if (ar.kind === "Hinder") {
       // Success-gating + fail/fumble Miss VFX stay here (presentation); on a
       // success, resolveAction fires Common/Hinder's open_action_menu, which
@@ -4840,6 +4922,13 @@ const Resolve = {
       if (ar.roll?.isFumble) {
         playMissVfx({ tokenUuid: ar.target?.tokenUuid });
       } else {
+        // Study guard (RAW p.74): mark this (studier actor → target token) pair
+        // as Studied for the rest of the fight, so a second Study on the same
+        // token by the same person is shown not-targetable. Only NON-fumbled
+        // Studies lock — a fumble reveals nothing, so the target stays re-studyable.
+        try {
+          director.dCombat?.markStudied?.(ar.attacker?.actorId, ar.target?.tokenUuid);
+        } catch (e) { warn("RESOLVE Study: markStudied threw", e); }
         const STUDY_LOWEST_BAR = 7; // TIER_IDENTITY in encyclopedia-core.js
         const studyTotal = Number(ar.roll?.total ?? 0) || 0;
         const studyBelowBar = !ar.roll?.isCrit && studyTotal < STUDY_LOWEST_BAR;
@@ -5506,6 +5595,11 @@ const FreeActionWindow = {
       // total MP cost ≤ 10"). Threaded so composeSkill can pass it to the picker;
       // omitting it here is what silently disabled the cap on the free turn.
       maxMpCost:        req.maxMpCost ?? null,
+      // free_of_cost — the granted action pays no resource cost (Bimagus's free
+      // spells). The Skill/Spell RESOLVE branch reads this off the grant and
+      // passes skipCost to resolveAction. The maxMpCost cap above still gates
+      // eligibility by printed cost.
+      freeOfCost:       req.freeOfCost === true,
       // Compose-style restrictions threaded from the free_action row: a Skill/Spell
       // menu allow-list (Counter Pass → only Passes) and a forced target the composed
       // action must hit (the triggering enemy). Both null when unset. composeSkill

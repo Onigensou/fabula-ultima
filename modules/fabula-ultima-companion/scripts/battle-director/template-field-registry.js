@@ -235,7 +235,8 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   // free-action queue + COMPUTE-time bonus application).
   textCol("check_bonus_formula", "Free: Check Bonus", { tooltip: "Free action grant: bonus added to the granted action's Check (formula). e.g. Blazing Sweep repeat: -(AE_CHARGES_BLAZING_SWEEP_LOCK).", vis: FREE_GRANT_VIS }),
   textCol("damage_bonus_formula", "Free: Damage Bonus", { tooltip: "Free action grant: bonus added to the granted action's damage (formula, may be negative). e.g. Blazing Sweep repeat: floor(38 * pow(0.5, AE_CHARGES_BLAZING_SWEEP_LOCK)) - 38.", vis: FREE_GRANT_VIS }),
-  textCol("max_mp_cost", "Free: Max MP Cost", { tooltip: "Free action grant: cap on the granted action's MP cost (blank = the action's own cost applies).", vis: FREE_GRANT_VIS }),
+  textCol("max_mp_cost", "Free: Max MP Cost", { tooltip: "Free action grant: cap on the granted action's MP cost (FORMULA, e.g. Bimagus \"20 + MP_SPENT_THIS_TURN\" / \"AE_CHARGES_BIMAGUS\"; blank = the action's own cost applies).", vis: FREE_GRANT_VIS }),
+  checkboxCol("free_of_cost", "Free: No Resource Cost", { tooltip: "Free action grant: the granted action pays NO resource cost (RAW Bimagus \"spells cost no MP\"). The Max MP Cost cap still gates which spell is eligible by its printed cost.", vis: FREE_GRANT_VIS }),
   // adjust_charges config — charge arithmetic on a target's named charge-AE
   // (Enkindle: double the target's Burn = Burn × 2). Mirrors adjust_damage.
   textCol("charge_ae_name", "Charge AE Name", { tooltip: "adjust_charges: the charge-AE to modify, by name (e.g. Burn).", vis: ADJUST_CHARGES_VIS }),

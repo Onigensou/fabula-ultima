@@ -407,6 +407,17 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // "Skill Enhancement Lv. 20 → 50 / Lv. 40 → 60" tiers, e.g.).
       case "CHAR_LEVEL": return Number(actor?.system?.props?.level ?? actor?.system?.level ?? 0) || 0;
       // Reactor resources
+      // MP this actor has spent on SPELL actions so far THIS turn (Bimagus).
+      // Combat-scoped, per-actor state the resolver can't derive from `actor`
+      // alone, so it reads the ambient active dCombat (set in
+      // DirectorCombat.start / cleared on stop). 0 out of combat or pre-spend.
+      case "MP_SPENT_THIS_TURN":
+        return Number(globalThis.__fudActiveDCombat?.spellMpSpentThisTurn?.(actor?.id) ?? 0) || 0;
+      // Printed MP cost of the spell that just resolved — stamped on the
+      // creature_completes_spell payload (Bimagus sizes its 2nd free cast off
+      // this: "2nd spell ≤ ½ the first"). 0 when not in that reaction context.
+      case "LAST_SPELL_MP":
+        return Number(payload?.lastSpellMp ?? 0) || 0;
       case "CUR_HP": return readProp(actor, "current_hp");
       case "MAX_HP": return readProp(actor, "max_hp");
       case "CUR_MP": return readProp(actor, "current_mp");
@@ -655,6 +666,19 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       case "ACTION_ROLLS_ACCURACY": {
         return payload?.actionCanMiss === true ? 1 : 0;
       }
+      // The in-flight action's native MP cost (printed/serialized), stamped on the
+      // creature_will_deal_damage payload. Lets a damage-window cost reaction
+      // (Cataclysm's overcharge) gate affordability against the FULL resulting
+      // cost — `CUR_MP >= ACTION_MP_COST + <overcharge>` — since the overcharge is
+      // folded into the spell's single (clamping) debit. 0 outside that context.
+      case "ACTION_MP_COST":
+        return Number(payload?.actionMpCost ?? 0) || 0;
+      // 1 if the in-flight action is a FREE cast (a free_of_cost free action —
+      // e.g. a Bimagus free spell). Lets Cataclysm exclude free casts (RAW: a
+      // free spell "costs no MP", so its cost can't be increased). Stamped on the
+      // creature_will_deal_damage payload from the live free-action grant.
+      case "ACTION_IS_FREE_CAST":
+        return payload?.actionIsFreeCast === true ? 1 : 0;
       // 1 if the action targets EXACTLY ONE creature AND that creature carries MY
       // Focus (per-applier, status fud-focus), else 0. Powers Hypercognition's
       // "SL × 2 if your focus is the only target" cost discount. Mirrors
