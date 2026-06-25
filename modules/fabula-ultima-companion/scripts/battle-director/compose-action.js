@@ -916,17 +916,26 @@ async function composeSkill({ director, snap, eligible, cancelSentinel, isSpell 
 // "Skip Cover" → bundle.coverTokenUuid = null (guard self only).
 // Picked ally → bundle.coverTokenUuid = ally's tokenUuid.
 async function composeGuard({ director, snap, eligible, cancelSentinel }) {
-  const allies = (eligible?.allies ?? []).filter((a) => a.tokenUuid !== snap.tokenUuid);
-  // If no allies on scene, requestTargeting auto-skips via secondaryAction
-  // and returns { ok:true, skipped:true } — the player still gets the
-  // self-only Guard.
+  const allAllies = eligible?.allies ?? [];
+  const allies = allAllies.filter((a) => a.tokenUuid !== snap.tokenUuid);
+  // When the guarder is the ONLY creature on their side, there's no ally to
+  // Cover — but rather than silently auto-skipping the targeting step (the old
+  // requestTargeting empty-eligible shortcut), still SHOW a targeting overlay
+  // with the guarder ringed + locked, so the player gets a visible confirm pass
+  // for the self-only Guard. A self pick can never be a Cover target → null.
+  const selfOnly = allies.length === 0;
+  const selfEntry = allAllies.find((a) => a.tokenUuid === snap.tokenUuid)
+    ?? { tokenUuid: snap.tokenUuid, tokenId: snap.tokenId, name: snap.name };
   const result = await raceCancel(
     requestTargeting({
       director,
-      eligible: allies,
+      eligible: selfOnly ? [selfEntry] : allies,
       mode: "exact",
       count: 1,
-      titleText: `${snap.name}: pick an ally to Cover (optional)`,
+      lockSelection: selfOnly,
+      titleText: selfOnly
+        ? `${snap.name}: Guard (no ally to Cover)`
+        : `${snap.name}: pick an ally to Cover (optional)`,
       cancelLabel: "Cancel Guard",
       secondaryAction: { label: "Skip Cover", value: "skip" },
       externalCancel: cancelSentinel,
@@ -936,9 +945,11 @@ async function composeGuard({ director, snap, eligible, cancelSentinel }) {
   if (!result || !result.ok) {
     return { cancelled: true, reason: result?.cancelled ? "target-cancelled" : "target-failed" };
   }
-  const coverTokenUuid = (result.skipped || result.tokenUuids.length === 0)
+  const picked = (result.skipped || result.tokenUuids.length === 0)
     ? null
     : result.tokenUuids[0];
+  // Self is never a Cover target — a self/locked confirm means self-only Guard.
+  const coverTokenUuid = (picked && picked !== snap.tokenUuid) ? picked : null;
   return {
     cancelled: false,
     bundle: {
