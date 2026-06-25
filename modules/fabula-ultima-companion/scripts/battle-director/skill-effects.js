@@ -731,6 +731,23 @@ async function passesMatchFilters(row, item, reactorActor, payload) {
     log(`passive ${item.name}: cause filter failed — want="${wantCause}" got="${payload?.cause}"`);
     return false;
   }
+  // 4b. Damage-SOURCE (origin) filter — the NAME of the effect/skill/status that
+  //     dealt this resource change (payload.originLabel: "Burn", "Poison", a
+  //     weapon/skill name, …), matched case-insensitively. Blank = any (no-op for
+  //     every existing row). This is WHAT caused the change, distinct from the
+  //     reaction_source/causeActor "WHO". Lets a reaction key off a specific
+  //     damage source as DATA — the engine never branches on "Burn": Wandering
+  //     Flame's Ignition fires on `creature_lose_resource` with
+  //     reaction_origin_filter "Burn" (whenever a creature loses HP to Burn),
+  //     and Poison/Bleed/a named weapon reuse the same filter. The Burn DoT tick
+  //     carries originLabel "Burn" (the carrier AE name); a skill that explicitly
+  //     "triggers Burn" (Flame Claw / Meteor) labels its detonation row
+  //     attacker_name "Burn" so it counts too.
+  const wantOrigin = String(row.reaction_origin_filter ?? "").trim().toLowerCase();
+  if (wantOrigin && String(payload?.originLabel ?? "").trim().toLowerCase() !== wantOrigin) {
+    log(`passive ${item.name}: origin filter failed — want="${wantOrigin}" got="${payload?.originLabel}"`);
+    return false;
+  }
   // 5. Status-ledger filter (creature_status_applied / creature_loses_status).
   //    Blank = any. reaction_status_filter matches payload.status (e.g. "Crisis").
   //    Used by On the Hunt ("when an enemy enters Crisis").

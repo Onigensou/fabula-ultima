@@ -529,6 +529,12 @@ async function resolveAction(director, ar, opts = {}) {
   // once, not N times.
   const hpLossTargetTokenUuids = [];
   const hpLossTargetActorUuids = [];
+  // Total HP damage this action dealt across all hit targets — surfaced on the
+  // action-level creature_deals_damage payload so an on-hit rider's DAMAGE_DEALT
+  // / DAMAGE_DEALT_TOTAL formula resolves (e.g. Diving Blaze Kick's Overflow
+  // spillover deals the dealt amount to other enemies). For a single-target
+  // skill this is exactly the one hit's value. Loss only (heals don't count).
+  let totalDamageDealt = 0;
   if (isDamagingAction && hits.length) {
     // Multi-pass label (Attack two-weapon / virtual): "(pass 2/2)".
     const passLabel = (ar.totalPasses ?? 1) > 1 ? ` (pass ${ar.passIndex}/${ar.totalPasses})` : "";
@@ -603,6 +609,7 @@ async function resolveAction(director, ar, opts = {}) {
         if (valueType === "hp" && valueDirection === "loss" && finalValue > 0) {
           hpLossTargetTokenUuids.push(r.tokenUuid);
           hpLossTargetActorUuids.push(r.actorUuid);
+          totalDamageDealt += finalValue;
         }
 
         // Per-target post_damage payload — HP_DEALT / MP_DEALT resolve
@@ -743,6 +750,10 @@ async function resolveAction(director, ar, opts = {}) {
     // Acting skill/weapon name for `reaction_source_skill` self-scoping
     // (replaces the removed skill_type item-gate).
     sourceSkillName: skill?.name ?? ar.skillName ?? ar.weapon?.name ?? null,
+    // Total HP damage this action dealt — lets an on-hit rider's DAMAGE_DEALT /
+    // DAMAGE_DEALT_TOTAL resolve (Diving Blaze's Overflow spillover). Single-
+    // target skills: the one hit's value. 0 for non-damaging/whiffed casts.
+    finalValue: totalDamageDealt,
   };
   const accepted = Array.isArray(ar.acceptedPrePassives) ? ar.acceptedPrePassives : [];
   if (accepted.length) {
