@@ -23,6 +23,124 @@
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/FireSlime_Standard.png",
   "items": [
     {
+      "_id": "0RK4SWuKCQhc5zEy",
+      "_stats": {
+        "compendiumSource": "Item.ts3PFjVewUwJRTiK",
+        "coreVersion": "12.343",
+        "createdTime": 1782308019206,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bag.png",
+      "name": "Ignium Jelly",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 4300000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<p>Inflicts&nbsp;<strong>Oil&nbsp;</strong>to target</p>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "ts3PFjVewUwJRTiK",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bag.png",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "30",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Common",
+          "item_type": "consumable",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Ignium Jelly",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.ts3PFjVewUwJRTiK",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "ts3PFjVewUwJRTiK"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "AgSm9zQCqJxTwvxS",
       "_stats": {
         "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
@@ -466,6 +584,143 @@
       "type": "equippableItem"
     },
     {
+      "_id": "fD0nqTnAWzQvkUOk",
+      "_stats": {
+        "compendiumSource": "Item.HD1icG9JDwEkXbmw",
+        "coreVersion": "12.343",
+        "createdTime": 1782270107293,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "accessory",
+            "fromTemplate": "r0yZpLPAK9VXhM2p",
+            "itemId": "HD1icG9JDwEkXbmw",
+            "itemName": "Slime Hat",
+            "pickedOldProps": {
+              "cost": "1500",
+              "def_bonus": "",
+              "defense": "0",
+              "defense_include_dex": false,
+              "initiative": "0",
+              "magic_defense": "0",
+              "magic_defense_include_ins": false,
+              "mdef_bonus": ""
+            },
+            "ts": 1769647436477
+          }
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Poring%20Hat.gif",
+      "name": "Slime Hat",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 10500000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li>Reduce <strong>Physical </strong>damage by 5.</li><li>You can speak and communicate with creatures belonging to the <strong>Elemental</strong> species.</li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "HD1icG9JDwEkXbmw",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Poring%20Hat.gif",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "2000",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Rare",
+          "item_type": "accessory",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Slime Hat",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.HD1icG9JDwEkXbmw",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "HD1icG9JDwEkXbmw"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "Jm8zStHxlN560HcV",
       "_stats": {
         "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
@@ -857,7 +1112,30 @@
   "system": {
     "activeConditionalModifierGroups": [],
     "props": {
-      "action_pattern_table": {},
+      "action_pattern_table": {
+        "0": {
+          "$deleted": false,
+          "action_pattern_condition": "always",
+          "action_pattern_cooldown": "0",
+          "action_pattern_name": "Fire Shot",
+          "action_pattern_priority": "5",
+          "action_pattern_string": "",
+          "action_pattern_target_focus": "by_affinity",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "100"
+        },
+        "1": {
+          "$deleted": false,
+          "action_pattern_condition": "always",
+          "action_pattern_cooldown": "0",
+          "action_pattern_name": "Tackle",
+          "action_pattern_priority": "3",
+          "action_pattern_string": "",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "100"
+        }
+      },
       "activation": "1",
       "affinity_1": "NA",
       "affinity_2": "NA",
@@ -1047,7 +1325,10 @@
       "minimum_critical_dice": 6,
       "name": "Fire Slime",
       "npc_rank": "soldier",
+      "override_all_damage_type": "None",
+      "override_attack_damage_type": "None",
       "override_damage_type": "None",
+      "override_spell_damage_type": "None",
       "rare": false,
       "resource_maxValue_1": "0",
       "resource_maxValue_2": "0",
@@ -1059,6 +1340,40 @@
       "rolled_atr2": "DEX",
       "shield_type": "PHYSICAL",
       "shield_value": "0",
+      "shop_accessory_list": {
+        "fD0nqTnAWzQvkUOk": {
+          "accessory_bonusdef": 0,
+          "accessory_bonusmdef": 0,
+          "accessory_buy": "",
+          "accessory_cost": 2000,
+          "accessory_description": "<ul><li>Reduce <strong>Physical </strong>damage by 5.</li><li>You can speak and communicate with creatures belonging to the <strong>Elemental</strong> species.</li></ul>",
+          "accessory_quantity": 1,
+          "accessory_set": false,
+          "id": "${item.id}",
+          "name": "Slime Hat",
+          "uuid": "Actor.Q2SuQSgrAC2dZR2Y.Item.fD0nqTnAWzQvkUOk"
+        }
+      },
+      "shop_consumable_list": {
+        "0RK4SWuKCQhc5zEy": {
+          "consumable_buy": "",
+          "consumable_cost": 30,
+          "consumable_descriptions": "<p>Inflicts&nbsp;<strong>Oil&nbsp;</strong>to target</p>",
+          "consumable_quantity": 1,
+          "id": "${item.id}",
+          "name": "Ignium Jelly",
+          "uuid": "Actor.Q2SuQSgrAC2dZR2Y.Item.0RK4SWuKCQhc5zEy"
+        },
+        "jAp7do99UvEITL31": {
+          "consumable_buy": "",
+          "consumable_cost": 10,
+          "consumable_descriptions": "<ul><li><p>Target creature <strong>recovers 30 HP</strong></p></li></ul>",
+          "consumable_quantity": 1,
+          "id": "${item.id}",
+          "name": "Apple Juice",
+          "uuid": "Actor.Q2SuQSgrAC2dZR2Y.Item.jAp7do99UvEITL31"
+        }
+      },
       "showMacro": false,
       "skill_passive_list": {
         "81bfGE4wmJk0iroO": {
@@ -1080,14 +1395,56 @@
       "species": "ELEMENTAL",
       "sprite_battle": "",
       "sprite_standard": "",
-      "steal_percentage_table": {},
+      "steal_percentage_table": {
+        "0": {
+          "$deleted": false,
+          "loot_id": "(Empty)",
+          "loot_percentage": "42"
+        },
+        "1": {
+          "$deleted": false,
+          "loot_id": "Jellopy",
+          "loot_percentage": "42"
+        },
+        "2": {
+          "$deleted": false,
+          "loot_id": "Ignium Jelly",
+          "loot_percentage": "11"
+        },
+        "3": {
+          "$deleted": false,
+          "loot_id": "Slime Hat",
+          "loot_percentage": "5"
+        }
+      },
       "stealable_loot": {
+        "0RK4SWuKCQhc5zEy": {
+          "id": "${item.id}",
+          "loot_description": "<p>Inflicts&nbsp;<strong>Oil&nbsp;</strong>to target</p>",
+          "name": "Ignium Jelly",
+          "roll": "",
+          "uuid": "Actor.Q2SuQSgrAC2dZR2Y.Item.0RK4SWuKCQhc5zEy"
+        },
         "cEkUfDBfoUC9sE4a": {
           "id": "${item.id}",
           "loot_description": "<pre><code>Use this item as placeholder for failing to steals any item from the target</code></pre>",
           "name": "(Empty)",
           "roll": "",
           "uuid": "Actor.Q2SuQSgrAC2dZR2Y.Item.cEkUfDBfoUC9sE4a"
+        },
+        "fD0nqTnAWzQvkUOk": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li>Reduce <strong>Physical </strong>damage by 5.</li><li>You can speak and communicate with creatures belonging to the <strong>Elemental</strong> species.</li></ul>",
+          "name": "Slime Hat",
+          "roll": "",
+          "uuid": "Actor.Q2SuQSgrAC2dZR2Y.Item.fD0nqTnAWzQvkUOk"
+        },
+        "jAp7do99UvEITL31": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><p>Target creature <strong>recovers 30 HP</strong></p></li></ul>",
+          "name": "Apple Juice",
+          "roll": "",
+          "uuid": "Actor.Q2SuQSgrAC2dZR2Y.Item.jAp7do99UvEITL31"
         },
         "oyaaW9A1V2OUuwN8": {
           "id": "${item.id}",
@@ -1097,7 +1454,7 @@
           "uuid": "Actor.Q2SuQSgrAC2dZR2Y.Item.oyaaW9A1V2OUuwN8"
         }
       },
-      "study_text": "<p>A Fire-Elemental Slime, it naturally weak, but is violatile and can explode upon contact with too much force, using <strong>Ice </strong>attacks can negate this effect.</p>",
+      "study_text": "<p>A quivering droplet of molten jelly, generally weak — but slain by anything other than <strong>frost</strong>, it explodes for fire damage.</p>",
       "subtype": "Sub-Type",
       "subtype_list": "SLIME",
       "sword_ef": "100",
@@ -1116,7 +1473,7 @@
     },
     "statusEffects": {},
     "template": "yegF6R8aaymhrvCg",
-    "templateSystemUniqueVersion": 3550575095
+    "templateSystemUniqueVersion": 2114752673
   },
   "type": "character"
 }

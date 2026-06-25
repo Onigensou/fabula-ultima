@@ -248,6 +248,136 @@ function evaluateActiveEffectCondition(context, row) {
   };
 }
 
+function getPerformerTokenDoc(context) {
+  return context?.performer?.tokenDocument ?? context?.actorData?.tokenDocument ?? null;
+}
+
+/* Enemy/ally count vs an inclusive v1–v2 range. */
+function evaluateCountCondition(context, row, relation, label) {
+  const actor = getActor(context);
+  const tokenDoc = getPerformerTokenDoc(context);
+  const count = AR.countSceneTargetsForRelation(actor, tokenDoc, relation);
+  const range = normalizeRange(row?.value1, row?.value2);
+  const passed = isValueInInclusiveRange(count, range.min, range.max);
+
+  return {
+    passed,
+    conditionKey: relation === "enemy" ? "enemy_count" : "ally_count",
+    conditionLabel: label,
+    reason: passed
+      ? `${label} ${count} is within ${range.min}–${range.max}.`
+      : `${label} ${count} is outside ${range.min}–${range.max}.`,
+    details: { count, min: range.min, max: range.max }
+  };
+}
+
+/* Passes if any enemy (opposing-side token) carries the named status. */
+function evaluateEnemyHasStatus(context, row) {
+  const statusName = AR.toString(row?.stringRaw, "").trim();
+  const label = "Enemy Has Status";
+
+  if (!statusName) {
+    return { passed: false, conditionKey: "enemy_has_status", conditionLabel: label,
+      reason: "No status name entered in the row string field.", details: {} };
+  }
+
+  const tokenDoc = getPerformerTokenDoc(context);
+  const performerDisposition = AR.getTokenDisposition(tokenDoc);
+  const tokens = Array.from(canvas?.tokens?.placeables ?? []);
+
+  let holder = null;
+  for (const tok of tokens) {
+    const actor = AR.getTokenActor(tok);
+    if (!actor) continue;
+    const rel = AR.relationToPerformer(AR.getTokenDisposition(AR.getTokenDocument(tok)), performerDisposition);
+    if (rel !== "enemy") continue;
+    if (AR.actorHasEffectByName(actor, statusName)) { holder = AR.getActorName(actor); break; }
+  }
+
+  const passed = Boolean(holder);
+  return {
+    passed,
+    conditionKey: "enemy_has_status",
+    conditionLabel: label,
+    reason: passed ? `Enemy "${holder}" has "${statusName}".` : `No enemy has "${statusName}".`,
+    details: { statusName, holder }
+  };
+}
+
+/* Passes if ANY creature on the scene except the performer carries the status. */
+function evaluateCreatureHasStatus(context, row) {
+  const statusName = AR.toString(row?.stringRaw, "").trim();
+  const label = "Creature Has Status";
+
+  if (!statusName) {
+    return { passed: false, conditionKey: "creature_has_status", conditionLabel: label,
+      reason: "No status name entered in the row string field.", details: {} };
+  }
+
+  const performerId = getPerformerTokenDoc(context)?.id ?? null;
+  const tokens = Array.from(canvas?.tokens?.placeables ?? []);
+
+  let holder = null;
+  for (const tok of tokens) {
+    const tokenDoc = AR.getTokenDocument(tok);
+    if (performerId && tokenDoc?.id === performerId) continue; // exclude self
+    const actor = AR.getTokenActor(tok);
+    if (!actor) continue;
+    if (AR.actorHasEffectByName(actor, statusName)) { holder = AR.getActorName(actor); break; }
+  }
+
+  const passed = Boolean(holder);
+  return {
+    passed,
+    conditionKey: "creature_has_status",
+    conditionLabel: label,
+    reason: passed ? `Creature "${holder}" has "${statusName}".` : `No creature has "${statusName}".`,
+    details: { statusName, holder }
+  };
+}
+
+/* Self status stack count. v1 = min (>=1 if blank); v2 = optional max. */
+function evaluateEffectStacks(context, row) {
+  const actor = getActor(context);
+  const statusName = AR.toString(row?.stringRaw, "").trim();
+  const label = "Effect Stacks";
+
+  if (!statusName) {
+    return { passed: false, conditionKey: "effect_stacks", conditionLabel: label,
+      reason: "No status name entered in the row string field.", details: {} };
+  }
+
+  const stacks = AR.getEffectStackCount(actor, statusName);
+  const min = Math.max(1, AR.toInteger(row?.value1, 1));
+  const max = AR.toInteger(row?.value2, 0);
+  const passed = max > 0 ? (stacks >= min && stacks <= max) : (stacks >= min);
+
+  return {
+    passed,
+    conditionKey: "effect_stacks",
+    conditionLabel: label,
+    reason: passed
+      ? `"${statusName}" stacks (${stacks}) satisfy ${max > 0 ? `${min}–${max}` : `>= ${min}`}.`
+      : `"${statusName}" stacks (${stacks}) do not satisfy ${max > 0 ? `${min}–${max}` : `>= ${min}`}.`,
+    details: { statusName, stacks, min, max: max > 0 ? max : null }
+  };
+}
+
+/* Pure random gate: v1 = percent chance (0–100). */
+function evaluateRandomChance(context, row) {
+  const chance = AR.clamp(AR.toInteger(row?.value1, 0), 0, 100);
+  const roll = Math.random() * 100;
+  const passed = roll < chance;
+
+  return {
+    passed,
+    conditionKey: "random",
+    conditionLabel: "Random %",
+    reason: passed ? `Rolled ${roll.toFixed(1)} < ${chance}% (pass).` : `Rolled ${roll.toFixed(1)} >= ${chance}% (fail).`,
+    details: { chance, roll: Number(roll.toFixed(1)) }
+  };
+}
+
 function evaluateOneCondition(context, row, options = {}) {
   const conditionKey = AR.toString(row?.conditionKey, "always");
   const conditionLabel = AR.toString(row?.conditionLabel, "Always");
@@ -325,6 +455,24 @@ function evaluateOneCondition(context, row, options = {}) {
 
     case "active_effect":
       return evaluateActiveEffectCondition(context, row);
+
+    case "enemy_count":
+      return evaluateCountCondition(context, row, "enemy", "Enemy Count");
+
+    case "ally_count":
+      return evaluateCountCondition(context, row, "ally", "Ally Count");
+
+    case "enemy_has_status":
+      return evaluateEnemyHasStatus(context, row);
+
+    case "creature_has_status":
+      return evaluateCreatureHasStatus(context, row);
+
+    case "effect_stacks":
+      return evaluateEffectStacks(context, row);
+
+    case "random":
+      return evaluateRandomChance(context, row);
 
     default:
       return {

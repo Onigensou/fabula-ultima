@@ -54,7 +54,26 @@ const CONDITION_ALIASES = Object.freeze({
   "resource 3": "resource3",
 
   active_effect: "active_effect",
-  "active effect": "active_effect"
+  "active effect": "active_effect",
+
+  enemy_count: "enemy_count",
+  "enemy count": "enemy_count",
+
+  ally_count: "ally_count",
+  "ally count": "ally_count",
+
+  enemy_has_status: "enemy_has_status",
+  "enemy has status": "enemy_has_status",
+
+  creature_has_status: "creature_has_status",
+  "creature has status": "creature_has_status",
+
+  effect_stacks: "effect_stacks",
+  "effect stacks": "effect_stacks",
+
+  random: "random",
+  "random %": "random",
+  "random percent": "random"
 });
 
 function getModuleApiContainer(moduleId) {
@@ -91,6 +110,12 @@ function getConditionLabel(conditionKey) {
     case "resource2": return "Resource 2";
     case "resource3": return "Resource 3";
     case "active_effect": return "Active Effect";
+    case "enemy_count": return "Enemy Count";
+    case "ally_count": return "Ally Count";
+    case "enemy_has_status": return "Enemy Has Status";
+    case "creature_has_status": return "Creature Has Status";
+    case "effect_stacks": return "Effect Stacks";
+    case "random": return "Random %";
     default: return AR.titleCase(conditionKey.replace(/_/g, " "));
   }
 }

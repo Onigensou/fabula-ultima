@@ -73,7 +73,55 @@ export const ACTION_READER_KEYS = Object.freeze({
 
   skillType: "skill_type",
   skillTarget: "skill_target",
-  isOffensiveSpell: "isOffensiveSpell"
+  isOffensiveSpell: "isOffensiveSpell",
+
+  // Action-economy / targeting intelligence (added for AI upgrade)
+  typeDamage: "type_damage",
+  defenseTargetType: "defense_target_type",
+  cost: "cost",
+  defenseValue: "defense",
+  magicDefenseValue: "magic_defense",
+
+  // New optional pattern-row columns (blank => legacy behavior)
+  actionPatternWeightKey: "action_pattern_weight",
+  actionPatternCooldownKey: "action_pattern_cooldown",
+  actionPatternTargetFocusKey: "action_pattern_target_focus"
+});
+
+/* Foundry module id (used for effect-charge stack flags + combatant memory). */
+export const FU_MODULE_ID = "fabula-ultima-companion";
+
+/* Stack count for a status lives at flags.<module>.charges on the ActiveEffect. */
+export const EFFECT_CHARGES_FLAG = "charges";
+
+/*
+ * Damage-type affinity order. The NPC sheet stores affinities as
+ * affinity_1 .. affinity_9; this is the fixed element order they map to.
+ * Values: "NA" (normal), "RS" (resist), "VU" (vulnerable), "IM" (immune),
+ * "AB" (absorb). Verified live against Fire Slime (fire=AB, ice=VU, poison=IM).
+ */
+export const AFFINITY_ELEMENTS = Object.freeze([
+  "physical", "air", "bolt", "dark", "earth", "fire", "ice", "light", "poison"
+]);
+
+/* Common spellings/synonyms normalized onto the canonical element keys above. */
+export const DAMAGE_TYPE_ALIASES = Object.freeze({
+  physical: "physical",
+  phys: "physical",
+  air: "air",
+  wind: "air",
+  bolt: "bolt",
+  lightning: "bolt",
+  thunder: "bolt",
+  dark: "dark",
+  shadow: "dark",
+  earth: "earth",
+  fire: "fire",
+  ice: "ice",
+  cold: "ice",
+  light: "light",
+  holy: "light",
+  poison: "poison"
 });
 
 export const ActionReaderCore = {
@@ -294,6 +342,189 @@ export const ActionReaderCore = {
     return this.getActorEffects(actor).some(effect =>
       this.equalsNormalized(effect?.name, target)
     );
+  },
+
+  /* ---------------------------------------------------------------------- */
+  /* Damage type / affinity / defense helpers (AI targeting)                */
+  /* ---------------------------------------------------------------------- */
+
+  normalizeDamageType(value) {
+    const normalized = this.normalizeText(value);
+    if (!normalized) return "";
+    return DAMAGE_TYPE_ALIASES[normalized] ?? normalized;
+  },
+
+  /* Returns { physical:"NA", air:"NA", ... } for an actor. */
+  getActorAffinityMap(actor) {
+    const props = this.getActorProps(actor);
+    const map = {};
+
+    for (let i = 0; i < AFFINITY_ELEMENTS.length; i++) {
+      const element = AFFINITY_ELEMENTS[i];
+      const raw = this.toString(props?.[`affinity_${i + 1}`], "NA").trim().toUpperCase();
+      map[element] = raw || "NA";
+    }
+
+    return map;
+  },
+
+  /* Affinity code ("NA"/"RS"/"VU"/"IM"/"AB") of an actor toward a damage type. */
+  getAffinityForType(actor, damageType) {
+    const element = this.normalizeDamageType(damageType);
+    if (!element) return "NA";
+
+    const map = this.getActorAffinityMap(actor);
+    return map[element] ?? "NA";
+  },
+
+  /* Reads the damage type ("fire", "ice", ...) declared on an action item. */
+  getItemDamageType(itemOrProps) {
+    const props = itemOrProps?.system?.props
+      ? this.getItemProps(itemOrProps)
+      : (itemOrProps ?? {});
+    return this.normalizeDamageType(props?.[this.keys.typeDamage]);
+  },
+
+  /* Which defense an action targets: "def" (physical) or "mdef" (magic). */
+  getItemDefenseTarget(itemOrProps) {
+    const props = itemOrProps?.system?.props
+      ? this.getItemProps(itemOrProps)
+      : (itemOrProps ?? {});
+    const raw = this.normalizeText(props?.[this.keys.defenseTargetType]);
+    return raw === "mdef" ? "mdef" : (raw === "def" ? "def" : "");
+  },
+
+  getActorDefenses(actor) {
+    const props = this.getActorProps(actor);
+    return {
+      def: this.toNumber(props?.[this.keys.defenseValue], 0),
+      mdef: this.toNumber(props?.[this.keys.magicDefenseValue], 0)
+    };
+  },
+
+  /*
+   * Stack count of a named status on an actor.
+   *   0   => not present
+   *   1   => present, no explicit charge count
+   *   N   => flags.<module>.charges value
+   */
+  getEffectStackCount(actor, statusName) {
+    const target = this.normalizeText(statusName);
+    if (!target) return 0;
+
+    for (const effect of this.getActorEffects(actor)) {
+      if (!this.equalsNormalized(effect?.name, target)) continue;
+
+      let charges;
+      try {
+        charges = effect.getFlag?.(FU_MODULE_ID, EFFECT_CHARGES_FLAG);
+      } catch (_e) {
+        charges = undefined;
+      }
+      if (charges === undefined || charges === null) {
+        charges = effect?.flags?.[FU_MODULE_ID]?.[EFFECT_CHARGES_FLAG];
+      }
+
+      const count = this.toInteger(charges, NaN);
+      return Number.isFinite(count) && count > 0 ? count : 1;
+    }
+
+    return 0;
+  },
+
+  /* ---------------------------------------------------------------------- */
+  /* Action cost parsing (feasibility)                                      */
+  /* ---------------------------------------------------------------------- */
+
+  /*
+   * Parse an action's cost string into a structured form.
+   * Examples: "20 MP", "10 MP", "30 x T MP", "-", "" , "5 IP".
+   * Returns { free, amount, resource, perTarget, raw }.
+   *   - free=true for "-" / blank / 0 (no resource cost).
+   *   - resource is "mp" | "ip" | "zenit" | "" (unknown).
+   *   - perTarget=true when the cost scales with target count ("x T").
+   */
+  parseActionCost(costText) {
+    const raw = this.toString(costText, "").trim();
+    const normalized = this.normalizeText(raw);
+
+    if (!normalized || normalized === "-" || normalized === "0") {
+      return { free: true, amount: 0, resource: "", perTarget: false, raw };
+    }
+
+    const perTarget = /x\s*t\b/.test(normalized) || /per target/.test(normalized);
+
+    let resource = "";
+    if (/\bmp\b/.test(normalized)) resource = "mp";
+    else if (/\bip\b/.test(normalized)) resource = "ip";
+    else if (/zenit|\bz\b/.test(normalized)) resource = "zenit";
+
+    const numberMatch = normalized.match(/\d+/);
+    const amount = numberMatch ? Number(numberMatch[0]) : 0;
+
+    if (amount <= 0) {
+      return { free: true, amount: 0, resource, perTarget, raw };
+    }
+
+    return { free: false, amount, resource, perTarget, raw };
+  },
+
+  /* ---------------------------------------------------------------------- */
+  /* Lightweight target-existence pre-check (feasibility)                   */
+  /* ---------------------------------------------------------------------- */
+
+  /* Coarse relation keyword from a skill_target string (for pre-filtering). */
+  quickTargetRelation(text) {
+    const t = this.normalizeText(text);
+    if (!t) return "";
+    if (t === "self" || /\bself\b/.test(t)) return "self";
+    if (/\ball(y|ies)\b/.test(t)) return "ally";
+    if (/\benem(y|ies)\b/.test(t)) return "enemy";
+    if (/\bneutral/.test(t)) return "neutral";
+    if (/\bsecret/.test(t)) return "secret";
+    if (/\bcreatures?\b/.test(t)) return "creature";
+    return "";
+  },
+
+  /* Relation of a candidate disposition toward the performer disposition. */
+  relationToPerformer(candidateDisposition, performerDisposition) {
+    if (this.isSameSide(candidateDisposition, performerDisposition)) return "ally";
+    if (this.isOpposingSide(candidateDisposition, performerDisposition)) return "enemy";
+
+    const side = this.getDispositionSide(candidateDisposition);
+    if (side === this.sideKeys.NEUTRAL) return "neutral";
+    if (side === this.sideKeys.SECRET) return "secret";
+    return "other";
+  },
+
+  /* Count scene tokens matching a target relation relative to a performer. */
+  countSceneTargetsForRelation(performerActor, performerTokenDoc, relation) {
+    const tokens = Array.from(canvas?.tokens?.placeables ?? []);
+    const performerDisposition = this.getTokenDisposition(performerTokenDoc);
+    const performerId = performerTokenDoc?.id ?? null;
+
+    let count = 0;
+
+    for (const tok of tokens) {
+      const actor = this.getTokenActor(tok);
+      if (!actor) continue;
+
+      const tokenDoc = this.getTokenDocument(tok);
+      const isSelf = Boolean(performerId && tokenDoc?.id === performerId);
+      const rel = this.relationToPerformer(this.getTokenDisposition(tokenDoc), performerDisposition);
+
+      switch (relation) {
+        case "self": if (isSelf) count++; break;
+        case "ally": if (rel === "ally") count++; break;
+        case "enemy":
+        case "creature": if (rel === "enemy") count++; break;
+        case "neutral": if (rel === "neutral") count++; break;
+        case "secret": if (rel === "secret") count++; break;
+        default: count++; break; // unknown relation => assume targetable
+      }
+    }
+
+    return count;
   },
 
   /* ---------------------------------------------------------------------- */
