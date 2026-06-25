@@ -10,11 +10,11 @@
   },
   "effects": [
     {
-      "_id": "F18Xy6Vx88Z4xjVl",
+      "_id": "8037eBwvd9RIyFex",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782244393570,
+        "createdTime": 1782377272282,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -41,17 +41,19 @@
         "fabula-ultima-companion": {
           "category": "buff",
           "chargeKey": "prophecy",
-          "charges": 10,
+          "charges": 4,
           "chargesMax": 99,
           "directorAppliedBy": {
             "appliedAtRound": 0,
             "effectLabel": "pds_gain",
+            "lifetimeMode": "persistent_counter",
             "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.1xLltSAF28BfIpBU",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.lCIoGqt9VFyLMSFT",
             "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.gm2w1NLdaEI7SzaQ",
             "turnsRemaining": null
           },
-          "directorPermanent": true
+          "directorPermanent": false,
+          "lifetimeMode": "persistent_counter"
         },
         "statuscounter": {
           "config": {
@@ -75,11 +77,11 @@
       "type": "base"
     },
     {
-      "_id": "l1k8ruMvfQH9MO4d",
+      "_id": "iBMhBfcDS2U9t5B5",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782218676583,
+        "createdTime": 1782360567252,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -112,7 +114,7 @@
             "appliedAtRound": 0,
             "effectLabel": "hod_refresh",
             "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.1xLltSAF28BfIpBU",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.lCIoGqt9VFyLMSFT",
             "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF",
             "turnsRemaining": null
           },
@@ -737,7 +739,7 @@
             "1": {
               "$deleted": false,
               "chain_steps": "cat_10_mp, cat_10_dmg",
-              "condition_formula": "SL >= 1 && CUR_MP >= 10",
+              "condition_formula": "SL >= 1 && CUR_MP >= ACTION_MP_COST + 10",
               "disable_ui_type": "dim",
               "disabled_reason": "Not enough MP",
               "effect_kind": "chain",
@@ -745,11 +747,11 @@
             },
             "2": {
               "$deleted": false,
-              "consume_amount": "10",
-              "consume_resource": "mp",
-              "effect_kind": "consume_resource",
-              "effect_label": "cat_10_mp",
-              "target_ref": "self"
+              "cost_amount": "10",
+              "cost_operation": "add",
+              "cost_resource": "mp",
+              "effect_kind": "adjust_cost",
+              "effect_label": "cat_10_mp"
             },
             "3": {
               "$deleted": false,
@@ -762,7 +764,7 @@
             "4": {
               "$deleted": false,
               "chain_steps": "cat_20_mp, cat_20_dmg",
-              "condition_formula": "SL >= 2 && CUR_MP >= 20",
+              "condition_formula": "SL >= 2 && CUR_MP >= ACTION_MP_COST + 20",
               "disable_ui_type": "dim",
               "disabled_reason": "Not enough MP",
               "effect_kind": "chain",
@@ -770,11 +772,11 @@
             },
             "5": {
               "$deleted": false,
-              "consume_amount": "20",
-              "consume_resource": "mp",
-              "effect_kind": "consume_resource",
-              "effect_label": "cat_20_mp",
-              "target_ref": "self"
+              "cost_amount": "20",
+              "cost_operation": "add",
+              "cost_resource": "mp",
+              "effect_kind": "adjust_cost",
+              "effect_label": "cat_20_mp"
             },
             "6": {
               "$deleted": false,
@@ -787,7 +789,7 @@
             "7": {
               "$deleted": false,
               "chain_steps": "cat_30_mp, cat_30_dmg",
-              "condition_formula": "SL >= 3 && CUR_MP >= 30",
+              "condition_formula": "SL >= 3 && CUR_MP >= ACTION_MP_COST + 30",
               "disable_ui_type": "dim",
               "disabled_reason": "Not enough MP",
               "effect_kind": "chain",
@@ -795,11 +797,11 @@
             },
             "8": {
               "$deleted": false,
-              "consume_amount": "30",
-              "consume_resource": "mp",
-              "effect_kind": "consume_resource",
-              "effect_label": "cat_30_mp",
-              "target_ref": "self"
+              "cost_amount": "30",
+              "cost_operation": "add",
+              "cost_resource": "mp",
+              "effect_kind": "adjust_cost",
+              "effect_label": "cat_30_mp"
             },
             "9": {
               "$deleted": false,
@@ -823,7 +825,7 @@
           "reaction_config_table": {
             "0": {
               "$deleted": false,
-              "condition_formula": "HAS_ARCANE_WEAPON == 1 && ACTION_IS_SPELL == 1",
+              "condition_formula": "HAS_ARCANE_WEAPON == 1 && ACTION_IS_SPELL == 1 && ACTION_IS_FREE_CAST == 0",
               "reaction_effect_ref": "cat_menu",
               "reaction_passive_mode": "ask",
               "reaction_source": "self",
@@ -2835,6 +2837,16 @@
           "defense_target_type": "def",
           "description": "<p>Once per turn during a conflict, if you have an <strong>arcane</strong> weapon equipped, you may use an action and spend <strong>20 to 50 Mind Points</strong> to perform the <strong>【📕Spell】</strong> action for free <strong>twice</strong>, casting two spells without needing to pay their MP costs. If you do, the two spells must have a combined total MP cost equal to or lower than <strong>【20 + the amount of MP you spent to use this Skill】</strong>, and the second spell must have a total MP cost that is equal to or lower than half the total MP cost of the first spell.</p>",
           "duration": "",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "action_ref": "Spell",
+              "effect_kind": "free_action",
+              "effect_label": "bim_free",
+              "free_of_cost": true,
+              "max_mp_cost": "min(70 - MP_SPENT_THIS_TURN, floor(MP_SPENT_THIS_TURN / 2))"
+            }
+          },
           "heroic_requirement": "you must have mastered two or more Classes among Elementalist, Entropist, and Spiritist, and your character must be level 30 or higher.",
           "ignore_hr": false,
           "isCheck": false,
@@ -2847,7 +2859,17 @@
           "max_level": 1,
           "name": "Bimagus",
           "optional_params": {},
-          "reaction_config_table": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "HAS_ARCANE_WEAPON == 1 && MP_SPENT_THIS_TURN > 0",
+              "reaction_effect_ref": "bim_free",
+              "reaction_passive_mode": "ask",
+              "reaction_passive_target": "self",
+              "reaction_source": "self",
+              "reaction_trigger": "turn_end"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
@@ -4640,9 +4662,12 @@
           "damage_bonus": "25",
           "defense_target_type": "def",
           "description": "<p>A pillar of ice magic envelops your foe, suddenly dropping their body temperature to a critical level. The target suffers <strong>【HR + 25】</strong><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(166, 227, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span> damage. </p><p>Damage dealt by this spell ignores Resistances.</p>",
+          "details_roller": "Show",
           "duration": "Instantaneous",
           "heroic_requirement": "",
+          "id": "pcCBP65FqbsMOF0h",
           "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/EMTrans6.png",
           "isCheck": true,
           "isFacet": true,
           "isHeroic": false,
@@ -4654,6 +4679,7 @@
           "name": "Iceberg",
           "optional_params": {},
           "reaction_config_table": {},
+          "reaction_effect_table": {},
           "rolled_atr1": "INS",
           "rolled_atr2": "WLP",
           "skill_animation_default": "",
@@ -4663,7 +4689,8 @@
           "skill_target": "One creature",
           "skill_type": "Spell",
           "type_damage": "Ice",
-          "use_optional_params": false
+          "use_optional_params": false,
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.pcCBP65FqbsMOF0h"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -7439,9 +7466,9 @@
       "critical_damage_bonus": 0,
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
-      "current_hp": "100",
+      "current_hp": "107",
       "current_ip": "6",
-      "current_mp": "78",
+      "current_mp": "30",
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/hina_Cut-in002.png",
       "cut_in_fumble": "",

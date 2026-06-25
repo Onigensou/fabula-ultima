@@ -16403,6 +16403,13 @@
         "effects": 0
       },
       {
+        "id": "BRVLt8eUwQBFb2p2",
+        "name": "BD Dummy Enemy",
+        "type": "character",
+        "items": [],
+        "effects": 1
+      },
+      {
         "id": "2U5MthxrDRMofSGl",
         "name": "Beary Goods",
         "type": "character",

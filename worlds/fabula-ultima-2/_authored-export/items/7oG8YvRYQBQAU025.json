@@ -46,7 +46,7 @@
         "1": {
           "$deleted": false,
           "chain_steps": "cat_10_mp, cat_10_dmg",
-          "condition_formula": "SL >= 1 && CUR_MP >= 10",
+          "condition_formula": "SL >= 1 && CUR_MP >= ACTION_MP_COST + 10",
           "disable_ui_type": "dim",
           "disabled_reason": "Not enough MP",
           "effect_kind": "chain",
@@ -54,11 +54,11 @@
         },
         "2": {
           "$deleted": false,
-          "consume_amount": "10",
-          "consume_resource": "mp",
-          "effect_kind": "consume_resource",
-          "effect_label": "cat_10_mp",
-          "target_ref": "self"
+          "cost_amount": "10",
+          "cost_operation": "add",
+          "cost_resource": "mp",
+          "effect_kind": "adjust_cost",
+          "effect_label": "cat_10_mp"
         },
         "3": {
           "$deleted": false,
@@ -71,7 +71,7 @@
         "4": {
           "$deleted": false,
           "chain_steps": "cat_20_mp, cat_20_dmg",
-          "condition_formula": "SL >= 2 && CUR_MP >= 20",
+          "condition_formula": "SL >= 2 && CUR_MP >= ACTION_MP_COST + 20",
           "disable_ui_type": "dim",
           "disabled_reason": "Not enough MP",
           "effect_kind": "chain",
@@ -79,11 +79,11 @@
         },
         "5": {
           "$deleted": false,
-          "consume_amount": "20",
-          "consume_resource": "mp",
-          "effect_kind": "consume_resource",
-          "effect_label": "cat_20_mp",
-          "target_ref": "self"
+          "cost_amount": "20",
+          "cost_operation": "add",
+          "cost_resource": "mp",
+          "effect_kind": "adjust_cost",
+          "effect_label": "cat_20_mp"
         },
         "6": {
           "$deleted": false,
@@ -96,7 +96,7 @@
         "7": {
           "$deleted": false,
           "chain_steps": "cat_30_mp, cat_30_dmg",
-          "condition_formula": "SL >= 3 && CUR_MP >= 30",
+          "condition_formula": "SL >= 3 && CUR_MP >= ACTION_MP_COST + 30",
           "disable_ui_type": "dim",
           "disabled_reason": "Not enough MP",
           "effect_kind": "chain",
@@ -104,11 +104,11 @@
         },
         "8": {
           "$deleted": false,
-          "consume_amount": "30",
-          "consume_resource": "mp",
-          "effect_kind": "consume_resource",
-          "effect_label": "cat_30_mp",
-          "target_ref": "self"
+          "cost_amount": "30",
+          "cost_operation": "add",
+          "cost_resource": "mp",
+          "effect_kind": "adjust_cost",
+          "effect_label": "cat_30_mp"
         },
         "9": {
           "$deleted": false,
@@ -132,7 +132,7 @@
       "reaction_config_table": {
         "0": {
           "$deleted": false,
-          "condition_formula": "HAS_ARCANE_WEAPON == 1 && ACTION_IS_SPELL == 1",
+          "condition_formula": "HAS_ARCANE_WEAPON == 1 && ACTION_IS_SPELL == 1 && ACTION_IS_FREE_CAST == 0",
           "reaction_effect_ref": "cat_menu",
           "reaction_passive_mode": "ask",
           "reaction_source": "self",
