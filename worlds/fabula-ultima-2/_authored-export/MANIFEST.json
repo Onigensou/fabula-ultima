@@ -7097,12 +7097,6 @@
         "effects": 0
       },
       {
-        "id": "Bk9AyjkZUv679vrb",
-        "name": "Fulgur (New Action System)",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "RZJCu7gqGQL3qQkE",
         "name": "Fulgur Alta",
         "type": "equippableItem",
@@ -17741,14 +17735,6 @@
           {
             "id": "H8IUPOQCh849yR06",
             "name": "Frenzy"
-          },
-          {
-            "id": "l9jLaWQXLdoLVdhn",
-            "name": "Fulgur (New Action System)"
-          },
-          {
-            "id": "wu8sqotFSaeyh0pj",
-            "name": "Fulgur (New Action System)"
           },
           {
             "id": "iM0bbQDgvXUYSm2v",
