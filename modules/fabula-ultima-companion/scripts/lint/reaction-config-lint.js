@@ -99,6 +99,11 @@
  *     TEMPLATE_NOT_FOUND / ENGINE_PARSE_FAILED / AE_CONFIG_PARSE_FAILED
  *
  *   Item-level canon rules (run on every item, regardless of isReaction):
+ *     OFFENSIVE_SPELL_NO_CHECK  Spell with a non-empty `type_damage` element but
+ *                             `isCheck` !== true. Offensive spells make a Magic
+ *                             Check vs MDEF in FU; without it the spell auto-hits
+ *                             and its action card mislabels the defense (warning;
+ *                             buff/heal spells with no type_damage are skipped).
  *     COST_DOUBLE_CHARGE      Item has both a non-empty `cost` field AND a
  *                             `consume_resource` row reachable from
  *                             `on_activate_effect_ref`. Action card debits
@@ -666,6 +671,38 @@
     return out;
   }
 
+  // ─── Offensive spell must roll a Check ────────────────────────────────
+  //
+  // FU canon: an offensive / damage Spell makes a Magic Check (vs MDEF) — it
+  // can miss. A damage Spell authored with isCheck:false skips the accuracy
+  // roll, becoming a silent auto-hit, and its action card mislabels (no HIT
+  // row, defense shown wrong). Heuristic for "deals damage" = a non-empty
+  // type_damage element. Buff / heal / utility spells (no type_damage)
+  // legitimately have isCheck:false and are skipped. This was the exact
+  // mis-authoring on the legacy "Fulgur (New Action System)" item.
+  // See [[feedback_offensive_spell_requires_check]].
+  function lintOffensiveSpellNeedsCheck(item) {
+    const out = [];
+    const props = item?.system?.props ?? {};
+    const isSpell = String(props.skill_type ?? "").trim().toLowerCase() === "spell";
+    if (!isSpell) return out;
+    const dmgEl = String(props.type_damage ?? "").trim();
+    if (!dmgEl) return out;                  // no damage element → not offensive
+    if (props.isCheck === true) return out;  // already rolls a Check — fine
+    out.push({
+      severity: "warning",
+      code: "OFFENSIVE_SPELL_NO_CHECK",
+      location: "system.props.isCheck",
+      message:
+        `Damage Spell (type_damage "${dmgEl}") has isCheck = ${JSON.stringify(props.isCheck ?? null)}. ` +
+        `Offensive spells make a Magic Check vs MDEF in FU — without isCheck:true the ` +
+        `spell auto-hits (no accuracy roll) and its action card mislabels the defense. ` +
+        `Set system.props.isCheck = true, or clear type_damage if this spell genuinely ` +
+        `deals no rolled damage.`,
+    });
+    return out;
+  }
+
   function lintCanonDeprecations(props) {
     const out = [];
     if (!props || typeof props !== "object") return out;
@@ -730,6 +767,18 @@
     // would debit again — silent double-charge with no engine guard.
     const costIssues = lintCostDoubleCharge(item);
     for (const i of costIssues) {
+      i.owner    = ownerLabel;
+      i.itemUuid = item?.uuid ?? null;
+      i.itemName = item?.name ?? "(unnamed)";
+      out.push(i);
+    }
+
+    // ── Offensive-spell-needs-Check (runs on EVERY item) ──
+    // Damage Spell with isCheck:false auto-hits + mislabels its card. See
+    // lintOffensiveSpellNeedsCheck. Warning-severity; reviewer triages legacy
+    // NPC spells that are intentionally auto-hit.
+    const checkIssues = lintOffensiveSpellNeedsCheck(item);
+    for (const i of checkIssues) {
       i.owner    = ownerLabel;
       i.itemUuid = item?.uuid ?? null;
       i.itemName = item?.name ?? "(unnamed)";

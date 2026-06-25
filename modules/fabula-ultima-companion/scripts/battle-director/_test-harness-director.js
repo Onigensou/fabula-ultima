@@ -53,7 +53,7 @@
 // read whatever was loaded at boot.
 async function loadDeps() {
   const bust = `?harness=${Date.now()}`;
-  const [stateHandlers, states, intents, snapshot, skillIntent, skillEffects, actionProfile] = await Promise.all([
+  const [stateHandlers, states, intents, snapshot, skillIntent, skillEffects, actionProfile, actionCard] = await Promise.all([
     import(`./state-handlers.js${bust}`),
     import(`./states.js${bust}`),
     import(`./intents.js${bust}`),
@@ -61,6 +61,7 @@ async function loadDeps() {
     import(`./skill-intent.js${bust}`),
     import(`./skill-effects.js${bust}`),
     import(`./action-profile.js${bust}`),
+    import(`./action-card.js${bust}`),
   ]);
   return {
     STATE_HANDLERS: stateHandlers.STATE_HANDLERS,
@@ -77,6 +78,12 @@ async function loadDeps() {
     // The single post-decision recompute (matches production CONFIRM); replaces
     // the retired computeSenderDamageBonuses + recomputePerTargetDamages overlay.
     recomputeActionProfile: actionProfile.recomputeActionProfile,
+    // Render-capture: the SAME kind→builder dispatch production uses to spawn the
+    // action card. Lets simulate harnesses assert on what the player actually sees
+    // (headline, per-target rows, pills, buttons) — not just the data writes.
+    composeActionCardObject: actionCard.composeActionCardObject,
+    composeActionCardRenderPayload: actionCard.composeActionCardRenderPayload,
+    stripHtmlForDesc: actionCard.stripHtmlForDesc,
   };
 }
 
@@ -714,6 +721,112 @@ function summarizeWrites(captures) {
   return [...byActor.values()];
 }
 
+// ─── Render-capture (Phase 2.4) ─────────────────────────────────────────
+//
+// Builds the action card the SAME way production's CONFIRM stage does
+// (state-handlers.js postActionCard payload, action-card.js composer) and
+// flattens it to an assertable record. The point: catch bugs that live in
+// the RENDER layer — wrong headline, a per-target row that says "— No
+// damage"/"Blocked"/"Negated" when it shouldn't, a missing affinity pill,
+// a reaction pill that shouldn't be offered — which the data-write captures
+// are completely blind to.
+//
+// v1 scope: the post-roll action card body/headline/buttons + the
+// pre-passive pill rows. NOT captured: the pre-passive header BONUS preview
+// (needs CONFIRM's payload builder extracted) and the player-client mirror
+// HTML. A green run does not claim those are covered.
+//
+// `ar` is the COMPUTE-stage frozen actionResult. `deps` carries the
+// composer + text-stripper pulled from action-card.js in loadDeps().
+function captureActionCard(ar, deps) {
+  const { composeActionCardObject, composeActionCardRenderPayload, stripHtmlForDesc } = deps;
+  if (typeof composeActionCardObject !== "function") return null;
+  // Build the payload from the SHARED builder production CONFIRM uses, so the
+  // captured card can't drift from what the player sees. The harness needs no
+  // overrides (no target-splicing, no invoke buttons) — the defaults are the
+  // faithful render. (Drift here once mislabeled a spell card's MDEF as "DEF".)
+  const payload = typeof composeActionCardRenderPayload === "function"
+    ? composeActionCardRenderPayload(ar)
+    : { ...ar };  // fallback: pre-extraction harness against newer disk
+  const prePassives = Array.isArray(payload.prePassives) ? payload.prePassives : [];
+  let card = null;
+  try {
+    card = composeActionCardObject({ kind: ar.kind, payload });
+  } catch (e) {
+    return { kind: ar.kind, error: String(e?.message ?? e), html: "", text: "" };
+  }
+  if (!card) return null;
+  const html = [card.titleText ?? "", card.subtitle ?? "", card.portraits ?? "", card.body ?? "", card.buttons ?? ""]
+    .filter(Boolean).join("\n");
+  const strip = typeof stripHtmlForDesc === "function"
+    ? stripHtmlForDesc
+    : (h) => String(h ?? "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+  return {
+    kind: ar.kind,
+    title: card.titleText ?? "",
+    targets: (ar.targets ?? []).map((t) => t?.name).filter(Boolean),
+    html,
+    // Stable form for golden-snapshot diffing — volatile ids/timestamps removed,
+    // whitespace collapsed (see normalizeCardHtml). This is the field you store
+    // as the golden and compare on later runs.
+    htmlNormalized: normalizeCardHtml(html),
+    // Plain text, tags stripped — the field tests grep. stripHtmlForDesc caps
+    // at 320 chars, so strip the title/body separately and join for full text.
+    text: [card.titleText, card.subtitle, card.body, card.buttons].map((h) => strip(h)).filter(Boolean).join(" | "),
+    pills: prePassives.map((p) => ({ name: p.carrierName ?? p.name ?? "?", mode: p.mode ?? null, available: p.available !== false })),
+  };
+}
+
+// Normalize captured card HTML into a stable string for golden-snapshot
+// regression. Strips the only volatile bits a render produces — the harness's
+// `harness-ae-<ts>-<rand>` / `harness-item-…` fake ids and epoch-ms timestamps —
+// and collapses the template-literal whitespace so cosmetic reformatting of a
+// builder doesn't churn the golden. Deterministic: same card in → same string.
+function normalizeCardHtml(html) {
+  return String(html ?? "")
+    .replace(/harness-(?:ae|item)-\d+-\d+/g, "harness-ID")  // volatile fake ids
+    .replace(/\b\d{13,}\b/g, "TS")                          // Date.now() epoch-ms
+    .replace(/\s+/g, " ")                                   // collapse whitespace
+    .trim();
+}
+
+// Diff a captured normalized-HTML array against a stored golden array (both from
+// `result.cardHtmlNormalized`). Returns { match, diffs } — `match` true only when
+// every card matches AND the counts are equal. Serializable result, so it works
+// both in-process and over the bridge. Usage: capture once, save
+// `result.cardHtmlNormalized` as the golden, then on later runs
+// `diffCardGolden(result.cardHtmlNormalized, golden)`.
+function diffCardGolden(actual, golden) {
+  const a = Array.isArray(actual) ? actual : [];
+  const g = Array.isArray(golden) ? golden : [];
+  const diffs = [];
+  const n = Math.max(a.length, g.length);
+  for (let i = 0; i < n; i++) {
+    if (a[i] !== g[i]) diffs.push({ index: i, expected: g[i] ?? null, actual: a[i] ?? null });
+  }
+  return { match: diffs.length === 0 && a.length === g.length, diffs };
+}
+
+// Attach the result-side card helpers. `cardText` is a flat string (survives
+// JSON serialization over the test-bridge). `expectCard` is a convenience for
+// IN-PROCESS callers (FUCompanion.api.test.*) — it is NOT serializable, so it
+// won't appear in a bridge res-*.json; over the bridge, grep `cardText` /
+// `cards[].text` instead.
+function attachCardHelpers(result, cards) {
+  result.cards = cards;
+  result.cardText = cards.map((c) => c?.text ?? "").filter(Boolean).join("\n");
+  // Serializable golden payload — store this array as the golden, then compare a
+  // later run with diffCardGolden / result.matchGolden.
+  result.cardHtmlNormalized = cards.map((c) => c?.htmlNormalized ?? "");
+  result.expectCard = (matcher) => cards.find((c) => {
+    const t = c?.text ?? "";
+    return matcher instanceof RegExp ? matcher.test(t) : t.includes(String(matcher));
+  }) ?? null;
+  // In-process convenience (not serializable): diff this run's cards vs a golden.
+  result.matchGolden = (golden) => diffCardGolden(result.cardHtmlNormalized, golden);
+  return result;
+}
+
 // Install identifier overrides via the global formula registry —
 // `globalThis.__FU_HARNESS_FORMULA_OVERRIDES__`. `buildSkillResolver`
 // consults this map BEFORE its normal cases (see skill-formulas.js).
@@ -861,6 +974,14 @@ async function runDirectorSkillSimulate(args = {}) {
     } catch (e) { console.warn(`${TAG} skill prePassives threw`, e); }
   }
 
+  // Render-capture — build the action card the way CONFIRM does (post-roll,
+  // pre-RESOLVE) so callers can assert on what the player sees. Non-fatal.
+  const renderedCards = [];
+  try {
+    const card = captureActionCard(ar, deps);
+    if (card) renderedCards.push(card);
+  } catch (e) { console.warn(`${TAG} card capture threw`, e); }
+
   // Step 2 — set up a synthetic director that resolveSkillAction can
   // walk. RESOLVE's Skill path reads director.ctx.actionResult and
   // director.dCombat.round + .currentTurnResolved.
@@ -904,7 +1025,7 @@ async function runDirectorSkillSimulate(args = {}) {
     formulaOverrides.restore();
   }
 
-  return {
+  return attachCardHelpers({
     ok: !resolveError,
     actionResult: ar,
     summary: compute.summary,
@@ -912,7 +1033,7 @@ async function runDirectorSkillSimulate(args = {}) {
     perActorWrites: summarizeWrites(captures),
     preApplied: preApplied.created,
     resolveError,
-  };
+  }, renderedCards);
 }
 
 // ─── Attack pipeline simulate (Phase 2.3) ───────────────────────────────
@@ -1055,6 +1176,7 @@ async function runDirectorAttackSimulate(args = {}) {
   const { captures, restore } = installWriteCaptures();
 
   const passResults = [];
+  const renderedCards = [];   // one card per pass (two-weapon → 2)
   let resolveError = null;
 
   try {
@@ -1094,6 +1216,11 @@ async function runDirectorAttackSimulate(args = {}) {
           }
         } catch (e) { console.warn(`${TAG} attack prePassives threw`, e); }
       }
+      // Render-capture for this pass (post-roll, pre-RESOLVE). Non-fatal.
+      try {
+        const card = captureActionCard(ar, deps);
+        if (card) renderedCards.push(card);
+      } catch (e) { console.warn(`${TAG} attack card capture threw`, e); }
       const synthDirector = {
         ctx: { actionResult: ar, _resumedFromPendingAction: true },
         dCombat: { round, currentTurnResolved: false },
@@ -1138,14 +1265,14 @@ async function runDirectorAttackSimulate(args = {}) {
     formulaOverrides.restore();
   }
 
-  return {
+  return attachCardHelpers({
     ok: !resolveError,
     passes: passResults,
     captures,
     perActorWrites: summarizeWrites(captures),
     preApplied: preApplied.created,
     resolveError,
-  };
+  }, renderedCards);
 }
 
 // ─── Passive trigger dispatch test (Gap 11) ─────────────────────────────
@@ -1461,7 +1588,10 @@ function registerHarness() {
   root.api.test.runDirectorScenarios      = runDirectorScenarios;
   root.api.test.runDirectorPassiveTriggerTest = runDirectorPassiveTriggerTest;
   root.api.test.getDirectorTestFixtures   = getDirectorTestFixtures;
-  console.info(`${TAG} registered: runDirectorSkillCompute/Simulate, runDirectorAttackCompute/Simulate, runDirectorScenarios, runDirectorPassiveTriggerTest, getDirectorTestFixtures`);
+  // Golden-snapshot helpers (render-capture regression).
+  root.api.test.diffCardGolden            = diffCardGolden;
+  root.api.test.normalizeCardHtml         = normalizeCardHtml;
+  console.info(`${TAG} registered: runDirectorSkillCompute/Simulate, runDirectorAttackCompute/Simulate, runDirectorScenarios, runDirectorPassiveTriggerTest, getDirectorTestFixtures, diffCardGolden, normalizeCardHtml`);
 }
 // Boot-time registration via the ready hook OR fast-path when the module
 // is dynamically re-imported with cache-bust at runtime (Foundry's ready
@@ -1477,4 +1607,6 @@ export {
   runDirectorAttackSimulate,
   runDirectorScenarios,
   getDirectorTestFixtures,
+  diffCardGolden,
+  normalizeCardHtml,
 };

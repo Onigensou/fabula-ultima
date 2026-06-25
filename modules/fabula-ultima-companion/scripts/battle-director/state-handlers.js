@@ -16,7 +16,7 @@ import { snapshotCombatant, snapshotDirectorCombatant, snapshotEligibleTargets, 
 import { TurnUI } from "./turn-ui.js";
 import { TurnPicker } from "./turn-picker.js";
 import { requestTargeting } from "./target-picker.js";
-import { postActionCard, BattlefieldActionCard } from "./action-card.js";
+import { postActionCard, BattlefieldActionCard, composeActionCardRenderPayload } from "./action-card.js";
 import { pickWeaponMode, WeaponModePicker } from "./weapon-mode-picker.js";
 import { pickAttributePair, AttributePairPicker } from "./attribute-pair-picker.js";
 import { runDirectorInit } from "./director-init.js";
@@ -4403,16 +4403,15 @@ const Confirm = {
       director,
       kind: ar.kind,
       payload: {
+        // Shared render-field set — single source with the test harness (see
+        // composeActionCardRenderPayload). CONFIRM overrides the fields it
+        // owns/derives below (invoke-stamped attacker, post-splice targets +
+        // perTargetResults, live prePassives, the onAddTargetApply callback).
+        ...composeActionCardRenderPayload(ar),
         attacker: { ...ar.attacker, invokeCapability, invokePointCount },
         attackerActor,
-        weapon: ar.weapon,
         targets: cardTargets,
-        roll: ar.roll,
-        damage: ar.damage,
         perTargetResults: cardPerTargets,
-        attackMode: ar.attackMode,
-        passIndex: ar.passIndex,
-        totalPasses: ar.totalPasses,
         prePassives,
         // GM-side callback the Barrage (creature_performs_action) pill's "Apply"
         // runs on the POST-ROLL card. Fires the reaction's add_target chain
@@ -4570,32 +4569,8 @@ const Confirm = {
             return { ok: false };
           }
         },
-        // Guard-specific:
-        coverTarget: ar.coverTarget,
-        // Study-specific:
-        target: ar.target,
-        tier: ar.tier,
-        previousBest: ar.previousBest,
-        improved: ar.improved,
-        // Hinder-specific:
-        dl: ar.dl,
-        success: ar.success,
-        // Item-specific:
-        itemCandidates: ar.itemCandidates,
-        ip: ar.ip,
-        // Skill-specific:
-        skillName: ar.skillName,
-        skillImg: ar.skillImg,
-        skillType: ar.skillType,
-        defenseTargetType: ar.defenseTargetType,
-        skillRange: ar.skillRange,
-        skillTarget: ar.skillTarget,
-        damageType: ar.damageType,
-        hasDamage: ar.hasDamage,
-        hasHealing: ar.hasHealing,
-        rawCost: ar.rawCost,
-        costSerialized: ar.costSerialized,
-        descriptionHtml: ar.descriptionHtml,
+        // (kind-specific render fields — Guard/Study/Hinder/Item/Skill — now
+        // come from composeActionCardRenderPayload spread at the top.)
       },
     });
 

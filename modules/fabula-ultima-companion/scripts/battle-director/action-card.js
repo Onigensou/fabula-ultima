@@ -3875,12 +3875,8 @@ function rerenderActionCardBody(root, kind, payload) {
   if (!bodyEl) return null;
   let card = null;
   try {
-    if (kind === "Attack")            card = buildAttackCard(payload);
-    else if (kind === "Guard")        card = buildGuardCard(payload);
-    else if (kind === "Study")        card = buildStudyCard(payload);
-    else if (kind === "Hinder")       card = buildHinderCard(payload);
-    else if (kind === "Equipment")    card = buildEquipmentCard(payload);
-    else /* Skill | Item | other */   card = buildSkillCard(payload);
+    // Shared composer; unknown kinds fall back to the Skill card (legacy behavior).
+    card = composeActionCardObject({ kind, payload }) ?? buildSkillCard(payload);
   } catch (e) {
     warn("rerenderActionCardBody: builder threw", e);
     return null;
@@ -3890,7 +3886,76 @@ function rerenderActionCardBody(root, kind, payload) {
   return card.body;
 }
 
-function stripHtmlForDesc(html) {
+// Single source of truth for the kind→builder dispatch. Shared by the spawn
+// path (postActionCard), the in-place re-render (rerenderActionCardBody), and
+// the test harness's render-capture — so the HTML the harness asserts on is
+// byte-for-byte what production renders. Returns null for unknown kinds; the
+// caller supplies its own fallback.
+export function composeActionCardObject({ kind, payload }) {
+  switch (kind) {
+    case "Attack":    return buildAttackCard(payload);
+    case "Guard":     return buildGuardCard(payload);
+    case "Study":     return buildStudyCard(payload);
+    case "Hinder":    return buildHinderCard(payload);
+    case "Equipment": return buildEquipmentCard(payload);
+    case "Skill":
+    case "Item":      return buildSkillCard(payload);
+    default:          return null;
+  }
+}
+
+// Single source of truth for the SET of fields the card builders read off the
+// frozen actionResult. Both production CONFIRM (state-handlers.js) and the test
+// harness derive their postActionCard payload from this, so a builder that
+// starts reading a new `ar.*` field can't silently degrade in one path but not
+// the other — that exact drift mislabeled a captured spell card's MDEF row as
+// "DEF" (skillType was missing from the harness payload). Callers override the
+// few fields they own/derive: CONFIRM swaps in the invoke-stamped attacker,
+// post-splice targets/perTargetResults, the live prePassives, and the
+// onAddTargetApply callback; the harness uses these defaults as-is.
+export function composeActionCardRenderPayload(ar) {
+  return {
+    attacker: ar.attacker,
+    weapon: ar.weapon,
+    targets: ar.targets,
+    roll: ar.roll,
+    damage: ar.damage,
+    perTargetResults: ar.perTargetResults,
+    attackMode: ar.attackMode,
+    passIndex: ar.passIndex,
+    totalPasses: ar.totalPasses,
+    prePassives: Array.isArray(ar.acceptedPrePassives) ? ar.acceptedPrePassives
+      : (Array.isArray(ar.prePassives) ? ar.prePassives : []),
+    // Guard-specific:
+    coverTarget: ar.coverTarget,
+    // Study-specific:
+    target: ar.target,
+    tier: ar.tier,
+    previousBest: ar.previousBest,
+    improved: ar.improved,
+    // Hinder-specific:
+    dl: ar.dl,
+    success: ar.success,
+    // Item-specific:
+    itemCandidates: ar.itemCandidates,
+    ip: ar.ip,
+    // Skill/Spell-specific:
+    skillName: ar.skillName,
+    skillImg: ar.skillImg,
+    skillType: ar.skillType,
+    defenseTargetType: ar.defenseTargetType,
+    skillRange: ar.skillRange,
+    skillTarget: ar.skillTarget,
+    damageType: ar.damageType,
+    hasDamage: ar.hasDamage,
+    hasHealing: ar.hasHealing,
+    rawCost: ar.rawCost,
+    costSerialized: ar.costSerialized,
+    descriptionHtml: ar.descriptionHtml,
+  };
+}
+
+export function stripHtmlForDesc(html) {
   if (!html) return "";
   try {
     const tmp = document.createElement("div");
@@ -3964,22 +4029,11 @@ export async function postActionCard({ director, kind, payload }) {
   // by tryBuild() inside the builders.
   let card = null;
   try {
-    if (kind === "Attack") {
-      card = buildAttackCard(effectivePayload);
-    } else if (kind === "Guard") {
-      card = buildGuardCard(effectivePayload);
-    } else if (kind === "Study") {
-      card = buildStudyCard(effectivePayload);
-    } else if (kind === "Hinder") {
-      card = buildHinderCard(effectivePayload);
-    } else if (kind === "Equipment") {
-      card = buildEquipmentCard(effectivePayload);
-    } else if (kind === "Skill" || kind === "Item") {
-      // Item is skill-shaped: after source selection (composeItem) it uses the
-      // standard reactable action card, same as a Skill. (Selection no longer
-      // happens on the card — buildItemCard is retired from the action flow.)
-      card = buildSkillCard(effectivePayload);
-    } else {
+    // Known kinds (Attack/Guard/Study/Hinder/Equipment/Skill/Item) route through
+    // the shared composer — single source of truth with rerenderActionCardBody +
+    // the test harness. Unknown kinds fall through to the minimal card below.
+    card = composeActionCardObject({ kind, payload: effectivePayload });
+    if (!card) {
       card = {
         titleIcon: "",
         titleText: kind,
