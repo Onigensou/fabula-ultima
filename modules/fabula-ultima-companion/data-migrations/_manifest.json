@@ -571,6 +571,18 @@
     {
       "key": "2026-06-22-template-options-ae-duplicate-replace-family",
       "path": "data-migrations/2026-06-22-template-options-ae-duplicate-replace-family.js"
+    },
+    {
+      "key": "2026-06-25-wandering-flame-author",
+      "path": "data-migrations/2026-06-25-wandering-flame-author.js"
+    },
+    {
+      "key": "2026-06-25-oil-charges-target-turn-end",
+      "path": "data-migrations/2026-06-25-oil-charges-target-turn-end.js"
+    },
+    {
+      "key": "2026-06-25-burn-dot-ceil",
+      "path": "data-migrations/2026-06-25-burn-dot-ceil.js"
     }
   ]
 }
