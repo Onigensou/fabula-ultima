@@ -81,7 +81,31 @@
           "defense_target_type": "def",
           "description": "<p>Drop a giant meteor to the battlefield, Deal <strong>10 </strong><a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\">Fire</a>&nbsp;damage and Trigger <strong>all </strong><a class=\"content-link\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Burn</a>&nbsp;stack effect on target, then, remove <strong>【half of the </strong><a class=\"content-link\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Burn</strong></a><strong>&nbsp;stack from the target】</strong><em>(Round up)</em></p>",
           "duration": "-",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "chain_steps": "meteor_detonate,meteor_halve",
+              "effect_kind": "chain",
+              "effect_label": "meteor_unleash"
+            },
+            "1": {
+              "attacker_name": "Burn",
+              "damage_amount": "AE_CHARGES_BURN * ceil(MAX_HP * 0.1)",
+              "damage_cause": "damage",
+              "damage_element": "fire",
+              "damage_verbosity": "full",
+              "effect_kind": "deal_damage",
+              "effect_label": "meteor_detonate",
+              "target_ref": "action_targets"
+            },
+            "2": {
+              "charge_ae_name": "Burn",
+              "charge_amount": "0.5",
+              "charge_operation": "multiply",
+              "effect_kind": "adjust_charges",
+              "effect_label": "meteor_halve",
+              "target_ref": "action_targets"
+            }
+          },
           "heroic_requirement": "",
           "ignore_hr": false,
           "isCheck": false,
@@ -93,7 +117,7 @@
           "level": "1",
           "max_level": "1",
           "name": "Zero Power: Meteor Impact",
-          "on_activate_effect_ref": "",
+          "on_activate_effect_ref": "meteor_unleash",
           "optional_params": {},
           "reaction_config_table": {},
           "rolled_atr1": "-",
@@ -150,7 +174,27 @@
           "defense_target_type": "def",
           "description": "<p>Whenever a creature <a class=\"content-link\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Burn</a>&nbsp;effect triggers, The Wandering Flame <strong>recovers 10 MP </strong>and <strong>gain 1 Zero Power</strong>.</p>",
           "duration": "-",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "chain_steps": "ignition_mp,ignition_zp",
+              "effect_kind": "chain",
+              "effect_label": "ignition_gain"
+            },
+            "1": {
+              "effect_kind": "grant",
+              "effect_label": "ignition_mp",
+              "grant_amount": "10",
+              "grant_resource": "mp",
+              "target_ref": "self"
+            },
+            "2": {
+              "effect_kind": "grant",
+              "effect_label": "ignition_zp",
+              "grant_amount": "1",
+              "grant_resource": "zero_power",
+              "target_ref": "self"
+            }
+          },
           "heroic_requirement": "",
           "ignore_hr": false,
           "isCheck": false,
@@ -164,7 +208,16 @@
           "name": "Zero Trigger: Ignition",
           "on_activate_effect_ref": "",
           "optional_params": {},
-          "reaction_config_table": {},
+          "reaction_config_table": {
+            "0": {
+              "reaction_effect_ref": "ignition_gain",
+              "reaction_origin_filter": "Burn",
+              "reaction_passive_mode": "force",
+              "reaction_resource_filter": "hp",
+              "reaction_source": "",
+              "reaction_trigger": "creature_lose_resource"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
@@ -226,7 +279,7 @@
               "effect_label": "flameclaw_blaze"
             },
             "1": {
-              "attacker_name": "Flame Claw",
+              "attacker_name": "Burn",
               "damage_amount": "ceil(MAX_HP * 0.1)",
               "damage_cause": "damage",
               "damage_element": "fire",
@@ -321,7 +374,42 @@
           "defense_target_type": "def",
           "description": "<p>Dive at the target with a flaming kick, Deal <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\">Fire</a>&nbsp;damage to the target.</p><p><strong>Blaze </strong>― On <strong>hit, </strong>If the target is inflicted with <a class=\"content-link\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Burn</a>&nbsp;, remove 1 <strong>Burn stack </strong>from the target and this skill gain <a class=\"content-link\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Overflow</a></p>",
           "duration": "Instantaneous",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "chain_steps": "blaze_remove_burn,blaze_overflow",
+              "effect_kind": "chain",
+              "effect_label": "blaze_on_hit"
+            },
+            "1": {
+              "charge_ae_name": "Burn",
+              "charge_amount": "1",
+              "charge_operation": "subtract",
+              "effect_kind": "adjust_charges",
+              "effect_label": "blaze_remove_burn",
+              "target_ref": "hit_action_targets"
+            },
+            "2": {
+              "attacker_name": "Diving Blaze Kick",
+              "damage_amount": "DAMAGE_DEALT",
+              "damage_cause": "damage",
+              "damage_element": "fire",
+              "damage_ignore_affinity": true,
+              "damage_verbosity": "full",
+              "effect_kind": "deal_damage",
+              "effect_label": "blaze_overflow",
+              "target_ref": "blaze_other_enemies"
+            },
+            "3": {
+              "candidate_source": "combat",
+              "category": "enemy",
+              "effect_kind": "targeting",
+              "effect_label": "blaze_other_enemies",
+              "exclude_action_targets": true,
+              "exclude_self": true,
+              "mode": "all",
+              "skip_when_passive": true
+            }
+          },
           "heroic_requirement": "",
           "ignore_hr": false,
           "isCheck": true,
@@ -335,7 +423,16 @@
           "name": "Diving Blaze Kick",
           "on_activate_effect_ref": "",
           "optional_params": {},
-          "reaction_config_table": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "TRIGGER_IS_SELF == 1 && TARGET_AE_CHARGES_BURN >= 1",
+              "reaction_effect_ref": "blaze_on_hit",
+              "reaction_passive_mode": "on",
+              "reaction_source": "self",
+              "reaction_source_skill": "Diving Blaze Kick",
+              "reaction_trigger": "creature_deals_damage"
+            }
+          },
           "rolled_atr1": "DEX",
           "rolled_atr2": "MIG",
           "skill_animation_default": "",
