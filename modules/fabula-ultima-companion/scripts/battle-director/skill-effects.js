@@ -4615,13 +4615,17 @@ async function applyApplyAeEffect(row, ctx) {
     const REACTION_FORMULA_FIELDS = ["damage_amount", "grant_amount"];
     // FIRE-TIME-volatile identifiers: their value at apply-time differs from
     // fire-time, so baking them freezes the WRONG value. AE_CHARGES_*/AE_COUNT_*
-    // count charges/stacks the bearer accrues AFTER this AE lands; CUR_*/TARGET_*/
-    // *_DEALT/STATUS_COUNT/HIT_* read fire-time state. Example: Beyond the Realms
-    // of Death's death-save heal "SL × AE_CHARGES_GRAVE_POINTS" would bake to 0 at
-    // SEED (Grave Points are 0 then) and never scale with the points held at death.
+    // count charges/stacks the bearer accrues AFTER this AE lands; CUR_*/MAX_*/
+    // TARGET_*/*_DEALT/STATUS_COUNT/HIT_* read fire-time state. Example: Beyond the
+    // Realms of Death's death-save heal "SL × AE_CHARGES_GRAVE_POINTS" would bake to
+    // 0 at SEED (Grave Points are 0 then) and never scale with the points held at
+    // death. MAX_HP/MAX_MP/MAX_IP are the BEARER's stat read per-victim at fire-time
+    // — a DoT like Burn ("MAX_HP * 0.1") must be 10% of the AFFLICTED creature's max
+    // HP, NOT the applier's. Baking it against the caster froze e.g. the Wandering
+    // Flame's 22 (10% of 220) onto every Burn it applied, dealing 22 to any victim.
     // SL and other apply-time-stable ids stay resolvable at fire-time via the AE's
     // origin skill (see firePreAcceptedCandidate), so they don't need baking.
-    const REACTION_FORMULA_VOLATILE = /AE_CHARGES_|AE_COUNT_|TARGET_|CUR_HP|CUR_MP|CUR_IP|HP_DEALT|MP_DEALT|SHIELD_DEALT|DAMAGE_DEALT|STATUS_COUNT|HIT_/;
+    const REACTION_FORMULA_VOLATILE = /AE_CHARGES_|AE_COUNT_|TARGET_|MAX_HP|MAX_MP|MAX_IP|CUR_HP|CUR_MP|CUR_IP|HP_DEALT|MP_DEALT|SHIELD_DEALT|DAMAGE_DEALT|STATUS_COUNT|HIT_/;
     const rcfg = data.flags?.[FLAG_NS]?.reactionConfig;
     const rcfgTable = rcfg?.effect_table ?? rcfg?.reaction_effect_table;
     if (rcfgTable && typeof rcfgTable === "object") {

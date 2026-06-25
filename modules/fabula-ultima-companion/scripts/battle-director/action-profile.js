@@ -609,17 +609,31 @@ async function attachHealEffects({ rows, view, ar, targets, resolver, liveAttack
 // EffectPreviews. Pure preview — no writes. Self vs target routing is by
 // target_ref ("self" → selfEffects). Phase 0: a flat list per row; per-target
 // fan-out happens in the profile builder once target resolution is wired.
-function gatherEffectPreviews({ view, resolver, chainVars = null }) {
+function gatherEffectPreviews({ view, resolver, targetResolver = null, chainVars = null }) {
   const selfEffects = [];
   const targetedEffects = [];
   const tbl = view?.effect_table ?? {};
   for (const k of Object.keys(tbl)) {
     const row = tbl[k];
     if (!row || row.$deleted) continue;
-    const pv = previewEffectRow(row, { resolver, targetRef: row.target_ref ?? null, chainVars });
-    if (!pv) continue;
     const ref = String(row.target_ref ?? "").trim().toLowerCase();
-    if (ref === "self" || ref === "" || pv.type === "cost" || pv.type === "equip") selfEffects.push(pv);
+    const isSelf = ref === "self" || ref === "";
+    const kind = String(row.effect_kind ?? "").trim().toLowerCase();
+    // Preview each row's amount against the SAME actor the APPLY path uses for
+    // that kind, or the card lies. `deal_damage` resolves PER-VICTIM
+    // (dealDamageApply builds the resolver from each token.actor), so a
+    // target-aimed deal_damage with a victim-relative formula (MAX_HP / CUR_HP)
+    // must preview against the target — without this Flame Claw's Burn DoT
+    // (ceil(MAX_HP*0.1)) previewed 10% of the Wandering Flame's 220 HP (22) not
+    // the hit target's (11). OTHER kinds (grant/cost/…) resolve their base amount
+    // ONCE against the CASTER at apply (grantApply computes `amount` from
+    // ctx.resolver), so they KEEP the caster resolver — swapping them would
+    // introduce the opposite preview/apply mismatch. Self rows = caster (the
+    // bearer). No formula semantics change: this only aligns preview to apply.
+    const rowResolver = (!isSelf && targetResolver && kind === "deal_damage") ? targetResolver : resolver;
+    const pv = previewEffectRow(row, { resolver: rowResolver, targetRef: row.target_ref ?? null, chainVars });
+    if (!pv) continue;
+    if (isSelf || pv.type === "cost" || pv.type === "equip") selfEffects.push(pv);
     else targetedEffects.push(pv);
   }
   return { selfEffects, targetedEffects };
@@ -700,7 +714,16 @@ export async function computeActionProfile(input) {
     healingObj = heal.healingObj;
   }
 
-  const { selfEffects, targetedEffects } = gatherEffectPreviews({ view, resolver, chainVars: ctx?.chainVars ?? null });
+  // Target-relative resolver for effect-row previews: a target-aimed deal_damage
+  // whose amount is victim-relative (MAX_HP / CUR_HP) must preview against the
+  // TARGET, not the caster — mirrors the per-target apply path. Uses the first
+  // action target (representative for AoE); null pre-target → caster fallback.
+  const firstTargetUuid = targets?.[0]?.actorUuid ?? null;
+  const firstTargetActor = firstTargetUuid ? await fromUuid(firstTargetUuid).catch(() => null) : null;
+  const targetResolver = firstTargetActor
+    ? buildSkillResolver({ actor: firstTargetActor, payload: { targets, _chainVars: ctx?.chainVars ?? null }, skill, round: ctx?.round ?? 0 })
+    : null;
+  const { selfEffects, targetedEffects } = gatherEffectPreviews({ view, resolver, targetResolver, chainVars: ctx?.chainVars ?? null });
 
   // Per-target status fan-out (additive): surface each targeted status AE on the
   // roster rows it applies to, tagged with a per-target `immune` flag — the status
