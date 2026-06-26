@@ -2420,6 +2420,39 @@ async function resolveActionTargets(director, attackerSnap, opts = {}) {
     }
   }
 
+  // ── Action-level pool focus (e.g. "Roulette — highest Burn stack") ───────
+  // A skill can declare an effect_table row with `action_pool_focus: true` and a
+  // `focus_max_formula`; we narrow the eligible pool to the candidate(s) with the
+  // MAX score of that formula (ties kept) BEFORE the picker/roulette runs. So
+  // Inferex Chomp (skill_target "One Random Creature" + focus "AE_CHARGES_BURN")
+  // rolls its roulette only over the highest-Burn creatures, randomizing ties —
+  // exactly the RAW "Roulette (creature with the highest Burn stack)" intent.
+  // Per-candidate score uses the candidate's own actor (resolved from its token),
+  // mirroring skill-targeting's target_filter/focus_max_formula resolver.
+  if (!isSelf && skill && eligibleForPicker.length > 1) {
+    const et = skill.system?.props?.effect_table ?? {};
+    const focusRow = Object.values(et).find(
+      (r) => r?.action_pool_focus === true && String(r?.focus_max_formula ?? "").trim()
+    );
+    if (focusRow) {
+      const round = director.dCombat?.round ?? 0;
+      let best = -Infinity;
+      const scored = [];
+      for (const e of eligibleForPicker) {
+        let a = null;
+        try { const td = await fromUuid(e.tokenUuid); a = td?.actor ?? td?.parent ?? null; } catch { /* gone */ }
+        const score = a
+          ? (Number(evaluateFormula(focusRow.focus_max_formula, buildSkillResolver({ actor: a, payload: null, skill, round }), 0)) || 0)
+          : -Infinity;
+        if (score > best) best = score;
+        scored.push({ e, score });
+      }
+      eligibleForPicker = scored.filter((s) => s.score === best).map((s) => s.e);
+      director.ctx.eligibleTargets = eligibleForPicker;
+      log(`resolveActionTargets: pool focus "${focusRow.focus_max_formula}" → ${eligibleForPicker.length} max-scorer(s) (score ${best})`);
+    }
+  }
+
   // ── Determine picker mode (single-source resolveTargetPlan) ─────────────
   // Self is a disposition fact handled above (isSelf); everything else — mode,
   // count, randomize, AND the ×T affordability cap — comes from the one shared
