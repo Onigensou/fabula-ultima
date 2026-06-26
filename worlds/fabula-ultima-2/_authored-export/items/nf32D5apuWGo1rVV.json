@@ -8,6 +8,63 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "TELgLPWu0K7gzoRO",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782499998415,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><em>Lucky Seven Ready:</em> Lucky Seven is available this scene. Spent when used; refreshes each conflict.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "TELgLPWu0K7gzoRO",
+          "originalParentId": "nf32D5apuWGo1rVV",
+          "originalUuid": "Item.nf32D5apuWGo1rVV.ActiveEffect.TELgLPWu0K7gzoRO"
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "lucky_seven",
+          "charges": 1,
+          "chargesMax": 1
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/control/buff-flight-wings-runes-purple.webp",
+      "name": "Lucky Seven Ready",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-lucky-seven-ready"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"

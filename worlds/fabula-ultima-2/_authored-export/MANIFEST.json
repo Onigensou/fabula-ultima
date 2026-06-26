@@ -9164,13 +9164,13 @@
         "id": "B0rR4DCijW1zC3SY",
         "name": "Lucky Seven",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "nf32D5apuWGo1rVV",
         "name": "Lucky Seven",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "46B3KzP5CbqDm9Ql",
@@ -18885,7 +18885,7 @@
             "name": "Umbra"
           }
         ],
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "xiw1tM4jkw8xLw5y",
@@ -21096,7 +21096,7 @@
             "name": "Warrior Seal"
           }
         ],
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "OYFcMSkBHGLXlFwq",
@@ -21314,6 +21314,10 @@
             "name": "Grape Juice"
           },
           {
+            "id": "oHXhszjXVKD0opBr",
+            "name": "Heal"
+          },
+          {
             "id": "Wtcdd42MQHwsOsSe",
             "name": "Heal"
           },
@@ -21386,7 +21390,7 @@
             "name": "Zero Trigger: Foresight"
           }
         ],
-        "effects": 1
+        "effects": 3
       },
       {
         "id": "tzXbVfDYPgvu5wml",
@@ -21562,7 +21566,7 @@
             "name": "Zero Trigger: Foresight"
           }
         ],
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "g2K54zkmg3hp2feV",

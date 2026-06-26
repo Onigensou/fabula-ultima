@@ -56,6 +56,8 @@
       "reaction_config_table": {
         "0": {
           "$deleted": false,
+          "reaction_cause_filter": "damage",
+          "reaction_damage_source": "enemy",
           "reaction_effect_ref": "pl_free_study",
           "reaction_passive_mode": "ask",
           "reaction_resource_filter": "hp",

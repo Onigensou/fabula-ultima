@@ -270,24 +270,14 @@
           "effect_table": {
             "0": {
               "$deleted": false,
-              "allowed_types": "Study",
+              "action_ref": "Study",
               "check_bonus_formula": "SL",
-              "effect_kind": "open_action_menu",
+              "effect_kind": "free_action",
               "effect_label": "pl_free_study",
-              "free_mode": true,
-              "target_ref": "pl_attacker"
+              "target_ref": "cause_actor"
             },
             "1": {
-              "$deleted": false,
-              "auto_confirm_when_obvious": true,
-              "candidate_source": "trigger_actor",
-              "category": "",
-              "count": 1,
-              "effect_kind": "targeting",
-              "effect_label": "pl_attacker",
-              "iteration_mode": "together",
-              "mode": "exact",
-              "skip_when_passive": true
+              "$deleted": true
             }
           },
           "heroic_requirement": "",
@@ -303,11 +293,13 @@
             "0": {
               "$deleted": false,
               "reaction_action_intent": "harmful",
+              "reaction_cause_filter": "damage",
               "reaction_damage_source": "enemy",
               "reaction_effect_ref": "pl_free_study",
               "reaction_passive_mode": "ask",
+              "reaction_resource_filter": "hp",
               "reaction_source": "self",
-              "reaction_trigger": "creature_takes_damage"
+              "reaction_trigger": "creature_lose_resource"
             }
           },
           "rolled_atr1": "-",
