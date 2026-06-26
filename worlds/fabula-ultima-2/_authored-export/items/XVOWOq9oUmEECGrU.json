@@ -768,6 +768,8 @@
                 "damage_verbosity": "full",
                 "effect_kind": "deal_damage",
                 "effect_label": "burn_dmg",
+                "emit_status": "Burn",
+                "emit_trigger": "creature_status_triggered",
                 "target_ref": "self"
               }
             },

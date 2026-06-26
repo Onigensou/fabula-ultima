@@ -88,14 +88,12 @@
               "effect_label": "meteor_unleash"
             },
             "1": {
-              "attacker_name": "Burn",
-              "damage_amount": "AE_CHARGES_BURN * ceil(MAX_HP * 0.1)",
-              "damage_cause": "damage",
-              "damage_element": "fire",
-              "damage_verbosity": "full",
-              "effect_kind": "deal_damage",
+              "consume_charges": false,
+              "effect_kind": "trigger_status",
               "effect_label": "meteor_detonate",
-              "target_ref": "action_targets"
+              "status_name": "Burn",
+              "target_ref": "action_targets",
+              "trigger_count": "AE_CHARGES_BURN"
             },
             "2": {
               "charge_ae_name": "Burn",
@@ -211,11 +209,10 @@
           "reaction_config_table": {
             "0": {
               "reaction_effect_ref": "ignition_gain",
-              "reaction_origin_filter": "Burn",
               "reaction_passive_mode": "force",
-              "reaction_resource_filter": "hp",
               "reaction_source": "",
-              "reaction_trigger": "creature_lose_resource"
+              "reaction_status_filter": "Burn",
+              "reaction_trigger": "creature_status_triggered"
             }
           },
           "rolled_atr1": "-",
@@ -274,27 +271,12 @@
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
-              "chain_steps": "flameclaw_trigger_burn,flameclaw_consume_burn",
-              "effect_kind": "chain",
-              "effect_label": "flameclaw_blaze"
-            },
-            "1": {
-              "attacker_name": "Burn",
-              "damage_amount": "ceil(MAX_HP * 0.1)",
-              "damage_cause": "damage",
-              "damage_element": "fire",
-              "damage_verbosity": "full",
-              "effect_kind": "deal_damage",
-              "effect_label": "flameclaw_trigger_burn",
-              "target_ref": "hit_action_targets"
-            },
-            "2": {
-              "charge_ae_name": "Burn",
-              "charge_amount": "1",
-              "charge_operation": "subtract",
-              "effect_kind": "adjust_charges",
-              "effect_label": "flameclaw_consume_burn",
-              "target_ref": "hit_action_targets"
+              "consume_charges": true,
+              "effect_kind": "trigger_status",
+              "effect_label": "flameclaw_blaze",
+              "status_name": "Burn",
+              "target_ref": "hit_action_targets",
+              "trigger_count": "1"
             }
           },
           "heroic_requirement": "",

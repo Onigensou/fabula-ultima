@@ -3372,15 +3372,11 @@
           "reaction_config_table": {
             "0": {
               "$deleted": false,
-              "reaction_damage_amount": "",
-              "reaction_damage_type": "",
-              "reaction_debuff_count_min": "",
-              "reaction_debuff_count_target": "",
+              "condition_formula": "CHECK_ADJUSTED_BY_ME == 1 && CHECK_RESULT_CHANGED == 1",
               "reaction_effect_ref": "ZP on Flip",
-              "reaction_passive_mode": "ask",
-              "reaction_passive_target": "self",
-              "reaction_source": "self",
-              "reaction_trigger": "creature_check_outcome_flipped"
+              "reaction_passive_mode": "on",
+              "reaction_source": "all",
+              "reaction_trigger": "creature_check_adjusted"
             }
           },
           "rolled_atr1": "-",
@@ -4150,6 +4146,16 @@
           "description": "<p>Choose and trigger <strong>3 Opportunity choice. </strong><em>(The same Opportunity cannot be chosen twice)</em></p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "count": "3",
+              "distinct": true,
+              "effect_kind": "trigger_opportunity",
+              "effect_label": "million_opp",
+              "opportunity_title": "A Million Possibility"
+            }
+          },
           "heroic_requirement": "",
           "id": "oe3OP8VmjHJpWJ41",
           "ignore_hr": false,
@@ -4163,6 +4169,7 @@
           "level": "1",
           "max_level": "1",
           "name": "Zero Power: A Million Possibility",
+          "on_activate_effect_ref": "million_opp",
           "optional_params": {},
           "reaction_config_table": {},
           "reaction_effect_table": {},

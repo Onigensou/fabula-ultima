@@ -70,15 +70,11 @@
       "reaction_config_table": {
         "0": {
           "$deleted": false,
-          "reaction_damage_amount": "",
-          "reaction_damage_type": "",
-          "reaction_debuff_count_min": "",
-          "reaction_debuff_count_target": "",
+          "condition_formula": "CHECK_ADJUSTED_BY_ME == 1 && CHECK_RESULT_CHANGED == 1",
           "reaction_effect_ref": "ZP on Flip",
-          "reaction_passive_mode": "ask",
-          "reaction_passive_target": "self",
-          "reaction_source": "self",
-          "reaction_trigger": "creature_check_outcome_flipped"
+          "reaction_passive_mode": "on",
+          "reaction_source": "all",
+          "reaction_trigger": "creature_check_adjusted"
         }
       },
       "rolled_atr1": "-",
