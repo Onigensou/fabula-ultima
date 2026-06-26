@@ -678,17 +678,25 @@ const promptTraitReroll = async ({ attrA, attrB, dieA, dieB, rollA, rollB }) => 
     const tokenUuid = token?.document?.uuid ?? null;
 
     const reactionPayload = {
-      kind: "check_outcome_flipped",
-      trigger: "creature_check_outcome_flipped",
+      kind: "check_adjusted",
+      trigger: "creature_check_adjusted",
       timestamp: Date.now(),
 
       actorUuid: actor.uuid ?? null,
       tokenUuid,
       sourceUuid: tokenUuid,
+      sourceActorUuid: actor.uuid ?? null,
       subjectTokenUuid: tokenUuid,
       subjectActorUuid: actor.uuid ?? null,
 
+      // Causer = the invoker (= subject here, a self-flip). The director bridge
+      // dispatches causer-side too so CHECK_ADJUSTED_BY_ME matches.
+      causerActorUuid: actor.uuid ?? null,
+      causerTokenUuid: tokenUuid,
+      mechanism,
       flipMechanism: mechanism,
+      // Invoke emits only on a confirmed flip.
+      resultChanged: true,
       before: { ...before },
       after: { ...after },
 

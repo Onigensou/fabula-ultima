@@ -244,8 +244,11 @@
     adjust_damage:    ["damage_operation", "damage_amount", "damage_stage"],
     // Direct damage (BD engine). damage_amount is a FORMULA (e.g. "MAX_HP * 0.1"),
     // resolved per-victim. damage_cause defaults to "hazard" when blank (DoT ticks
-    // like Burn); set "damage" to count as attacker-inflicted.
-    deal_damage:      ["damage_element", "damage_amount", "target_ref", "damage_cause"],
+    // like Burn); set "damage" to count as attacker-inflicted. emit_trigger /
+    // emit_status announce a status trigger (the Burn tick row carries them →
+    // creature_status_triggered/"Burn"); listed so editing a Burn-style AE here
+    // doesn't strip them (readEffectRowFromDom only keeps widgeted fields).
+    deal_damage:      ["damage_element", "damage_amount", "target_ref", "damage_cause", "emit_trigger", "emit_status"],
   });
 
   function effectKindFields(kind) {

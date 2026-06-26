@@ -145,7 +145,17 @@ export const DIRECTOR_NATIVE_TRIGGERS = new Set([
 export const LEGACY_BRIDGED_TRIGGERS = new Set([
   "creature_performs_check",
   "creature_fumbles_check",
-  "creature_check_outcome_flipped",
+  // Fires when a reactive INTERVENTION during check resolution changes a
+  // check's numbers — reroll / die-swap / +accuracy / −DEF·MDEF / invoke.
+  // (Passive statuses baked into the base roll do NOT count — only an
+  // "action that changes the check".) Payload carries before/after number
+  // snapshots, the causer (who applied it), the mechanism (which effect),
+  // and resultChanged (did pass/fail or any per-target miss↔hit flip). The
+  // generalisation of the retired `creature_check_outcome_flipped`, which
+  // only fired on an open-check pass↔fail; consumers gate the result-change
+  // case via the CHECK_RESULT_CHANGED identifier. First consumer: Zero
+  // Trigger: Foresight (CHECK_ADJUSTED_BY_ME && CHECK_RESULT_CHANGED).
+  "creature_check_adjusted",
   "creature_recovers_hp",
   "creature_recovers_mp",
   "creature_lose_mp",
@@ -223,7 +233,7 @@ export const TRIGGER_PHASE = Object.freeze({
   // Legacy-bridged triggers — all post-resolve by RAW shape.
   "creature_performs_check":      "post-resolve",
   "creature_fumbles_check":       "post-resolve",
-  "creature_check_outcome_flipped": "post-resolve",
+  "creature_check_adjusted":      "post-resolve",
   "creature_recovers_hp":         "post-resolve",
   "creature_recovers_mp":         "post-resolve",
   "creature_lose_mp":             "post-resolve",

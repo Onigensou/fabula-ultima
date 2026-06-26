@@ -325,6 +325,14 @@ async function resolveRedirectSubjects({ cand, row, reactor, reactorTok, ctx }) 
     isPassive: false,
     remotePrompt: ctx.remotePrompt ?? null,
   });
+  // The redirect runs at the card-mutation phase — OUTSIDE applyEffectRow's
+  // _skipTargetConfirm scope — so without this an ASSURED redirect source
+  // (pool ≤ count: Protect's single incoming attacker, the common case) would
+  // pop a redundant locked Confirm the player already implied by accepting the
+  // reaction. Set it so the assured set auto-resolves; a GENUINE multi-source
+  // pick (pool > count → promptBdPick, which ignores autoTarget) still prompts.
+  // Action-level twin of 2ff6e919's effect-level ctx._skipTargetConfirm.
+  chainCtx._skipTargetConfirm = true;
   const resolved = await resolveBdTargetRef(targetRef, chainCtx);
   if (!resolved?.ok || !resolved.tokens?.length) {
     if (resolved?.cancelled) {
@@ -410,6 +418,10 @@ async function applyRedirectTargetMutation(ctx, cand, row) {
         isPassive: false,   // a real choice — prompt when ambiguous
         remotePrompt: ctx.remotePrompt ?? null,
       });
+      // Assured destination (pool ≤ count: Protect's dest = the Guardian itself)
+      // auto-resolves without a redundant locked Confirm; an ambiguous pick
+      // (pool > count) still prompts. See the redirect SOURCE site above.
+      chainCtx._skipTargetConfirm = true;
       const resolved = await resolveBdTargetRef(destRef, chainCtx);
       if (resolved?.cancelled) { cand._pickerCancelled = true; return "cancelled"; }
       const destTok = resolved?.tokens?.[0];
@@ -523,6 +535,9 @@ async function applyShieldRedirectMutation(ctx, cand, row) {
       isPassive: false,   // a real choice — prompt when more than one phantasm
       remotePrompt: ctx.remotePrompt ?? null,
     });
+    // A single own-phantasm (the assured case) auto-resolves without a redundant
+    // locked Confirm; >1 phantasm still prompts. See the redirect SOURCE site.
+    chainCtx._skipTargetConfirm = true;
     const resolved = await resolveBdTargetRef(destRef, chainCtx);
     if (resolved?.cancelled) { cand._pickerCancelled = true; return "cancelled"; }
     const tok = resolved?.tokens?.[0];
@@ -1121,6 +1136,10 @@ async function applyAddTargetMutation(ctx, cand, row, effectTable) {
     isPassive: true,
     remotePrompt: ctx.remotePrompt ?? null,
   });
+  // Assured add_target (pool ≤ count) auto-resolves without a redundant locked
+  // Confirm; a genuine extra-target pick (pool > count) still prompts. Consistent
+  // with the redirect sites — the card-mutation phase is outside applyEffectRow.
+  chainCtx._skipTargetConfirm = true;
   const resolved = await resolveBdTargetRef(targetRef, chainCtx);
   const tokens = resolved?.tokens ?? [];
   if (!resolved?.ok || !tokens.length) {
@@ -1337,6 +1356,21 @@ export async function applyAcceptedCardMutations(arSnapshot, acceptedPrePassives
   let mutationsApplied = 0;
   let cancelled = false;
 
+  // Check-adjusting interventions applied this pass (reroll / +accuracy /
+  // −DEF·MDEF) — the raw material for the `creature_check_adjusted` event the
+  // commit path emits. Records WHO caused each (the reactor for a third-party
+  // reaction; the action-taker for a performer-side one like Magical Artillery /
+  // Cognitive Focus, which carry no reactorActorUuid) and WHICH mechanism. The
+  // commit path diffs baseline-vs-final hits to decide resultChanged + direction.
+  const checkAdjusters = [];
+  const pushAdjuster = (cand, mechanism) => {
+    const causerActorUuid = cand?.reactorActorUuid
+      ?? ctx.ar?.attacker?.actorUuid ?? ctx.ar?.attackerActorRef ?? null;
+    const causerTokenUuid = cand?.reactorTokenUuid
+      ?? ctx.ar?.attacker?.tokenUuid ?? null;
+    if (causerActorUuid) checkAdjusters.push({ causerActorUuid, causerTokenUuid, mechanism });
+  };
+
   // Phase 0: negate_action — a performer/self reaction (Shadow Possession's
   // Creeped block variant) nullifies the WHOLE action: no hit, no damage, no
   // effects, no reactions. Scans EVERY accepted candidate (not just third-party
@@ -1367,6 +1401,7 @@ export async function applyAcceptedCardMutations(arSnapshot, acceptedPrePassives
       cancelled: false,
       accuracyOverride: null,
       negated: true,
+      checkAdjusters: [],
     };
   }
 
@@ -1414,16 +1449,16 @@ export async function applyAcceptedCardMutations(arSnapshot, acceptedPrePassives
       const kind = String(row.effect_kind ?? "").trim().toLowerCase();
       if (kind === "adjust_accuracy") {
         const result = await applyAdjustAccuracyMutation(ctx, cand, row);
-        if (result === "applied") mutationsApplied += 1;
+        if (result === "applied") { mutationsApplied += 1; pushAdjuster(cand, "adjust_accuracy"); }
       } else if (kind === "check_reroll") {
         // Divination: reroll the action-taker's accuracy dice, recompute hits.
         const result = await applyCheckRerollMutation(ctx, cand, row);
-        if (result === "applied") mutationsApplied += 1;
+        if (result === "applied") { mutationsApplied += 1; pushAdjuster(cand, "check_reroll"); }
       } else if (kind === "adjust_defense") {
         // Defender-side: the targeted creature raises its own DEF for this action
         // (Verónica). Per-target; only the reactor's slot recomputes hit/miss.
         const result = await applyAdjustDefenseMutation(ctx, cand, row);
-        if (result === "applied") mutationsApplied += 1;
+        if (result === "applied") { mutationsApplied += 1; pushAdjuster(cand, "adjust_defense"); }
       } else if (kind === "adjust_grant") {
         // Performer/self reaction heal-boost (Cognitive Focus). Reaction-context
         // adjust_grant ONLY — Potion Rain's in-chain adjust_grant never appears as
@@ -1487,5 +1522,96 @@ export async function applyAcceptedCardMutations(arSnapshot, acceptedPrePassives
     // roll-changing mutation is reflected automatically by writing ctx.ar.
     roll: ctx.ar?.roll ?? null,
     negated: false,
+    // Check-adjusting interventions applied (causer + mechanism per applied
+    // accuracy/reroll/defense mutation). Rides through applyTargetSetMutation's
+    // `...mut` spread; the commit path turns these into creature_check_adjusted.
+    checkAdjusters,
   };
+}
+
+// Build the `creature_check_adjusted` event objects for a committed action.
+// PURE — no actor resolution, no dispatch; the commit path (state-handlers)
+// resolves actors + queues them onto the post-resolve ledger.
+//
+//   ar           — the PRE-mutation action result (baseline hits + roll + attacker)
+//   finalPerTargets — the post-mutation per-target rows (final hits)
+//   finalRoll    — the post-mutation roll (check_reroll changes the dice)
+//   accuracyOverride — present when an accuracy/reroll override set a new total
+//   adjusters    — [{ causerActorUuid, causerTokenUuid, mechanism }] from the mutation
+//
+// Returns ONE event per distinct causer (mechanisms merged), each carrying
+// before/after number snapshots + resultChanged. Empty when nothing adjusted.
+//
+// resultChanged is a CARD-LEVEL fact (did any per-target hit move). It is exact
+// when a single causer adjusted the check (the overwhelmingly common case — a
+// performer's own +accuracy, a single reroll). With multiple distinct causers on
+// one card it is attributed to each contributor (a minor, documented over-credit;
+// the "1 per card" + resource hardMax keep the economy impact negligible).
+export function buildCheckAdjustedEvents({ ar, finalPerTargets, finalRoll, accuracyOverride, adjusters } = {}) {
+  if (!Array.isArray(adjusters) || !adjusters.length) return [];
+  const subjectActorUuid = ar?.attacker?.actorUuid ?? ar?.attackerActorRef ?? null;
+  const subjectTokenUuid = ar?.attacker?.tokenUuid ?? null;
+
+  const keyOf = (r) => String(r?.tokenUuid ?? r?.actorUuid ?? "");
+  const baseHit = new Map((ar?.perTargetResults ?? []).map((r) => [keyOf(r), !!r?.hit]));
+  const finalHit = new Map((finalPerTargets ?? []).map((r) => [keyOf(r), !!r?.hit]));
+  const finalActor = new Map((finalPerTargets ?? []).map((r) => [keyOf(r), r?.actorUuid ?? null]));
+
+  // Per-target hit crossings (present on both sides with a changed hit bool).
+  const flipped = [];
+  for (const [k, fh] of finalHit) {
+    if (baseHit.has(k) && baseHit.get(k) !== fh) flipped.push({ key: k, to: fh });
+  }
+  const resultChanged = flipped.length > 0;
+
+  const before = {
+    total: Number(ar?.roll?.total) || 0,
+    rA: ar?.roll?.rA ?? null, rB: ar?.roll?.rB ?? null, hr: ar?.roll?.hr ?? null,
+    isCrit: !!ar?.roll?.isCrit, isFumble: !!ar?.roll?.isFumble,
+    perTarget: [...baseHit].map(([targetUuid, hit]) => ({ targetUuid, hit })),
+  };
+  const afterTotal = Number(accuracyOverride?.to ?? finalRoll?.total ?? ar?.roll?.total) || 0;
+  const after = {
+    total: afterTotal,
+    rA: finalRoll?.rA ?? ar?.roll?.rA ?? null, rB: finalRoll?.rB ?? ar?.roll?.rB ?? null,
+    hr: finalRoll?.hr ?? ar?.roll?.hr ?? null,
+    isCrit: !!(finalRoll?.isCrit ?? ar?.roll?.isCrit), isFumble: !!(finalRoll?.isFumble ?? ar?.roll?.isFumble),
+    perTarget: [...finalHit].map(([targetUuid, hit]) => ({ targetUuid, hit })),
+  };
+
+  // Direction relative to the SUBJECT's success: more hits / higher total = improved.
+  const hitsBefore = [...baseHit.values()].filter(Boolean).length;
+  const hitsAfter  = [...finalHit.values()].filter(Boolean).length;
+  let direction = null;
+  if (hitsAfter > hitsBefore) direction = "improved";
+  else if (hitsAfter < hitsBefore) direction = "worsened";
+  else if (afterTotal > before.total) direction = "improved";
+  else if (afterTotal < before.total) direction = "worsened";
+
+  // Single flipped target → name it (so CHECK_ADJUST_AGAINST_ME can match).
+  const targetActorUuid = flipped.length === 1
+    ? (finalActor.get(flipped[0].key) ?? null) : null;
+
+  // Group adjusters by causer, merging mechanisms.
+  const byCauser = new Map();
+  for (const a of adjusters) {
+    if (!a?.causerActorUuid) continue;
+    const e = byCauser.get(a.causerActorUuid) ?? { causerActorUuid: a.causerActorUuid, causerTokenUuid: a.causerTokenUuid ?? null, mechanism: new Set() };
+    e.mechanism.add(a.mechanism);
+    if (!e.causerTokenUuid && a.causerTokenUuid) e.causerTokenUuid = a.causerTokenUuid;
+    byCauser.set(a.causerActorUuid, e);
+  }
+
+  return [...byCauser.values()].map((e) => ({
+    trigger: "creature_check_adjusted",
+    subjectActorUuid, subjectTokenUuid,
+    // sourceActorUuid mirrors subjectActorUuid so the legacy reaction_source
+    // (self/ally/enemy) filter — which keys off payload.sourceActorUuid — scopes
+    // against the checker, like every other bridged trigger.
+    sourceActorUuid: subjectActorUuid, sourceTokenUuid: subjectTokenUuid,
+    causerActorUuid: e.causerActorUuid, causerTokenUuid: e.causerTokenUuid,
+    mechanism: [...e.mechanism],
+    before, after, resultChanged, direction,
+    scope: "target", targetActorUuid,
+  }));
 }

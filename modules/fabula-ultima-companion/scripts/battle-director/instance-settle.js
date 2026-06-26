@@ -51,6 +51,12 @@ const LEDGER_FAMILY = new Set([
   // fan out observer-aware so it reaches allied combatants, not just the caster;
   // the row's reaction_source "ally" matches the unleasher (and excludes self).
   "creature_unleashes_zero_power",
+  // creature_status_triggered fans out observer-aware — an ONLOOKER reacts to
+  // ANOTHER creature's status producing its effect (Wandering Flame's Ignition:
+  // +10 MP +1 ZP whenever ANY creature's Burn triggers). Emitted by emit_trigger
+  // deal_damage rows (the Burn tick + trigger_status replays); listeners scope by
+  // status via reaction_status_filter. Subject = the afflicted creature.
+  "creature_status_triggered",
 ]);
 
 export function registerBuiltinReactor(fn) {

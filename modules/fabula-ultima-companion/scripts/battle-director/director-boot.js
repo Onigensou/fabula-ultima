@@ -1442,6 +1442,24 @@ Hooks.once("ready", () => {
         trigger,
         payload,
       });
+      // Causer-aware dispatch: some bridged triggers (creature_check_adjusted)
+      // carry a `causerActorUuid` distinct from the subject — e.g. an observer
+      // who rerolled someone else's check. firePassiveTriggers above only scans
+      // the SUBJECT, so a causer-keyed reaction (CHECK_ADJUSTED_BY_ME) on the
+      // causer would be missed. Fire a second pass on the causer when it differs.
+      const causerUuid = payload?.causerActorUuid;
+      if (causerUuid && causerUuid !== actor.uuid) {
+        const causerDoc = await fromUuid(causerUuid).catch(() => null);
+        const causerActor = causerDoc?.actor ?? (causerDoc?.documentName === "Actor" ? causerDoc : null);
+        if (causerActor) {
+          await firePassiveTriggers({
+            director: _instance ?? null,
+            casterActor: causerActor,
+            trigger,
+            payload,
+          });
+        }
+      }
     } catch (e) { warn(`oni:reactionPhase bridge (${payload?.trigger}) threw`, e); }
   });
 

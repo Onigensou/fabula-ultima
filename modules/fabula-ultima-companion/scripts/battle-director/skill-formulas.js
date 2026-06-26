@@ -430,6 +430,40 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       case "ZERO_POWER":
       case "CUR_ZERO_POWER": return readProp(actor, "zero_power_value");
       case "MAX_ZERO_POWER": return readProp(actor, "max_zero");
+      // ── creature_check_adjusted identifier kit ──────────────────────
+      // Reusable surface for "a reactive intervention changed a check".
+      // Read off the creature_check_adjusted payload; default 0 when the
+      // reactor evaluates outside that trigger (so a stray gate is safe).
+      //   causer  = who applied the intervention (reroll / +acc / −DEF …)
+      //   subject = whose check it is (the action-taker / checker)
+      //   target  = for a per-target attack flip, which target moved
+      // 1 if THIS reactor is the one who adjusted the check (Foresight:
+      // "when Hina changes the outcome"). Works for self-flips AND observer
+      // flips (Hina rerolls an ally's check) — the dispatch fires on the
+      // causer too, not just the subject.
+      case "CHECK_ADJUSTED_BY_ME":
+        return (payload?.causerActorUuid && payload.causerActorUuid === actor?.uuid) ? 1 : 0;
+      // 1 if it was MY OWN check that got adjusted (react to being meddled with).
+      case "CHECK_ADJUSTED_ON_MINE":
+        return (payload?.subjectActorUuid && payload.subjectActorUuid === actor?.uuid) ? 1 : 0;
+      // 1 if the adjustment actually changed the result (pass↔fail / miss↔hit).
+      // Foresight pairs this with CHECK_ADJUSTED_BY_ME so a non-flipping tweak
+      // (e.g. +accuracy on an already-hitting target) grants nothing.
+      case "CHECK_RESULT_CHANGED":
+        return payload?.resultChanged ? 1 : 0;
+      // 1 if a per-target attack flip landed on ME (an attack got flipped onto
+      // me, or my defence change moved my own slot). target-scope only.
+      case "CHECK_ADJUST_AGAINST_ME":
+        return (payload?.targetActorUuid && payload.targetActorUuid === actor?.uuid) ? 1 : 0;
+      // Direction of the change relative to the subject's success.
+      case "CHECK_ADJUST_IMPROVED":
+        return payload?.direction === "improved" ? 1 : 0;
+      case "CHECK_ADJUST_WORSENED":
+        return payload?.direction === "worsened" ? 1 : 0;
+      // Signed change in the check total (after − before). Lets a future skill
+      // scale by how much the check moved.
+      case "CHECK_TOTAL_DELTA":
+        return (Number(payload?.after?.total) || 0) - (Number(payload?.before?.total) || 0);
       // Status / bond counts
       case "STATUS_COUNT": return countStatusDebuffs(actor);
       // Distinct debuff TYPES across all enemy combatants (Zero Trigger:

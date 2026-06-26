@@ -587,6 +587,14 @@
     {
       "key": "2026-06-26-wandering-flame-tier2",
       "path": "data-migrations/2026-06-26-wandering-flame-tier2.js"
+    },
+    {
+      "key": "2026-06-27-burn-emit-status-trigger",
+      "path": "data-migrations/2026-06-27-burn-emit-status-trigger.js"
+    },
+    {
+      "key": "2026-06-27-wandering-flame-burn-trigger-unify",
+      "path": "data-migrations/2026-06-27-wandering-flame-burn-trigger-unify.js"
     }
   ]
 }

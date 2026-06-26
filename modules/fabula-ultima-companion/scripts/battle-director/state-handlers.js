@@ -1903,6 +1903,11 @@ function applyComposedBundleAndAdvance(director, winnerBundle) {
     director.ctx._composedBundle = null;
   }
   director.ctx.declaredCommand = winnerBundle.command;
+  // Forced/engine autocast (free_action preset) flag: the staged action's obvious
+  // (self/all) target set auto-resolves at TARGET without the locked Confirm. Set
+  // every DECLARE so a normal composed action (no flag) resets it to false. See
+  // resolveActionTargets' obvious-set branch + applyFreeActionEffect.
+  director.ctx._skipActionTargetConfirm = !!winnerBundle?.skipTargetConfirm;
 
   // Advance the FSM. TARGET's per-command branches read ctx and skip
   // their pickers when pre-populated.
@@ -2471,6 +2476,13 @@ async function resolveActionTargets(director, attackerSnap, opts = {}) {
   if (pickerMode !== "random" && usingPreComposed
       && Array.isArray(composedTargetUuids) && composedTargetUuids.length) {
     result = { ok: true, cancelled: false, tokenUuids: [...composedTargetUuids] };
+  } else if (isObviousTargetSet && director.ctx?._skipActionTargetConfirm) {
+    // Forced/engine autocast (free_action preset, e.g. Explosive Entrance's
+    // Unleash): auto-resolve the obvious (self/all) set silently — there is no
+    // player to acknowledge a locked Confirm. The action-level twin of the
+    // effect-level ctx._skipTargetConfirm (2ff6e919). The locked-confirm pre-
+    // selects ALL eligibleForPicker anyway, so this yields the identical targets.
+    result = { ok: true, cancelled: false, tokenUuids: eligibleForPicker.map((e) => e.tokenUuid).filter(Boolean) };
   } else if (isObviousTargetSet) {
     const lockedTitle = forcedTitle
       ?? `${attackerSnap.name}: confirm target${eligibleForPicker.length === 1 ? "" : "s"}`;
@@ -4668,7 +4680,7 @@ const Confirm = {
       let costOverride = null;
       let negated = false;
       try {
-        const { applyTargetSetMutation } = await import("./card-mutations.js?cb=" + Date.now());
+        const { applyTargetSetMutation, buildCheckAdjustedEvents } = await import("./card-mutations.js?cb=" + Date.now());
         const r = await applyTargetSetMutation({
           ar: liveAr, accepted: applied, attackerActor, round: director.dCombat?.round ?? 0,
         });
@@ -4690,6 +4702,41 @@ const Confirm = {
           if (r.mutationsApplied > 0 || negated) {
             log(`CONFIRM: target-set mutation — ${r.mutationsApplied} applied${negated ? "; NEGATED" : ""}`);
           }
+          // creature_check_adjusted — a reactive intervention (reroll / +accuracy /
+          // −DEF·MDEF) changed this check's numbers. Emit ONCE per (card, causer) at
+          // the commit, deduped by _instanceId so a re-CONFIRM / F5 can't double-fire.
+          // Dispatched to the UNION of {subject, causer} so both CHECK_ADJUSTED_ON_MINE
+          // (subject-side) and CHECK_ADJUSTED_BY_ME (causer-side, incl. observer flips
+          // where Hina rerolls an ally's check) resolve — the legacy oni:reactionPhase
+          // bridge only ever reaches the subject, so we queue directly here.
+          try {
+            const events = buildCheckAdjustedEvents({
+              ar: liveAr, finalPerTargets: recomputedPerTargets, finalRoll: recomputedRoll,
+              accuracyOverride, adjusters: r.checkAdjusters,
+            });
+            if (events.length) {
+              const inst = liveAr?._instanceId ?? director.ctx.actionResult?._instanceId ?? "";
+              if (!(director.ctx._checkAdjustedEmitted instanceof Set)) director.ctx._checkAdjustedEmitted = new Set();
+              if (!Array.isArray(director.ctx._postResolveTriggers)) director.ctx._postResolveTriggers = [];
+              for (const ev of events) {
+                const dedupKey = `${inst}::${ev.causerActorUuid}`;
+                if (director.ctx._checkAdjustedEmitted.has(dedupKey)) continue;
+                director.ctx._checkAdjustedEmitted.add(dedupKey);
+                // Union of reactor actors: subject + causer (deduped by uuid).
+                const reactorUuids = [...new Set([ev.subjectActorUuid, ev.causerActorUuid].filter(Boolean))];
+                for (const ruid of reactorUuids) {
+                  const reactor = await fromUuid(ruid).catch(() => null);
+                  const actorDoc = reactor?.actor ?? (reactor?.documentName === "Actor" ? reactor : null);
+                  if (!actorDoc) continue;
+                  director.ctx._postResolveTriggers.push({
+                    casterActor: actorDoc,
+                    trigger: "creature_check_adjusted",
+                    payload: ev,
+                  });
+                }
+              }
+            }
+          } catch (e) { warn("CONFIRM: creature_check_adjusted emit threw", e); }
         }
       } catch (e) { warn("CONFIRM: target-set mutation threw", e); }
       // Infusion element override (change_damage_element): if every hit now

@@ -299,7 +299,7 @@
   }
 
   // ── Local dialog flow ───────────────────────────────────────────────────────
-  async function showDialogLocally({ actorName, actorUuid }) {
+  async function showDialogLocally({ actorName, actorUuid, excludeIds = [], title = null }) {
     const cfg = getConfig();
     if (!cfg) { console.error(TAG, "OpportunityConfig not loaded"); return { cancelled: true }; }
     const dialog = getDialog();
@@ -307,11 +307,18 @@
 
     const portrait = await resolvePortrait(actorUuid);
 
+    // excludeIds removes already-chosen options (A Million Possibility: "the same
+    // Opportunity cannot be chosen twice") — a filtered list is equivalent to
+    // greying them out, since an absent option can't be picked.
+    const ex = new Set(excludeIds ?? []);
+    const options = (cfg.OPTIONS ?? []).filter(o => !ex.has(o.id));
+
     return dialog.showPicker({
       actorName,
       actorPortrait: portrait,
-      options:       cfg.OPTIONS,
+      options,
       canDecline:    true,
+      title,
     });
   }
 
@@ -320,8 +327,8 @@
   // the effect's pre handler. Returns { optionId, preResult } on success or
   // { cancelled: true } if the player declined or the pre handler cancelled.
   // Shared between the local owner path and the socket OPP_OFFER handler.
-  async function runPromptPhase({ actorName, actorUuid, context = {} }) {
-    const result = await showDialogLocally({ actorName, actorUuid });
+  async function runPromptPhase({ actorName, actorUuid, context = {}, excludeIds = [], title = null }) {
+    const result = await showDialogLocally({ actorName, actorUuid, excludeIds, title });
     if (result?.cancelled || !result?.optionId) return { cancelled: true };
 
     const handler = getEffects()?.[result.optionId];
@@ -383,7 +390,7 @@
    * @param {object}  [opts.context]      Caller metadata
    * @returns {Promise<{optionId:string}|{cancelled:boolean}>}
    */
-  async function offer({ actorUuid, actorName, source, actionCardId, context = {} }) {
+  async function offer({ actorUuid, actorName, source, actionCardId, context = {}, excludeIds = [], announce = true, title = null }) {
     const ownerUserId = resolveOwnerUserId(actorUuid);
     const amGM        = game.user?.isGM ?? false;
 
@@ -398,17 +405,21 @@
     // prompt phase locally
     if (amOwner) {
       // Step 1 — stagger pause: player reads their roll result
-      if (_staggerMs > 0) await new Promise(r => setTimeout(r, _staggerMs));
+      if (_staggerMs > 0 && announce) await new Promise(r => setTimeout(r, _staggerMs));
 
-      // Step 2 — broadcast "Opportunity!" fly-text to all, then wait for it to finish
-      const annPayload = { optionLabel: "Opportunity!", color: "#fcd470" };
-      game.socket.emit(SOCKET_CH, { type: MSG_DRAMATIC, payload: annPayload });
-      playDramaticAnimation(annPayload);
-      await new Promise(r => setTimeout(r, DRAMATIC_DURATION));
+      // Step 2 — broadcast "Opportunity!" fly-text to all, then wait for it to finish.
+      // Suppressed when announce===false (A Million Possibility shows the intro ONCE,
+      // then chains its 2nd + 3rd pickers straight in).
+      if (announce) {
+        const annPayload = { optionLabel: "Opportunity!", color: "#fcd470" };
+        game.socket.emit(SOCKET_CH, { type: MSG_DRAMATIC, payload: annPayload });
+        playDramaticAnimation(annPayload);
+        await new Promise(r => setTimeout(r, DRAMATIC_DURATION));
+      }
 
       // Step 3 — prompt phase: picker + pre handler (all user decisions happen here)
       const offerKey = makeOfferKey(actorUuid, actionCardId);
-      const picked   = await runPromptPhase({ actorName, actorUuid, context });
+      const picked   = await runPromptPhase({ actorName, actorUuid, context, excludeIds, title });
 
       if (picked.cancelled) {
         if (!amGM) game.socket.emit(SOCKET_CH, { type: MSG_CANCELLED, payload: { offerKey, actorUuid } });
@@ -431,13 +442,15 @@
     // Case 2: GM, player-owned actor — stagger + animation run GM-side, then send offer to player
     if (amGM) {
       // Step 1 — stagger pause
-      if (_staggerMs > 0) await new Promise(r => setTimeout(r, _staggerMs));
+      if (_staggerMs > 0 && announce) await new Promise(r => setTimeout(r, _staggerMs));
 
       // Step 2 — broadcast "Opportunity!" and wait; player receives it via MSG_DRAMATIC
-      const annPayload = { optionLabel: "Opportunity!", color: "#fcd470" };
-      game.socket.emit(SOCKET_CH, { type: MSG_DRAMATIC, payload: annPayload });
-      playDramaticAnimation(annPayload);
-      await new Promise(r => setTimeout(r, DRAMATIC_DURATION));
+      if (announce) {
+        const annPayload = { optionLabel: "Opportunity!", color: "#fcd470" };
+        game.socket.emit(SOCKET_CH, { type: MSG_DRAMATIC, payload: annPayload });
+        playDramaticAnimation(annPayload);
+        await new Promise(r => setTimeout(r, DRAMATIC_DURATION));
+      }
 
       // Step 3 — send offer; player runs prompt phase (picker + pre), sends back OPP_PICKED
       return new Promise(resolve => {
@@ -446,7 +459,7 @@
 
         game.socket.emit(SOCKET_CH, {
           type:    MSG_OFFER,
-          payload: { offerKey, actorUuid, actorName, context, targetUserId: ownerUserId },
+          payload: { offerKey, actorUuid, actorName, context, targetUserId: ownerUserId, excludeIds, title },
         });
 
         // Safety timeout: give up after 120 s
@@ -493,10 +506,10 @@
 
       // OPP_OFFER — targeted player runs full prompt phase (picker + pre), then sends MSG_PICKED
       if (msg.type === MSG_OFFER) {
-        const { offerKey, actorUuid, actorName, context, targetUserId } = msg.payload ?? {};
+        const { offerKey, actorUuid, actorName, context, targetUserId, excludeIds, title } = msg.payload ?? {};
         if (game.user.id !== targetUserId) return;
 
-        const picked = await runPromptPhase({ actorName, actorUuid, context })
+        const picked = await runPromptPhase({ actorName, actorUuid, context, excludeIds, title })
           .catch(e => { console.error(TAG, "Socket prompt phase error:", e); return { cancelled: true }; });
 
         if (picked.cancelled) {

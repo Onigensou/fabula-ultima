@@ -1675,7 +1675,22 @@
     }
 
     if (cp.flippedOutcome) {
-      emit("oni:reactionPhase", { ...base, trigger: "creature_check_outcome_flipped" }, opts);
+      // A reactive intervention (invoke trait/bond/divination) flipped this open
+      // check's pass↔fail. Causer = the checker (self-flip); the director bridge
+      // also dispatches causer-side. mechanism best-effort from what was used.
+      const mechanism = cp.usedDivination ? "divination" : cp.usedTrait ? "invoke_trait" : cp.usedBond ? "invoke_bond" : "check";
+      emit("oni:reactionPhase", {
+        ...base,
+        trigger: "creature_check_adjusted",
+        subjectActorUuid: cp.actorUuid,
+        causerActorUuid: cp.actorUuid,
+        causerTokenUuid: tokenUuid,
+        mechanism,
+        flipMechanism: mechanism,
+        resultChanged: true,
+        direction: cp.pass ? "improved" : "worsened",
+        scope: "check",
+      }, opts);
     }
   }
 

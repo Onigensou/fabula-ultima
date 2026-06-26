@@ -205,8 +205,8 @@ Hooks.once("ready", () => {
       filters: ["source"]
     },
     {
-      key: "creature_check_outcome_flipped",
-      label: "When a creature changes the outcome of a check",
+      key: "creature_check_adjusted",
+      label: "When a check is adjusted (reroll / accuracy / DEF·MDEF)",
       bucket: "action_phase",
       subjectFrom: SUBJECT_PERFORMER,
       filters: ["source"]
@@ -359,6 +359,24 @@ Hooks.once("ready", () => {
     {
       key: "creature_unleashes_zero_power",
       label: "When a creature unleashes Zero Power",
+      bucket: "resolution_phase",
+      subjectFrom: SUBJECT_PERFORMER,
+      filters: ["source"]
+    },
+    {
+      // GENERIC "a status produced its effect" event — DECOUPLED from the HP
+      // delta so it fires whether the tick dealt damage, healed (absorb), or did
+      // nothing (immune). Emitted by any `deal_damage` row carrying
+      // `emit_trigger:"creature_status_triggered"` (the Burn DoT tick, and via
+      // the `trigger_status` effect_kind, Flame Claw / Meteor — which replay the
+      // REAL tick). The row names the status via `emit_status` -> payload.status,
+      // so a listener scopes with `reaction_status_filter` (e.g. "Burn"), exactly
+      // like creature_status_applied. Subject = the afflicted creature
+      // (payload.sourceActorUuid). Observer-aware (instance-settle LEDGER_FAMILY)
+      // so the Wandering Flame's Ignition reacts to ANY creature's Burn trigger;
+      // Poison/Bleed/etc. reuse the same trigger via their own emit_status.
+      key: "creature_status_triggered",
+      label: "When a creature's Status triggers (e.g. Burn DoT)",
       bucket: "resolution_phase",
       subjectFrom: SUBJECT_PERFORMER,
       filters: ["source"]

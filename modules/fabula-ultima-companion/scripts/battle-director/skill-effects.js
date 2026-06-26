@@ -2912,8 +2912,49 @@ async function applyNotifyEffect(row, ctx) {
 // without acting — their real work happens earlier (computeSenderDamageBonuses /
 // resolveDamageReactions / card-mutations at the CONFIRM write site); ok keeps
 // the chain running so downstream cost steps still fire ([[consume-last-in-chain]]).
+// trigger_opportunity — offer the caster N Opportunity picks via the ONI
+// OpportunitySystem (the same wheel a crit raises). `count` (formula, default 1)
+// = how many; `distinct:true` removes already-chosen options from later wheels
+// (RAW "the same Opportunity cannot be chosen twice"). The dramatic intro plays
+// ONCE (first pick); picks 2..N chain straight into the wheel. A decline stops
+// the run (the resource cost is already paid by the action). First consumer:
+// Hina's "Zero Power: A Million Possibility" (count 3, distinct).
+async function applyTriggerOpportunityEffect(row, ctx) {
+  const actor = ctx.casterActor ?? ctx.reactorActor ?? null;
+  if (!actor) return { ok: false, kind: "trigger_opportunity", reason: "no-actor" };
+  const oppSys = globalThis.ONI?.OpportunitySystem;
+  if (!oppSys?.offer) {
+    warn("skill-effects.trigger_opportunity: OpportunitySystem not available");
+    return { ok: false, kind: "trigger_opportunity", reason: "no-opportunity-system" };
+  }
+  const resolver = buildSkillResolver({ actor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0 });
+  const count = Math.max(1, Math.floor(Number(evaluateFormula(String(row.count ?? "1"), resolver, 1)) || 1));
+  const distinct = row.distinct === true || String(row.distinct ?? "").trim().toLowerCase() === "true";
+  const title = String(row.opportunity_title ?? "").trim() || null;
+
+  const excludeIds = [];
+  const picked = [];
+  for (let i = 0; i < count; i++) {
+    const res = await oppSys.offer({
+      actorUuid: actor.uuid,
+      actorName: actor.name,
+      source: "skill",
+      context: { source: "trigger_opportunity", skill: ctx.skill?.name ?? null, index: i, total: count },
+      excludeIds: distinct ? [...excludeIds] : [],
+      announce: i === 0,   // dramatic intro once; subsequent picks chain in
+      title,
+    }).catch((e) => { warn("skill-effects.trigger_opportunity: offer threw", e); return { cancelled: true }; });
+    if (res?.cancelled || !res?.optionId) break;   // a decline ends the run
+    picked.push(res.optionId);
+    if (distinct) excludeIds.push(res.optionId);
+  }
+  log(`skill-effects.trigger_opportunity: ${picked.length}/${count} opportunit(ies) resolved for ${actor.name} [${picked.join(", ")}]`);
+  return { ok: picked.length > 0, kind: "trigger_opportunity", count: picked.length, picked };
+}
+
 const EFFECT_KIND_DISPATCH = {
   targeting:           applyTargetingEffect,
+  trigger_opportunity: applyTriggerOpportunityEffect,
   grant:               grantRun,             // UNIFIED (see grantRun)
   set_resource:        setResourceRun,       // UNIFIED (see setResourceRun)
   apply_ae:            applyApplyAeEffect,
@@ -2923,6 +2964,7 @@ const EFFECT_KIND_DISPATCH = {
   open_action_menu:    applyOpenActionMenuEffect,
   free_action:         applyFreeActionEffect,
   adjust_charges:      applyAdjustChargesEffect,
+  trigger_status:      triggerStatusRun,     // UNIFIED (see triggerStatusRun) — fire a status's tick N×
   prompt_number:       applyPromptNumberEffect,
   prompt_element:      applyPromptElementEffect,
   remove_tagged_ae:    applyRemoveTaggedAeEffect,
@@ -3017,6 +3059,7 @@ try {
 // itself if a label is missing, but keep this complete).
 export const EFFECT_KIND_LABELS = {
   targeting:           "Targeting (produce token list)",
+  trigger_opportunity: "Trigger Opportunity (offer N distinct Opportunity picks)",
   grant:               "Grant / Drain Resource",
   set_resource:        "Set Resource",
   apply_ae:            "Apply Active Effect",
@@ -3026,6 +3069,7 @@ export const EFFECT_KIND_LABELS = {
   open_action_menu:    "Open Action Menu",
   free_action:         "Free Action (perform single action)",
   adjust_charges:      "Adjust Charges (multiply/add a target's stacks)",
+  trigger_status:      "Trigger Status (fire a status's tick N×, e.g. Burn)",
   adjust_cost:         "Adjust Cost (standing MP/IP cost modifier — e.g. focus discount)",
   check_die_swap:      "Check Die Swap (pre-roll: replace one accuracy die — e.g. → WLP)",
   prompt_number:       "Prompt Number (ask the user for an amount)",
@@ -3106,6 +3150,8 @@ const EFFECT_KIND_PREVIEW = {
   // by the add_target splice. No standalone card chip — the adjusted numbers show
   // in the per-target rows the splice rebuilds.
   adjust_grant: () => null,
+  // trigger_opportunity offers wheel pickers at apply-time — nothing to preview.
+  trigger_opportunity: () => null,
 
   // grant: UNIFIED — preview lives in grantRun (mode:"preview"). Override below.
 
@@ -3236,6 +3282,7 @@ EFFECT_KIND.grant = { run: grantRun };
 EFFECT_KIND.deal_damage = { run: dealDamageRun };
 EFFECT_KIND.set_resource = { run: setResourceRun };
 EFFECT_KIND.consume_charge = { run: consumeChargeRun };
+EFFECT_KIND.trigger_status = { run: triggerStatusRun };
 
 // ── Parity guard (load-time) ─────────────────────────────────────────────────
 // The unified registry's whole purpose is that the card preview and RESOLVE apply
@@ -4040,6 +4087,37 @@ async function dealDamageApply(row, ctx, d) {
           });
         }
       }
+
+      // Emit a GENERIC "a status triggered" event when this damage REPRESENTS a
+      // status producing its effect — set `emit_trigger:"creature_status_triggered"`
+      // + `emit_status:"<Status>"` on the row (the Burn DoT tick row carries it;
+      // the trigger_status effect_kind replays that row for Flame Claw / Meteor).
+      // DECOUPLED from the HP delta: gated on the pre-affinity `amount > 0` (we
+      // already `continue`d past a 0 amount above), so an ABSORBED (heal) or
+      // IMMUNE (0) tick STILL counts as triggered — the fix for "Burn that heals
+      // an absorber didn't fire Ignition". Batched callers (trigger_status with N
+      // stacks => one N×amount row) emit ONCE per target, so a listener counts
+      // per-creature, not per-stack. Observer-aware drain (the trigger is in
+      // instance-settle's LEDGER_FAMILY). No-op out of combat (no director).
+      if (row.emit_trigger && _director?.ctx) {
+        if (!Array.isArray(_director.ctx._postResolveTriggers)) _director.ctx._postResolveTriggers = [];
+        const emitStatus = String(row.emit_status ?? "").trim()
+          || row.attacker_name || ctx.sourceLabel || ctx.skill?.name || attackerName;
+        _director.ctx._postResolveTriggers.push({
+          casterActor: actor,
+          trigger: String(row.emit_trigger).trim(),
+          payload: {
+            sourceActorUuid: actor.uuid,
+            sourceTokenUuid: token.uuid ?? token.document?.uuid ?? null,
+            subjectActorUuid: actor.uuid,
+            subjectTokenUuid: token.uuid ?? token.document?.uuid ?? null,
+            status: emitStatus,
+            element,
+            originLabel: row.attacker_name || ctx.sourceLabel || ctx.skill?.name || attackerName,
+            amount,
+          },
+        });
+      }
     } catch (e) {
       warn(`skill-effects.deal_damage: applyDamageToTarget failed on ${actor.name}`, e);
     }
@@ -4049,6 +4127,109 @@ async function dealDamageApply(row, ctx, d) {
   if (!inheritedSink && battleLogSink.length) await appendBattleLog(battleLogSink);
   log(`skill-effects.deal_damage: row "${row.effect_label}" dealt ${element} to ${applied.length} actor(s)`);
   return { ok: true, kind: "deal_damage", applied };
+}
+
+// ── trigger_status ───────────────────────────────────────────────────────
+//
+// "Trigger a status's effect on the target(s)" — fire a charge-based status's
+// own tick the way the engine does at turn start, instead of a hand-copied
+// look-alike. A skill that 'triggers Burn' (Flame Claw, Meteor Impact) uses this
+// so it runs the REAL Burn tick (right formula, right element, right affinity) AND
+// announces the SAME `creature_status_triggered` signal a natural tick does — so
+// "react when a creature's Burn triggers" (Ignition) fires identically for the
+// natural tick and the skill-driven one. DRY: the tick formula is read from the
+// status's common-AE definition, so if Burn's DoT changes, every trigger follows.
+//
+// BATCHED: triggering N stacks compiles to ONE N×(per-tick) deal_damage per
+// target (one calc, one event), NOT N separate ticks — so a listener counts
+// per-creature, and it stays cheap. The per-victim resolver evaluates both the
+// count and the tick formula against each target, so a mixed-stack AoE is correct.
+//
+// Row fields:
+//   status_name      — the status/AE to trigger (e.g. "Burn"). Required.
+//   target_ref       — whose status to trigger (hit_action_targets / action_targets / …).
+//   trigger_count    — formula, per-victim, how many stacks to trigger. Default "1".
+//                      "AE_CHARGES_BURN" = all of the target's stacks.
+//   consume_charges  — bool. When true, also remove `trigger_count` charges of the
+//                      status from each target (Flame Claw: trigger 1 + consume 1).
+//                      When false, the SKILL manages charges (Meteor triggers all,
+//                      then halves via a separate adjust_charges). Default false.
+//
+// Sync dispatcher (preview must not return a Promise — parity guard): the preview
+// chip is the underlying deal_damage's; apply runs the damage then the optional
+// consume.
+function triggerStatusRun(row, ctx) {
+  const statusName = String(row.status_name ?? "").trim();
+  const triggerCount = String(row.trigger_count ?? "1").trim() || "1";
+  const tick = statusName ? findStatusTickDef(statusName) : null;
+  // Synthetic per-tick deal_damage = (count) × (the status's OWN tick formula),
+  // labelled so its originLabel + emit_status read the status name (→ Ignition).
+  const dmgRow = {
+    effect_kind: "deal_damage",
+    effect_label: `${row.effect_label ?? "trigger_status"}__tick`,
+    damage_element: tick?.element ?? "elementless",
+    damage_amount: tick ? `(${triggerCount}) * (${tick.amount})` : "0",
+    target_ref: row.target_ref,
+    damage_cause: row.damage_cause ?? "damage",
+    attacker_name: statusName || "Status",
+    emit_trigger: "creature_status_triggered",
+    emit_status: statusName,
+    damage_verbosity: row.damage_verbosity ?? "full",
+  };
+  if (ctx?.mode === "preview") return dealDamageRun(dmgRow, ctx);
+  return triggerStatusApply(dmgRow, row, ctx, { statusName, triggerCount, tick });
+}
+
+async function triggerStatusApply(dmgRow, row, ctx, { statusName, triggerCount, tick }) {
+  if (!statusName) {
+    warn(`skill-effects.trigger_status: missing status_name on "${row.effect_label}"`);
+    return { ok: false, kind: "trigger_status", reason: "no-status" };
+  }
+  if (!tick) {
+    warn(`skill-effects.trigger_status: no tick deal_damage definition for status "${statusName}" (row "${row.effect_label}")`);
+    return { ok: false, kind: "trigger_status", reason: "no-tick-def" };
+  }
+  // Read stacks BEFORE consuming so the damage scales off the full count.
+  const damage = await dealDamageRun(dmgRow, ctx);
+  let consumed = null;
+  const wantConsume = row.consume_charges === true || String(row.consume_charges).trim().toLowerCase() === "true";
+  if (wantConsume) {
+    const consumeRow = {
+      effect_kind: "adjust_charges",
+      effect_label: `${row.effect_label ?? "trigger_status"}__consume`,
+      charge_ae_name: statusName,
+      charge_operation: "subtract",
+      charge_amount: triggerCount,
+      target_ref: row.target_ref,
+    };
+    try { consumed = await applyAdjustChargesEffect(consumeRow, ctx); }
+    catch (e) { warn(`skill-effects.trigger_status: consume failed on "${row.effect_label}"`, e); }
+  }
+  return { ok: true, kind: "trigger_status", status: statusName, damage, consumed };
+}
+
+// Read a charge-based status's tick deal_damage definition (formula + element)
+// from its common-AE master, so trigger_status replays the REAL tick rather than
+// a hand-copied number. Sync (game.items is in-memory). Returns null if the
+// status has no carried deal_damage tick row.
+function findStatusTickDef(statusName) {
+  const needle = String(statusName ?? "").trim().toLowerCase();
+  if (!needle) return null;
+  for (const it of game.items?.contents ?? []) {
+    if (it.type !== "activeEffectContainer") continue;
+    for (const ae of it.effects ?? []) {
+      if (String(ae?.name ?? "").trim().toLowerCase() !== needle) continue;
+      const et = ae.flags?.[FLAG_NS]?.reactionConfig?.effect_table
+        ?? ae.flags?.[FLAG_NS]?.reactionConfig?.reaction_effect_table;
+      if (!et || typeof et !== "object") continue;
+      for (const r of Object.values(et)) {
+        if (r?.effect_kind === "deal_damage") {
+          return { amount: String(r.damage_amount ?? "0"), element: r.damage_element ?? "elementless" };
+        }
+      }
+    }
+  }
+  return null;
 }
 
 // ── consume_resource ───────────────────────────────────────────────────
@@ -5893,6 +6074,14 @@ async function applyFreeActionEffect(row, ctx) {
     } else {
       preset = { command: kind, skillUuid: presetItem.uuid, targetUuids };
     }
+    // A preset autocast is an ENGINE-staged action (the exact skill is already
+    // determined). Its obvious (self / all) target set should auto-resolve at
+    // TARGET without the post-c43c1d33 locked Confirm — there's no player to
+    // acknowledge a forced Unleash (Explosive Entrance) re-casting itself at
+    // "All Enemy". The action-level twin of ctx._skipTargetConfirm (2ff6e919);
+    // honored in resolveActionTargets' obvious-set branch only, so a genuine
+    // pick (One Enemy / pool > count) still prompts.
+    preset.skipTargetConfirm = true;
     // Keep the grant's type filter consistent with the preset command.
     enabledLabels = [preset.command];
   }

@@ -287,7 +287,7 @@
   }
 
   // ── Main showPicker ────────────────────────────────────────────────────────
-  function showPicker({ actorName, actorPortrait, options, canDecline = true }) {
+  function showPicker({ actorName, actorPortrait, options, canDecline = true, title = null } = {}) {
     applyTunerOverrides(); // pick up any live tuner changes before rebuilding
     ensureStyles();        // always regenerates CSS with current dimension vars
 
@@ -303,7 +303,7 @@
 
       const titleEl = document.createElement("div");
       titleEl.className = "oni-opp-title";
-      titleEl.textContent = "✦ Critical! — Spend an Opportunity";
+      titleEl.textContent = title ?? "✦ Critical! — Spend an Opportunity";
       backdrop.appendChild(titleEl);
 
       if (actorName) {

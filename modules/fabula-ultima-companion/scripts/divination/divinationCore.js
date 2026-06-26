@@ -227,17 +227,26 @@
     const tokenUuid = token?.document?.uuid ?? null;
 
     const reactionPayload = {
-      kind: "check_outcome_flipped",
-      trigger: "creature_check_outcome_flipped",
+      kind: "check_adjusted",
+      trigger: "creature_check_adjusted",
       timestamp: Date.now(),
 
       actorUuid: actor.uuid ?? null,
       tokenUuid,
       sourceUuid: tokenUuid,
+      sourceActorUuid: actor.uuid ?? null,
       subjectTokenUuid: tokenUuid,
       subjectActorUuid: actor.uuid ?? null,
 
+      // Causer = the actor who performed the reroll/invoke. Here it equals the
+      // subject (a self-flip); the bridge dispatches causer-side too so
+      // CHECK_ADJUSTED_BY_ME matches on the reroller regardless.
+      causerActorUuid: actor.uuid ?? null,
+      causerTokenUuid: tokenUuid,
+      mechanism,
       flipMechanism: mechanism,
+      // These open-check emitters fire ONLY on a confirmed pass↔fail flip.
+      resultChanged: true,
       before: { ...(before ?? {}) },
       after:  { ...(after  ?? {}) },
 

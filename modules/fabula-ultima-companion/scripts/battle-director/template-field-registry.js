@@ -34,6 +34,8 @@ const APPLY_AE_VIS = `equalText(sameRow("effect_kind",''), "apply_ae")`;
 const KEYWORD_VIS = `equalText(sameRow("effect_kind",''), "apply_action_keyword")`;
 // adjust_charges — charge arithmetic on a target's named charge-AE.
 const ADJUST_CHARGES_VIS = `equalText(sameRow("effect_kind",''), "adjust_charges")`;
+// trigger_status — fire a charge-based status's own tick N× on the target(s).
+const TRIGGER_STATUS_VIS = `equalText(sameRow("effect_kind",''), "trigger_status")`;
 // free_action — perform ONE free turn-action (skill name / "self" / type).
 const FREE_ACTION_VIS = `equalText(sameRow("effect_kind",''), "free_action")`;
 // prompt_number — interactive amount picker (Blazing Tether's Burn-stack move).
@@ -60,6 +62,8 @@ const ADJUST_ACC_VIS = `equalText(sameRow("effect_kind",''), "adjust_accuracy")`
 const MODIFY_TURNS_VIS = `equalText(sameRow("effect_kind",''), "modify_turns")`;
 // create_bond — form an FU Bond (emotion) toward a creature (Heart of Darkness).
 const CREATE_BOND_VIS = `equalText(sameRow("effect_kind",''), "create_bond")`;
+// trigger_opportunity — offer N distinct Opportunity wheel picks (A Million Possibility).
+const TRIGGER_OPP_VIS = `equalText(sameRow("effect_kind",''), "trigger_opportunity")`;
 
 function textCol(key, colName, { tooltip = "", vis = "" } = {}) {
   return {
@@ -119,6 +123,13 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
     { key: "hazard", value: "Hazard (Burn/Poison/environment — not an attack)" },
     { key: "damage", value: "Damage (creature-inflicted — counts as an attack)" },
   ], { tooltip: "Resource-ledger cause for this deal_damage. hazard (default) won't trip 'player-inflicted damage' reactions; damage = creature-inflicted. Reactions filter via reaction_cause_filter.", vis: DEAL_VIS, defaultValue: "hazard" }),
+  // emit_trigger / emit_status — announce that this damage REPRESENTS a status
+  // producing its effect (the Burn DoT tick carries these; trigger_status replays
+  // it). Emitted DECOUPLED from the HP delta (absorb/immune ticks still count), so
+  // a listener ("when a creature's Burn triggers") fires every time. See
+  // [[feedback_reaction_origin_filter]] (the status_triggered successor).
+  textCol("emit_trigger", "Emit Trigger", { tooltip: "deal_damage: a reaction trigger to fire after this row applies, regardless of the HP delta (e.g. \"creature_status_triggered\"). Pairs with Emit Status. Blank = none. Used by the Burn tick + trigger_status.", vis: DEAL_VIS }),
+  textCol("emit_status", "Emit Status", { tooltip: "deal_damage: the status NAME carried on the emitted event's payload.status (e.g. \"Burn\"), so a listener scopes via reaction_status_filter. Defaults to the row's attacker_name/source when blank.", vis: DEAL_VIS }),
   textCol("damage_amount", "Damage Amount", { tooltip: "Damage formula. deal_damage: amount dealt per target. adjust_damage: the operand.", vis: DEAL_OR_ADJUST_VIS }),
   selectCol("damage_operation", "Damage Op", [
     { key: "add",      value: "Add" },
@@ -150,6 +161,11 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   // create_bond config — the Bond's emotion when no AE template supplies one
   // (the AE template's flags.bondAE.emotions wins when present). Heart of Darkness.
   textCol("bond_emotion", "Bond Emotion", { tooltip: "create_bond: the emotion for the formed Bond (e.g. hatred) when the ae_template_ref AE doesn't carry flags.bondAE.emotions. Default 'hatred'.", vis: CREATE_BOND_VIS }),
+  // trigger_opportunity config — how many Opportunity picks to offer + whether
+  // they must be distinct (A Million Possibility: count 3, distinct).
+  textCol("count", "Count", { tooltip: "trigger_opportunity: how many Opportunity picks to offer (number or formula). A Million Possibility = 3.", vis: TRIGGER_OPP_VIS }),
+  checkboxCol("distinct", "Distinct Picks", { tooltip: "trigger_opportunity: when checked, an already-chosen Opportunity is removed from later pickers (RAW 'the same Opportunity cannot be chosen twice').", vis: TRIGGER_OPP_VIS, defaultChecked: false }),
+  textCol("opportunity_title", "Opportunity Title", { tooltip: "trigger_opportunity: optional title shown above the Opportunity wheel (default 'Critical! — Spend an Opportunity').", vis: TRIGGER_OPP_VIS }),
   // apply_action_keyword config — which keyword to tag the in-flight hit with.
   // Extensible: each new keyword = one option here + one branch in
   // recomputePerTargetDamages. Author via a creature_will_deal_damage reaction
@@ -250,6 +266,13 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   ], { tooltip: "adjust_charges: how charge_amount combines with the target's current charge count.", vis: ADJUST_CHARGES_VIS, defaultValue: "multiply" }),
   textCol("charge_amount", "Charge Amount", { tooltip: "adjust_charges: the operand (number or per-target formula). e.g. 2 to double.", vis: ADJUST_CHARGES_VIS }),
   textCol("charge_max", "Charge Max", { tooltip: "adjust_charges: optional cap on the resulting charge total. Blank = uncapped.", vis: ADJUST_CHARGES_VIS }),
+  // trigger_status config — fire a charge-based status's OWN tick on the target(s)
+  // (a skill that 'triggers Burn': Flame Claw, Meteor Impact). Runs the real tick
+  // (formula read from the status's common-AE — DRY) and emits creature_status_triggered.
+  // BATCHED: N stacks => one N×(per-tick) deal_damage per target. See trigger_status.
+  textCol("status_name", "Trigger Status Name", { tooltip: "trigger_status: the status/AE to trigger by name (e.g. Burn). Its tick formula + element are read from the status's common-AE definition.", vis: TRIGGER_STATUS_VIS }),
+  textCol("trigger_count", "Trigger Count", { tooltip: "trigger_status: how many stacks to trigger (per-victim number or formula). Default 1. \"AE_CHARGES_BURN\" = all of the target's stacks (batched into one N×tick hit).", vis: TRIGGER_STATUS_VIS }),
+  checkboxCol("consume_charges", "Consume Charges", { tooltip: "trigger_status: also REMOVE Trigger Count charges of the status from each target (Flame Claw: trigger 1 + consume 1). Off = the skill manages charges (Meteor triggers all, then halves via adjust_charges).", vis: TRIGGER_STATUS_VIS }),
   // prompt_number config — interactive amount picker. Stores the entered value as
   // a chain variable read later via the VAR_<NAME> formula identifier (Blazing
   // Tether's move = prompt_number then two adjust_charges using VAR_MOVE_AMOUNT).
@@ -296,6 +319,11 @@ export const REACTION_CONFIG_REQUIRED_COLUMNS = [
   // Blank = any. resource matches the changed resource; cause matches why.
   textCol("reaction_resource_filter", "Resource Filter", { tooltip: "For creature_lose_resource / creature_gain_resource: fire only when this resource changed — hp/mp/ip/fp/zero_power/shield/zenit/enmity. Blank = any." }),
   textCol("reaction_cause_filter", "Cause Filter", { tooltip: "For creature_lose_resource / creature_gain_resource: fire only for this cause — damage/hazard/cost/drain/grant/heal. Blank = any. (damage = inflicted attack; hazard = Burn/Poison/environment.)" }),
+  // Damage-SOURCE (origin) filter — fire only when the resource change was dealt by
+  // an effect/skill/status of this NAME (payload.originLabel, e.g. "Burn", a weapon
+  // name). WHAT dealt it (vs reaction_source's WHO). General "react to damage from
+  // source X". See [[feedback_reaction_origin_filter]].
+  textCol("reaction_origin_filter", "Origin Filter", { tooltip: "For creature_lose_resource / creature_gain_resource: fire only when the change's SOURCE name (the effect/skill/status that dealt it — payload.originLabel, e.g. \"Burn\") matches. Blank = any. Distinct from Source (which creature)." }),
   // Status-ledger filter (creature_status_applied / creature_loses_status).
   textCol("reaction_status_filter", "Status Filter", { tooltip: "For creature_status_applied / creature_loses_status: fire only when this status (AE) changed — e.g. Crisis. Blank = any." }),
   // Action-kind filter (creature_performs_action). Comma-list of action TYPES the
