@@ -3233,12 +3233,27 @@ const Target = {
       attackCancelLabel = "Cancel";
     }
 
+    // For an NPC attack, thread the backing attack ITEM + the attacker ACTOR so
+    // the unified resolver can (a) evaluate the skill_target count formula
+    // (without them "Up to N" silently collapses to 1) and (b) read a
+    // `target_sequence` declared on the item — e.g. Chomp's highest-Burn focus
+    // pick. PC attacks have no single backing skill item (the weapon drives
+    // targeting), so leave skill null there. Resolved once, before the call.
+    let attackSkillItem = null;
+    let attackActorDoc  = null;
+    if (director.ctx.attackMode === "npc" && director.ctx.npcAttackItemUuid) {
+      try { attackSkillItem = await fromUuid(director.ctx.npcAttackItemUuid); } catch {}
+    }
+    try { attackActorDoc = attacker?.actorUuid ? await fromUuid(attacker.actorUuid) : null; } catch {}
+
     // RAW Core p.70 — Covered creatures can't be melee-targeted. The
     // range gate is passed as a post-filter so the unified resolver still
     // builds the full category pool (needed for random/creature modes)
     // and then applies coverage + Vanish exclusions on top.
     const attackTargeting = await resolveActionTargets(director, attacker, {
       skillTargetText:    weaponSkillTarget,
+      attackerActor:      attackActorDoc,
+      skill:              attackSkillItem,
       excludeSelf:        true,
       eligiblePostFilter: (pool) => applyAttackRangeGate(pool, currentWeapon),
       usingPreComposed:   !isMultiPassReEntry,
