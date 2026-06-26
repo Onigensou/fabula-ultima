@@ -241,6 +241,13 @@
               "rebuild_card": true,
               "target_ref": "",
               "target_select": "first"
+            },
+            "3": {
+              "damage_amount": "AE_CHARGES_BURN * 10",
+              "damage_operation": "add",
+              "damage_stage": "outgoing",
+              "effect_kind": "adjust_damage",
+              "effect_label": "voracious_burn_bonus"
             }
           },
           "heroic_requirement": "",
@@ -276,6 +283,15 @@
               "reaction_subject_kind": "",
               "reaction_trigger": "creature_deals_damage",
               "requires_skill": ""
+            },
+            "1": {
+              "condition_formula": "",
+              "reaction_effect_ref": "voracious_burn_bonus",
+              "reaction_passive_mode": "on",
+              "reaction_source": "self",
+              "reaction_source_skill": "",
+              "reaction_trigger": "creature_will_deal_damage",
+              "requires_skill": ""
             }
           },
           "rolled_atr1": "-",
@@ -307,66 +323,6 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
-      "effects": [
-        {
-          "_id": "2pOj6sRViDzNQaTP",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": 1780588914192,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.8.5"
-          },
-          "changes": [],
-          "description": "<p>This creature deals increased <strong>100% Damage</strong>.</p>",
-          "disabled": false,
-          "duration": {
-            "combat": null,
-            "rounds": null,
-            "seconds": null,
-            "startRound": null,
-            "startTime": null,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "originalId": "2pOj6sRViDzNQaTP",
-              "originalParentId": "msdUrwq2F4LO3xy4",
-              "originalUuid": "Actor.zODzgQipiH3nsimr.Item.msdUrwq2F4LO3xy4.ActiveEffect.2pOj6sRViDzNQaTP"
-            },
-            "fabula-ultima-companion": {
-              "charges": 1,
-              "chargesMax": 99,
-              "directorPermanent": true
-            },
-            "statuscounter": {
-              "config": {
-                "durationType": 1,
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/devour.png",
-          "name": "Kill Frenzy",
-          "origin": null,
-          "sort": 0,
-          "statuses": [],
-          "system": {
-            "tags": [
-              "kill_frenzy"
-            ]
-          },
-          "tint": "#ffffff",
-          "transfer": false,
-          "type": "base"
-        }
-      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.8.4"
@@ -396,31 +352,36 @@
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
-              "ae_duplicate_mode": "replace",
-              "ae_initial_charges": "1",
-              "ae_template_ref": "Kill Frenzy",
-              "effect_kind": "apply_ae",
-              "effect_label": "chomp_kill_apply",
-              "target_ref": "self"
-            },
-            "1": {
-              "damage_amount": "1 + AE_CHARGES_KILL_FRENZY",
-              "damage_operation": "multiply",
-              "damage_stage": "outgoing",
-              "effect_kind": "grant",
-              "effect_label": "chomp_kill_bonus",
-              "grant_amount": "",
-              "grant_resource": "",
-              "target_ref": ""
-            },
-            "2": {
               "action_keyword": "pierce",
               "condition_formula": "FINAL_DAMAGE >= 100",
-              "effect_kind": "grant",
-              "effect_label": "chomp_pierce",
-              "grant_amount": "",
-              "grant_resource": "",
-              "target_ref": ""
+              "effect_kind": "apply_action_keyword",
+              "effect_label": "chomp_pierce"
+            },
+            "1": {
+              "action_pool_focus": true,
+              "effect_kind": "targeting",
+              "effect_label": "chomp_focus",
+              "focus_max_formula": "AE_CHARGES_BURN"
+            },
+            "2": {
+              "chain_steps": "blaze_self_burn,blaze_consume_target",
+              "effect_kind": "chain",
+              "effect_label": "blaze_transfer"
+            },
+            "3": {
+              "ae_duplicate_mode": "add_charges",
+              "ae_initial_charges": "TARGET_AE_CHARGES_BURN",
+              "ae_template_ref": "Burn",
+              "effect_kind": "apply_ae",
+              "effect_label": "blaze_self_burn",
+              "target_ref": "self"
+            },
+            "4": {
+              "count": "all",
+              "effect_kind": "remove_tagged_ae",
+              "effect_label": "blaze_consume_target",
+              "filter_tag": "burn",
+              "target_ref": "trigger_subject"
             }
           },
           "has_pierce": true,
@@ -442,44 +403,21 @@
           "optional_params": {},
           "reaction_config_table": {
             "0": {
-              "condition_formula": "TRIGGER_IS_SELF == 1 && TARGET_CURRENT_HP <= 0",
-              "reaction_action_intent": "",
-              "reaction_action_target": "",
-              "reaction_damage_amount": "",
-              "reaction_damage_outcome": "",
-              "reaction_damage_source": "",
-              "reaction_damage_type": "",
-              "reaction_effect_ref": "chomp_kill_apply",
-              "reaction_isPassive": false,
-              "reaction_ownership": "",
+              "condition_formula": "TRIGGER_IS_SELF == 1",
+              "reaction_effect_ref": "chomp_pierce",
               "reaction_passive_mode": "on",
-              "reaction_passive_target": "",
               "reaction_source": "self",
               "reaction_source_skill": "Chomp",
-              "reaction_subject_kind": "",
-              "reaction_trigger": "creature_deals_damage",
+              "reaction_trigger": "creature_will_deal_damage",
               "requires_skill": ""
             },
             "1": {
-              "condition_formula": "AE_CHARGES_KILL_FRENZY > 0",
-              "reaction_damage_outcome": "",
-              "reaction_effect_ref": "chomp_kill_bonus",
-              "reaction_isPassive": false,
-              "reaction_passive_mode": "on",
-              "reaction_passive_target": "",
-              "reaction_source": "self",
-              "reaction_source_skill": "Chomp",
-              "reaction_trigger": "creature_will_deal_damage",
-              "requires_skill": ""
-            },
-            "2": {
-              "condition_formula": "TRIGGER_IS_SELF == 1",
-              "reaction_effect_ref": "chomp_pierce",
-              "reaction_isPassive": false,
+              "condition_formula": "TRIGGER_IS_SELF == 1 && TARGET_AE_CHARGES_BURN > 0",
+              "reaction_effect_ref": "blaze_transfer",
               "reaction_passive_mode": "on",
               "reaction_source": "self",
               "reaction_source_skill": "Chomp",
-              "reaction_trigger": "creature_will_deal_damage",
+              "reaction_trigger": "creature_deals_damage",
               "requires_skill": ""
             }
           },
@@ -489,7 +427,7 @@
           "skill_animation_mode": "default",
           "skill_information": "",
           "skill_range": "Melee",
-          "skill_target": "One Creature",
+          "skill_target": "One Random Creature",
           "skill_type": "Attack",
           "type_damage": "Physical",
           "use_optional_params": false,
@@ -1404,7 +1342,7 @@
           "action_pattern_name": "Chomp",
           "action_pattern_priority": "5",
           "action_pattern_string": "",
-          "action_pattern_target_focus": "burn_focus",
+          "action_pattern_target_focus": "auto",
           "action_pattern_value_1": "0",
           "action_pattern_value_2": "100"
         },

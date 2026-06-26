@@ -14,7 +14,7 @@
     }
   },
   "folder": "vE96q7FVLmhb7wDD",
-  "img": "icons/svg/item-bag.svg",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/12_MCH/hypercharge.png",
   "name": "Gadgets",
   "ownership": {
     "JQGNzKpDPHJmcUIW": 3,
@@ -23,20 +23,36 @@
   "sort": 0,
   "system": {
     "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "check_bonus": "0",
       "class": "Tinkerer",
       "cost": "2 IP",
+      "damage_bonus": "",
+      "defense_target_type": "def",
       "description": "<p>You can produce <strong>infusions</strong> and other gadgets on the fly.</p><p><strong>Infusions.</strong> When you successfully <strong>hit one or more targets with an attack</strong>, you may spend <strong>2 Inventory Points</strong> to produce a special infusion and apply its effect to that attack. If the attack had the <em>multi</em> property, the effect applies to <strong>each</strong> target. You cannot apply more than one infusion to the same attack; producing and using an infusion are both part of the attack.</p><ul><li><strong>Cryo / Pyro / Volt:</strong> deal 5 extra damage; the attack's damage becomes <strong>ice / fire / bolt</strong>.</li><li><strong>Cyclone / Exorcism / Seismic / Shadow:</strong> deal 5 extra damage; the attack's damage becomes <strong>air / light / earth / dark</strong>.</li><li><strong>Venom:</strong> deal 5 extra damage; the attack's damage becomes <strong>poison</strong>; each creature hit suffers <strong>poisoned</strong>.</li><li><strong>Vampire:</strong> heal HP equal to <strong>half the damage dealt</strong>. <em>Single-target attacks only.</em></li></ul>",
+      "details_roller": "Show",
       "duration": "Instantaneous",
       "effect_table": {
         "0": {
+          "allowed_types": "",
+          "check_bonus_formula": "",
+          "damage_bonus_formula": "",
           "effect_kind": "open_action_menu",
           "effect_label": "inf_offer",
+          "free_hr_as_zero": false,
+          "free_mode": false,
+          "max_mp_cost": "",
+          "menu_option_colors": "",
           "menu_option_descriptions": "+5; becomes Ice|+5; becomes Fire|+5; becomes Bolt|+5; becomes Air|+5; becomes Light|+5; becomes Earth|+5; becomes Dark|+5; becomes Poison + Poisoned|Single-target: heal 50% of damage dealt",
+          "menu_option_icons": "",
           "menu_option_labels": "Cryo|Pyro|Volt|Cyclone|Exorcism|Seismic|Shadow|Venom|Vampire",
           "menu_option_refs": "inf_cryo,inf_pyro,inf_volt,inf_cyclone,inf_exorcism,inf_seismic,inf_shadow,inf_venom,inf_vampire",
           "menu_pick_count": "1",
           "menu_subtitle": "Spend 2 IP — the attack's damage changes",
-          "menu_title": "Produce an Infusion"
+          "menu_title": "Produce an Infusion",
+          "target_ref": ""
         },
         "1": {
           "chain_steps": "inf_pay,inf_el_ice,inf_plus5",
@@ -99,6 +115,8 @@
           "consume_resource": "ip",
           "effect_kind": "consume_resource",
           "effect_label": "inf_pay",
+          "grant_amount": "",
+          "grant_resource": "",
           "on_empty": "abort",
           "target_ref": "self"
         },
@@ -151,26 +169,38 @@
         },
         "19": {
           "ae_duplicate_mode": "replace",
+          "ae_initial_charges": "",
+          "ae_initial_charges_max": "",
           "ae_template_ref": "Poisoned",
           "effect_kind": "apply_ae",
           "effect_label": "inf_poison",
           "target_ref": "hit_action_targets"
         },
         "20": {
+          "allowed_types": "",
+          "check_bonus_formula": "",
+          "damage_bonus_formula": "",
           "effect_kind": "open_action_menu",
           "effect_label": "gadget_active_root",
+          "free_hr_as_zero": false,
+          "free_mode": false,
+          "max_mp_cost": "",
+          "menu_option_colors": "",
           "menu_option_descriptions": "Mix a potion|Build a magitech device",
+          "menu_option_icons": "",
           "menu_option_labels": "Alchemy|Magitech",
           "menu_option_refs": "stub_alchemy,stub_magitech",
           "menu_pick_count": "1",
           "menu_subtitle": "Choose a gadget branch",
-          "menu_title": "Use a Gadget"
+          "menu_title": "Use a Gadget",
+          "target_ref": ""
         },
         "21": {
           "condition_formula": "GADGET_ALCHEMY_TIER >= 1",
           "effect_kind": "notify",
           "effect_label": "stub_alchemy",
           "menu_label": "Alchemy",
+          "notify_abort": true,
           "notify_message": "Alchemy gadgets (potion-mixing) are not yet implemented.",
           "notify_type": "info"
         },
@@ -179,6 +209,7 @@
           "effect_kind": "notify",
           "effect_label": "stub_magitech",
           "menu_label": "Magitech",
+          "notify_abort": true,
           "notify_message": "Magitech gadgets are not yet implemented.",
           "notify_type": "info"
         },
@@ -190,31 +221,57 @@
           "menu_label": "Vampire"
         },
         "24": {
-          "action_keyword": "drain",
+          "action_keyword": "pierce",
+          "condition_formula": "",
           "effect_kind": "apply_action_keyword",
           "effect_label": "inf_drain"
         }
       },
+      "gadget_alchemy_tier": "",
+      "gadget_infusion_tier": "",
+      "gadget_magitech_tier": "",
+      "heroic_requirement": "",
+      "id": "1w2LjUOVhlbLR8nn",
+      "ignore_hr": false,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/12_MCH/hypercharge.png",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,
+      "isOffensiveSpell": false,
       "isReaction": false,
+      "isZeroPower": false,
       "level": "1",
       "max_level": "1",
       "name": "Gadgets",
       "on_activate_effect_ref": "gadget_active_root",
+      "optional_params": {},
+      "pre_activate_effect_ref": "",
       "reaction_config_table": {
         "0": {
+          "condition_formula": "",
           "reaction_action_kind": "Attack",
+          "reaction_cause_filter": "",
           "reaction_effect_ref": "inf_offer",
           "reaction_passive_mode": "ask",
+          "reaction_resource_filter": "",
           "reaction_source": "self",
-          "reaction_trigger": "creature_will_deal_damage"
+          "reaction_source_skill": "",
+          "reaction_status_filter": "",
+          "reaction_trigger": "creature_will_deal_damage",
+          "requires_skill": ""
         }
       },
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
       "skill_range": "-",
       "skill_target": "Special",
-      "skill_type": "Active"
+      "skill_type": "Active",
+      "type_damage": "",
+      "use_optional_params": false,
+      "uuid": "Item.1w2LjUOVhlbLR8nn"
     },
     "template": "j0F5Msw5RZ8aIB3j",
     "templateSystemUniqueVersion": 2666163373,

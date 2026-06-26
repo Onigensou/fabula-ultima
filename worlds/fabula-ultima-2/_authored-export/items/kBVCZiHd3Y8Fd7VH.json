@@ -67,6 +67,7 @@
       "beast_ef": "100",
       "category": "Arcane",
       "celestial_ef": "100",
+      "check": "Check",
       "check_bonus": "0",
       "construct_ef": "100",
       "damage_bonus": "10",
@@ -84,6 +85,8 @@
       "hand_slots": "Two-handed",
       "human_ef": "100",
       "humanoid_ef": "100",
+      "id": "kBVCZiHd3Y8Fd7VH",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/2000.gif",
       "insect_ef": "100",
       "ip_cost": "",
       "isEquipped": false,
@@ -107,7 +110,7 @@
           "skill_cost": "",
           "skill_description": "<p>When you cast an <strong>instantaneous</strong> spell, if you have an <strong>arcane</strong> weapon equipped, <strong>you may increase the spell's total MP cost</strong> by up to <strong>【SL × 10】</strong> Mind Points. If you do so and the spell deals damage to one or more creatures, it will deal 5 extra damage to each creature for every 10 Mind Points by which you increased its total MP cost.</p>",
           "skill_maxLevel": 3,
-          "uuid": ""
+          "uuid": "Item.5su5PxiW5lwGHx70"
         }
       },
       "item_type": "weapon",
@@ -116,12 +119,14 @@
       "name": "Arc Wand",
       "optional_params": {},
       "plant_ef": "100",
+      "refine_count": "0",
+      "refine_level": "0",
       "related_item_list": {
         "5su5PxiW5lwGHx70": {
           "id": "${item.id}",
           "name": "Cataclysm",
           "related_item_description": "<p>When you cast an <strong>instantaneous</strong> spell, if you have an <strong>arcane</strong> weapon equipped, <strong>you may increase the spell's total MP cost</strong> by up to <strong>【SL × 10】</strong> Mind Points. If you do so and the spell deals damage to one or more creatures, it will deal 5 extra damage to each creature for every 10 Mind Points by which you increased its total MP cost.</p>",
-          "uuid": ""
+          "uuid": "Item.5su5PxiW5lwGHx70"
         }
       },
       "reptilian_ef": "100",
@@ -133,6 +138,7 @@
       "spirit_ef": "100",
       "type_damage": "Bolt",
       "undead_ef": "100",
+      "uuid": "Item.kBVCZiHd3Y8Fd7VH",
       "vehicle_ef": "100",
       "weapon_range": "Melee"
     },

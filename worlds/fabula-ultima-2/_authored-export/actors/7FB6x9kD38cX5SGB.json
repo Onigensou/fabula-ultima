@@ -747,7 +747,8 @@
               "damage_bonus_formula": "floor(38 * pow(0.5, AE_CHARGES_BLAZING_SWEEP_LOCK)) - 38",
               "effect_kind": "free_action",
               "effect_label": "repeat_sweep",
-              "max_mp_cost": "0"
+              "max_mp_cost": "0",
+              "target_ref": "hit_action_targets"
             },
             "4": {
               "count": "all",

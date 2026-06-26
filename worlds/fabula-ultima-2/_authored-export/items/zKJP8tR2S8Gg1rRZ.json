@@ -44,6 +44,7 @@
       "beast_ef": "100",
       "category": "Sword",
       "celestial_ef": "100",
+      "check": "Check",
       "check_bonus": "0",
       "construct_ef": "100",
       "damage_bonus": "15",
@@ -61,6 +62,8 @@
       "hand_slots": "One-handed",
       "human_ef": "100",
       "humanoid_ef": "100",
+      "id": "zKJP8tR2S8Gg1rRZ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1137.gif",
       "insect_ef": "100",
       "ip_cost": "",
       "isEquipped": false,
@@ -93,6 +96,8 @@
       "name": "Save the Queen",
       "optional_params": {},
       "plant_ef": "100",
+      "refine_count": "0",
+      "refine_level": "0",
       "related_item_list": {
         "TD3i1fdSE7qGwApx": {
           "id": "${item.id}",
@@ -111,6 +116,7 @@
       "spirit_ef": "100",
       "type_damage": "Light",
       "undead_ef": "100",
+      "uuid": "Item.zKJP8tR2S8Gg1rRZ",
       "vehicle_ef": "100",
       "weapon_range": "Melee"
     },
