@@ -854,7 +854,23 @@ export async function dispatchReactionMenu({
         // future REACTION_CHOICE intents from the next reaction window.
         try { remoteAwait.abort("remote-won"); } catch {}
         const body = intent?.body ?? {};
+        // Acknowledge receipt to the picking player so their token menu cancels
+        // its no-response re-spawn timer (the pick landed; the close /
+        // rebroadcast follows). Only sent for picks we actually act on — a
+        // stale/unknown rowKey is NOT acked, so the player's menu re-spawns and
+        // they can pick again.
+        const fromUid = intent?.fromUserId ?? null;
+        const sendAck = () => {
+          if (!fromUid || !channel) return;
+          try {
+            channel.broadcastMenuPatch({
+              targetUserId: fromUid,
+              patch: { kind: "reaction-menu-ack", combatId, tokenId: token.id },
+            });
+          } catch (e) { warn(`reaction[${trigger}]: ack broadcast threw`, e); }
+        };
         if (body.decision === "pass") {
+          sendAck();
           await processPass();
           closeMenusEverywhere();
           resolveClose();
@@ -868,6 +884,7 @@ export async function dispatchReactionMenu({
           localPickFired = false;
           return;
         }
+        sendAck();
         const keepGoing = await processDecision(cand);
         if (keepGoing) renderMenu();
         else { closeMenusEverywhere(); resolveClose(); }

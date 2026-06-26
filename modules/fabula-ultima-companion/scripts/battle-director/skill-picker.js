@@ -151,6 +151,15 @@ export async function gatherSkillsForActor(actor) {
   for (const item of items) {
     const skillType = String(item.system?.props?.skill_type ?? "").trim();
     if (!skillType) continue;
+    // Linked `_skills` (a real `container` back-ref → they belong to a gear /
+    // consumable shell, CSB container model) must NOT surface as standalone
+    // actor skills. They reach the menu only through their container's
+    // `item_skill_active` projection — the equipped-gated SECONDARY source
+    // below — so an equipped wand can grant a castable Spell/Skill that
+    // disappears when the gear is unequipped, with no duplicate when the actor
+    // also knows the skill. "-" is CSB's empty-container sentinel, not a link.
+    const container = String(item.system?.container ?? "").trim();
+    if (container && container !== "-") continue;
     if (seenUuids.has(item.uuid)) continue;
     const cand = buildCandidateFromItem(item, actor, { source: "actor", sourceItem: null });
     if (!cand) continue;
@@ -161,12 +170,21 @@ export async function gatherSkillsForActor(actor) {
   // SECONDARY SOURCE: equipped items' item_skill_active grants. These point
   // at skills the actor doesn't own (the granting weapon/accessory is the
   // source). Resolve each via fromUuid.
+  // Names the actor already knows (PRIMARY source) — a grant that duplicates a
+  // known skill is redundant and suppressed (equipping Heal-granting gear when
+  // you already know Heal shouldn't list Heal twice). The grant only matters
+  // for actors who LACK the skill.
+  const knownNames = new Set(
+    candidates.map((c) => String(c.name ?? "").trim().toLowerCase()).filter(Boolean),
+  );
   for (const item of items) {
-    const isEquipped = item.system?.isEquipped ?? false;
+    // isEquipped lives at system.props.isEquipped (CSB prop), NOT system.isEquipped.
+    const isEquipped = item.system?.props?.isEquipped ?? false;
     if (!isEquipped) continue;
     const granted = asObjectValues(item.system?.props?.item_skill_active);
     for (const entry of granted) {
       if (!entry?.uuid || seenUuids.has(entry.uuid)) continue;
+      if (knownNames.has(String(entry.name ?? "").trim().toLowerCase())) continue;
       const cand = await buildCandidate(entry.uuid, actor, { source: "item-granted", sourceItem: item });
       if (!cand) continue;
       seenUuids.add(entry.uuid);

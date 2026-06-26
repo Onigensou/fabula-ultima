@@ -39,6 +39,7 @@
 
 import { log, warn } from "./logger.js";
 import { resolveTargetRef as resolveBdTargetRef, makeChainContext as makeBdChainContext } from "./skill-targeting.js";
+import { deriveCheck } from "./check.js";
 
 const FLAG_NS = "fabula-ultima-companion";
 
@@ -863,6 +864,107 @@ async function applyCheckRerollMutation(ctx, cand, row) {
   return "applied";
 }
 
+// ── Set check die (effect_kind: "set_check_die") ─────────────────────────
+// Replace ONE of the action's rolled dice with a value, then let the shared
+// recompute re-derive the whole card from the new dice. A GENERIC check-mutation
+// primitive (no skill hardcoded): the value can be a literal/formula, or — when
+// the formula is blank — the CARRIER AE's own charge, which turns that AE into a
+// stored "die value". With `writeback_carrier_charge`, the replaced die's OLD face
+// is written back to the carrier's charge, so the stored value MUTATES on each use
+// (a die that "remembers" its swaps). The set is DETERMINISTIC (unlike
+// check_reroll's random reroll), so no result memo is needed; the only
+// non-card-state effect — the charge writeback — is DEFERRED to the commit path via
+// the generic `ctx.chargeWrites` channel (applied EXACTLY once, never on a preview
+// pass). Reports through the same `accuracyOverride` (`rerolled`) channel as
+// check_reroll so the card repaints accuracy + headline damage + per-target result
+// from the new dice via the one shared recompute.
+//
+// First user: Hina's Lucky Seven (carrier = a permanent "Lucky Number" AE whose
+// charge starts at 7 — replace a die with it; the old face becomes the new lucky
+// number). RAW-impossible values (a 7 on a d6) are allowed — no clamp to die faces.
+//
+//   { effect_kind: "set_check_die",
+//     which_die: "A" | "B",                  // which rolled die to replace
+//     die_value: <number|formula>,           // value to set; blank → carrier charge
+//     writeback_carrier_charge: <bool> }     // old face → carrier AE charge (mutate)
+// RAW gate (also enforced by the reaction condition): a rolled, non-crit,
+// non-fumble Check.
+async function applySetCheckDieMutation(ctx, cand, row) {
+  const roll = ctx.ar?.roll;
+  if (!roll) { warn("set_check_die: no accuracy roll on this action — skipping"); return "failed"; }
+  if (roll.isCrit || roll.isFumble) { log("set_check_die: roll is a Critical/Fumble — cannot replace a die (RAW)"); return "failed"; }
+
+  // Which die to replace (menu pick → row.which_die). Fall back to the LOWER die.
+  let which = String(row?.which_die ?? "").trim().toUpperCase();
+  if (which !== "A" && which !== "B") which = (Number(roll.rB) || 0) < (Number(roll.rA) || 0) ? "B" : "A";
+
+  // The carrier AE — its charge is both the default value source and the writeback
+  // sink (so a charge-bearing AE doubles as a self-contained stored die value).
+  const carrier = cand?.carrierUuid ? await fromUuid(cand.carrierUuid).catch(() => null) : null;
+  const carrierCharge = Number(carrier?.flags?.[FLAG_NS]?.charges);
+
+  // The value to set: explicit number/formula, else the carrier's charge.
+  const valSpec = String(row?.die_value ?? "").trim();
+  let value;
+  if (valSpec === "") {
+    value = Number.isFinite(carrierCharge) ? carrierCharge : 0;
+  } else {
+    value = Number(valSpec);
+    if (!Number.isFinite(value)) {
+      try {
+        const { reactor, skill } = await resolveReactionReactorSkill(ctx, cand);
+        const { buildSkillResolver, evaluateFormula } = await import("./skill-formulas.js");
+        const resolver = buildSkillResolver({ actor: reactor, payload: cand?.payloadAtFire ?? null, skill, round: ctx.ar?.round ?? 0 });
+        value = Number(evaluateFormula(valSpec, resolver)) || 0;
+      } catch (e) { warn("set_check_die: die_value formula eval threw — treating as 0", e); value = 0; }
+    }
+  }
+
+  // The action-taker owns the dice (fumble threshold / crit props).
+  const attackerUuid = ctx.ar?.attackerActorRef ?? ctx.ar?.attacker?.actorUuid ?? null;
+  const attacker = attackerUuid ? await fromUuid(attackerUuid).catch(() => null) : null;
+  const props = attacker?.system?.props ?? null;
+  const fumbleThreshold = Math.max(1, Number(props?.fumble_threshold ?? 1) || 1);
+
+  // Replace the chosen die — NO clamp to die faces (RAW allows an impossible value
+  // like a 7 on a d6). deriveCheck re-derives total/HR/crit/fumble on the result: a
+  // value > 6 never matches a real die so it can't fabricate doubles, but a value
+  // that DOES match the other die (e.g. set a die to 6 to pair an existing 6)
+  // legitimately crits.
+  const oldFace = which === "A" ? (Number(roll.rA) || 0) : (Number(roll.rB) || 0);
+  const rA = which === "A" ? value : (Number(roll.rA) || 0);
+  const rB = which === "B" ? value : (Number(roll.rB) || 0);
+  const derived = deriveCheck({ rA, rB, props, fumbleThreshold, checkBonus: Number(roll.checkBonus) || 0 });
+  const newRoll = { ...roll, ...derived, opportunities: derived.isCrit && !derived.isFumble };
+
+  const newTotal = Number(newRoll.total ?? 0);
+  const via = cand?.carrierName ?? cand?.reactorActorName ?? "reaction";
+
+  // Swap the roll + report via accuracyOverride (rerolled channel) — same as
+  // check_reroll, so the shared recompute owns the result. A die SET replaces the
+  // dice (not an additive modifier) → no `parts`.
+  ctx.ar = { ...ctx.ar, roll: newRoll };
+  ctx.accuracyOverride = {
+    from: Number(roll.total ?? 0),
+    to: newTotal,
+    blocked: newTotal <= 0,
+    via,
+    reactorName: cand?.reactorActorName ?? null,
+    rerolled: true,
+    newRoll,
+  };
+
+  // Deferred durable charge write (generic): the replaced die's old face → the
+  // carrier AE's charge, committed EXACTLY once by the commit path (never on a
+  // preview pass). The mutation only RECORDS the intent here.
+  if (row?.writeback_carrier_charge === true && cand?.carrierUuid) {
+    (ctx.chargeWrites ??= []).push({ aeUuid: cand.carrierUuid, charges: oldFace });
+  }
+
+  log(`set_check_die: die ${which} ${oldFace} → ${value} (writeback=${row?.writeback_carrier_charge === true}); ${roll.rA}+${roll.rB}=${roll.total} → ${newRoll.rA}+${newRoll.rB}=${newTotal} (via ${via})`);
+  return "applied";
+}
+
 // ── Defense adjustment (effect_kind: "adjust_defense") ───────────────────
 // The DEFENDER-side twin of adjust_accuracy: a `creature_targeted_by_action`
 // reaction on the TARGET raises ITS OWN effective defense for the in-flight
@@ -1454,6 +1556,13 @@ export async function applyAcceptedCardMutations(arSnapshot, acceptedPrePassives
         // Divination: reroll the action-taker's accuracy dice, recompute hits.
         const result = await applyCheckRerollMutation(ctx, cand, row);
         if (result === "applied") { mutationsApplied += 1; pushAdjuster(cand, "check_reroll"); }
+      } else if (kind === "set_check_die") {
+        // set_check_die authored as a DIRECT chain row (e.g. an auto-pick or
+        // fixed-value variant, no menu). A build that lets the player choose the
+        // die via open_action_menu is reached in Phase 2b instead; this handles the
+        // menuless authoring too.
+        const result = await applySetCheckDieMutation(ctx, cand, row);
+        if (result === "applied") { mutationsApplied += 1; pushAdjuster(cand, "set_check_die"); }
       } else if (kind === "adjust_defense") {
         // Defender-side: the targeted creature raises its own DEF for this action
         // (Verónica). Per-target; only the reactor's slot recomputes hit/miss.
@@ -1492,9 +1601,19 @@ export async function applyAcceptedCardMutations(arSnapshot, acceptedPrePassives
     const rows = expandEffectChainWithPicks(effectTable, cand.ref, cand.chosenMenuPicks);
     for (const row of rows) {
       if (plainLabels.has(row.effect_label)) continue;   // already handled in Phase 2
-      if (String(row.effect_kind ?? "").trim().toLowerCase() !== "adjust_cost") continue;
-      const result = await applyAdjustCostMutation(ctx, cand, row);
-      if (result === "applied") mutationsApplied += 1;
+      const kind = String(row.effect_kind ?? "").trim().toLowerCase();
+      if (kind === "adjust_cost") {
+        const result = await applyAdjustCostMutation(ctx, cand, row);
+        if (result === "applied") mutationsApplied += 1;
+      } else if (kind === "set_check_die") {
+        // A build may let the player pick WHICH die to replace via the reaction's
+        // open_action_menu (die A vs die B), so set_check_die lives ONLY in the
+        // picked option's chain — unreachable by Phase 2's plain expansion. Apply it
+        // here and credit the adjuster (causer falls back to the action-taker for a
+        // self reaction) so `creature_check_adjusted` feeds dependent reactions free.
+        const result = await applySetCheckDieMutation(ctx, cand, row);
+        if (result === "applied") { mutationsApplied += 1; pushAdjuster(cand, "set_check_die"); }
+      }
     }
   }
 
@@ -1526,6 +1645,10 @@ export async function applyAcceptedCardMutations(arSnapshot, acceptedPrePassives
     // accuracy/reroll/defense mutation). Rides through applyTargetSetMutation's
     // `...mut` spread; the commit path turns these into creature_check_adjusted.
     checkAdjusters,
+    // Generic deferred durable AE-charge writes requested by a mutation (e.g.
+    // set_check_die's old-face writeback) — applied EXACTLY once by the commit
+    // path, never on a preview pass. [{ aeUuid, charges }].
+    chargeWrites: ctx.chargeWrites ?? null,
   };
 }
 

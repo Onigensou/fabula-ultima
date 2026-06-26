@@ -5545,9 +5545,30 @@ export async function postActionCard({ director, kind, payload }) {
             const body = intent?.body ?? {};
             log(`postActionCard: remote REACTION_CHOICE received (${body.rowKey ?? "?"}/${body.decision ?? "?"})`);
             const decision = body.decision === "apply" ? "apply" : "skip";
+            const fromUid = intent?.fromUserId ?? null;
+            // Acknowledge receipt to the clicking player IMMEDIATELY so their
+            // mirror cancels its no-response retry timer (the click landed). The
+            // final Applied/Skipped/revert follows after resolution — which may
+            // legitimately take a while if a secondary picker opens on their
+            // client. Sent before recordPillDecision so a slow resolve never
+            // looks like a dropped message.
+            if (fromUid && fromUid !== game.user?.id) {
+              try {
+                director.intentChannel.broadcastMenuOpen({
+                  targetUserId: fromUid,
+                  menuSpec: {
+                    kind: "action-card-pill-update",
+                    combatId: director.combatId,
+                    rowKey: String(body.rowKey ?? ""),
+                    carrierUuid: String(body.carrierUuid ?? ""),
+                    decision: "ack",
+                  },
+                });
+              } catch (e) { warn("postActionCard: reaction ack broadcast threw", e); }
+            }
             // intent.fromUserId = the player who applied → route their secondary
             // pickers back to their client (recordPillDecision builds remotePrompt).
-            recordPillDecision(String(body.rowKey ?? ""), String(body.carrierUuid ?? ""), decision, intent?.fromUserId ?? null);
+            recordPillDecision(String(body.rowKey ?? ""), String(body.carrierUuid ?? ""), decision, fromUid);
             // Re-arm for the next pill click (or no-op if none left).
             armReactionAwait();
           }).catch((e) => {
@@ -6097,6 +6118,69 @@ export const BattlefieldActionCard = {
 const MIRROR_ROOT_ID = "fud-bf-mirror-root";
 let _mirrorCleanup = null;
 
+// How long the owner's mirror waits after clicking a reaction Apply/Skip for
+// the GM to acknowledge the click before assuming the message was lost (dropped
+// socket / GM not listening). On timeout the pill is restored to actionable so
+// the player can retry instead of being stuck on a dimmed button until they
+// refresh. The GM sends an "ack" pill-update the instant it receives the click
+// (BEFORE running any secondary picker), so a legitimately slow resolution —
+// e.g. the player is still choosing a Protect target — does NOT trip this.
+const REACTION_SUBMIT_TIMEOUT_MS = 8000;
+
+// Restore a reaction pill from its in-flight "submitting" state back to
+// actionable (pending, buttons live). Shared by the GM-broadcast "revert" path
+// and the client-side no-response timeout. Also clears any pending retry timer.
+function restoreReactionPillToActionable(pillEl) {
+  if (!pillEl) return;
+  if (pillEl._fudSubmitTimer) {
+    try { clearTimeout(pillEl._fudSubmitTimer); } catch {}
+    pillEl._fudSubmitTimer = null;
+  }
+  pillEl.dataset.fudReactionPending = "1";
+  delete pillEl.dataset.fudReactionSubmitting;
+  pillEl.classList.remove("is-submitting");
+}
+
+// Clear a pill's retry timer once the GM has responded (ack / final state).
+function clearReactionPillTimer(pillEl) {
+  if (pillEl?._fudSubmitTimer) {
+    try { clearTimeout(pillEl._fudSubmitTimer); } catch {}
+    pillEl._fudSubmitTimer = null;
+  }
+}
+
+// Clear the no-response retry timer(s) on invoke buttons once the GM's reroll /
+// invoke-update broadcast lands. `type` ("trait"|"bond") narrows it; omitted
+// clears both. Invoke needs no GM ack: the player commits all choices in their
+// local HUD before emitting, so the GM resolves immediately and the success
+// broadcast always beats the timeout.
+function clearInvokeSubmitTimers(wrapper, type = null) {
+  if (!wrapper) return;
+  const sel = type ? `[data-fud-invoke="${type}"]` : "[data-fud-invoke]";
+  for (const btn of wrapper.querySelectorAll(sel)) {
+    if (btn._fudInvokeTimer) {
+      try { clearTimeout(btn._fudInvokeTimer); } catch {}
+      btn._fudInvokeTimer = null;
+    }
+  }
+}
+
+// Arm the no-response net on an invoke button: after the player commits and
+// emits INVOKE_CHOICE the button locks ("is-resolved"); if the GM's reroll /
+// invoke-update never comes back, restore it so the player can retry instead of
+// being stuck on a locked button.
+function armInvokeSubmitTimer(invokeBtn, type) {
+  if (!invokeBtn) return;
+  if (invokeBtn._fudInvokeTimer) { try { clearTimeout(invokeBtn._fudInvokeTimer); } catch {} }
+  invokeBtn._fudInvokeTimer = setTimeout(() => {
+    invokeBtn._fudInvokeTimer = null;
+    if (!invokeBtn.isConnected) return;
+    if (!invokeBtn.classList.contains("is-resolved")) return;
+    invokeBtn.classList.remove("is-resolved");
+    try { ui.notifications?.warn(`No response from the host — try invoking ${type === "trait" ? "the Trait" : "the Bond"} again.`); } catch {}
+  }, REACTION_SUBMIT_TIMEOUT_MS);
+}
+
 function cleanupMirror() {
   if (_mirrorCleanup) {
     try { _mirrorCleanup(); } catch {}
@@ -6125,6 +6209,7 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
     playerInvokeState = menuSpec.invokeState ?? playerInvokeState;
     const wrapper = document.getElementById(MIRROR_ROOT_ID);
     if (!wrapper) return;
+    clearInvokeSubmitTimers(wrapper); // GM responded — stop the no-response net
     import(`./invoke/invoke-worker.js?cb=${Date.now()}`).then((w) => {
       w.patchCardDom(wrapper, playerAr, playerInvokeState);
     }).catch((e) => warn("action-card-invoke-update: patchCardDom threw", e));
@@ -6165,6 +6250,8 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
     if (isActiveDirector()) return; // GM presents locally; never via its own (non-echoing) broadcast
     playerAr = menuSpec.actionResult ?? playerAr;
     playerInvokeState = menuSpec.invokeState ?? playerInvokeState;
+    // GM responded — stop the no-response net before the (slower) reroll animation.
+    clearInvokeSubmitTimers(document.getElementById(MIRROR_ROOT_ID));
     const r = menuSpec.roll ?? {};
     (async () => {
       try {
@@ -6219,14 +6306,21 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
       `.fud-bf-reaction-pill[data-fud-reaction-key="${CSS.escape(String(menuSpec.rowKey ?? ""))}"][data-fud-reaction-carrier="${CSS.escape(String(menuSpec.carrierUuid ?? ""))}"]`
     );
     if (!pillEl) return;
+    // "ack" — the GM received the click and is resolving it (possibly awaiting a
+    // secondary pick on this client). Cancel the no-response retry timer but keep
+    // the pill submitting; the final Applied/Skipped/revert follows.
+    if (menuSpec.decision === "ack") {
+      clearReactionPillTimer(pillEl);
+      return;
+    }
+    // The GM responded — stop the retry timer regardless of outcome.
+    clearReactionPillTimer(pillEl);
     // "revert" — the owner's secondary pick was cancelled; restore the pill to
     // its actionable (pending) state so they can click Apply/Skip again. The
     // Apply/Skip buttons were left in place during "submitting", so we only
     // clear the in-flight flags.
     if (menuSpec.decision === "revert") {
-      pillEl.dataset.fudReactionPending = "1";
-      delete pillEl.dataset.fudReactionSubmitting;
-      pillEl.classList.remove("is-submitting");
+      restoreReactionPillToActionable(pillEl);
       return;
     }
     const decision = menuSpec.decision === "apply" ? "apply" : "skip";
@@ -6374,6 +6468,22 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
       pill.dataset.fudReactionPending = "0";
       pill.dataset.fudReactionSubmitting = "1";
       pill.classList.add("is-submitting");
+      // Connection safety net: the GM owns the final Applied/Skipped (or revert)
+      // broadcast, but if the click never reaches a listening GM (dropped socket
+      // / desync) the pill would stay dimmed forever and the only recovery was a
+      // client refresh. Arm a timer that restores the pill to actionable if the
+      // GM hasn't even ACKNOWLEDGED the click within the window, so the player
+      // can just tap again. The GM's immediate "ack" pill-update clears this, so
+      // a legitimately slow resolution (secondary picker open on this client)
+      // never trips it.
+      clearReactionPillTimer(pill);
+      pill._fudSubmitTimer = setTimeout(() => {
+        pill._fudSubmitTimer = null;
+        if (!pill.isConnected) return;
+        if (pill.dataset.fudReactionSubmitting !== "1") return; // already resolved
+        restoreReactionPillToActionable(pill);
+        try { ui.notifications?.warn("No response from the host — tap Apply/Skip again."); } catch {}
+      }, REACTION_SUBMIT_TIMEOUT_MS);
       // Card-level pending counter is owned by the GM's pill-update broadcasts —
       // don't decrement locally (a cancelled pick would leave it wrong).
       channel.emit({
@@ -6452,6 +6562,7 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
                   body: { type: "trait", choice },
                   combatId: menuSpec.combatId,
                 });
+                armInvokeSubmitTimer(invokeBtn, "trait");
               } else {
                 const attackerUuid = menuSpec.attackerActorUuid ?? null;
                 if (!attackerUuid) return;
@@ -6490,6 +6601,7 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
                   body: { type: "bond", bondIndex },
                   combatId: menuSpec.combatId,
                 });
+                armInvokeSubmitTimer(invokeBtn, "bond");
               }
             } catch (e) {
               warn("mirror invoke handler threw", e);

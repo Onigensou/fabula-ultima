@@ -26,6 +26,13 @@ import { INTENTS } from "./intents.js";
 import { ReactionMenu } from "./reaction-menu.js";
 import { ReactionIndicator } from "./reaction-indicator.js";
 
+// How long the player's token menu waits after picking a blade for the GM to
+// acknowledge before assuming the click was lost (dropped socket / GM not
+// listening) and re-spawning the menu so they can pick again. The GM sends a
+// "reaction-menu-ack" patch the instant it receives the pick, so a slow
+// resolution does NOT trip this. Matches the action-card pill net's window.
+const REACTION_SUBMIT_TIMEOUT_MS = 8000;
+
 // Public: register the handler on a given IntentChannel. Call from
 // boot on every client (GM + players). The handler no-ops on the GM
 // client because the GM spawns the menu directly via the dispatcher.
@@ -54,6 +61,87 @@ export function registerPlayerReactionMenuHandler(channel, isActiveDirector = ()
       return null;
     }
     return token;
+  }
+
+  // No-response re-spawn timers, keyed by `${combatId}:${tokenId}`. Armed when
+  // the player picks a blade (the menu despawns immediately on click); cleared
+  // by the GM's ack, by the GM's authoritative close/rebroadcast, or by firing
+  // (which re-spawns the menu so the player can retry a lost pick).
+  const pendingResend = new Map();
+  const resendKey = (combatId, tokenId) => `${combatId ?? "no-combat"}:${tokenId ?? "no-token"}`;
+  function clearResend(key) {
+    const e = pendingResend.get(key);
+    if (e) { try { clearTimeout(e.timer); } catch {} pendingResend.delete(key); }
+  }
+  function clearAllResend() {
+    for (const e of pendingResend.values()) { try { clearTimeout(e.timer); } catch {} }
+    pendingResend.clear();
+  }
+
+  // Resolve the token + spawn the actionable reaction menu. Reused for the
+  // initial GM broadcast AND for the no-response re-spawn, so a lost pick
+  // restores an identical, clickable menu.
+  async function spawnReactionMenu(menuSpec) {
+    const token = await resolveCanvasToken(menuSpec.tokenUuid, "reaction-menu MENU_OPEN");
+    if (!token) return;
+    const key = resendKey(menuSpec.combatId, token.id);
+    clearResend(key); // a fresh spawn supersedes any pending re-send for this token
+    const armResend = () => {
+      clearResend(key);
+      const timer = setTimeout(() => {
+        pendingResend.delete(key);
+        // No GM ack within the window — the pick was likely lost. Re-spawn the
+        // menu so the player can try again instead of being left with no UI.
+        spawnReactionMenu(menuSpec);
+        try { ui.notifications?.warn("No response from the host — pick your reaction again."); } catch {}
+      }, REACTION_SUBMIT_TIMEOUT_MS);
+      pendingResend.set(key, { timer });
+    };
+    ReactionMenu.spawn({
+      director: null,  // player-side has no director ref; not used by the menu module
+      token,
+      combatId: menuSpec.combatId,
+      candidates: menuSpec.candidates,
+      trigger: menuSpec.trigger,
+      label: menuSpec.label,
+      passLabel: menuSpec.passLabel,
+      disabledLabels: menuSpec.disabledLabels ?? null,
+      onPick: (cand) => {
+        // Emit REACTION_CHOICE back to the GM. The GM-side awaitIntent
+        // in standalone-reactions.js picks this up + applies the
+        // candidate + broadcasts MENU_CLOSE (or a rebroadcast with the
+        // remaining candidates).
+        channel.emit({
+          type: INTENTS.REACTION_CHOICE,
+          body: {
+            reactorActorUuid: menuSpec.reactorActorUuid,
+            rowKey: cand.rowKey,
+            carrierUuid: cand.carrierUuid,
+            decision: "apply",
+          },
+          combatId: menuSpec.combatId,
+        });
+        // Close the local menu — the GM may rebroadcast with the remaining
+        // candidates if there are any. Arm the no-response net in case the
+        // pick was lost on the wire.
+        ReactionMenu.despawn({ combatId: menuSpec.combatId, tokenId: token.id });
+        armResend();
+      },
+      onPass: () => {
+        channel.emit({
+          type: INTENTS.REACTION_CHOICE,
+          body: {
+            reactorActorUuid: menuSpec.reactorActorUuid,
+            rowKey: null,
+            carrierUuid: null,
+            decision: "pass",
+          },
+          combatId: menuSpec.combatId,
+        });
+        ReactionMenu.despawn({ combatId: menuSpec.combatId, tokenId: token.id });
+        armResend();
+      },
+    });
   }
 
   const offOpen = channel.onMenuOpen(async (menuSpec) => {
@@ -88,51 +176,7 @@ export function registerPlayerReactionMenuHandler(channel, isActiveDirector = ()
 
     if (menuSpec.kind !== "reaction-menu") return;
     try {
-      const token = await resolveCanvasToken(menuSpec.tokenUuid, "reaction-menu MENU_OPEN");
-      if (!token) return;
-
-      ReactionMenu.spawn({
-        director: null,  // player-side has no director ref; not used by the menu module
-        token,
-        combatId: menuSpec.combatId,
-        candidates: menuSpec.candidates,
-        trigger: menuSpec.trigger,
-        label: menuSpec.label,
-        passLabel: menuSpec.passLabel,
-        disabledLabels: menuSpec.disabledLabels ?? null,
-        onPick: (cand) => {
-          // Emit REACTION_CHOICE back to the GM. The GM-side awaitIntent
-          // in standalone-reactions.js picks this up + applies the
-          // candidate + broadcasts MENU_CLOSE.
-          channel.emit({
-            type: INTENTS.REACTION_CHOICE,
-            body: {
-              reactorActorUuid: menuSpec.reactorActorUuid,
-              rowKey: cand.rowKey,
-              carrierUuid: cand.carrierUuid,
-              decision: "apply",
-            },
-            combatId: menuSpec.combatId,
-          });
-          // Close the local menu — the GM may rebroadcast with the
-          // remaining candidates if there are any. Until then the menu
-          // is gone client-side.
-          ReactionMenu.despawn({ combatId: menuSpec.combatId, tokenId: token.id });
-        },
-        onPass: () => {
-          channel.emit({
-            type: INTENTS.REACTION_CHOICE,
-            body: {
-              reactorActorUuid: menuSpec.reactorActorUuid,
-              rowKey: null,
-              carrierUuid: null,
-              decision: "pass",
-            },
-            combatId: menuSpec.combatId,
-          });
-          ReactionMenu.despawn({ combatId: menuSpec.combatId, tokenId: token.id });
-        },
-      });
+      await spawnReactionMenu(menuSpec);
     } catch (e) {
       warn("reaction-menu MENU_OPEN handler threw", e);
     }
@@ -146,6 +190,12 @@ export function registerPlayerReactionMenuHandler(channel, isActiveDirector = ()
   // next MENU_OPEN will carry the fresh disabledLabels baked in).
   const offPatch = channel.onMenuPatch((patch) => {
     if (isActiveDirector()) return;
+    // GM acknowledged a pick — the click landed; cancel the no-response
+    // re-spawn timer for this token (the close / rebroadcast follows).
+    if (patch?.kind === "reaction-menu-ack") {
+      clearResend(resendKey(patch.combatId, patch.tokenId));
+      return;
+    }
     if (!patch || patch.kind !== "reaction-menu-disabled") return;
     try {
       ReactionMenu.updateDisabledLabels({
@@ -177,7 +227,9 @@ export function registerPlayerReactionMenuHandler(channel, isActiveDirector = ()
     // Player-side: dismiss every reaction menu — the GM's authoritative
     // close (e.g. after applying a candidate, after dispatch ends).
     // Untyped close (kind=null) sweeps menu + indicator so a
-    // director.stop or scene-change clears everything.
+    // director.stop or scene-change clears everything. The authoritative
+    // close means the GM responded, so cancel any pending re-spawn timers.
+    clearAllResend();
     try { ReactionMenu.despawnAll(); } catch {}
     if (!kind) {
       try { ReactionIndicator.despawnAll(); } catch {}
@@ -185,6 +237,7 @@ export function registerPlayerReactionMenuHandler(channel, isActiveDirector = ()
   });
 
   return () => {
+    try { clearAllResend(); } catch {}
     try { offOpen?.(); } catch {}
     try { offPatch?.(); } catch {}
     try { offClose?.(); } catch {}

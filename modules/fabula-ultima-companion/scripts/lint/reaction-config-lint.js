@@ -186,7 +186,7 @@
     "take_turn_next", "modify_turns", "create_bond", "change_damage_element",
     "apply_action_keyword", "check_die_swap",
     "adjust_damage", "adjust_accuracy", "adjust_defense", "adjust_grant", "adjust_cost",
-    "check_reroll",
+    "check_reroll", "set_check_die",
   ]);
   function getEffectKindValues() {
     const reg = globalThis.FUCompanion?.api?.effectKinds;

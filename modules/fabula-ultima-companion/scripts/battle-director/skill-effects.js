@@ -664,6 +664,28 @@ async function passesMatchFilters(row, item, reactorActor, payload) {
     return false;
   }
 
+  // 1b. Damage-SOURCE disposition filter — the WHO that CAUSED the change
+  //     (payload.causeActorUuid: the attacker/applier), scoped self/ally/enemy
+  //     relative to the reactor. Distinct from reaction_source (section 1),
+  //     which scopes the event SUBJECT (the creature the change happened TO).
+  //     On a resource-ledger event the subject is the victim (reaction_source
+  //     "self") while the cause is the attacker — so "react when an ENEMY makes
+  //     ME lose HP" = reaction_source "self" + reaction_damage_source "enemy".
+  //     Blank = any (no-op). Pairs with reaction_cause_filter "damage" to mean
+  //     "an enemy CREATURE dealt the damage" and exclude self-recoil / a Burn
+  //     tick (which has no attacker cause, or whose cause is the original
+  //     applier — gated out by the cause filter, not this one). Universal: the
+  //     legacy reaction-system already honors this field; this teaches the BD
+  //     ledger path the same gate (it was silently ignored before).
+  const wantDamageSource = String(row.reaction_damage_source ?? "").trim().toLowerCase();
+  if (wantDamageSource) {
+    const causeActorUuid = payload?.causeActorUuid ?? null;
+    if (!subjectMatchesSource(wantDamageSource, causeActorUuid, reactorActor)) {
+      log(`passive ${item.name}: damage_source filter failed — want="${wantDamageSource}" causeActorUuid="${causeActorUuid}" reactorUuid="${reactorActor?.uuid}"`);
+      return false;
+    }
+  }
+
   // 2. Target-disposition filter — at least one ally/enemy/neutral in payload.
   const wantActionTarget = String(row.reaction_action_target ?? "").trim().toLowerCase();
   if (wantActionTarget && wantActionTarget !== "any") {
@@ -3013,6 +3035,14 @@ const EFFECT_KIND_DISPATCH = {
   // here; the real work runs at the card-mutation phase
   // (card-mutations.applyCheckRerollMutation), exactly like adjust_accuracy.
   check_reroll:        (row) => ({ ok: true, kind: "check_reroll", applied: [], reason: "applied-at-card-mutation-phase" }),
+  // set_check_die: replace one of the action's rolled dice with a value (literal /
+  // formula / a carrier AE's charge), optionally writing the old face back to that
+  // charge. Data-only here; the real work runs at the card-mutation phase
+  // (card-mutations.applySetCheckDieMutation), exactly like check_reroll. A build
+  // can let the player choose the die via the reaction's open_action_menu
+  // (which_die), in which case it reaches the card-mutation phase through Phase 2b.
+  // First user: Hina's Lucky Seven.
+  set_check_die:       (row) => ({ ok: true, kind: "set_check_die", applied: [], reason: "applied-at-card-mutation-phase" }),
   // adjust_defense: the DEFENDER-side twin of adjust_accuracy. A
   // creature_targeted_by_action reaction on the TARGET raises its OWN effective
   // defense for the in-flight action (Matador Verónica: +2 DEF when targeted).
@@ -3100,6 +3130,7 @@ export const EFFECT_KIND_LABELS = {
   shield_redirect:     "Shield Redirect (Phantasm interposes; PV-capped soak, overflow to ally)",
   adjust_accuracy:     "Adjust Accuracy",
   check_reroll:        "Check Reroll (reroll the action's accuracy dice — Divination)",
+  set_check_die:       "Set Check Die (replace one rolled die with a value / stored charge)",
   adjust_defense:      "Adjust Defense (defender raises own DEF for the action)",
   negate_action:       "Negate Action (block — no outcome/reactions)",
 };
@@ -3244,6 +3275,7 @@ const EFFECT_KIND_PREVIEW = {
   shield_redirect: () => null,
   adjust_accuracy: () => null,
   check_reroll: () => null,
+  set_check_die: () => null,
   negate_action: () => null,
 };
 
@@ -3965,6 +3997,11 @@ function describeDealDamage(row, ctx = {}) {
     // "player-inflicted damage" reactions; authors set damage_cause:"damage" for
     // inflicted deal_damage that should count as an attack.
     damageCause: String(row.damage_cause ?? "").trim().toLowerCase() || "hazard",
+    // Which resource the damage comes off — "hp" (default) or "mp" (MP-burn:
+    // Curse's drain, MP-damage spells). The "mp" route uses applyDamageToTarget's
+    // MP path, which clamps at 0 and fires the −N loss VFX but skips affinity /
+    // shield / the HP crisis-ledger (MP loss has none of those).
+    damageResource: String(row.damage_resource ?? "hp").trim().toLowerCase() || "hp",
   };
 }
 
@@ -3974,7 +4011,7 @@ function dealDamageRun(row, ctx) {
     return {
       type: "damage",
       element: d.isVar ? (d.resolvedElement ?? "varies") : d.resolvedElement,
-      resource: "hp", damageClass: "effect",
+      resource: d.damageResource, damageClass: "effect",
       value: _previewAmount(d.amountFormula, ctx),
       valence: "harmful", source: row.effect_label, targetRef: d.targetRef,
     };
@@ -4034,13 +4071,17 @@ async function dealDamageApply(row, ctx, d) {
       // isn't inflated by the bearer's own bonuses; the base is baked in the
       // damage_amount formula. The commit also applies shield absorption and the
       // Mercy reaction-AE clamp (shared with the attack pipeline).
-      const ruled = computeIncomingDamage(actor, { base: amount, element, ignoreAffinity });
+      // MP-burn (damage_resource "mp") goes straight to applyDamageToTarget's MP
+      // path — no affinity/shield ruling (MP loss has neither). HP damage takes the
+      // full incoming ruleset. Both clamp at 0 + fire their loss VFX inside the commit.
+      const isMp = d.damageResource === "mp";
+      const ruled = isMp ? null : computeIncomingDamage(actor, { base: amount, element, ignoreAffinity });
       const hpBefore = readPropNum(actor, ["current_hp", "hp"]);
       const res = await applyDamageToTarget({
         target: actor,
-        damage: ruled.damage,
-        affinity: ruled.affinity,
-        resource: "hp",
+        damage: isMp ? amount : ruled.damage,
+        affinity: isMp ? "NE" : ruled.affinity,
+        resource: isMp ? "mp" : "hp",
         targetName: actor.name,
         tokenUuid: token.uuid ?? token.document?.uuid ?? null,
         logPrefix: `${attackerName}:`,
@@ -6196,16 +6237,31 @@ async function applySaveCheckEffect(row, ctx) {
   // No Request Check / it threw → every target FAILS (the effect still lands —
   // better than silently doing nothing).
   if (!Array.isArray(results)) {
+    // Every SLOT fails — so the failed-token list carries multiplicity (one
+    // entry per failed slot), matching the resolved-results path below.
     ctx.saveFailedTargetUuids = [...uniqueActorUuids];
-    ctx.saveFailedTokenUuids  = [...actorToToken.values()].filter(Boolean);
-    log(`save_check: no results — defaulting ${uniqueActorUuids.length} target(s) to FAIL`);
+    ctx.saveFailedTokenUuids  = [];
+    for (const u of uniqueActorUuids) {
+      const tok = actorToToken.get(u);
+      if (!tok) continue;
+      for (let i = 0; i < (slotCount.get(u) ?? 1); i++) ctx.saveFailedTokenUuids.push(tok);
+    }
+    log(`save_check: no results — defaulting ${slotActorUuids.length} slot(s) to FAIL`);
     return { ok: true, kind: "save_check", failed: [...uniqueActorUuids], passed: [], reason: "no-results" };
   }
 
-  // Aggregate per-slot results back to per-token outcomes. A token FAILS if ANY
-  // of its slot-saves failed (or an expected result is missing). The same status
-  // applied twice is idempotent, so the failed/passed pools stay token-level even
-  // though the rolls are per-slot.
+  // Aggregate per-slot results to a per-token FAIL COUNT. A token's count = how
+  // many of its slot-saves failed (an expected-but-missing result counts as a
+  // fail — "a save you don't make, you fail"). The failed-token list then carries
+  // MULTIPLICITY: a token that failed N slots appears N times, so a follow-up
+  // consequence on `save_failed_targets` lands once PER failed save. This is the
+  // RAW intent for a Protector who soaks several allies' Checks at once (Wandering
+  // Flame's Explosive Entrance: each failed exposure = another 30 Fire + 3 Burn
+  // stacks). Idempotent consequences (a plain status — Dreadwyrm's Frightened)
+  // re-apply harmlessly; the normal one-slot-per-target case is unchanged
+  // (multiplicity 1). The deal_damage / apply_ae executors iterate the resolved
+  // token list directly (apply_ae's _aeBatch dup-visibility guard makes repeated
+  // add_charges on one token accumulate), so duplicates scale correctly.
   const passByActor = new Map();   // actorUuid → array of per-slot pass booleans
   for (const r of results) {
     if (!r?.actorUuid) continue;
@@ -6213,15 +6269,26 @@ async function applySaveCheckEffect(row, ctx) {
     arr.push(!!r.pass);
     passByActor.set(r.actorUuid, arr);
   }
-  const failed = uniqueActorUuids.filter((u) => {
+  const failCount = new Map();     // actorUuid → number of FAILED slots
+  for (const u of uniqueActorUuids) {
     const arr = passByActor.get(u) ?? [];
-    return arr.length < (slotCount.get(u) ?? 1) || arr.some((p) => !p);   // missing or any-fail = FAIL
-  });
-  const passed = uniqueActorUuids.filter((u) => !failed.includes(u));
+    const expected = slotCount.get(u) ?? 1;
+    const missing = Math.max(0, expected - arr.length);     // unreturned slots = fails
+    const explicitFails = arr.reduce((n, p) => n + (p ? 0 : 1), 0);
+    failCount.set(u, missing + explicitFails);
+  }
+  const failed = uniqueActorUuids.filter((u) => (failCount.get(u) ?? 0) > 0);
+  const passed = uniqueActorUuids.filter((u) => (failCount.get(u) ?? 0) === 0);
   ctx.saveFailedTargetUuids = failed;
-  ctx.saveFailedTokenUuids  = failed.map((u) => actorToToken.get(u)).filter(Boolean);
+  ctx.saveFailedTokenUuids  = [];
+  for (const u of failed) {
+    const tok = actorToToken.get(u);
+    if (!tok) continue;
+    for (let i = 0; i < (failCount.get(u) ?? 1); i++) ctx.saveFailedTokenUuids.push(tok);
+  }
   ctx.savePassedTargetUuids = passed;
-  log(`save_check: DL ${dl} ${attrA}+${attrB} — ${slotActorUuids.length} roll(s), ${failed.length} target(s) failed / ${passed.length} passed`);
+  const totalFails = [...failCount.values()].reduce((a, b) => a + b, 0);
+  log(`save_check: DL ${dl} ${attrA}+${attrB} — ${slotActorUuids.length} roll(s), ${totalFails} failed save(s) across ${failed.length} target(s) / ${passed.length} passed`);
   return { ok: true, kind: "save_check", failed, passed };
 }
 

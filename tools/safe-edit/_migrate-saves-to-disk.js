@@ -12,7 +12,9 @@ const fs = require("fs");
 const path = require("path");
 
 const WORLD_ID  = "fabula-ultima-2";
-const DATA_ROOT = "C:/Users/Oni/AppData/Local/FoundryVTT/Data";
+// Derive the data root from this script's location (tools/safe-edit/ -> repo root)
+// so the migration is portable across machines; allow an explicit override.
+const DATA_ROOT = process.env.FU_DATA_ROOT || path.resolve(__dirname, "..", "..");
 const SETTINGS_DIR = path.join(DATA_ROOT, "worlds", WORLD_ID, "data", "settings");
 const SAVES_DIR    = path.join(DATA_ROOT, "worlds", WORLD_ID, "fu-saves");
 const SLOT_COUNT   = 3;

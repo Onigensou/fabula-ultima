@@ -741,6 +741,12 @@ async function resolveAction(director, ar, opts = {}) {
     // actionKind already carried on the pre-resolve creature_targeted_by_action
     // payload. Item-use reactions read this off creature_completes_item (§8b).
     actionKind: ar.kind ?? null,
+    // Capability flag (single-source `ar.canMiss`): 1 when this action rolled a
+    // Check that can miss — attacks, OFFENSIVE spells, opposed/Hinder checks —
+    // and 0 for Heal/buff/utility. Read by ACTION_ROLLS_ACCURACY so a
+    // creature_completes_spell reaction can gate to "spell with a check" (e.g.
+    // Opportunity Advantage's self-consume only spends on an offensive spell).
+    actionCanMiss: !!ar.canMiss,
     // Printed MP cost of the spell/skill that just resolved — read by the
     // LAST_SPELL_MP formula identifier so a `creature_completes_spell` reaction
     // can size a follow-up off the cast's cost (Bimagus's "2nd spell ≤ ½ the
@@ -754,6 +760,18 @@ async function resolveAction(director, ar, opts = {}) {
     // DAMAGE_DEALT_TOTAL resolve (Diving Blaze's Overflow spillover). Single-
     // target skills: the one hit's value. 0 for non-damaging/whiffed casts.
     finalValue: totalDamageDealt,
+    // SUBJECT of the action-level creature_deals_damage — the creature the
+    // damage happened TO. Unlike the Attack path (which fires per hit target and
+    // stamps each subject), a Skill fires ONE action-level event, so a SUBJECT-
+    // relative gate (TARGET_AE_CHARGES_BURN, TARGET_AE_COUNT_*, …) has nothing to
+    // read and silently evaluates 0 — which is exactly why Diving Blaze Kick's
+    // "Blaze" rider (condition `TARGET_AE_CHARGES_BURN >= 1`) never fired. We
+    // surface the single damaged target as the subject. Multi-target skills stay
+    // ambiguous by design (per-target firing is the keyword-layer follow-up that
+    // avoids hit_action_targets over-apply), so we only bind a subject for the
+    // unambiguous single-hit case; multi-hit leaves it null (prior behavior).
+    subjectActorUuid: hpLossTargetActorUuids.length === 1 ? hpLossTargetActorUuids[0] : null,
+    subjectTokenUuid: hpLossTargetTokenUuids.length === 1 ? hpLossTargetTokenUuids[0] : null,
   };
   const accepted = Array.isArray(ar.acceptedPrePassives) ? ar.acceptedPrePassives : [];
   if (accepted.length) {
@@ -3873,6 +3891,10 @@ const Confirm = {
             sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
             sourceActorUuid: ar.attackerActorRef,
             actionIntent: ar.actionIntent,
+            // Mirror the post-resolve payload so a gate like ACTION_ROLLS_ACCURACY
+            // (Advantage's "offensive spell only" self-consume) evaluates the
+            // same way whether the row fires pre- or post-resolve.
+            actionCanMiss: !!ar.canMiss,
           },
         });
       } catch (e) {
@@ -4785,6 +4807,28 @@ const Confirm = {
               }
             }
           } catch (e) { warn("CONFIRM: creature_check_adjusted emit threw", e); }
+          // Deferred durable AE-charge writes (generic) — a card mutation can request
+          // a value-dependent charge update that must persist EXACTLY once. The
+          // card-mutation runs many times during preview; THIS confirm path runs once,
+          // so it is the single safe write site. The actual write goes through the
+          // shared charges API (badge-aware, persistent-counter-safe), NOT a raw flags
+          // poke. First producer: set_check_die's old-face writeback (Lucky Seven's
+          // mutating lucky number) — the value is only known mid-mutation, so it can't
+          // be a static adjust_charges row.
+          try {
+            const writes = Array.isArray(r.chargeWrites) ? r.chargeWrites : [];
+            if (writes.length) {
+              const { set: setCharge } = await import("./skill-charges.js");
+              for (const cw of writes) {
+                if (!cw?.aeUuid || !Number.isFinite(Number(cw.charges))) continue;
+                const ae = await fromUuid(cw.aeUuid).catch(() => null);
+                if (!ae) continue;
+                // deleteWhenEmpty:false — a store AE (the lucky number) must survive a 0.
+                await setCharge(ae, Number(cw.charges), { deleteWhenEmpty: false });
+                log(`CONFIRM: deferred charge write — ${ae.name} charges → ${Number(cw.charges)}`);
+              }
+            }
+          } catch (e) { warn("CONFIRM: deferred charge write threw", e); }
         }
       } catch (e) { warn("CONFIRM: target-set mutation threw", e); }
       // Infusion element override (change_damage_element): if every hit now

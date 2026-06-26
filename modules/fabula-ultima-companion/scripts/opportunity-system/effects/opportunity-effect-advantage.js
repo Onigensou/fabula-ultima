@@ -12,10 +12,18 @@
 //
 // Implementation: GM picks an ally via the JRPG Targeting UI. A charged AE
 // (charges=1, chargeKey="opportunityAdvantage") is placed on the target.
-// The AE carries a changes entry (check_mod_all +4) so the bonus is applied
-// natively while the AE exists. The CheckRoller "opportunity-advantage" step
-// (in opportunity-action-hook.js) consumes the charge after render, deleting
-// the AE so it only applies to one check.
+// The AE carries a changes entry (check_mod_all +4 / attack_accuracy_mod_all +4)
+// so the bonus is applied natively while the AE exists.
+//
+// Self-removal is DECLARATIVE — the AE carries its own `reactionConfig`
+// (force-mode rows on creature_completes_attack / creature_completes_spell,
+// reaction_source: "self") that consumes the opportunityAdvantage charge once
+// the bearer next acts; the charge hits 0 and the AE auto-deletes. This is what
+// makes Advantage one-shot under the BATTLE DIRECTOR — BD action cards are DOM
+// overlays (no renderChatMessage) and BD attacks don't run through the legacy
+// CheckRoller, so the legacy consume hooks in opportunity-action-hook.js never
+// fire for a BD action. The two legacy hooks remain for the legacy chat-card /
+// CheckRoller flows; charges=1 makes the two paths mutually idempotent.
 // A PIXI ring animation + Up1.ogg play as visual/audio feedback.
 // ============================================================================
 (() => {
@@ -25,6 +33,63 @@
   const AE_ICON  = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Elesis/DAS.png";
   const AE_DESC  = "The next Check made by this creature receives a +4 bonus. Consumed automatically when a Check is rolled.";
   const SFX_APPLY = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Up1.ogg";
+
+  // ── Declarative self-removal (Battle Director) ──────────────────────────────
+  // Carried on the AE's flags.<MODULE_ID>.reactionConfig. Force-mode rows (no
+  // pill, engine-mandatory housekeeping) fire when the BEARER (reaction_source
+  // "self") next completes an Attack or Spell, then consume the single
+  // opportunityAdvantage charge → the AE auto-deletes at 0. Attacks fire
+  // creature_completes_attack hit-or-miss, so the bonus is spent on the next
+  // attack regardless of outcome. The native +4 changes are already baked into
+  // the action's accuracy at COMPUTE, so consuming post-resolve is correct.
+  const ADV_REACTION_CONFIG = {
+    name: "Advantage",
+    reaction_config_table: {
+      "0": {
+        "$deleted": false,
+        reaction_trigger:     "creature_completes_attack",
+        reaction_source:      "self",
+        reaction_passive_mode: "force",
+        reaction_effect_ref:  "adv_consume",
+      },
+      "1": {
+        "$deleted": false,
+        reaction_trigger:     "creature_completes_spell",
+        reaction_source:      "self",
+        reaction_passive_mode: "force",
+        // Only an OFFENSIVE spell spends the bonus — i.e. a spell that actually
+        // rolled a Check (ACTION_ROLLS_ACCURACY == 1). Heal / buff / utility
+        // spells (isCheck:false, no accuracy roll) leave the bonus intact for
+        // the bearer's next real Check. Reads payload.actionCanMiss, stamped on
+        // both the pre- and post-resolve creature_completes_spell payloads.
+        condition_formula:    "ACTION_ROLLS_ACCURACY == 1",
+        reaction_effect_ref:  "adv_consume",
+      },
+    },
+    effect_table: {
+      "0": {
+        "$deleted": false,
+        effect_label:   "adv_self",
+        effect_kind:    "targeting",
+        candidate_source: "self",
+        mode:           "exact",
+        count:          "1",
+        exclude_self:   false,
+        auto_confirm_when_obvious: true,
+        skip_when_passive: true,
+        iteration_mode: "together",
+      },
+      "1": {
+        "$deleted": false,
+        effect_label: "adv_consume",
+        effect_kind:  "consume_charge",
+        target_ref:   "adv_self",
+        charge_key:   "opportunityAdvantage",
+        count:        "1",
+        on_empty:     "abort",
+      },
+    },
+  };
 
   function playSound(url, vol = 0.65) {
     try { (foundry.audio.AudioHelper ?? AudioHelper).play({ src: url, volume: vol, autoplay: true }, false); }
@@ -149,6 +214,8 @@
               charges:    1,
               chargesMax: 1,
               chargeKey:  "opportunityAdvantage",
+              // Declarative one-shot self-removal under the Battle Director.
+              reactionConfig: ADV_REACTION_CONFIG,
               activeEffectManager: { optimizedCreate: true },
               showTokenIcon: true,
             },

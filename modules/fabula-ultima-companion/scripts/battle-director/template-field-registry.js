@@ -64,6 +64,7 @@ const MODIFY_TURNS_VIS = `equalText(sameRow("effect_kind",''), "modify_turns")`;
 const CREATE_BOND_VIS = `equalText(sameRow("effect_kind",''), "create_bond")`;
 // trigger_opportunity — offer N distinct Opportunity wheel picks (A Million Possibility).
 const TRIGGER_OPP_VIS = `equalText(sameRow("effect_kind",''), "trigger_opportunity")`;
+const SET_CHECK_DIE_VIS = `equalText(sameRow("effect_kind",''), "set_check_die")`;
 
 function textCol(key, colName, { tooltip = "", vis = "" } = {}) {
   return {
@@ -123,6 +124,10 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
     { key: "hazard", value: "Hazard (Burn/Poison/environment — not an attack)" },
     { key: "damage", value: "Damage (creature-inflicted — counts as an attack)" },
   ], { tooltip: "Resource-ledger cause for this deal_damage. hazard (default) won't trip 'player-inflicted damage' reactions; damage = creature-inflicted. Reactions filter via reaction_cause_filter.", vis: DEAL_VIS, defaultValue: "hazard" }),
+  selectCol("damage_resource", "Damage Resource", [
+    { key: "hp", value: "HP (default)" },
+    { key: "mp", value: "MP (MP-burn / drain — clamps at 0, no affinity)" },
+  ], { tooltip: "deal_damage: which resource the damage comes off. hp (default) = normal damage with affinity/shield/crisis-ledger; mp = MP-burn (e.g. Curse's drain) via applyDamageToTarget's MP path — clamps at 0, fires the −N loss VFX, no affinity/shield/ledger.", vis: DEAL_VIS, defaultValue: "hp" }),
   // emit_trigger / emit_status — announce that this damage REPRESENTS a status
   // producing its effect (the Burn DoT tick carries these; trigger_status replays
   // it). Emitted DECOUPLED from the HP delta (absorb/immune ticks still count), so
@@ -208,6 +213,22 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
     { key: "ask", value: "Ask — pre-roll picker (player chooses)" },
     { key: "off", value: "Off — disabled" },
   ], { tooltip: "check_die_swap: on = auto-swap the biggest upgrade · ask = pre-roll picker · off = disabled. One charge per swap skill (a single skill can't swap both dice).", vis: CHECK_DIE_SWAP_VIS, defaultValue: "on" }),
+  // set_check_die config — replace one rolled die with a value (Hina's Lucky Seven
+  // is the first user). `which_die` is authored one per open_action_menu option
+  // (die A / die B) when the player chooses; the pick routes the chosen option's
+  // set_check_die row to the card-mutation phase. Blank → the mutation falls back to
+  // the lower die.
+  selectCol("which_die", "Which Die", [
+    { key: "A", value: "A — the first die" },
+    { key: "B", value: "B — the second die" },
+  ], { tooltip: "set_check_die: which rolled die this row replaces (A = first / rA, B = second / rB). Blank → the lower die.", vis: SET_CHECK_DIE_VIS, defaultValue: "A" }),
+  // The value to set the die to: a number, a formula (reactor context), or blank to
+  // use the CARRIER AE's charge (so a charge-bearing AE acts as a stored die value
+  // — Lucky Seven leaves this blank and stores 7 on the carrier "Lucky Number" AE).
+  textCol("die_value", "Die Value", { tooltip: "set_check_die: value to set the die to (number or formula). Blank → use the carrier AE's charge as the value (a stored die value). No clamp to die faces — an impossible value like 7 on a d6 is allowed (RAW).", vis: SET_CHECK_DIE_VIS }),
+  // Mutate the stored value: write the REPLACED die's old face back to the carrier
+  // AE's charge (Lucky Seven's "the replaced value becomes your new lucky number").
+  checkboxCol("writeback_carrier_charge", "Writeback Old Face", { tooltip: "set_check_die: when checked, the replaced die's OLD face is written back to the carrier AE's charge, so the stored value mutates on each use (Lucky Seven: the swapped-out value becomes the new lucky number).", vis: SET_CHECK_DIE_VIS, defaultChecked: false }),
   // targeting config — Auto-target. Governs ASSURED targets (self / all / single).
   // "auto" (default) is ROLE-BASED: the GM resolves silently for pace; a PLAYER
   // gets a locked Confirm so they see what they're committing to. "skip" = never
