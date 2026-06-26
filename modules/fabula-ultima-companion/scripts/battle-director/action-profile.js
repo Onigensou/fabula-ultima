@@ -1044,7 +1044,13 @@ export async function recomputeActionProfile({ ar, targets = null, acceptedReact
     const profile = await computeActionProfile({
       view, ar, attacker: ar.attacker, weapon: ar.weapon ?? null,
       targets: snaps, dice,
-      ctx: { round: ar.round ?? round ?? 0, attackMode: attackMode ?? ar.attackMode ?? null },
+      // Re-thread the free-action grant (High Speed +SL, Blazing Sweep's -50%
+      // repeat, …) so the rebuilt per-target rows fold its check + damage bonus
+      // exactly as COMPUTE did. Without it the recompute reverts each target's
+      // damage to the un-granted base (header keeps the COMPUTE value, so only
+      // the per-target rows drift) and its hit/miss to the un-granted total.
+      // Re-derives from the same dice, so the grant folds once — no double-count.
+      ctx: { round: ar.round ?? round ?? 0, attackMode: attackMode ?? ar.attackMode ?? null, grant: ar.freeActionGrant ?? null },
       acceptedReactions, accuracyOverride,
     });
     const delta = projectProfileToActionResult(profile, ar, snaps);

@@ -4915,6 +4915,12 @@ export async function postActionCard({ director, kind, payload }) {
             attackerActorRef: base?.attackerActorRef ?? null,
             weapon: base?.weapon ?? null,
             attackMode: base?.attackMode ?? null,
+            // Free-action grant (check + damage bonus) so recomputeActionProfile
+            // can re-fold it into the rebuilt per-target rows — else a granted
+            // attack's per-target preview reverts to the un-granted base (e.g.
+            // Blazing Sweep's -50% repeat shows full damage per target while the
+            // header + the committed damage stay correct). Null for normal cards.
+            freeActionGrant: base?.freeActionGrant ?? null,
             round: base?.round ?? director?.dCombat?.round ?? 0,
           };
 

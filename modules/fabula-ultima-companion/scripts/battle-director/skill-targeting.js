@@ -309,6 +309,31 @@ async function resolveTargetingRow(row, ctx) {
     });
   }
 
+  // 3e. focus_max_formula — narrow the pool to the candidate(s) with the MAXIMUM
+  // score of a per-candidate formula (e.g. "AE_CHARGES_BURN" → the highest-Burn
+  // creature on the field). Ties keep ALL max-scorers, so a downstream
+  // mode:"random" picks one at random (Inferex Chomp: "Roulette — creature with
+  // the highest Burn stack"). Generic "target the most-X creature" primitive,
+  // evaluated with the same per-candidate resolver as target_filter. Runs AFTER
+  // target_filter (so a filter can pre-restrict the field), and only when the
+  // pool still has a real choice. Blank = no focusing.
+  const focusFormula = String(row.focus_max_formula ?? "").trim();
+  if (focusFormula && pool.length > 1) {
+    const { buildSkillResolver, evaluateFormula } = await import("./skill-formulas.js");
+    let best = -Infinity;
+    const scored = pool.map((t) => {
+      const actor = t?.actor;
+      const score = actor
+        ? (Number(evaluateFormula(focusFormula, buildSkillResolver({
+            actor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0,
+          }), 0)) || 0)
+        : -Infinity;
+      if (score > best) best = score;
+      return { t, score };
+    });
+    pool = scored.filter((s) => s.score === best).map((s) => s.t);
+  }
+
   if (!pool.length) return emptyResult();
 
   // mode "random" — pick `count` tokens at random from the pool, no prompt.

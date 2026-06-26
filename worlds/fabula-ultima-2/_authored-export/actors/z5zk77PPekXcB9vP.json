@@ -29,7 +29,7 @@
       }
     }
   },
-  "folder": "MJiFIdO1Fzd4tOu2",
+  "folder": "yrt0v9PKovSRpKQJ",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Alcina/Alcina_Standard.png",
   "name": "Alcina",
   "ownership": {
@@ -142,7 +142,7 @@
     },
     "width": 1
   },
-  "sort": 200000,
+  "sort": 0,
   "system": {
     "activeConditionalModifierGroups": [],
     "props": {

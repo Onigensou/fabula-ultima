@@ -4661,7 +4661,7 @@
         "effects": 1
       },
       {
-        "id": "t2HuioQg8uJz87NP",
+        "id": "uArdDODq3hodD3AJ",
         "name": "Blink",
         "type": "equippableItem",
         "effects": 1
@@ -11465,6 +11465,12 @@
         "effects": 0
       },
       {
+        "id": "8o1tS1YwcrSoe4et",
+        "name": "Ring of Regeneration",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "ODyPzODFOYsQ7vJ2",
         "name": "Ring of Strong",
         "type": "equippableItem",
@@ -11753,6 +11759,12 @@
         "effects": 0
       },
       {
+        "id": "NHQNneNjKb1Je06v",
+        "name": "Sage Ring",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "YdYhFx1vrvod4P2Y",
         "name": "Sage Robe",
         "type": "equippableItem",
@@ -12027,6 +12039,12 @@
         "name": "Shield of Egis",
         "type": "equippableItem",
         "effects": 2
+      },
+      {
+        "id": "sHMfimeSyKQcj8bM",
+        "name": "Shield of Rejuvenation",
+        "type": "equippableItem",
+        "effects": 0
       },
       {
         "id": "o24tseu8UsnGuo3m",
@@ -13825,6 +13843,12 @@
       {
         "id": "RJXZsu4p2oxhhKGC",
         "name": "Venus Statue",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "AA4Q5zF1fnkriTFk",
+        "name": "Verdant Force",
         "type": "equippableItem",
         "effects": 0
       },
@@ -16397,162 +16421,6 @@
         "effects": 0
       },
       {
-        "id": "cKyz6P2cJx5JVEtr",
-        "name": "BD Test — Guardian",
-        "type": "character",
-        "items": [
-          {
-            "id": "ZNljOmQphOcdlPwN",
-            "name": "Bodyguard"
-          },
-          {
-            "id": "pNYGens9nZ8r3mm3",
-            "name": "Broadaxe"
-          },
-          {
-            "id": "3mddjAlShKst4Y4x",
-            "name": "Bronze Shield"
-          },
-          {
-            "id": "rPFLPJi33mDrHf67",
-            "name": "Bronze Sword"
-          },
-          {
-            "id": "IMuN1gorA0H2XTip",
-            "name": "Chain Whip"
-          },
-          {
-            "id": "H0p7jQg9E4fOK8ba",
-            "name": "Crossbow"
-          },
-          {
-            "id": "CaFP2Mv2xn2emA9c",
-            "name": "Defensive Mastery"
-          },
-          {
-            "id": "O5B1CHqLpNvRb5Ur",
-            "name": "Dual Shieldbearer"
-          },
-          {
-            "id": "jy9cG8RJvtj0MuWI",
-            "name": "Fortress"
-          },
-          {
-            "id": "0QpLyZH5NgAej4u5",
-            "name": "Greatsword"
-          },
-          {
-            "id": "DfrWPjJELJdKQW7J",
-            "name": "Heavy Spear"
-          },
-          {
-            "id": "70gfIyaOmrk70ZBg",
-            "name": "Hoplite"
-          },
-          {
-            "id": "rhE4fPm0ifOyEHru",
-            "name": "Improvised (Melee)"
-          },
-          {
-            "id": "SlZ7vhBdE2Vv6V96",
-            "name": "Improvised (Ranged)"
-          },
-          {
-            "id": "qXcqTRyicUnFbIq1",
-            "name": "Iron Hammer"
-          },
-          {
-            "id": "Sy8DIYuyA23gygWU",
-            "name": "Iron Knuckle"
-          },
-          {
-            "id": "I2Nnsmu9CwO3gXHc",
-            "name": "Katana"
-          },
-          {
-            "id": "2tdL2Ro0ONoVsNrP",
-            "name": "Light Spear"
-          },
-          {
-            "id": "xgLgvTy4OoOmxO2Q",
-            "name": "Longsword"
-          },
-          {
-            "id": "5Ft0GJQRrEy9yp7w",
-            "name": "Magicannon"
-          },
-          {
-            "id": "P3KDs5Bsu1jKtVrs",
-            "name": "Pistol"
-          },
-          {
-            "id": "UcmHloCttjQVOEAH",
-            "name": "Prophetic Defender"
-          },
-          {
-            "id": "QoREaIpKOjgHkLim",
-            "name": "Protect"
-          },
-          {
-            "id": "2jv6P9fO9nIh3r9V",
-            "name": "Quaking Titan"
-          },
-          {
-            "id": "I8HXaTtzTXGBxkoP",
-            "name": "Rampart"
-          },
-          {
-            "id": "BmE9CD9dKBmvzO1e",
-            "name": "Rapier"
-          },
-          {
-            "id": "ye951TDHxtEyk8jB",
-            "name": "Runic Shield"
-          },
-          {
-            "id": "b0SGfVPyR8y8cqFo",
-            "name": "Shortbow"
-          },
-          {
-            "id": "XwuKsc09WQFhBeJ3",
-            "name": "Shuriken"
-          },
-          {
-            "id": "ZMPVAuc4Fjz9Wl5g",
-            "name": "Staff"
-          },
-          {
-            "id": "CwFOZXUGuTPCW31p",
-            "name": "Steel Dagger"
-          },
-          {
-            "id": "AOh9EtuOslFF3bjQ",
-            "name": "Tome"
-          },
-          {
-            "id": "u7o0G7hYpirNwzI2",
-            "name": "Twin Runic Shield"
-          },
-          {
-            "id": "myRflhMB8nt2KchO",
-            "name": "Twin Shield"
-          },
-          {
-            "id": "zMyiZVaPLczshfxk",
-            "name": "Unarmed Strike"
-          },
-          {
-            "id": "qGr0wJFAWih1boqd",
-            "name": "Unbreakable"
-          },
-          {
-            "id": "TyLlxam4LurhRGFq",
-            "name": "Waraxe"
-          }
-        ],
-        "effects": 4
-      },
-      {
         "id": "2U5MthxrDRMofSGl",
         "name": "Beary Goods",
         "type": "character",
@@ -16646,6 +16514,13 @@
       {
         "id": "1UiZld5Kyvb2NdX0",
         "name": "Bezo",
+        "type": "character",
+        "items": [],
+        "effects": 0
+      },
+      {
+        "id": "8ZKo5tt90i1Tdtr5",
+        "name": "Blacksmith Shade",
         "type": "character",
         "items": [],
         "effects": 0
@@ -17794,6 +17669,13 @@
             "name": "Tabula Rasa"
           }
         ],
+        "effects": 0
+      },
+      {
+        "id": "C7PsWytpMXK0PZSt",
+        "name": "Commodities Shade",
+        "type": "character",
+        "items": [],
         "effects": 0
       },
       {
@@ -19431,6 +19313,10 @@
             "name": "Flame Burst"
           },
           {
+            "id": "8aHn1U4aYdeXFKCD",
+            "name": "Heat Up"
+          },
+          {
             "id": "0RK4SWuKCQhc5zEy",
             "name": "Ignium Jelly"
           },
@@ -20859,35 +20745,35 @@
             "name": "5-Star Exchange Ticket"
           },
           {
-            "id": "lCc6xIrCaRBqyhaT",
-            "name": "Alpha Regalia"
+            "id": "xMMr0G3f1G0PIDOx",
+            "name": "Apothecary Robes"
           },
           {
             "id": "txMRFkA7TJ3FZBL2",
             "name": "Army Wrecker"
           },
           {
-            "id": "k7EiQufhCIQVIxyx",
+            "id": "oDVo37h0x4X8LkRl",
+            "name": "Avalon"
+          },
+          {
+            "id": "utumNuWYo9Hzwxqx",
+            "name": "Blink"
+          },
+          {
+            "id": "IrKN92jRRxDzdYzm",
             "name": "Brief Respite"
           },
           {
-            "id": "sKEmQ181E8T1Lscl",
-            "name": "Defense Matrix"
+            "id": "l7kMJfPCrp9mfxsL",
+            "name": "Copycat"
           },
           {
-            "id": "yrTbCX8rUSurlPg3",
-            "name": "Emergency-Radio"
+            "id": "c5UMCKLMcRC47hq0",
+            "name": "Excalibur?"
           },
           {
-            "id": "jX6qJWsLhEB4K6iL",
-            "name": "Enforcer Uniform"
-          },
-          {
-            "id": "4bBB2tcydcki1QHr",
-            "name": "Excalibur"
-          },
-          {
-            "id": "SHR82jGN2l8Rc2dG",
+            "id": "2bpkyQeHry5IsNgL",
             "name": "Fairy Cloak"
           },
           {
@@ -20915,16 +20801,16 @@
             "name": "Hekat Shield"
           },
           {
-            "id": "ldRfTyFXn5iOJwOl",
-            "name": "Lightning Rod"
-          },
-          {
             "id": "GlBKvz5lDwGextqo",
             "name": "Mega-Elixir"
           },
           {
             "id": "LVwLI7slKbPofiP4",
             "name": "Mega-Remedy"
+          },
+          {
+            "id": "XtpBgKfbKMR18UTT",
+            "name": "Myth of Sisyphus"
           },
           {
             "id": "exVAwWwaIvNcyuwc",
@@ -20943,6 +20829,10 @@
             "name": "Portable Cauldron"
           },
           {
+            "id": "eGhfJdrJ8FRqYnaC",
+            "name": "Protect"
+          },
+          {
             "id": "YBFhNsKLmy1QlkQ8",
             "name": "Psychic Dagger"
           },
@@ -20951,20 +20841,24 @@
             "name": "Ring of Magma"
           },
           {
+            "id": "PMxrhqZDiu4RoaW5",
+            "name": "Ring of Onions"
+          },
+          {
             "id": "rGzyWaaZtXCmUjxn",
             "name": "Shadow Grimoire"
           },
           {
-            "id": "2FOvgqW2Ah45CAtp",
-            "name": "Shield of Egis"
+            "id": "K7ouFNu9tWlNiv6n",
+            "name": "Shield of Rejuvenation"
           },
           {
             "id": "ZgLGoh1jL1XqTxl2",
             "name": "Super Tonic"
           },
           {
-            "id": "t6RfSKRWDh3BsWyB",
-            "name": "Vengueful Yoroi Old"
+            "id": "bRQomGnYf2xsGtHA",
+            "name": "The Selfless"
           },
           {
             "id": "3cnqLWqSdV8YxBSH",
@@ -22279,6 +22173,13 @@
       {
         "id": "9faR504Wvoy2ALP6",
         "name": "Jeff",
+        "type": "character",
+        "items": [],
+        "effects": 0
+      },
+      {
+        "id": "HMVout7kK8udbjEi",
+        "name": "Jeweler Shade",
         "type": "character",
         "items": [],
         "effects": 0

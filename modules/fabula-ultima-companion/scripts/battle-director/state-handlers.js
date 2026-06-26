@@ -2425,6 +2425,39 @@ async function resolveActionTargets(director, attackerSnap, opts = {}) {
     }
   }
 
+  // ── Action-level pool focus (e.g. "Roulette — highest Burn stack") ───────
+  // A skill can declare an effect_table row with `action_pool_focus: true` and a
+  // `focus_max_formula`; we narrow the eligible pool to the candidate(s) with the
+  // MAX score of that formula (ties kept) BEFORE the picker/roulette runs. So
+  // Inferex Chomp (skill_target "One Random Creature" + focus "AE_CHARGES_BURN")
+  // rolls its roulette only over the highest-Burn creatures, randomizing ties —
+  // exactly the RAW "Roulette (creature with the highest Burn stack)" intent.
+  // Per-candidate score uses the candidate's own actor (resolved from its token),
+  // mirroring skill-targeting's target_filter/focus_max_formula resolver.
+  if (!isSelf && skill && eligibleForPicker.length > 1) {
+    const et = skill.system?.props?.effect_table ?? {};
+    const focusRow = Object.values(et).find(
+      (r) => r?.action_pool_focus === true && String(r?.focus_max_formula ?? "").trim()
+    );
+    if (focusRow) {
+      const round = director.dCombat?.round ?? 0;
+      let best = -Infinity;
+      const scored = [];
+      for (const e of eligibleForPicker) {
+        let a = null;
+        try { const td = await fromUuid(e.tokenUuid); a = td?.actor ?? td?.parent ?? null; } catch { /* gone */ }
+        const score = a
+          ? (Number(evaluateFormula(focusRow.focus_max_formula, buildSkillResolver({ actor: a, payload: null, skill, round }), 0)) || 0)
+          : -Infinity;
+        if (score > best) best = score;
+        scored.push({ e, score });
+      }
+      eligibleForPicker = scored.filter((s) => s.score === best).map((s) => s.e);
+      director.ctx.eligibleTargets = eligibleForPicker;
+      log(`resolveActionTargets: pool focus "${focusRow.focus_max_formula}" → ${eligibleForPicker.length} max-scorer(s) (score ${best})`);
+    }
+  }
+
   // ── Determine picker mode (single-source resolveTargetPlan) ─────────────
   // Self is a disposition fact handled above (isSelf); everything else — mode,
   // count, randomize, AND the ×T affordability cap — comes from the one shared
@@ -3245,12 +3278,27 @@ const Target = {
       attackCancelLabel = "Cancel";
     }
 
+    // For an NPC attack, thread the backing attack ITEM + the attacker ACTOR so
+    // the unified resolver can (a) evaluate the skill_target count formula
+    // (without them "Up to N" silently collapses to 1) and (b) read a
+    // `target_sequence` declared on the item — e.g. Chomp's highest-Burn focus
+    // pick. PC attacks have no single backing skill item (the weapon drives
+    // targeting), so leave skill null there. Resolved once, before the call.
+    let attackSkillItem = null;
+    let attackActorDoc  = null;
+    if (director.ctx.attackMode === "npc" && director.ctx.npcAttackItemUuid) {
+      try { attackSkillItem = await fromUuid(director.ctx.npcAttackItemUuid); } catch {}
+    }
+    try { attackActorDoc = attacker?.actorUuid ? await fromUuid(attacker.actorUuid) : null; } catch {}
+
     // RAW Core p.70 — Covered creatures can't be melee-targeted. The
     // range gate is passed as a post-filter so the unified resolver still
     // builds the full category pool (needed for random/creature modes)
     // and then applies coverage + Vanish exclusions on top.
     const attackTargeting = await resolveActionTargets(director, attacker, {
       skillTargetText:    weaponSkillTarget,
+      attackerActor:      attackActorDoc,
+      skill:              attackSkillItem,
       excludeSelf:        true,
       eligiblePostFilter: (pool) => applyAttackRangeGate(pool, currentWeapon),
       usingPreComposed:   !isMultiPassReEntry,

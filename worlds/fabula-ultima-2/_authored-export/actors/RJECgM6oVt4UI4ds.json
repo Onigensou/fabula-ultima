@@ -262,7 +262,7 @@
               "charge_ae_name": "Burn",
               "charge_amount": "2",
               "charge_operation": "multiply",
-              "effect_kind": "adjust_charges",
+              "effect_kind": "grant",
               "effect_label": "enkindle_double_burn",
               "target_ref": "action_targets"
             },
@@ -271,7 +271,7 @@
               "damage_amount": "AE_CHARGES_BURN * 5",
               "damage_cause": "damage",
               "damage_element": "fire",
-              "effect_kind": "deal_damage",
+              "effect_kind": "grant",
               "effect_label": "enkindle_fire_damage",
               "target_ref": "action_targets"
             }
@@ -1194,12 +1194,12 @@
       "action_pattern_table": {
         "0": {
           "$deleted": false,
-          "action_pattern_condition": "creature_has_status",
+          "action_pattern_condition": "always",
           "action_pattern_cooldown": "0",
           "action_pattern_name": "Enkindle",
           "action_pattern_priority": "6",
           "action_pattern_string": "Burn",
-          "action_pattern_target_focus": "burn_spread",
+          "action_pattern_target_focus": "auto",
           "action_pattern_value_1": "0",
           "action_pattern_value_2": "0"
         },
