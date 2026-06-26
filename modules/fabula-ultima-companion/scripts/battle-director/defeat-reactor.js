@@ -26,10 +26,13 @@
  * Removal goes through the GM-native `bd.removeCombatant({ tokenUuid })`, which
  * drops the director combatant AND deletes the token (mirrors destroy_summon).
  *
- * Scope note: like the legacy hook, this owns ONLY the physical-removal
- * pipeline. It does not emit a `creature_defeated` reaction event — that emit
- * was the (now director-suppressed) creature-defeated-emitter's job, except for
- * the explicit destroy_summon shatter path.
+ * Scope note: this owns the physical-removal pipeline AND (since the on-death
+ * reaction work) the `creature_defeated` emit for normal HP→0 deaths. The emit
+ * fires the dying creature's own + observer reactions INLINE, before removal,
+ * so a self-targeted on-death passive (Fire Slime's Flame Burst) reacts while
+ * the token still exists — see emitCreatureDefeated below. The legacy detached
+ * creature-defeated-emitter stays director-suppressed; destroy_summon keeps its
+ * own explicit shatter-path emit (observer-only, summoner reacts).
  */
 import { log, warn } from "./logger.js";
 
@@ -181,12 +184,81 @@ async function evaluateDefeat(director, actor, payload) {
   return true;
 }
 
-// Built-in reactor — settleInstance invokes this per ledger event.
-export async function defeatReactor(director, cfg) {
+// Fire the dying creature's OWN (and observers') `creature_defeated` reactions
+// BEFORE the physical removal below, so a self-targeted on-death passive (e.g.
+// Fire Slime's Flame Burst) can react while its token still exists. The settle
+// loop's normal authored dispatch can't cover this case: the builtin defeat
+// removal runs first and `collectReactors` skips the removed/defeated subject,
+// so a self-reaction on the dying creature would never be collected. Deduped
+// per actor via the settle's shared `firedKeys` set so a multi-event kill (e.g.
+// a multi-hit attack) only fires the death reaction once. Observer reactions
+// (creature_defeated is observer-aware) fan out to every live combatant.
+async function emitCreatureDefeated(director, actor, payload, firedKeys) {
+  if (!actor) return;
+  const key = `cdef:${actor.uuid}`;
+  if (firedKeys?.has?.(key)) return;
+  firedKeys?.add?.(key);
+
+  const tokenDoc = await resolveDefeatedToken(actor, payload);
+  // dispatchReactionMenu requires a live placeable token (menu anchor + owner
+  // resolution). Prefer the ledger token's placeable, else find one by actor.
+  const placeable =
+    tokenDoc?.object
+    ?? canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === actor.uuid)
+    ?? null;
+
+  // creature_defeated payload: subject = the defeated creature (reaction_source
+  // self/ally/enemy keys off sourceActorUuid). `element` carries the killing
+  // damage's type so a `TRIGGER_DAMAGE_IS_<ELEMENT>` gate (Flame Burst's
+  // "non-Ice" condition) resolves; `cause`/`causeActorUuid` forward the killer.
+  const defeatedPayload = {
+    trigger:          "creature_defeated",
+    sourceActorUuid:  actor.uuid,
+    sourceTokenUuid:  tokenDoc?.uuid ?? null,
+    subjectActorUuid: actor.uuid,
+    subjectTokenUuid: tokenDoc?.uuid ?? null,
+    element:          payload?.element ?? null,
+    cause:            payload?.cause ?? null,
+    causeActorUuid:   payload?.causeActorUuid ?? null,
+    causeTokenUuid:   payload?.causeTokenUuid ?? null,
+  };
+
+  try {
+    const { collectReactors, dispatchReactionMenu } = await import("./standalone-reactions.js");
+    const reactors = await collectReactors(director);   // observers (live combatants)
+    // collectReactors skips `defeated` combatants — ensure the dying subject
+    // ITSELF is in the list so its own creature_defeated reaction can fire.
+    if (placeable && !reactors.some((r) => r.actor?.uuid === actor.uuid)) {
+      reactors.push({ actor, token: placeable });
+    }
+    for (const { actor: ra, token } of reactors) {
+      if (!ra || !token) continue;
+      await dispatchReactionMenu({
+        director, reactor: ra, token,
+        trigger: "creature_defeated", payload: defeatedPayload,
+      });
+    }
+  } catch (e) {
+    warn(`defeat-reactor: emitCreatureDefeated dispatch threw for ${actor?.name}`, e);
+  }
+}
+
+// Built-in reactor — settleInstance invokes this per ledger event, passing the
+// shared `firedKeys` dedup set as the third arg.
+export async function defeatReactor(director, cfg, extra) {
   if (!director?.ctx) return;
   const payload = cfg?.payload ?? {};
   if (String(payload.resource ?? "").toLowerCase() !== "hp") return;   // defeat is HP-only
-  await evaluateDefeat(director, cfg.casterActor, payload);
+  const actor = cfg.casterActor;
+  // On-death reactions fire FIRST (token still present), removal SECOND. Gated
+  // on HP ≤ 0 (independent of the removal gates, so bosses/PCs that stay on the
+  // scene still fire their on-death passives). `num` returns null on a bad read
+  // — guard so a null doesn't coerce to 0 and false-trigger.
+  const hp = num(get(actor, PATH_HP));
+  if (actor && hp != null && hp <= 0) {
+    await emitCreatureDefeated(director, actor, payload, extra?.firedKeys);
+  }
+  await evaluateDefeat(director, actor, payload);
 }
 
 // One-time sweep over all combatants — removes creatures that begin combat
