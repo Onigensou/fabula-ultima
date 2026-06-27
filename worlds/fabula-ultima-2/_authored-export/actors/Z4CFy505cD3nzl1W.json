@@ -10,17 +10,24 @@
   },
   "effects": [
     {
-      "_id": "jl0e9I7HkPkBZqSs",
+      "_id": "tlViNHLPYYwJs34H",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782552021867,
+        "createdTime": 1782583522367,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
-      "changes": [],
-      "description": "<p><em>Hawkeye:</em> your next ranged attack this scene deals extra damage.</p>",
+      "changes": [
+        {
+          "key": "extra_damage_mod_all",
+          "mode": 2,
+          "priority": null,
+          "value": "1"
+        }
+      ],
+      "description": "<p>Campfire skewers marinated with wild berry vinegar. Everyone who eats gains <strong>+1 bonus damage</strong> until the next rest.</p>",
       "disabled": false,
       "duration": {
         "combat": null,
@@ -34,65 +41,19 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "4GlvL0JbbYzL7AXq",
-          "originalParentId": "VdzUY6OaTy7vncGT",
-          "originalUuid": "Item.VdzUY6OaTy7vncGT.ActiveEffect.4GlvL0JbbYzL7AXq"
+          "originalId": "tlViNHLPYYwJs34H",
+          "originalParentId": "Z4CFy505cD3nzl1W",
+          "originalUuid": "Actor.Z4CFy505cD3nzl1W.ActiveEffect.tlViNHLPYYwJs34H"
         },
         "fabula-ultima-companion": {
-          "category": "buff",
-          "chargeKey": "hawkeye_aim",
-          "charges": 1,
-          "chargesMax": 1,
-          "directorAppliedBy": {
-            "appliedAtRound": 5,
-            "effectLabel": "hawkeye_choose:Take aim — your next ranged attack deals +SL×2 extra damage",
-            "lifetimeMode": "on_activation",
-            "reactorActorUuid": "Actor.Z4CFy505cD3nzl1W",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.yKXp8TuB6WjGXCX0",
-            "skillUuid": "Actor.Z4CFy505cD3nzl1W.Item.SP5BT5DfIbe2os5C",
-            "turnsRemaining": null
+          "campRestCharges": 0,
+          "cookingDish": {
+            "dishId": "G0tvPWqwJHkdwoFQ",
+            "family": "sour",
+            "instant": {},
+            "tier": 1
           },
-          "directorPermanent": true,
-          "lifetimeMode": "on_activation",
-          "reactionConfig": {
-            "effect_table": {
-              "0": {
-                "chain_steps": "hawkeye_add, hawkeye_consume",
-                "effect_kind": "chain",
-                "effect_label": "hawkeye_fire"
-              },
-              "1": {
-                "damage_amount": "2",
-                "damage_operation": "add",
-                "damage_stage": "outgoing",
-                "effect_kind": "adjust_damage",
-                "effect_label": "hawkeye_add"
-              },
-              "2": {
-                "charge_key": "hawkeye_aim",
-                "count": 1,
-                "effect_kind": "consume_charge",
-                "effect_label": "hawkeye_consume",
-                "on_empty": "skip",
-                "target_ref": "hawkeye_self_ae"
-              },
-              "3": {
-                "candidate_source": "self",
-                "effect_kind": "targeting",
-                "effect_label": "hawkeye_self_ae"
-              }
-            },
-            "reaction_config_table": {
-              "0": {
-                "condition_formula": "ATTACK_IS_RANGED == 1",
-                "reaction_effect_ref": "hawkeye_fire",
-                "reaction_passive_mode": "on",
-                "reaction_passive_target": "self",
-                "reaction_source": "self",
-                "reaction_trigger": "creature_will_deal_damage"
-              }
-            }
-          }
+          "foodBuff": true
         },
         "statuscounter": {
           "config": {
@@ -103,16 +64,16 @@
           "visible": false
         }
       },
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/GrandArcherPassive1.png",
-      "name": "Hawkeye",
-      "origin": "Actor.Z4CFy505cD3nzl1W.Item.SP5BT5DfIbe2os5C",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Genshin/Item_Chicken-Mushroom_Skewer.webp",
+      "name": "Tangy Trailside Skewer",
+      "origin": "Item.G0tvPWqwJHkdwoFQ",
       "sort": 0,
       "statuses": [
-        "fud-hawkeye-aim"
+        "permanent"
       ],
       "system": {
         "tags": [
-          "buff"
+          "food"
         ]
       },
       "tint": "#ffffff",
@@ -125,6 +86,7 @@
       "version": "4.8.4"
     },
     "fabula-ultima-companion": {
+      "damage_taken_mult": 1,
       "iconFocus": {
         "x": 60,
         "y": 8,
@@ -263,11 +225,68 @@
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Zarg/Portrait/Zarg_Portrait.png",
   "items": [
     {
+      "_id": "2mUzQqk9EWEw45yl",
+      "_stats": {
+        "compendiumSource": "Item.aP3bmiJNoOzRUBaB",
+        "coreVersion": "12.343",
+        "createdTime": 1782583145847,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/en_avant.png",
+      "name": "Follow my lead",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3,
+        "iLeUVmwqnze8ulOI": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "check_bonus": "0",
+          "class": "Dancer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you perform a <strong>dance</strong> with a duration of “Until the start of your next turn,” you may spend 10 additional Mind Points. If you do, choose one ally you can see towards whom you have a Bond of affection: apply the benefits of the <strong>dance</strong> to that ally as well as yourself (the benefits still last until the start of your next turn).</p>\n",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Follow my lead",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_mode": "default",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "aP3bmiJNoOzRUBaB"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "2vCRlHoLq2d8tTWn",
       "_stats": {
         "compendiumSource": "Item.SzqIrFxP8JxjsmIK",
         "coreVersion": "12.343",
-        "createdTime": 1781875194386,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -375,6 +394,7 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
+          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -392,9 +412,12 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
+          "id": "2vCRlHoLq2d8tTWn",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/beast.png",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
+          "isIngredient": false,
           "isKey": false,
           "isMartial": false,
           "isModule": false,
@@ -406,7 +429,7 @@
           "item_cost": "2000",
           "item_def_bonus": "0",
           "item_mdef_bonus": "0",
-          "item_quantity": 1,
+          "item_quantity": "1",
           "item_rarity": "Uncommon",
           "item_type": "accessory",
           "mimic_ef": "100",
@@ -422,6 +445,7 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.2vCRlHoLq2d8tTWn",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -437,7 +461,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1781937346172,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -489,7 +513,7 @@
       "_stats": {
         "compendiumSource": "Item.oAP85eeLJCliYm2E",
         "coreVersion": "12.343",
-        "createdTime": 1781875194386,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -570,7 +594,7 @@
           "item_cost": "100",
           "item_def_bonus": "0",
           "item_mdef_bonus": "0",
-          "item_quantity": 1,
+          "item_quantity": "1",
           "item_rarity": "Common",
           "item_type": "material",
           "mimic_ef": "100",
@@ -601,7 +625,7 @@
       "_stats": {
         "compendiumSource": "Item.UhJH8T9TEmsJnQVc",
         "coreVersion": "12.343",
-        "createdTime": 1781875194386,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -706,7 +730,7 @@
       "_stats": {
         "compendiumSource": "Item.SccgW4PlHy8m6ph5",
         "coreVersion": "12.343",
-        "createdTime": 1781875194386,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -818,7 +842,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1781943881202,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -870,7 +894,7 @@
       "_stats": {
         "compendiumSource": "Item.QXgHt7VEXEaVdPz1",
         "coreVersion": "12.343",
-        "createdTime": 1781875194386,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -978,7 +1002,7 @@
       "_stats": {
         "compendiumSource": "Item.VKB7qLNF1XBdN7yX",
         "coreVersion": "12.343",
-        "createdTime": 1781875194386,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1317,7 +1341,7 @@
       "_stats": {
         "compendiumSource": "Item.22zoFt3zhXjelhsX",
         "coreVersion": "12.343",
-        "createdTime": 1781956960570,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1458,7 +1482,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1781957428713,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1510,7 +1534,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1781934729250,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1582,7 +1606,7 @@
       "_stats": {
         "compendiumSource": "Item.2mX266qZdTJYJXCy",
         "coreVersion": "12.343",
-        "createdTime": 1781875194386,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1610,13 +1634,15 @@
           "beast_ef": "100",
           "category": "Bow",
           "celestial_ef": "100",
+          "check": "Check",
           "check_bonus": "1",
           "construct_ef": "100",
-          "damage_bonus": 19,
+          "damage_bonus": "19",
           "demiHuman_ef": "100",
           "demon_ef": "100",
           "description": "<p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.EYcZ6QkAqiGBAxLB\" data-id=\"EYcZ6QkAqiGBAxLB\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Transform</span></strong></a></span></span>&nbsp;@UUID[Item.GYrsWYBQ6Hu7DnuA]{Zarg's Bow}</p><ul><li><p>Damage dealt by the weapon ignores <strong>Resistances</strong></p></li></ul>",
           "dragon_ef": "100",
+          "effect_table": {},
           "elemental_ef": "100",
           "enforcer_ef": "100",
           "fey_ef": "100",
@@ -1627,9 +1653,14 @@
           "hand_slots": "Two-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
+          "id": "AQprVL9AoxIbsz3D",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/Genshin/The_Viridescent_Hunt.webp",
+          "ingredient_taste": "",
+          "ingredient_taste2": "",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
+          "isIngredient": false,
           "isKey": false,
           "isMartial": true,
           "isModule": false,
@@ -1649,16 +1680,21 @@
           "name": "+3 Zarg's Bow - Light",
           "optional_params": {},
           "plant_ef": "100",
-          "refine_count": 3,
-          "refine_level": 3,
+          "reaction_config_table": {},
+          "recipe_dish_uuid": "",
+          "recipe_kind": "",
+          "refine_count": "3",
+          "refine_level": "3",
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "INS",
           "set_name": "",
+          "skill_target": "Up to two creatures",
           "soldier_ef": "100",
           "spirit_ef": "100",
           "type_damage": "Light",
           "undead_ef": "100",
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.AQprVL9AoxIbsz3D",
           "vehicle_ef": "100",
           "weapon_range": "Ranged"
         },
@@ -1674,7 +1710,7 @@
       "_stats": {
         "compendiumSource": "Item.bRbJl1AxELZ0TLLo",
         "coreVersion": "12.343",
-        "createdTime": 1781875194386,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1802,11 +1838,151 @@
       "type": "equippableItem"
     },
     {
+      "_id": "B5EA1iq4j0wYzpo5",
+      "_stats": {
+        "compendiumSource": "Item.txUds8BUb5KqMhvZ",
+        "coreVersion": "12.343",
+        "createdTime": 1782583104203,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/technical_step.png",
+      "name": "Dance",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3,
+        "iLeUVmwqnze8ulOI": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Dancer",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>Each time you take this Skill, you learn a <strong>dance</strong> (see Facet).</p><p>On your turn during a conflict scene, if you have no martial armor equipped, you may spend 10 Mind Points to perform a <strong>dance</strong> you have learned. This doesn’t require an action, but it can only be done before or after an action, and only once per turn. If you already performed a different dance during your previous turn in this scene, the cost of the new dance is reduced to 5 Mind Points.</p><p>Some dances are instantaneous and resolve immediately, while others have effects that last until the start of your next turn.</p>",
+          "details_roller": "Show",
+          "duration": "",
+          "effect_table": {},
+          "heroic_requirement": "",
+          "id": "B5EA1iq4j0wYzpo5",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/technical_step.png",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "2",
+          "max_level": "10",
+          "name": "Dance",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Other",
+          "type_damage": "",
+          "use_optional_params": false,
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.B5EA1iq4j0wYzpo5"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "txUds8BUb5KqMhvZ"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "bik5TL6rLy0NerM9",
+      "_stats": {
+        "compendiumSource": "Item.NOvNmDvnFaasddUT",
+        "coreVersion": "12.343",
+        "createdTime": 1782584238890,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/technical_finish.png",
+      "name": "Ouroboros Dance",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3,
+        "iLeUVmwqnze8ulOI": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Dancer",
+          "cost": "10 MP",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>Choose one ally you can see who has yet to take a turn during this round. That ally may take their turn immediately after yours during this round.</p>\n",
+          "details_roller": "Show",
+          "duration": "Instantaneous",
+          "effect_table": {},
+          "heroic_requirement": "",
+          "id": "NOvNmDvnFaasddUT",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/technical_finish.png",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Ouroboros Dance",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Any",
+          "skill_target": "One ally",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false,
+          "uuid": "Item.NOvNmDvnFaasddUT"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "NOvNmDvnFaasddUT"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "c3zfGAqVWxIggKi1",
       "_stats": {
         "compendiumSource": "Item.pN90SZleopmB3PM1",
         "coreVersion": "12.343",
-        "createdTime": 1781875194386,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1899,7 +2075,7 @@
       "_stats": {
         "compendiumSource": "Item.XnhMQfWfxKi7wukc",
         "coreVersion": "12.343",
-        "createdTime": 1781875194386,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2012,7 +2188,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782560368455,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2145,7 +2321,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1781875194386,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2236,7 +2412,7 @@
       "_stats": {
         "compendiumSource": "Item.dkCavl0YcUWMPkRj",
         "coreVersion": "12.343",
-        "createdTime": 1781875194386,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2332,7 +2508,7 @@
       "_stats": {
         "compendiumSource": "Item.5h2gvjbvw26dQSU4",
         "coreVersion": "12.343",
-        "createdTime": 1781875194386,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2460,7 +2636,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1781875194386,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2738,7 +2914,7 @@
       "_stats": {
         "compendiumSource": "Item.psUl41nZsOWgzA0R",
         "coreVersion": "12.343",
-        "createdTime": 1781875194386,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2901,7 +3077,7 @@
       "_stats": {
         "compendiumSource": "Item.pGPOqWRyrAFLbHho",
         "coreVersion": "12.343",
-        "createdTime": 1781875194386,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3026,7 +3202,7 @@
       "_stats": {
         "compendiumSource": "Item.A68h8dHO8F75awX4",
         "coreVersion": "12.343",
-        "createdTime": 1781875194386,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3154,7 +3330,7 @@
       "_stats": {
         "compendiumSource": "Item.B1s2K9VLjc4XF4GB",
         "coreVersion": "12.343",
-        "createdTime": 1781951497014,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3294,7 +3470,7 @@
       "_stats": {
         "compendiumSource": "Item.P4dQ5Ms73YVs9gPv",
         "coreVersion": "12.343",
-        "createdTime": 1781875194386,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3422,7 +3598,7 @@
       "_stats": {
         "compendiumSource": "Item.wVVluaGNDUiNVLUw",
         "coreVersion": "12.343",
-        "createdTime": 1781875194386,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3529,7 +3705,7 @@
       "_stats": {
         "compendiumSource": "Item.vHU5RXkhcOoFrXtm",
         "coreVersion": "12.343",
-        "createdTime": 1781875194386,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3656,7 +3832,7 @@
       "_stats": {
         "compendiumSource": "Item.aITJntRz2m10Rgeo",
         "coreVersion": "12.343",
-        "createdTime": 1781953421635,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3786,7 +3962,7 @@
       "_stats": {
         "compendiumSource": "Item.NPmGcRRbc5IBeprB",
         "coreVersion": "12.343",
-        "createdTime": 1781875194386,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3924,11 +4100,68 @@
       "type": "equippableItem"
     },
     {
+      "_id": "Paz1YwWMytTfowSm",
+      "_stats": {
+        "compendiumSource": "Item.xXfHHzbpU7zXPqsS",
+        "coreVersion": "12.343",
+        "createdTime": 1782583115394,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/fountain.png",
+      "name": "Quick-change",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3,
+        "iLeUVmwqnze8ulOI": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "check_bonus": "0",
+          "class": "Dancer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>After you perform a <strong>dance</strong>, you may perform the Equipment action for free.</p>\n",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Quick-change",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_mode": "default",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "xXfHHzbpU7zXPqsS"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "PS5zlTZIJ2yXog8S",
       "_stats": {
         "compendiumSource": "Item.MTu5qi3M3S9M0CJw",
         "coreVersion": "12.343",
-        "createdTime": 1781875194386,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4013,11 +4246,144 @@
       "type": "equippableItem"
     },
     {
+      "_id": "QfaU0E6iq829nPxO",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782581536301,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "accessory",
+            "fromTemplate": "r0yZpLPAK9VXhM2p",
+            "itemId": "ZZG5sHvIc3GH26w7",
+            "itemName": "Maid cap",
+            "pickedOldProps": {
+              "cost": "400",
+              "def_bonus": "",
+              "defense": "0",
+              "defense_include_dex": false,
+              "initiative": "0",
+              "magic_defense": "0",
+              "magic_defense_include_ins": false,
+              "mdef_bonus": ""
+            },
+            "ts": 1769647435971
+          }
+        }
+      },
+      "folder": "knSkFyfOf3QJv6Fg",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Headgear/2215.gif",
+      "name": "Maid cap",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 100000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li>Decrease IP usage by 1 when creating a <strong>Potion </strong>or <strong>Magisphere</strong> <em>(to a minimum of 1)</em></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": true,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "400",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Rare",
+          "item_type": "accessory",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Maid cap",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_description": "<p><strong>【Set Bonus】</strong></p><ul><li><p><strong>2 Piece</strong></p><ul><li><p>When a <strong>potion</strong> or <strong>magisphere</strong> created with your Inventory Points restores<br>Mind Points, it restores 5 extra Mind Points.</p><hr></li></ul><p><strong>3 Piece</strong></p><ul><li><p>When a <strong>potion</strong> or <strong>magisphere</strong> created with your Inventory Points restores<br>Mind Points, it restores 5 extra Mind Points.</p></li></ul></li></ul>",
+          "set_name": "Lovely Retainer",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "ZZG5sHvIc3GH26w7"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "qPKh0SP1YQSPnaPl",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1781875194386,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4148,7 +4514,7 @@
       "_stats": {
         "compendiumSource": "Item.u2tHLEanQ7gWP4BS",
         "coreVersion": "12.343",
-        "createdTime": 1781875194386,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4205,7 +4571,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1781959951797,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4263,11 +4629,81 @@
       "type": "equippableItem"
     },
     {
+      "_id": "RJUqK88OOv4WUmKH",
+      "_stats": {
+        "compendiumSource": "Item.gBgCB84iaNLxy59e",
+        "coreVersion": "12.343",
+        "createdTime": 1782583934680,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/technical_finish.png",
+      "name": "Lion Dance",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3,
+        "iLeUVmwqnze8ulOI": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Dancer",
+          "cost": "Instantaneous",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>You immediately recover from a single status effect of your choice.</p>\n",
+          "details_roller": "Show",
+          "duration": "instantaneous",
+          "effect_table": {},
+          "heroic_requirement": "",
+          "id": "gBgCB84iaNLxy59e",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/technical_finish.png",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Lion Dance",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Any",
+          "skill_target": "Self",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false,
+          "uuid": "Item.gBgCB84iaNLxy59e"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "gBgCB84iaNLxy59e"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "RZJ1UW2Ib3O36eCi",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1781934536119,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4319,7 +4755,7 @@
       "_stats": {
         "compendiumSource": "Item.e0jdBTIQ8BACGIph",
         "coreVersion": "12.343",
-        "createdTime": 1781875194386,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4412,7 +4848,7 @@
       "_stats": {
         "compendiumSource": "Item.VdzUY6OaTy7vncGT",
         "coreVersion": "12.343",
-        "createdTime": 1781875194386,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4622,7 +5058,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1781875194386,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4633,7 +5069,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1781989234703,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -4646,7 +5082,7 @@
             "rounds": null,
             "seconds": null,
             "startRound": null,
-            "startTime": null,
+            "startTime": 298800,
             "startTurn": null,
             "turns": null
           },
@@ -4820,7 +5256,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1781937296597,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4871,7 +5307,7 @@
       "_stats": {
         "compendiumSource": "Item.71Rxh6OREMP3D84z",
         "coreVersion": "12.343",
-        "createdTime": 1781875194386,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5021,7 +5457,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1781875194386,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5130,7 +5566,7 @@
       "_stats": {
         "compendiumSource": "Item.uSfpUFshad2WnIiR",
         "coreVersion": "12.343",
-        "createdTime": 1781875194386,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5196,7 +5632,7 @@
       "_stats": {
         "compendiumSource": "Item.GYrsWYBQ6Hu7DnuA",
         "coreVersion": "12.343",
-        "createdTime": 1781875194386,
+        "createdTime": 1782566224505,
         "duplicateSource": "Item.2mX266qZdTJYJXCy",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5224,15 +5660,17 @@
           "beast_ef": "100",
           "category": "Bow",
           "celestial_ef": "100",
+          "check": "Check",
           "check_bonus": "1",
           "construct_ef": "100",
           "custom_logic_action": "",
           "custom_logic_resolution": "",
-          "damage_bonus": 19,
+          "damage_bonus": "19",
           "demiHuman_ef": "100",
           "demon_ef": "100",
           "description": "<p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.EYcZ6QkAqiGBAxLB\" data-id=\"EYcZ6QkAqiGBAxLB\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Transform</span></strong></a></span></span>&nbsp;@UUID[Item.2mX266qZdTJYJXCy]{Zarg's Bow - Light}</p><ul><li><p>Damage dealt by the weapon ignores <strong>Resistances</strong></p></li></ul>",
           "dragon_ef": "100",
+          "effect_table": {},
           "elemental_ef": "100",
           "enforcer_ef": "100",
           "fey_ef": "100",
@@ -5243,9 +5681,14 @@
           "hand_slots": "Two-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
+          "id": "xEHcsYyJhPaTCGcJ",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/Genshin/The_Viridescent_Hunt.webp",
+          "ingredient_taste": "",
+          "ingredient_taste2": "",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": true,
+          "isIngredient": false,
           "isKey": false,
           "isMartial": true,
           "isModule": false,
@@ -5265,16 +5708,21 @@
           "name": "+3 Zarg's Bow",
           "optional_params": {},
           "plant_ef": "100",
-          "refine_count": 3,
-          "refine_level": 3,
+          "reaction_config_table": {},
+          "recipe_dish_uuid": "",
+          "recipe_kind": "",
+          "refine_count": "3",
+          "refine_level": "3",
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "INS",
           "set_name": "",
+          "skill_target": "Up to two creatures",
           "soldier_ef": "100",
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.xEHcsYyJhPaTCGcJ",
           "vehicle_ef": "100",
           "weapon_range": "Ranged"
         },
@@ -5290,7 +5738,7 @@
       "_stats": {
         "compendiumSource": "Item.8aONdOoBQoSzz1wU",
         "coreVersion": "12.343",
-        "createdTime": 1781875194386,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5385,7 +5833,7 @@
       "_stats": {
         "compendiumSource": "Item.I8Nn2LBram2GzpJ5",
         "coreVersion": "12.343",
-        "createdTime": 1781875194386,
+        "createdTime": 1782566224505,
         "duplicateSource": "Item.sQf6CgTCaoIwHVUT",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5474,7 +5922,7 @@
       "_stats": {
         "compendiumSource": "Item.6ThyGpmcPzrBBGji",
         "coreVersion": "12.343",
-        "createdTime": 1781875194386,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5632,7 +6080,7 @@
       "_stats": {
         "compendiumSource": "Item.hPNGofTLZQVvhtbf",
         "coreVersion": "12.343",
-        "createdTime": 1781875194386,
+        "createdTime": 1782566224505,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5790,6 +6238,7 @@
   "name": "Zarg",
   "ownership": {
     "2vy7wrEUqBy0kzsU": 2,
+    "7hKw8KGsimboeDif": 0,
     "JQGNzKpDPHJmcUIW": 3,
     "default": 3,
     "iLeUVmwqnze8ulOI": 3,
@@ -6077,6 +6526,12 @@
           "benefit": "ip",
           "class_name": "Tinkerer",
           "level": "10"
+        },
+        "5": {
+          "$deleted": false,
+          "benefit": "hp",
+          "class_name": "Dancer",
+          "level": "1"
         }
       },
       "clock_adoration": "0",
@@ -6299,9 +6754,9 @@
       "critical_damage_bonus": 0,
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
-      "current_hp": 75,
-      "current_ip": 4,
-      "current_mp": 70,
+      "current_hp": "84",
+      "current_ip": "10",
+      "current_mp": "74",
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/Zarg_Cut-in002.png",
       "cut_in_fumble": "",
@@ -6390,7 +6845,7 @@
       "draw_card_copy1": "Use",
       "elementalism": false,
       "emotion_1_1": "admiration",
-      "emotion_1_2": "",
+      "emotion_1_2": "loyalty",
       "emotion_1_3": "affection",
       "emotion_2_1": "admiration",
       "emotion_2_2": "loyalty",
@@ -6414,11 +6869,11 @@
       "enraged_status": 0,
       "entropism": false,
       "envenomed_status": 0,
-      "exp_meter": "8.69",
-      "experience": "8.69",
+      "exp_meter": "1.84",
+      "experience": "1.84",
       "experience_ui": "0",
       "extra_damage_mod_air": 0,
-      "extra_damage_mod_all": 0,
+      "extra_damage_mod_all": 1,
       "extra_damage_mod_arcane": 0,
       "extra_damage_mod_bolt": 0,
       "extra_damage_mod_bow": 0,
@@ -6441,7 +6896,7 @@
       "extra_damage_mod_spell": 0,
       "extra_damage_mod_sword": 0,
       "extra_damage_mod_thrown": 0,
-      "fabula_point": "3",
+      "fabula_point": "1",
       "fatigue_status": 0,
       "firearm_ef": "100",
       "flail_ef": "100",
@@ -6592,6 +7047,13 @@
           "roll": "",
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.OPGC3l2sGAxkAfk2"
         },
+        "QfaU0E6iq829nPxO": {
+          "acess_description": "<ul><li>Decrease IP usage by 1 when creating a <strong>Potion </strong>or <strong>Magisphere</strong> <em>(to a minimum of 1)</em></li></ul>",
+          "id": "${item.id}",
+          "name": "Maid cap",
+          "roll": "",
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.QfaU0E6iq829nPxO"
+        },
         "Ti72kIFBm0pAkmtb": {
           "acess_description": "<ul>\n<li>When you take damage for the&nbsp;<strong>first time&nbsp;</strong>in a&nbsp;<strong>conflict,&nbsp;</strong>reduce that damage to&nbsp;<strong>0</strong></li>\n</ul>",
           "id": "${item.id}",
@@ -6714,7 +7176,7 @@
       },
       "item_restore_mod": 20,
       "key_list": {},
-      "level": "30",
+      "level": "34",
       "lifesteal_percentage": 0,
       "lifesteal_value": 0,
       "magic_defense": 9,
@@ -6722,7 +7184,7 @@
       "main_attrib_1": "DEX",
       "main_attrib_2": "INS",
       "main_details": "<p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.EYcZ6QkAqiGBAxLB\" data-id=\"EYcZ6QkAqiGBAxLB\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Transform</span></strong></a></span></span>&nbsp;@UUID[Item.2mX266qZdTJYJXCy]{Zarg's Bow - Light}</p><ul><li><p>Damage dealt by the weapon ignores <strong>Resistances</strong></p></li></ul>",
-      "main_hand": "Zarg's Bow",
+      "main_hand": "+3 Zarg's Bow",
       "main_hand_attack": "",
       "manadrain_percentage": 0,
       "manadrain_value": 0,
@@ -6770,9 +7232,9 @@
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.ynvsqZxmSc2Eqsld"
         }
       },
-      "max_hp": 75,
+      "max_hp": 84,
       "max_ip": 10,
-      "max_mp": 70,
+      "max_mp": 74,
       "memories_list": {
         "0": {
           "$deleted": false,
@@ -6943,6 +7405,18 @@
       "silence_status": 0,
       "skill_accuracy": "0",
       "skill_active_list": {
+        "2mUzQqk9EWEw45yl": {
+          "active_class": "Dancer",
+          "active_cost": "",
+          "active_description": "<p>When you perform a <strong>dance</strong> with a duration of “Until the start of your next turn,” you may spend 10 additional Mind Points. If you do, choose one ally you can see towards whom you have a Bond of affection: apply the benefits of the <strong>dance</strong> to that ally as well as yourself (the benefits still last until the start of your next turn).</p>\n",
+          "active_duration": "",
+          "active_level": 1,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Follow my lead",
+          "roll": "",
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.2mUzQqk9EWEw45yl"
+        },
         "35hOVeijHtjAupb2": {
           "active_class": "Sharpshooter",
           "active_cost": "",
@@ -6990,6 +7464,18 @@
           "name": "Warning Shot",
           "roll": "",
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.7v93rEUiFC81g0sk"
+        },
+        "B5EA1iq4j0wYzpo5": {
+          "active_class": "Dancer",
+          "active_cost": "",
+          "active_description": "<p>Each time you take this Skill, you learn a <strong>dance</strong> (see Facet).</p><p>On your turn during a conflict scene, if you have no martial armor equipped, you may spend 10 Mind Points to perform a <strong>dance</strong> you have learned. This doesn’t require an action, but it can only be done before or after an action, and only once per turn. If you already performed a different dance during your previous turn in this scene, the cost of the new dance is reduced to 5 Mind Points.</p><p>Some dances are instantaneous and resolve immediately, while others have effects that last until the start of your next turn.</p>",
+          "active_duration": "",
+          "active_level": 2,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Dance",
+          "roll": "",
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.B5EA1iq4j0wYzpo5"
         },
         "CmQ9cu48gd2zp1eq": {
           "active_class": "Sharpshooter",
@@ -7135,6 +7621,30 @@
           "roll": "",
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.PS5zlTZIJ2yXog8S"
         },
+        "Paz1YwWMytTfowSm": {
+          "active_class": "Dancer",
+          "active_cost": "",
+          "active_description": "<p>After you perform a <strong>dance</strong>, you may perform the Equipment action for free.</p>\n",
+          "active_duration": "",
+          "active_level": 1,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Quick-change",
+          "roll": "",
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.Paz1YwWMytTfowSm"
+        },
+        "RJUqK88OOv4WUmKH": {
+          "active_class": "Dancer",
+          "active_cost": "Instantaneous",
+          "active_description": "<p>You immediately recover from a single status effect of your choice.</p>\n",
+          "active_duration": "instantaneous",
+          "active_level": 1,
+          "active_target": "Self",
+          "id": "${item.id}",
+          "name": "Lion Dance",
+          "roll": "",
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.RJUqK88OOv4WUmKH"
+        },
         "SP5BT5DfIbe2os5C": {
           "active_class": "Sharpshooter",
           "active_cost": "",
@@ -7194,6 +7704,18 @@
           "name": "Generic NPC Skill Template",
           "roll": "",
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.azE4D7qDjwP7KjTO"
+        },
+        "bik5TL6rLy0NerM9": {
+          "active_class": "Dancer",
+          "active_cost": "10 MP",
+          "active_description": "<p>Choose one ally you can see who has yet to take a turn during this round. That ally may take their turn immediately after yours during this round.</p>\n",
+          "active_duration": "Instantaneous",
+          "active_level": 1,
+          "active_target": "One ally",
+          "id": "${item.id}",
+          "name": "Ouroboros Dance",
+          "roll": "",
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.bik5TL6rLy0NerM9"
         },
         "c3zfGAqVWxIggKi1": {
           "active_class": "Rogue",
@@ -7401,7 +7923,7 @@
         }
       },
       "skill_attack_damage": "0",
-      "skill_class_filter": "Sharpshooter",
+      "skill_class_filter": "Dancer",
       "skill_hideEffect": false,
       "skill_hp": "0",
       "skill_ip": "",
@@ -7422,9 +7944,9 @@
       "turbulence_status": 0,
       "uuid": "Actor.Z4CFy505cD3nzl1W",
       "weak_status": 0,
-      "weapon1_base_damage": "16",
+      "weapon1_base_damage": "19",
       "weapon1_base_mod": "1",
-      "weapon1_damage": 16,
+      "weapon1_damage": 19,
       "weapon1_damagetype": "Physical",
       "weapon1_mod": 1,
       "weapon2_damagetype": "-",
@@ -7500,6 +8022,18 @@
           "weapon_hand": "Two-handed",
           "weapon_martial": "",
           "weapon_range": "Ranged"
+        },
+        "E3uSk0fUhcOKpeVF": {
+          "id": "${item.id}",
+          "name": "Draconic Claw",
+          "quantity": "",
+          "roll": "",
+          "type": "Brawling",
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.E3uSk0fUhcOKpeVF",
+          "weapon_description": "<p><ul><li><p>On <strong>hit, </strong>inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Burn</a>&nbsp;to the target, if the target is already <a class=\"content-link\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Burn</a>&nbsp;trigger its effect instead</p></li></ul></p>",
+          "weapon_hand": "One-handed",
+          "weapon_martial": "",
+          "weapon_range": "Melee"
         },
         "HIdBNxM9OoSMgXsp": {
           "id": "${item.id}",
@@ -7711,7 +8245,7 @@
       "wlp_base": "8",
       "wlp_current": 8,
       "your_class_name": "Hunter",
-      "zenit": "2294",
+      "zenit": "2899",
       "zero_label": "Zero Power",
       "zero_power_description": "<p><strong>Zero Scourge</strong></p><p>Special rule: when you select this effect for your Zero Power, choose a damage type</p><p>among air, bolt, dark, earth, fire, ice, light, and poison; then, choose two status effects</p><p>among dazed, shaken, slow, and weak.</p><p>Choose any number of creatures you can see: each of them suffers damage of then</p><p>chosen type equal to【30 + half your level】and suffers the chosen status effects.</p>",
       "zero_power_macro": "",

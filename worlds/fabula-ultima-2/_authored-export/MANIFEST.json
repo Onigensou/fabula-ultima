@@ -5153,6 +5153,12 @@
         "effects": 0
       },
       {
+        "id": "37zrTkcEtdrwiIIF",
+        "name": "Draconic Claw",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "g3r4oZYBrA3O9ssW",
         "name": "Draconic Roar",
         "type": "equippableItem",
@@ -13481,6 +13487,10 @@
             "name": "Diving Blaze Kick"
           },
           {
+            "id": "OLSurYt2W7DIrK94",
+            "name": "Draconic Claw"
+          },
+          {
             "id": "rFHHUi8udeJEjsrE",
             "name": "Explosive Entrance"
           },
@@ -14302,13 +14312,6 @@
         "effects": 1
       },
       {
-        "id": "QY0WLCEVD9FVtYaJ",
-        "name": "BD Dummy Enemy",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
         "id": "N5k5aBtdGBakHLGO",
         "name": "Berserker",
         "type": "character",
@@ -14413,6 +14416,10 @@
             "name": "Elegance Showmanship"
           },
           {
+            "id": "WZWSw7mdfoIPOzqS",
+            "name": "Elemental Harmony"
+          },
+          {
             "id": "uZGPznG4ahL5zGRZ",
             "name": "Fancy Footwork"
           },
@@ -14439,6 +14446,10 @@
           {
             "id": "mu1lQYmXO6pYVif5",
             "name": "Heal"
+          },
+          {
+            "id": "wecgr398559brY1I",
+            "name": "Invocation"
           },
           {
             "id": "JT5pvl5buIjL9JHX",
@@ -14505,7 +14516,7 @@
             "name": "Zero Trigger: Motivation"
           }
         ],
-        "effects": 0
+        "effects": 2
       },
       {
         "id": "UXagcMfhhqcSz7OZ",
@@ -16037,6 +16048,10 @@
             "name": "Apple o' Archer"
           },
           {
+            "id": "k8ZtjB1OJJ1AFYkU",
+            "name": "Arch Ice Wand"
+          },
+          {
             "id": "xCskLjO3pJWiKp5f",
             "name": "Bandit King"
           },
@@ -16071,6 +16086,10 @@
           {
             "id": "PVtCRQHVnat83dFp",
             "name": "Derringer"
+          },
+          {
+            "id": "wCSJTNqVjW9ZweJk",
+            "name": "Draconic Claw"
           },
           {
             "id": "P6VI53iKqeVaeciW",
@@ -16141,10 +16160,6 @@
             "name": "Looting Bow"
           },
           {
-            "id": "G2wMZ8HN1AkN1VSz",
-            "name": "Maid cap"
-          },
-          {
             "id": "AHy1tE6vcMJBxBlN",
             "name": "Mega-Elixir"
           },
@@ -16169,8 +16184,8 @@
             "name": "Revealing Lens"
           },
           {
-            "id": "08uDbIorrsmW2YXB",
-            "name": "Scounter"
+            "id": "VuEqfVKZJ3rU1ce9",
+            "name": "Ring of the Pupil"
           },
           {
             "id": "2na6LT4hqNFM2hhJ",
@@ -17283,6 +17298,10 @@
             "name": "Copycat"
           },
           {
+            "id": "OHpfq3cznsoVXLh8",
+            "name": "Curse Collector"
+          },
+          {
             "id": "c5UMCKLMcRC47hq0",
             "name": "Excalibur?"
           },
@@ -17343,10 +17362,6 @@
             "name": "Portable Cauldron"
           },
           {
-            "id": "eGhfJdrJ8FRqYnaC",
-            "name": "Protect"
-          },
-          {
             "id": "YBFhNsKLmy1QlkQ8",
             "name": "Psychic Dagger"
           },
@@ -17369,10 +17384,6 @@
           {
             "id": "ZgLGoh1jL1XqTxl2",
             "name": "Super Tonic"
-          },
-          {
-            "id": "bRQomGnYf2xsGtHA",
-            "name": "The Selfless"
           },
           {
             "id": "3cnqLWqSdV8YxBSH",
@@ -17601,6 +17612,10 @@
             "name": "Bimagus"
           },
           {
+            "id": "Mav3EErTtfTiCLIM",
+            "name": "Bind and Summon"
+          },
+          {
             "id": "XVCbb7lj05eYPQ3f",
             "name": "Budding Maple Wand"
           },
@@ -17613,8 +17628,24 @@
             "name": "Cataclysm"
           },
           {
+            "id": "rOdq8hhYJpSutkre",
+            "name": "Cleanse"
+          },
+          {
+            "id": "3NKLKZPGi2XywTWG",
+            "name": "Curse Magic"
+          },
+          {
             "id": "KHWUWYvTzbYyHPs7",
             "name": "Dark Blood"
+          },
+          {
+            "id": "gUqhsZUi9Adk4Ly6",
+            "name": "Decoy Doll"
+          },
+          {
+            "id": "vliuwtKw7PKGGKcU",
+            "name": "Decoy Doll"
           },
           {
             "id": "bheVgo6iuvRRaQ5Y",
@@ -17631,6 +17662,14 @@
           {
             "id": "hxPlRSwOxHShzdRK",
             "name": "Dragonskull Helm"
+          },
+          {
+            "id": "bsG2aZEMX2Glb3pI",
+            "name": "Dragontrap Bow"
+          },
+          {
+            "id": "eSIh2SB8tc4Ux4vz",
+            "name": "Dragontrap Bow"
           },
           {
             "id": "jb0jobWNa9rlKKjN",
@@ -17725,6 +17764,14 @@
             "name": "Magical Artillery"
           },
           {
+            "id": "LdxJgEghJUNP6bYL",
+            "name": "Mega-Remedy"
+          },
+          {
+            "id": "peoXVGo2UIvAnZfE",
+            "name": "Mega-Remedy"
+          },
+          {
             "id": "Pf1vhSjtOOTBXFkB",
             "name": "Morrigan"
           },
@@ -17749,6 +17796,14 @@
             "name": "Sage Robe"
           },
           {
+            "id": "ljZLoe65h3hnWTYc",
+            "name": "Scounter"
+          },
+          {
+            "id": "KVCOLRQv6anedDGI",
+            "name": "Spiritual Magic"
+          },
+          {
             "id": "L1vZvNSNxlYlrQhu",
             "name": "Starfall"
           },
@@ -17759,6 +17814,14 @@
           {
             "id": "z1GsqcJC8bh4TOAs",
             "name": "Stop"
+          },
+          {
+            "id": "p7WldKGSMumLxC4p",
+            "name": "Symptom Shift"
+          },
+          {
+            "id": "YZIW3yUn3JoEyjZA",
+            "name": "The Tormentor"
           },
           {
             "id": "720wa4E0ldJEqXG4",
@@ -17773,7 +17836,7 @@
             "name": "Zero Trigger: Foresight"
           }
         ],
-        "effects": 5
+        "effects": 1
       },
       {
         "id": "tzXbVfDYPgvu5wml",
@@ -18581,6 +18644,10 @@
           {
             "id": "DHHxK3dVRzjui5hw",
             "name": "Fear Is the Key"
+          },
+          {
+            "id": "fjThxMdxufSrumbB",
+            "name": "For Whom the Bell Tolls"
           },
           {
             "id": "aBoK1AS1nb27Wwye",
@@ -22408,6 +22475,10 @@
             "name": "Combat Tunic"
           },
           {
+            "id": "B5EA1iq4j0wYzpo5",
+            "name": "Dance"
+          },
+          {
             "id": "7V5swu31yb3p60cH",
             "name": "Decoy Doll"
           },
@@ -22426,6 +22497,10 @@
           {
             "id": "HiXFAkSm35bBGHfM",
             "name": "Emergency Item"
+          },
+          {
+            "id": "2mUzQqk9EWEw45yl",
+            "name": "Follow my lead"
           },
           {
             "id": "H663NG14lmAbBtzp",
@@ -22460,6 +22535,10 @@
             "name": "Life Charm"
           },
           {
+            "id": "RJUqK88OOv4WUmKH",
+            "name": "Lion Dance"
+          },
+          {
             "id": "A3VqPJRBDW8c1NnH",
             "name": "Love Potion"
           },
@@ -22468,8 +22547,16 @@
             "name": "Love Potion"
           },
           {
+            "id": "QfaU0E6iq829nPxO",
+            "name": "Maid cap"
+          },
+          {
             "id": "tImoyJ8c71GeEmSi",
             "name": "Ninja Log"
+          },
+          {
+            "id": "bik5TL6rLy0NerM9",
+            "name": "Ouroboros Dance"
           },
           {
             "id": "Wu0v7HRS4pIHfuOL",
@@ -22490,6 +22577,10 @@
           {
             "id": "62wNY7bslntnoL7o",
             "name": "Potion Rain"
+          },
+          {
+            "id": "Paz1YwWMytTfowSm",
+            "name": "Quick-change"
           },
           {
             "id": "arvArw1iQ2E2jy1A",

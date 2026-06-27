@@ -10,80 +10,24 @@
   },
   "effects": [
     {
-      "_id": "fWXyoM4Zn7zZYzA9",
+      "_id": "vgm6FKWWbEAlRq3B",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782560305081,
+        "createdTime": 1782583510529,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
-      "changes": [],
-      "description": "<p><em>Lucky Seven Ready:</em> Lucky Seven is available this scene. Spent when used; refreshes each conflict.</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": 298800,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "DIJbLrv3X5vkOVnj",
-          "originalParentId": "v56GvN63nvIYV4iJ",
-          "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.v56GvN63nvIYV4iJ.ActiveEffect.DIJbLrv3X5vkOVnj"
-        },
-        "fabula-ultima-companion": {
-          "chargeKey": "lucky_seven",
-          "charges": 1,
-          "chargesMax": 1,
-          "directorAppliedBy": {
-            "appliedAtRound": 0,
-            "effectLabel": "ls_arm",
-            "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.blzmhnVQPc3CAFe2",
-            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.v56GvN63nvIYV4iJ",
-            "turnsRemaining": 1
-          }
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
+      "changes": [
+        {
+          "key": "extra_damage_mod_all",
+          "mode": 2,
+          "priority": null,
+          "value": "1"
         }
-      },
-      "img": "icons/magic/control/buff-flight-wings-runes-purple.webp",
-      "name": "Lucky Seven Ready",
-      "origin": "Actor.dafTLBUscCDNgq8H.Item.v56GvN63nvIYV4iJ",
-      "sort": 0,
-      "statuses": [
-        "fud-lucky-seven-ready"
       ],
-      "system": {},
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "JpPnLqsLIkXtD2lm",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1782524821101,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [],
-      "description": "<p>This creature has less than 50% HP</p>",
+      "description": "<p>Campfire skewers marinated with wild berry vinegar. Everyone who eats gains <strong>+1 bonus damage</strong> until the next rest.</p>",
       "disabled": false,
       "duration": {
         "combat": null,
@@ -97,21 +41,19 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "isPredefined": true,
-          "originalId": "4ldx00srGNv5AJBr",
-          "originalParentId": "0gIBYzSpjdXS6f25",
-          "originalUuid": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr"
-        },
-        "dfreds-convenient-effects": {
-          "ceEffectId": "ce-crisis",
-          "isBackup": false,
-          "isConvenient": true,
-          "isDynamic": false,
-          "isTemporary": false,
-          "isViewable": false
+          "originalId": "vgm6FKWWbEAlRq3B",
+          "originalParentId": "dafTLBUscCDNgq8H",
+          "originalUuid": "Actor.dafTLBUscCDNgq8H.ActiveEffect.vgm6FKWWbEAlRq3B"
         },
         "fabula-ultima-companion": {
-          "bdCrisis": true
+          "campRestCharges": 0,
+          "cookingDish": {
+            "dishId": "G0tvPWqwJHkdwoFQ",
+            "family": "sour",
+            "instant": {},
+            "tier": 1
+          },
+          "foodBuff": true
         },
         "statuscounter": {
           "config": {
@@ -122,296 +64,18 @@
           "visible": false
         }
       },
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/08_DRG/blood_for_blood.png",
-      "name": "Crisis",
-      "origin": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Genshin/Item_Chicken-Mushroom_Skewer.webp",
+      "name": "Tangy Trailside Skewer",
+      "origin": "Item.G0tvPWqwJHkdwoFQ",
       "sort": 0,
       "statuses": [
-        "5jkr80zqdzaR003d"
+        "permanent"
       ],
       "system": {
-        "tags": []
+        "tags": [
+          "food"
+        ]
       },
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "nJmcpeI5iyCYiVQv",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1782554655127,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [],
-      "description": "<p>A reserve of foresight Hina spends to take the place of all creatures threatened by a single danger.</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": 298800,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "propheticPoint01",
-          "originalParentId": "Lmzs6VllFRo44jZq",
-          "originalUuid": "Item.Lmzs6VllFRo44jZq.ActiveEffect.propheticPoint01"
-        },
-        "fabula-ultima-companion": {
-          "category": "buff",
-          "chargeKey": "prophecy",
-          "charges": 2,
-          "chargesMax": 99,
-          "directorAppliedBy": {
-            "appliedAtRound": 0,
-            "effectLabel": "pds_gain",
-            "lifetimeMode": "persistent_counter",
-            "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.blzmhnVQPc3CAFe2",
-            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.gm2w1NLdaEI7SzaQ",
-            "turnsRemaining": null
-          },
-          "directorPermanent": false,
-          "lifetimeMode": "persistent_counter"
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/nocturnal_sect.png",
-      "name": "Prophecy Point",
-      "origin": "Actor.dafTLBUscCDNgq8H.Item.gm2w1NLdaEI7SzaQ",
-      "sort": 0,
-      "statuses": [
-        "fud-prophecy-point"
-      ],
-      "system": {},
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "nW9KaO1SljWW7CeG",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1782540447661,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [],
-      "description": "<p><em>Heart of Darkness:</em> armed for this scene.</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": null,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "TQINaXFTRwWZBJvx",
-          "originalParentId": "EGYilCNAGvl2BldF",
-          "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF.ActiveEffect.TQINaXFTRwWZBJvx"
-        },
-        "fabula-ultima-companion": {
-          "category": "buff",
-          "chargeKey": "hod_ready",
-          "charges": 1,
-          "chargesMax": 1,
-          "directorAppliedBy": {
-            "appliedAtRound": 0,
-            "effectLabel": "hod_refresh",
-            "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.blzmhnVQPc3CAFe2",
-            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF",
-            "turnsRemaining": null
-          },
-          "directorPermanent": true
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "icons/magic/unholy/silhouette-evil-horned-giant.webp",
-      "name": "Heart of Darkness Ready",
-      "origin": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF",
-      "sort": 0,
-      "statuses": [
-        "fud-heart-of-darkness-ready"
-      ],
-      "system": {},
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "oTetvbwsT79Jb0vG",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1782498356558,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [],
-      "description": "<p><em>Lucky Number:</em> the value you may swap onto a die with Lucky Seven (starts at 7). Replacing a die makes the replaced value your new lucky number.</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": 298800,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "oTetvbwsT79Jb0vG",
-          "originalParentId": "dafTLBUscCDNgq8H",
-          "originalUuid": "Actor.dafTLBUscCDNgq8H.ActiveEffect.oTetvbwsT79Jb0vG"
-        },
-        "fabula-ultima-companion": {
-          "chargeKey": "lucky_number",
-          "charges": 3,
-          "chargesMax": 7,
-          "directorAppliedBy": {
-            "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
-            "reactorTokenUuid": null,
-            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.v56GvN63nvIYV4iJ",
-            "turnsRemaining": null
-          },
-          "directorPermanent": true,
-          "lifetimeMode": "persistent_counter",
-          "reactionConfig": {
-            "effect_table": {
-              "0": {
-                "$deleted": false,
-                "ae_duplicate_mode": "replace",
-                "ae_template_ref": "Lucky Seven Ready",
-                "effect_kind": "apply_ae",
-                "effect_label": "ls_arm",
-                "target_ref": "ls_self"
-              },
-              "1": {
-                "$deleted": false,
-                "chain_steps": "ls_consume, ls_menu",
-                "effect_kind": "chain",
-                "effect_label": "ls_root"
-              },
-              "2": {
-                "$deleted": false,
-                "charge_key": "lucky_seven",
-                "count": "1",
-                "effect_kind": "consume_charge",
-                "effect_label": "ls_consume",
-                "on_empty": "abort",
-                "target_ref": "ls_self"
-              },
-              "3": {
-                "$deleted": false,
-                "effect_kind": "open_action_menu",
-                "effect_label": "ls_menu",
-                "menu_option_descriptions": "New total: ${AE_CHARGES_LUCKY_NUMBER + CHECK_DIE_B + CHECK_BONUS}|New total: ${CHECK_DIE_A + AE_CHARGES_LUCKY_NUMBER + CHECK_BONUS}",
-                "menu_option_labels": "First die (${CHECK_DIE_A_ATTR}): ${CHECK_DIE_A} → ${AE_CHARGES_LUCKY_NUMBER}|Second die (${CHECK_DIE_B_ATTR}): ${CHECK_DIE_B} → ${AE_CHARGES_LUCKY_NUMBER}",
-                "menu_option_refs": "ls_die_a, ls_die_b",
-                "menu_subtitle": "Replace one die with your lucky number (${AE_CHARGES_LUCKY_NUMBER}); the replaced value becomes your new lucky number.",
-                "menu_title": "Lucky Seven"
-              },
-              "4": {
-                "$deleted": false,
-                "die_value": "",
-                "effect_kind": "set_check_die",
-                "effect_label": "ls_die_a",
-                "which_die": "A",
-                "writeback_carrier_charge": true
-              },
-              "5": {
-                "$deleted": false,
-                "die_value": "",
-                "effect_kind": "set_check_die",
-                "effect_label": "ls_die_b",
-                "which_die": "B",
-                "writeback_carrier_charge": true
-              },
-              "6": {
-                "$deleted": false,
-                "auto_confirm_when_obvious": true,
-                "candidate_source": "self",
-                "category": "",
-                "count": 1,
-                "effect_kind": "targeting",
-                "effect_label": "ls_self",
-                "exclude_self": false,
-                "iteration_mode": "together",
-                "mode": "exact",
-                "skip_when_passive": true
-              }
-            },
-            "name": "Lucky Seven",
-            "reaction_config_table": {
-              "0": {
-                "$deleted": false,
-                "condition_formula": "",
-                "reaction_effect_ref": "ls_arm",
-                "reaction_passive_mode": "force",
-                "reaction_source": "",
-                "reaction_trigger": "conflict_start"
-              },
-              "1": {
-                "$deleted": false,
-                "condition_formula": "ACTION_ROLLS_ACCURACY == 1 && ATTACK_IS_CRIT == 0 && ATTACK_IS_FUMBLE == 0 && AE_CHARGES_LUCKY_SEVEN_READY > 0",
-                "reaction_effect_ref": "ls_root",
-                "reaction_passive_mode": "ask",
-                "reaction_source": "self",
-                "reaction_trigger": "creature_performs_action"
-              }
-            }
-          }
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "icons/sundries/gaming/dice-runed-brown.webp",
-      "name": "Lucky Number",
-      "origin": null,
-      "sort": 0,
-      "statuses": [
-        "fud-lucky-number"
-      ],
-      "system": {},
       "tint": "#ffffff",
       "transfer": false,
       "type": "base"
@@ -422,6 +86,7 @@
       "version": "4.8.4"
     },
     "fabula-ultima-companion": {
+      "damage_taken_mult": 1,
       "iconFocus": {
         "x": 50,
         "y": 19,
@@ -569,7 +234,7 @@
       "name": "",
       "optalign": "top",
       "settings": {
-        "emote": "speechless",
+        "emote": "dizzy",
         "textcolor": null,
         "textflyin": "typewriter",
         "textfont": null,
@@ -592,7 +257,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1781952550604,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -644,7 +309,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1781875189508,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -776,7 +441,7 @@
       "_stats": {
         "compendiumSource": "Item.6HdBHEPiRoPMMydJ",
         "coreVersion": "12.343",
-        "createdTime": 1781875189508,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -842,7 +507,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782542203691,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -885,11 +550,76 @@
       "type": "equippableItem"
     },
     {
+      "_id": "3NKLKZPGi2XywTWG",
+      "_stats": {
+        "compendiumSource": "Item.XSy7MGgInDpsTwG5",
+        "coreVersion": "12.343",
+        "createdTime": 1782586487992,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/VoidPrincessPassive3.png",
+      "name": "Curse Magic",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3,
+        "yL2PQxh3R9ddt0te": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "check_bonus": "0",
+          "class": "Hexer",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>Each time you acquire this <strong>Skill</strong>, learn one <strong>Hexer spell</strong> (see the Facet).</p><p><strong>Offensive (⚡) Hexer spells</strong> use <strong>[INS + WLP]</strong> for the Magic Check.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "10",
+          "name": "Curse Magic",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>Hexer Spells Known (total)</strong></p></td></tr><tr><td><p>1</p></td><td><p>1</p></td></tr><tr><td><p>2</p></td><td><p>2</p></td></tr><tr><td><p>3</p></td><td><p>3</p></td></tr><tr><td><p>4</p></td><td><p>4</p></td></tr><tr><td><p>5</p></td><td><p>5</p></td></tr><tr><td><p>6</p></td><td><p>6</p></td></tr><tr><td><p>7</p></td><td><p>7</p></td></tr><tr><td><p>8</p></td><td><p>8</p></td></tr><tr><td><p>9</p></td><td><p>9</p></td></tr><tr><td><p>10</p></td><td><p>10</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "XSy7MGgInDpsTwG5"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "4GzzwpTJyf7iyOtq",
       "_stats": {
         "compendiumSource": "Item.wJBq8w0Xuh7suRqm",
         "coreVersion": "12.343",
-        "createdTime": 1781875189508,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1037,7 +767,7 @@
       "_stats": {
         "compendiumSource": "Item.UCGtDYsRkyH4IqBs",
         "coreVersion": "12.343",
-        "createdTime": 1781875189508,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1196,7 +926,7 @@
       "_stats": {
         "compendiumSource": "Item.BykEf2Th3dTmg02o",
         "coreVersion": "12.343",
-        "createdTime": 1781875189508,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1303,7 +1033,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1781875189508,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1416,7 +1146,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1781875189508,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1560,7 +1290,7 @@
       "_stats": {
         "compendiumSource": "Item.OoVNUOIssIfwPo7H",
         "coreVersion": "12.343",
-        "createdTime": 1781875189508,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1637,7 +1367,7 @@
       "_stats": {
         "compendiumSource": "Item.pVs2sPd5o0XMbdah",
         "coreVersion": "12.343",
-        "createdTime": 1781875189508,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1775,11 +1505,148 @@
       "type": "equippableItem"
     },
     {
+      "_id": "bsG2aZEMX2Glb3pI",
+      "_stats": {
+        "compendiumSource": "Item.Qex8FZz4dvDcBmlz",
+        "coreVersion": "12.343",
+        "createdTime": 1782581598158,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.Qex8FZz4dvDcBmlz"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "weapon",
+            "fromTemplate": "gIRU9XGqYeMBwBN9",
+            "itemId": "D32pUz6M6e1smWrB",
+            "itemName": "Dragontrap Bow",
+            "pickedOldProps": {
+              "cost": "1500",
+              "martial": true
+            },
+            "ts": 1769647000242
+          }
+        }
+      },
+      "folder": "gkxeb18rMnUvyuqk",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bow.png",
+      "name": "Dragontrap Bow",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 900000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Bow",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "12",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>When you hit a <strong>@UUID[JournalEntry.q6keqwDWUsEgSWDw]{Flying}</strong>&nbsp;target with this weapon, you may force that target to land immediately</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flavor_text": "",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "Two-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "D32pUz6M6e1smWrB",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bow.png",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": true,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "1500",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Uncommon",
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Dragontrap Bow",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Earth",
+          "undead_ef": "100",
+          "uuid": "Item.D32pUz6M6e1smWrB",
+          "vehicle_ef": "100",
+          "weapon_range": "Ranged"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "D32pUz6M6e1smWrB"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "EGYilCNAGvl2BldF",
       "_stats": {
         "compendiumSource": "Item.nkKJD5vo65EM887m",
         "coreVersion": "12.343",
-        "createdTime": 1781875189508,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1790,7 +1657,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1782164384017,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -1850,7 +1717,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1782164384017,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -2029,7 +1896,7 @@
       "_stats": {
         "compendiumSource": "Item.U1WUGQw6hkUo1La7",
         "coreVersion": "12.343",
-        "createdTime": 1781875189508,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2183,7 +2050,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1782560268033,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -2203,7 +2070,7 @@
             "rounds": null,
             "seconds": null,
             "startRound": null,
-            "startTime": null,
+            "startTime": 298800,
             "startTurn": null,
             "turns": null
           },
@@ -2513,11 +2380,148 @@
       "type": "equippableItem"
     },
     {
+      "_id": "eSIh2SB8tc4Ux4vz",
+      "_stats": {
+        "compendiumSource": "Item.Qex8FZz4dvDcBmlz",
+        "coreVersion": "12.343",
+        "createdTime": 1782581632859,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.Qex8FZz4dvDcBmlz"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "weapon",
+            "fromTemplate": "gIRU9XGqYeMBwBN9",
+            "itemId": "D32pUz6M6e1smWrB",
+            "itemName": "Dragontrap Bow",
+            "pickedOldProps": {
+              "cost": "1500",
+              "martial": true
+            },
+            "ts": 1769647000242
+          }
+        }
+      },
+      "folder": "gkxeb18rMnUvyuqk",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bow.png",
+      "name": "Dragontrap Bow",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 900000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Bow",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "12",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>When you hit a <strong>@UUID[JournalEntry.q6keqwDWUsEgSWDw]{Flying}</strong>&nbsp;target with this weapon, you may force that target to land immediately</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flavor_text": "",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "Two-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "D32pUz6M6e1smWrB",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bow.png",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": true,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "1500",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Uncommon",
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Dragontrap Bow",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Earth",
+          "undead_ef": "100",
+          "uuid": "Item.D32pUz6M6e1smWrB",
+          "vehicle_ef": "100",
+          "weapon_range": "Ranged"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "D32pUz6M6e1smWrB"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "FBWC6v9hhDqMlIaZ",
       "_stats": {
         "compendiumSource": "Item.BmgIHS4DdDAT1rUc",
         "coreVersion": "12.343",
-        "createdTime": 1781875189508,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2694,7 +2698,7 @@
       "_stats": {
         "compendiumSource": "Item.rERGt9WNcSfYV31k",
         "coreVersion": "12.343",
-        "createdTime": 1781875189508,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2809,7 +2813,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782551343860,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2877,7 +2881,7 @@
       "_stats": {
         "compendiumSource": "Item.ROQw6telXF9qyZC8",
         "coreVersion": "12.343",
-        "createdTime": 1781875189508,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2888,7 +2892,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1782556389023,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -3053,7 +3057,7 @@
       "_stats": {
         "compendiumSource": "Item.Lmzs6VllFRo44jZq",
         "coreVersion": "12.343",
-        "createdTime": 1781875189508,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3084,7 +3088,7 @@
             "rounds": null,
             "seconds": null,
             "startRound": null,
-            "startTime": null,
+            "startTime": 298800,
             "startTurn": null,
             "turns": null
           },
@@ -3318,11 +3322,148 @@
       "type": "equippableItem"
     },
     {
+      "_id": "gUqhsZUi9Adk4Ly6",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782576298332,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "VzpCG9mySsd9sQSL",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Pokemon/poke-doll.png",
+      "name": "Decoy Doll",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 700000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>Summon the <strong>Companion </strong>@UUID[Actor.DMHfh4ChYzXNkMGe]{Decoy Doll}, this <strong>companion</strong> disappear at the end of this scene</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "S71vgGdSVCmEGWN0",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Pokemon/poke-doll.png",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "50",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 2,
+          "item_rarity": "Common",
+          "item_skill_active": {
+            "KnKIXdPq6wjaFnCK": {
+              "id": "${item.id}",
+              "name": "Decoy Doll",
+              "skill_cost": "-",
+              "skill_description": "<p><em>Decoy Doll:</em> summon a Decoy Doll companion until the end of the scene.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Item.KnKIXdPq6wjaFnCK"
+            }
+          },
+          "item_type": "consumable",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Decoy Doll",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "related_item_list": {
+            "KnKIXdPq6wjaFnCK": {
+              "id": "${item.id}",
+              "name": "Decoy Doll",
+              "related_item_description": "<p><em>Decoy Doll:</em> summon a Decoy Doll companion until the end of the scene.</p>",
+              "uuid": "Item.KnKIXdPq6wjaFnCK"
+            }
+          },
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.S71vgGdSVCmEGWN0",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "S71vgGdSVCmEGWN0"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "H0DADhpEoUIbwhex",
       "_stats": {
         "compendiumSource": "Item.ooo1vmilBi2YWAiH",
         "coreVersion": "12.343",
-        "createdTime": 1781875189508,
+        "createdTime": 1782566176054,
         "duplicateSource": "Item.IhVYx6OZYAUtd9s7",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3381,7 +3522,7 @@
               "$deleted": false,
               "condition_formula": "HAS_ARCANE_WEAPON == 1 && MP_SPENT_THIS_TURN > 0",
               "reaction_effect_ref": "bim_free",
-              "reaction_passive_mode": "ask",
+              "reaction_passive_mode": "off",
               "reaction_passive_target": "self",
               "reaction_source": "self",
               "reaction_trigger": "turn_end"
@@ -3410,7 +3551,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1781934527808,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3462,7 +3603,7 @@
       "_stats": {
         "compendiumSource": "Item.YpRxmj2S5mNfkal2",
         "coreVersion": "12.343",
-        "createdTime": 1781875189508,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3801,7 +3942,7 @@
       "_stats": {
         "compendiumSource": "Actor.t6E3CQ0pGxwLgXrn.Item.RZLJIWmPbTwQnAl2",
         "coreVersion": "12.343",
-        "createdTime": 1781875189508,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3887,7 +4028,7 @@
           "humanoid_ef": "100",
           "insect_ef": "100",
           "ip_cost": "",
-          "isEquipped": true,
+          "isEquipped": false,
           "isKey": false,
           "isMartial": false,
           "isModule": false,
@@ -3964,7 +4105,7 @@
       "_stats": {
         "compendiumSource": "Item.WeoIipMyJ8Iq9jx4",
         "coreVersion": "12.343",
-        "createdTime": 1781875189508,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4138,7 +4279,7 @@
       "_stats": {
         "compendiumSource": "Item.fIMx7fleEq7LKXNE",
         "coreVersion": "12.343",
-        "createdTime": 1781875189508,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4253,7 +4394,7 @@
       "_stats": {
         "compendiumSource": "Item.cdsIDKSvSbnXzp7n",
         "coreVersion": "12.343",
-        "createdTime": 1781875189508,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4351,7 +4492,7 @@
       "_stats": {
         "compendiumSource": "Item.KZmKUTuRvlvw6svp",
         "coreVersion": "12.343",
-        "createdTime": 1781875189508,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4362,7 +4503,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1781925187389,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -4388,7 +4529,7 @@
             "rounds": null,
             "seconds": null,
             "startRound": null,
-            "startTime": null,
+            "startTime": 298800,
             "startTurn": null,
             "turns": null
           },
@@ -4476,11 +4617,67 @@
       "type": "equippableItem"
     },
     {
+      "_id": "KVCOLRQv6anedDGI",
+      "_stats": {
+        "compendiumSource": "Item.KaykXhgyX1J1mdPv",
+        "coreVersion": "12.343",
+        "createdTime": 1782586354763,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/enhanced_healing_magic.png",
+      "name": "Spiritual Magic",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3,
+        "yL2PQxh3R9ddt0te": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "check_bonus": "0",
+          "class": "Spiritist",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>Each time you acquire this Skill, learn one Spiritist spell (see Facet). 【⚡Offensive Spiritist Spell】 use <strong>【INS + WLP】</strong> for the Magic Check.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "10",
+          "name": "Spiritual Magic",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Other",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "KaykXhgyX1J1mdPv"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "L1vZvNSNxlYlrQhu",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782542203691,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4536,11 +4733,252 @@
       "type": "equippableItem"
     },
     {
+      "_id": "LdxJgEghJUNP6bYL",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782579194853,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "VzpCG9mySsd9sQSL",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion3.png",
+      "name": "Mega-Remedy",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 3100000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>Target creature recovers <strong>100</strong> HP.</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "6",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "600",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Rare",
+          "item_skill_active": {
+            "0gi0e6XOfjVr2S0d": {
+              "id": "${item.id}",
+              "name": "Mega-Remedy",
+              "skill_cost": "-",
+              "skill_description": "<ul><li><p>Target creature <strong>recovers 100 HP</strong></p></li></ul>",
+              "skill_maxLevel": 1,
+              "uuid": "Item.0gi0e6XOfjVr2S0d"
+            }
+          },
+          "item_type": "consumable",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Mega-Remedy",
+          "optional_params": {},
+          "plant_ef": "100",
+          "related_item_list": {
+            "0gi0e6XOfjVr2S0d": {
+              "id": "${item.id}",
+              "name": "Mega-Remedy",
+              "related_item_description": "<ul><li><p>Target creature <strong>recovers 100 HP</strong></p></li></ul>",
+              "uuid": "Item.0gi0e6XOfjVr2S0d"
+            }
+          },
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "9vM7Xu5q3cj7EFQt"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "ljZLoe65h3hnWTYc",
+      "_stats": {
+        "compendiumSource": "Item.bUSzzJWSTpDdpf6S",
+        "coreVersion": "12.343",
+        "createdTime": 1782572525573,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "accessory",
+            "fromTemplate": "r0yZpLPAK9VXhM2p",
+            "itemId": "bUSzzJWSTpDdpf6S",
+            "itemName": "Scounter",
+            "pickedOldProps": {
+              "cost": "800",
+              "def_bonus": "",
+              "defense": "0",
+              "defense_include_dex": false,
+              "initiative": "0",
+              "magic_defense": "0",
+              "magic_defense_include_ins": false,
+              "mdef_bonus": ""
+            },
+            "ts": 1769647436325
+          }
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/vizor.png",
+      "name": "Scounter",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3,
+        "yL2PQxh3R9ddt0te": 3
+      },
+      "sort": 6300000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li>Once at the start of a<strong>&nbsp;Conflict</strong> scene, you may perform the <strong>【Study】</strong>action as a&nbsp;<strong>Free Action</strong></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flavor_text": "<blockquote>\n<p>\"It's over 9000....!!!!\"</p>\n</blockquote>",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "800",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Uncommon",
+          "item_type": "accessory",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Scounter",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "bUSzzJWSTpDdpf6S"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "lWzQBQkKvZVg6mRL",
       "_stats": {
         "compendiumSource": "Item.oyoBGiPAlNfKoQc9",
         "coreVersion": "12.343",
-        "createdTime": 1781875189508,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4551,7 +4989,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1781926982293,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -4620,7 +5058,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1781926982293,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -4689,7 +5127,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1781926982293,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -4758,7 +5196,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1781926982293,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -4827,7 +5265,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1781926982293,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -5006,11 +5444,73 @@
       "type": "equippableItem"
     },
     {
+      "_id": "Mav3EErTtfTiCLIM",
+      "_stats": {
+        "compendiumSource": "Item.PPbGO3BZOBtULyxy",
+        "coreVersion": "12.343",
+        "createdTime": 1782586576018,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/akh_morn.png",
+      "name": "Bind and Summon",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0,
+        "yL2PQxh3R9ddt0te": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Arcanist",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>You may bind Arcana to your soul and summon them later. The Game Master will tell you the details of each binding process when you first encounter the Arcanum in question.</p><p> You may use an action and spend <strong>40 Mind Points</strong> to summon an Arcanum you have bound: the details of this process are explained on the next page. If you take this Skill at character creation, you begin play with one Arcanum of your choice already bound to you, chosen from the list on the next pages. Other than that, you may only obtain new Arcana through exploration and story progression</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "0",
+          "max_level": "1",
+          "name": "Bind and Summon",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Other",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "PPbGO3BZOBtULyxy"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "mNOQFKdgnyhiGTBx",
       "_stats": {
         "compendiumSource": "Item.iFhrsC0cnyChDhgw",
         "coreVersion": "12.343",
-        "createdTime": 1781875189508,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5177,7 +5677,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782538262044,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5248,7 +5748,7 @@
       "_stats": {
         "compendiumSource": "Item.wXvaSpnM04KZ2QFA",
         "coreVersion": "12.343",
-        "createdTime": 1781875189508,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5327,7 +5827,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782497855457,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5376,11 +5876,80 @@
       "type": "equippableItem"
     },
     {
+      "_id": "p7WldKGSMumLxC4p",
+      "_stats": {
+        "compendiumSource": "Item.wfvBxZq0qkwMMn1G",
+        "coreVersion": "12.343",
+        "createdTime": 1782586500880,
+        "duplicateSource": "Item.88RMlBlB3uXxvzOn",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/MagicalRangedRollAction/drain.png",
+      "name": "Symptom Shift",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3,
+        "yL2PQxh3R9ddt0te": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Hexer",
+          "cost": "10 MP",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>You draw sickness away from an ally and pass it onto your enemy. The target recovers from <strong>all status effects</strong>. Then choose one of the status effects the target recovered from and another creature you can see. The chosen creature suffers the chosen status effect.</p>\n",
+          "details_roller": "Show",
+          "duration": "Instantaneous",
+          "effect_table": {},
+          "heroic_requirement": "",
+          "id": "p7WldKGSMumLxC4p",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/MagicalRangedRollAction/drain.png",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Symptom Shift",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "One creature",
+          "skill_type": "Spell",
+          "type_damage": "",
+          "use_optional_params": false,
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.p7WldKGSMumLxC4p"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "wfvBxZq0qkwMMn1G"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "pcCBP65FqbsMOF0h",
       "_stats": {
         "compendiumSource": "Item.ahyRJYDdxMKqhWSm",
         "coreVersion": "12.343",
-        "createdTime": 1781875189508,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5443,11 +6012,77 @@
       "type": "equippableItem"
     },
     {
+      "_id": "peoXVGo2UIvAnZfE",
+      "_stats": {
+        "compendiumSource": "Item.P2ZlEmmK2DUhao0y",
+        "coreVersion": "12.343",
+        "createdTime": 1782579195683,
+        "duplicateSource": "Item.cneU6dfTzI13k0U2",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213818.767.png",
+      "name": "Mega-Remedy",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "container": "LdxJgEghJUNP6bYL",
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "",
+          "cost": "-",
+          "damage_bonus": "100",
+          "defense_target_type": "def",
+          "description": "<ul><li><p>Target creature <strong>recovers 100 HP</strong></p></li></ul>",
+          "duration": "Instnataneous",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Mega-Remedy",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Any",
+          "skill_target": "One Creature",
+          "skill_type": "Item",
+          "type_damage": "Heal",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "0gi0e6XOfjVr2S0d"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "Pf1vhSjtOOTBXFkB",
       "_stats": {
         "compendiumSource": "Item.jqykkhAB5m9durso",
         "coreVersion": "12.343",
-        "createdTime": 1781875189508,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5537,7 +6172,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782550205118,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5593,7 +6228,7 @@
       "_stats": {
         "compendiumSource": "Item.23dQXPmLWKFjpwNt",
         "coreVersion": "12.343",
-        "createdTime": 1781875189508,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5686,7 +6321,7 @@
       "_stats": {
         "compendiumSource": "Item.O5uVGKRfZCS4ufTp",
         "coreVersion": "12.343",
-        "createdTime": 1781875189508,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5773,11 +6408,80 @@
       "type": "equippableItem"
     },
     {
+      "_id": "rOdq8hhYJpSutkre",
+      "_stats": {
+        "compendiumSource": "Item.u2lw7vPFH9QikB7X",
+        "coreVersion": "12.343",
+        "createdTime": 1782586375668,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/SGE/pepsis.png",
+      "name": "Cleanse",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3,
+        "yL2PQxh3R9ddt0te": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Spiritist",
+          "cost": "5 x T MP",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>You strengthen and purify the soul energy coursing through your companions. Each target <strong>recovers</strong> from 1 status effects.</p>",
+          "details_roller": "Show",
+          "duration": "Instantaneous",
+          "effect_table": {},
+          "heroic_requirement": "",
+          "id": "rOdq8hhYJpSutkre",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/SGE/pepsis.png",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Cleanse",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "Up to three creatures",
+          "skill_type": "Spell",
+          "type_damage": "",
+          "use_optional_params": false,
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.rOdq8hhYJpSutkre"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "u2lw7vPFH9QikB7X"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "RRTO6uRQtUQ2o4Er",
       "_stats": {
         "compendiumSource": "Item.i7XP3i8a8GM70yCF",
         "coreVersion": "12.343",
-        "createdTime": 1781875189508,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5840,7 +6544,7 @@
       "_stats": {
         "compendiumSource": "Item.YdYhFx1vrvod4P2Y",
         "coreVersion": "12.343",
-        "createdTime": 1781875189508,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -6082,7 +6786,7 @@
       "_stats": {
         "compendiumSource": "Actor.t6E3CQ0pGxwLgXrn.Item.9RzsCJ2bfZU0pmRo",
         "coreVersion": "12.343",
-        "createdTime": 1781875189508,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -6192,7 +6896,7 @@
       "_stats": {
         "compendiumSource": "Item.97wep1as6JfhC3M3",
         "coreVersion": "12.343",
-        "createdTime": 1781875189508,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -6203,7 +6907,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1782090071778,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -6271,7 +6975,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1782090071778,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -6339,7 +7043,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1782090071778,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -6407,7 +7111,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1782090071778,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -6475,7 +7179,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1782090071778,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -6697,7 +7401,7 @@
       "_stats": {
         "compendiumSource": "Item.Uml73l4MKy1gSJYU",
         "coreVersion": "12.343",
-        "createdTime": 1781875189508,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -6840,7 +7544,7 @@
       "_stats": {
         "compendiumSource": "Item.nf32D5apuWGo1rVV",
         "coreVersion": "12.343",
-        "createdTime": 1781875189508,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -6851,7 +7555,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1782499998892,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -6965,7 +7669,7 @@
       "_stats": {
         "compendiumSource": "Item.kMH1iSlYIZyXl8hV",
         "coreVersion": "12.343",
-        "createdTime": 1781875189508,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -7045,11 +7749,62 @@
       "type": "equippableItem"
     },
     {
+      "_id": "vliuwtKw7PKGGKcU",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782576299487,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Pokemon/poke-doll.png",
+      "name": "Decoy Doll",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "gUqhsZUi9Adk4Ly6",
+        "props": {
+          "cost": "-",
+          "description": "<p><em>Decoy Doll:</em> summon a Decoy Doll companion until the end of the scene.</p>",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "effect_kind": "summon",
+              "effect_label": "decoy_summon",
+              "summon_act_this_round": false,
+              "summon_actor": "Actor.DMHfh4ChYzXNkMGe",
+              "summon_count": "1"
+            }
+          },
+          "isCheck": false,
+          "on_activate_effect_ref": "decoy_summon",
+          "skill_target": "Self",
+          "skill_type": "Item",
+          "type_damage": ""
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "KnKIXdPq6wjaFnCK"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "wdkyWxt43rlxEtTO",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782560293560,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -7181,7 +7936,7 @@
       "_stats": {
         "compendiumSource": "Item.wPC22EqyPCSc20i0",
         "coreVersion": "12.343",
-        "createdTime": 1781875189508,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -7259,7 +8014,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1781939975039,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -7311,7 +8066,7 @@
       "_stats": {
         "compendiumSource": "Item.IzAH4YAoK4vPt9MP",
         "coreVersion": "12.343",
-        "createdTime": 1781875189508,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -7376,7 +8131,7 @@
       "_stats": {
         "compendiumSource": "Item.Y2ItFIBB8PtKttz8",
         "coreVersion": "12.343",
-        "createdTime": 1781875189508,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -7445,7 +8200,7 @@
           "humanoid_ef": "100",
           "insect_ef": "100",
           "ip_cost": "",
-          "isEquipped": false,
+          "isEquipped": true,
           "isKey": false,
           "isMartial": false,
           "isModule": false,
@@ -7518,7 +8273,7 @@
       "_stats": {
         "compendiumSource": "Item.YxXwy2Giyln0kuLT",
         "coreVersion": "12.343",
-        "createdTime": 1781875189508,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -7593,11 +8348,131 @@
       "type": "equippableItem"
     },
     {
+      "_id": "YZIW3yUn3JoEyjZA",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782581663644,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "SytaFVloXb4Fnryp",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1969.gif",
+      "name": "The Tormentor",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Flail",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "10",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.N1c190b6J1kKS6Vf\" data-id=\"N1c190b6J1kKS6Vf\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Benign</span></strong></a></span></span></p></li><li><p>This weapon deals bonus damage equal to 20% of the <strong>target current health</strong>, this bonus is reduce to 10% against Champion-rank creature</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flavor_text": "<p><em>A chained whip designed to inflicts pained to its target while avoid killing them</em></p>",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "xktj2JJX7QZ5z6jA",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1969.gif",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": true,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "2500",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Uncommon",
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "The Tormentor",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "MIG",
+          "set_name": "<Set Name>",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.xktj2JJX7QZ5z6jA",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "xktj2JJX7QZ5z6jA"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "z1GsqcJC8bh4TOAs",
       "_stats": {
         "compendiumSource": "Item.2Ncb8FEV4lynlsHH",
         "coreVersion": "12.343",
-        "createdTime": 1781875189508,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -7689,7 +8564,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1781875189508,
+        "createdTime": 1782566176054,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -8106,20 +8981,20 @@
   "system": {
     "activeConditionalModifierGroups": [],
     "props": {
-      "accessory2_details": "<ul><li><p>You gain a new <strong>Opportunity,</strong> 【⏳<strong>Lucky】</strong></p></li></ul><blockquote><p>Roll <strong>5d100,</strong> you gain <strong>Zenit</strong> equal to the result rolled.</p></blockquote>",
-      "accessory2_name": "Bunny Tail",
-      "accessory_details": "<ul><li><p><strong>+50% Zenit Gain </strong>after conflict</p></li></ul>",
-      "accessory_name": "Golden Apple",
+      "accessory2_details": "<ul><li><p><strong>+50% Zenit Gain </strong>after conflict</p></li></ul>",
+      "accessory2_name": "Golden Apple",
+      "accessory_details": "<ul><li><p>You gain a new <strong>Opportunity,</strong> 【⏳<strong>Lucky】</strong></p></li></ul><blockquote><p>Roll <strong>5d100,</strong> you gain <strong>Zenit</strong> equal to the result rolled.</p></blockquote>",
+      "accessory_name": "Bunny Tail",
       "activation": 1,
       "affinity_1": "NA",
       "affinity_2": "NA",
       "affinity_3": "NA",
-      "affinity_4": "RS",
+      "affinity_4": "NA",
       "affinity_5": "NA",
       "affinity_6": "NA",
       "affinity_7": "NA",
       "affinity_8": "NA",
-      "affinity_9": "RS",
+      "affinity_9": "NA",
       "animation_table": {},
       "anomaly_status": 0,
       "arcane_ef": "100",
@@ -8145,7 +9020,7 @@
       "bond_4": "Keren",
       "bond_5": "",
       "bond_6": "",
-      "bond_temp": "Training Dummy C",
+      "bond_temp": "Wandering Flame",
       "bonus_defense": 0,
       "bonus_dex": 0,
       "bonus_hp": 0,
@@ -8194,6 +9069,24 @@
           "benefit": "hp",
           "class_name": "Dark Blade",
           "level": "10"
+        },
+        "4": {
+          "$deleted": false,
+          "benefit": "mp",
+          "class_name": "Spiritist",
+          "level": "2"
+        },
+        "5": {
+          "$deleted": false,
+          "benefit": "mp",
+          "class_name": "Hexer",
+          "level": "1"
+        },
+        "6": {
+          "$deleted": false,
+          "benefit": "mp",
+          "class_name": "Arcanist",
+          "level": "1"
         }
       },
       "clock_adoration": "0",
@@ -8279,6 +9172,14 @@
           "roll": "",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.L44xOMOdhR17JhbV"
         },
+        "LdxJgEghJUNP6bYL": {
+          "consume_description": "<ul><li><p>Target creature recovers <strong>100</strong> HP.</p></li></ul>",
+          "id": "${item.id}",
+          "name": "Mega-Remedy",
+          "quantity": 1,
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.LdxJgEghJUNP6bYL"
+        },
         "OBngUCIFVWDgvrVD": {
           "consume_description": "<ul><li><p>Target creature recovers <strong>20</strong> MP</p></li></ul>",
           "id": "${item.id}",
@@ -8350,6 +9251,14 @@
           "quantity": 50,
           "roll": "",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.f4QrbWyzS7Hhn2wo"
+        },
+        "gUqhsZUi9Adk4Ly6": {
+          "consume_description": "<ul><li><p>Summon the <strong>Companion </strong>@UUID[Actor.DMHfh4ChYzXNkMGe]{Decoy Doll}, this <strong>companion</strong> disappear at the end of this scene</p></li></ul>",
+          "id": "${item.id}",
+          "name": "Decoy Doll",
+          "quantity": 2,
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.gUqhsZUi9Adk4Ly6"
         },
         "gUr7RMwDQLoxIVbW": {
           "consume_description": "<ul><li>Reduce the next damage instance on target creature by <strong>15</strong></li></ul>",
@@ -8480,9 +9389,9 @@
       "critical_damage_bonus": 0,
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
-      "current_hp": "112",
+      "current_hp": "116",
       "current_ip": "6",
-      "current_mp": "90",
+      "current_mp": "109",
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/hina_Cut-in002.png",
       "cut_in_fumble": "",
@@ -8576,7 +9485,7 @@
       "emotion_2_1": "admiration",
       "emotion_2_2": "loyalty",
       "emotion_2_3": "affection",
-      "emotion_3_1": "",
+      "emotion_3_1": "admiration",
       "emotion_3_2": "loyalty",
       "emotion_3_3": "",
       "emotion_4_1": "inferiority",
@@ -8595,11 +9504,11 @@
       "enraged_status": 0,
       "entropism": false,
       "envenomed_status": 0,
-      "exp_meter": "8.69",
-      "experience": "8.69",
+      "exp_meter": "1.84",
+      "experience": "1.84",
       "experience_ui": "0",
       "extra_damage_mod_air": 0,
-      "extra_damage_mod_all": 0,
+      "extra_damage_mod_all": 1,
       "extra_damage_mod_arcane": 0,
       "extra_damage_mod_bolt": 0,
       "extra_damage_mod_bow": 0,
@@ -8621,7 +9530,7 @@
       "extra_damage_mod_spell": 0,
       "extra_damage_mod_sword": 0,
       "extra_damage_mod_thrown": 0,
-      "fabula_point": "5",
+      "fabula_point": "6",
       "fatigue_status": 0,
       "firearm_ef": "100",
       "flail_ef": "100",
@@ -9204,12 +10113,26 @@
           "roll": "",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.kyyVstlLiWCM3zFC"
         },
+        "ljZLoe65h3hnWTYc": {
+          "acess_description": "<ul><li>Once at the start of a<strong>&nbsp;Conflict</strong> scene, you may perform the <strong>【Study】</strong>action as a&nbsp;<strong>Free Action</strong></li></ul>",
+          "id": "${item.id}",
+          "name": "Scounter",
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.ljZLoe65h3hnWTYc"
+        },
         "o6SGSI41b9S2zQQi": {
           "acess_description": "<ul><li><p><strong>+1 DEF / +1 MDEF</strong></p></li><li><p>You may perform the skill 【💥Draconic Roar】</p></li></ul>",
           "id": "${item.id}",
           "name": "Dragonskull Helm",
           "roll": "",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.o6SGSI41b9S2zQQi"
+        },
+        "q3rZNdr5dEaYIdV0": {
+          "acess_description": "<ul><li>As long as you have at least two <strong>Bonds of admiration</strong>, you gain a +1 bonus to both your <strong>Defense</strong> and <strong>Magic Defense</strong>.</li></ul>",
+          "id": "${item.id}",
+          "name": "Ring of the Pupil",
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.q3rZNdr5dEaYIdV0"
         },
         "qK30knMoMl1eqTTU": {
           "acess_description": "<ul><li><p><strong>+1 DEF / +1 MDEF</strong></p></li><li><p>You may perform the skill 【💥Draconic Roar】</p></li></ul>",
@@ -9312,21 +10235,21 @@
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.ERBLg9oQAHRlJ8wZ"
         }
       },
-      "level": "30",
+      "level": "34",
       "lifesteal_percentage": 0,
       "lifesteal_value": 0,
       "magic_defense": 12,
       "magic_defense_mod": "0",
       "main_attrib_1": "INS",
-      "main_attrib_2": "INS",
-      "main_details": "<ul><li><p>You gain +2 to <strong>Study </strong>Checks</p></li><li><p>As a <strong>【Skill】</strong>Action, you may perform a <strong>Free Attack </strong>with this weapon, this attack range becomes <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Fcq1HgCEh3jxxELa\" data-id=\"Fcq1HgCEh3jxxELa\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Range</span></strong></a></span><strong>, </strong>and deal 10 bonus damage. <strong>Unequip </strong>this weapon, it disappear from your inventory until the end of this scene, Then, you may perform the <strong>【Equipment】</strong>Action as a Free Action.</p></li></ul>",
-      "main_hand": "Encyclopedia",
+      "main_attrib_2": "WLP",
+      "main_details": "<ul><li><p>You may cast the spell 【📕Heal】</p></li></ul>",
+      "main_hand": "Budding Maple Wand",
       "main_hand_attack": "",
       "manadrain_percentage": 0,
       "manadrain_value": 0,
-      "max_hp": 112,
+      "max_hp": 116,
       "max_ip": 6,
-      "max_mp": 90,
+      "max_mp": 109,
       "memories_list": {
         "0": {
           "$deleted": false,
@@ -9670,6 +10593,28 @@
           "spell_target": "One creature",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.mOUoZmNfNGNMyuxU"
         },
+        "p7WldKGSMumLxC4p": {
+          "class": "Hexer",
+          "cost": "10 MP",
+          "duration": "Instantaneous",
+          "id": "${item.id}",
+          "name": "Symptom Shift",
+          "roll": "",
+          "spell_description": "<p>You draw sickness away from an ally and pass it onto your enemy. The target recovers from <strong>all status effects</strong>. Then choose one of the status effects the target recovered from and another creature you can see. The chosen creature suffers the chosen status effect.</p>\n",
+          "spell_target": "One creature",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.p7WldKGSMumLxC4p"
+        },
+        "rOdq8hhYJpSutkre": {
+          "class": "Spiritist",
+          "cost": "5 x T MP",
+          "duration": "Instantaneous",
+          "id": "${item.id}",
+          "name": "Cleanse",
+          "roll": "",
+          "spell_description": "<p>You strengthen and purify the soul energy coursing through your companions. Each target <strong>recovers</strong> from 1 status effects.</p>",
+          "spell_target": "Up to three creatures",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.rOdq8hhYJpSutkre"
+        },
         "sDaXNDNWfQ1ugdgS": {
           "class": "Spiritist",
           "cost": "10 x T MP",
@@ -9951,7 +10896,7 @@
       "place_card_vanguard": "Place",
       "poisoned_status": 0,
       "populate_deck": "Populate",
-      "quirk_description": "<p><span class=\"fontstyle0\">When a rule or ability requires you to spend </span><span class=\"fontstyle2\">100 or fewer </span><span class=\"fontstyle0\">Hit Points, Mind Points, or<br>Inventory Points, you may suffer </span><span class=\"fontstyle2\">1d8 Instability Points </span><span class=\"fontstyle0\">to ignore that cost.</span></p><p><span class=\"fontstyle0\">At the end of each session, you lose </span><span class=\"fontstyle2\">1d6 Instability Points </span><span class=\"fontstyle0\">(to a minimum of zero).</span></p><p><span class=\"fontstyle0\">If your </span><span class=\"fontstyle2\">Instability Points </span><span class=\"fontstyle0\">ever reach </span><span class=\"fontstyle2\">10 or more</span><span class=\"fontstyle0\">, you are immediately reduced to 0 Hit<br>Points and must </span><span class=\"fontstyle2\">Surrender</span><span class=\"fontstyle0\">.</span></p><p><span class=\"fontstyle0\">The consequences of this Surrender should be closely tied<br>to you losing control of your abilities. Then, you lose all </span><span class=\"fontstyle2\">Instability Points</span> <br style=\" font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-align: -webkit-auto; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; -webkit-text-size-adjust: auto; -webkit-text-stroke-width: 0px; \">3</p>",
+      "quirk_description": "<p><span class=\"fontstyle0\">When a rule or ability requires you to spend </span><span class=\"fontstyle2\">100 or fewer </span><span class=\"fontstyle0\">Hit Points, Mind Points, or<br>Inventory Points, you may suffer </span><span class=\"fontstyle2\">1d8 Instability Points </span><span class=\"fontstyle0\">to ignore that cost.</span></p><p><span class=\"fontstyle0\">At the end of each session, you lose </span><span class=\"fontstyle2\">1d6 Instability Points </span><span class=\"fontstyle0\">(to a minimum of zero).</span></p><p><span class=\"fontstyle0\">If your </span><span class=\"fontstyle2\">Instability Points </span><span class=\"fontstyle0\">ever reach </span><span class=\"fontstyle2\">10 or more</span><span class=\"fontstyle0\">, you are immediately reduced to 0 Hit<br>Points and must </span><span class=\"fontstyle2\">Surrender</span><span class=\"fontstyle0\">.</span></p><p><span class=\"fontstyle0\">The consequences of this Surrender should be closely tied<br>to you losing control of your abilities. Then, you lose all </span><span class=\"fontstyle2\">Instability Points</span> <br style=\" font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-align: -webkit-auto; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; -webkit-text-size-adjust: auto; -webkit-text-stroke-width: 0px; \">2</p>",
       "quirk_name": "FUGITIVE EXPERIMENT",
       "relationship_1": "You cheater!!",
       "relationship_2": "Best Supplier",
@@ -10010,6 +10955,18 @@
           "name": "Ice Mastery (Test)",
           "roll": "",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.3AH2rZa8VXKdcCAv"
+        },
+        "3NKLKZPGi2XywTWG": {
+          "active_class": "Hexer",
+          "active_cost": "",
+          "active_description": "<p>Each time you acquire this <strong>Skill</strong>, learn one <strong>Hexer spell</strong> (see the Facet).</p><p><strong>Offensive (⚡) Hexer spells</strong> use <strong>[INS + WLP]</strong> for the Magic Check.</p>",
+          "active_duration": "",
+          "active_level": 1,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Curse Magic",
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.3NKLKZPGi2XywTWG"
         },
         "3WGzUXDEa9mnvJ5d": {
           "active_class": "Entropist",
@@ -10167,6 +11124,18 @@
           "roll": "",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.KHWUWYvTzbYyHPs7"
         },
+        "KVCOLRQv6anedDGI": {
+          "active_class": "Spiritist",
+          "active_cost": "",
+          "active_description": "<p>Each time you acquire this Skill, learn one Spiritist spell (see Facet). 【⚡Offensive Spiritist Spell】 use <strong>【INS + WLP】</strong> for the Magic Check.</p>",
+          "active_duration": "",
+          "active_level": 1,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Spiritual Magic",
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.KVCOLRQv6anedDGI"
+        },
         "LlvITYHhhic4UIuA": {
           "active_class": "Entropist",
           "active_cost": "20 MP",
@@ -10190,6 +11159,18 @@
           "name": "Crushing Chariot",
           "roll": "",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.MHn7rVnxQLDt1c8B"
+        },
+        "Mav3EErTtfTiCLIM": {
+          "active_class": "Arcanist",
+          "active_cost": "",
+          "active_description": "<p>You may bind Arcana to your soul and summon them later. The Game Master will tell you the details of each binding process when you first encounter the Arcanum in question.</p><p> You may use an action and spend <strong>40 Mind Points</strong> to summon an Arcanum you have bound: the details of this process are explained on the next page. If you take this Skill at character creation, you begin play with one Arcanum of your choice already bound to you, chosen from the list on the next pages. Other than that, you may only obtain new Arcana through exploration and story progression</p>",
+          "active_duration": "",
+          "active_level": 0,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Bind and Summon",
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.Mav3EErTtfTiCLIM"
         },
         "RBdT18zr2DzwwA0E": {
           "active_class": "Elementalist",
@@ -10431,6 +11412,30 @@
           "roll": "",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.oe3OP8VmjHJpWJ41"
         },
+        "p7WldKGSMumLxC4p": {
+          "active_class": "Hexer",
+          "active_cost": "10 MP",
+          "active_description": "<p>You draw sickness away from an ally and pass it onto your enemy. The target recovers from <strong>all status effects</strong>. Then choose one of the status effects the target recovered from and another creature you can see. The chosen creature suffers the chosen status effect.</p>\n",
+          "active_duration": "Instantaneous",
+          "active_level": 1,
+          "active_target": "One creature",
+          "id": "${item.id}",
+          "name": "Symptom Shift",
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.p7WldKGSMumLxC4p"
+        },
+        "rOdq8hhYJpSutkre": {
+          "active_class": "Spiritist",
+          "active_cost": "5 x T MP",
+          "active_description": "<p>You strengthen and purify the soul energy coursing through your companions. Each target <strong>recovers</strong> from 1 status effects.</p>",
+          "active_duration": "Instantaneous",
+          "active_level": 1,
+          "active_target": "Up to three creatures",
+          "id": "${item.id}",
+          "name": "Cleanse",
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.rOdq8hhYJpSutkre"
+        },
         "uQzDNlmdv9XmIycs": {
           "active_class": "NPC",
           "active_cost": "-",
@@ -10502,9 +11507,9 @@
       "turbulence_status": 0,
       "uuid": "Actor.dafTLBUscCDNgq8H",
       "weak_status": 0,
-      "weapon1_base_damage": "7",
+      "weapon1_base_damage": "3",
       "weapon1_base_mod": "0",
-      "weapon1_damage": 7,
+      "weapon1_damage": 3,
       "weapon1_damagetype": "Physical",
       "weapon1_mod": 0,
       "weapon2_damagetype": "-",
@@ -11049,6 +12054,18 @@
           "weapon_martial": "♦️",
           "weapon_range": "Melee"
         },
+        "YZIW3yUn3JoEyjZA": {
+          "id": "${item.id}",
+          "name": "The Tormentor",
+          "quantity": "",
+          "roll": "",
+          "type": "Flail",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.YZIW3yUn3JoEyjZA",
+          "weapon_description": "<p><ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.N1c190b6J1kKS6Vf\" data-id=\"N1c190b6J1kKS6Vf\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Benign</span></strong></a></span></span></p></li><li><p>This weapon deals bonus damage equal to 20% of the <strong>target current health</strong>, this bonus is reduce to 10% against Champion-rank creature</p></li></ul></p>",
+          "weapon_hand": "One-handed",
+          "weapon_martial": "♦️",
+          "weapon_range": "Melee"
+        },
         "ak93svwYVuZil9nY": {
           "id": "${item.id}",
           "name": "Katana",
@@ -11085,6 +12102,18 @@
           "weapon_martial": "",
           "weapon_range": "Melee"
         },
+        "bsG2aZEMX2Glb3pI": {
+          "id": "${item.id}",
+          "name": "Dragontrap Bow",
+          "quantity": "",
+          "roll": "",
+          "type": "Bow",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.bsG2aZEMX2Glb3pI",
+          "weapon_description": "<p><ul><li><p>When you hit a <strong>@UUID[JournalEntry.q6keqwDWUsEgSWDw]{Flying}</strong>&nbsp;target with this weapon, you may force that target to land immediately</p></li></ul></p>",
+          "weapon_hand": "Two-handed",
+          "weapon_martial": "♦️",
+          "weapon_range": "Ranged"
+        },
         "cs8q4sn5wHECuxDQ": {
           "id": "${item.id}",
           "name": "Encyclopedia",
@@ -11107,6 +12136,18 @@
           "weapon_description": "<p><ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.2hNU23YLpCcZCCmf\" data-id=\"2hNU23YLpCcZCCmf\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Pierce</span></strong></a></span></span></p></li><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.2JlZwoTU5Ql7sUyS\" data-id=\"2JlZwoTU5Ql7sUyS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Snipe</span></strong></a><strong><span style=\"text-decoration: underline;\"> 15:</span></strong></span></span> inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.vzkQ7MNkmqRDJIXV\" data-id=\"vzkQ7MNkmqRDJIXV\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Turbulence</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>to the target.</p></li></ul></p>",
           "weapon_hand": "Two-handed",
           "weapon_martial": "",
+          "weapon_range": "Ranged"
+        },
+        "eSIh2SB8tc4Ux4vz": {
+          "id": "${item.id}",
+          "name": "Dragontrap Bow",
+          "quantity": "",
+          "roll": "",
+          "type": "Bow",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.eSIh2SB8tc4Ux4vz",
+          "weapon_description": "<p><ul><li><p>When you hit a <strong>@UUID[JournalEntry.q6keqwDWUsEgSWDw]{Flying}</strong>&nbsp;target with this weapon, you may force that target to land immediately</p></li></ul></p>",
+          "weapon_hand": "Two-handed",
+          "weapon_martial": "♦️",
           "weapon_range": "Ranged"
         },
         "efq8qACXhPp85WmM": {
@@ -11511,13 +12552,13 @@
       "wlp_base": "10",
       "wlp_current": 10,
       "your_class_name": "Night Guidance",
-      "zenit": "5646",
+      "zenit": "7780",
       "zero_label": "Zero Power",
       "zero_power_description": "<p style=\"text-align: center\"><strong>Choose and trigger 3 oppertunity choice.</strong></p>",
       "zero_power_macro": "",
       "zero_power_name": "A MILLION POSSIBILITY",
       "zero_power_showMacro": false,
-      "zero_power_value": "6",
+      "zero_power_value": "4",
       "zero_trigger_description": "<p>When Hina change the outcome of check (fail&gt; success or success&gt;fail), she gain 1 zero trigger.</p>",
       "zero_trigger_label": "Trigger",
       "zombie_status": 0

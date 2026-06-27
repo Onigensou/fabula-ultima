@@ -10,17 +10,24 @@
   },
   "effects": [
     {
-      "_id": "TpCkb3eZygxEwjCo",
+      "_id": "6L2aafqjK0JG5eOJ",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782558961809,
+        "createdTime": 1782583515350,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
-      "changes": [],
-      "description": "",
+      "changes": [
+        {
+          "key": "extra_damage_mod_all",
+          "mode": 2,
+          "priority": null,
+          "value": "1"
+        }
+      ],
+      "description": "<p>Campfire skewers marinated with wild berry vinegar. Everyone who eats gains <strong>+1 bonus damage</strong> until the next rest.</p>",
       "disabled": false,
       "duration": {
         "combat": null,
@@ -34,12 +41,19 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "TpCkb3eZygxEwjCo",
+          "originalId": "6L2aafqjK0JG5eOJ",
           "originalParentId": "gdJZ1L1kv5mjTTMr",
-          "originalUuid": "Actor.gdJZ1L1kv5mjTTMr.ActiveEffect.TpCkb3eZygxEwjCo"
+          "originalUuid": "Actor.gdJZ1L1kv5mjTTMr.ActiveEffect.6L2aafqjK0JG5eOJ"
         },
         "fabula-ultima-companion": {
-          "setBonus": "Swift Swimmers:2"
+          "campRestCharges": 0,
+          "cookingDish": {
+            "dishId": "G0tvPWqwJHkdwoFQ",
+            "family": "sour",
+            "instant": {},
+            "tier": 1
+          },
+          "foodBuff": true
         },
         "statuscounter": {
           "config": {
@@ -50,14 +64,18 @@
           "visible": false
         }
       },
-      "img": null,
-      "name": "Swift Swimmers (2-Piece)",
-      "origin": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Genshin/Item_Chicken-Mushroom_Skewer.webp",
+      "name": "Tangy Trailside Skewer",
+      "origin": "Item.G0tvPWqwJHkdwoFQ",
       "sort": 0,
       "statuses": [
-        "wet"
+        "permanent"
       ],
-      "system": {},
+      "system": {
+        "tags": [
+          "food"
+        ]
+      },
       "tint": "#ffffff",
       "transfer": false,
       "type": "base"
@@ -68,7 +86,7 @@
       "version": "4.8.4"
     },
     "fabula-ultima-companion": {
-      "campBondMemories": [],
+      "damage_taken_mult": 1,
       "iconFocus": {
         "x": 48,
         "y": 10,
@@ -215,7 +233,7 @@
       "_stats": {
         "compendiumSource": "Item.YNRwUI8yD6PLZo5U",
         "coreVersion": "12.343",
-        "createdTime": 1781875191491,
+        "createdTime": 1782566182098,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -304,7 +322,7 @@
       "_stats": {
         "compendiumSource": "Item.TpHy6WcxSkQRhgtS",
         "coreVersion": "12.343",
-        "createdTime": 1781875191491,
+        "createdTime": 1782566182098,
         "duplicateSource": "Item.OsIQ6VBzU7XklPUQ",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -428,7 +446,7 @@
       "_stats": {
         "compendiumSource": "Item.k7gaSnhF7IynAnfG",
         "coreVersion": "12.343",
-        "createdTime": 1781875191491,
+        "createdTime": 1782566182098,
         "duplicateSource": "Item.TpHy6WcxSkQRhgtS",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -530,7 +548,7 @@
       "_stats": {
         "compendiumSource": "Item.CnueY54QHD80cmph",
         "coreVersion": "12.343",
-        "createdTime": 1781875191491,
+        "createdTime": 1782566182098,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -541,7 +559,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1782557985972,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -722,7 +740,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782560309346,
+        "createdTime": 1782566182098,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -753,7 +771,7 @@
             "rounds": null,
             "seconds": null,
             "startRound": null,
-            "startTime": null,
+            "startTime": 298800,
             "startTurn": null,
             "turns": null
           },
@@ -805,7 +823,7 @@
             }
           ],
           "description": "",
-          "disabled": true,
+          "disabled": false,
           "duration": {
             "combat": null,
             "rounds": null,
@@ -873,7 +891,7 @@
             }
           ],
           "description": "",
-          "disabled": true,
+          "disabled": false,
           "duration": {
             "combat": null,
             "rounds": null,
@@ -918,6 +936,122 @@
           "system": {
             "tags": []
           },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        },
+        {
+          "_id": "Pg2V5uSmbm5hb2uA",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1782572855702,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "affinity_6",
+              "mode": 5,
+              "priority": 20,
+              "value": "${isEquipped ? 'RS' : 'NA'}$"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "Pg2V5uSmbm5hb2uA",
+              "originalParentId": "6Pry1DbGlFej0tVP",
+              "originalUuid": "Actor.gdJZ1L1kv5mjTTMr.Item.6Pry1DbGlFej0tVP.ActiveEffect.Pg2V5uSmbm5hb2uA"
+            },
+            "fabula-ultima-companion": {
+              "equipGrantedAffinity": "fire"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/svg/fire.svg",
+          "name": "Fire Resistance",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        },
+        {
+          "_id": "scYgrHaDZUs7vp4h",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1782572856794,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "affinity_6",
+              "mode": 5,
+              "priority": 20,
+              "value": "${isEquipped ? 'RS' : 'NA'}$"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "scYgrHaDZUs7vp4h",
+              "originalParentId": "6Pry1DbGlFej0tVP",
+              "originalUuid": "Actor.gdJZ1L1kv5mjTTMr.Item.6Pry1DbGlFej0tVP.ActiveEffect.scYgrHaDZUs7vp4h"
+            },
+            "fabula-ultima-companion": {
+              "equipGrantedAffinity": "fire"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/svg/fire.svg",
+          "name": "Fire Resistance",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
           "tint": "#ffffff",
           "transfer": true,
           "type": "base"
@@ -1024,6 +1158,7 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
+          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -1031,6 +1166,7 @@
           "demon_ef": "100",
           "description": "<ul>\n<li>You have Resistance to<strong> Fire</strong>&nbsp;damage.</li>\n</ul>",
           "dragon_ef": "100",
+          "effect_table": {},
           "elemental_ef": "100",
           "enforcer_ef": "100",
           "fey_ef": "100",
@@ -1041,9 +1177,14 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
+          "id": "6Pry1DbGlFej0tVP",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/shield.png",
+          "ingredient_taste": "",
+          "ingredient_taste2": "",
           "insect_ef": "100",
           "ip_cost": "",
-          "isEquipped": false,
+          "isEquipped": true,
+          "isIngredient": false,
           "isKey": false,
           "isMartial": false,
           "isModule": false,
@@ -1063,16 +1204,21 @@
           "name": "+2 Ignis Shield",
           "optional_params": {},
           "plant_ef": "100",
-          "refine_count": 2,
-          "refine_level": 2,
+          "reaction_config_table": {},
+          "recipe_dish_uuid": "",
+          "recipe_kind": "",
+          "refine_count": "2",
+          "refine_level": "2",
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
           "set_name": "",
+          "skill_target": "One Enemy",
           "soldier_ef": "100",
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
+          "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.6Pry1DbGlFej0tVP",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -1088,7 +1234,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1781925342820,
+        "createdTime": 1782566182098,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1161,7 +1307,7 @@
       "_stats": {
         "compendiumSource": "Item.uNsw1vWtAssZo4Bz",
         "coreVersion": "12.343",
-        "createdTime": 1781875191491,
+        "createdTime": 1782566182098,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1172,7 +1318,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1782554345211,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -1394,7 +1540,7 @@
       "_stats": {
         "compendiumSource": "Item.iSDT72qWfpPtIczE",
         "coreVersion": "12.343",
-        "createdTime": 1781875191491,
+        "createdTime": 1782566182098,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1482,7 +1628,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1781875191491,
+        "createdTime": 1782566182098,
         "duplicateSource": "Item.Vj0Vth8l3zMAUOoh",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1573,7 +1719,7 @@
       "_stats": {
         "compendiumSource": "Item.FsAN2KEgFrmQnp0g",
         "coreVersion": "12.343",
-        "createdTime": 1781875191491,
+        "createdTime": 1782566182098,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1662,7 +1808,7 @@
       "_stats": {
         "compendiumSource": "Item.lRk4pXxACoezIlOD",
         "coreVersion": "12.343",
-        "createdTime": 1781875191491,
+        "createdTime": 1782566182098,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1868,7 +2014,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1782560316266,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -1888,7 +2034,7 @@
             "rounds": null,
             "seconds": null,
             "startRound": null,
-            "startTime": null,
+            "startTime": 298800,
             "startTurn": null,
             "turns": null
           },
@@ -2031,7 +2177,7 @@
       "_stats": {
         "compendiumSource": "Item.pN90SZleopmB3PM1",
         "coreVersion": "12.343",
-        "createdTime": 1781875191491,
+        "createdTime": 1782566182098,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2119,7 +2265,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1781875191491,
+        "createdTime": 1782566182098,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2479,7 +2625,7 @@
       "_stats": {
         "compendiumSource": "Item.tE8pb6Spf4UoFo55",
         "coreVersion": "12.343",
-        "createdTime": 1781875191491,
+        "createdTime": 1782566182098,
         "duplicateSource": "Item.G6zwbm2sfECSKpDM",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2490,7 +2636,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1781889240559,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -2666,7 +2812,7 @@
       "_stats": {
         "compendiumSource": "Item.ivCSQcT8cuj07ELa",
         "coreVersion": "12.343",
-        "createdTime": 1781875191491,
+        "createdTime": 1782566182098,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2733,7 +2879,7 @@
       "_stats": {
         "compendiumSource": "Item.14ni8QTjG5uq5whY",
         "coreVersion": "12.343",
-        "createdTime": 1781875191491,
+        "createdTime": 1782566182098,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2744,7 +2890,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1781888652348,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -2842,7 +2988,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1781888652348,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -2924,95 +3070,144 @@
           "damage_bonus": "",
           "defense_target_type": "def",
           "description": "<p>When another creature you can see loses Hit Points while in \n<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span>, if they are not <strong>undead</strong>, you gain <strong>1 Grave Point</strong>. You may never have more than <strong>[SL + 1]</strong> <strong>Grave Points</strong>.</p>\n\n<p>When you are reduced to <strong>0 Hit Points</strong>, you <strong>lose all Grave Points</strong>; then, if you lost at least <strong>1 Grave Point</strong> this way and this is the first time you are reduced to <strong>0 HP</strong> during this scene, you do not <strong>Surrender</strong> nor <strong>Sacrifice</strong> yourself; instead, you recover an amount of <strong>HP</strong> equal to <strong>[SL, multiplied by the amount of Grave Points you lost this way]</strong>.</p>\n",
+          "details_roller": "Show",
           "duration": "",
           "effect_table": {
             "0": {
+              "allow_empty": false,
               "auto_confirm_when_obvious": true,
+              "auto_target": true,
               "candidate_source": "self",
               "category": "",
+              "consume_self": false,
               "count": "1",
               "effect_kind": "targeting",
               "effect_label": "bortd_self",
+              "exclude": "",
+              "exclude_action_targets": false,
               "exclude_self": false,
+              "from_resource": "",
               "iteration_mode": "together",
+              "menu_label": "",
               "mode": "exact",
               "skip_when_passive": true,
-              "target_prompt": ""
+              "target_filter": "",
+              "target_prompt": "",
+              "to_resource": ""
             },
             "1": {
               "ae_duplicate_mode": "add_charges",
+              "ae_family": "",
               "ae_initial_charges": "1",
               "ae_initial_charges_max": "SL + 1",
               "ae_template_ref": "Grave Points",
+              "consume_self": false,
               "effect_kind": "apply_ae",
               "effect_label": "bortd_gain",
-              "target_ref": "bortd_self"
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "bortd_self",
+              "to_resource": ""
             },
             "2": {
               "chain_steps": "bortd_seed_gp, bortd_seed_mark",
+              "consume_self": false,
               "effect_kind": "chain",
-              "effect_label": "bortd_seed"
+              "effect_label": "bortd_seed",
+              "from_resource": "",
+              "menu_label": "",
+              "to_resource": ""
             },
             "3": {
               "ae_duplicate_mode": "replace",
+              "ae_family": "",
+              "ae_initial_charges": "",
               "ae_initial_charges_max": "SL + 1",
               "ae_template_ref": "Grave Points",
+              "consume_self": false,
               "effect_kind": "apply_ae",
               "effect_label": "bortd_seed_gp",
-              "target_ref": "bortd_self"
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "bortd_self",
+              "to_resource": ""
             },
             "4": {
               "ae_duplicate_mode": "replace",
+              "ae_family": "",
               "ae_initial_charges": "1",
               "ae_initial_charges_max": "1",
               "ae_template_ref": "Beyond the Realms of Death",
+              "consume_self": false,
               "effect_kind": "apply_ae",
               "effect_label": "bortd_seed_mark",
-              "target_ref": "bortd_self"
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "bortd_self",
+              "to_resource": ""
             }
           },
+          "gadget_alchemy_tier": "",
+          "gadget_infusion_tier": "",
+          "gadget_magitech_tier": "",
           "heroic_requirement": "",
+          "id": "fFHKCwDndsOmUg0q",
           "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/Shadowed_Vigil.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
           "isReaction": true,
           "isZeroPower": false,
-          "level": "1",
+          "level": "2",
           "max_level": "5",
           "name": "Beyond the Realms of Death",
           "on_activate_effect_ref": "",
           "optional_params": {},
           "passive_logic_resolution": "<p>const DEBUG = true;</p><p>const TAG = \"[PL-RES][BeyondTheRealmsOfDeath]\";</p><p>const ctx = (typeof context !== \"undefined\" &amp;&amp; context) ? context : {};</p><p>const p = (typeof __PAYLOAD !== \"undefined\" &amp;&amp; __PAYLOAD) ? __PAYLOAD : {};</p><p>const globalTargets = (typeof __TARGETS !== \"undefined\" &amp;&amp; Array.isArray(__TARGETS)) ? __TARGETS : [];</p><p>p.meta = p.meta || {};</p><p>const log = (...args) =&gt; {</p><p>if (DEBUG) console.log(TAG, ...args);</p><p>};</p><p>const warn = (...args) =&gt; {</p><p>if (DEBUG) console.warn(TAG, ...args);</p><p>};</p><p>// Use this whenever the passive should NOT show a passive UI card.</p><p>const quietStop = (reason = \"\") =&gt; {</p><p>if (DEBUG &amp;&amp; reason) console.log(TAG, \"SKIP:\", reason);</p><p>// Main intended passive-system cancel helper.</p><p>if (ctx.skipPassive) {</p><p>return ctx.skipPassive(reason || \"No effect.\", { notify: false });</p><p>}</p><p>// Fallback markers, just in case this script runs in a lighter context.</p><p>p.meta.__skipPassive = true;</p><p>p.meta.__skipPassiveCard = true;</p><p>p.meta.__passiveNoEffect = true;</p><p>p.meta.__passiveSkipReason = reason || \"No effect.\";</p><p>return undefined;</p><p>};</p><p>const norm = (v) =&gt; String(v ?? \"\").trim().toLowerCase();</p><p>const asArray = (v) =&gt; Array.isArray(v) ? v : (v == null ? [] : [v]);</p><p>const toNumber = (v, fallback = 0) =&gt; {</p><p>const n = Number(v);</p><p>return Number.isFinite(n) ? n : fallback;</p><p>};</p><p>const collectionValues = (collectionLike) =&gt; {</p><p>if (!collectionLike) return [];</p><p>if (Array.isArray(collectionLike)) return collectionLike;</p><p>if (typeof collectionLike.values === \"function\") return Array.from(collectionLike.values());</p><p>return Array.from(collectionLike);</p><p>};</p><p>async function resolveDoc(ref) {</p><p>if (!ref) return null;</p><p>if (typeof ref !== \"string\") return ref;</p><p>try {</p><p>return await fromUuid(ref);</p><p>} catch (err) {</p><p>warn(\"fromUuid failed\", { ref, err });</p><p>return null;</p><p>}</p><p>}</p><p>function actorFromDoc(doc) {</p><p>if (!doc) return null;</p><p>if (doc.documentName === \"Actor\" || doc.constructor?.name === \"Actor\") return doc;</p><p>if (doc.actor) return doc.actor;</p><p>if (doc.object?.actor) return doc.object.actor;</p><p>if (doc.token?.actor) return doc.token.actor;</p><p>if (doc.document?.actor) return doc.document.actor;</p><p>return null;</p><p>}</p><p>async function resolveActor(ref) {</p><p>const doc = await resolveDoc(ref);</p><p>return actorFromDoc(doc);</p><p>}</p><p>async function resolveTokenDoc(ref) {</p><p>const doc = await resolveDoc(ref);</p><p>if (!doc) return null;</p><p>if (doc.documentName === \"Token\" || doc.documentName === \"TokenDocument\") return doc;</p><p>if (doc.document?.documentName === \"Token\") return doc.document;</p><p>if (doc.token?.document) return doc.token.document;</p><p>return null;</p><p>}</p><p>function activeTokenUuidForActor(actor) {</p><p>try {</p><p>const tok =</p><p>actor?.getActiveTokens?.(true, true)?.[0] ??</p><p>actor?.getActiveTokens?.()?.[0] ??</p><p>null;</p><p>return tok?.document?.uuid ?? null;</p><p>} catch {</p><p>return null;</p><p>}</p><p>}</p><p>// --------------------------------------------------</p><p>// 1) Read trigger payload.</p><p>// This passive should only care about creature_takes_damage.</p><p>// --------------------------------------------------</p><p>const phaseRoot =</p><p>p?.meta?.reaction_phase_payload ??</p><p>p?.reaction_phase_payload ??</p><p>{};</p><p>const phaseByTrigger =</p><p>p?.meta?.reaction_phase_payload_by_trigger ??</p><p>p?.reaction_phase_payload_by_trigger ??</p><p>{};</p><p>const passiveTriggerKey =</p><p>p?.meta?.passiveTriggerKey ??</p><p>p?.passiveTriggerKey ??</p><p>p?.reaction_trigger_key ??</p><p>phaseRoot?.trigger ??</p><p>null;</p><p>const phase =</p><p>phaseByTrigger?.creature_takes_damage ??</p><p>(passiveTriggerKey &amp;&amp; phaseByTrigger?.[passiveTriggerKey]) ??</p><p>phaseRoot ??</p><p>{};</p><p>const triggerName = phase?.trigger ?? passiveTriggerKey ?? \"\";</p><p>if (triggerName !== \"creature_takes_damage\") {</p><p>return quietStop(`Wrong trigger: ${triggerName || \"none\"}`);</p><p>}</p><p>// --------------------------------------------------</p><p>// 2) Resolve passive owner and this skill item.</p><p>// --------------------------------------------------</p><p>const owner =</p><p>ctx.passiveOwner ??</p><p>(ctx.helpers?.getPassiveOwnerActor ? await ctx.helpers.getPassiveOwnerActor() : null) ??</p><p>((typeof __PASSIVE_ACTOR !== \"undefined\") ? __PASSIVE_ACTOR : null) ??</p><p>await resolveActor(</p><p>p?.meta?.attackerActorUuid ??</p><p>p?.attackerActorUuid ??</p><p>p?.meta?.attackerUuid ??</p><p>p?.attackerUuid ??</p><p>null</p><p>);</p><p>if (!owner) {</p><p>return quietStop(\"Could not resolve passive owner.\");</p><p>}</p><p>const passiveItem =</p><p>ctx.passiveItem ??</p><p>(ctx.helpers?.getPassiveItem ? await ctx.helpers.getPassiveItem() : null) ??</p><p>((typeof __PASSIVE_ITEM !== \"undefined\") ? __PASSIVE_ITEM : null) ??</p><p>collectionValues(owner.items).find(i =&gt; norm(i?.name) === \"beyond the realms of death\");</p><p>if (!passiveItem) {</p><p>return quietStop(\"Could not resolve Beyond the Realms of Death item.\");</p><p>}</p><p>const skillLevel = Math.max(0, parseInt(passiveItem.system?.props?.level ?? \"0\", 10) || 0);</p><p>if (skillLevel &lt;= 0) {</p><p>return quietStop(\"Beyond the Realms of Death SL is 0.\");</p><p>}</p><p>const maxGrave = Math.max(1, skillLevel + 1);</p><p>// --------------------------------------------------</p><p>// 3) Resolve damaged creature.</p><p>// For creature_takes_damage, the target side is the creature losing HP.</p><p>// --------------------------------------------------</p><p>const damagedActorUuid =</p><p>phase?.targetActorUuid ??</p><p>asArray(phase?.targetActorUuids)[0] ??</p><p>null;</p><p>const damagedTokenUuid =</p><p>phase?.targetTokenUuid ??</p><p>phase?.targetUuid ??</p><p>asArray(phase?.targetTokenUuids)[0] ??</p><p>asArray(phase?.targets)[0] ??</p><p>globalTargets[0] ??</p><p>null;</p><p>let damagedActor = null;</p><p>if (damagedActorUuid) {</p><p>damagedActor = await resolveActor(damagedActorUuid);</p><p>}</p><p>if (!damagedActor &amp;&amp; damagedTokenUuid) {</p><p>damagedActor = await resolveActor(damagedTokenUuid);</p><p>}</p><p>if (!damagedActor) {</p><p>return quietStop(\"Could not resolve damaged creature.\");</p><p>}</p><p>// --------------------------------------------------</p><p>// 4) \"Another creature\" check.</p><p>// Owner should not gain Grave Point when the owner is the damaged creature.</p><p>// --------------------------------------------------</p><p>const ownerActorUuid = owner.uuid ?? null;</p><p>const ownerTokenUuid = activeTokenUuidForActor(owner);</p><p>const damagedTokenDoc = damagedTokenUuid ? await resolveTokenDoc(damagedTokenUuid) : null;</p><p>const damagedTokenUuidResolved = damagedTokenDoc?.uuid ?? damagedTokenUuid ?? null;</p><p>if (ownerActorUuid &amp;&amp; damagedActor.uuid === ownerActorUuid) {</p><p>return quietStop(\"Damaged creature is the passive owner.\");</p><p>}</p><p>if (ownerTokenUuid &amp;&amp; damagedTokenUuidResolved &amp;&amp; ownerTokenUuid === damagedTokenUuidResolved) {</p><p>return quietStop(\"Damaged token is the passive owner's token.\");</p><p>}</p><p>// --------------------------------------------------</p><p>// 5) Confirm real HP loss.</p><p>// Shield-only damage should not count as losing Hit Points.</p><p>// --------------------------------------------------</p><p>const hpBefore = toNumber(phase?.gmChanges?.hp?.from, NaN);</p><p>const hpAfter = toNumber(phase?.gmChanges?.hp?.to, NaN);</p><p>let hpLost = 0;</p><p>if (Number.isFinite(hpBefore) &amp;&amp; Number.isFinite(hpAfter)) {</p><p>hpLost = Math.max(0, hpBefore - hpAfter);</p><p>} else {</p><p>hpLost = Math.max(</p><p>0,</p><p>Math.abs(toNumber(phase?.finalValue, 0)) ||</p><p>Math.abs(toNumber(phase?.displayedAmount, 0)) ||</p><p>Math.abs(toNumber(phase?.baseValue, 0))</p><p>);</p><p>}</p><p>if (phase?.affected === false || hpLost &lt;= 0) {</p><p>return quietStop(\"Damage event did not cause HP loss.\");</p><p>}</p><p>// --------------------------------------------------</p><p>// 6) Check Crisis Active Effect.</p><p>// ID first, name/status fallback.</p><p>// --------------------------------------------------</p><p>const CRISIS_EFFECT_UUID = \"Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr\";</p><p>const CRISIS_EFFECT_ID = CRISIS_EFFECT_UUID.split(\".\").pop();</p><p>function isTruthy(v) {</p><p>return v === true || v === 1 || v === \"1\" || norm(v) === \"true\" || norm(v) === \"yes\";</p><p>}</p><p>function actorHasCrisis(actor) {</p><p>if (!actor) return false;</p><p>const effects = collectionValues(actor.effects);</p><p>// ID/source UUID first.</p><p>for (const eff of effects) {</p><p>if (!eff || eff.disabled) continue;</p><p>const effId = String(eff.id ?? eff._id ?? \"\");</p><p>const effUuid = String(eff.uuid ?? \"\");</p><p>const effOrigin = String(eff.origin ?? \"\");</p><p>if (effId === CRISIS_EFFECT_ID) return true;</p><p>if (effUuid === CRISIS_EFFECT_UUID) return true;</p><p>if (effOrigin === CRISIS_EFFECT_UUID) return true;</p><p>}</p><p>// Name/status fallback.</p><p>for (const eff of effects) {</p><p>if (!eff || eff.disabled) continue;</p><p>const effName = norm(eff.name ?? eff.label ?? \"\");</p><p>if (effName === \"crisis\") return true;</p><p>const statuses = Array.from(eff.statuses ?? []).map(norm);</p><p>if (statuses.includes(\"crisis\")) return true;</p><p>}</p><p>// Sheet mirror fallback, if your sheet has it.</p><p>const props = actor.system?.props ?? {};</p><p>if (isTruthy(props.isCrisis) || isTruthy(props.crisis)) return true;</p><p>return false;</p><p>}</p><p>if (!actorHasCrisis(damagedActor)) {</p><p>return quietStop(`${damagedActor.name} is not in Crisis.`);</p><p>}</p><p>// --------------------------------------------------</p><p>// 7) Undead check.</p><p>// Clean rule:</p><p>// - Check actor.system.props.species</p><p>// - If species is exactly UNDEAD, cancel.</p><p>// - If missing or anything else, assume not undead.</p><p>// --------------------------------------------------</p><p>function actorIsUndead(actor) {</p><p>const species = String(actor?.system?.props?.species ?? \"\").trim().toUpperCase();</p><p>return species === \"UNDEAD\";</p><p>}</p><p>if (actorIsUndead(damagedActor)) {</p><p>return quietStop(`${damagedActor.name} is UNDEAD.`);</p><p>}</p><p>// --------------------------------------------------</p><p>// 8) Gain 1 Grave Point, capped at SL + 1.</p><p>// If no point is actually gained, cancel silently so no passive card appears.</p><p>// --------------------------------------------------</p><p>const props = owner.system?.props ?? {};</p><p>const graveBefore = Math.max(0, toNumber(props.clock_grave, 0));</p><p>const graveAfter = Math.min(maxGrave, graveBefore + 1);</p><p>const graveGained = Math.max(0, graveAfter - graveBefore);</p><p>if (graveGained &lt;= 0) {</p><p>return quietStop(`No Grave Point gained. Already at max (${graveBefore}/${maxGrave}).`);</p><p>}</p><p>await owner.update({</p><p>\"system.props.clock_grave\": graveAfter</p><p>});</p><p>log(\"APPLIED\", {</p><p>owner: owner.name,</p><p>damagedCreature: damagedActor.name,</p><p>damagedCreatureSpecies: damagedActor.system?.props?.species ?? null,</p><p>hpLost,</p><p>skillLevel,</p><p>maxGrave,</p><p>graveBefore,</p><p>graveAfter,</p><p>graveGained</p><p>});</p>",
+          "pre_activate_effect_ref": "",
           "reaction_config_table": {
             "0": {
               "$deleted": false,
               "condition_formula": "SUBJECT_IS_SELF == 0 && TARGET_AE_COUNT_CRISIS > 0 && TARGET_SPECIES_IS_UNDEAD == 0",
+              "reaction_action_kind": "",
+              "reaction_cause_filter": "",
               "reaction_damage_amount": "",
               "reaction_damage_type": "",
               "reaction_debuff_count_min": "",
               "reaction_debuff_count_target": "",
               "reaction_effect_ref": "bortd_gain",
               "reaction_isPassive": false,
+              "reaction_origin_filter": "",
               "reaction_passive_mode": "force",
               "reaction_passive_target": "self",
               "reaction_resource_filter": "hp",
+              "reaction_responder": "",
               "reaction_source": "all",
+              "reaction_source_skill": "",
+              "reaction_status_filter": "",
               "reaction_trigger": "creature_lose_resource",
               "requires_skill": ""
             },
             "1": {
               "condition_formula": "",
+              "reaction_action_kind": "",
+              "reaction_cause_filter": "",
               "reaction_damage_amount": "",
               "reaction_damage_type": "",
               "reaction_debuff_count_min": "",
               "reaction_debuff_count_target": "",
               "reaction_effect_ref": "bortd_seed",
               "reaction_isPassive": false,
+              "reaction_origin_filter": "",
               "reaction_passive_mode": "force",
               "reaction_passive_target": "self",
+              "reaction_resource_filter": "",
+              "reaction_responder": "",
               "reaction_source": "",
+              "reaction_source_skill": "",
+              "reaction_status_filter": "",
               "reaction_trigger": "conflict_start",
               "requires_skill": ""
             }
@@ -3025,8 +3220,10 @@
           "skill_range": "",
           "skill_target": "",
           "skill_type": "Passive",
+          "target_eligibility": "",
           "type_damage": "",
-          "use_optional_params": false
+          "use_optional_params": false,
+          "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.fFHKCwDndsOmUg0q"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -3036,11 +3233,80 @@
       "type": "equippableItem"
     },
     {
+      "_id": "fjThxMdxufSrumbB",
+      "_stats": {
+        "compendiumSource": "Item.43HnRNN8cWeAgSmr",
+        "coreVersion": "12.343",
+        "createdTime": 1782584777153,
+        "duplicateSource": "Item.tE8pb6Spf4UoFo55",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/blackblood.png",
+      "name": "For Whom the Bell Tolls",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Necromancer",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>When you deal damage to a creature with a 【📕Spell】, if that spell only deals damage to that creature, you may spend <strong>1 Grave Point</strong>. If you do, <strong>Choose one option:</strong></p>\n<ul>\n  <li>If that creature is suffering from one or more status effects, the spell deals extra damage equal to <strong>[(SL × 2) + the number of status effects on that creature]</strong>;</li>\n  <li>or, if that creature is suffering from no status effects, they suffer \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span></span>.\n  </li>\n</ul>\n",
+          "details_roller": "Show",
+          "duration": "",
+          "effect_table": {},
+          "heroic_requirement": "",
+          "id": "fjThxMdxufSrumbB",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/blackblood.png",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "3",
+          "max_level": "3",
+          "name": "For Whom the Bell Tolls",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width:100%; text-align:center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Base Extra Damage</strong></p></td><td><p><strong>Total Extra Damage</strong></p></td></tr><tr><td><p>1</p></td><td><p>2</p></td><td><p>2 + number of statuses on target</p></td></tr><tr><td><p>2</p></td><td><p>4</p></td><td><p>4 + number of statuses on target</p></td></tr><tr><td><p>3</p></td><td><p>6</p></td><td><p>6 + number of statuses on target</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false,
+          "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.fjThxMdxufSrumbB"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "43HnRNN8cWeAgSmr"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "fWSnV0BKWLOPGZnq",
       "_stats": {
         "compendiumSource": "Item.Yt8dPWkIZtissH3m",
         "coreVersion": "12.343",
-        "createdTime": 1781875191491,
+        "createdTime": 1782566182098,
         "duplicateSource": "Item.qTU1jyH5qDXfr1MU",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3141,7 +3407,7 @@
       "_stats": {
         "compendiumSource": "Item.0Up4BNAxtoUC23jq",
         "coreVersion": "12.343",
-        "createdTime": 1781875191491,
+        "createdTime": 1782566182098,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3152,7 +3418,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1781888255077,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -3346,7 +3612,7 @@
       "_stats": {
         "compendiumSource": "Item.tW8QuBva77z4HwZY",
         "coreVersion": "12.343",
-        "createdTime": 1781875191491,
+        "createdTime": 1782566182098,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3357,7 +3623,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1781888650499,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -3505,7 +3771,7 @@
       "_stats": {
         "compendiumSource": "Item.j9ve2lwzoHiOo6bM",
         "coreVersion": "12.343",
-        "createdTime": 1781875191491,
+        "createdTime": 1782566182098,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3610,7 +3876,7 @@
       "_stats": {
         "compendiumSource": "Item.39Y43bBRXTeu4SNo",
         "coreVersion": "12.343",
-        "createdTime": 1781875191491,
+        "createdTime": 1782566182098,
         "duplicateSource": "Item.xsFQ7dGyfH0X3i2t",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3621,7 +3887,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1781888646156,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -3942,7 +4208,7 @@
       "_stats": {
         "compendiumSource": "Item.ZRTMm0aLWKq2UHeR",
         "coreVersion": "12.343",
-        "createdTime": 1781875191491,
+        "createdTime": 1782566182098,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4041,7 +4307,7 @@
       "_stats": {
         "compendiumSource": "Item.NNTvabK5vy807Mvt",
         "coreVersion": "12.343",
-        "createdTime": 1781875191491,
+        "createdTime": 1782566182098,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4131,7 +4397,7 @@
       "_stats": {
         "compendiumSource": "Item.zbulFnM318NgBgh5",
         "coreVersion": "12.343",
-        "createdTime": 1781875191491,
+        "createdTime": 1782566182098,
         "duplicateSource": "Item.bbEv9kibtZscX9eJ",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4142,7 +4408,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1781889737514,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -4209,7 +4475,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1781889737514,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -4393,7 +4659,7 @@
       "_stats": {
         "compendiumSource": "Item.b8PD9B8tWQ60BEFG",
         "coreVersion": "12.343",
-        "createdTime": 1781875191491,
+        "createdTime": 1782566182098,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4404,7 +4670,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1781919024689,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -4424,7 +4690,7 @@
             "rounds": null,
             "seconds": null,
             "startRound": null,
-            "startTime": null,
+            "startTime": 298800,
             "startTurn": null,
             "turns": null
           },
@@ -4515,7 +4781,7 @@
       "_stats": {
         "compendiumSource": "Item.ewCSpkXC8Awo7b0k",
         "coreVersion": "12.343",
-        "createdTime": 1781875191491,
+        "createdTime": 1782566182098,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4618,7 +4884,7 @@
       "_stats": {
         "compendiumSource": "Item.YDzMWktTnD9J9Jun",
         "coreVersion": "12.343",
-        "createdTime": 1781875191491,
+        "createdTime": 1782566182098,
         "duplicateSource": "Item.ivCSQcT8cuj07ELa",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4712,7 +4978,7 @@
       "_stats": {
         "compendiumSource": "Item.ZXaslUkB4sJRWJn3",
         "coreVersion": "12.343",
-        "createdTime": 1781875191491,
+        "createdTime": 1782566182098,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4758,7 +5024,7 @@
           "humanoid_ef": "100",
           "insect_ef": "100",
           "ip_cost": "",
-          "isEquipped": true,
+          "isEquipped": false,
           "isKey": false,
           "isMartial": false,
           "isModule": false,
@@ -4802,7 +5068,7 @@
       "_stats": {
         "compendiumSource": "Item.VXzpUvjAr9Z5wfBA",
         "coreVersion": "12.343",
-        "createdTime": 1781875191491,
+        "createdTime": 1782566182098,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4960,7 +5226,7 @@
       "_stats": {
         "compendiumSource": "Item.N2IgLImJ07QLdBVT",
         "coreVersion": "12.343",
-        "createdTime": 1781875191491,
+        "createdTime": 1782566182098,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4971,7 +5237,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1781884811938,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -5111,7 +5377,7 @@
       "_stats": {
         "compendiumSource": "Item.8g79dzk64n7b0kIb",
         "coreVersion": "12.343",
-        "createdTime": 1781875191491,
+        "createdTime": 1782566182098,
         "duplicateSource": "Item.QJw9MuxrOXtRVOxx",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5480,7 +5746,7 @@
       "affinity_3": "NA",
       "affinity_4": "NA",
       "affinity_5": "NA",
-      "affinity_6": "NA",
+      "affinity_6": "RS",
       "affinity_7": "NA",
       "affinity_8": "NA",
       "affinity_9": "NA",
@@ -5510,7 +5776,7 @@
       "bond_5": "Geist",
       "bond_6": "",
       "bond_temp": "",
-      "bonus_defense": 1,
+      "bonus_defense": 3,
       "bonus_dex": 0,
       "bonus_hp": 0,
       "bonus_ins": 0,
@@ -5569,7 +5835,7 @@
           "$deleted": false,
           "benefit": "mp",
           "class_name": "Necromancer",
-          "level": "4"
+          "level": "8"
         }
       },
       "clock_adoration": "0",
@@ -5660,9 +5926,9 @@
       "critical_damage_bonus": 0,
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
-      "current_hp": "85",
-      "current_ip": "3",
-      "current_mp": "100",
+      "current_hp": "89",
+      "current_ip": "8",
+      "current_mp": "104",
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/Keren_Cut-in002.png",
       "cut_in_fumble": "",
@@ -5695,7 +5961,7 @@
       "damage_receiving_percentage_range": 0,
       "dazed_status": 0,
       "default_facing_direction": "left",
-      "defense": 7,
+      "defense": 9,
       "delayed_status": 0,
       "despair_status": 0,
       "dex_base": "6",
@@ -5706,7 +5972,7 @@
       "draw_card_copy1": "Use",
       "elementalism": false,
       "emotion_1_1": "admiration",
-      "emotion_1_2": "",
+      "emotion_1_2": "loyalty",
       "emotion_1_3": "affection",
       "emotion_2_1": "admiration",
       "emotion_2_2": "loyalty",
@@ -5730,11 +5996,11 @@
       "enraged_status": 0,
       "entropism": false,
       "envenomed_status": 0,
-      "exp_meter": "8.58",
-      "experience": "8.58",
+      "exp_meter": "1.73",
+      "experience": "1.73",
       "experience_ui": "0",
       "extra_damage_mod_air": 0,
-      "extra_damage_mod_all": 0,
+      "extra_damage_mod_all": 1,
       "extra_damage_mod_arcane": 0,
       "extra_damage_mod_bolt": 0,
       "extra_damage_mod_bow": 0,
@@ -5968,7 +6234,7 @@
           "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.alJIkZKIha6tZRiL"
         }
       },
-      "level": "30",
+      "level": "34",
       "lifesteal_percentage": 0,
       "lifesteal_value": 0,
       "magic_defense": 13,
@@ -5980,9 +6246,9 @@
       "main_hand_attack": "",
       "manadrain_percentage": 0,
       "manadrain_value": 0,
-      "max_hp": 85,
+      "max_hp": 89,
       "max_ip": 8,
-      "max_mp": 100,
+      "max_mp": 104,
       "memories_list": {},
       "memory": "Memories",
       "mig_base": "6",
@@ -6059,15 +6325,15 @@
       },
       "notes_text": "<p>Exploration Yourself or one ally</p><p>You spend your time looking for useful items; describe how, then roll 1d6.</p><p>w 1. Ouch! You recover half the normal amount of HP and MP during this rest.</p><p>w 2. Not what I was looking for... The target regains 2 Inventory Points.</p><p>w 3-5. Hoho, this can be useful! The target regains 3 Inventory Points.</p><p>w 6. Jackpot! The target regains 3 Inventory Points, and you also find an amount of</p><p>zenit equal to 【your character’s level × 50】.</p><p></p><p></p><p>Training Yourself</p><p>Once before the next rest, if you are about to suffer one or more status effects from</p><p>the same source, you may instead choose not to suffer any of those status effects.</p>",
       "obscure_status": 0,
-      "off_attrib_1": "DEX",
-      "off_attrib_2": "INS",
-      "off_base_mod_1": "1",
-      "off_base_mod_2": "4",
-      "off_details": "<ul><li><p>No Quality.</p></li></ul>",
-      "off_hand": "Steel Dagger",
+      "off_attrib_1": "SHI",
+      "off_attrib_2": "SHI",
+      "off_base_mod_1": "2",
+      "off_base_mod_2": "0",
+      "off_details": "<ul>\n<li>You have Resistance to<strong> Fire</strong>&nbsp;damage.</li>\n</ul>",
+      "off_hand": "+2 Ignis Shield",
       "off_hand_attack": "",
-      "off_mod_1": 1,
-      "off_mod_2": 4,
+      "off_mod_1": 2,
+      "off_mod_2": 0,
       "offensive_spell_list": {
         "2JQjJkiP9OBk2z5o": {
           "class": "Illusionist",
@@ -6522,7 +6788,7 @@
           "active_cost": "",
           "active_description": "<p>When another creature you can see loses Hit Points while in \n<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span>, if they are not <strong>undead</strong>, you gain <strong>1 Grave Point</strong>. You may never have more than <strong>[SL + 1]</strong> <strong>Grave Points</strong>.</p>\n\n<p>When you are reduced to <strong>0 Hit Points</strong>, you <strong>lose all Grave Points</strong>; then, if you lost at least <strong>1 Grave Point</strong> this way and this is the first time you are reduced to <strong>0 HP</strong> during this scene, you do not <strong>Surrender</strong> nor <strong>Sacrifice</strong> yourself; instead, you recover an amount of <strong>HP</strong> equal to <strong>[SL, multiplied by the amount of Grave Points you lost this way]</strong>.</p>\n",
           "active_duration": "",
-          "active_level": 1,
+          "active_level": 2,
           "active_target": "",
           "id": "${item.id}",
           "name": "Beyond the Realms of Death",
@@ -6540,6 +6806,18 @@
           "name": "Life Transference",
           "roll": "",
           "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.fWSnV0BKWLOPGZnq"
+        },
+        "fjThxMdxufSrumbB": {
+          "active_class": "Necromancer",
+          "active_cost": "",
+          "active_description": "<p>When you deal damage to a creature with a 【📕Spell】, if that spell only deals damage to that creature, you may spend <strong>1 Grave Point</strong>. If you do, <strong>Choose one option:</strong></p>\n<ul>\n  <li>If that creature is suffering from one or more status effects, the spell deals extra damage equal to <strong>[(SL × 2) + the number of status effects on that creature]</strong>;</li>\n  <li>or, if that creature is suffering from no status effects, they suffer \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span></span>.\n  </li>\n</ul>\n",
+          "active_duration": "",
+          "active_level": 3,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "For Whom the Bell Tolls",
+          "roll": "",
+          "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.fjThxMdxufSrumbB"
         },
         "hM6v0QnLirXVKohD": {
           "active_class": "Rogue",
@@ -6713,7 +6991,7 @@
       "weapon1_damage": 5,
       "weapon1_damagetype": "Physical",
       "weapon1_mod": 0,
-      "weapon2_damagetype": "Physical",
+      "weapon2_damagetype": "-",
       "weapon_list": {
         "33mIsYsdD1nqOXXH": {
           "id": "${item.id}",
@@ -6847,6 +7125,18 @@
           "weapon_martial": "♦️",
           "weapon_range": "Melee"
         },
+        "mXG3arZFcDD3MT7y": {
+          "id": "${item.id}",
+          "name": "Arch Ice Wand",
+          "quantity": "",
+          "roll": "",
+          "type": "Arcane",
+          "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.mXG3arZFcDD3MT7y",
+          "weapon_description": "<p><ul>\n    <li>\n        <p>This weapon deals <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-type=\"JournalEntry\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(61, 166, 255) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Magic Damage</span></strong></a></span></span></p>\n    </li>\n    <li>\n        <p>You may cast the spell 【<strong>⚡ Glacies Finis </strong>】</p>\n        <hr class=\"\">\n    </li>\n</ul>\n<details>\n    <summary><strong>⚡ Glacies Finis</strong></summary>\n    <p><strong>Cost:</strong> 30 x T MP</p>\n    <p><strong>Target:</strong> Up to three creatures</p>\n    <p><strong>Duration:</strong> Instantaneous</p>\n    <p><strong>Check:【WLP】</strong> + <strong>【WLP】</strong></p>\n    <p>You cause a glacial avalanche. Each target hit by this spell suffers 【HR + 30】ice damage. Opportunity: Each target hit by this spell suffers slow.</p>\n</details></p>",
+          "weapon_hand": "Two-handed",
+          "weapon_martial": "",
+          "weapon_range": "Ranged"
+        },
         "oSd1oNEDkCVAmLLx": {
           "id": "${item.id}",
           "name": "Budding Maple Wand",
@@ -6901,13 +7191,13 @@
       "wlp_base": "10",
       "wlp_current": 10,
       "your_class_name": "",
-      "zenit": "6654",
+      "zenit": "7259",
       "zero_label": "Zero Power",
       "zero_power_description": "<p>Shatter all phantom. Deal damage to all enemy equal to <strong>【(shattered phantom x 20) + 20】</strong> <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(226, 88, 34) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span> damage.</p>",
       "zero_power_macro": "",
       "zero_power_name": "Last Den of Cinders",
       "zero_power_showMacro": false,
-      "zero_power_value": "2",
+      "zero_power_value": "3",
       "zero_trigger_description": "<p>Every time a Phantasm shattered, gain 1 zero trigger</p>",
       "zero_trigger_label": "Trigger",
       "zombie_status": 0

@@ -8,12 +8,145 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "qNi5Df5DQ6lt0GnL",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782583567968,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "Once before the next rest, Blanche may cast Heal (up to 2 times).",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "qNi5Df5DQ6lt0GnL",
+          "originalParentId": "uJFaNQCSvwwsr2AW",
+          "originalUuid": "Actor.uJFaNQCSvwwsr2AW.ActiveEffect.qNi5Df5DQ6lt0GnL"
+        },
+        "fabula-ultima-companion": {
+          "campRestCharges": 0,
+          "magicLessonSpell": true,
+          "magicLessonTeacherId": "dafTLBUscCDNgq8H",
+          "spellImg": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/assize.png",
+          "spellIsOffensive": false,
+          "spellName": "Heal",
+          "spellUuid": "Actor.dafTLBUscCDNgq8H.Item.Wtcdd42MQHwsOsSe",
+          "usagesLeft": 2
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/EM.png",
+      "name": "Magic Lesson — Heal",
+      "origin": "Actor.dafTLBUscCDNgq8H",
+      "sort": 0,
+      "statuses": [
+        "permanent"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "xmnGnQ4eBlq2bRbY",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782583518983,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "extra_damage_mod_all",
+          "mode": 2,
+          "priority": null,
+          "value": "1"
+        }
+      ],
+      "description": "<p>Campfire skewers marinated with wild berry vinegar. Everyone who eats gains <strong>+1 bonus damage</strong> until the next rest.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "xmnGnQ4eBlq2bRbY",
+          "originalParentId": "uJFaNQCSvwwsr2AW",
+          "originalUuid": "Actor.uJFaNQCSvwwsr2AW.ActiveEffect.xmnGnQ4eBlq2bRbY"
+        },
+        "fabula-ultima-companion": {
+          "campRestCharges": 0,
+          "cookingDish": {
+            "dishId": "G0tvPWqwJHkdwoFQ",
+            "family": "sour",
+            "instant": {},
+            "tier": 1
+          },
+          "foodBuff": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Genshin/Item_Chicken-Mushroom_Skewer.webp",
+      "name": "Tangy Trailside Skewer",
+      "origin": "Item.G0tvPWqwJHkdwoFQ",
+      "sort": 0,
+      "statuses": [
+        "permanent"
+      ],
+      "system": {
+        "tags": [
+          "food"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.8.4"
     },
     "fabula-ultima-companion": {
-      "campBondMemories": [],
+      "damage_taken_mult": 1,
       "iconFocus": {
         "x": 50,
         "y": 25,
@@ -143,7 +276,7 @@
       "name": "",
       "optalign": "top",
       "settings": {
-        "emote": "panic",
+        "emote": "smile",
         "textcolor": null,
         "textflyin": "typewriter",
         "textfont": null,
@@ -160,7 +293,7 @@
       "_stats": {
         "compendiumSource": "Item.gTXdzJjV4Lmwfm7i",
         "coreVersion": "12.343",
-        "createdTime": 1781875192313,
+        "createdTime": 1782566203317,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -171,7 +304,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1781893425789,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -399,7 +532,7 @@
       "_stats": {
         "compendiumSource": "Item.EtGyLWPHbqzQu4iC",
         "coreVersion": "12.343",
-        "createdTime": 1781875192313,
+        "createdTime": 1782566203317,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -488,7 +621,7 @@
       "_stats": {
         "compendiumSource": "Item.d3MLcotE69Z9TUWh",
         "coreVersion": "12.343",
-        "createdTime": 1781875192313,
+        "createdTime": 1782566203317,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -555,7 +688,7 @@
       "_stats": {
         "compendiumSource": "Item.tElX5Ko3X5wpTCfI",
         "coreVersion": "12.343",
-        "createdTime": 1781875192313,
+        "createdTime": 1782566203317,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -633,7 +766,7 @@
       "_stats": {
         "compendiumSource": "Item.0BK9PoXbrolOBbKI",
         "coreVersion": "12.343",
-        "createdTime": 1781875192313,
+        "createdTime": 1782566203317,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -749,7 +882,7 @@
       "_stats": {
         "compendiumSource": "Item.wPC22EqyPCSc20i0",
         "coreVersion": "12.343",
-        "createdTime": 1781875192313,
+        "createdTime": 1782566203317,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -805,7 +938,7 @@
       "_stats": {
         "compendiumSource": "Item.yVFJkol5V9OWvceZ",
         "coreVersion": "12.343",
-        "createdTime": 1781875192313,
+        "createdTime": 1782566203317,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -830,7 +963,7 @@
             }
           ],
           "description": "<ul><li>+5 Damage with <strong>brawling</strong> weapons</li></ul>",
-          "disabled": false,
+          "disabled": true,
           "duration": {
             "combat": null,
             "rounds": null,
@@ -910,7 +1043,7 @@
           "humanoid_ef": "100",
           "insect_ef": "100",
           "ip_cost": "",
-          "isEquipped": true,
+          "isEquipped": false,
           "isKey": false,
           "isMartial": false,
           "isModule": false,
@@ -953,7 +1086,7 @@
       "_stats": {
         "compendiumSource": "Item.PGGgozrKWNrtGZLH",
         "coreVersion": "12.343",
-        "createdTime": 1781875192313,
+        "createdTime": 1782566203317,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -981,14 +1114,15 @@
           "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<p>Threatens target enemies into chasing you, <strong>Choose:</strong></p><ul><li><p>Inflicts <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.c4sYPClmvld4TEK8\" data-id=\"c4sYPClmvld4TEK8\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Provoked</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span>to the target</p></li><li><p>Inflicts <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.aPF9gzkqnUkcQmIC\" data-id=\"aPF9gzkqnUkcQmIC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Berserk</span></strong></a></span><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>to the target</p></li></ul>",
+          "details_roller": "Show",
           "duration": "Instantaneous",
-          "effect_table": [
-            {
+          "effect_table": {
+            "0": {
               "chain_steps": "cap_menu, cap_cost",
               "effect_kind": "chain",
               "effect_label": "cap_root"
             },
-            {
+            "1": {
               "effect_kind": "open_action_menu",
               "effect_label": "cap_menu",
               "menu_option_descriptions": "Target must include you as a target of its attacks and spells.|Target deals double damage but can only use the Attack action.",
@@ -997,21 +1131,21 @@
               "menu_subtitle": "Threaten the target into chasing you — choose a debuff.",
               "menu_title": "Capote"
             },
-            {
+            "2": {
               "ae_duplicate_mode": "replace",
               "ae_template_ref": "Provoked",
               "effect_kind": "apply_ae",
               "effect_label": "cap_provoked",
               "target_ref": "action_targets"
             },
-            {
+            "3": {
               "ae_duplicate_mode": "replace",
               "ae_template_ref": "Berserk",
               "effect_kind": "apply_ae",
               "effect_label": "cap_berserk",
               "target_ref": "action_targets"
             },
-            {
+            "4": {
               "charge_key": "adoration",
               "count": "4",
               "effect_kind": "consume_charge",
@@ -1019,9 +1153,11 @@
               "on_empty": "abort",
               "target_ref": "self"
             }
-          ],
+          },
           "heroic_requirement": "",
+          "id": "bNQshbn7G8YoDX9p",
           "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Swordsman/icon_warri_capote.png",
           "isCheck": false,
           "isFacet": true,
           "isHeroic": false,
@@ -1034,6 +1170,7 @@
           "on_activate_effect_ref": "cap_root",
           "optional_params": {},
           "reaction_config_table": {},
+          "reaction_effect_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
@@ -1043,7 +1180,8 @@
           "skill_target": "One creature",
           "skill_type": "Active",
           "type_damage": "",
-          "use_optional_params": false
+          "use_optional_params": false,
+          "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.bNQshbn7G8YoDX9p"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -1057,7 +1195,7 @@
       "_stats": {
         "compendiumSource": "Item.CA8Ilu2bkIkYhfgY",
         "coreVersion": "12.343",
-        "createdTime": 1781875192313,
+        "createdTime": 1782566203317,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1068,7 +1206,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1781957115424,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -1088,7 +1226,7 @@
             "rounds": null,
             "seconds": null,
             "startRound": null,
-            "startTime": null,
+            "startTime": 298800,
             "startTurn": null,
             "turns": null
           },
@@ -1180,7 +1318,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1781934526436,
+        "createdTime": 1782566203317,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1231,7 +1369,7 @@
       "_stats": {
         "compendiumSource": "Item.qyvHeUWIvWGFSiEg",
         "coreVersion": "12.343",
-        "createdTime": 1781875192313,
+        "createdTime": 1782566203317,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1311,7 +1449,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1782528222023,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -1331,7 +1469,7 @@
             "rounds": null,
             "seconds": null,
             "startRound": null,
-            "startTime": null,
+            "startTime": 298800,
             "startTurn": null,
             "turns": null
           },
@@ -1565,7 +1703,7 @@
       "_stats": {
         "compendiumSource": "Item.E1dOu3pYQKL60blD",
         "coreVersion": "12.343",
-        "createdTime": 1781875192313,
+        "createdTime": 1782566203317,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1628,7 +1766,7 @@
       "_stats": {
         "compendiumSource": "Item.nMkcYQIOYWFKigMv",
         "coreVersion": "12.343",
-        "createdTime": 1781875192313,
+        "createdTime": 1782566203317,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1770,7 +1908,7 @@
       "_stats": {
         "compendiumSource": "Item.RxIy2d516YrLuzpS",
         "coreVersion": "12.343",
-        "createdTime": 1781875192313,
+        "createdTime": 1782566203317,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1880,7 +2018,7 @@
       "_stats": {
         "compendiumSource": "Item.4ZT937s6xT8yWX3R",
         "coreVersion": "12.343",
-        "createdTime": 1781875192313,
+        "createdTime": 1782566203317,
         "duplicateSource": "Item.8MexKo5xIFUmdjje",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2029,7 +2167,7 @@
       "_stats": {
         "compendiumSource": "Item.StNZ1ldqagBVx41h",
         "coreVersion": "12.343",
-        "createdTime": 1781875192313,
+        "createdTime": 1782566203317,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2109,7 +2247,7 @@
       "_stats": {
         "compendiumSource": "Item.TwiggXCPpT07L0OR",
         "coreVersion": "12.343",
-        "createdTime": 1781875192313,
+        "createdTime": 1782566203317,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2120,7 +2258,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1781893431730,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -2133,7 +2271,7 @@
             "rounds": null,
             "seconds": null,
             "startRound": null,
-            "startTime": null,
+            "startTime": 298800,
             "startTurn": null,
             "turns": null
           },
@@ -2243,7 +2381,7 @@
       "_stats": {
         "compendiumSource": "Item.53Usenn5H4oDCDzD",
         "coreVersion": "12.343",
-        "createdTime": 1781875192313,
+        "createdTime": 1782566203317,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2588,7 +2726,7 @@
       "_stats": {
         "compendiumSource": "Item.dMvcBdU80jaNnOYT",
         "coreVersion": "12.343",
-        "createdTime": 1781875192313,
+        "createdTime": 1782566203317,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2599,7 +2737,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1781893422797,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -2619,7 +2757,7 @@
             "rounds": null,
             "seconds": null,
             "startRound": null,
-            "startTime": null,
+            "startTime": 298800,
             "startTurn": null,
             "turns": null
           },
@@ -2715,7 +2853,7 @@
       "_stats": {
         "compendiumSource": "Item.wPC22EqyPCSc20i0",
         "coreVersion": "12.343",
-        "createdTime": 1781875192313,
+        "createdTime": 1782566203317,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2771,7 +2909,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1781934529013,
+        "createdTime": 1782566203317,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2835,7 +2973,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1781875192313,
+        "createdTime": 1782566203317,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2982,7 +3120,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1782528218396,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -3002,7 +3140,7 @@
             "rounds": null,
             "seconds": null,
             "startRound": null,
-            "startTime": null,
+            "startTime": 298800,
             "startTurn": null,
             "turns": null
           },
@@ -3206,7 +3344,7 @@
       "_stats": {
         "compendiumSource": "Item.BuOjiNzcT4CY6iue",
         "coreVersion": "12.343",
-        "createdTime": 1781875192313,
+        "createdTime": 1782566203317,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3355,7 +3493,7 @@
       "_stats": {
         "compendiumSource": "Item.kS8rEaApk4J1WvjU",
         "coreVersion": "12.343",
-        "createdTime": 1781875192313,
+        "createdTime": 1782566203317,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3366,7 +3504,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1781957057029,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -3539,7 +3677,7 @@
       "_stats": {
         "compendiumSource": "Item.79TTBHuBvD7ysgZQ",
         "coreVersion": "12.343",
-        "createdTime": 1782528432936,
+        "createdTime": 1782566203317,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3983,7 +4121,7 @@
       "_stats": {
         "compendiumSource": "Item.8Vn4CZdcyrkTJKm3",
         "coreVersion": "12.343",
-        "createdTime": 1781875192313,
+        "createdTime": 1782566203317,
         "duplicateSource": "Item.RxIy2d516YrLuzpS",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4077,7 +4215,7 @@
       "_stats": {
         "compendiumSource": "Item.EO5v5UChnByyIVGp",
         "coreVersion": "12.343",
-        "createdTime": 1781875192313,
+        "createdTime": 1782566203317,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4141,7 +4279,7 @@
       "_stats": {
         "compendiumSource": "Item.GN2lmhC75LItt0Nj",
         "coreVersion": "12.343",
-        "createdTime": 1781875192313,
+        "createdTime": 1782566203317,
         "duplicateSource": "Item.8Vn4CZdcyrkTJKm3",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4276,7 +4414,7 @@
       "_stats": {
         "compendiumSource": "Item.DMglYkZ4stxssLQw",
         "coreVersion": "12.343",
-        "createdTime": 1781875192313,
+        "createdTime": 1782566203317,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4287,7 +4425,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1781957054182,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -4465,7 +4603,7 @@
       "_stats": {
         "compendiumSource": "Item.vpFPtAgKm2tB93w0",
         "coreVersion": "12.343",
-        "createdTime": 1781875192313,
+        "createdTime": 1782566203317,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4533,7 +4671,7 @@
       "_stats": {
         "compendiumSource": "Item.fJshVRdauYDSTAop",
         "coreVersion": "12.343",
-        "createdTime": 1781875192313,
+        "createdTime": 1782566203317,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4544,7 +4682,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1781893429195,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -4564,7 +4702,7 @@
             "rounds": null,
             "seconds": null,
             "startRound": null,
-            "startTime": null,
+            "startTime": 298800,
             "startTurn": null,
             "turns": null
           },
@@ -4662,7 +4800,7 @@
       "_stats": {
         "compendiumSource": "Item.b8BGWwomp8rSkuxz",
         "coreVersion": "12.343",
-        "createdTime": 1781875192313,
+        "createdTime": 1782566203317,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4774,7 +4912,7 @@
       "_stats": {
         "compendiumSource": "Item.65vqojNWT7Ptxq0E",
         "coreVersion": "12.343",
-        "createdTime": 1781875192313,
+        "createdTime": 1782566203317,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4785,7 +4923,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1781893433835,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -4805,7 +4943,7 @@
             "rounds": null,
             "seconds": null,
             "startRound": null,
-            "startTime": null,
+            "startTime": 298800,
             "startTurn": null,
             "turns": null
           },
@@ -4902,7 +5040,7 @@
       "_stats": {
         "compendiumSource": "Item.Rrs0Rt6X9ji6JZZh",
         "coreVersion": "12.343",
-        "createdTime": 1781875192313,
+        "createdTime": 1782566203317,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4913,7 +5051,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1781898553751,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -5157,11 +5295,151 @@
       "type": "equippableItem"
     },
     {
+      "_id": "wecgr398559brY1I",
+      "_stats": {
+        "compendiumSource": "Item.9MkxxTnQjRcFQ2IN",
+        "coreVersion": "12.343",
+        "createdTime": 1782584154485,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/phantom_rush.png",
+      "name": "Invocation",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "nSGZ1sz1rdKao0kz": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Invoker",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>You may use an action and spend 5 Mind Points to perform an <strong>invocation</strong>, drawing energy from one of the <strong>wellsprings</strong> present on the scene (see <strong>Invoker's</strong> <strong>Unique Mechanic</strong>). Your <strong>【SL】</strong> in this Skill determines which invocations you have access to.</p>",
+          "details_roller": "Show",
+          "duration": "",
+          "effect_table": {},
+          "heroic_requirement": "",
+          "id": "wecgr398559brY1I",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/phantom_rush.png",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "3",
+          "max_level": "3",
+          "name": "Invocation",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Other",
+          "type_damage": "",
+          "use_optional_params": false,
+          "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.wecgr398559brY1I"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "9MkxxTnQjRcFQ2IN"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "WZWSw7mdfoIPOzqS",
+      "_stats": {
+        "compendiumSource": "Item.XsODbvZry66Fs6xS",
+        "coreVersion": "12.343",
+        "createdTime": 1782584502638,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/EMTrans1.png",
+      "name": "Elemental Harmony",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "nSGZ1sz1rdKao0kz": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "check_bonus": "0",
+          "class": "Invoker",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>You may verbally communicate with creatures of the <strong>elemental</strong> Species.</p>\n<p>When you restore a creature’s Hit Points with an <strong>invocation</strong> or spell, if an <strong>elemental</strong> is present on the scene, the restored amount is increased by <strong>[SL × 5]</strong>.</p>\n",
+          "details_roller": "Show",
+          "duration": "",
+          "effect_table": {},
+          "heroic_requirement": "",
+          "id": "sPTX2h7JM3JAO8l6",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/EMTrans1.png",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Elemental Harmony",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>Bonus HP Restored</strong></p></td></tr><tr><td><p>1</p></td><td><p>5</p></td></tr><tr><td><p>2</p></td><td><p>10</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false,
+          "uuid": "Actor.V9geXDcQmBrjsnfF.Item.sPTX2h7JM3JAO8l6"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "XsODbvZry66Fs6xS"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "XrwiCo9dqjD1UGJi",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782528225879,
+        "createdTime": 1782566203317,
         "duplicateSource": "Item.VIPHiDpYC69MDFiO",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5313,7 +5591,7 @@
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
           "insect_ef": "100",
           "ip_cost": "",
-          "isEquipped": false,
+          "isEquipped": true,
           "isKey": false,
           "isMartial": false,
           "isModule": false,
@@ -5359,7 +5637,7 @@
       "_stats": {
         "compendiumSource": "Item.zgb1ZKLnw50WNjlG",
         "coreVersion": "12.343",
-        "createdTime": 1781875192313,
+        "createdTime": 1782566203317,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5419,7 +5697,7 @@
       "_stats": {
         "compendiumSource": "Item.KRD2oLQnj3dgVq0j",
         "coreVersion": "12.343",
-        "createdTime": 1781875192313,
+        "createdTime": 1782566203317,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5896,8 +6174,8 @@
   "system": {
     "activeConditionalModifierGroups": [],
     "props": {
-      "accessory2_details": "<ul>\n<li>Your attacks with <strong>brawling</strong> weapons deal 5 extra damage.</li>\n</ul>",
-      "accessory2_name": "Black Belt",
+      "accessory2_details": "<ul><li><p style=\"\">You have Resistance to <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(226, 88, 34) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><strong><span style=\"text-decoration: underline;\"> </span></strong></span></span>damage.</p></li></ul>",
+      "accessory2_name": "Ruby Pendant",
       "accessory_details": "<ul><li><p><strong>【Provoke】SL+1</strong></p></li><li><p>+1 <strong>DEF </strong>this bonus <strong>doubles </strong>if you are in <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span></p></li></ul>",
       "accessory_name": "Matador Cape",
       "activation": 1,
@@ -5906,7 +6184,7 @@
       "affinity_3": "NA",
       "affinity_4": "NA",
       "affinity_5": "NA",
-      "affinity_6": "NA",
+      "affinity_6": "RS",
       "affinity_7": "NA",
       "affinity_8": "NA",
       "affinity_9": "NA",
@@ -5984,6 +6262,12 @@
           "benefit": "hp",
           "class_name": "Matador",
           "level": "10"
+        },
+        "3": {
+          "$deleted": false,
+          "benefit": "hp",
+          "class_name": "Invoker",
+          "level": "4"
         }
       },
       "clock_adoration": "0",
@@ -6106,9 +6390,9 @@
       "critical_damage_bonus": 0,
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
-      "current_hp": 145,
-      "current_ip": "3",
-      "current_mp": 65,
+      "current_hp": "154",
+      "current_ip": "10",
+      "current_mp": "69",
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/Blanche_Cut-in002.png",
       "cut_in_fumble": "",
@@ -6124,7 +6408,7 @@
       "damage_receiving_mod_ice": 0,
       "damage_receiving_mod_light": 0,
       "damage_receiving_mod_melee": 0,
-      "damage_receiving_mod_physical": 0,
+      "damage_receiving_mod_physical": 9,
       "damage_receiving_mod_poison": 0,
       "damage_receiving_mod_range": 0,
       "damage_receiving_percentage_air": 0,
@@ -6162,7 +6446,7 @@
       "emotion_3_3": "hatred",
       "emotion_4_1": "inferiority",
       "emotion_4_2": "loyalty",
-      "emotion_4_3": "",
+      "emotion_4_3": "affection",
       "emotion_5_1": "",
       "emotion_5_2": "",
       "emotion_5_3": "affection",
@@ -6176,15 +6460,15 @@
       "enraged_status": 0,
       "entropism": false,
       "envenomed_status": 0,
-      "exp_meter": "8.69",
-      "experience": 8.69,
+      "exp_meter": "1.84",
+      "experience": "1.84",
       "experience_ui": "0",
       "extra_damage_mod_air": 0,
-      "extra_damage_mod_all": 0,
+      "extra_damage_mod_all": 1,
       "extra_damage_mod_arcane": 0,
       "extra_damage_mod_bolt": 0,
       "extra_damage_mod_bow": 0,
-      "extra_damage_mod_brawling": 5,
+      "extra_damage_mod_brawling": 0,
       "extra_damage_mod_dagger": 0,
       "extra_damage_mod_dark": 0,
       "extra_damage_mod_earth": 0,
@@ -6203,7 +6487,7 @@
       "extra_damage_mod_spell": 0,
       "extra_damage_mod_sword": 0,
       "extra_damage_mod_thrown": 0,
-      "fabula_point": "10",
+      "fabula_point": "8",
       "fatigue_status": 0,
       "firearm_ef": "100",
       "flail_ef": "100",
@@ -6314,6 +6598,14 @@
           "roll": "",
           "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.kW12WGgIOK3KzsRi"
         },
+        "rcyOz2H1OGzvSE0P": {
+          "armor_description": "<p><ul>\n<li>You gain a +1 bonus to your <strong>Accuracy Checks</strong>.</li>\n</ul></p>",
+          "armor_martial": "♦️",
+          "id": "${item.id}",
+          "name": "+4 Ardent Yoroi",
+          "roll": "",
+          "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.rcyOz2H1OGzvSE0P"
+        },
         "wXCSc2PW2sSNtmw5": {
           "armor_description": "<p>ERROR</p>",
           "armor_martial": "",
@@ -6374,7 +6666,7 @@
         },
         "cXbX8RdGLCiQ5V1d": {
           "id": "${item.id}",
-          "name": "Runic Shield",
+          "name": "+5 Runic Shield",
           "roll": "",
           "shield_description": "<ul><li><p>No Quality.</p></li></ul>",
           "shield_martial": "♦️",
@@ -6390,7 +6682,7 @@
         },
         "oM6Bo3Hc4wV9ICa9": {
           "id": "${item.id}",
-          "name": "Titanic Shield",
+          "name": "+4 Titanic Shield",
           "roll": "",
           "shield_description": "<ul><li><p>Your equipped weapon gain <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.ljKBtlzPVvhhmdHW\" data-id=\"ljKBtlzPVvhhmdHW\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Weighted</span></strong></a></span></p></li></ul>",
           "shield_martial": "",
@@ -6494,6 +6786,13 @@
           "roll": "",
           "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.JT5pvl5buIjL9JHX"
         },
+        "XrwiCo9dqjD1UGJi": {
+          "acess_description": "<ul><li><p style=\"\">You have Resistance to <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(226, 88, 34) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><strong><span style=\"text-decoration: underline;\"> </span></strong></span></span>damage.</p></li></ul>",
+          "id": "${item.id}",
+          "name": "Ruby Pendant",
+          "roll": "",
+          "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.XrwiCo9dqjD1UGJi"
+        },
         "a2LdCaDOs2kAeAw3": {
           "acess_description": "<p style=\"\">You have Resistance to 【<strong>Air】</strong> damage.</p>",
           "id": "${item.id}",
@@ -6581,7 +6880,7 @@
       },
       "item_restore_mod": 0,
       "key_list": {},
-      "level": 30,
+      "level": "34",
       "lifesteal_percentage": 0,
       "lifesteal_value": 0,
       "magic_defense": 8,
@@ -6589,13 +6888,13 @@
       "main_attrib_1": "SHI",
       "main_attrib_2": "SHI",
       "main_details": "<ul><li><p>Your equipped weapon gain <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.ljKBtlzPVvhhmdHW\" data-id=\"ljKBtlzPVvhhmdHW\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Weighted</span></strong></a></span></p></li></ul>",
-      "main_hand": "Titanic Shield",
+      "main_hand": "+4 Titanic Shield",
       "main_hand_attack": "",
       "manadrain_percentage": 0,
       "manadrain_value": 0,
-      "max_hp": 125,
+      "max_hp": 154,
       "max_ip": 10,
-      "max_mp": 65,
+      "max_mp": 69,
       "memories_list": {},
       "memory": "Memories",
       "mig_base": "12",
@@ -6666,7 +6965,7 @@
       "off_base_mod_1": "2",
       "off_base_mod_2": "2",
       "off_details": "<ul><li><p>No Quality.</p></li></ul>",
-      "off_hand": "Runic Shield",
+      "off_hand": "+5 Runic Shield",
       "off_hand_attack": "",
       "off_mod_1": 2,
       "off_mod_2": 2,
@@ -6806,6 +7105,18 @@
           "roll": "",
           "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.3PGlRQq7M3q7X9aA"
         },
+        "4sBUKgAmWx5w2qSQ": {
+          "active_class": "Invoker",
+          "active_cost": "",
+          "active_description": "<p>After an enemy you can see loses Hit Points due to damage dealt by one of your allies, if that damage was increased by one or more of your <strong>“hex” invocations</strong>, you may perform a <strong>free attack</strong> with a weapon you have equipped. This attack may only target that enemy, and receives a bonus equal to <strong>[SL]</strong> to its Accuracy Check; if it is successful, all its damage becomes of the same type dealt by your ally, and all <strong>“hex” invocations</strong> present on its target end immediately after the attack has been resolved.</p>\n<p>If two or more enemies trigger this Skill at the same time, you can perform a <strong>free attack</strong> against each of them, in whatever order you prefer.</p>\n",
+          "active_duration": "Instantanious",
+          "active_level": 1,
+          "active_target": "Special",
+          "id": "${item.id}",
+          "name": "Ripples",
+          "roll": "",
+          "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.4sBUKgAmWx5w2qSQ"
+        },
         "BXrs9fsYHnpaFTun": {
           "active_class": "Wayfarer",
           "active_cost": "",
@@ -6913,6 +7224,18 @@
           "name": "Pases",
           "roll": "",
           "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.WBMByjJUKDlD8TmE"
+        },
+        "WZWSw7mdfoIPOzqS": {
+          "active_class": "Invoker",
+          "active_cost": "",
+          "active_description": "<p>You may verbally communicate with creatures of the <strong>elemental</strong> Species.</p>\n<p>When you restore a creature’s Hit Points with an <strong>invocation</strong> or spell, if an <strong>elemental</strong> is present on the scene, the restored amount is increased by <strong>[SL × 5]</strong>.</p>\n",
+          "active_duration": "",
+          "active_level": 1,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Elemental Harmony",
+          "roll": "",
+          "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.WZWSw7mdfoIPOzqS"
         },
         "ZmZelFTyII167BrS": {
           "active_class": "Wayfarer",
@@ -7141,6 +7464,18 @@
           "name": "Grace Under Pressure",
           "roll": "",
           "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.vEo4cizZIusEH80B"
+        },
+        "wecgr398559brY1I": {
+          "active_class": "Invoker",
+          "active_cost": "",
+          "active_description": "<p>You may use an action and spend 5 Mind Points to perform an <strong>invocation</strong>, drawing energy from one of the <strong>wellsprings</strong> present on the scene (see <strong>Invoker's</strong> <strong>Unique Mechanic</strong>). Your <strong>【SL】</strong> in this Skill determines which invocations you have access to.</p>",
+          "active_duration": "",
+          "active_level": 3,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Invocation",
+          "roll": "",
+          "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.wecgr398559brY1I"
         }
       },
       "skill_attack_damage": "0",
@@ -7322,7 +7657,7 @@
       "wlp_base": "6",
       "wlp_current": 6,
       "your_class_name": "Housekeeper",
-      "zenit": "3378",
+      "zenit": "3983",
       "zero_label": "Zero Power",
       "zero_power_description": "<p>You and any number of allies you can see recover from all status effects and recover an amount of Hit Points equal to <strong>【40 + half your level】</strong></p>",
       "zero_power_macro": "",

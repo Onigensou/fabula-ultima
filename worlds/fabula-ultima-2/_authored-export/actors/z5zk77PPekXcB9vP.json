@@ -13,6 +13,7 @@
       "version": "4.8.5"
     },
     "fabula-ultima-companion": {
+      "damage_taken_mult": 1,
       "idleAnimation": {
         "bounce": false,
         "float": false

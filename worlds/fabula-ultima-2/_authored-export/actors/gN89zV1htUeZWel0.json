@@ -13,6 +13,11 @@
       "version": "4.8.5"
     },
     "fabula-ultima-companion": {
+      "iconFocus": {
+        "x": 50,
+        "y": 0,
+        "zoom": 1
+      },
       "idleAnimation": {
         "bounce": false,
         "float": false
