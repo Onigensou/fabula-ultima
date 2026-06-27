@@ -5579,6 +5579,18 @@
         "effects": 0
       },
       {
+        "id": "QjuNoo0rGl9iUWiO",
+        "name": "Encyclopedia (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "TouMdewrn3xPmsMj",
+        "name": "Encyclopedia Strike",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "VKDyQXm0Tsxtt3t2",
         "name": "Energized",
         "type": "equippableItem",
@@ -9056,7 +9068,7 @@
         "id": "GTVdZrNCbZGjjaR5",
         "name": "Ninja Log",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "JumKPTx7VEmwb4WP",
@@ -11558,7 +11570,7 @@
         "id": "uNsw1vWtAssZo4Bz",
         "name": "Swordbreaker",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "ZdwdNhKXtC96Z2VB",
@@ -14285,6 +14297,13 @@
       {
         "id": "w2Ugj35nARiZpvV4",
         "name": "Battle Rank",
+        "type": "character",
+        "items": [],
+        "effects": 1
+      },
+      {
+        "id": "QY0WLCEVD9FVtYaJ",
+        "name": "BD Dummy Enemy",
         "type": "character",
         "items": [],
         "effects": 1
@@ -17598,6 +17617,10 @@
             "name": "Divination"
           },
           {
+            "id": "O7KjXoyMd4zoGh5c",
+            "name": "Draconic Roar"
+          },
+          {
             "id": "hxPlRSwOxHShzdRK",
             "name": "Dragonskull Helm"
           },
@@ -17620,6 +17643,14 @@
           {
             "id": "IJPsdKmEyzpLjJu6",
             "name": "Encyclopedia"
+          },
+          {
+            "id": "pJES3zgWibJ7kiaq",
+            "name": "Encyclopedia (Passive)"
+          },
+          {
+            "id": "gbwC7vk4bsQ56Knr",
+            "name": "Encyclopedia Strike"
           },
           {
             "id": "xmLeuCQNdswv14Zi",
@@ -17710,6 +17741,14 @@
             "name": "Sage Robe"
           },
           {
+            "id": "L1vZvNSNxlYlrQhu",
+            "name": "Starfall"
+          },
+          {
+            "id": "3jT2QfRSixKYGLMZ",
+            "name": "Starfall Comet"
+          },
+          {
             "id": "z1GsqcJC8bh4TOAs",
             "name": "Stop"
           },
@@ -17726,7 +17765,7 @@
             "name": "Zero Trigger: Foresight"
           }
         ],
-        "effects": 3
+        "effects": 4
       },
       {
         "id": "tzXbVfDYPgvu5wml",
@@ -22501,7 +22540,7 @@
             "name": "Zero Trigger: Strategy"
           }
         ],
-        "effects": 1
+        "effects": 2
       },
       {
         "id": "eovuAdwJdbtn8rOr",

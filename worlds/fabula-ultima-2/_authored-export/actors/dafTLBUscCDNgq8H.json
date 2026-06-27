@@ -10,17 +10,17 @@
   },
   "effects": [
     {
-      "_id": "JpPnLqsLIkXtD2lm",
+      "_id": "fWXyoM4Zn7zZYzA9",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782524821101,
+        "createdTime": 1782554655928,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
       "changes": [],
-      "description": "<p>This creature has less than 50% HP</p>",
+      "description": "<p><em>Lucky Seven Ready:</em> Lucky Seven is available this scene. Spent when used; refreshes each conflict.</p>",
       "disabled": false,
       "duration": {
         "combat": null,
@@ -34,21 +34,22 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "isPredefined": true,
-          "originalId": "4ldx00srGNv5AJBr",
-          "originalParentId": "0gIBYzSpjdXS6f25",
-          "originalUuid": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr"
-        },
-        "dfreds-convenient-effects": {
-          "ceEffectId": "ce-crisis",
-          "isBackup": false,
-          "isConvenient": true,
-          "isDynamic": false,
-          "isTemporary": false,
-          "isViewable": false
+          "originalId": "DIJbLrv3X5vkOVnj",
+          "originalParentId": "v56GvN63nvIYV4iJ",
+          "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.v56GvN63nvIYV4iJ.ActiveEffect.DIJbLrv3X5vkOVnj"
         },
         "fabula-ultima-companion": {
-          "bdCrisis": true
+          "chargeKey": "lucky_seven",
+          "charges": 1,
+          "chargesMax": 1,
+          "directorAppliedBy": {
+            "appliedAtRound": 0,
+            "effectLabel": "ls_arm",
+            "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.blzmhnVQPc3CAFe2",
+            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.v56GvN63nvIYV4iJ",
+            "turnsRemaining": 1
+          }
         },
         "statuscounter": {
           "config": {
@@ -59,16 +60,146 @@
           "visible": false
         }
       },
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/08_DRG/blood_for_blood.png",
-      "name": "Crisis",
-      "origin": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr",
+      "img": "icons/magic/control/buff-flight-wings-runes-purple.webp",
+      "name": "Lucky Seven Ready",
+      "origin": "Actor.dafTLBUscCDNgq8H.Item.v56GvN63nvIYV4iJ",
       "sort": 0,
       "statuses": [
-        "5jkr80zqdzaR003d"
+        "fud-lucky-seven-ready"
       ],
-      "system": {
-        "tags": []
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "nJmcpeI5iyCYiVQv",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782554655127,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
       },
+      "changes": [],
+      "description": "<p>A reserve of foresight Hina spends to take the place of all creatures threatened by a single danger.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "propheticPoint01",
+          "originalParentId": "Lmzs6VllFRo44jZq",
+          "originalUuid": "Item.Lmzs6VllFRo44jZq.ActiveEffect.propheticPoint01"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "chargeKey": "prophecy",
+          "charges": 2,
+          "chargesMax": 99,
+          "directorAppliedBy": {
+            "appliedAtRound": 0,
+            "effectLabel": "pds_gain",
+            "lifetimeMode": "persistent_counter",
+            "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.blzmhnVQPc3CAFe2",
+            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.gm2w1NLdaEI7SzaQ",
+            "turnsRemaining": null
+          },
+          "directorPermanent": false,
+          "lifetimeMode": "persistent_counter"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/nocturnal_sect.png",
+      "name": "Prophecy Point",
+      "origin": "Actor.dafTLBUscCDNgq8H.Item.gm2w1NLdaEI7SzaQ",
+      "sort": 0,
+      "statuses": [
+        "fud-prophecy-point"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "nW9KaO1SljWW7CeG",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782540447661,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><em>Heart of Darkness:</em> armed for this scene.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "TQINaXFTRwWZBJvx",
+          "originalParentId": "EGYilCNAGvl2BldF",
+          "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF.ActiveEffect.TQINaXFTRwWZBJvx"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "chargeKey": "hod_ready",
+          "charges": 1,
+          "chargesMax": 1,
+          "directorAppliedBy": {
+            "appliedAtRound": 0,
+            "effectLabel": "hod_refresh",
+            "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.blzmhnVQPc3CAFe2",
+            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF",
+            "turnsRemaining": null
+          },
+          "directorPermanent": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/unholy/silhouette-evil-horned-giant.webp",
+      "name": "Heart of Darkness Ready",
+      "origin": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF",
+      "sort": 0,
+      "statuses": [
+        "fud-heart-of-darkness-ready"
+      ],
+      "system": {},
       "tint": "#ffffff",
       "transfer": false,
       "type": "base"
@@ -104,7 +235,7 @@
         },
         "fabula-ultima-companion": {
           "chargeKey": "lucky_number",
-          "charges": 7,
+          "charges": 3,
           "chargesMax": 7,
           "directorAppliedBy": {
             "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
@@ -143,9 +274,10 @@
                 "$deleted": false,
                 "effect_kind": "open_action_menu",
                 "effect_label": "ls_menu",
-                "menu_option_labels": "Replace the first die|Replace the second die",
+                "menu_option_descriptions": "New total: ${AE_CHARGES_LUCKY_NUMBER + CHECK_DIE_B + CHECK_BONUS}|New total: ${CHECK_DIE_A + AE_CHARGES_LUCKY_NUMBER + CHECK_BONUS}",
+                "menu_option_labels": "First die (${CHECK_DIE_A_ATTR}): ${CHECK_DIE_A} → ${AE_CHARGES_LUCKY_NUMBER}|Second die (${CHECK_DIE_B_ATTR}): ${CHECK_DIE_B} → ${AE_CHARGES_LUCKY_NUMBER}",
                 "menu_option_refs": "ls_die_a, ls_die_b",
-                "menu_subtitle": "Replace a die with your lucky number",
+                "menu_subtitle": "Replace one die with your lucky number (${AE_CHARGES_LUCKY_NUMBER}); the replaced value becomes your new lucky number.",
                 "menu_title": "Lucky Seven"
               },
               "4": {
@@ -185,7 +317,7 @@
                 "condition_formula": "",
                 "reaction_effect_ref": "ls_arm",
                 "reaction_passive_mode": "force",
-                "reaction_source": "self",
+                "reaction_source": "",
                 "reaction_trigger": "conflict_start"
               },
               "1": {
@@ -214,71 +346,6 @@
       "sort": 0,
       "statuses": [
         "fud-lucky-number"
-      ],
-      "system": {},
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "swMya4fWuaJd71pY",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1782493704097,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [],
-      "description": "<p><em>Heart of Darkness:</em> armed for this scene.</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": null,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "TQINaXFTRwWZBJvx",
-          "originalParentId": "EGYilCNAGvl2BldF",
-          "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF.ActiveEffect.TQINaXFTRwWZBJvx"
-        },
-        "fabula-ultima-companion": {
-          "category": "buff",
-          "chargeKey": "hod_ready",
-          "charges": 1,
-          "chargesMax": 1,
-          "directorAppliedBy": {
-            "appliedAtRound": 0,
-            "effectLabel": "hod_refresh",
-            "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.RpC6IM3OsHRX5a24",
-            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF",
-            "turnsRemaining": null
-          },
-          "directorPermanent": true
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "icons/magic/unholy/silhouette-evil-horned-giant.webp",
-      "name": "Heart of Darkness Ready",
-      "origin": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF",
-      "sort": 0,
-      "statuses": [
-        "fud-heart-of-darkness-ready"
       ],
       "system": {},
       "tint": "#ffffff",
@@ -684,6 +751,53 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "tbtry6egID5MOcxv"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "3jT2QfRSixKYGLMZ",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782542203691,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        },
+        "fabula-ultima-companion": {
+          "helperSkill": true
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/Genshin/Elegy_for_the_End.png",
+      "name": "Starfall Comet",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "zEo3OgMcD2P3ug1o",
+        "props": {
+          "cost": "0",
+          "damage_bonus": "15",
+          "description": "<p>A single Starfall comet. Deals <strong>【HR+15】 Light damage</strong> to one random enemy.</p>",
+          "isCheck": true,
+          "isOffensiveSpell": true,
+          "name": "Starfall Comet",
+          "skill_range": "Range",
+          "skill_target": "One Random Enemy",
+          "skill_type": "Spell",
+          "type_damage": "Light"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": null,
+        "unique": false,
+        "uniqueId": "3jT2QfRSixKYGLMZ"
       },
       "type": "equippableItem"
     },
@@ -2557,6 +2671,80 @@
       "type": "equippableItem"
     },
     {
+      "_id": "gbwC7vk4bsQ56Knr",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782551343860,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        },
+        "fabula-ultima-companion": {
+          "coreAction": "study"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/book.png",
+      "name": "Encyclopedia Strike",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "IJPsdKmEyzpLjJu6",
+        "props": {
+          "action_command": "",
+          "check_mode": "",
+          "cost": "",
+          "damage_bonus": "17",
+          "description": "<p>As a Skill Action, perform a free ranged attack with the Encyclopedia dealing +10 bonus damage (HR + 17 Physical). The Encyclopedia is then unequipped and vanishes from your inventory until the end of the scene; you may immediately perform an Equipment action as a Free Action.</p>",
+          "details_roller": "",
+          "effect_table": {
+            "0": {
+              "chain_steps": "encstrike_hide,encstrike_equip",
+              "effect_kind": "chain",
+              "effect_label": "encstrike_chain"
+            },
+            "1": {
+              "effect_kind": "hide_item",
+              "effect_label": "encstrike_hide"
+            },
+            "2": {
+              "action_ref": "equipment",
+              "effect_kind": "free_action",
+              "effect_label": "encstrike_equip",
+              "free_of_cost": "true"
+            }
+          },
+          "id": "gbwC7vk4bsQ56Knr",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/book.png",
+          "isCheck": true,
+          "isReaction": false,
+          "max_level": "1",
+          "name": "Encyclopedia Strike",
+          "on_activate_effect_ref": "encstrike_chain",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "INS",
+          "skill_range": "Ranged",
+          "skill_target": "One Enemy",
+          "skill_type": "Active",
+          "type_damage": "Physical",
+          "uuid": "Item.gbwC7vk4bsQ56Knr"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": true,
+        "uniqueId": "TouMdewrn3xPmsMj"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "GLE6h2EmyLBSYgRX",
       "_stats": {
         "compendiumSource": "Item.ROQw6telXF9qyZC8",
@@ -3426,6 +3614,9 @@
         "custom-system-builder": {
           "version": "3.2.4"
         },
+        "fabula-ultima-companion": {
+          "hiddenUntilBattleEnd": false
+        },
         "fucompanion": {
           "itemMigratorBackup": {
             "detectedType": "weapon",
@@ -3503,7 +3694,7 @@
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/book.png",
           "insect_ef": "100",
           "ip_cost": "",
-          "isEquipped": false,
+          "isEquipped": true,
           "isKey": false,
           "isMartial": false,
           "isModule": false,
@@ -4053,6 +4244,66 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "loJVZKaVMt8VxzCI"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "L1vZvNSNxlYlrQhu",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782542203691,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/Genshin/Elegy_for_the_End.png",
+      "name": "Starfall",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "zEo3OgMcD2P3ug1o",
+        "props": {
+          "cost": "30 MP",
+          "description": "<p><strong>Roulette Enemy.</strong> Summon 3 comets to fall on random enemies (repeats allowed). Each deals <strong>【HR+15】 Light damage</strong>.</p>",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "chain_repeat": "3",
+              "chain_steps": "starfall_comet_cast",
+              "effect_kind": "chain",
+              "effect_label": "starfall_chain"
+            },
+            "1": {
+              "$deleted": false,
+              "action_ref": "Starfall Comet",
+              "effect_kind": "free_action",
+              "effect_label": "starfall_comet_cast",
+              "free_of_cost": "true"
+            }
+          },
+          "isCheck": false,
+          "isOffensiveSpell": false,
+          "name": "Starfall",
+          "on_activate_effect_ref": "starfall_chain",
+          "skill_range": "Range",
+          "skill_target": "Self",
+          "skill_type": "Spell",
+          "type_damage": ""
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": null,
+        "unique": false,
+        "uniqueId": "L1vZvNSNxlYlrQhu"
       },
       "type": "equippableItem"
     },
@@ -4694,6 +4945,77 @@
       "type": "equippableItem"
     },
     {
+      "_id": "O7KjXoyMd4zoGh5c",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782538262044,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/beast.png",
+      "name": "Draconic Roar",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "hxPlRSwOxHShzdRK",
+        "props": {
+          "cost": "30 MP",
+          "description": "<p>Unleash a terrifying roar. Deals <strong>【HR+13】 Non-Elemental damage</strong> to all enemies and inflicts each with a random <strong>Basic Debuff</strong>.</p><p>An enemy whose Level is lower than yours is afflicted by an even <strong>stronger debuff</strong> instead.</p>",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "chain_steps": "roar_damage,roar_debuff",
+              "effect_kind": "chain",
+              "effect_label": "roar_chain"
+            },
+            "1": {
+              "$deleted": false,
+              "attacker_name": "Draconic Roar",
+              "damage_amount": "HR + 13",
+              "damage_element": "none",
+              "damage_ignore_affinity": true,
+              "effect_kind": "deal_damage",
+              "effect_label": "roar_damage",
+              "target_ref": "hit_action_targets"
+            },
+            "2": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_name_pool": "Dazed,Shaken,Slow,Weak",
+              "ae_name_pool_alt": "Enraged,Poisoned",
+              "ae_pool_alt_condition": "TARGET_LEVEL < CHAR_LEVEL",
+              "effect_kind": "apply_ae",
+              "effect_label": "roar_debuff",
+              "target_ref": "hit_action_targets"
+            }
+          },
+          "isCheck": true,
+          "isOffensiveSpell": false,
+          "name": "Draconic Roar",
+          "on_activate_effect_ref": "roar_chain",
+          "skill_target": "All Enemy",
+          "skill_type": "Active",
+          "type_damage": ""
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": null,
+        "unique": false,
+        "uniqueId": "O7KjXoyMd4zoGh5c"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "oe3OP8VmjHJpWJ41",
       "_stats": {
         "compendiumSource": "Item.wXvaSpnM04KZ2QFA",
@@ -4994,6 +5316,68 @@
         "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "jqykkhAB5m9durso"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "pJES3zgWibJ7kiaq",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782550205118,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        },
+        "fabula-ultima-companion": {
+          "coreAction": "study"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/book.png",
+      "name": "Encyclopedia (Passive)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "IJPsdKmEyzpLjJu6",
+        "props": {
+          "action_command": "",
+          "check_mode": "",
+          "cost": "",
+          "description": "<p>Equipped passive: +2 to Study Checks.</p>",
+          "details_roller": "",
+          "effect_table": {
+            "0": {
+              "check_buff_action": "study",
+              "check_buff_amount": "2",
+              "effect_kind": "check_buff",
+              "effect_label": "enc_study_buff"
+            }
+          },
+          "id": "pJES3zgWibJ7kiaq",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/book.png",
+          "isCheck": false,
+          "isReaction": false,
+          "max_level": "1",
+          "name": "Encyclopedia (Passive)",
+          "on_activate_effect_ref": "",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "INS",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "uuid": "Item.pJES3zgWibJ7kiaq"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": true,
+        "uniqueId": "QjuNoo0rGl9iUWiO"
       },
       "type": "equippableItem"
     },
@@ -6747,7 +7131,7 @@
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Stave/Icon-Budding_Maple_Wand.webp",
           "insect_ef": "100",
           "ip_cost": "",
-          "isEquipped": true,
+          "isEquipped": false,
           "isKey": false,
           "isMartial": false,
           "isModule": false,
@@ -7058,6 +7442,7 @@
           "demon_ef": "100",
           "description": "<ul><li><p>Attack with this weapon ignores <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Hidden</span></strong></a></span></span></p></li><li><p>You may cast the spell <strong>【</strong>⚡<strong>Starfall】</strong></p></li></ul>",
           "dragon_ef": "100",
+          "effect_table": {},
           "elemental_ef": "100",
           "enforcer_ef": "100",
           "fey_ef": "100",
@@ -7071,9 +7456,12 @@
           "humanoid_ef": "100",
           "id": "zEo3OgMcD2P3ug1o",
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/Genshin/Elegy_for_the_End.png",
+          "ingredient_taste": "",
+          "ingredient_taste2": "",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
+          "isIngredient": false,
           "isKey": false,
           "isMartial": true,
           "isModule": false,
@@ -7088,6 +7476,14 @@
           "item_quantity": "1",
           "item_rarity": "Rare",
           "item_skill_active": {
+            "N8yUQ5shy1kYfjn1": {
+              "id": "${item.id}",
+              "name": "Starfall",
+              "skill_cost": "30 MP",
+              "skill_description": "<p><strong>Roulette Enemy.</strong> Summon comets to fall on random enemies. Deals <strong>【HR+15】 Light damage</strong>. Repeat this <strong>3 times</strong>.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.N8yUQ5shy1kYfjn1"
+            },
             "b760w07CqhFF1rDJ": {
               "id": "${item.id}",
               "name": "Starfall",
@@ -7111,7 +7507,18 @@
           "name": "Lunar Bow",
           "optional_params": {},
           "plant_ef": "100",
+          "reaction_config_table": {},
+          "recipe_dish_uuid": "",
+          "recipe_kind": "",
+          "refine_count": "0",
+          "refine_level": "0",
           "related_item_list": {
+            "N8yUQ5shy1kYfjn1": {
+              "id": "${item.id}",
+              "name": "Starfall",
+              "related_item_description": "<p><strong>Roulette Enemy.</strong> Summon comets to fall on random enemies. Deals <strong>【HR+15】 Light damage</strong>. Repeat this <strong>3 times</strong>.</p>",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.N8yUQ5shy1kYfjn1"
+            },
             "Zcz1y0z4DrAHfx76": {
               "id": "${item.id}",
               "name": "Starfall",
@@ -7135,6 +7542,7 @@
           "rolled_atr1": "DEX",
           "rolled_atr2": "INS",
           "set_name": "",
+          "skill_target": "One Enemy",
           "soldier_ef": "100",
           "spirit_ef": "100",
           "type_damage": "Light",
@@ -7729,9 +8137,9 @@
       "critical_damage_bonus": 0,
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
-      "current_hp": 42,
+      "current_hp": "100",
       "current_ip": "6",
-      "current_mp": 17,
+      "current_mp": "30",
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/hina_Cut-in002.png",
       "cut_in_fumble": "",
@@ -7845,7 +8253,7 @@
       "entropism": false,
       "envenomed_status": 0,
       "exp_meter": "8.69",
-      "experience": 8.69,
+      "experience": "8.69",
       "experience_ui": "0",
       "extra_damage_mod_air": 0,
       "extra_damage_mod_all": 0,
@@ -8554,15 +8962,15 @@
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.ERBLg9oQAHRlJ8wZ"
         }
       },
-      "level": 30,
+      "level": "30",
       "lifesteal_percentage": 0,
       "lifesteal_value": 0,
       "magic_defense": 12,
       "magic_defense_mod": "0",
       "main_attrib_1": "INS",
-      "main_attrib_2": "WLP",
-      "main_details": "<ul><li><p>You may cast the spell 【📕Heal】</p></li></ul>",
-      "main_hand": "Budding Maple Wand",
+      "main_attrib_2": "INS",
+      "main_details": "<ul><li><p>You gain +2 to <strong>Study </strong>Checks</p></li><li><p>As a <strong>【Skill】</strong>Action, you may perform a <strong>Free Attack </strong>with this weapon, this attack range becomes <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Fcq1HgCEh3jxxELa\" data-id=\"Fcq1HgCEh3jxxELa\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Range</span></strong></a></span><strong>, </strong>and deal 10 bonus damage. <strong>Unequip </strong>this weapon, it disappear from your inventory until the end of this scene, Then, you may perform the <strong>【Equipment】</strong>Action as a Free Action.</p></li></ul>",
+      "main_hand": "Encyclopedia",
       "main_hand_attack": "",
       "manadrain_percentage": 0,
       "manadrain_value": 0,
@@ -9744,9 +10152,9 @@
       "turbulence_status": 0,
       "uuid": "Actor.dafTLBUscCDNgq8H",
       "weak_status": 0,
-      "weapon1_base_damage": "3",
+      "weapon1_base_damage": "7",
       "weapon1_base_mod": "0",
-      "weapon1_damage": 3,
+      "weapon1_damage": 7,
       "weapon1_damagetype": "Physical",
       "weapon1_mod": 0,
       "weapon2_damagetype": "-",
@@ -10753,13 +11161,13 @@
       "wlp_base": "10",
       "wlp_current": 10,
       "your_class_name": "Night Guidance",
-      "zenit": 6516,
+      "zenit": "6516",
       "zero_label": "Zero Power",
       "zero_power_description": "<p style=\"text-align: center\"><strong>Choose and trigger 3 oppertunity choice.</strong></p>",
       "zero_power_macro": "",
       "zero_power_name": "A MILLION POSSIBILITY",
       "zero_power_showMacro": false,
-      "zero_power_value": 6,
+      "zero_power_value": "6",
       "zero_trigger_description": "<p>When Hina change the outcome of check (fail&gt; success or success&gt;fail), she gain 1 zero trigger.</p>",
       "zero_trigger_label": "Trigger",
       "zombie_status": 0

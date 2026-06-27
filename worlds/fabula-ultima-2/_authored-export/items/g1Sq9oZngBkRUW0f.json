@@ -14,7 +14,7 @@
     }
   },
   "folder": "kmQEAefGfUhoR22y",
-  "img": "icons/skills/ranged/cannon-barrel-firing-yellow.webp",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/12_MCH/quick_reload.png",
   "name": "Bullet Break",
   "ownership": {
     "JQGNzKpDPHJmcUIW": 3,
@@ -44,7 +44,7 @@
       },
       "heroic_requirement": "You must have learned the Crossfire Skill, and have mastered one or more Classes among Commander and Sharpshooter.",
       "ignore_hr": false,
-      "img": "icons/skills/ranged/cannon-barrel-firing-yellow.webp",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/12_MCH/quick_reload.png",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": true,

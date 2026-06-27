@@ -233,6 +233,7 @@
       "beast_ef": "100",
       "category": "Arcane",
       "celestial_ef": "100",
+      "check": "Check",
       "check_bonus": "0",
       "construct_ef": "100",
       "damage_bonus": "0",
@@ -251,6 +252,8 @@
       "hand_slots": "One-handed",
       "human_ef": "100",
       "humanoid_ef": "100",
+      "id": "YpRxmj2S5mNfkal2",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/beast.png",
       "insect_ef": "100",
       "ip_cost": "",
       "isEquipped": false,
@@ -283,6 +286,8 @@
       "name": "Dragonskull Helm",
       "optional_params": {},
       "plant_ef": "100",
+      "refine_count": "0",
+      "refine_level": "0",
       "related_item_list": {
         "hIiWUGkuayYqQNeb": {
           "id": "${item.id}",
@@ -299,6 +304,7 @@
       "spirit_ef": "100",
       "type_damage": "Physical",
       "undead_ef": "100",
+      "uuid": "Item.YpRxmj2S5mNfkal2",
       "vehicle_ef": "100",
       "weapon_range": "Melee"
     },

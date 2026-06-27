@@ -79,9 +79,10 @@
                 "$deleted": false,
                 "effect_kind": "open_action_menu",
                 "effect_label": "ls_menu",
-                "menu_option_labels": "Replace the first die|Replace the second die",
+                "menu_option_descriptions": "New total: ${AE_CHARGES_LUCKY_NUMBER + CHECK_DIE_B + CHECK_BONUS}|New total: ${CHECK_DIE_A + AE_CHARGES_LUCKY_NUMBER + CHECK_BONUS}",
+                "menu_option_labels": "First die (${CHECK_DIE_A_ATTR}): ${CHECK_DIE_A} → ${AE_CHARGES_LUCKY_NUMBER}|Second die (${CHECK_DIE_B_ATTR}): ${CHECK_DIE_B} → ${AE_CHARGES_LUCKY_NUMBER}",
                 "menu_option_refs": "ls_die_a, ls_die_b",
-                "menu_subtitle": "Replace a die with your lucky number",
+                "menu_subtitle": "Replace one die with your lucky number (${AE_CHARGES_LUCKY_NUMBER}); the replaced value becomes your new lucky number.",
                 "menu_title": "Lucky Seven"
               },
               "4": {
@@ -121,7 +122,7 @@
                 "condition_formula": "",
                 "reaction_effect_ref": "ls_arm",
                 "reaction_passive_mode": "force",
-                "reaction_source": "self",
+                "reaction_source": "",
                 "reaction_trigger": "conflict_start"
               },
               "1": {
