@@ -261,10 +261,20 @@ function serializeCostMap(costMap) {
 function getCoreActionSkill(command) {
   const cmd = String(command ?? "").trim().toLowerCase();
   if (!cmd) return null;
-  return game.items?.find((it) =>
+  // `coreAction` is meant to uniquely tag the one authored Common action Item,
+  // but a gear `_skill` cloned from an action can leak the flag (e.g. the
+  // encyclopedia gear cloned from Study). Collect every match and prefer the
+  // one whose `action_command` agrees (the Common action authors set it; gear
+  // leaves it ""), falling back to the first only if none qualifies — so a
+  // stray cloned flag can never shadow the real action.
+  const matches = (game.items ?? []).filter((it) =>
     it.type === "equippableItem" &&
     (it.flags?.["fabula-ultima-companion"]?.coreAction ?? null) === cmd
-  ) ?? null;
+  );
+  if (!matches.length) return null;
+  return matches.find((it) =>
+    String(it.system?.props?.action_command ?? "").trim().toLowerCase() === cmd
+  ) ?? matches[0];
 }
 
 // The single action resolver. Every turn action (Attack/Skill/Spell/Guard/
