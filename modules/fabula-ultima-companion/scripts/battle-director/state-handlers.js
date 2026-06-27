@@ -1298,9 +1298,18 @@ const Prep = {
       director.enqueue({ type: INTENTS.ABORT });
       return;
     }
+    // In-place reinforce (Battle-End follow-up, e.g. ⭐ Wandering Flame): we
+    // re-enter PREP on the SAME live director to start a new conflict without
+    // tearing down. Skip the overworld-viewport capture (preserve the value
+    // from the first battle so the eventual boss-victory transition returns to
+    // the right overworld view) and skip the lifecycle-watcher installs (the
+    // ones from the first battle are still live and read director.dCombat at
+    // fire time, so they auto-track the swapped combat). See [[battle-followup]].
+    const inPlace = !!(payload?.context?.inPlaceReinforce);
+
     // Capture A: pre-battle viewport — synchronous, before runDirectorInit switches scenes.
     // Uses live PIXI stage values which are always accurate unlike _viewPosition.
-    try {
+    if (!inPlace) try {
       const _px = canvas?.stage?.pivot?.x;
       const _py = canvas?.stage?.pivot?.y;
       const _ps = canvas?.stage?.scale?.x;
@@ -1346,22 +1355,33 @@ const Prep = {
     } catch (_) {}
 
     // Install lifecycle watchers that need dCombat in place. Owned by
-    // director.hooks → auto-disposed on director.stop().
-    installGuardHpWatcher(director);
-    // Reap orphaned applier-tied AEs when an applier is defeated/removed.
-    installApplierReaperWatcher(director);
-    // End dCombat when all enemies are wiped so TURN_END routes to BATTLE_ENDING.
-    installEnemyWipeWatcher(director);
-    // Rewind tool: buffer item deletions between snapshots so the
-    // rewind UI can recreate consumed items. See [[director-rewind-tool-plan]].
-    installItemDeletionTracker(director);
+    // director.hooks → auto-disposed on director.stop(). Skipped on an
+    // in-place reinforce: the first battle's watchers are still installed and
+    // read director.dCombat live, so they already track the swapped combat —
+    // re-installing would double-fire them.
+    if (!inPlace) {
+      installGuardHpWatcher(director);
+      // Reap orphaned applier-tied AEs when an applier is defeated/removed.
+      installApplierReaperWatcher(director);
+      // End dCombat when all enemies are wiped so TURN_END routes to BATTLE_ENDING.
+      installEnemyWipeWatcher(director);
+      // Rewind tool: buffer item deletions between snapshots so the
+      // rewind UI can recreate consumed items. See [[director-rewind-tool-plan]].
+      installItemDeletionTracker(director);
+    }
     // Pre-compute EXP/Zenit rewards while all enemy tokens are guaranteed live.
     // Stored in a world setting so it survives F5; read at BATTLE_ENDING to
     // pre-fill the GM prompt.
     try {
       const _isBoss = !!(director.ctx.payload?.battlePlan?.isBoss) ||
         String(director.ctx.payload?.battlePlan?.type ?? "").toLowerCase() === "boss";
+      // Snapshot is always THIS battle's own rewards. Any carried rewards from
+      // a preceding follow-up battle are merged in later at award time
+      // (battle-end-orchestrator), so the snapshot never double-counts a chain.
       const _snap = await computeBattleEndRewards(director.dCombat, _isBoss);
+      // Fresh (non-follow-up) battle — drop any stale carry from an
+      // aborted/abandoned chain so it can't leak into an unrelated fight.
+      if (!inPlace) game.settings.set("fabula-ultima-companion", "bdCarriedRewards", null);
       game.settings.set("fabula-ultima-companion", "bdRewardSnapshot", _snap);
     } catch (e) { warn("PREP: reward pre-compute failed (prompt will default to 0)", e); }
     log(`PREP done: dCombat ${result.dCombat.id} with ${result.partyTokens} party + ${result.enemyTokens} enemies, sourceScene=${result.dCombat?.sourceSceneId ?? "(none)"}`);

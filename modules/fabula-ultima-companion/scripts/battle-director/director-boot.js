@@ -20,6 +20,15 @@ import { installGrappledCoverWatcher } from "./grappled.js";
 import { STATES } from "./states.js";
 import { INTENTS } from "./intents.js";
 import { showBattleEndPrompt } from "./battle-end/battle-end-prompt.js";
+import {
+  setFollowupActive,
+  isFollowupActive,
+  listActiveFollowups,
+  listFollowupRules,
+  getFollowupPity,
+} from "./battle-end/battle-followup.js";
+import { registerWanderingFlameAmbush } from "./battle-end/followups/wandering-flame-ambush.js";
+import { initWanderingFlameEntrance } from "./battle-end/followups/wandering-flame-entrance.js";
 import { getIntentChannel, attachDirector, detachDirector } from "./intent-channel.js";
 import { TurnUI } from "./turn-ui.js";
 import { registerPlayerComposeActionHandler } from "./compose-action.js";
@@ -835,6 +844,20 @@ Hooks.once("init", () => {
   game.settings.register("fabula-ultima-companion", "bdBattleSceneViewport", {
     scope: "world", config: false, default: null, type: Object,
   });
+  // Battle-End follow-up registry state. bdActiveFollowups: { ruleId: bool }
+  // (story gating); bdFollowupPity: { ruleId: int } (escalation counter).
+  // See [[battle-followup]].
+  game.settings.register("fabula-ultima-companion", "bdActiveFollowups", {
+    scope: "world", config: false, default: {}, type: Object,
+  });
+  game.settings.register("fabula-ultima-companion", "bdFollowupPity", {
+    scope: "world", config: false, default: {}, type: Object,
+  });
+  // Reward pool carried across an in-place follow-up chain so the final
+  // Battle-End award includes the preceding battle(s). See [[battle-followup]].
+  game.settings.register("fabula-ultima-companion", "bdCarriedRewards", {
+    scope: "world", config: false, default: null, type: Object,
+  });
 });
 
 // Register the public API on ready. The `FUCompanion.api` root is set up by
@@ -849,6 +872,11 @@ Hooks.once("ready", () => {
   // when its parent AE leaves the bearer (first consumer: Draconic Domination
   // riding Charmed). Session-global, idempotent. See [[reference_rider_ae_linkage]].
   installRiderAeLinkage();
+  // Battle-End follow-up subsystem: register the entrance-animation socket on
+  // every client, and register the ⭐ Wandering Flame ambush rule (GM evaluates
+  // it). Idempotent. See [[battle-followup]].
+  try { initWanderingFlameEntrance(); } catch (e) { warn("initWanderingFlameEntrance threw", e); }
+  try { registerWanderingFlameAmbush(); } catch (e) { warn("registerWanderingFlameAmbush threw", e); }
   const root = (globalThis.FUCompanion = globalThis.FUCompanion ?? {});
   const api = (root.api = root.api ?? {});
   const exp = (api.experimental = api.experimental ?? {});
@@ -866,6 +894,19 @@ Hooks.once("ready", () => {
     // when battleSystem === "director"). Called by the new "Director Manager"
     // macro after the user confirms the Battle Prompt.
     runDirectorInit,
+    // Battle-End follow-up control (GM-only story gating). Flip an event on for
+    // a story segment and off after. e.g.
+    //   followups.setActive("wandering-flame-ambush", true)
+    // See [[battle-followup]].
+    followups: {
+      setActive: (id, on) => setFollowupActive(id, on),
+      isActive:  (id) => isFollowupActive(id),
+      listActive: () => listActiveFollowups(),
+      listRules: () => listFollowupRules().map((r) => ({
+        id: r.id, label: r.label ?? "", priority: r.priority ?? 0,
+      })),
+      pity: (id) => getFollowupPity(id),
+    },
     // Manual recovery — removes any tokens still flagged as director-spawned
     // on the given scene (or canvas.scene by default). Normally fires
     // automatically via stop(); exposed in case the auto-cleanup is bypassed.

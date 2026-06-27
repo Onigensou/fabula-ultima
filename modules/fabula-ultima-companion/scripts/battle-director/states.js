@@ -289,7 +289,26 @@ export const TRANSITIONS = Object.freeze({
     // then enqueues INTERNAL_DONE. Dev mode skips the pipeline and goes
     // directly to STOPPED. ABORT also hard-exits to STOPPED so the GM can
     // always escape a stuck sequence.
-    INTERNAL_DONE:   { next: STATES.STOPPED },
+    //
+    // Follow-up hand-off: if the orchestrator set ctx.pendingFollowup (a
+    // Battle-End rule fired, e.g. ⭐ Wandering Flame), route back to PREP for
+    // an IN-PLACE new conflict instead of stopping. The commit hook swaps
+    // ctx.payload to the sequel payload before PREP.onEnter reads it. The
+    // director instance stays live (no stop()), so party tokens + HP/MP/buffs
+    // carry over; PREP rebuilds dCombat fresh (round resets, conflict_start
+    // re-fires). See [[battle-followup]].
+    INTERNAL_DONE: {
+      next: (ctx) => ctx.pendingFollowup ? STATES.PREP : STATES.STOPPED,
+      commit: async (ctx) => {
+        if (!ctx.pendingFollowup) return;
+        ctx.payload        = ctx.pendingFollowup.payload;
+        ctx.pendingFollowup = null;
+        // Clear stale end-of-combat markers so the fresh conflict starts clean.
+        ctx.endOfCombat = false;
+        ctx.endOfRound  = false;
+        ctx.abortReason = null;
+      },
+    },
     [INTENTS.ABORT]: { next: STATES.STOPPED },
   },
 
