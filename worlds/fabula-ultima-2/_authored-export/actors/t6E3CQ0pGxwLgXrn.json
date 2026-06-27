@@ -68,7 +68,7 @@
       },
       "folder": "ft3358qUh5ZDldYQ",
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/vizor.png",
-      "name": "Scounter",
+      "name": "Scouter",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
         "default": 3,
@@ -121,7 +121,7 @@
           "item_type": "accessory",
           "mimic_ef": "100",
           "monster_ef": "100",
-          "name": "Scounter",
+          "name": "Scouter",
           "optional_params": {},
           "plant_ef": "100",
           "reptilian_ef": "100",
@@ -3000,6 +3000,69 @@
       "type": "equippableItem"
     },
     {
+      "_id": "KSepKK2J2itbHUUK",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782583656244,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/vizor.png",
+      "name": "Scouter",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "08uDbIorrsmW2YXB",
+        "props": {
+          "cost": "",
+          "description": "<ul><li>Once at the start of a<strong>&nbsp;Conflict</strong> scene, you may perform the <strong>【Study】</strong>action as a&nbsp;<strong>Free Action</strong></li></ul>",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "allowed_types": "Study",
+              "check_bonus_formula": "",
+              "damage_bonus_formula": "",
+              "effect_kind": "open_action_menu",
+              "effect_label": "sc_study",
+              "free_mode": true
+            }
+          },
+          "isCheck": false,
+          "name": "Scouter",
+          "on_activate_effect_ref": "",
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "",
+              "reaction_effect_ref": "sc_study",
+              "reaction_passive_mode": "ask",
+              "reaction_source": "",
+              "reaction_trigger": "conflict_start"
+            }
+          },
+          "skill_target": "Self",
+          "skill_type": "Passive",
+          "type_damage": ""
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "AQqb37jPpVi1h6j6"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "MrFTlBwxcu4IyIU5",
       "_stats": {
         "compendiumSource": "Item.a9elI6g2FZ6qPY51",
@@ -5399,113 +5462,8 @@
       "away_name_3": "",
       "away_name_4": "",
       "battle_bgm": "Fabula Battle Theme",
-      "battle_log": "[\n  {\n    \"ts\": \"2026-06-27T06:24:52.257Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Starfall\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"effect\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"light\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 25,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999905,\n        \"to\": 999880\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Starfall deals 25 Light damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-06-27T06:24:52.887Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Starfall\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"effect\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"light\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 25,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999830,\n        \"to\": 999805\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Starfall deals 25 Light damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-06-27T06:24:53.514Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Starfall\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"effect\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"light\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 25,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999880,\n        \"to\": 999855\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Starfall deals 25 Light damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-06-27T06:24:54.149Z\",\n    \"accuracy\": \"13\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"Light\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 10,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999899,\n        \"to\": 999889\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 10 Light damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-06-27T06:24:54.171Z\",\n    \"accuracy\": \"13\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"Light\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 10,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999855,\n        \"to\": 999845\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 10 Light damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-06-27T06:24:54.216Z\",\n    \"accuracy\": \"13\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"Light\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 10,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999805,\n        \"to\": 999795\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 10 Light damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-06-27T06:48:01.631Z\",\n    \"accuracy\": \"9\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"Light\",\n      \"weaponType\": null\n    },\n    \"miss\": true,\n    \"summary\": \"Hina misses BD Dummy Enemy\"\n  },\n  {\n    \"ts\": \"2026-06-27T06:48:10.007Z\",\n    \"accuracy\": \"20\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"Light\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 24,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 30,\n        \"to\": 6\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 24 Light damage to Hina [Normal]\"\n  },\n  {\n    \"ts\": \"2026-06-27T06:48:17.794Z\",\n    \"accuracy\": \"11\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"Light\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 25,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999845,\n        \"to\": 999820\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 25 Light damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-06-27T06:56:31.155Z\",\n    \"accuracy\": \"21\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"Light\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 27,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999820,\n        \"to\": 999793\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 27 Light damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-06-27T06:57:36.328Z\",\n    \"accuracy\": \"3\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"Light\",\n      \"weaponType\": null\n    },\n    \"miss\": true,\n    \"summary\": \"Hina misses BD Dummy Enemy\"\n  },\n  {\n    \"ts\": \"2026-06-27T06:57:41.125Z\",\n    \"accuracy\": \"13\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"Light\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 27,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999889,\n        \"to\": 999862\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 27 Light damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-06-27T07:14:40.684Z\",\n    \"accuracy\": \"12\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"Light\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 22,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999795,\n        \"to\": 999773\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 22 Light damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-06-27T07:19:48.593Z\",\n    \"accuracy\": \"6\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"Light\",\n      \"weaponType\": null\n    },\n    \"miss\": true,\n    \"summary\": \"Hina misses BD Dummy Enemy\"\n  },\n  {\n    \"ts\": \"2026-06-27T07:24:01.068Z\",\n    \"accuracy\": \"10\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"Light\",\n      \"weaponType\": null\n    },\n    \"miss\": true,\n    \"summary\": \"Hina misses BD Dummy Enemy\"\n  },\n  {\n    \"ts\": \"2026-06-27T07:28:41.360Z\",\n    \"accuracy\": \"15\",\n    \"dealer\": {\n      \"name\": \"Hellhound\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Melee\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"Zarg\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 24,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 75,\n        \"to\": 75\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hellhound deals 24 Null damage to Zarg [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-06-27T07:29:02.925Z\",\n    \"accuracy\": \"18\",\n    \"dealer\": {\n      \"name\": \"Hellhound\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Melee\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"Zarg\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 25,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 75,\n        \"to\": 50\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hellhound deals 25 Null damage to Zarg [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-06-27T07:30:23.150Z\",\n    \"accuracy\": \"15\",\n    \"dealer\": {\n      \"name\": \"Hellhound\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Melee\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"Zarg\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 24,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 75,\n        \"to\": 75\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hellhound deals 24 Null damage to Zarg [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-06-27T07:32:16.731Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Skull Orb\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"effect\"\n    },\n    \"target\": {\n      \"name\": \"Hellhound\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"dark\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 3,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 96,\n        \"to\": 93\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Skull Orb deals 3 Dark damage to Hellhound [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-06-27T07:32:17.403Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Skull Orb\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"effect\"\n    },\n    \"target\": {\n      \"name\": \"Hellhound\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"dark\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 3,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 93,\n        \"to\": 90\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Skull Orb deals 3 Dark damage to Hellhound [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-06-27T09:12:46.636Z\",\n    \"accuracy\": \"14\",\n    \"dealer\": {\n      \"name\": \"Zarg\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 21,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999999,\n        \"to\": 999978\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Zarg deals 21 Null damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-06-27T09:12:46.673Z\",\n    \"accuracy\": \"14\",\n    \"dealer\": {\n      \"name\": \"Zarg\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 21,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999999,\n        \"to\": 999978\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Zarg deals 21 Null damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-06-27T09:13:29.278Z\",\n    \"accuracy\": \"11\",\n    \"dealer\": {\n      \"name\": \"Zarg\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 23,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999978,\n        \"to\": 999955\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Zarg deals 23 Null damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-06-27T09:13:29.314Z\",\n    \"accuracy\": \"11\",\n    \"dealer\": {\n      \"name\": \"Zarg\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 23,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999999,\n        \"to\": 999976\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Zarg deals 23 Null damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-06-27T09:20:09.433Z\",\n    \"accuracy\": \"21\",\n    \"dealer\": {\n      \"name\": \"Zarg\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"bolt\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 58,\n      \"effectiveness\": \"Vulnerable\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999978,\n        \"to\": 999920\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Zarg deals 58 Bolt damage to BD Dummy Enemy [Vulnerable]\"\n  },\n  {\n    \"ts\": \"2026-06-27T09:20:09.481Z\",\n    \"accuracy\": \"21\",\n    \"dealer\": {\n      \"name\": \"Zarg\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"bolt\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 58,\n      \"effectiveness\": \"Vulnerable\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999955,\n        \"to\": 999897\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Zarg deals 58 Bolt damage to BD Dummy Enemy [Vulnerable]\"\n  },\n  {\n    \"ts\": \"2026-06-27T09:36:17.607Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Encyclopedia\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"effect\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"physical\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 25,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999999,\n        \"to\": 999974\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Encyclopedia deals 25 Physical damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-06-27T10:02:39.482Z\",\n    \"accuracy\": \"22\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Skill\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"Physical\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": true\n    },\n    \"computed\": {\n      \"finalValue\": 28,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999999,\n        \"to\": 999971\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 28 Physical damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-06-27T10:03:18.358Z\",\n    \"accuracy\": \"17\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Melee\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Arcane\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 10,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999971,\n        \"to\": 999961\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 10 Null damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-06-27T10:03:38.642Z\",\n    \"accuracy\": \"8\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"Ice\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 20,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999961,\n        \"to\": 999941\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 20 Ice damage to BD Dummy Enemy [Normal]\"\n  }\n]",
+      "battle_log": "[\n  {\n    \"ts\": \"2026-06-27T06:48:10.007Z\",\n    \"accuracy\": \"20\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"Light\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 24,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 30,\n        \"to\": 6\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 24 Light damage to Hina [Normal]\"\n  },\n  {\n    \"ts\": \"2026-06-27T06:48:17.794Z\",\n    \"accuracy\": \"11\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"Light\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 25,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999845,\n        \"to\": 999820\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 25 Light damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-06-27T06:56:31.155Z\",\n    \"accuracy\": \"21\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"Light\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 27,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999820,\n        \"to\": 999793\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 27 Light damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-06-27T06:57:36.328Z\",\n    \"accuracy\": \"3\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"Light\",\n      \"weaponType\": null\n    },\n    \"miss\": true,\n    \"summary\": \"Hina misses BD Dummy Enemy\"\n  },\n  {\n    \"ts\": \"2026-06-27T06:57:41.125Z\",\n    \"accuracy\": \"13\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"Light\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 27,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999889,\n        \"to\": 999862\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 27 Light damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-06-27T07:14:40.684Z\",\n    \"accuracy\": \"12\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"Light\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 22,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999795,\n        \"to\": 999773\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 22 Light damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-06-27T07:19:48.593Z\",\n    \"accuracy\": \"6\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"Light\",\n      \"weaponType\": null\n    },\n    \"miss\": true,\n    \"summary\": \"Hina misses BD Dummy Enemy\"\n  },\n  {\n    \"ts\": \"2026-06-27T07:24:01.068Z\",\n    \"accuracy\": \"10\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"Light\",\n      \"weaponType\": null\n    },\n    \"miss\": true,\n    \"summary\": \"Hina misses BD Dummy Enemy\"\n  },\n  {\n    \"ts\": \"2026-06-27T07:28:41.360Z\",\n    \"accuracy\": \"15\",\n    \"dealer\": {\n      \"name\": \"Hellhound\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Melee\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"Zarg\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 24,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 75,\n        \"to\": 75\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hellhound deals 24 Null damage to Zarg [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-06-27T07:29:02.925Z\",\n    \"accuracy\": \"18\",\n    \"dealer\": {\n      \"name\": \"Hellhound\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Melee\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"Zarg\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 25,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 75,\n        \"to\": 50\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hellhound deals 25 Null damage to Zarg [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-06-27T07:30:23.150Z\",\n    \"accuracy\": \"15\",\n    \"dealer\": {\n      \"name\": \"Hellhound\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Melee\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"Zarg\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 24,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 75,\n        \"to\": 75\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hellhound deals 24 Null damage to Zarg [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-06-27T07:32:16.731Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Skull Orb\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"effect\"\n    },\n    \"target\": {\n      \"name\": \"Hellhound\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"dark\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 3,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 96,\n        \"to\": 93\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Skull Orb deals 3 Dark damage to Hellhound [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-06-27T07:32:17.403Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Skull Orb\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"effect\"\n    },\n    \"target\": {\n      \"name\": \"Hellhound\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"dark\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 3,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 93,\n        \"to\": 90\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Skull Orb deals 3 Dark damage to Hellhound [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-06-27T09:12:46.636Z\",\n    \"accuracy\": \"14\",\n    \"dealer\": {\n      \"name\": \"Zarg\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 21,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999999,\n        \"to\": 999978\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Zarg deals 21 Null damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-06-27T09:12:46.673Z\",\n    \"accuracy\": \"14\",\n    \"dealer\": {\n      \"name\": \"Zarg\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 21,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999999,\n        \"to\": 999978\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Zarg deals 21 Null damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-06-27T09:13:29.278Z\",\n    \"accuracy\": \"11\",\n    \"dealer\": {\n      \"name\": \"Zarg\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 23,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999978,\n        \"to\": 999955\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Zarg deals 23 Null damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-06-27T09:13:29.314Z\",\n    \"accuracy\": \"11\",\n    \"dealer\": {\n      \"name\": \"Zarg\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 23,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999999,\n        \"to\": 999976\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Zarg deals 23 Null damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-06-27T09:20:09.433Z\",\n    \"accuracy\": \"21\",\n    \"dealer\": {\n      \"name\": \"Zarg\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"bolt\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 58,\n      \"effectiveness\": \"Vulnerable\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999978,\n        \"to\": 999920\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Zarg deals 58 Bolt damage to BD Dummy Enemy [Vulnerable]\"\n  },\n  {\n    \"ts\": \"2026-06-27T09:20:09.481Z\",\n    \"accuracy\": \"21\",\n    \"dealer\": {\n      \"name\": \"Zarg\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"bolt\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 58,\n      \"effectiveness\": \"Vulnerable\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999955,\n        \"to\": 999897\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Zarg deals 58 Bolt damage to BD Dummy Enemy [Vulnerable]\"\n  },\n  {\n    \"ts\": \"2026-06-27T09:36:17.607Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Encyclopedia\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"effect\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"physical\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 25,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999999,\n        \"to\": 999974\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Encyclopedia deals 25 Physical damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-06-27T10:02:39.482Z\",\n    \"accuracy\": \"22\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Skill\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"Physical\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": true\n    },\n    \"computed\": {\n      \"finalValue\": 28,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999999,\n        \"to\": 999971\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 28 Physical damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-06-27T10:03:18.358Z\",\n    \"accuracy\": \"17\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Melee\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Arcane\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 10,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999971,\n        \"to\": 999961\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 10 Null damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-06-27T10:03:38.642Z\",\n    \"accuracy\": \"8\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"Ice\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 20,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999961,\n        \"to\": 999941\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 20 Ice damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-06-27T17:32:14.593Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Explosive Entrance\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"effect\"\n    },\n    \"target\": {\n      \"name\": \"Zarg\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 30,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 75,\n        \"to\": 75\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Explosive Entrance deals 30 Fire damage to Zarg [Normal]\"\n  },\n  {\n    \"ts\": \"2026-06-27T17:32:18.103Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"⭐️ Wandering Flame\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"effect\"\n    },\n    \"target\": {\n      \"name\": \"⭐️ Wandering Flame\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": true,\n      \"element\": \"fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 22,\n      \"effectiveness\": \"Absorbed\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 220,\n        \"to\": 220\n      },\n      \"mp\": null,\n      \"shield\": null,\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"⭐️ Wandering Flame heals ⭐️ Wandering Flame for 22 HP\"\n  },\n  {\n    \"ts\": \"2026-06-27T17:34:01.951Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Explosive Entrance\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"effect\"\n    },\n    \"target\": {\n      \"name\": \"Zarg\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 30,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 75,\n        \"to\": 75\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Explosive Entrance deals 30 Fire damage to Zarg [Normal]\"\n  },\n  {\n    \"ts\": \"2026-06-27T17:42:13.796Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Explosive Entrance\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"effect\"\n    },\n    \"target\": {\n      \"name\": \"Zarg\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 30,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 75,\n        \"to\": 75\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Explosive Entrance deals 30 Fire damage to Zarg [Normal]\"\n  },\n  {\n    \"ts\": \"2026-06-27T17:42:26.621Z\",\n    \"accuracy\": \"14\",\n    \"dealer\": {\n      \"name\": \"Zarg\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Melee\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"⭐️ Wandering Flame\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 25,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 220,\n        \"to\": 195\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Zarg deals 25 Null damage to ⭐️ Wandering Flame [Normal]\"\n  },\n  {\n    \"ts\": \"2026-06-27T17:42:29.137Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"⭐️ Wandering Flame\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"effect\"\n    },\n    \"target\": {\n      \"name\": \"⭐️ Wandering Flame\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": true,\n      \"element\": \"fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 22,\n      \"effectiveness\": \"Absorbed\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 195,\n        \"to\": 217\n      },\n      \"mp\": null,\n      \"shield\": null,\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"⭐️ Wandering Flame heals ⭐️ Wandering Flame for 22 HP\"\n  },\n  {\n    \"ts\": \"2026-06-27T20:07:58.577Z\",\n    \"accuracy\": \"5\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"Ice\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 38,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999999,\n        \"to\": 999961\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 38 Ice damage to BD Dummy Enemy [Normal]\"\n  }\n]",
       "battle_log_table": [
-        {
-          "$deleted": false,
-          "accuracy": "-",
-          "affinity": "Normal",
-          "apply_mode": "Damage",
-          "attack_target": "BD Dummy Enemy",
-          "attacker": "Starfall",
-          "damage_type": "Light",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "effect",
-          "value": "25",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        {
-          "$deleted": false,
-          "accuracy": "-",
-          "affinity": "Normal",
-          "apply_mode": "Damage",
-          "attack_target": "BD Dummy Enemy",
-          "attacker": "Starfall",
-          "damage_type": "Light",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "effect",
-          "value": "25",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        {
-          "$deleted": false,
-          "accuracy": "-",
-          "affinity": "Normal",
-          "apply_mode": "Damage",
-          "attack_target": "BD Dummy Enemy",
-          "attacker": "Starfall",
-          "damage_type": "Light",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "effect",
-          "value": "25",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        {
-          "$deleted": false,
-          "accuracy": "13",
-          "affinity": "Normal",
-          "apply_mode": "Damage",
-          "attack_target": "BD Dummy Enemy",
-          "attacker": "Hina",
-          "damage_type": "Light",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "Spell",
-          "value": "10",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        {
-          "$deleted": false,
-          "accuracy": "13",
-          "affinity": "Normal",
-          "apply_mode": "Damage",
-          "attack_target": "BD Dummy Enemy",
-          "attacker": "Hina",
-          "damage_type": "Light",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "Spell",
-          "value": "10",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        {
-          "$deleted": false,
-          "accuracy": "13",
-          "affinity": "Normal",
-          "apply_mode": "Damage",
-          "attack_target": "BD Dummy Enemy",
-          "attacker": "Hina",
-          "damage_type": "Light",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "Spell",
-          "value": "10",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        {
-          "$deleted": false,
-          "accuracy": "9",
-          "affinity": "—",
-          "apply_mode": "Miss",
-          "attack_target": "BD Dummy Enemy",
-          "attacker": "Hina",
-          "damage_type": "Light",
-          "efficiency": "—",
-          "range": "None",
-          "source_type": "Spell",
-          "value": "—",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
         {
           "$deleted": false,
           "accuracy": "20",
@@ -5848,6 +5806,111 @@
           "range": "None",
           "source_type": "Spell",
           "value": "20",
+          "value_type": "HP",
+          "weapon_type": "—"
+        },
+        {
+          "$deleted": false,
+          "accuracy": "-",
+          "affinity": "Normal",
+          "apply_mode": "Damage",
+          "attack_target": "Zarg",
+          "attacker": "Explosive Entrance",
+          "damage_type": "Fire",
+          "efficiency": "100%",
+          "range": "None",
+          "source_type": "effect",
+          "value": "30",
+          "value_type": "HP",
+          "weapon_type": "—"
+        },
+        {
+          "$deleted": false,
+          "accuracy": "-",
+          "affinity": "Absorbed",
+          "apply_mode": "Healing",
+          "attack_target": "⭐️ Wandering Flame",
+          "attacker": "⭐️ Wandering Flame",
+          "damage_type": "Fire",
+          "efficiency": "100%",
+          "range": "None",
+          "source_type": "effect",
+          "value": "22",
+          "value_type": "HP",
+          "weapon_type": "—"
+        },
+        {
+          "$deleted": false,
+          "accuracy": "-",
+          "affinity": "Normal",
+          "apply_mode": "Damage",
+          "attack_target": "Zarg",
+          "attacker": "Explosive Entrance",
+          "damage_type": "Fire",
+          "efficiency": "100%",
+          "range": "None",
+          "source_type": "effect",
+          "value": "30",
+          "value_type": "HP",
+          "weapon_type": "—"
+        },
+        {
+          "$deleted": false,
+          "accuracy": "-",
+          "affinity": "Normal",
+          "apply_mode": "Damage",
+          "attack_target": "Zarg",
+          "attacker": "Explosive Entrance",
+          "damage_type": "Fire",
+          "efficiency": "100%",
+          "range": "None",
+          "source_type": "effect",
+          "value": "30",
+          "value_type": "HP",
+          "weapon_type": "—"
+        },
+        {
+          "$deleted": false,
+          "accuracy": "14",
+          "affinity": "Normal",
+          "apply_mode": "Damage",
+          "attack_target": "⭐️ Wandering Flame",
+          "attacker": "Zarg",
+          "damage_type": "Elementless",
+          "efficiency": "100%",
+          "range": "Melee",
+          "source_type": "Attack",
+          "value": "25",
+          "value_type": "HP",
+          "weapon_type": "—"
+        },
+        {
+          "$deleted": false,
+          "accuracy": "-",
+          "affinity": "Absorbed",
+          "apply_mode": "Healing",
+          "attack_target": "⭐️ Wandering Flame",
+          "attacker": "⭐️ Wandering Flame",
+          "damage_type": "Fire",
+          "efficiency": "100%",
+          "range": "None",
+          "source_type": "effect",
+          "value": "22",
+          "value_type": "HP",
+          "weapon_type": "—"
+        },
+        {
+          "$deleted": false,
+          "accuracy": "5",
+          "affinity": "Normal",
+          "apply_mode": "Damage",
+          "attack_target": "BD Dummy Enemy",
+          "attacker": "Hina",
+          "damage_type": "Ice",
+          "efficiency": "100%",
+          "range": "None",
+          "source_type": "Spell",
+          "value": "38",
           "value_type": "HP",
           "weapon_type": "—"
         }

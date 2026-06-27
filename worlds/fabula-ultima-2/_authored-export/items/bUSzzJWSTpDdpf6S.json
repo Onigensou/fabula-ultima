@@ -34,7 +34,7 @@
   },
   "folder": "5uQIy5BCy7UEVfcT",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/vizor.png",
-  "name": "Scounter",
+  "name": "Scouter",
   "ownership": {
     "2vy7wrEUqBy0kzsU": 3,
     "6DmgigM5jq76r0Gd": 3,
@@ -110,7 +110,7 @@
       "item_type": "accessory",
       "mimic_ef": "100",
       "monster_ef": "100",
-      "name": "Scounter",
+      "name": "Scouter",
       "optional_params": {},
       "plant_ef": "100",
       "reptilian_ef": "100",

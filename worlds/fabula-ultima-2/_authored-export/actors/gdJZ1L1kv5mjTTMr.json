@@ -1084,6 +1084,68 @@
       "type": "equippableItem"
     },
     {
+      "_id": "7WC6heFnxC7s3Zqr",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782564940945,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        },
+        "fabula-ultima-companion": {
+          "coreAction": "study"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cate.png",
+      "name": "Cat Ears (Passive)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "BMk7ey9etLgHOrnI",
+        "props": {
+          "action_command": "",
+          "check_mode": "",
+          "cost": "",
+          "description": "<p>Equipped passive: +2 to Study Checks.</p>",
+          "details_roller": "",
+          "effect_table": {
+            "0": {
+              "check_buff_action": "any",
+              "check_buff_amount": "1",
+              "effect_kind": "check_buff",
+              "effect_label": "catears_any_buff"
+            }
+          },
+          "id": "QjuNoo0rGl9iUWiO",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cate.png",
+          "isCheck": false,
+          "isReaction": false,
+          "max_level": "1",
+          "name": "Cat Ears (Passive)",
+          "on_activate_effect_ref": "",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "INS",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "uuid": "Item.QjuNoo0rGl9iUWiO"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": true,
+        "uniqueId": "tgcZ9aHO4LzlcxA2"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "8FD1odJvyVnJRXGC",
       "_stats": {
         "compendiumSource": null,
@@ -3133,6 +3195,68 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "jp5JDPhrhjBsFbYf"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "gTVVty4CEgxlH0J5",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782564535359,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        },
+        "fabula-ultima-companion": {
+          "coreAction": "study"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/sneak.png",
+      "name": "Sneaker (Passive)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "05OeWaPbNYmWjD0T",
+        "props": {
+          "action_command": "",
+          "check_mode": "",
+          "cost": "",
+          "description": "<p>Equipped passive: +2 to Study Checks.</p>",
+          "details_roller": "",
+          "effect_table": {
+            "0": {
+              "check_buff_action": "stealth",
+              "check_buff_amount": "2",
+              "effect_kind": "check_buff",
+              "effect_label": "sneaker_stealth_buff"
+            }
+          },
+          "id": "QjuNoo0rGl9iUWiO",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/sneak.png",
+          "isCheck": false,
+          "isReaction": false,
+          "max_level": "1",
+          "name": "Sneaker (Passive)",
+          "on_activate_effect_ref": "",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "INS",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "uuid": "Item.QjuNoo0rGl9iUWiO"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": true,
+        "uniqueId": "nWasi2AW6FFlUKCN"
       },
       "type": "equippableItem"
     },
@@ -5491,13 +5615,13 @@
       "armor_details": "<ul><li><p>When you're <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.2rh5lyMNU5yL8Btk\" data-id=\"2rh5lyMNU5yL8Btk\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Wet</span></strong></a></span><strong>, </strong>Treat your <strong>【DEX】</strong>size as <strong>D12,&nbsp;</strong></p></li><li><p>Gain +2 to all Skill Checks that require <strong>【DEX】</strong></p></li></ul>",
       "armor_mod": "1",
       "armor_name": "Swimsuit",
-      "attack_accuracy_mod_all": 0,
+      "attack_accuracy_mod_all": 3,
       "attack_accuracy_mod_magic": 0,
       "attack_accuracy_mod_melee": 0,
       "attack_accuracy_mod_ranged": 0,
       "backstory": "",
       "bane_status": 0,
-      "base_defense": 6,
+      "base_defense": 12,
       "base_magic_defense": 12,
       "battle_facing_direction": "left",
       "berserk_status": 0,
@@ -5695,11 +5819,11 @@
       "damage_receiving_percentage_range": 0,
       "dazed_status": 0,
       "default_facing_direction": "left",
-      "defense": 7,
+      "defense": 13,
       "delayed_status": 0,
       "despair_status": 0,
       "dex_base": "6",
-      "dex_current": 6,
+      "dex_current": 12,
       "disarmed_status": 0,
       "doom_status": 0,
       "draw_card": "Draw",
@@ -6241,7 +6365,7 @@
       "override_attack_damage_type": "None",
       "override_damage_type": "None",
       "override_defense": 0,
-      "override_dex": 0,
+      "override_dex": 12,
       "override_ins": 0,
       "override_magic_defense": 0,
       "override_mig": 0,

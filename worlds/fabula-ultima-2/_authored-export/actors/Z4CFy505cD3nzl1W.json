@@ -10,6 +10,71 @@
   },
   "effects": [
     {
+      "_id": "1SWJRihdelBG5IHQ",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782582123544,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><em>Emergency Item:</em> ready — once per conflict.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "KUfkeoHoBkKeHowc",
+          "originalParentId": "HiXFAkSm35bBGHfM",
+          "originalUuid": "Actor.Z4CFy505cD3nzl1W.Item.HiXFAkSm35bBGHfM.ActiveEffect.KUfkeoHoBkKeHowc"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "chargeKey": "emergency_item",
+          "charges": 1,
+          "chargesMax": 1,
+          "directorAppliedBy": {
+            "appliedAtRound": 0,
+            "effectLabel": "em_refresh",
+            "reactorActorUuid": "Actor.Z4CFy505cD3nzl1W",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.VVe86c2YNGWPFaAs",
+            "skillUuid": "Actor.Z4CFy505cD3nzl1W.Item.HiXFAkSm35bBGHfM",
+            "turnsRemaining": null
+          },
+          "directorPermanent": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/12_MCH/heat_blast.png",
+      "name": "Emergency Item Ready",
+      "origin": "Actor.Z4CFy505cD3nzl1W.Item.HiXFAkSm35bBGHfM",
+      "sort": 0,
+      "statuses": [
+        "fud-emergency-item-ready"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
       "_id": "jl0e9I7HkPkBZqSs",
       "_stats": {
         "compendiumSource": null,
@@ -4691,6 +4756,14 @@
                     "reaction_passive_mode": "force",
                     "reaction_source": "self",
                     "reaction_trigger": "creature_targeted_by_action"
+                  },
+                  "1": {
+                    "$deleted": false,
+                    "condition_formula": "HAS_STATUS_NINJA_LOG_SPENT == 0",
+                    "reaction_effect_ref": "ninjalog_nullify",
+                    "reaction_passive_mode": "force",
+                    "reaction_source": "self",
+                    "reaction_trigger": "creature_takes_damage"
                   }
                 }
               }
@@ -6301,7 +6374,7 @@
       "critical_dice_range": 0,
       "current_hp": 75,
       "current_ip": 4,
-      "current_mp": 70,
+      "current_mp": 60,
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/Zarg_Cut-in002.png",
       "cut_in_fumble": "",

@@ -1,9 +1,9 @@
 {
-  "_id": "QjuNoo0rGl9iUWiO",
+  "_id": "tgcZ9aHO4LzlcxA2",
   "_stats": {
     "compendiumSource": null,
     "coreVersion": "12.343",
-    "createdTime": 1782550203969,
+    "createdTime": 1782564939938,
     "duplicateSource": null,
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
@@ -15,15 +15,15 @@
     "fabula-ultima-companion": {}
   },
   "folder": "ft3358qUh5ZDldYQ",
-  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/book.png",
-  "name": "Encyclopedia (Passive)",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cate.png",
+  "name": "Cat Ears (Passive)",
   "ownership": {
     "JQGNzKpDPHJmcUIW": 3,
     "default": 0
   },
   "sort": 0,
   "system": {
-    "container": "3UYXnhsSCTo0lV68",
+    "container": "FsAN2KEgFrmQnp0g",
     "props": {
       "action_command": "",
       "check_mode": "",
@@ -32,18 +32,18 @@
       "details_roller": "",
       "effect_table": {
         "0": {
-          "check_buff_action": "study",
-          "check_buff_amount": "2",
+          "check_buff_action": "any",
+          "check_buff_amount": "1",
           "effect_kind": "check_buff",
-          "effect_label": "enc_study_buff"
+          "effect_label": "catears_any_buff"
         }
       },
       "id": "QjuNoo0rGl9iUWiO",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/book.png",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cate.png",
       "isCheck": false,
       "isReaction": false,
       "max_level": "1",
-      "name": "Encyclopedia (Passive)",
+      "name": "Cat Ears (Passive)",
       "on_activate_effect_ref": "",
       "rolled_atr1": "INS",
       "rolled_atr2": "INS",
@@ -54,7 +54,7 @@
     "template": "j0F5Msw5RZ8aIB3j",
     "templateSystemUniqueVersion": 2666163373,
     "unique": true,
-    "uniqueId": "QjuNoo0rGl9iUWiO"
+    "uniqueId": "tgcZ9aHO4LzlcxA2"
   },
   "type": "equippableItem"
 }

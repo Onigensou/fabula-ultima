@@ -1,0 +1,63 @@
+{
+  "_id": "AQqb37jPpVi1h6j6",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1782583640180,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/vizor.png",
+  "name": "Scouter",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "bUSzzJWSTpDdpf6S",
+    "props": {
+      "cost": "",
+      "description": "<ul><li>Once at the start of a<strong>&nbsp;Conflict</strong> scene, you may perform the <strong>【Study】</strong>action as a&nbsp;<strong>Free Action</strong></li></ul>",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "allowed_types": "Study",
+          "check_bonus_formula": "",
+          "damage_bonus_formula": "",
+          "effect_kind": "open_action_menu",
+          "effect_label": "sc_study",
+          "free_mode": true
+        }
+      },
+      "isCheck": false,
+      "name": "Scouter",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "$deleted": false,
+          "condition_formula": "",
+          "reaction_effect_ref": "sc_study",
+          "reaction_passive_mode": "ask",
+          "reaction_source": "",
+          "reaction_trigger": "conflict_start"
+        }
+      },
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": ""
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "AQqb37jPpVi1h6j6"
+  },
+  "type": "equippableItem"
+}

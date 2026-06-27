@@ -10,138 +10,11 @@
   },
   "effects": [
     {
-      "_id": "fWXyoM4Zn7zZYzA9",
+      "_id": "nnRTyEGQ2z9bknFK",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782560305081,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [],
-      "description": "<p><em>Lucky Seven Ready:</em> Lucky Seven is available this scene. Spent when used; refreshes each conflict.</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": 298800,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "DIJbLrv3X5vkOVnj",
-          "originalParentId": "v56GvN63nvIYV4iJ",
-          "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.v56GvN63nvIYV4iJ.ActiveEffect.DIJbLrv3X5vkOVnj"
-        },
-        "fabula-ultima-companion": {
-          "chargeKey": "lucky_seven",
-          "charges": 1,
-          "chargesMax": 1,
-          "directorAppliedBy": {
-            "appliedAtRound": 0,
-            "effectLabel": "ls_arm",
-            "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.blzmhnVQPc3CAFe2",
-            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.v56GvN63nvIYV4iJ",
-            "turnsRemaining": 1
-          }
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "icons/magic/control/buff-flight-wings-runes-purple.webp",
-      "name": "Lucky Seven Ready",
-      "origin": "Actor.dafTLBUscCDNgq8H.Item.v56GvN63nvIYV4iJ",
-      "sort": 0,
-      "statuses": [
-        "fud-lucky-seven-ready"
-      ],
-      "system": {},
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "JpPnLqsLIkXtD2lm",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1782524821101,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [],
-      "description": "<p>This creature has less than 50% HP</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": 298800,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "isPredefined": true,
-          "originalId": "4ldx00srGNv5AJBr",
-          "originalParentId": "0gIBYzSpjdXS6f25",
-          "originalUuid": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr"
-        },
-        "dfreds-convenient-effects": {
-          "ceEffectId": "ce-crisis",
-          "isBackup": false,
-          "isConvenient": true,
-          "isDynamic": false,
-          "isTemporary": false,
-          "isViewable": false
-        },
-        "fabula-ultima-companion": {
-          "bdCrisis": true
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/08_DRG/blood_for_blood.png",
-      "name": "Crisis",
-      "origin": "Item.0gIBYzSpjdXS6f25.ActiveEffect.4ldx00srGNv5AJBr",
-      "sort": 0,
-      "statuses": [
-        "5jkr80zqdzaR003d"
-      ],
-      "system": {
-        "tags": []
-      },
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "nJmcpeI5iyCYiVQv",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1782554655127,
+        "createdTime": 1782590588528,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -175,7 +48,7 @@
             "effectLabel": "pds_gain",
             "lifetimeMode": "persistent_counter",
             "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.blzmhnVQPc3CAFe2",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.vOffpYC7J17k873m",
             "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.gm2w1NLdaEI7SzaQ",
             "turnsRemaining": null
           },
@@ -241,7 +114,7 @@
             "appliedAtRound": 0,
             "effectLabel": "hod_refresh",
             "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.blzmhnVQPc3CAFe2",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.vOffpYC7J17k873m",
             "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF",
             "turnsRemaining": null
           },
@@ -914,7 +787,7 @@
             }
           ],
           "description": "<p>Increase Zenit Gain by 50%</p>",
-          "disabled": false,
+          "disabled": true,
           "duration": {
             "combat": null,
             "rounds": null,
@@ -994,7 +867,7 @@
           "human_ef": "100",
           "humanoid_ef": "100",
           "insect_ef": "100",
-          "isEquipped": true,
+          "isEquipped": false,
           "isKey": false,
           "isMartial": false,
           "isModule": false,
@@ -3887,7 +3760,7 @@
           "humanoid_ef": "100",
           "insect_ef": "100",
           "ip_cost": "",
-          "isEquipped": true,
+          "isEquipped": false,
           "isKey": false,
           "isMartial": false,
           "isModule": false,
@@ -5589,6 +5462,170 @@
       "type": "equippableItem"
     },
     {
+      "_id": "QjxsWydAvl3FjOFr",
+      "_stats": {
+        "compendiumSource": "Item.bUSzzJWSTpDdpf6S",
+        "coreVersion": "12.343",
+        "createdTime": 1782586042214,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "accessory",
+            "fromTemplate": "r0yZpLPAK9VXhM2p",
+            "itemId": "bUSzzJWSTpDdpf6S",
+            "itemName": "Scounter",
+            "pickedOldProps": {
+              "cost": "800",
+              "def_bonus": "",
+              "defense": "0",
+              "defense_include_dex": false,
+              "initiative": "0",
+              "magic_defense": "0",
+              "magic_defense_include_ins": false,
+              "mdef_bonus": ""
+            },
+            "ts": 1769647436325
+          }
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/vizor.png",
+      "name": "Scouter",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 9900000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li>Once at the start of a<strong>&nbsp;Conflict</strong> scene, you may perform the <strong>【Study】</strong>action as a&nbsp;<strong>Free Action</strong></li></ul>",
+          "dragon_ef": "100",
+          "effect_table": {},
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flavor_text": "<blockquote>\n<p>\"It's over 9000....!!!!\"</p>\n</blockquote>",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "QjxsWydAvl3FjOFr",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/vizor.png",
+          "ingredient_taste": "",
+          "ingredient_taste2": "",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": true,
+          "isIngredient": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": true,
+          "isRelatedItem": true,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "800",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Uncommon",
+          "item_skill_passive": {
+            "wGMngSNcL0icOQiw": {
+              "id": "${item.id}",
+              "name": "Scouter",
+              "skill_cost": "",
+              "skill_description": "<ul><li>Once at the start of a<strong>&nbsp;Conflict</strong> scene, you may perform the <strong>【Study】</strong>action as a&nbsp;<strong>Free Action</strong></li></ul>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.wGMngSNcL0icOQiw"
+            }
+          },
+          "item_type": "accessory",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Scouter",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reaction_config_table": {},
+          "recipe_dish_uuid": "",
+          "recipe_kind": "",
+          "refine_count": "0",
+          "refine_level": "0",
+          "related_item_list": {
+            "wGMngSNcL0icOQiw": {
+              "id": "${item.id}",
+              "name": "Scouter",
+              "related_item_description": "<ul><li>Once at the start of a<strong>&nbsp;Conflict</strong> scene, you may perform the <strong>【Study】</strong>action as a&nbsp;<strong>Free Action</strong></li></ul>",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.wGMngSNcL0icOQiw"
+            }
+          },
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.QjxsWydAvl3FjOFr",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "bUSzzJWSTpDdpf6S"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "qXvY2q2G2bjHFdu1",
       "_stats": {
         "compendiumSource": "Item.23dQXPmLWKFjpwNt",
@@ -6074,6 +6111,68 @@
         "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "YdYhFx1vrvod4P2Y"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "sNQBVLstuZSz5EZC",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782567172870,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        },
+        "fabula-ultima-companion": {
+          "coreAction": "study"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "name": "Lens of Insight (Passive)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "wdkyWxt43rlxEtTO",
+        "props": {
+          "action_command": "",
+          "check_mode": "",
+          "cost": "",
+          "description": "<p>Equipped passive: +2 to Study Checks.</p>",
+          "details_roller": "",
+          "effect_table": {
+            "0": {
+              "check_buff_action": "study",
+              "check_buff_amount": "2",
+              "effect_kind": "check_buff",
+              "effect_label": "lens_study_buff"
+            }
+          },
+          "id": "QjuNoo0rGl9iUWiO",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+          "isCheck": false,
+          "isReaction": false,
+          "max_level": "1",
+          "name": "Lens of Insight (Passive)",
+          "on_activate_effect_ref": "",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "INS",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "uuid": "Item.QjuNoo0rGl9iUWiO"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": true,
+        "uniqueId": "fABWj5MvuADYTbpR"
       },
       "type": "equippableItem"
     },
@@ -7177,80 +7276,65 @@
       "type": "equippableItem"
     },
     {
-      "_id": "Wtcdd42MQHwsOsSe",
+      "_id": "wGMngSNcL0icOQiw",
       "_stats": {
-        "compendiumSource": "Item.wPC22EqyPCSc20i0",
+        "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1781875189508,
+        "createdTime": 1782586042214,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
       "flags": {
         "custom-system-builder": {
-          "version": "4.6.4"
+          "version": "4.8.5"
         }
       },
       "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/assize.png",
-      "name": "Heal",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/vizor.png",
+      "name": "Scouter",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
+        "default": 0
       },
       "sort": 0,
       "system": {
+        "container": "QjxsWydAvl3FjOFr",
         "props": {
-          "active_effect_config_table": {},
-          "animation_damage_timing_offset": "0",
-          "animation_damage_timing_options": "default",
-          "animation_script": "",
-          "check_bonus": "0",
-          "class": "Spiritist",
-          "cost": "10 x T MP",
-          "damage_bonus": "0",
-          "defense_target_type": "def",
-          "description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points</strong>.</p><hr><p><strong>Skill Enhancement Lv. 20</strong> — The amount of Hit Points recovered increases to <strong>50</strong>.</p><p><strong>Skill Enhancement Lv. 40</strong> — The amount of Hit Points recovered increases to <strong>60</strong>.</p>",
-          "duration": "-",
+          "cost": "",
+          "description": "<ul><li>Once at the start of a<strong>&nbsp;Conflict</strong> scene, you may perform the <strong>【Study】</strong>action as a&nbsp;<strong>Free Action</strong></li></ul>",
           "effect_table": {
             "0": {
               "$deleted": false,
-              "effect_kind": "grant",
-              "effect_label": "heal_hp",
-              "grant_amount": "40 + 10 * floor(min(CHAR_LEVEL, 40) / 20)",
-              "grant_resource": "hp",
-              "target_ref": "action_targets"
+              "allowed_types": "Study",
+              "check_bonus_formula": "",
+              "damage_bonus_formula": "",
+              "effect_kind": "open_action_menu",
+              "effect_label": "sc_study",
+              "free_mode": true
             }
           },
-          "heroic_requirement": "",
-          "ignore_hr": false,
           "isCheck": false,
-          "isFacet": false,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
-          "isReaction": false,
-          "isZeroPower": false,
-          "level": "1",
-          "max_level": "1",
-          "name": "Heal",
-          "on_activate_effect_ref": "heal_hp",
-          "optional_params": {},
-          "reaction_config_table": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_animation_default": "",
-          "skill_animation_mode": "default",
-          "skill_information": "",
-          "skill_range": "Range",
-          "skill_target": "Up to three creatures",
-          "skill_type": "Spell",
-          "type_damage": "healing",
-          "use_optional_params": false
+          "name": "Scouter",
+          "on_activate_effect_ref": "",
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "",
+              "reaction_effect_ref": "sc_study",
+              "reaction_passive_mode": "ask",
+              "reaction_source": "",
+              "reaction_trigger": "conflict_start"
+            }
+          },
+          "skill_target": "Self",
+          "skill_type": "Passive",
+          "type_damage": ""
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
-        "unique": true,
-        "uniqueId": "7ApZzLcwZfDZz0nE"
+        "unique": false,
+        "uniqueId": "AQqb37jPpVi1h6j6"
       },
       "type": "equippableItem"
     },
@@ -7445,7 +7529,7 @@
           "humanoid_ef": "100",
           "insect_ef": "100",
           "ip_cost": "",
-          "isEquipped": false,
+          "isEquipped": true,
           "isKey": false,
           "isMartial": false,
           "isModule": false,
@@ -8108,18 +8192,18 @@
     "props": {
       "accessory2_details": "<ul><li><p>You gain a new <strong>Opportunity,</strong> 【⏳<strong>Lucky】</strong></p></li></ul><blockquote><p>Roll <strong>5d100,</strong> you gain <strong>Zenit</strong> equal to the result rolled.</p></blockquote>",
       "accessory2_name": "Bunny Tail",
-      "accessory_details": "<ul><li><p><strong>+50% Zenit Gain </strong>after conflict</p></li></ul>",
-      "accessory_name": "Golden Apple",
+      "accessory_details": "<ul><li>Once at the start of a<strong>&nbsp;Conflict</strong> scene, you may perform the <strong>【Study】</strong>action as a&nbsp;<strong>Free Action</strong></li></ul>",
+      "accessory_name": "Scouter",
       "activation": 1,
       "affinity_1": "NA",
       "affinity_2": "NA",
       "affinity_3": "NA",
-      "affinity_4": "RS",
+      "affinity_4": "NA",
       "affinity_5": "NA",
       "affinity_6": "NA",
       "affinity_7": "NA",
       "affinity_8": "NA",
-      "affinity_9": "RS",
+      "affinity_9": "NA",
       "animation_table": {},
       "anomaly_status": 0,
       "arcane_ef": "100",
@@ -8170,7 +8254,7 @@
       "chanter_volume_target_medium": "Every ally who can hear you.",
       "char_identity": "Traveler, Fortune Teller, Possessed",
       "character_exp_multiplier": 1,
-      "character_zenit_multiplier": 1.5,
+      "character_zenit_multiplier": 1,
       "charm_status": 0,
       "check_mod_all": 0,
       "check_mod_stealth": 0,
@@ -8482,7 +8566,7 @@
       "critical_dice_range": 0,
       "current_hp": "112",
       "current_ip": "6",
-      "current_mp": "90",
+      "current_mp": 50,
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/hina_Cut-in002.png",
       "cut_in_fumble": "",
@@ -9063,6 +9147,13 @@
           "name": "Behemoth Horn",
           "roll": "",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.QV31ua9NkR7UTbsr"
+        },
+        "QjxsWydAvl3FjOFr": {
+          "acess_description": "<ul><li>Once at the start of a<strong>&nbsp;Conflict</strong> scene, you may perform the <strong>【Study】</strong>action as a&nbsp;<strong>Free Action</strong></li></ul>",
+          "id": "${item.id}",
+          "name": "Scouter",
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.QjxsWydAvl3FjOFr"
         },
         "RSsqodfs4cIosnrr": {
           "acess_description": "<ul><li><p><strong>+50% Zenit Gain </strong>after conflict</p></li></ul>",
