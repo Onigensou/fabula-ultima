@@ -294,6 +294,7 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   textCol("status_name", "Trigger Status Name", { tooltip: "trigger_status: the status/AE to trigger by name (e.g. Burn). Its tick formula + element are read from the status's common-AE definition.", vis: TRIGGER_STATUS_VIS }),
   textCol("trigger_count", "Trigger Count", { tooltip: "trigger_status: how many stacks to trigger (per-victim number or formula). Default 1. \"AE_CHARGES_BURN\" = all of the target's stacks (batched into one N×tick hit).", vis: TRIGGER_STATUS_VIS }),
   checkboxCol("consume_charges", "Consume Charges", { tooltip: "trigger_status: also REMOVE Trigger Count charges of the status from each target (Flame Claw: trigger 1 + consume 1). Off = the skill manages charges (Meteor triggers all, then halves via adjust_charges).", vis: TRIGGER_STATUS_VIS }),
+  checkboxCol("suppress_status_trigger", "Suppress Status Trigger", { tooltip: "trigger_status: do NOT emit the creature_status_triggered signal for this detonation, so status-trigger listeners (e.g. Ignition) don't react to it. Damage/element/affinity are unchanged. Meteor Impact uses this so detonating Burn doesn't refund Wandering Flame's own Zero Power.", vis: TRIGGER_STATUS_VIS }),
   // prompt_number config — interactive amount picker. Stores the entered value as
   // a chain variable read later via the VAR_<NAME> formula identifier (Blazing
   // Tether's move = prompt_number then two adjust_charges using VAR_MOVE_AMOUNT).
@@ -353,6 +354,10 @@ export const REACTION_CONFIG_REQUIRED_COLUMNS = [
   // Source-skill name filter (creature_completes_skill). The NAME of the skill
   // whose completion fired the trigger — for "after you use <Skill>" follow-ups.
   textCol("reaction_source_skill", "Source Skill Filter", { tooltip: "For creature_completes_skill: fire only when the completing skill has this NAME (e.g. \"Crossfire\"). Matched against the completing skill's name. Blank = any skill." }),
+  // Per-round fire quota — bound how many times this reaction row may auto/ask-fire
+  // within one BD round (counter resets each round, wiped at combat end). Wandering
+  // Flame's Ignition caps Burn-triggered MP/ZP gains at 3/round.
+  textCol("reaction_max_per_round", "Max Per Round", { tooltip: "Limit how many times this reaction can fire within a single BD round (e.g. 3). The row is hidden/skipped once its quota is spent for the round; resets each round. Blank or 0 = unlimited." }),
 ];
 
 // Map a table key → its required columns, for the boot sync to iterate.
