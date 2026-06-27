@@ -72,218 +72,6 @@
       "tint": "#ffffff",
       "transfer": false,
       "type": "base"
-    },
-    {
-      "_id": "oTetvbwsT79Jb0vG",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1782498356558,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [],
-      "description": "<p><em>Lucky Number:</em> the value you may swap onto a die with Lucky Seven (starts at 7). Replacing a die makes the replaced value your new lucky number.</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": 298800,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "oTetvbwsT79Jb0vG",
-          "originalParentId": "dafTLBUscCDNgq8H",
-          "originalUuid": "Actor.dafTLBUscCDNgq8H.ActiveEffect.oTetvbwsT79Jb0vG"
-        },
-        "fabula-ultima-companion": {
-          "chargeKey": "lucky_number",
-          "charges": 7,
-          "chargesMax": 7,
-          "directorAppliedBy": {
-            "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
-            "reactorTokenUuid": null,
-            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.v56GvN63nvIYV4iJ",
-            "turnsRemaining": null
-          },
-          "directorPermanent": true,
-          "lifetimeMode": "persistent_counter",
-          "reactionConfig": {
-            "effect_table": {
-              "0": {
-                "$deleted": false,
-                "ae_duplicate_mode": "replace",
-                "ae_template_ref": "Lucky Seven Ready",
-                "effect_kind": "apply_ae",
-                "effect_label": "ls_arm",
-                "target_ref": "ls_self"
-              },
-              "1": {
-                "$deleted": false,
-                "chain_steps": "ls_consume, ls_menu",
-                "effect_kind": "chain",
-                "effect_label": "ls_root"
-              },
-              "2": {
-                "$deleted": false,
-                "charge_key": "lucky_seven",
-                "count": "1",
-                "effect_kind": "consume_charge",
-                "effect_label": "ls_consume",
-                "on_empty": "abort",
-                "target_ref": "ls_self"
-              },
-              "3": {
-                "$deleted": false,
-                "effect_kind": "open_action_menu",
-                "effect_label": "ls_menu",
-                "menu_option_labels": "Replace the first die|Replace the second die",
-                "menu_option_refs": "ls_die_a, ls_die_b",
-                "menu_subtitle": "Replace a die with your lucky number",
-                "menu_title": "Lucky Seven"
-              },
-              "4": {
-                "$deleted": false,
-                "die_value": "",
-                "effect_kind": "set_check_die",
-                "effect_label": "ls_die_a",
-                "which_die": "A",
-                "writeback_carrier_charge": true
-              },
-              "5": {
-                "$deleted": false,
-                "die_value": "",
-                "effect_kind": "set_check_die",
-                "effect_label": "ls_die_b",
-                "which_die": "B",
-                "writeback_carrier_charge": true
-              },
-              "6": {
-                "$deleted": false,
-                "auto_confirm_when_obvious": true,
-                "candidate_source": "self",
-                "category": "",
-                "count": 1,
-                "effect_kind": "targeting",
-                "effect_label": "ls_self",
-                "exclude_self": false,
-                "iteration_mode": "together",
-                "mode": "exact",
-                "skip_when_passive": true
-              }
-            },
-            "name": "Lucky Seven",
-            "reaction_config_table": {
-              "0": {
-                "$deleted": false,
-                "condition_formula": "",
-                "reaction_effect_ref": "ls_arm",
-                "reaction_passive_mode": "force",
-                "reaction_source": "self",
-                "reaction_trigger": "conflict_start"
-              },
-              "1": {
-                "$deleted": false,
-                "condition_formula": "ACTION_ROLLS_ACCURACY == 1 && ATTACK_IS_CRIT == 0 && ATTACK_IS_FUMBLE == 0 && AE_CHARGES_LUCKY_SEVEN_READY > 0",
-                "reaction_effect_ref": "ls_root",
-                "reaction_passive_mode": "ask",
-                "reaction_source": "self",
-                "reaction_trigger": "creature_performs_action"
-              }
-            }
-          }
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "icons/sundries/gaming/dice-runed-brown.webp",
-      "name": "Lucky Number",
-      "origin": null,
-      "sort": 0,
-      "statuses": [
-        "fud-lucky-number"
-      ],
-      "system": {},
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "swMya4fWuaJd71pY",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1782493704097,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [],
-      "description": "<p><em>Heart of Darkness:</em> armed for this scene.</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": null,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "TQINaXFTRwWZBJvx",
-          "originalParentId": "EGYilCNAGvl2BldF",
-          "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF.ActiveEffect.TQINaXFTRwWZBJvx"
-        },
-        "fabula-ultima-companion": {
-          "category": "buff",
-          "chargeKey": "hod_ready",
-          "charges": 1,
-          "chargesMax": 1,
-          "directorAppliedBy": {
-            "appliedAtRound": 0,
-            "effectLabel": "hod_refresh",
-            "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.RpC6IM3OsHRX5a24",
-            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF",
-            "turnsRemaining": null
-          },
-          "directorPermanent": true
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "icons/magic/unholy/silhouette-evil-horned-giant.webp",
-      "name": "Heart of Darkness Ready",
-      "origin": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF",
-      "sort": 0,
-      "statuses": [
-        "fud-heart-of-darkness-ready"
-      ],
-      "system": {},
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
     }
   ],
   "flags": {
@@ -1983,6 +1771,64 @@
           "type": "base"
         },
         {
+          "_id": "qZXsB2J7lHw9EMgG",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1782528204348,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "system.props.max_hp",
+              "mode": 2,
+              "priority": 20,
+              "value": "5"
+            }
+          ],
+          "description": "Increase Max HP",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "qZXsB2J7lHw9EMgG",
+              "originalParentId": "EhrhSD2uc4XZ3uGD",
+              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.EhrhSD2uc4XZ3uGD.ActiveEffect.qZXsB2J7lHw9EMgG"
+            },
+            "fabula-ultima-companion": {
+              "refinementBonus": true
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUp.webp",
+          "name": "Armor Refinement",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        },
+        {
           "_id": "vrDZ4pLrvfynmg1e",
           "_stats": {
             "compendiumSource": null,
@@ -2161,7 +2007,7 @@
       },
       "folder": "ft3358qUh5ZDldYQ",
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/2316.gif",
-      "name": "Full Plate",
+      "name": "+1 Full Plate",
       "ownership": {
         "2vy7wrEUqBy0kzsU": 3,
         "6DmgigM5jq76r0Gd": 3,
@@ -2241,6 +2087,8 @@
           "name": "Full Plate",
           "optional_params": {},
           "plant_ef": "100",
+          "refine_count": 1,
+          "refine_level": 1,
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
@@ -6471,6 +6319,138 @@
       "type": "equippableItem"
     },
     {
+      "_id": "wdkyWxt43rlxEtTO",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782528224801,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.4.2"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "accessory",
+            "fromTemplate": "r0yZpLPAK9VXhM2p",
+            "itemId": "BXCY3beJ2HouEdSX",
+            "itemName": "Lens of Insight",
+            "pickedOldProps": {
+              "cost": "1000",
+              "def_bonus": "",
+              "defense": "0",
+              "defense_include_dex": false,
+              "initiative": "0",
+              "magic_defense": "0",
+              "magic_defense_include_ins": false,
+              "mdef_bonus": ""
+            },
+            "ts": 1769647435874
+          }
+        }
+      },
+      "folder": "5uQIy5BCy7UEVfcT",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "name": "Lens of Insight",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 2500000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li>Gain +2 to your <strong>【Study】</strong>check</li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "800",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Uncommon",
+          "item_type": "accessory",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Lens of Insight",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "BXCY3beJ2HouEdSX"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "Wtcdd42MQHwsOsSe",
       "_stats": {
         "compendiumSource": "Item.wPC22EqyPCSc20i0",
@@ -7363,12 +7343,12 @@
       "affinity_1": "NA",
       "affinity_2": "NA",
       "affinity_3": "NA",
-      "affinity_4": "NA",
+      "affinity_4": "RS",
       "affinity_5": "NA",
       "affinity_6": "NA",
       "affinity_7": "NA",
       "affinity_8": "NA",
-      "affinity_9": "NA",
+      "affinity_9": "RS",
       "animation_table": {},
       "anomaly_status": 0,
       "arcane_ef": "100",
@@ -7388,7 +7368,7 @@
       "berserk_status": 0,
       "bleed_status": 0,
       "blind_status": 0,
-      "bond_1": "",
+      "bond_1": "Fafnir",
       "bond_2": "Blanche",
       "bond_3": "Zarg",
       "bond_4": "Keren",
@@ -7729,9 +7709,9 @@
       "critical_damage_bonus": 0,
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
-      "current_hp": 42,
+      "current_hp": "112",
       "current_ip": "6",
-      "current_mp": 17,
+      "current_mp": "90",
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/hina_Cut-in002.png",
       "cut_in_fumble": "",
@@ -7819,8 +7799,8 @@
       "draw_card": "Draw",
       "draw_card_copy1": "Use",
       "elementalism": false,
-      "emotion_1_1": "",
-      "emotion_1_2": "",
+      "emotion_1_1": "inferiority",
+      "emotion_1_2": "mistrust",
       "emotion_1_3": "",
       "emotion_2_1": "admiration",
       "emotion_2_2": "loyalty",
@@ -7845,7 +7825,7 @@
       "entropism": false,
       "envenomed_status": 0,
       "exp_meter": "8.69",
-      "experience": 8.69,
+      "experience": "8.69",
       "experience_ui": "0",
       "extra_damage_mod_air": 0,
       "extra_damage_mod_all": 0,
@@ -7969,7 +7949,7 @@
           "armor_description": "<p><ul><li><p><strong>+3 Damage Reduction</strong></p></li></ul></p>",
           "armor_martial": "♦️",
           "id": "${item.id}",
-          "name": "Full Plate",
+          "name": "+1 Full Plate",
           "roll": "",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.EhrhSD2uc4XZ3uGD"
         },
@@ -8509,6 +8489,13 @@
           "roll": "",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.v9PnCJH59MztMRU8"
         },
+        "wdkyWxt43rlxEtTO": {
+          "acess_description": "<ul><li>Gain +2 to your <strong>【Study】</strong>check</li></ul>",
+          "id": "${item.id}",
+          "name": "Lens of Insight",
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.wdkyWxt43rlxEtTO"
+        },
         "wxglZhHU9cSYnD30": {
           "acess_description": "<ul><li>Once at the start of a<strong>&nbsp;Conflict</strong> scene, you may perform the <strong>【Study】</strong>action as a&nbsp;<strong>Free Action</strong></li></ul>",
           "id": "${item.id}",
@@ -8554,7 +8541,7 @@
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.ERBLg9oQAHRlJ8wZ"
         }
       },
-      "level": 30,
+      "level": "30",
       "lifesteal_percentage": 0,
       "lifesteal_value": 0,
       "magic_defense": 12,
@@ -8566,7 +8553,7 @@
       "main_hand_attack": "",
       "manadrain_percentage": 0,
       "manadrain_value": 0,
-      "max_hp": 107,
+      "max_hp": 112,
       "max_ip": 6,
       "max_mp": 90,
       "memories_list": {
@@ -10753,13 +10740,13 @@
       "wlp_base": "10",
       "wlp_current": 10,
       "your_class_name": "Night Guidance",
-      "zenit": 6516,
+      "zenit": "5646",
       "zero_label": "Zero Power",
       "zero_power_description": "<p style=\"text-align: center\"><strong>Choose and trigger 3 oppertunity choice.</strong></p>",
       "zero_power_macro": "",
       "zero_power_name": "A MILLION POSSIBILITY",
       "zero_power_showMacro": false,
-      "zero_power_value": 6,
+      "zero_power_value": "6",
       "zero_trigger_description": "<p>When Hina change the outcome of check (fail&gt; success or success&gt;fail), she gain 1 zero trigger.</p>",
       "zero_trigger_label": "Trigger",
       "zombie_status": 0
