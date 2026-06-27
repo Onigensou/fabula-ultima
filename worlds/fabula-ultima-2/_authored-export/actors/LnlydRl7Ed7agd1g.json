@@ -13,6 +13,7 @@
       "version": "4.8.5"
     },
     "fabula-ultima-companion": {
+      "damage_taken_mult": 1,
       "idleAnimation": {
         "bounce": false,
         "float": false
@@ -42,6 +43,13 @@
         },
         "cry": {
           "insert": ""
+        },
+        "custom1": {
+          "custom": true,
+          "image": "modules/theatre/assets/graphics/emotes/blank.png",
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Kalina/Kalina_Portrair001.png",
+          "label": "Hat",
+          "name": "custom1"
         },
         "dissatisfied": {
           "insert": ""
@@ -154,7 +162,7 @@
       "_stats": {
         "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
         "coreVersion": "12.343",
-        "createdTime": 1781875205340,
+        "createdTime": 1782566245995,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -221,7 +229,7 @@
       "_stats": {
         "compendiumSource": "Item.A87i0WJvlVD1w3E7",
         "coreVersion": "12.343",
-        "createdTime": 1781875205340,
+        "createdTime": 1782566245995,
         "duplicateSource": "Item.yWlkWZC2vLf4J5Pv",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -289,7 +297,7 @@
       "_stats": {
         "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
         "coreVersion": "12.343",
-        "createdTime": 1781875205340,
+        "createdTime": 1782566245995,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -356,7 +364,7 @@
       "_stats": {
         "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
         "coreVersion": "12.343",
-        "createdTime": 1781875205340,
+        "createdTime": 1782566245995,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -424,7 +432,7 @@
       "_stats": {
         "compendiumSource": "Item.aGZAOUdRyopqoDyc",
         "coreVersion": "12.343",
-        "createdTime": 1781875205340,
+        "createdTime": 1782566245995,
         "duplicateSource": "Item.iFdNNGp4OVZVMEcB",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -499,7 +507,7 @@
       "_stats": {
         "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
         "coreVersion": "12.343",
-        "createdTime": 1781875205340,
+        "createdTime": 1782566245995,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -644,7 +652,7 @@
       "_stats": {
         "compendiumSource": "Item.iFdNNGp4OVZVMEcB",
         "coreVersion": "12.343",
-        "createdTime": 1781875205340,
+        "createdTime": 1782566245995,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -711,7 +719,7 @@
       "_stats": {
         "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
         "coreVersion": "12.343",
-        "createdTime": 1781875205340,
+        "createdTime": 1782566245995,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -868,7 +876,7 @@
       "_stats": {
         "compendiumSource": "Item.iFdNNGp4OVZVMEcB",
         "coreVersion": "12.343",
-        "createdTime": 1781875205340,
+        "createdTime": 1782566245995,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -933,7 +941,7 @@
       "_stats": {
         "compendiumSource": "Item.YpRxmj2S5mNfkal2",
         "coreVersion": "12.343",
-        "createdTime": 1781875205340,
+        "createdTime": 1782566245995,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1055,7 +1063,7 @@
       "_stats": {
         "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
         "coreVersion": "12.343",
-        "createdTime": 1781875205340,
+        "createdTime": 1782566245995,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1210,7 +1218,7 @@
       "_stats": {
         "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
         "coreVersion": "12.343",
-        "createdTime": 1781875205340,
+        "createdTime": 1782566245995,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1354,7 +1362,7 @@
       "_stats": {
         "compendiumSource": "Item.iFdNNGp4OVZVMEcB",
         "coreVersion": "12.343",
-        "createdTime": 1781875205340,
+        "createdTime": 1782566245995,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"

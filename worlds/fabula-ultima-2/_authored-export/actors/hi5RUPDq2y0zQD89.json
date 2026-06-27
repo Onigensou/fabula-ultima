@@ -11,6 +11,9 @@
   "flags": {
     "custom-system-builder": {
       "version": "4.8.4"
+    },
+    "fabula-ultima-companion": {
+      "damage_taken_mult": 1
     }
   },
   "folder": "yrt0v9PKovSRpKQJ",

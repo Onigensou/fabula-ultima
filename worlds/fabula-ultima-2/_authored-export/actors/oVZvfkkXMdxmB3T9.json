@@ -13,6 +13,7 @@
       "version": "4.8.5"
     },
     "fabula-ultima-companion": {
+      "damage_taken_mult": 1,
       "idleAnimation": {
         "bounce": false,
         "float": false
@@ -27,7 +28,7 @@
       "_stats": {
         "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
         "coreVersion": "12.343",
-        "createdTime": 1781947539987,
+        "createdTime": 1782566243199,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -101,7 +102,7 @@
       "_stats": {
         "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
         "coreVersion": "12.343",
-        "createdTime": 1781947536416,
+        "createdTime": 1782566243199,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -174,7 +175,7 @@
       "_stats": {
         "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
         "coreVersion": "12.343",
-        "createdTime": 1781947538285,
+        "createdTime": 1782566243199,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"

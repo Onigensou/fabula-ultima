@@ -12,6 +12,9 @@
     "custom-system-builder": {
       "version": "4.8.4"
     },
+    "fabula-ultima-companion": {
+      "damage_taken_mult": 1
+    },
     "theatre": {
       "baseinsert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Geist/Portrait/Geist_Portrait.png",
       "disabledefault": false,
@@ -36,6 +39,13 @@
         },
         "cry": {
           "insert": ""
+        },
+        "custom1": {
+          "custom": true,
+          "image": "modules/theatre/assets/graphics/emotes/blank.png",
+          "insert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Geist/Portrait/Geist_Portrait_Onsen.png",
+          "label": "Onsen",
+          "name": "custom1"
         },
         "dissatisfied": {
           "insert": ""
@@ -148,7 +158,7 @@
       "_stats": {
         "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
         "coreVersion": "12.343",
-        "createdTime": 1781875196834,
+        "createdTime": 1782566230861,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -221,7 +231,7 @@
       "_stats": {
         "compendiumSource": "Item.iFdNNGp4OVZVMEcB",
         "coreVersion": "12.343",
-        "createdTime": 1781875196834,
+        "createdTime": 1782566230861,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -294,7 +304,7 @@
       "_stats": {
         "compendiumSource": "Item.YAMrjKy6d6hgGP1F",
         "coreVersion": "12.343",
-        "createdTime": 1781875196834,
+        "createdTime": 1782566230861,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -367,7 +377,7 @@
       "_stats": {
         "compendiumSource": "Item.mJuSEmMc3A0HrqNO",
         "coreVersion": "12.343",
-        "createdTime": 1781875196834,
+        "createdTime": 1782566230861,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -440,7 +450,7 @@
       "_stats": {
         "compendiumSource": "Item.iFdNNGp4OVZVMEcB",
         "coreVersion": "12.343",
-        "createdTime": 1781875196834,
+        "createdTime": 1782566230861,
         "duplicateSource": "Item.iFdNNGp4OVZVMEcB",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -513,7 +523,7 @@
       "_stats": {
         "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
         "coreVersion": "12.343",
-        "createdTime": 1781875196834,
+        "createdTime": 1782566230861,
         "duplicateSource": "Item.UKzHkmIJcjXZ4GFR",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"

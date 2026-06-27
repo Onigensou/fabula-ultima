@@ -12,6 +12,9 @@
     "custom-system-builder": {
       "version": "4.8.4"
     },
+    "fabula-ultima-companion": {
+      "damage_taken_mult": 1
+    },
     "theatre": {
       "settings": {
         "emote": null,

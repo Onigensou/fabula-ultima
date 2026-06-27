@@ -12,6 +12,9 @@
     "custom-system-builder": {
       "version": "4.8.4"
     },
+    "fabula-ultima-companion": {
+      "damage_taken_mult": 1
+    },
     "theatre": {
       "settings": {
         "emote": null,
@@ -31,7 +34,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1781976610577,
+        "createdTime": 1782566243584,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -108,7 +111,7 @@
       "_stats": {
         "compendiumSource": "Item.mJuSEmMc3A0HrqNO",
         "coreVersion": "12.343",
-        "createdTime": 1781875204222,
+        "createdTime": 1782566243584,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -174,7 +177,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1781976610720,
+        "createdTime": 1782566243584,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -251,7 +254,7 @@
       "_stats": {
         "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
         "coreVersion": "12.343",
-        "createdTime": 1781875204222,
+        "createdTime": 1782566243584,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -390,7 +393,7 @@
       "_stats": {
         "compendiumSource": "Item.iFdNNGp4OVZVMEcB",
         "coreVersion": "12.343",
-        "createdTime": 1781875204222,
+        "createdTime": 1782566243584,
         "duplicateSource": "Item.iFdNNGp4OVZVMEcB",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -476,7 +479,7 @@
       "_stats": {
         "compendiumSource": "Item.mJuSEmMc3A0HrqNO",
         "coreVersion": "12.343",
-        "createdTime": 1781875204222,
+        "createdTime": 1782566243584,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -487,7 +490,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1781976611625,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -672,7 +675,7 @@
       "_stats": {
         "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
         "coreVersion": "12.343",
-        "createdTime": 1781875204222,
+        "createdTime": 1782566243584,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -768,7 +771,7 @@
       "_stats": {
         "compendiumSource": "Item.mJuSEmMc3A0HrqNO",
         "coreVersion": "12.343",
-        "createdTime": 1781875204222,
+        "createdTime": 1782566243584,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -865,7 +868,7 @@
       "_stats": {
         "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
         "coreVersion": "12.343",
-        "createdTime": 1781875204222,
+        "createdTime": 1782566243584,
         "duplicateSource": "Item.UKzHkmIJcjXZ4GFR",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -999,7 +1002,7 @@
       "_stats": {
         "compendiumSource": "Item.mJuSEmMc3A0HrqNO",
         "coreVersion": "12.343",
-        "createdTime": 1781875204222,
+        "createdTime": 1782566243584,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1201,7 +1204,7 @@
       "_stats": {
         "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
         "coreVersion": "12.343",
-        "createdTime": 1781875204222,
+        "createdTime": 1782566243584,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"

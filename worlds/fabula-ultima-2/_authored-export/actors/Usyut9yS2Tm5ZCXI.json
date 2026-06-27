@@ -12,6 +12,9 @@
     "custom-system-builder": {
       "version": "4.8.4"
     },
+    "fabula-ultima-companion": {
+      "damage_taken_mult": 1
+    },
     "theatre": {
       "baseinsert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Bruce%20V/Bruce%20V_Armor.png",
       "disabledefault": false,
@@ -148,7 +151,7 @@
       "_stats": {
         "compendiumSource": "Item.Zw14b4NHt6geS7nE",
         "coreVersion": "12.343",
-        "createdTime": 1781875195953,
+        "createdTime": 1782566229004,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -309,7 +312,7 @@
       "_stats": {
         "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
         "coreVersion": "12.343",
-        "createdTime": 1781875195953,
+        "createdTime": 1782566229004,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -374,7 +377,7 @@
       "_stats": {
         "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
         "coreVersion": "12.343",
-        "createdTime": 1781875195953,
+        "createdTime": 1782566229004,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -438,7 +441,7 @@
       "_stats": {
         "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
         "coreVersion": "12.343",
-        "createdTime": 1781875195953,
+        "createdTime": 1782566229004,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -568,7 +571,7 @@
       "_stats": {
         "compendiumSource": "Item.iFdNNGp4OVZVMEcB",
         "coreVersion": "12.343",
-        "createdTime": 1781875195953,
+        "createdTime": 1782566229004,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -633,7 +636,7 @@
       "_stats": {
         "compendiumSource": "Item.wh14ZZz56LQHyrvF",
         "coreVersion": "12.343",
-        "createdTime": 1781875195953,
+        "createdTime": 1782566229004,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"

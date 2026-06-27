@@ -11,6 +11,9 @@
   "flags": {
     "custom-system-builder": {
       "version": "4.8.4"
+    },
+    "fabula-ultima-companion": {
+      "damage_taken_mult": 1
     }
   },
   "folder": "yrt0v9PKovSRpKQJ",
@@ -21,7 +24,7 @@
       "_stats": {
         "compendiumSource": "Item.9NedNyPRoLHZEmMX",
         "coreVersion": "12.343",
-        "createdTime": 1781875202908,
+        "createdTime": 1782566240187,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -86,7 +89,7 @@
       "_stats": {
         "compendiumSource": "Item.EJ8qEpVDNMA0I1fi",
         "coreVersion": "12.343",
-        "createdTime": 1781875202908,
+        "createdTime": 1782566240187,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -151,7 +154,7 @@
       "_stats": {
         "compendiumSource": "Item.YxXwy2Giyln0kuLT",
         "coreVersion": "12.343",
-        "createdTime": 1781875202908,
+        "createdTime": 1782566240187,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -216,7 +219,7 @@
       "_stats": {
         "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
         "coreVersion": "12.343",
-        "createdTime": 1781875202908,
+        "createdTime": 1782566240187,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -280,7 +283,7 @@
       "_stats": {
         "compendiumSource": "Item.oyoBGiPAlNfKoQc9",
         "coreVersion": "12.343",
-        "createdTime": 1781875202908,
+        "createdTime": 1782566240187,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -345,7 +348,7 @@
       "_stats": {
         "compendiumSource": "Item.sT1zHupoHq9gkpFA",
         "coreVersion": "12.343",
-        "createdTime": 1781875202908,
+        "createdTime": 1782566240187,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"

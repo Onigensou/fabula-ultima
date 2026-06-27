@@ -72,14 +72,6 @@
                 "reaction_passive_mode": "force",
                 "reaction_source": "self",
                 "reaction_trigger": "creature_targeted_by_action"
-              },
-              "1": {
-                "$deleted": false,
-                "condition_formula": "HAS_STATUS_NINJA_LOG_SPENT == 0",
-                "reaction_effect_ref": "ninjalog_nullify",
-                "reaction_passive_mode": "force",
-                "reaction_source": "self",
-                "reaction_trigger": "creature_takes_damage"
               }
             }
           }

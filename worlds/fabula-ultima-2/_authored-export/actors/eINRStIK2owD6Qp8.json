@@ -13,6 +13,7 @@
       "version": "4.8.5"
     },
     "fabula-ultima-companion": {
+      "damage_taken_mult": 1,
       "idleAnimation": {
         "bounce": false,
         "float": false
@@ -37,7 +38,7 @@
       "_stats": {
         "compendiumSource": "Item.uQtyl33m5hL8JxJ3",
         "coreVersion": "12.343",
-        "createdTime": 1781875203683,
+        "createdTime": 1782566242867,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -169,7 +170,7 @@
       "_stats": {
         "compendiumSource": "Item.apTtxjIGZbuM8Ofc",
         "coreVersion": "12.343",
-        "createdTime": 1781875203683,
+        "createdTime": 1782566242867,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -300,7 +301,7 @@
       "_stats": {
         "compendiumSource": "Item.BXCY3beJ2HouEdSX",
         "coreVersion": "12.343",
-        "createdTime": 1781875203683,
+        "createdTime": 1782566242867,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -427,73 +428,11 @@
       "type": "equippableItem"
     },
     {
-      "_id": "kJjLVV3KCLRQGcOr",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1782567173365,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.8.5"
-        },
-        "fabula-ultima-companion": {
-          "coreAction": "study"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
-      "name": "Lens of Insight (Passive)",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 0
-      },
-      "sort": 0,
-      "system": {
-        "container": "b1mxERLfITftCEZA",
-        "props": {
-          "action_command": "",
-          "check_mode": "",
-          "cost": "",
-          "description": "<p>Equipped passive: +2 to Study Checks.</p>",
-          "details_roller": "",
-          "effect_table": {
-            "0": {
-              "check_buff_action": "study",
-              "check_buff_amount": "2",
-              "effect_kind": "check_buff",
-              "effect_label": "lens_study_buff"
-            }
-          },
-          "id": "QjuNoo0rGl9iUWiO",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
-          "isCheck": false,
-          "isReaction": false,
-          "max_level": "1",
-          "name": "Lens of Insight (Passive)",
-          "on_activate_effect_ref": "",
-          "rolled_atr1": "INS",
-          "rolled_atr2": "INS",
-          "skill_target": "",
-          "skill_type": "Passive",
-          "uuid": "Item.QjuNoo0rGl9iUWiO"
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": true,
-        "uniqueId": "fABWj5MvuADYTbpR"
-      },
-      "type": "equippableItem"
-    },
-    {
       "_id": "ldKVT2OMTq8wEXR3",
       "_stats": {
         "compendiumSource": "Item.2sPBBryQTqyGYT68",
         "coreVersion": "12.343",
-        "createdTime": 1781875203683,
+        "createdTime": 1782566242867,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -624,7 +563,7 @@
       "_stats": {
         "compendiumSource": "Item.7ZXppIX7woYU0V8B",
         "coreVersion": "12.343",
-        "createdTime": 1781875203683,
+        "createdTime": 1782566242867,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -736,7 +675,7 @@
       "_stats": {
         "compendiumSource": "Item.cN3u9EEjsbZVjxzb",
         "coreVersion": "12.343",
-        "createdTime": 1781875203683,
+        "createdTime": 1782566242867,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -868,7 +807,7 @@
       "_stats": {
         "compendiumSource": "Item.EaSl6IwD3TfS7zBm",
         "coreVersion": "12.343",
-        "createdTime": 1781875203683,
+        "createdTime": 1782566242867,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
