@@ -24,6 +24,7 @@
 // during a single action." Legacy macro hides armor mid-combat too.
 
 import { log, warn } from "./logger.js";
+import { reconcileSetBonuses } from "./set-bonus.js";
 
 const UNARM_STRIKE_ITEM_ID = "bwqZvS4NXw7bCrmV";
 
@@ -454,6 +455,11 @@ export async function applyEquipmentSwap(actor, selections) {
     }
   }
 
+  // Equipment SET BONUSES — reconcile after isEquipped is committed so the count
+  // of equipped set pieces is accurate (e.g. aquatic 2-piece → "always Wet").
+  try { await reconcileSetBonuses(actor); }
+  catch (e) { warn("applyEquipmentSwap: set-bonus reconcile failed", e); }
+
   log(`Equipment swap applied (${changes.length} change${changes.length === 1 ? "" : "s"}) for ${actor.name}`);
   return { changes, skipped: false };
 }
@@ -502,23 +508,31 @@ export async function reconcileEquip(actor) {
   for (const it of handItems) sync(it, wornHandIds.has(it.id));
   for (const ac of accessories) sync(ac, wornAccIds.has(ac.id));
 
-  if (!itemUpdates.length) return { changed: 0 };
-  try { await actor.updateEmbeddedDocuments("Item", itemUpdates); }
-  catch (e) { warn("reconcileEquip: item updates failed", e); }
+  if (itemUpdates.length) {
+    try { await actor.updateEmbeddedDocuments("Item", itemUpdates); }
+    catch (e) { warn("reconcileEquip: item updates failed", e); }
 
-  // Item-resident AE enable/disable, mirroring applyEquipmentSwap's sync.
-  for (const { itemId, enable } of aeWork) {
-    const item = actor.items?.get?.(itemId);
-    if (!item) continue;
-    const docs = resolveItemEffectDocs(item);
-    const fxUpdates = docs
-      .filter((fx) => !!fx.disabled === enable)   // currently wrong-way → flip
-      .map((fx) => ({ _id: fx.id, disabled: !enable }));
-    if (fxUpdates.length) {
-      try { await item.updateEmbeddedDocuments("ActiveEffect", fxUpdates); }
-      catch (e) { warn(`reconcileEquip: AE sync failed for ${item.name}`, e); }
+    // Item-resident AE enable/disable, mirroring applyEquipmentSwap's sync.
+    for (const { itemId, enable } of aeWork) {
+      const item = actor.items?.get?.(itemId);
+      if (!item) continue;
+      const docs = resolveItemEffectDocs(item);
+      const fxUpdates = docs
+        .filter((fx) => !!fx.disabled === enable)   // currently wrong-way → flip
+        .map((fx) => ({ _id: fx.id, disabled: !enable }));
+      if (fxUpdates.length) {
+        try { await item.updateEmbeddedDocuments("ActiveEffect", fxUpdates); }
+        catch (e) { warn(`reconcileEquip: AE sync failed for ${item.name}`, e); }
+      }
     }
+    log(`reconcileEquip: synced ${itemUpdates.length} item(s) to slots on ${actor.name}`);
   }
-  log(`reconcileEquip: synced ${itemUpdates.length} item(s) to slots on ${actor.name}`);
-  return { changed: itemUpdates.length };
+
+  // Set bonuses — reconcile even when nothing changed here, so a load/clone repair
+  // sweep restores a missing set-bonus AE (e.g. aquatic 2-piece → "always Wet").
+  let setBonus = null;
+  try { setBonus = await reconcileSetBonuses(actor); }
+  catch (e) { warn("reconcileEquip: set-bonus reconcile failed", e); }
+
+  return { changed: itemUpdates.length, setBonus };
 }

@@ -41,6 +41,30 @@ function classAffinityCode(actor, damageClass) {
   return (raw === "RS" || raw === "VU" || raw === "IM" || raw === "AB") ? raw : null;
 }
 
+// Shared tail of the incoming-damage ruleset: (3) damage-class affinity
+// (strike/magic) + (4) the universal damage_taken_mult. Exported so the BD ATTACK
+// path (action-profile) applies the SAME two axes as the effect ruleset — one
+// source of truth, the damage-unification reconciliation. `damage_taken_mult` is a
+// pure AE accumulator (seeded to 1 before AEs apply in ActiveEffectFormulaBridge),
+// so multiple sources compose via MULTIPLY-mode changes (two ×2 items → ×4).
+// Returns the post-class, post-mult value and whether damage was absorbed (element
+// OR class flipped to AB → heal downstream).
+export function applyClassAffinityAndMult(actor, value, {
+  damageClass = null,
+  ignoreAffinity = false,
+  elementAbsorbed = false,
+} = {}) {
+  let v = value;
+  const classCode = ignoreAffinity ? null : classAffinityCode(actor, damageClass);
+  if (classCode) v = applyAffinityToDamage(v, classCode);
+  const absorbed = elementAbsorbed || classCode === "AB";
+  if (!absorbed) {
+    const mult = _num(actor?.flags?.[FLAG_NS]?.damage_taken_mult, 1);
+    if (mult > 0 && mult !== 1) v = Math.ceil(v * mult);
+  }
+  return { value: Math.max(0, Math.ceil(v)), absorbed };
+}
+
 export function computeIncomingDamage(actor, {
   base = 0,
   element = "elementless",
@@ -80,17 +104,13 @@ export function computeIncomingDamage(actor, {
   const elementCode = ignoreAffinity ? "NE" : resolveAffinity(actor, element);
   v = applyAffinityToDamage(v, elementCode);
 
-  // 3) Damage-class affinity (inert for element-only effect damage).
-  const classCode = ignoreAffinity ? null : classAffinityCode(actor, damageClass);
-  if (classCode) v = applyAffinityToDamage(v, classCode);
-
-  const absorbed = elementCode === "AB" || classCode === "AB";
-
-  // 4) Universal incoming multiplier — reductions only (never amplifies a heal).
-  if (!absorbed) {
-    const mult = _num(actor?.flags?.[FLAG_NS]?.damage_taken_mult, 1);
-    if (mult > 0 && mult !== 1) v = Math.ceil(v * mult);
-  }
+  // 3) Damage-class affinity + 4) universal multiplier — via the shared helper so
+  //    the attack path (action-profile) applies them identically.
+  const cm = applyClassAffinityAndMult(actor, v, {
+    damageClass, ignoreAffinity, elementAbsorbed: elementCode === "AB",
+  });
+  v = cm.value;
+  const absorbed = cm.absorbed;
 
   return {
     damage: Math.max(0, Math.ceil(v)),

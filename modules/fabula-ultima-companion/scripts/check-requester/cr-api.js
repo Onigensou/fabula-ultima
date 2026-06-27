@@ -66,6 +66,7 @@
     hiddenDl: true,
     skipGroupOutcomeSound: false,
     revealTimeout: 2300,
+    checkBuffActions: [],
   };
 
   // ── Helpers ───────────────────────────────────────────────────────────────
@@ -77,6 +78,51 @@
   const esc  = s  => String(s ?? "")
     .replaceAll("&", "&amp;").replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;").replaceAll('"', "&quot;");
+
+  // ── Equipped-gear action-scoped Check buffs (e.g. Encyclopedia +2 Study) ──
+  // When the GM tags a Request Check with one or more named actions (Study /
+  // Stealth / Strength / Mobility), each tag is matched — purely BY STRING —
+  // against every selected actor's EQUIPPED-gear passive `check_buff` rows and
+  // any matching +N is folded into that actor's roll as a modifier. This reuses
+  // the exact engine the Study action already runs (sumEquippedCheckBuffs in
+  // battle-director/skill-effects.js); the dropdown just opens it up to arbitrary
+  // checks. cr-api.js is a CLASSIC script, so the module is reached by absolute
+  // URL (relative import() would resolve against the page, not this file) and the
+  // promise is cached WITHOUT a cache-bust so we share the canonical singleton.
+  let _seBuffFnPromise = null;
+  const getCheckBuffFn = () => {
+    if (!_seBuffFnPromise) {
+      _seBuffFnPromise = import(
+        `${window.location.origin}/modules/${MODULE_ID}/scripts/battle-director/skill-effects.js`
+      ).then(m => m?.sumEquippedCheckBuffs ?? null)
+       .catch(e => { console.warn(TAG, "check_buff: skill-effects import failed:", e); return null; });
+    }
+    return _seBuffFnPromise;
+  };
+
+  // Resolve an actor's equipped check_buff modifiers for the given action tokens.
+  // Returns [{label, value}] ready to merge into modifierParts. Deduped per gear
+  // source so picking two actions a single gear covers never double-counts.
+  async function resolveEquippedCheckBuffMods(actor, actions) {
+    const list = Array.isArray(actions)
+      ? actions.map(a => String(a ?? "").trim().toLowerCase()).filter(Boolean)
+      : [];
+    if (!actor || !list.length) return [];
+    const fn = await getCheckBuffFn();
+    if (typeof fn !== "function") return [];
+    const bySource = new Map(); // gear name → amount (first match wins per gear)
+    for (const cmd of list) {
+      let res = null;
+      try { res = fn(actor, cmd) ?? null; } catch (e) { console.warn(TAG, "check_buff resolve:", e); }
+      for (const p of (res?.parts ?? [])) {
+        const src = p?.source ?? "Equipment";
+        if (!bySource.has(src)) bySource.set(src, safeInt(p?.amount, 0));
+      }
+    }
+    return [...bySource.entries()]
+      .filter(([, amt]) => amt !== 0)
+      .map(([src, amt]) => ({ label: src, value: amt }));
+  }
 
   // Decide whether the final die should play intense anticipation.
   // Always intense if the total lands within 3 of DL (close call).
@@ -289,7 +335,8 @@
       const rollA    = await rollDie(dieA);
       const rollB    = singleDie ? rollA : await rollDie(dieB);
       const actorMods = globalThis.ONI?.CheckModifiers?.resolve?.(actor, context?.checkContext ?? null) ?? [];
-      const modParts = [...actorMods, ...(modifiers ?? [])];
+      const buffMods  = await resolveEquippedCheckBuffMods(actor, opts.checkBuffActions);
+      const modParts = [...actorMods, ...buffMods, ...(modifiers ?? [])];
       const computed = computeCheck(rollA, rollB, modParts, dl, singleDie);
       results.push({
         actorUuid: actor.uuid, actorName: actor.name, tokenImg: getTokenImg(actor),
@@ -1142,7 +1189,7 @@
       panelStates.set(pd.slotId, {
         ...pd,
         rollA: null, rollB: null,
-        result: null, modifierParts: [...(opts?.modifiers ?? [])],
+        result: null, modifierParts: [...(pd.checkBuffMods ?? []), ...(opts?.modifiers ?? [])],
         canTrait: false, usedTrait: false,
         canBond: false,  usedBond: false,
         canDivination: false, usedDivination: false,
@@ -1846,15 +1893,20 @@
     // actor can occupy multiple panels (e.g. a Protector who takes a redirected
     // save in addition to their own rolls twice). All panel/confirm/socket
     // bookkeeping keys on slotId; actorUuid stays a data field for actor ops.
-    const panels = actors.map((actor, i) => {
+    const panels = await Promise.all(actors.map(async (actor, i) => {
       const dieA = getDieSize(actor, attrA);
+      // Per-actor equipped check_buff modifiers — computed authoritatively on the
+      // GM and shipped inside the panel payload (MSG_OPEN), so every client shows
+      // the identical bonus from the start. Empty unless the GM tagged actions.
+      const checkBuffMods = await resolveEquippedCheckBuffMods(actor, opts.checkBuffActions);
       return {
         slotId: `${actor.uuid}#${i}`,
         actorUuid: actor.uuid, actorName: actor.name, tokenImg: getTokenImg(actor),
         attrA, attrB, singleDie: opts.singleDie ?? false,
         dieA, dieB: opts.singleDie ? dieA : getDieSize(actor, attrB),
+        checkBuffMods,
       };
-    });
+    }));
     const expectedCount = panels.length;
 
     let _resolve;
@@ -1929,6 +1981,7 @@
     opts.attrB = opts.singleDie ? opts.attrA : String(opts.attrB ?? "MIG").toUpperCase();
     opts.dl    = safeInt(opts.dl, 10);
     opts.modifiers = Array.isArray(opts.modifiers) ? opts.modifiers : [];
+    opts.checkBuffActions = Array.isArray(opts.checkBuffActions) ? opts.checkBuffActions : [];
 
     // Accept actor objects or UUID strings
     const rawActors = Array.isArray(actorsInput) ? actorsInput : [actorsInput];

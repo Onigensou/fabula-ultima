@@ -21,6 +21,7 @@ import {
   applyCritDamage, resolveIncomingReduction, healReceivingMultiplier, normalizeDamageType, applyAdjustOp,
 } from "./skill-formulas.js";
 import { applyAffinityToDamage, readWeaponEfficiency, snapshotTargetForToken } from "./snapshot.js";
+import { applyClassAffinityAndMult } from "./damage-ruleset.js";
 import { resolveResourceDef } from "./resources.js";
 import { deriveCheck } from "./check.js";
 import { previewEffectRow, resolveDamageElementOverride,
@@ -459,6 +460,25 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
       }
       if (reactionKeywords?.includes("pierce") && affinityCode === "RS") affinityCode = "NE";
       damageVal = applyAffinityToDamage(rawDamage, affinityCode);
+
+      // Damage-class affinity (strike/magic) + universal damage_taken_mult — the
+      // SAME incoming axes the effect ruleset applies, via the shared helper. The
+      // attack path historically skipped both (see damage-unification-plan.md), so
+      // an actor with affinity_class_strike:"IM" / damage_taken_mult≠1 (e.g. Ghostly
+      // Sheet: immune to Strike, 200% from all else) now has them honored on basic
+      // attacks too. strike = a weapon Attack (targets DEF); magic = a Spell
+      // (targets MDEF); other skills/MP = neither (null → both axes inert).
+      if (!primary.isMpDamage) {
+        const dmgClass = kind === "Attack" ? "strike"
+          : (kind === "Spell" || String(ar?.skillType ?? "").toLowerCase() === "spell") ? "magic"
+          : null;
+        const cm = applyClassAffinityAndMult(liveTarget, damageVal, {
+          damageClass: dmgClass,
+          elementAbsorbed: affinityCode === "AB",
+        });
+        damageVal = cm.value;
+        if (cm.absorbed && affinityCode !== "AB") affinityCode = "AB";
+      }
 
       effects.push({
         id: `primary-damage:${e.tokenUuid}`,
