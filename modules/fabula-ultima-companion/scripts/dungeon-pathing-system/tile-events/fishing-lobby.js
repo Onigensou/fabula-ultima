@@ -301,11 +301,15 @@
     if (window["__ONI_FISHLOBBY_SOCKET__"]) return;
     window["__ONI_FISHLOBBY_SOCKET__"] = true;
 
-    game.socket.on(SOCKET_CH, msg => {
+    game.socket.on(SOCKET_CH, async msg => {
       if (!msg?.type?.startsWith("FISHLOBBY_")) return;
 
       if (msg.type === FL_OPEN) {
-        if (!game.user?.isGM) openLobby(msg.payload, false);   // GM opens directly
+        // GM opens directly (in request()). Player clients open here, but only
+        // party-member clients — spectator clients are not dragged into the lobby.
+        if (game.user?.isGM) return;
+        const allowed = await (globalThis.CampSystem?.isPartyMemberClient?.() ?? Promise.resolve(true));
+        if (allowed) openLobby(msg.payload, false);
         return;
       }
       if (msg.type === FL_SYNC) {
