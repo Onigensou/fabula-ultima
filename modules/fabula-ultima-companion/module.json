@@ -168,6 +168,8 @@
     "scripts/dungeon-pathing-system/tile-events/tile-event-camp.js",
     "scripts/dungeon-pathing-system/tile-events/tile-event-force-move.js",
     "scripts/dungeon-pathing-system/tile-events/tile-event-gusty.js",
+    "scripts/dungeon-pathing-system/tile-events/fishing-lobby.js",
+    "scripts/dungeon-pathing-system/tile-events/tile-event-fishing.js",
     "scripts/dungeon-pathing-system/dp-tile-effect-engine.js",
     "scripts/dungeon-pathing-system/dp-tile-config.js",
     "scripts/dungeon-pathing-system/dp-tile-effect-config.js",

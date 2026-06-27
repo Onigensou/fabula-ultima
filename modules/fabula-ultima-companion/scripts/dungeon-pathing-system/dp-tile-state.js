@@ -113,6 +113,16 @@
     return ALIAS[hit] ?? hit.replace(/\s+/g, "_");
   }
 
+  // Resolve a tile's type.  The explicit per-tile flag (set via the config
+  // dialog's Tile Type dropdown) is authoritative; name/texture inference is a
+  // fallback only for tiles that have NOT been given an explicit type.
+  //   Flag path: flags.<MODULE_ID>.dungeonPathing.tileType
+  function resolveType(tileDoc) {
+    const explicit = tileDoc?.getFlag?.(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.tileType`);
+    if (explicit) return String(explicit);
+    return inferType(tileDoc);
+  }
+
   DP.TileState = {
     /**
      * Ensure a tile has a state entry.  Call this when the graph is first built.
@@ -126,7 +136,7 @@
       const id = tileDoc.id;
       if (states[id]) return;
 
-      const inferredType = inferType(tileDoc);
+      const inferredType = resolveType(tileDoc);
       const initialTexture = tileDoc.texture?.src ?? null;
 
       // Write only this tile's entry — avoids broadcasting the full 129-tile object.
@@ -329,6 +339,62 @@
     },
 
     /**
+     * Reset only tiles flagged "Reset on rest" back to their initial state
+     * (currentType → initialType, texture → initialTexture).  Scans EVERY scene
+     * because a rest is performed on a camp scene while the dungeon tiles live
+     * on a different (non-active) scene.  Also clears each reset tile's visited
+     * flag so it can be re-triggered.  Must run as GM.
+     *
+     * Triggered automatically by the "fabula.restPerformed" hook (see bottom).
+     */
+    async resetOnRestTiles() {
+      if (!game.user?.isGM) return;
+
+      let total = 0;
+      for (const scene of game.scenes ?? []) {
+        const states = getStates(scene);
+        if (!Object.keys(states).length) continue;
+
+        const updated   = { ...states };
+        const visited   = { ...getVisited(scene) };
+        let   touched   = false;
+        let   visitedHit = false;
+
+        for (const [id, entry] of Object.entries(states)) {
+          const tileDoc = scene.tiles.get(id);
+          const onRest  = tileDoc?.getFlag?.(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.resetOnRest`);
+          if (!(onRest === true || onRest === "true")) continue;
+
+          // Nothing to do if the tile is already at its initial state.
+          if (entry.currentType === entry.initialType) {
+            if (visited[id]) { delete visited[id]; visitedHit = true; }
+            continue;
+          }
+
+          updated[id] = { ...entry, currentType: entry.initialType };
+          touched = true;
+          total++;
+          if (entry.initialTexture && tileDoc) {
+            await tileDoc.update({ "texture.src": entry.initialTexture }, { dungeonPathing: true })
+              .catch(() => {});
+          }
+          if (visited[id]) { delete visited[id]; visitedHit = true; }
+        }
+
+        if (touched) {
+          await setStates(scene, updated)
+            .catch(e => console.warn(TAG, "resetOnRestTiles — setStates failed:", e));
+        }
+        if (visitedHit) {
+          await scene.setFlag(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.visitedTiles`, visited)
+            .catch(e => console.warn(TAG, "resetOnRestTiles — visited update failed:", e));
+        }
+      }
+
+      if (total) console.debug(TAG, `resetOnRestTiles — ${total} tile(s) reset on rest.`);
+    },
+
+    /**
      * Clear ALL shroud reveals for a scene without touching tile states or visited tiles.
      * Use when setting up for a fresh group.  Must run as GM.
      */
@@ -339,9 +405,44 @@
         .catch(e => console.warn(TAG, "resetAllFogRevealed failed", e));
     },
 
+    /** Resolve a tile's type (explicit flag, else name/texture inference). */
+    resolveType(tileDoc) { return resolveType(tileDoc); },
+
     /** Raw dump of all tile states for debugging. */
     dump(scene) {
       return { states: getStates(scene), visited: getVisited(scene), fogRevealed: getRevealed(scene) };
     }
   };
+
+  // ── Re-sync cached state when the GM changes a tile's explicit type ─────────
+  // ensure() caches initialType/currentType once, so a later type change in the
+  // config dialog would otherwise go stale.  Rewrite the cached entry: update
+  // initialType, and currentType too while the tile is un-consumed (currentType
+  // still equals the old initialType — not "blank" or some other mutation).
+  Hooks.on("updateTile", async (tileDoc, changes) => {
+    if (!game.user?.isGM) return;
+    const newType = foundry.utils.getProperty(
+      changes, `flags.${DP.MODULE_ID}.${DP.PATHING_ROOT_KEY}.tileType`
+    );
+    if (newType === undefined) return;   // this update didn't touch the type flag
+
+    const scene = tileDoc.parent;
+    const entry = getStates(scene)[tileDoc.id];
+    if (!entry) return;   // not tracked yet — ensure() will pick it up on graph build
+
+    const resolved   = resolveType(tileDoc);   // honours the just-saved flag (or inference if cleared)
+    const wasConsumed = entry.currentType !== entry.initialType;
+    await scene.setFlag(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.tileStates.${tileDoc.id}`, {
+      ...entry,
+      initialType: resolved,
+      currentType: wasConsumed ? entry.currentType : resolved,
+    }).catch(e => console.warn(TAG, "updateTile type re-sync failed:", e));
+  });
+
+  // ── Reset-on-rest: restore flagged tiles when the party rests ───────────────
+  // RestAPI.perform() fires this hook after restoring the party (GM context).
+  Hooks.on("fabula.restPerformed", () => {
+    DP.TileState.resetOnRestTiles()
+      .catch(e => console.warn(TAG, "resetOnRestTiles (rest hook) failed:", e));
+  });
 })();
