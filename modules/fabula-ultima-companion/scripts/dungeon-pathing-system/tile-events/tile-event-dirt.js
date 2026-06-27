@@ -13,10 +13,14 @@
 //        BEST  (pass / crit)              → transform into a Treasure tile,
 //                                           triggered immediately.
 //        BANE  (close fail, within band)  → buried explosive detonates:
-//                                           flat FIRE damage to every
-//                                           participant; the mound is consumed.
-//        WORST (fumble / well below DL)   → transform into a Random Battle
-//                                           (ambush), triggered immediately.
+//                                           flat FIRE damage to every participant.
+//        WORST (fumble / well below DL)   → spring a one-time Random Battle ambush.
+//
+//   Every outcome ends the same way — once resolved the mound collapses to a
+//   Blank tile (type + texture):
+//        BANE / WORST → cleared to blank right after the effect fires.
+//        BEST         → the Treasure roulette blanks the tile when the party
+//                       claims it (its own clearTileVisualAndDisable).
 //
 // Defaults below are overridable per-tile via flags under
 //   flags.<MODULE_ID>.dungeonPathing.dirt.*
@@ -201,11 +205,14 @@
       return;
     }
 
-    // worst — disturbed something. Become a Random Battle ambush, trigger now.
+    // worst — disturbed something. Spring a ONE-TIME ambush, then the disturbed
+    // mound collapses into a blank tile (no lingering, re-triggering battle tile).
     await DP.TileTransform.transform(scene, tileDoc.id, cfg.worstType, {
       triggerNow: true,
       tokenDoc,
     });
+    await DP.Socket.clearTile(scene, tileDoc.id)
+      .catch(e => console.warn(TAG, "clearTile (worst) failed:", e));
   }
 
   // ── GM-side socket listener (installed on all clients; only GM acts) ────────
