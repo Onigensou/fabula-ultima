@@ -261,10 +261,23 @@ function serializeCostMap(costMap) {
 function getCoreActionSkill(command) {
   const cmd = String(command ?? "").trim().toLowerCase();
   if (!cmd) return null;
-  return game.items?.find((it) =>
+  // Gear `_skill`s have historically been cloned from these singleton action
+  // Items and leaked the same `coreAction` flag — e.g. the Encyclopedia / Cat
+  // Ears passives carried `coreAction:"study"`. A bare `find` then returns
+  // whichever the collection yields first (NOT id-sorted), so a gear item with
+  // an empty `on_activate_effect_ref` can shadow the real action and silently
+  // break its RESOLVE (Study → no `encyclopedia_record` → no encyclopedia
+  // reveal). Disambiguate deterministically: the genuine Common action Item
+  // also sets `system.props.action_command === cmd` (gear leaves it ""), so
+  // prefer that match; fall back to the first only if none qualifies.
+  const matches = (game.items?.filter?.((it) =>
     it.type === "equippableItem" &&
     (it.flags?.["fabula-ultima-companion"]?.coreAction ?? null) === cmd
-  ) ?? null;
+  )) ?? [];
+  if (matches.length <= 1) return matches[0] ?? null;
+  return matches.find((it) =>
+    String(it.system?.props?.action_command ?? "").trim().toLowerCase() === cmd
+  ) ?? matches[0];
 }
 
 // The single action resolver. Every turn action (Attack/Skill/Spell/Guard/

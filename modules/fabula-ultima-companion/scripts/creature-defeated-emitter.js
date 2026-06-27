@@ -61,6 +61,12 @@
   function buildPayload(actor, tokenDoc) {
     const tokenUuid = tokenDoc?.uuid ?? null;
     const actorUuid = actor?.uuid ?? null;
+    // Mirror destroy_summon / defeat-reactor: carry the phantasm-identifying
+    // fields so SUBJECT_IS_MY_PHANTASM matches a phantasm shattered by damage
+    // even on the legacy (non-BD) defeat path. summonedBy is the summoner's
+    // ACTOR uuid; isPhantasm flags it as a phantasm token.
+    const NS = "fabula-ultima-companion";
+    const tokenFlags = tokenDoc?.flags?.[NS] ?? {};
     return {
       trigger: "creature_defeated",
       tokenUuid,
@@ -70,6 +76,8 @@
       targetActorUuid: actorUuid,
       defeatedTokenUuid: tokenUuid,
       defeatedActorUuid: actorUuid,
+      summonedBy: tokenFlags.summonedBy ?? null,
+      isPhantasm: !!(foundry.utils.getProperty(actor, "system.props.isPhantasm") || tokenFlags.isPhantasm),
       hpCur: 0,
       hpMax: Number(foundry.utils.getProperty(actor, "system.props.max_hp")) || null,
       source: "creature-defeated-emitter",

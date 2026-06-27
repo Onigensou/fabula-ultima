@@ -56,7 +56,11 @@ Hooks.once("ready", () => {
     // the SAME engine the Study action already uses (sumEquippedCheckBuffs); the
     // dropdown just exposes it for arbitrary checks. `value` is the lowercase
     // token compared to check_buff_action (e.g. Encyclopedia carries "study").
+    // "Any" is a wildcard tag — equipped check_buff rows scoped to "any" (e.g. Cat
+    // Ears "+1 to any check") fold in whenever ANY action is tagged, and selecting
+    // "Any" alone applies those universal bonuses to a check outside the named four.
     const CHECK_BUFF_OPTIONS = [
+      { label: "Any",      value: "any" },
       { label: "Study",    value: "study" },
       { label: "Stealth",  value: "stealth" },
       { label: "Strength", value: "strength" },

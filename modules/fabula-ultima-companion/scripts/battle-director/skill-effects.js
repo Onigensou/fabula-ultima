@@ -328,6 +328,21 @@ function fireAbsorbVfx(opts) {
   }
 }
 
+// Block counterpart — a HIT a defender reaction (Ninja Log's adjust_damage)
+// soaked to 0 on the shared damage-write path. The loss VFX early-returns on
+// amount 0, so a non-action damage block (DoT/hazard/fixed-damage) would land
+// with no feedback. Floats the steel "BLOCK" cue — the twin of the action-card
+// RESOLVE block (state-handlers). Same lazy fire-and-forget contract.
+function fireBlockVfx(opts) {
+  try {
+    import("./director-vfx.js")
+      .then((m) => m.playBlockVfx?.(opts))
+      .catch((e) => warn("fireBlockVfx import failed", e));
+  } catch (e) {
+    warn("fireBlockVfx threw", e);
+  }
+}
+
 // Spend counterpart — floats a `−N` over a payer paying a self-paid cost
 // (reaction / free-action `consume_resource`). Same lazy fire-and-forget
 // contract; distinct look from the loss VFX (no impact / hit sound).
@@ -494,7 +509,19 @@ export async function applyDamageToTarget({
     const reactionNote = fired.length ? ` (reactions: ${fired.map((f) => f.aeName).join(", ")})` : "";
     const shieldNote = absorbed > 0 ? ` [shield −${absorbed}]` : "";
     log(`${prefix}applied ${toHp} dmg to ${targetName} [${affinity}]: ${curHp} → ${newHp}${shieldNote}${reactionNote}${logSuffix}`);
-    fireResourceLossVfx({ tokenUuid, resource: "hp", amount: dealtDamage, affinity, element: _vfxElement, isCrit: _vfxIsCrit, pierce: _vfxPierce });
+    // A defender reaction (Ninja Log) soaked the hit to 0 — the loss VFX
+    // early-returns on amount 0, so float the "BLOCK" cue instead. This is the
+    // universal-damage twin of the action-card RESOLVE block (state-handlers),
+    // so a non-accuracy source (DoT/hazard/fixed-damage) nullified here still
+    // shows feedback. Gated on a fired reduction that brought the landed damage
+    // to 0 (a true block), not a plain 0-roll.
+    const blockedByReaction = dealtDamage <= 0
+      && fired.some((f) => Number(f.to) <= 0 && Number(f.from) > 0);
+    if (blockedByReaction) {
+      fireBlockVfx({ tokenUuid });
+    } else {
+      fireResourceLossVfx({ tokenUuid, resource: "hp", amount: dealtDamage, affinity, element: _vfxElement, isCrit: _vfxIsCrit, pierce: _vfxPierce });
+    }
     _pushLog({ resource: "hp", affinity, value: damage, valueDirection: "loss", bands: { hp: { from: curHp, to: newHp }, shield: { from: curShield, to: newShield } } });
     return {
       resource: "hp",
@@ -5304,7 +5331,11 @@ export function sumEquippedCheckBuffs(actor, command, { payload = null, round = 
         if (!row || row.effect_kind !== "check_buff") continue;
         const actions = String(row.check_buff_action ?? "")
           .toLowerCase().split(/[,;|]+/).map((s) => s.trim()).filter(Boolean);
-        if (!actions.includes(cmd)) continue;
+        // "any"/"*" = wildcard: a stat/action-agnostic bonus that applies to EVERY
+        // check regardless of which action is queried (e.g. Cat Ears "+1 to any
+        // check"). Otherwise the action token must match by string.
+        const isWildcard = actions.includes("any") || actions.includes("*");
+        if (!isWildcard && !actions.includes(cmd)) continue;
         const raw = String(row.check_buff_amount ?? row.check_buff_value ?? "0");
         let amt = 0;
         try {

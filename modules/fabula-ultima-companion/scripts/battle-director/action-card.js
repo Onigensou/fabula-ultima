@@ -5306,6 +5306,39 @@ export async function postActionCard({ director, kind, payload }) {
               }
             }
           }
+          // Mirror the fully-recomputed card BODY to every player client. The GM
+          // patched accuracy / per-target result spans / headline damage IN PLACE
+          // above (and via applyCardTargetMutationDelta), but the broadcast `delta`
+          // only carries redirects / defense / grants / accuracy — NOT the per-target
+          // damage spans or the headline `.fud-bf-dmg` fieldset (those live only on the
+          // GM's DOM, lines ~5164-5308). So a player's mirror went stale on any
+          // add_damage / element-override / reroll reaction: "only the GM side updates".
+          // Re-establish parity by shipping the final `.fud-bf-body` innerHTML through
+          // the existing `action-card-body-update` channel — offBodyUpdate swaps ONLY
+          // the body, leaving the reaction pills + buttons (siblings of .fud-bf-body)
+          // and their per-client state intact. Captured synchronously here, before
+          // animateCardNumber's requestAnimationFrame tween advances, so the numbers are
+          // already at their final values. Mirrors the heal-spread broadcast in
+          // recordPillDecision; the structured `delta` broadcast above is left in place
+          // (harmless — the body swap is authoritative and supersedes it on the mirror).
+          try {
+            const bodyEl = root.querySelector(".fud-bf-body");
+            const finalBody = bodyEl ? bodyEl.innerHTML : null;
+            if (finalBody) {
+              const onlineNonPrimary = (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id);
+              for (const u of onlineNonPrimary) {
+                director?.intentChannel?.broadcastMenuOpen({
+                  targetUserId: u.id,
+                  menuSpec: {
+                    kind: "action-card-body-update",
+                    combatId: director.combatId,
+                    bodyHtml: finalBody,
+                  },
+                });
+              }
+            }
+          } catch (e) { warn("recomputeTargetPreviews: body-update broadcast threw", e); }
+
           return { cancelled: false };
         } catch (e) {
           warn("action-card: recomputeTargetPreviews threw", e);

@@ -65,6 +65,10 @@ const CREATE_BOND_VIS = `equalText(sameRow("effect_kind",''), "create_bond")`;
 // trigger_opportunity — offer N distinct Opportunity wheel picks (A Million Possibility).
 const TRIGGER_OPP_VIS = `equalText(sameRow("effect_kind",''), "trigger_opportunity")`;
 const SET_CHECK_DIE_VIS = `equalText(sameRow("effect_kind",''), "set_check_die")`;
+// check_buff — a PASSIVE action-scoped Check bonus on an equipped gear's linked
+// _skill, read at the action's COMPUTE by sumEquippedCheckBuffs (Encyclopedia +2
+// Study, Sneaker +2 Stealth, Cat Ears +1 Any). Its two fields were data-only.
+const CHECK_BUFF_VIS = `equalText(sameRow("effect_kind",''), "check_buff")`;
 
 function textCol(key, colName, { tooltip = "", vis = "" } = {}) {
   return {
@@ -326,6 +330,11 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
     { key: "success", value: "Success (green)" },
   ], { tooltip: "confirm: cancel button color.", vis: CONFIRM_VIS, defaultValue: "default" }),
   textCol("confirm_button_refs", "Confirm Button Refs", { tooltip: "confirm BRANCH mode: comma-separated effect_label refs — one button per ref (any number); clicking dispatches that ref then stops the chain. Blank = GATE mode (OK/Cancel).", vis: CONFIRM_VIS }),
+  // check_buff config — action-scoped passive Check bonus (Encyclopedia/Sneaker/Cat
+  // Ears). Both were data-only (no column) → strippable on a sheet save. Register so
+  // boot-3b self-heals them. See [[feedback_csb_template_gating]].
+  textCol("check_buff_action", "Check Buff Action", { tooltip: "check_buff: comma-separated action token(s) the bonus applies to — study / stealth / strength / mobility / … — matched BY STRING against the Request Check tag. \"any\" or \"*\" = wildcard (applies to EVERY check regardless of action, e.g. Cat Ears).", vis: CHECK_BUFF_VIS }),
+  textCol("check_buff_amount", "Check Buff Amount", { tooltip: "check_buff: bonus added to the matched Check (number or wielder-relative formula, e.g. 2).", vis: CHECK_BUFF_VIS }),
 ];
 
 // ── reaction_config_table declarative fields ─────────────────────────────────

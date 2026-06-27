@@ -211,12 +211,21 @@ async function emitCreatureDefeated(director, actor, payload, firedKeys) {
   // self/ally/enemy keys off sourceActorUuid). `element` carries the killing
   // damage's type so a `TRIGGER_DAMAGE_IS_<ELEMENT>` gate (Flame Burst's
   // "non-Ice" condition) resolves; `cause`/`causeActorUuid` forward the killer.
+  // `summonedBy`/`isPhantasm` mirror destroy_summon's explicit-shatter payload so
+  // SUBJECT_IS_MY_PHANTASM also matches a phantasm shattered by DAMAGE (PV→0 from
+  // an attack), not just by destroy_summon — powers Phantasmal Echo / Zero
+  // Trigger: Shattered Phantasm on the common "enemy killed my phantasm" case.
+  // Read from token flags + actor props exactly as skill-effects.destroy_summon.
+  const NS = "fabula-ultima-companion";
+  const tokenFlags = tokenDoc?.flags?.[NS] ?? {};
   const defeatedPayload = {
     trigger:          "creature_defeated",
     sourceActorUuid:  actor.uuid,
     sourceTokenUuid:  tokenDoc?.uuid ?? null,
     subjectActorUuid: actor.uuid,
     subjectTokenUuid: tokenDoc?.uuid ?? null,
+    summonedBy:       tokenFlags.summonedBy ?? null,
+    isPhantasm:       !!(actor?.system?.props?.isPhantasm || tokenFlags.isPhantasm),
     element:          payload?.element ?? null,
     cause:            payload?.cause ?? null,
     causeActorUuid:   payload?.causeActorUuid ?? null,
