@@ -301,15 +301,15 @@
     if (window["__ONI_FISHLOBBY_SOCKET__"]) return;
     window["__ONI_FISHLOBBY_SOCKET__"] = true;
 
-    game.socket.on(SOCKET_CH, async msg => {
+    game.socket.on(SOCKET_CH, msg => {
       if (!msg?.type?.startsWith("FISHLOBBY_")) return;
 
       if (msg.type === FL_OPEN) {
-        // GM opens directly (in request()). Player clients open here, but only
-        // party-member clients — spectator clients are not dragged into the lobby.
-        if (game.user?.isGM) return;
-        const allowed = await (globalThis.CampSystem?.isPartyMemberClient?.() ?? Promise.resolve(true));
-        if (allowed) openLobby(msg.payload, false);
+        // GM opens directly (in request()); player clients open from the socket.
+        // Only the 4 party members appear as joinable panels (participant list is
+        // db-resolved), and the owner check gates the Join button — so spectators
+        // can watch the lobby but can't be dragged in as participants.
+        if (!game.user?.isGM) openLobby(msg.payload, false);
         return;
       }
       if (msg.type === FL_SYNC) {

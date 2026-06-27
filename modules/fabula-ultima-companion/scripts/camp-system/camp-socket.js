@@ -16,35 +16,6 @@
   const TAG     = "[CampSystem][Socket]";
   const GUARD   = "__ONI_CAMP_SOCKET__";
 
-  // ── Party-member client gate ─────────────────────────────────────────────
-  // "Players" = the 4 party members resolved via db-resolver (member_id_1..4 on
-  // the database actor), NOT every connected client. A game commonly has
-  // spectator player clients who own no party member; party-only overlays
-  // (Fishing) must not be forced onto them.
-  // GM always passes; fail-open if the party can't be resolved (better to show
-  // than to wrongly hide the UI from a real player).
-  async function _isPartyMemberClient() {
-    if (game.user?.isGM) return true;
-    const api = window.FUCompanion?.api;
-    let dbActor = null;
-    if (api?.getCurrentGameDb) {
-      const res = await api.getCurrentGameDb().catch(() => null);
-      dbActor = res?.source ?? res?.db ?? null;
-    }
-    if (!dbActor) return true;
-    const props = dbActor.system?.props ?? {};
-    for (let i = 1; i <= 4; i++) {
-      const raw = String(props[`member_id_${i}`] ?? "").trim();
-      if (!raw) continue;
-      let actor = game.actors.get(raw) ?? null;
-      if (!actor && raw.includes(".")) actor = await fromUuid(raw).catch(() => null);
-      if (!actor) actor = await fromUuid(`Actor.${raw}`).catch(() => null);
-      if (actor?.testUserPermission?.(game.user, "OWNER")) return true;
-    }
-    return false;
-  }
-  CAMP.isPartyMemberClient = _isPartyMemberClient;
-
   CAMP.Socket = {
     // ── Emit a request to the GM ──────────────────────────────────────────
     emit(type, payload = {}) {
@@ -426,12 +397,8 @@
 
         // ── Fishing minigame (two-phase: Cast + Battle) ───────────────────
         if (type === CAMP.MSG.FISHING_START) {
-          // Party-only: spectator clients (no party-member ownership) are skipped.
-          // Subsequent FISHING_* handlers all no-op without an overlay present.
-          if (await _isPartyMemberClient()) {
-            CAMP.FishingUI?.show(payload?.actorId, payload?.actorName, payload?.stats,
-              { battleTimeout: payload?.battleTimeout ?? 0, totalRounds: payload?.totalRounds });
-          }
+          CAMP.FishingUI?.show(payload?.actorId, payload?.actorName, payload?.stats,
+            { battleTimeout: payload?.battleTimeout ?? 0, totalRounds: payload?.totalRounds });
           return;
         }
         if (type === CAMP.MSG.FISHING_BEGIN) {
