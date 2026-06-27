@@ -21,7 +21,7 @@ import { pickWeaponMode, WeaponModePicker } from "./weapon-mode-picker.js";
 import { pickAttributePair, AttributePairPicker } from "./attribute-pair-picker.js";
 import { runDirectorInit } from "./director-init.js";
 import { destroyDirectorHud } from "./director-player-hud.js";
-import { playStudyVfx, playActionNamecard, playMissVfx, playResourceSpendVfx } from "./director-vfx.js";
+import { playStudyVfx, playActionNamecard, playMissVfx, playBlockVfx, playResourceSpendVfx } from "./director-vfx.js";
 import { playCritCutin } from "./director-cutin.js";
 import { playRoundBanner, hideRoundBanner } from "./director-round-banner.js";
 import { applyEquipmentSwap } from "./equipment-swap.js";
@@ -42,7 +42,19 @@ import { parseSkillCost, resolveCost, checkAffordable, debitCost, affordableTarg
 import { evaluateFormula, buildSkillResolver } from "./skill-formulas.js";
 import { freeActions } from "./free-actions.js";
 import { makeChainContext, resolveTargetRef } from "./skill-targeting.js";
-import { fireActivationEffect, fireActivationEffectPre, firePostDamageEffect, tickDirectorAEsForApplier, tickDirectorAEsForBearerTurnEnd, tickDirectorAEsForBearerTurnStart, tickDirectorAEsAtRoundEnd, reapApplierTiedAEs, firePassiveTriggers, applyDamageToTarget, fireResourceChangeTrigger } from "./skill-effects.js";
+// skill-effects is routed through the hot-reload registry so edits to it take
+// effect without Ctrl+Shift+R: the harness (per-call) and a live reloadHot()
+// bump the global token, and SE() then resolves the freshly-imported module.
+// `_seStatic` is the boot namespace, used until the first refresh. Call THROUGH
+// the SE() accessor at every use site (see call sites below) — a destructured
+// `const { fn } = SE()` would re-freeze the binding and defeat the point.
+import * as _seStatic from "./skill-effects.js";
+import { registerHotModule } from "./hot-reload.js";
+const SE = registerHotModule(
+  "battle-director/skill-effects.js",
+  (t) => import(`./skill-effects.js?cb=${t}`),
+  _seStatic,
+);
 import { appendBattleLog, buildMissRow } from "./director-battle-log.js";
 import { rollCheck, checkVsThreshold } from "./check.js";
 // Standalone-reaction dispatcher — runs at FSM transitions for triggers
@@ -156,7 +168,7 @@ export function installApplierReaperWatcher(director) {
       const newHp = foundry.utils.getProperty(change, "system.props.current_hp");
       if (newHp === undefined || newHp === null) return;
       if (Number(newHp) > 0) return;
-      await reapApplierTiedAEs(actor.uuid);
+      await SE().reapApplierTiedAEs(actor.uuid);
     } catch (e) { warn("Applier reaper (defeat) threw", e); }
   }, { label: "applier-reaper:defeat" });
 
@@ -166,7 +178,7 @@ export function installApplierReaperWatcher(director) {
       if (!game.user?.isGM) return;
       const auid = combatant?.actor?.uuid ?? null;
       if (!auid) return;
-      await reapApplierTiedAEs(auid);
+      await SE().reapApplierTiedAEs(auid);
     } catch (e) { warn("Applier reaper (remove) threw", e); }
   }, { label: "applier-reaper:remove" });
 
@@ -494,7 +506,7 @@ async function resolveAction(director, ar, opts = {}) {
 
   // 3. Fire on_activate effect (pre-damage, no damage payload).
   try {
-    const r = await fireActivationEffect(skill, ctx);
+    const r = await SE().fireActivationEffect(skill, ctx);
     if (r?.abort) {
       log(`Skill resolve: on_activate aborted chain — skipping damage + post_damage`);
       return;
@@ -556,6 +568,17 @@ async function resolveAction(director, ar, opts = {}) {
         }));
         continue;
       }
+      // Nullified hit (Ninja Log adjust_damage → 0): a HIT a defender reaction
+      // soaked to 0. No loss VFX fires (applyDamageToTarget early-returns on 0),
+      // so float a "BLOCK" cue — the visual twin of MISS. The attack still HIT,
+      // so on-hit riders (queued from `struck` below) still apply; we just skip
+      // the no-op damage write + loss-trigger path. Gated on the damageOverride
+      // the adjust_damage card-mutation stamped reducing >0 to 0.
+      if (r.hit && r.damageOverride
+          && Number(r.damageOverride.to) <= 0 && Number(r.damageOverride.from) > 0) {
+        playBlockVfx({ tokenUuid: r.tokenUuid });
+        continue;
+      }
       try {
         const targetActor = await fromUuid(r.actorUuid).catch(() => null);
         if (!targetActor) { warn("Skill resolve: target actor not found", r.actorUuid); continue; }
@@ -571,7 +594,7 @@ async function resolveAction(director, ar, opts = {}) {
         // Shared damage-write path. Handles MP-resource, AB → heal flip,
         // resolveDamageReactions (Mercy + future clamp/cap AEs), and the
         // log line. See applyDamageToTarget in skill-effects.js.
-        const dmgRes = await applyDamageToTarget({
+        const dmgRes = await SE().applyDamageToTarget({
           target: targetActor,
           damage: r.damage,
           affinity: r.affinity,
@@ -632,14 +655,14 @@ async function resolveAction(director, ar, opts = {}) {
           isFumble: !!ar.roll?.isFumble,
           total: ar.roll?.total ?? 0,
         };
-        try { await firePostDamageEffect(skill, ctx, damagePayload); }
+        try { await SE().firePostDamageEffect(skill, ctx, damagePayload); }
         catch (e) { warn("Skill resolve: firePostDamageEffect threw", e); }
 
         // Part 1 — unified resource-ledger trigger. Fire creature_lose_resource /
         // creature_gain_resource on the creature whose HP/MP just changed (cause:
         // "damage"). Queued (post-save) + supervised. Part 2's crisis reactor
         // listens here (resource=hp); any "when my <resource> changes" skill too.
-        fireResourceChangeTrigger({
+        SE().fireResourceChangeTrigger({
           director, actor: targetActor, tokenUuid: r.tokenUuid,
           resource: valueType, direction: valueDirection, amount: finalValue,
           cause: "damage",
@@ -674,7 +697,7 @@ async function resolveAction(director, ar, opts = {}) {
           const healAmt = Math.floor(finalValue / 2);
           if (healAmt > 0) {
             try {
-              const drainRes = await applyDamageToTarget({
+              const drainRes = await SE().applyDamageToTarget({
                 target: casterActor, damage: healAmt, affinity: "AB", resource: "hp",
                 targetName: casterActor.name, tokenUuid: ar.attacker?.tokenUuid ?? null,
                 logPrefix: `${view.kind} ${ar.skillName ?? skill?.name ?? ""}:`, logSuffix: " [Drain]",
@@ -684,7 +707,7 @@ async function resolveAction(director, ar, opts = {}) {
                   sink: battleLogSink,
                 },
               });
-              fireResourceChangeTrigger({
+              SE().fireResourceChangeTrigger({
                 director, actor: casterActor, tokenUuid: ar.attacker?.tokenUuid ?? null,
                 resource: "hp", direction: "recover", amount: drainRes.finalValue, cause: "heal",
                 source: { actorUuid: ar.attackerActorRef, tokenUuid: ar.attacker?.tokenUuid ?? null },
@@ -1375,6 +1398,19 @@ const Prep = {
     try { await clearAllDirectorStateFlags(); }
     catch (e) { warn("PREP: clearAllDirectorStateFlags threw", e); }
 
+    // Restore any items hidden by `hide_item` in a PRIOR battle (the
+    // Encyclopedia's "vanish until end of scene"). The battle-END cleanup also
+    // does this, but a battle that didn't shut down cleanly (crash, legacy-flow
+    // end, manual re-start) would leave the item stranded — so re-running it at
+    // battle START guarantees the item is back (UNEQUIPPED) for the new fight.
+    try {
+      const partyActors = (director.dCombat?.combatants ?? [])
+        .filter((c) => c.side === "party")
+        .map((c) => c.actorDoc)
+        .filter(Boolean);
+      for (const a of partyActors) await SE().restoreHiddenItems(a);
+    } catch (e) { warn("PREP: restoreHiddenItems sweep threw", e); }
+
     // Persistence checkpoint #1 — first save once dCombat is built.
     // Fire-and-forget; a failed write logs but doesn't abort the FSM.
     // Label describes the state the GM will land IN on rewind: the
@@ -1739,7 +1775,7 @@ const TurnStart = {
     try {
       const applierUuid = snap?.actorUuid;
       if (applierUuid) {
-        await tickDirectorAEsForApplier(applierUuid);
+        await SE().tickDirectorAEsForApplier(applierUuid);
       }
     } catch (e) { warn("TURN_START: AE tick threw", e); }
 
@@ -1751,7 +1787,7 @@ const TurnStart = {
     try {
       const bearerUuid = snap?.actorUuid;
       if (bearerUuid) {
-        await tickDirectorAEsForBearerTurnStart(bearerUuid);
+        await SE().tickDirectorAEsForBearerTurnStart(bearerUuid);
       }
     } catch (e) { warn("TURN_START: bearer-turn-start AE tick threw", e); }
 
@@ -3472,7 +3508,7 @@ async function computeStudy(director, { attacker, tokenUuids }) {
   // queued onto the grant, and then silently dropped (computeStudy used to
   // hardcode checkBonus:0), so the bonus never reached the roll.
   const studyGrant = studierActorId ? freeActions.get(studierActorId) : null;
-  const studyCheckBonus = studyGrant ? Number(studyGrant.checkBonus) || 0 : 0;
+  let studyCheckBonus = studyGrant ? Number(studyGrant.checkBonus) || 0 : 0;
   const studyCheckBonusParts = [];
   if (studyGrant && studyCheckBonus !== 0) {
     studyCheckBonusParts.push({
@@ -3491,6 +3527,19 @@ async function computeStudy(director, { attacker, tokenUuids }) {
   const A1 = String(studyProps.rolled_atr1 ?? "INS").toUpperCase();
   const A2 = String(studyProps.rolled_atr2 ?? "INS").toUpperCase();
   const liveActor = await fromUuid(attacker.actorUuid).catch(() => null);
+
+  // Equipped-gear passive Check buffs (generic action-scoped +N knob) — e.g. the
+  // Encyclopedia grants "+2 to Study Checks" while equipped. Folded into the roll
+  // AND surfaced on the card via checkBonusParts. Read-only; stacks per source.
+  try {
+    const studyBuffs = SE().sumEquippedCheckBuffs?.(liveActor, "study") ?? { total: 0, parts: [] };
+    if (studyBuffs.total) {
+      studyCheckBonus += studyBuffs.total;
+      for (const p of studyBuffs.parts) studyCheckBonusParts.push(p);
+      log(`Study COMPUTE: applied +${studyBuffs.total} from equipped check_buff (${studyBuffs.parts.map((p) => p.source).join(", ")})`);
+    }
+  } catch (e) { warn("Study COMPUTE: sumEquippedCheckBuffs threw", e); }
+
   const check = await rollCheck({ actor: liveActor, A1, A2, checkBonus: studyCheckBonus });
   const { rA, rB, dA, dB, total, hr, isFumble, isCrit } = check;
 
@@ -3625,7 +3674,7 @@ const Compute = {
             harnessPicks: ar?._harnessPicks ?? null, harnessNumbers: ar?._harnessNumbers ?? null,
             remotePrompt: preRemotePrompt,
           });
-          const pre = await fireActivationEffectPre(skill, capCtx);
+          const pre = await SE().fireActivationEffectPre(skill, capCtx);
           if (pre?.abort) {
             // Player cancelled a choice (element / status pick) → return to the
             // Action Menu to re-pick, NOT a full abort. The card was never built,
@@ -4123,6 +4172,18 @@ const Confirm = {
             // so its condition reads ATTACK_IS_CRIT/FUMBLE). Post-roll at CONFIRM.
             isCrit: !!ar.roll?.isCrit,
             isFumble: !!ar.roll?.isFumble,
+            // Live roll faces + attribute names — so a self-reaction's
+            // open_action_menu can label each die with its current value
+            // (Lucky Seven die picker: "First die (DEX): 3 → 7"). Faces read by
+            // CHECK_DIE_A/CHECK_DIE_B; attribute names travel as the menu string
+            // vars ${CHECK_DIE_A_ATTR}/${CHECK_DIE_B_ATTR} (formulas are numeric).
+            rollDieA: Number(ar.roll?.rA ?? 0) || 0,
+            rollDieB: Number(ar.roll?.rB ?? 0) || 0,
+            rollDieAAttr: String(ar.roll?.A1 ?? ""),
+            rollDieBAttr: String(ar.roll?.A2 ?? ""),
+            // Flat check modifier (CHECK_BONUS) so a menu can show the resulting
+            // total after a die swap: kept die + new die + bonus (Lucky Seven).
+            rollCheckBonus: Number(ar.roll?.checkBonus ?? 0) || 0,
             actionName: ar.weapon?.name ?? ar.skillName ?? ar.kind ?? "Action",
             // Acting skill/weapon name for `reaction_source_skill` self-scoping.
             sourceSkillName: ar.skillName ?? ar.weapon?.name ?? null,
@@ -5341,7 +5402,7 @@ const TurnEnd = {
       // AFFECTED creature's own turns). Distinct from the applier-turn-start tick
       // that runs in TURN_START; awaited so expiry commits before the next turn.
       if (endingActorUuid) {
-        try { await tickDirectorAEsForBearerTurnEnd(endingActorUuid); }
+        try { await SE().tickDirectorAEsForBearerTurnEnd(endingActorUuid); }
         catch (e) { warn("TURN_END: tickDirectorAEsForBearerTurnEnd threw", e); }
       }
 
@@ -5439,7 +5500,7 @@ const RoundEnd = {
     // the standalone reaction window so round_end-triggered reactions
     // see a clean slate.
     try {
-      const swept = await tickDirectorAEsAtRoundEnd();
+      const swept = await SE().tickDirectorAEsAtRoundEnd();
       if (swept?.swept) {
         log(`ROUND_END: swept ${swept.swept} round-end AE(s): ${swept.names.join(", ")}`);
       }

@@ -31,16 +31,30 @@ function ensureStyles() {
     }
     .fud-target-ring.is-hover{ filter:brightness(1.3); border-color:#d5b67a; }
     .fud-target-ring.is-selected{ border-style:solid; border-color:#ffcc44; box-shadow:0 0 14px rgba(255,204,68,.8), inset 0 0 14px rgba(255,204,68,.3); }
-    /* Roulette mode — all eligible rings strobe rapidly while the random
-       draw is in progress. CSS steps(1) makes it a hard digital blink
-       rather than a smooth fade, reinforcing the "slot machine" feel. */
+    /* Roulette mode — keep the original "slot machine" blink IDEA, but SOFT.
+       The harsh part was a 7 Hz hard steps(1) on/off strobe (the WCAG 2.3.1
+       photosensitivity risk). This is a SMOOTH ease-in-out PULSE on a ~0.55s
+       cycle ~ 1.8 flashes/sec, well under the 3-flashes/sec limit, so the
+       luminance change is gradual, not a strobe. The opacity swing is gentle
+       (1.0 to 0.55) but the GLOW pulses hard (18px->5px, .95->.3 alpha), which
+       is what makes it read clearly as "rolling" without a harsh blink. Bright
+       amber keeps it distinct from the steady solid-gold selected ring.
+       NOTE: no backticks in this comment, it lives inside a CSS template
+       literal. Honors prefers-reduced-motion. */
     .fud-target-ring.is-roulette{
-      border-style:solid; border-color:#e8a040; transition:none;
-      box-shadow:0 0 12px rgba(232,160,64,.7), inset 0 0 12px rgba(232,160,64,.25);
-      animation:fud-roulette-blink 0.14s steps(1) infinite;
+      border-style:solid; border-color:#ffb24d; transition:none;
+      animation:fud-roulette-pulse 0.4s ease-in-out infinite;
     }
-    @keyframes fud-roulette-blink{
-      50%{ opacity:0.15; border-color:#b7935a; box-shadow:0 0 10px rgba(213,182,122,.6), inset 0 0 10px rgba(213,182,122,.3); }
+    @keyframes fud-roulette-pulse{
+      0%,100%{ opacity:0.85; border-width:4px; border-color:#ffcf80;
+        box-shadow:0 0 9px rgba(255,184,77,.5), inset 0 0 7px rgba(255,184,77,.28); }
+      50%{ opacity:0.3; border-width:3px; border-color:#8f6322;
+        box-shadow:0 0 2px rgba(255,184,77,.15), inset 0 0 2px rgba(255,184,77,.06); }
+    }
+    /* Reduced-motion users get NO pulse — a steady bright ring still marks the
+       eligible roulette pool, distinct from the solid selected ring. */
+    @media (prefers-reduced-motion: reduce){
+      .fud-target-ring.is-roulette{ animation:none; }
     }
     /* Excluded-target overlay — drawn over tokens removed from the eligible
        pool by an AE-driven block (e.g. Vanish's cannot_target_uuids). The
@@ -119,6 +133,7 @@ function ensureStyles() {
       font-weight:800; letter-spacing:.32px; text-transform:uppercase;
       font-size:11.5px;
       cursor:pointer; user-select:none;
+      display:flex; align-items:center; justify-content:center;
       text-align:center;
       box-shadow:0 3px 0 rgba(41,33,24,.55), 0 0 0 1px rgba(255,255,255,.7) inset;
       transition:transform 100ms ease, filter 100ms ease;

@@ -52,17 +52,31 @@
 // soft reload doesn't bust the browser ESM cache, so static imports here would
 // read whatever was loaded at boot.
 async function loadDeps() {
-  const bust = `?harness=${Date.now()}`;
-  const [stateHandlers, states, intents, snapshot, skillIntent, skillEffects, actionProfile, actionCard] = await Promise.all([
+  // Single token per call drives BOTH the harness's own re-imports AND the
+  // hot-reload registry (state-handlers' internal skill-effects edge). We set
+  // globalThis.__FU_CB to this token so the freshly-imported state-handlers,
+  // when it calls SE().<fn>, resolves to the SAME fresh skill-effects instance
+  // we import here (matching `?cb=<token>` URL → one cached module, no double
+  // instance / no module-state split). refreshHotModules() (awaited below)
+  // performs that re-import after state-handlers has registered its edge.
+  const token = Date.now();
+  globalThis.__FU_CB = token;
+  const bust = `?harness=${token}`;
+  const cb = `?cb=${token}`;  // MUST match hot-reload.js's loader query
+  const [stateHandlers, states, intents, snapshot, skillIntent, skillEffects, actionProfile, actionCard, hot] = await Promise.all([
     import(`./state-handlers.js${bust}`),
     import(`./states.js${bust}`),
     import(`./intents.js${bust}`),
     import(`./snapshot.js${bust}`),
     import(`./skill-intent.js${bust}`),
-    import(`./skill-effects.js${bust}`),
+    import(`./skill-effects.js${cb}`),
     import(`./action-profile.js${bust}`),
     import(`./action-card.js${bust}`),
+    import(`./hot-reload.js`),  // singleton (registry on globalThis); no cache-bust
   ]);
+  // state-handlers registered its skill-effects hot edge during the import
+  // above; refresh it now so its internal SE() calls use the fresh instance.
+  await hot.refreshHotModules();
   return {
     STATE_HANDLERS: stateHandlers.STATE_HANDLERS,
     STATES: states.STATES,
@@ -1575,6 +1589,23 @@ async function getDirectorTestFixtures() {
   };
 }
 
+// Live hot-reload entry point. Bumps the shared cache-bust token and re-imports
+// every registered hot edge so edits to a hot-routed module (skill-effects.js
+// today) take effect mid-session without a Ctrl+Shift+R. Imports hot-reload.js
+// as a singleton (its registry lives on globalThis), so no cache-bust here.
+async function reloadHot() {
+  if (!game.user?.isGM) return { ok: false, reason: "gm_only" };
+  try {
+    const hot = await import("./hot-reload.js");
+    const res = await hot.bumpAndRefresh();
+    console.info(`${TAG} reloadHot → token=${res.token}, refreshed ${res.refreshed}/${res.edges.length} edge(s):`, res.edges);
+    return { ok: true, ...res };
+  } catch (e) {
+    console.error(`${TAG} reloadHot failed`, e);
+    return { ok: false, reason: "threw", error: String(e?.message ?? e) };
+  }
+}
+
 // Register on the FUCompanion.api.test namespace alongside the legacy
 // harness. We don't replace the legacy methods — they coexist.
 function registerHarness() {
@@ -1591,7 +1622,12 @@ function registerHarness() {
   // Golden-snapshot helpers (render-capture regression).
   root.api.test.diffCardGolden            = diffCardGolden;
   root.api.test.normalizeCardHtml         = normalizeCardHtml;
-  console.info(`${TAG} registered: runDirectorSkillCompute/Simulate, runDirectorAttackCompute/Simulate, runDirectorScenarios, runDirectorPassiveTriggerTest, getDirectorTestFixtures, diffCardGolden, normalizeCardHtml`);
+  // Live hot-reload: bump the cache-bust token and re-import every registered
+  // hot edge (currently state-handlers → skill-effects). Call this after editing
+  // skill-effects.js DURING a real session to pick up the change without a
+  // Ctrl+Shift+R. Returns { token, refreshed, edges }.
+  root.api.test.reloadHot                 = reloadHot;
+  console.info(`${TAG} registered: runDirectorSkillCompute/Simulate, runDirectorAttackCompute/Simulate, runDirectorScenarios, runDirectorPassiveTriggerTest, getDirectorTestFixtures, diffCardGolden, normalizeCardHtml, reloadHot`);
 }
 // Boot-time registration via the ready hook OR fast-path when the module
 // is dynamically re-imported with cache-bust at runtime (Foundry's ready
@@ -1609,4 +1645,5 @@ export {
   getDirectorTestFixtures,
   diffCardGolden,
   normalizeCardHtml,
+  reloadHot,
 };

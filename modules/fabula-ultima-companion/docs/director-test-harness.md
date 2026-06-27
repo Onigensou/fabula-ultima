@@ -171,7 +171,7 @@ console.assert(r.captures.aeCreates.some(c => c.name.includes("Reinforced")));
 
 | Limit | Workaround |
 |---|---|
-| Cross-module edits need Ctrl+Shift+R | Hard-reload Foundry after multi-file edits. Single-file edits inside the harness reload fine (entry module is cache-busted per call; deeper static imports aren't) |
+| Cross-module edits need Ctrl+Shift+R | Hard-reload Foundry after multi-file edits. Single-file edits inside the harness reload fine (entry module is cache-busted per call; deeper static imports aren't). **Exception:** the `state-handlers.js → skill-effects.js` edge is hot — the harness re-imports it per call, and live you can `await FUCompanion.api.test.reloadHot()` to pick up a `skill-effects.js` edit with no refresh (see `hot-reload.js` / `registerHotModule`) |
 | Cascading-state for chained skills (Mercy + damage) | Use `preApply` to install Mercy before the damage skill |
 | `summary.healed` shows COMPUTE preview only | Read `captures.actorUpdates` directly for the ordered write list |
 | Vismagus alt-cost Dialog (TARGET phase) | Use `vismagusHpPaid: true` to test RESOLVE-side suppression directly |

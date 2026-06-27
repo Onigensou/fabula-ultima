@@ -1385,7 +1385,13 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
       });
     }
   }
-  for (const ae of casterActor.effects?.contents ?? []) {
+  // Walk `appliedEffects` (not `.effects`) so equipped-gear reaction AEs surface:
+  // a `transfer:true` AE on a worn accessory/weapon (Ninja Log, Skull Orb) lives
+  // in appliedEffects when equipped and drops out when equipment-swap disables it
+  // on unequip — the same set resolveDamageReactions walks. Direct actor AEs
+  // (Mercy etc.) are a subset, so no regression / double-count. Mirrors the
+  // case-2a "engine expands equipped gear" model.
+  for (const ae of (casterActor.appliedEffects ?? casterActor.effects?.contents ?? Array.from(casterActor.effects ?? []))) {
     if (ae.disabled) continue;
     const cfg = ae.flags?.[FLAG_NS]?.reactionConfig;
     if (!cfg || typeof cfg !== "object") continue;
@@ -2930,6 +2936,28 @@ async function applyNotifyEffect(row, ctx) {
   return { ok: true, kind: "notify", message, abort };
 }
 
+// ── delay ────────────────────────────────────────────────────────────────
+//
+// Pause the chain for `delay_ms` milliseconds (number or formula) so multi-step
+// / repeated effects play out one at a time instead of landing simultaneously —
+// e.g. Starfall's 3 comets read as three hits when a `delay` sits between the
+// repeated damage steps. Composable: drop it anywhere in a chain's step list.
+// Skipped in capture/preview (no real timeline to space out) and clamped to 5s
+// so a mis-typed value can't wedge the resolve loop.
+async function applyDelayEffect(row, ctx) {
+  if (ctx?.captureMode || ctx?.mode === "preview") return { ok: true, kind: "delay", skipped: true };
+  let ms = 0;
+  const raw = String(row.delay_ms ?? "").trim();
+  if (raw) {
+    const { buildSkillResolver, evaluateFormula } = await getSkillFormulas();
+    const resolver = buildSkillResolver({ actor: ctx.reactorActor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0 });
+    ms = Math.floor(Number(evaluateFormula(raw, resolver, 0)) || 0);
+  }
+  ms = Math.max(0, Math.min(5000, ms));
+  if (ms > 0) await new Promise((resolve) => setTimeout(resolve, ms));
+  return { ok: true, kind: "delay", ms };
+}
+
 // Data-only kinds (adjust_damage / redirect_target / adjust_accuracy) return ok
 // without acting — their real work happens earlier (computeSenderDamageBonuses /
 // resolveDamageReactions / card-mutations at the CONFIRM write site); ok keeps
@@ -3006,9 +3034,17 @@ const EFFECT_KIND_DISPATCH = {
   roll_loot_table:     applyRollLootTableEffect,
   deal_damage:         dealDamageRun,        // UNIFIED (see dealDamageRun)
   equip_swap:          applyEquipSwapEffect,
+  hide_item:           applyHideItemEffect,
   encyclopedia_record: applyEncyclopediaRecordEffect,
   notify:              applyNotifyEffect,
   adjust_damage:       (row) => ({ ok: true, kind: "adjust_damage", applied: [], reason: "data-only" }),
+  // check_buff: a PASSIVE marker, not an executed effect. It declares "+N to a
+  // named action's Check" (check_buff_action = csv of action_commands, e.g.
+  // "study,attack"; check_buff_amount = number/formula). It lives on an equipped
+  // gear's linked passive _skill and is READ at the action's COMPUTE step by
+  // sumEquippedCheckBuffs() — never fired at RESOLVE. Registered here as a
+  // recognized no-op so the parity guard / canon lint accept it in authored data.
+  check_buff:          (row) => ({ ok: true, kind: "check_buff", applied: [], reason: "data-only (read at check COMPUTE)" }),
   // change_damage_element: override the in-flight attack's damage element for the
   // chosen targets (Tinkerer Infusions: Cryo/Pyro/Volt/… make the attack "become"
   // ice/fire/bolt/…). Data-only here — the real work rides the SAME per-subject
@@ -3069,6 +3105,7 @@ const EFFECT_KIND_DISPATCH = {
   // (skips outcome + effect/reaction firing when ar.negated). The reaction's OTHER
   // rows (Frightened, consume_self) still fire normally.
   negate_action:       (row) => ({ ok: true, kind: "negate_action", applied: [], reason: "applied-at-card-mutation-phase" }),
+  delay:               applyDelayEffect,
 };
 
 // Canonical effect_kind keys (every kind the engine dispatches). The template
@@ -3121,9 +3158,11 @@ export const EFFECT_KIND_LABELS = {
   roll_loot_table:     "Roll Loot Table",
   deal_damage:         "Deal Damage",
   equip_swap:          "Equip Swap",
+  hide_item:           "Hide Item (unequip + vanish from inventory until battle end — Encyclopedia)",
   encyclopedia_record: "Encyclopedia Record",
   notify:              "Notify (show a message — stub / info)",
   adjust_damage:       "Adjust Damage",
+  check_buff:          "Check Buff (passive +N to a named action's Check — read at COMPUTE, e.g. +2 Study)",
   change_damage_element: "Change Damage Element (override in-flight element)",
   apply_action_keyword: "Apply Action Keyword (Pierce, …)",
   redirect_target:     "Redirect Target",
@@ -3133,6 +3172,7 @@ export const EFFECT_KIND_LABELS = {
   set_check_die:       "Set Check Die (replace one rolled die with a value / stored charge)",
   adjust_defense:      "Adjust Defense (defender raises own DEF for the action)",
   negate_action:       "Negate Action (block — no outcome/reactions)",
+  delay:               "Delay (pause the chain N ms — space out multi-hit effects)",
 };
 
 // ── Effect-kind PREVIEW registry (ActionProfile / Action Card) ───────────────
@@ -3221,6 +3261,11 @@ const EFFECT_KIND_PREVIEW = {
   // create_bond writes actor bond props at RESOLVE — no inline card preview.
   create_bond: () => null,
 
+  // check_buff is a passive marker read at COMPUTE (sumEquippedCheckBuffs) — it
+  // never fires as a card effect, so there is nothing to surface here. The bonus
+  // it contributes shows on the card via the action's checkBonusParts instead.
+  check_buff: () => null,
+
   encyclopedia_record: (row) => ({
     type: "reveal", aspect: "encyclopedia", tier: null,
     valence: "neutral", source: row.effect_label, targetRef: row.target_ref ?? null,
@@ -3230,6 +3275,10 @@ const EFFECT_KIND_PREVIEW = {
     type: "equip", change: null,
     valence: "neutral", source: row.effect_label, targetRef: "self",
   }),
+
+  // hide_item unequips + vanishes a gear at RESOLVE (Encyclopedia "disappears
+  // until end of scene"); a state change with no inline card preview.
+  hide_item: () => null,
 
   roll_loot_table: (row) => ({
     type: "random", label: String(row.effect_label ?? "Random"), possibilities: [],
@@ -4534,7 +4583,23 @@ async function applyApplyAeEffect(row, ctx) {
       return { ok: false, kind: "apply_ae", reason: "no-status-value" };
     }
   }
-  if (!aeRef) {
+  // Random-pool mode — instead of a single `ae_template_ref`, the row may carry
+  // `ae_name_pool` (comma/semicolon/pipe-separated AE names): one is picked at
+  // random PER TARGET. An optional second pool `ae_name_pool_alt` is drawn from
+  // instead when the per-target formula `ae_pool_alt_condition` is truthy for
+  // that target (resolver = caster actor + subjectActorUuid=target, so a formula
+  // like "TARGET_LEVEL < CHAR_LEVEL" compares the target's level to the caster's).
+  // Generic "inflict a random debuff, a stronger one on weaker foes" primitive
+  // (Draconic Roar; reusable by any roar/breath skill). Per-target template
+  // resolution happens inside the loop; cached so each distinct name resolves once.
+  const splitNames = (s) => String(s ?? "").split(/[,;|]/).map((x) => x.trim()).filter(Boolean);
+  const poolMain = splitNames(row.ae_name_pool);
+  const poolAlt  = splitNames(row.ae_name_pool_alt);
+  const poolAltCond = String(row.ae_pool_alt_condition ?? "").trim();
+  const poolMode = poolMain.length > 0;
+  const _tplCache = new Map();
+
+  if (!aeRef && !poolMode) {
     warn(`skill-effects.apply_ae: missing ae_template_ref on "${row.effect_label}"`);
     return { ok: false, kind: "apply_ae", reason: "no-ae-ref" };
   }
@@ -4560,10 +4625,14 @@ async function applyApplyAeEffect(row, ctx) {
   //   - "Item.<id>.ActiveEffect.<id>"  full UUID
   //   - the AE's name as it appears on the skill's effects collection
   //   - an effect's _id on the skill's effects collection
-  const template = await resolveAeTemplate(aeRef, ctx);
-  if (!template) {
-    warn(`skill-effects.apply_ae: AE template "${aeRef}" not found`);
-    return { ok: false, kind: "apply_ae", reason: "template-not-found" };
+  // Single-template mode resolves once up front; pool mode defers to the loop.
+  let sharedTemplate = null;
+  if (!poolMode) {
+    sharedTemplate = await resolveAeTemplate(aeRef, ctx);
+    if (!sharedTemplate) {
+      warn(`skill-effects.apply_ae: AE template "${aeRef}" not found`);
+      return { ok: false, kind: "apply_ae", reason: "template-not-found" };
+    }
   }
 
   // Charge counts (ae_initial_charges / _max) may be FORMULAS — evaluated per
@@ -4577,6 +4646,29 @@ async function applyApplyAeEffect(row, ctx) {
   for (const token of tokens) {
     const actor = token.actor;
     if (!actor) continue;
+    // Per-target AE template. Pool mode picks one at random (alt pool when the
+    // per-target condition holds — caster resolver with this target as subject);
+    // single-template mode reuses the up-front `sharedTemplate`.
+    let template = sharedTemplate;
+    if (poolMode) {
+      let pool = poolMain;
+      if (poolAlt.length && poolAltCond) {
+        const condResolver = buildSkillResolver({
+          actor: ctx.reactorActor,
+          payload: { ...(ctx.payload ?? {}), subjectActorUuid: actor.uuid },
+          skill: ctx.skill,
+          round: ctx.dCombat?.round ?? 0,
+        });
+        if (Number(evaluateFormula(poolAltCond, condResolver, 0)) > 0) pool = poolAlt;
+      }
+      const pickName = pool[Math.floor(Math.random() * pool.length)];
+      if (!_tplCache.has(pickName)) _tplCache.set(pickName, await resolveAeTemplate(pickName, ctx));
+      template = _tplCache.get(pickName);
+      if (!template) {
+        warn(`skill-effects.apply_ae: pool AE "${pickName}" not found on "${row.effect_label}" — skipping ${actor.name}`);
+        continue;
+      }
+    }
     // Lever B dup-visibility guard. If an earlier chain step queued a create
     // that this row's dup/skip/remove/replace logic would need to see (same
     // name or status), commit the batch NOW so findDuplicateAe / findSameStatusAe
@@ -5018,7 +5110,11 @@ async function applyApplyAeEffect(row, ctx) {
   // deliberately NOT a global hook. Applied once via a self-targeted recursive
   // call with skip-dup; recursion-safe (the reciprocal carries no reciprocalAe
   // of its own + the _reciprocalApply guard). See [[project_grappled_advanced_debuff]].
-  const reciprocalName = String(template.flags?.[FLAG_NS]?.reciprocalAe ?? "").trim();
+  // Post-loop references use `sharedTemplate` (single-template mode) — the
+  // loop-local `template` is out of scope here, and in pool mode there is no
+  // single template, so reciprocal / status-emit (single-template features)
+  // are null-safely skipped.
+  const reciprocalName = String(sharedTemplate?.flags?.[FLAG_NS]?.reciprocalAe ?? "").trim();
   if (reciprocalName && applied.length && !ctx._reciprocalApply && ctx.reactorActor) {
     try {
       await applyApplyAeEffect(
@@ -5042,8 +5138,8 @@ async function applyApplyAeEffect(row, ctx) {
   // queueStatusEvent; the settle loop dispatches observer-aware. Crisis is
   // emitted by crisis-reactor at its own create site — skip it here so the
   // ledger never carries a duplicate Crisis event.
-  if (Array.isArray(template.statuses) && template.statuses.length && applied.length) {
-    const statusName = template.name ?? "Effect";
+  if (sharedTemplate && Array.isArray(sharedTemplate.statuses) && sharedTemplate.statuses.length && applied.length) {
+    const statusName = sharedTemplate.name ?? "Effect";
     if (statusName !== "Crisis") {
       const bd = globalThis.FUCompanion?.api?.experimental?.battleDirector;
       const director = ctx.director ?? bd?.getActiveDirector?.() ?? null;
@@ -5072,7 +5168,7 @@ async function applyApplyAeEffect(row, ctx) {
       }
     }
   }
-  log(`skill-effects.apply_ae: row "${row.effect_label}" applied "${template.name}" to ${applied.length} actor(s)`);
+  log(`skill-effects.apply_ae: row "${row.effect_label}" applied "${sharedTemplate?.name ?? row.ae_template_ref ?? "AE"}" to ${applied.length} actor(s)`);
   return { ok: true, kind: "apply_ae", applied };
 }
 
@@ -5176,6 +5272,56 @@ function findSameStatusAe(actor, template) {
   return null;
 }
 
+// ── check_buff (passive action-scoped Check bonus) ─────────────────────────
+// Generic, reusable "+N to a named action's Check" knob. Any EQUIPPED gear can
+// carry a linked passive _skill (skill_type "Passive", container = the gear id)
+// whose effect_table holds one or more `check_buff` rows:
+//   { effect_kind:"check_buff", check_buff_action:"study,attack", check_buff_amount:"2" }
+// At an action's COMPUTE step the relevant handler calls this with the acting
+// actor + the action_command being rolled; the returned `total` is folded into
+// the Check's checkBonus and `parts` appended to checkBonusParts (card display).
+// Read-time only (nothing is written), so it is reload-safe and stacks across
+// every equipped source that matches the command. `check_buff_amount` may be a
+// literal or a wielder-relative formula (CHAR_LEVEL, etc.).
+export function sumEquippedCheckBuffs(actor, command, { payload = null, round = null } = {}) {
+  const cmd = String(command ?? "").trim().toLowerCase();
+  const out = { total: 0, parts: [] };
+  if (!actor?.items || !cmd) return out;
+  for (const gear of actor.items) {
+    if (gear.type !== "equippableItem") continue;
+    if (!gear.system?.props?.isEquipped) continue;
+    const gearId = gear.id;
+    // Resolve the gear's linked passive _skill(s) directly off actor.items
+    // (container back-ref) rather than the derived item_skill_passive projection,
+    // which can be half-baked on cold load (same race the picker hit).
+    for (const sk of actor.items) {
+      if (sk === gear) continue;
+      if (String(sk.system?.container ?? "") !== gearId) continue;
+      if (String(sk.system?.props?.skill_type ?? "") !== "Passive") continue;
+      const rows = sk.system?.props?.effect_table;
+      if (!rows || typeof rows !== "object") continue;
+      for (const row of Object.values(rows)) {
+        if (!row || row.effect_kind !== "check_buff") continue;
+        const actions = String(row.check_buff_action ?? "")
+          .toLowerCase().split(/[,;|]+/).map((s) => s.trim()).filter(Boolean);
+        if (!actions.includes(cmd)) continue;
+        const raw = String(row.check_buff_amount ?? row.check_buff_value ?? "0");
+        let amt = 0;
+        try {
+          amt = isFormulaString(raw)
+            ? (Number(evaluateFormula(raw, buildSkillResolver({ actor, payload, skill: sk, round }), 0)) || 0)
+            : (Number(raw) || 0);
+        } catch { amt = Number(raw) || 0; }
+        if (amt) {
+          out.total += amt;
+          out.parts.push({ source: gear.name ?? "Equipment", amount: amt });
+        }
+      }
+    }
+  }
+  return out;
+}
+
 // ── equip_swap (Equipment action) ────────────────────────────────────────
 // Commits the per-slot equipment selections the Equipment card collected onto
 // the acting actor. Wraps the proven `applyEquipmentSwap` (equipment-swap.js)
@@ -5204,6 +5350,132 @@ async function applyEquipSwapEffect(row, ctx) {
     warn("skill-effects.equip_swap threw", e);
     return { ok: false, kind: "equip_swap", reason: "threw" };
   }
+}
+
+// ── hide_item (unequip + vanish until battle end) ──────────────────────────
+// Encyclopedia RAW: "Unequip this weapon, it disappears from your inventory
+// until the end of this scene." Generic primitive: unequips a gear from whatever
+// slot holds it (reusing applyEquipmentSwap so isEquipped + item-AE state stay
+// consistent) and flags it `hiddenUntilBattleEnd`, which makes partitionInventory
+// (equipment-swap.js) drop it from BOTH the Equipment picker AND any re-equip
+// attempt. The flag is cleared at battle end by battle-end-cleanup's restore pass,
+// so the item reappears (unequipped) next scene.
+//
+// Target resolution (first match wins):
+//   row.hide_item_id   → that embedded item id
+//   row.hide_item_name → first item with that name
+//   else               → the gear that granted this skill (ctx.skill.container)
+async function applyHideItemEffect(row, ctx) {
+  const actor = ctx.reactorActor;
+  if (!actor) return { ok: false, kind: "hide_item", reason: "no-actor" };
+
+  let item = null;
+  const explicitId = String(row.hide_item_id ?? "").trim();
+  const explicitName = String(row.hide_item_name ?? "").trim().toLowerCase();
+  if (explicitId) item = actor.items?.get?.(explicitId) ?? null;
+  if (!item && explicitName) {
+    item = actor.items?.find?.((i) => String(i.name ?? "").trim().toLowerCase() === explicitName) ?? null;
+  }
+  if (!item) {
+    const containerId = String(ctx.skill?.system?.container ?? "").trim();
+    if (containerId) item = actor.items?.get?.(containerId) ?? null;
+  }
+  if (!item) {
+    warn(`skill-effects.hide_item: no item to hide on ${actor.name}`);
+    return { ok: false, kind: "hide_item", reason: "no-item" };
+  }
+
+  // Idempotent: if already hidden, do nothing. Re-running would be a no-op at
+  // best — but worse, the partitionInventory hidden-filter (step 1 below) would
+  // no longer see the item, so applyEquipmentSwap couldn't find it to empty its
+  // slot. Bail before that can desync the equip slot from isEquipped.
+  if (item.flags?.["fabula-ultima-companion"]?.hiddenUntilBattleEnd) {
+    log(`skill-effects.hide_item: "${item.name}" already hidden on ${actor.name} — no-op`);
+    return { ok: true, kind: "hide_item", reason: "already-hidden", applied: [] };
+  }
+
+  // 1) Unequip from whichever slot wears it — reuse applyEquipmentSwap so the
+  //    actor's slot props, isEquipped, and item-resident AEs all stay coherent
+  //    (empties that hand → "Unarmed", leaving the other slots untouched).
+  try {
+    const { applyEquipmentSwap, gatherEquipmentSlots } = await import("./equipment-swap.js");
+    const slots = gatherEquipmentSlots(actor).slots ?? [];
+    const sel = {};
+    let wasWorn = false;
+    for (const s of slots) {
+      sel[s.key] = s.currentItemId ?? null;
+      if (s.currentItemId === item.id) { sel[s.key] = null; wasWorn = true; }
+    }
+    if (wasWorn) await applyEquipmentSwap(actor, sel);
+  } catch (e) { warn("skill-effects.hide_item: unequip via applyEquipmentSwap threw", e); }
+
+  // 2) Flag hidden + force isEquipped false. The flag drops it out of
+  //    partitionInventory until battle-end cleanup restores it.
+  try {
+    await item.update({
+      "system.props.isEquipped": false,
+      "flags.fabula-ultima-companion.hiddenUntilBattleEnd": true,
+    });
+  } catch (e) {
+    warn("skill-effects.hide_item: flag update threw", e);
+    return { ok: false, kind: "hide_item", reason: "update-threw" };
+  }
+
+  log(`skill-effects.hide_item: ${actor.name} — "${item.name}" unequipped + hidden until battle end`);
+  return { ok: true, kind: "hide_item", applied: [{ actor: actor.uuid, itemId: item.id, itemName: item.name }] };
+}
+
+// Counterpart to hide_item: bring back every item flagged `hiddenUntilBattleEnd`
+// on an actor. Called at battle START (PREP — robust, runs for every new fight)
+// and battle END (best-effort cleanup). Idempotent.
+//
+// Beyond clearing the flag it also NULLS any equip-slot prop that still NAMES a
+// restored item. A hidden item can't be worn, so such a reference is stale (e.g.
+// from a hide that desynced) — leaving it would let a later reconcileEquip
+// silently RE-EQUIP the just-returned item. The item always returns UNEQUIPPED.
+export async function restoreHiddenItems(actor) {
+  const NS = "fabula-ultima-companion";
+  const hidden = Array.from(actor?.items ?? []).filter(
+    (i) => i?.flags?.[NS]?.hiddenUntilBattleEnd,
+  );
+  if (!hidden.length) return 0;
+
+  const p = actor.system?.props ?? {};
+  const names = new Set(hidden.map((i) => String(i.system?.props?.name ?? i.name ?? "")));
+  const actorUpd = {};
+  if (names.has(String(p.main_hand ?? ""))) {
+    Object.assign(actorUpd, {
+      "system.props.main_hand": "", "system.props.main_attrib_1": "DEX",
+      "system.props.main_attrib_2": "DEX", "system.props.weapon1_base_mod": 0,
+      "system.props.weapon1_base_damage": 0, "system.props.weapon1_damagetype": "-",
+      "system.props.main_details": "",
+    });
+  }
+  if (names.has(String(p.off_hand ?? ""))) {
+    Object.assign(actorUpd, {
+      "system.props.off_hand": "", "system.props.off_attrib_1": "DEX",
+      "system.props.off_attrib_2": "DEX", "system.props.off_base_mod_1": 0,
+      "system.props.off_base_mod_2": 0, "system.props.weapon2_damagetype": "-",
+      "system.props.off_details": "",
+    });
+  }
+  if (names.has(String(p.accessory_name ?? ""))) {
+    Object.assign(actorUpd, { "system.props.accessory_name": "", "system.props.accessory_details": "" });
+  }
+  if (names.has(String(p.accessory2_name ?? ""))) {
+    Object.assign(actorUpd, { "system.props.accessory2_name": "", "system.props.accessory2_details": "" });
+  }
+
+  const itemUpd = hidden.map((i) => ({ _id: i.id, [`flags.${NS}.hiddenUntilBattleEnd`]: false }));
+  try {
+    await actor.updateEmbeddedDocuments("Item", itemUpd);
+    if (Object.keys(actorUpd).length) await actor.update(actorUpd);
+  } catch (e) {
+    warn(`skill-effects.restoreHiddenItems: failed for ${actor?.name}`, e);
+    return 0;
+  }
+  log(`skill-effects.restoreHiddenItems: ${actor.name} — restored ${hidden.length} (${hidden.map((i) => i.name).join(", ")})`);
+  return hidden.length;
 }
 
 // ── encyclopedia_record (Study action) ────────────────────────────────────
@@ -5448,6 +5720,41 @@ function parseEffectRefList(raw) {
 // Back-compat: if the menu row doesn't supply a label/description for an option,
 // fall back to that option row's legacy `menu_label` / `menu_description`
 // (so skills authored under the old per-option shape still render correctly).
+// Interpolate ${...} placeholders in author-facing menu text against the LIVE
+// reaction context, so a menu can show real values instead of static prose.
+// ${TOKEN} resolves a STRING var first (die-attribute names the payload carries —
+// formulas are numeric so a name like "DEX" can't come through the evaluator),
+// else evaluates TOKEN as a numeric skill-formula (CHECK_DIE_A, CHECK_DIE_B,
+// AE_CHARGES_LUCKY_NUMBER, …). On an unknown token / eval failure the placeholder
+// is left intact (visible tell, not a silent 0). No-op on text without "${" — so
+// every existing static menu is unaffected. First user: Lucky Seven's die picker
+// ("First die (DEX): 3 → 7"). The resolver is cached on ctx across calls.
+function interpolateMenuText(str, ctx) {
+  const s = str == null ? "" : String(str);
+  if (!s.includes("${")) return s;
+  const p = ctx?.payload ?? {};
+  const strVars = {
+    CHECK_DIE_A_ATTR: p.rollDieAAttr ?? "",
+    CHECK_DIE_B_ATTR: p.rollDieBAttr ?? "",
+  };
+  return s.replace(/\$\{([^}]+)\}/g, (m, raw) => {
+    const expr = String(raw).trim();
+    if (Object.prototype.hasOwnProperty.call(strVars, expr)) {
+      const v = strVars[expr];
+      return (v === "" || v == null) ? m : String(v);
+    }
+    try {
+      if (!ctx.__menuTextResolver) {
+        ctx.__menuTextResolver = buildSkillResolver({
+          actor: ctx.reactorActor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0,
+        });
+      }
+      const n = evaluateFormula(expr, ctx.__menuTextResolver, NaN);
+      return Number.isFinite(n) ? String(n) : m;
+    } catch { return m; }
+  });
+}
+
 function buildMenuOptions(row, ctx) {
   const refs = parseEffectRefList(row.menu_option_refs);
   const splitPipe = (s) =>
@@ -5499,12 +5806,12 @@ function buildMenuOptions(row, ctx) {
       if (!_gatePass && (!_uiType || _uiType === "hide")) continue;
       // Menu-row text wins; fall back to the option row's legacy fields, then
       // to the ref label. (Empty entries in the |-list also fall through.)
-      const label = (rowLabels[i] && rowLabels[i] !== "")
+      const label = interpolateMenuText((rowLabels[i] && rowLabels[i] !== "")
         ? rowLabels[i]
-        : String(refRow.menu_label ?? refRow.effect_label ?? ref);
-      const desc = (rowDescs[i] && rowDescs[i] !== "")
+        : String(refRow.menu_label ?? refRow.effect_label ?? ref), ctx);
+      const desc = interpolateMenuText((rowDescs[i] && rowDescs[i] !== "")
         ? rowDescs[i]
-        : (refRow.menu_description ?? null);
+        : (refRow.menu_description ?? null), ctx) || null;
       // Optional per-option presentation (icon image + accent color). Menu-row
       // pipe-list wins; fall back to the option row's own field. Absent → null,
       // and the picker renders a plain row (back-compat for every existing menu).
@@ -5532,8 +5839,8 @@ function buildMenuOptions(row, ctx) {
       const uiType = String(o?.disable_ui_type ?? "").trim().toLowerCase();
       if (!gatePass && (!uiType || uiType === "hide")) continue;
       options.push({
-        label: String(o.label),
-        description: o.description ? String(o.description) : null,
+        label: interpolateMenuText(String(o.label), ctx),
+        description: o.description ? interpolateMenuText(String(o.description), ctx) : null,
         icon: o.menu_icon ?? o.icon ?? null,
         color: o.menu_color ?? o.color ?? null,
         disabled: !gatePass,
@@ -5673,13 +5980,13 @@ async function selectMenuPicks(row, ctx, options) {
       idx = remainingIdx[0];
       log(`skill-effects.open_action_menu: passive + skip_when_passive — auto-picking "${options[idx].label}"`);
     } else {
-      const baseSubtitle = row.menu_subtitle ? String(row.menu_subtitle) : null;
+      const baseSubtitle = row.menu_subtitle ? interpolateMenuText(String(row.menu_subtitle), ctx) : null;
       const subtitle = pickCount > 1
         ? `${baseSubtitle ? baseSubtitle + " — " : ""}choose ${pickCount} (${pick + 1}/${pickCount})`
         : baseSubtitle;
       const remOptions = remainingIdx.map((i) => options[i]);
       const listArgs = {
-        title: String(row.menu_title ?? "Choose an option"),
+        title: interpolateMenuText(String(row.menu_title ?? "Choose an option"), ctx),
         subtitle,
         options: menuOptionsToRows(remOptions),
         zIndex: 97,  // above the action card (95) during RESOLVE
@@ -7549,6 +7856,23 @@ async function applyChainEffect(row, ctx) {
   const steps = parseEffectRefList(row.chain_steps);
   if (!steps.length) return { ok: false, kind: "chain", reason: "no-steps" };
 
+  // `chain_repeat` — run the whole step list N times (N may be a formula, e.g.
+  // "3" or "SL"). Between passes the targeting memo (ctx.resolvedTargets) is
+  // cleared so any `mode:random` targeting row inside RE-ROLLS a fresh pick each
+  // pass (repeats allowed) — the engine model for "roulette, repeat N times"
+  // (Starfall: 3 comets, each a random enemy, each HR+15). A single accuracy
+  // check (HR) is shared across passes. Captured player picks survive (they live
+  // on ctx.payload._capturedTargets, a separate store), so a repeated chain that
+  // references a captured pick reuses it rather than re-prompting. Default 1.
+  let repeatCount = 1;
+  const repeatRaw = String(row.chain_repeat ?? "").trim();
+  if (repeatRaw) {
+    const { buildSkillResolver, evaluateFormula } = await getSkillFormulas();
+    const resolver = buildSkillResolver({ actor: ctx.reactorActor, payload: ctx.payload, skill: ctx.skill, round: ctx.dCombat?.round ?? 0 });
+    const n = Math.floor(Number(evaluateFormula(repeatRaw, resolver, 1)));
+    repeatCount = Number.isFinite(n) && n > 0 ? n : 1;
+  }
+
   // Lever B — open an AE-create batch for this chain. Consecutive apply_ae
   // CREATES queue onto ctx._aeBatch and flush as ONE createEmbeddedDocuments
   // per actor (see makeAeBatch / flushAeBatch). Nested chains REUSE the outer
@@ -7561,38 +7885,45 @@ async function applyChainEffect(row, ctx) {
 
   const aggregated = [];
   try {
-    for (const label of steps) {
-      // Commit queued creates before a non-apply_ae step (any chain level) so
-      // formulas / grants / damage / dup checks in that step see committed AEs.
-      const stepRow = findEffectRow(ctx, label);
-      if (String(stepRow?.effect_kind ?? "").trim().toLowerCase() !== "apply_ae") {
-        await flushAeBatch(batch);
-      }
-      const r = await applyEffectByLabel(label, ctx);
-      aggregated.push({ label, result: r });
-      if (!r.ok) {
-        log(`skill-effects.chain: step "${label}" returned ok=false (${r.reason ?? "?"}); stopping chain`);
-        // Forward a user-cancellation signal (target picker / option menu
-        // dismissed) so the reaction dispatcher can re-offer the reaction
-        // (back to the menu) instead of treating it as a hard failure.
-        const cancelled = !!r.cancelled || String(r.reason ?? "") === "cancelled";
-        return { ok: false, kind: "chain", applied: aggregated, reason: `step-failed:${label}`, abort: r.abort, cancelled };
-      }
-      if (r.abort) {
-        log(`skill-effects.chain: step "${label}" set abort:true; stopping chain`);
-        // Picker/menu/confirm cancels abort with ok:true + reason "cancelled"
-        // (open_action_menu, prompt_element, confirm). Forward the signal so
-        // the reaction dispatcher re-offers the reaction instead of marking it
-        // fired. A plain abort (no cancel reason) stays a normal early-stop.
-        const cancelled = !!r.cancelled || String(r.reason ?? "") === "cancelled";
-        return { ok: true, kind: "chain", applied: aggregated, abort: true, cancelled };
-      }
-      if (r.skipBody) {
-        // `redirect_target` returns skipBody:true (B.2). We surface it
-        // upward but DON'T stop the chain — schema doc rationale: cost
-        // steps AFTER the redirect should still run.
-        // For B.1 redirect_target isn't implemented; this path is dead
-        // until B.2.
+    for (let pass = 0; pass < repeatCount; pass++) {
+      // Re-roll random targeting on every pass after the first: clear the
+      // per-chain targeting memo so a `mode:random` row resolves a fresh pick.
+      // Captured picks (ctx.payload._capturedTargets) are a separate store and
+      // survive, so non-random refs stay stable across passes.
+      if (pass > 0 && ctx.resolvedTargets instanceof Map) ctx.resolvedTargets.clear();
+      for (const label of steps) {
+        // Commit queued creates before a non-apply_ae step (any chain level) so
+        // formulas / grants / damage / dup checks in that step see committed AEs.
+        const stepRow = findEffectRow(ctx, label);
+        if (String(stepRow?.effect_kind ?? "").trim().toLowerCase() !== "apply_ae") {
+          await flushAeBatch(batch);
+        }
+        const r = await applyEffectByLabel(label, ctx);
+        aggregated.push({ label, result: r });
+        if (!r.ok) {
+          log(`skill-effects.chain: step "${label}" returned ok=false (${r.reason ?? "?"}); stopping chain`);
+          // Forward a user-cancellation signal (target picker / option menu
+          // dismissed) so the reaction dispatcher can re-offer the reaction
+          // (back to the menu) instead of treating it as a hard failure.
+          const cancelled = !!r.cancelled || String(r.reason ?? "") === "cancelled";
+          return { ok: false, kind: "chain", applied: aggregated, reason: `step-failed:${label}`, abort: r.abort, cancelled };
+        }
+        if (r.abort) {
+          log(`skill-effects.chain: step "${label}" set abort:true; stopping chain`);
+          // Picker/menu/confirm cancels abort with ok:true + reason "cancelled"
+          // (open_action_menu, prompt_element, confirm). Forward the signal so
+          // the reaction dispatcher re-offers the reaction instead of marking it
+          // fired. A plain abort (no cancel reason) stays a normal early-stop.
+          const cancelled = !!r.cancelled || String(r.reason ?? "") === "cancelled";
+          return { ok: true, kind: "chain", applied: aggregated, abort: true, cancelled };
+        }
+        if (r.skipBody) {
+          // `redirect_target` returns skipBody:true (B.2). We surface it
+          // upward but DON'T stop the chain — schema doc rationale: cost
+          // steps AFTER the redirect should still run.
+          // For B.1 redirect_target isn't implemented; this path is dead
+          // until B.2.
+        }
       }
     }
     return { ok: true, kind: "chain", applied: aggregated };

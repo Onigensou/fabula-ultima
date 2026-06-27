@@ -12,8 +12,10 @@
 //
 // Implementation: GM picks an ally via the JRPG Targeting UI. A charged AE
 // (charges=1, chargeKey="opportunityAdvantage") is placed on the target.
-// The AE carries a changes entry (check_mod_all +4 / attack_accuracy_mod_all +4)
-// so the bonus is applied natively while the AE exists.
+// The AE carries a single changes entry (check_mod_all +4) so the bonus is
+// applied natively while the AE exists. check_mod_all already covers attacks
+// (an attack is a check) — do NOT also add attack_accuracy_mod_all or the
+// bonus double-counts to +8 on attack rolls.
 //
 // Self-removal is DECLARATIVE — the AE carries its own `reactionConfig`
 // (force-mode rows on creature_completes_attack / creature_completes_spell,
@@ -205,9 +207,14 @@
           label:       "Advantage",
           description: AE_DESC,
           icon:        AE_ICON,
+          // ONE change only. `check_mod_all` applies to EVERY check — and an
+          // attack IS a check (see resolveAccuracyParts) — so it already covers
+          // attacks, spells, and opposed skill checks. A separate
+          // attack_accuracy_mod_all would be summed ON TOP for attacks
+          // (resolveAccuracyParts folds both families), double-counting the
+          // bonus to +8 on an attack roll. So the attack-specific key is gone.
           changes: [
-            { key: "check_mod_all",    mode: 2, value: "4", priority: 20 },
-            { key: "attack_accuracy_mod_all", mode: 2, value: "4", priority: 20 },
+            { key: "check_mod_all", mode: 2, value: "4", priority: 20 },
           ],
           flags: {
             [MODULE_ID]: {

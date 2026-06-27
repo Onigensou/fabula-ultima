@@ -93,6 +93,17 @@ export function resolveDamageNumberStyle(payload = {}) {
       spec.fontPx = 46;
       break;
 
+    case "block":
+      // A HIT whose damage a defender reaction (Ninja Log) soaked to 0 — the
+      // visual twin of MISS, but a shield glyph + steel-blue word so it reads as
+      // "blocked / nullified", NOT "dodged" (the attack DID land — RAW 0-damage
+      // hit). Number-only event (no amount).
+      spec.bigWord = "BLOCK";
+      spec.iconClass = "fa-solid fa-shield-halved";
+      spec.color = "#bcd2e8";
+      spec.fontPx = 42;
+      break;
+
     case "immune":
       spec.tag = "IMMUNE";
       spec.tagVariant = "immune";

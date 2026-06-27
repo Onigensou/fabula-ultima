@@ -46,9 +46,18 @@ function actorOwnsDualShieldbearer(actor) {
   return false;
 }
 
+// Items flagged `hiddenUntilBattleEnd` (e.g. the Encyclopedia after its active
+// skill makes it "disappear from your inventory until the end of this scene")
+// must not appear in the Equipment picker NOR be re-equippable. Filtering them
+// out of partitionInventory covers both — it feeds the card candidates AND
+// applyEquipmentSwap. The flag is cleared at battle end (battle-end-cleanup).
+function isHiddenItem(it) {
+  return !!it?.flags?.["fabula-ultima-companion"]?.hiddenUntilBattleEnd;
+}
+
 // Pull every equipment-relevant item off the actor, grouped by category.
 function partitionInventory(actor) {
-  const all = Array.from(actor?.items ?? []);
+  const all = Array.from(actor?.items ?? []).filter((i) => !isHiddenItem(i));
   return {
     weapons:     all.filter((i) => i?.system?.props?.item_type === ITEM_TYPE_WEAPON),
     shields:     all.filter((i) => i?.system?.props?.item_type === ITEM_TYPE_SHIELD),

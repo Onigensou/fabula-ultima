@@ -25,6 +25,7 @@ import {
   playResourceGainVfx,
   playResourceSpendVfx,
   playMissVfx,
+  playBlockVfx,
   playImmuneVfx,
   playAbsorbVfx,
 } from "../director-vfx.js";
@@ -48,6 +49,7 @@ const CASES = [
   { label: "IMMUNE",                fn: (t) => playImmuneVfx({ tokenUuid: t }) },
   { label: "ABSORB 64",             fn: (t) => playAbsorbVfx({ tokenUuid: t, amount: 64 }) },
   { label: "MISS",                  fn: (t) => playMissVfx({ tokenUuid: t }) },
+  { label: "BLOCK (Ninja Log)",     fn: (t) => playBlockVfx({ tokenUuid: t }) },
   { label: "MP loss 22",            fn: (t) => playResourceLossVfx({ tokenUuid: t, resource: "mp", amount: 22 }) },
   { label: "Shield −35",            fn: (t) => playResourceLossVfx({ tokenUuid: t, resource: "shield", amount: 35, element: "fire" }) },
   { label: "Heal +88",              fn: (t) => playResourceGainVfx({ tokenUuid: t, resource: "hp", amount: 88 }) },

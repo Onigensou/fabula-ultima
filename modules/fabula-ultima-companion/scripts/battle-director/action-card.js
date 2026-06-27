@@ -1943,6 +1943,15 @@ export function resultLabelFor(r, { hasDamage = true } = {}) {
   // the verb so the result line reads the outcome on its own (VU → "WEAK",
   // RS → "RESIST") without relying on the separate affinity pill.
   if (!r.hit) return "MISS";
+  // Incoming damage NULLIFIED by a defender reaction (Ninja Log's adjust_damage
+  // → 0). This is a HIT that deals 0 — NOT a miss (on-hit riders still apply) —
+  // so credit the soak instead of the generic "NO EFFECT" / affinity verb, and
+  // take precedence over the affinity branches below (a soaked hit reads the same
+  // whether the victim was VU/RS/NE). Partial reductions (to > 0) fall through to
+  // the normal HIT <n> verb. Mirrors the defenseOverride badge in the row tooltip.
+  if (r.damageOverride && Number(r.damageOverride.to) <= 0 && Number(r.damageOverride.from) > 0) {
+    return "NULLIFIED";
+  }
   // The damage number is the headline — wrap it in `.t-num` so CSS can size it
   // large. "dmg" is dropped (the panel is already labelled DAMAGE); the MP unit
   // stays so MP-burn skills don't read as HP loss.
@@ -1958,6 +1967,8 @@ export function resultLabelFor(r, { hasDamage = true } = {}) {
 
 export function resultClsFor(r) {
   if (!r.hit) return "miss";
+  // Nullified hit (Ninja Log) — muted, same as IM/miss, since 0 landed.
+  if (r.damageOverride && Number(r.damageOverride.to) <= 0 && Number(r.damageOverride.from) > 0) return "miss";
   if (typeof r.grantAmount === "number") {
     if (r.vismagusSuppressed) return "miss"; // visually muted — no heal landed
     if (r.grantResource === "mp")     return "restore-mp";
@@ -2080,6 +2091,15 @@ function buildPerTargetHTML({ perTargetResults, legendSuffix = "", weapon = null
       const d = Number(dov.to) - Number(dov.from);
       const sign = d > 0 ? "+" : "−";
       tipLines.push(`<p style="margin:4px 0 0;"><b>${defLabelTag} Mods:</b></p><div style="display:flex;justify-content:space-between;gap:10px;opacity:0.9;"><span>${escapeHtml(dov.via ?? "Reaction")}</span><span>${sign}${Math.abs(d)}</span></div>`);
+    }
+    // Incoming-damage override (adjust_damage reaction, e.g. Ninja Log) — itemize
+    // WHY this target's damage differs from the rolled amount, same shape as the
+    // Damage Mods / Defense Mods breakdowns. Explains the "NULLIFIED" result span.
+    if (r.damageOverride && Number(r.damageOverride.from) !== Number(r.damageOverride.to)) {
+      const dmo = r.damageOverride;
+      const d = Number(dmo.to) - Number(dmo.from);
+      const sign = d > 0 ? "+" : "−";
+      tipLines.push(`<p style="margin:4px 0 0;"><b>Damage Mods:</b></p><div style="display:flex;justify-content:space-between;gap:10px;opacity:0.9;"><span>${escapeHtml(dmo.via ?? "Reaction")}</span><span>${sign}${Math.abs(d)}</span></div>`);
     }
     if (roll?.isFumble) {
       tipLines.push(`<p><b>Hit Check:</b> Fumble — auto-miss</p>`);
