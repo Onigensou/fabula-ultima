@@ -25,7 +25,7 @@
 
 import { log, warn, err } from "./logger.js";
 import { buildDirectorCombat } from "./director-combat.js";
-import { DIRECTOR_STATIC_URLS, playBattleStartTransition, playBattleBgm, preloadDirectorSfx } from "./director-vfx.js";
+import { DIRECTOR_STATIC_URLS, playBattleStartTransition, playBattleBgm, stopBattleBgm, preloadDirectorSfx } from "./director-vfx.js";
 import { preloadDirectorCutins } from "./director-cutin.js";
 import { playSfx } from "./director-sfx.js";
 import { playBattleStartBanner } from "./director-round-banner.js";
@@ -862,6 +862,126 @@ function buildDCombatFromSpawn({ battleScene, partyTokens, enemyTokens, payload 
   return dCombat;
 }
 
+// ─── In-place reinforce init (Battle-End follow-up) ────────────────────────
+//
+// A lighter init used when a battle continues as a NEW conflict on the same
+// scene (e.g. the ⭐ Wandering Flame ambush). Skips the curtain / scene-activate
+// / preload / party-spawn / battle-start banner that the full PREP does:
+//   1. Resolve the incoming enemies (manual picks) + the party roster.
+//   2. ADOPT the party tokens already on the battle scene (mid-stance from the
+//      prior fight) — do NOT re-spawn them, so HP/MP/buffs/positions carry.
+//   3. Spawn only the new enemy tokens (hidden), switch BGM, run the rule's
+//      custom entrance (or a plain reveal), then reveal them.
+//   4. Build a FRESH DirectorCombat (round resets → conflict_start re-fires in
+//      PREP's standalone hand-off → the boss's beginning-of-conflict ability).
+//
+// Returns the same shape as runDirectorInit so PREP.onEnter is unchanged.
+async function runInPlaceReinforceInit(payload, battleScene) {
+  log("runDirectorInit: IN-PLACE REINFORCE — adopting party, dropping in reinforcements");
+
+  // 1. Resolve enemies (the boss) + party roster.
+  const enemies = await resolveEncounter(payload);
+  if (!enemies.length) warn("in-place reinforce: no enemies resolved (check manualPicks)");
+  const party = resolveParty(payload);
+
+  // 2. Adopt existing party tokens; spawn any roster member not on the scene.
+  const adoptedPartyTokens = [];
+  const missingParty = [];
+  for (const m of party) {
+    const tok = (battleScene.tokens?.contents ?? []).find(
+      (t) => t.actorId && t.actorId === m.actorId
+    ) ?? null;
+    if (tok) adoptedPartyTokens.push(tok);
+    else missingParty.push(m);
+  }
+  let spawnedMissing = [];
+  if (missingParty.length) {
+    log(`in-place reinforce: ${missingParty.length} party member(s) not on scene — spawning`);
+    const { partyLayout } = computeLayout({ party: missingParty, enemies: [], scene: battleScene });
+    spawnedMissing = await spawnTokensHidden({ scene: battleScene, layout: partyLayout, disposition: 1 });
+    try {
+      const ids = spawnedMissing.map((t) => t.id);
+      if (ids.length) {
+        await battleScene.updateEmbeddedDocuments(
+          "Token", ids.map((id) => ({ _id: id, alpha: 1 })), { animate: false });
+      }
+    } catch (e) { warn("in-place reinforce: reveal missing party failed", e); }
+  }
+  const partyTokens = [...adoptedPartyTokens, ...spawnedMissing];
+
+  // 3. Spawn the reinforcement enemy tokens (hidden) at the enemy layout.
+  const { enemyLayout } = computeLayout({ party, enemies, scene: battleScene });
+  const enemyTokens = await spawnTokensHidden({ scene: battleScene, layout: enemyLayout, disposition: -1 });
+
+  // 3b. Switch BGM to the boss track. Stop the prior battle BGM first, using
+  // the per-sound stopSound path (playlist.stopAll() is unreliable in this
+  // world — the battle-end transition stops tracks by name for the same
+  // reason). Three layers: the director's tracked-BGM stop + an explicit
+  // by-name stop of the normal battle theme ("DRG_Battle") + a sweep of every
+  // still-playing playlist sound. Awaited so silence precedes the boss track.
+  try { await stopBattleBgm("DRG_Battle"); }
+  catch (e) { warn("in-place reinforce: stopBattleBgm threw", e); }
+  try {
+    for (const pl of (game.playlists ?? [])) {
+      for (const s of (pl.sounds ?? [])) {
+        if (s?.playing) { try { await pl.stopSound(s); } catch (_) {} }
+      }
+    }
+  } catch (e) { warn("in-place reinforce: per-sound BGM sweep threw", e); }
+  playBattleBgm(payload).catch((e) => warn("in-place reinforce: playBattleBgm threw", e));
+
+  // 3c. Preload the reinforcement sprite(s) across ALL clients before the
+  // entrance so the falling animation plays consistently everywhere (no
+  // first-play decode hitch / skipped fall on an uncached asset). Awaited but
+  // bounded by preloadUrls' own timeout.
+  try {
+    const spriteUrls = enemyTokens
+      .map((t) => t?.texture?.src)
+      .filter((s) => typeof s === "string" && s.length);
+    if (spriteUrls.length) await preloadUrls(spriteUrls, { label: `wf-entrance-${Date.now()}` });
+  } catch (e) { warn("in-place reinforce: entrance sprite preload threw", e); }
+
+  // 3d. Custom entrance (rule-supplied), else a plain reveal. The entrance is
+  // expected to reveal the tokens at impact; we re-assert alpha:1 afterwards.
+  const entranceFn = payload?.followup?.entrance;
+  if (typeof entranceFn === "function") {
+    try { await entranceFn({ tokens: enemyTokens, scene: battleScene }); }
+    catch (e) { warn("in-place reinforce: custom entrance threw", e); }
+  }
+  try {
+    const ids = enemyTokens.map((t) => t.id);
+    if (ids.length) {
+      await battleScene.updateEmbeddedDocuments(
+        "Token", ids.map((id) => ({ _id: id, alpha: 1 })), { animate: false });
+    }
+  } catch (e) { warn("in-place reinforce: reveal enemies failed", e); }
+
+  // 3d. Kick battle-stance loops on the new tokens.
+  try { await ensureBattleStancePlaying(enemyTokens); }
+  catch (e) { warn("in-place reinforce: ensureBattleStancePlaying threw", e); }
+
+  // 3e. Rebuild the player resource HUD. BATTLE_ENDING.onEnter destroyed it
+  // before this re-entry; the full PREP rebuilds it at step 10.5, but the
+  // in-place path skips that, so rebuild here. Fire-and-forget (mirrors PREP).
+  try {
+    buildDirectorHud(
+      partyTokens.map((t) => ({ actor: t.actor, token: t })).filter((e) => e.actor),
+      battleScene
+    ).catch((e) => warn("in-place reinforce: buildDirectorHud threw", e));
+  } catch (e) { warn("in-place reinforce: buildDirectorHud dispatch threw", e); }
+
+  // 4. Fresh DirectorCombat — round resets to 0 (conflict_start fires next).
+  const dCombat = buildDCombatFromSpawn({ battleScene, partyTokens, enemyTokens, payload });
+
+  log(`in-place reinforce ready: ${partyTokens.length} party + ${enemyTokens.length} reinforcement(s)`);
+  return {
+    dCombat,
+    battleScene,
+    enemyTokens: enemyTokens.length,
+    partyTokens: partyTokens.length,
+  };
+}
+
 // ─── Top-level orchestration ───────────────────────────────────────────
 
 export async function runDirectorInit(payload) {
@@ -871,6 +991,16 @@ export async function runDirectorInit(payload) {
   const battleSceneUuid = payload?.context?.battleSceneUuid ?? payload?.battleConfig?.battleSceneUuid;
   const battleScene = await resolveScene(battleSceneUuid);
   if (!battleScene) throw new Error(`Battle scene not found: ${battleSceneUuid}`);
+
+  // In-place reinforce ("battle continues"): a Battle-End follow-up (e.g. the
+  // ⭐ Wandering Flame ambush) routed BATTLE_ENDING → PREP on the SAME live
+  // director. We're already on the battle scene with the party tokens present
+  // mid-stance — adopt them, drop in only the new enemies, and rebuild dCombat
+  // fresh (round resets, conflict_start re-fires). No curtain, no scene swap,
+  // no party teardown; HP/MP/buffs carry over. See [[battle-followup]].
+  if (payload?.context?.inPlaceReinforce) {
+    return await runInPlaceReinforceInit(payload, battleScene);
+  }
 
   // Lean mode (dev "Test Battle" tool): run the REAL init pipeline — encounter
   // resolve, party resolve, scene activate, token spawn, dCombat build, FSM —

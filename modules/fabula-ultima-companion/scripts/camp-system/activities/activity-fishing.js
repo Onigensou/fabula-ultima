@@ -182,11 +182,15 @@
   // ---------------------------------------------------------------------------
   Hooks.once("ready", () => {
     CAMP.ActivityRegistry?.register("fishing", {
-      async execute(actor, _scene) {
+      async execute(actor, _scene, opts = {}) {
         if (!actor) {
           console.warn(TAG, "execute() called with null actor.");
           return;
         }
+
+        // Round count is overridable (e.g. the dungeon Fishing tile runs 1 round
+        // per angler); camp passes nothing → default TOTAL_ROUNDS.
+        const totalRounds = Math.max(1, Number(opts?.totalRounds ?? TOTAL_ROUNDS));
 
         CAMP.Sound?.play(CAMP.SFX?.CAMP_START);
 
@@ -198,26 +202,27 @@
           actorName:    actor.name,
           stats,
           battleTimeout: BATTLE_TIMEOUT,
+          totalRounds,
         });
-        CAMP.FishingUI?.show(actor.id, actor.name, stats, { battleTimeout: BATTLE_TIMEOUT });
+        CAMP.FishingUI?.show(actor.id, actor.name, stats, { battleTimeout: BATTLE_TIMEOUT, totalRounds });
 
         await new Promise(r => setTimeout(r, 300));
 
         // ------------------------------------------------------------------
-        // 3-round loop
+        // Round loop (default 3; overridable via opts.totalRounds)
         // ------------------------------------------------------------------
         const catches = [];   // fish names earned this session
 
-        for (let round = 1; round <= TOTAL_ROUNDS; round++) {
+        for (let round = 1; round <= totalRounds; round++) {
           // Round 1 is gated by the owner's "Cast Line" button (already shown in show()).
           // Rounds 2+ need a broadcast so all clients (including owner) transition.
           if (round > 1) {
             CAMP.Socket.broadcast(CAMP.MSG.FISHING_NEXT_ROUND, {
               actorId:     actor.id,
               round,
-              totalRounds: TOTAL_ROUNDS,
+              totalRounds,
             });
-            CAMP.FishingUI?.beginRound(actor.id, round, TOTAL_ROUNDS); // GM direct
+            CAMP.FishingUI?.beginRound(actor.id, round, totalRounds); // GM direct
           }
 
           // Wait for owner to complete this round (cast + optional battle)
@@ -242,7 +247,7 @@
           CAMP.FishingUI?.applyResult(actor.id, round, awardedFish, [...catches]);
 
           // Brief pause between rounds (except after the last one)
-          if (round < TOTAL_ROUNDS) {
+          if (round < totalRounds) {
             await new Promise(r => setTimeout(r, 2200));
           }
         }

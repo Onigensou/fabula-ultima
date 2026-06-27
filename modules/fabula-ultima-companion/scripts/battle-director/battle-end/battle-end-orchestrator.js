@@ -16,6 +16,7 @@ import { runBattleEndRank } from "./battle-end-rank.js";
 import { runBattleEndSummaryUI } from "./battle-end-summary-ui.js";
 import { runBattleEndTransition } from "./battle-end-transition.js";
 import { runBattleEndResourceReset } from "./battle-end-cleanup.js";
+import { evaluateFollowups, mergeRewardSnapshots } from "./battle-followup.js";
 
 function detectOutcome(director) {
   const dc = director.dCombat;
@@ -48,19 +49,31 @@ export async function runBattleEndSequence(director) {
     totalRounds: dc?.round ?? 0,
     isBoss: !!(payload?.battlePlan?.isBoss) ||
             String(payload?.battlePlan?.type ?? "").toLowerCase() === "boss",
+    battleType: String(payload?.battlePlan?.type ?? "default").toLowerCase(),
+    // Which follow-up rule (if any) spawned THIS battle — lets a rule avoid
+    // chaining off its own ambush battle.
+    followupRuleId: payload?.meta?.followupRuleId ?? null,
     promptResult:   null,
     summaryResults: null,
     rank:           null,
   };
 
-  // Read snapshots pre-computed at PREP time.
+  // Read snapshots pre-computed at PREP time. bdRewardSnapshot is THIS battle's
+  // own rewards; bdCarriedRewards is the accumulated pool from any preceding
+  // follow-up battle(s). Merge them so the prompt + award include the whole
+  // chain (e.g. the random encounter's loot AND the Wandering Flame's).
   const _bdSnap = (() => {
     try { return game.settings.get("fabula-ultima-companion", "bdRewardSnapshot") ?? {}; }
     catch { return {}; }
   })();
+  const _carried = (() => {
+    try { return game.settings.get("fabula-ultima-companion", "bdCarriedRewards") ?? null; }
+    catch { return null; }
+  })();
+  const _combined = _carried ? mergeRewardSnapshots(_carried, _bdSnap) : _bdSnap;
   endCtx.defaultRewards = {
-    expByActorId:   _bdSnap.expByActorId   ?? {},
-    zenitByActorId: _bdSnap.zenitByActorId ?? {},
+    expByActorId:   _combined.expByActorId   ?? {},
+    zenitByActorId: _combined.zenitByActorId ?? {},
   };
   endCtx.preBattleCamera = (() => {
     try { return game.settings.get("fabula-ultima-companion", "bdPreBattleViewport") ?? null; }
@@ -72,6 +85,39 @@ export async function runBattleEndSequence(director) {
   })();
 
   log("[BattleEnd] Starting sequence", { outcome: endCtx.outcome, rounds: endCtx.totalRounds });
+
+  // ── Follow-up / sequel evaluation (e.g. ⭐ Wandering Flame ambush) ────────
+  // Runs BEFORE the Battle-End prompt + victory cinematic so a triggered
+  // ambush skips the victory screen entirely: enemies wiped → boss drops in →
+  // new conflict, in place, on the same scene. Rules self-gate on outcome,
+  // story state, and their own (pity-escalated) chance. Only the auto-detected
+  // outcome is needed here — a triggered ambush only applies to a victory.
+  let _followup = null;
+  try { _followup = await evaluateFollowups(endCtx); }
+  catch (e) { warn("[BattleEnd] evaluateFollowups threw", e); _followup = null; }
+  if (_followup?.resolved?.kind === "battle" && _followup.resolved.payload) {
+    log(`[BattleEnd] Follow-up "${_followup.rule.id}" triggered — deferring to in-place reinforce`);
+    try { await _followup.rule.intro?.(endCtx); }
+    catch (e) { warn("[BattleEnd] follow-up intro threw", e); }
+    // Stash for the BATTLE_ENDING → PREP hand-off. states.js routes
+    // INTERNAL_DONE on ctx.pendingFollowup (→ PREP instead of STOPPED) and a
+    // commit hook swaps ctx.payload to this sequel payload.
+    director.ctx.pendingFollowup = { payload: _followup.resolved.payload, ruleId: _followup.rule.id };
+    // Carry THIS won battle's rewards forward so the FINAL pool (after the boss
+    // fight) still includes them — the player earns both the original
+    // encounter's and the boss's EXP/Zenit. Accumulates across a chain.
+    try {
+      const cur     = game.settings.get("fabula-ultima-companion", "bdRewardSnapshot")  ?? null;
+      const carried = game.settings.get("fabula-ultima-companion", "bdCarriedRewards")   ?? null;
+      await game.settings.set("fabula-ultima-companion", "bdCarriedRewards", mergeRewardSnapshots(carried, cur));
+    } catch (e) { warn("[BattleEnd] carry rewards forward failed", e); }
+    // Consume any pre-filled (sword-button) prompt result so it can't leak
+    // into the follow-up battle's own Battle-End prompt later.
+    director.ctx.battleEndPromptResult = null;
+    // Skip the prompt, FX, summary, transition, and resource reset — the won
+    // fight is not "over"; it continues as the boss conflict.
+    return;
+  }
 
   // Sword-button path: prompt was shown in battleEndManager before the FSM
   // committed. Consume the pre-filled result and skip the prompt dialog.
@@ -108,7 +154,9 @@ export async function runBattleEndSequence(director) {
   // Resource reset fires after scene transition; token teardown is boot.stop()'s job
   runBattleEndResourceReset(endCtx).catch(e => warn("[BattleEnd] ResourceReset threw", e));
 
-  // Clear all snapshots.
+  // Clear all snapshots. The carried-rewards pool is now baked into the
+  // awarded snapshot, so clear it too (end of any follow-up chain).
+  try { game.settings.set("fabula-ultima-companion", "bdCarriedRewards",      null); } catch (_) {}
   try { game.settings.set("fabula-ultima-companion", "bdRewardSnapshot",      null); } catch (_) {}
   try { game.settings.set("fabula-ultima-companion", "bdPreBattleViewport",   null); } catch (_) {}
   try { game.settings.set("fabula-ultima-companion", "bdBattleSceneViewport", null); } catch (_) {}

@@ -1306,6 +1306,46 @@ function effectRefUsesAddTarget(effectTable, ref, depth = 0) {
   return false;
 }
 
+// ── Per-round reaction cap (reaction_max_per_round) ──────────────────────────
+// A reaction row may carry `reaction_max_per_round: N` to bound how many times it
+// auto/ask-fires within a single BD round (Wandering Flame's Ignition: at most 3
+// Burn-triggered MP/ZP gains per round). The counter lives on the active director,
+// keyed by carrier+row+round, so it resets naturally each round and is wiped with
+// the director at combat end. 0/blank/non-finite = uncapped.
+function readReactionMaxPerRound(row) {
+  const raw = row?.reaction_max_per_round;
+  if (raw === undefined || raw === null || raw === "") return 0;
+  const n = Number(raw);
+  return Number.isFinite(n) && n > 0 ? Math.floor(n) : 0;
+}
+function reactionRoundCountKey(carrierUuid, rowKey, round) {
+  return `${carrierUuid}::${rowKey}::${round}`;
+}
+function getActiveBdDirector() {
+  return globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.() ?? null;
+}
+function reactionRoundCount(director, carrierUuid, rowKey) {
+  const m = director?._reactionRoundCounts;
+  if (!(m instanceof Map)) return 0;
+  const round = director?.dCombat?.round ?? 0;
+  return m.get(reactionRoundCountKey(carrierUuid, rowKey, round)) ?? 0;
+}
+// Returns true if the row is at/over its per-round cap right now (so it should be
+// surfaced as unavailable / skipped). No cap or no director ⇒ never capped.
+function reactionRoundCapReached(row, carrierUuid, rowKey, director = getActiveBdDirector()) {
+  const max = readReactionMaxPerRound(row);
+  if (!max || !director) return false;
+  return reactionRoundCount(director, carrierUuid, rowKey) >= max;
+}
+// Increment the per-round fire count for a capped row after it actually fires.
+export function bumpReactionRoundCount(director, carrierUuid, rowKey) {
+  if (!director || !carrierUuid || rowKey == null) return;
+  if (!(director._reactionRoundCounts instanceof Map)) director._reactionRoundCounts = new Map();
+  const round = director?.dCombat?.round ?? 0;
+  const k = reactionRoundCountKey(carrierUuid, rowKey, round);
+  director._reactionRoundCounts.set(k, (director._reactionRoundCounts.get(k) ?? 0) + 1);
+}
+
 export async function findPassiveCandidates({ casterActor, trigger, payload, includeUnavailable = false }) {
   if (!casterActor || !trigger) return [];
   const out = [];
@@ -1382,8 +1422,13 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
       if (!shouldKeep(row)) continue;
       if (!(await passesMatchFilters(row, item, casterActor, payload))) continue;
       const refLabel = String(row.reaction_effect_ref ?? "").trim();
-      const { available, unavailableKind, unavailableReason } =
+      let { available, unavailableKind, unavailableReason } =
         await evaluateAvailability(row, effectTable, refLabel, item);
+      // Per-round cap: hide the row (as "condition") once it's fired its quota
+      // this round, so it doesn't auto-fire or surface as a dimmed pill.
+      if (available && reactionRoundCapReached(row, item.uuid, key)) {
+        available = false; unavailableKind = "condition"; unavailableReason = "Per-round limit reached";
+      }
       if (!includeUnavailable && !available) continue;
       const mode = modeFor(row);
       out.push({
@@ -1396,6 +1441,8 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
         kind: kindForMode(mode),
         mode,
         ref: refLabel,
+        // Per-round fire quota (0 = uncapped); the fire path bumps the counter.
+        maxPerRound: readReactionMaxPerRound(row),
         // The row's disposition scope (self/ally/enemy/all/""). Lets a dispatch
         // path distinguish self-riders from bystander reactions — the observer
         // creature_performs_action scan surfaces only explicit all/ally/enemy.
@@ -1431,8 +1478,12 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
       if (!shouldKeep(row)) continue;
       if (!(await passesMatchFilters(row, ae, casterActor, payload))) continue;
       const refLabel = String(row.reaction_effect_ref ?? "").trim();
-      const { available, unavailableKind, unavailableReason } =
+      let { available, unavailableKind, unavailableReason } =
         await evaluateAvailability(row, effectTable, refLabel, fakeItem);
+      // Per-round cap (see item path above).
+      if (available && reactionRoundCapReached(row, ae.uuid, key)) {
+        available = false; unavailableKind = "condition"; unavailableReason = "Per-round limit reached";
+      }
       if (!includeUnavailable && !available) continue;
       const mode = modeFor(row);
       out.push({
@@ -1445,6 +1496,8 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
         kind: kindForMode(mode),
         mode,
         ref: refLabel,
+        // Per-round fire quota (0 = uncapped); see item path above.
+        maxPerRound: readReactionMaxPerRound(row),
         // See item path above — disposition scope for observer-scan filtering.
         reactionSource: String(row.reaction_source ?? "").trim().toLowerCase(),
         usesAddTarget: effectRefUsesAddTarget(effectTable, refLabel),
@@ -1620,6 +1673,13 @@ export async function firePreAcceptedCandidate({ director, casterActor, candidat
   }
 
   const r = await applyEffectByLabel(candidate.ref, ctx);
+
+  // Per-round cap bookkeeping: count this fire so reaction_max_per_round can
+  // hide the row once its quota is spent for the round. Only capped rows are
+  // counted (keeps the Map small); requires the live director for the round key.
+  if (r?.ok && candidate?.maxPerRound > 0) {
+    bumpReactionRoundCount(director ?? getActiveBdDirector(), candidate.carrierUuid, candidate.rowKey);
+  }
 
   // ── AE post-fire bookkeeping ─────────────────────────────────────────
   // Moved here from firePassiveTriggers so EVERY dispatch path (standalone
@@ -4289,7 +4349,12 @@ function triggerStatusRun(row, ctx) {
     target_ref: row.target_ref,
     damage_cause: row.damage_cause ?? "damage",
     attacker_name: statusName || "Status",
-    emit_trigger: "creature_status_triggered",
+    // Emit the generic "a status triggered" signal so listeners (e.g. Ignition)
+    // react — UNLESS the row opts out via suppress_status_trigger. Meteor Impact
+    // sets this so detonating Burn doesn't feed Wandering Flame's own Ignition
+    // (it would refund Zero Power instantly => infinite Meteor loop). Damage,
+    // element and affinity are unaffected; only the reaction signal is muted.
+    emit_trigger: row.suppress_status_trigger ? "" : "creature_status_triggered",
     emit_status: statusName,
     damage_verbosity: row.damage_verbosity ?? "full",
   };

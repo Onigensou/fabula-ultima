@@ -280,6 +280,9 @@
       const skipConfirmFlag   = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.skipConfirm`) ?? false;
       const disableGoBackFlag = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.disableGoBack`) ?? false;
       const blockGoBackFlag   = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.blockGoBack`)   ?? false;
+      const tileTypeFlag      = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.tileType`)      ?? "";
+      const resetOnRestFlag   = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.resetOnRest`)   ?? false;
+      const resetOnRest       = resetOnRestFlag === true || resetOnRestFlag === "true";
       const initialType     = (scene && tileId) ? (DP.TileState?.getInitialType(scene, tileId) ?? "") : "";
       const currentType     = (scene && tileId) ? (DP.TileState?.getCurrentType(scene, tileId) ?? "") : "";
       const visitedTile     = (scene && tileId) ? (DP.TileState?.isVisited(scene, tileId) ?? false) : false;
@@ -346,8 +349,51 @@
           ${resetRow}`;
       })();
 
+      // Tile-type options: explicit override (authoritative) vs auto-detect
+      // fallback.  Friendly labels are derived from the enum keys so new types
+      // appear automatically with no map to maintain.
+      const titleCase = s => String(s)
+        .split("_").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+      const tileTypeOptions = [
+        `<option value="" ${!tileTypeFlag ? "selected" : ""}>— Auto-detect (from name/texture) —</option>`,
+        ...Object.values(DP.TILE_TYPES ?? {})
+          .filter(t => t !== "unknown")
+          .sort()
+          .map(t => `<option value="${t}" ${tileTypeFlag === t ? "selected" : ""}>${titleCase(t)}</option>`),
+      ].join("");
+
       dungeonSubPanel.innerHTML = `
         <h3 style="margin: 0 0 6px;"><i class="fas fa-cog"></i> Behavior</h3>
+
+        <div class="form-group">
+          <label>Tile Type</label>
+          <div class="form-fields">
+            <select name="flags.${MODULE_ID}.${pathingKey}.tileType">
+              ${tileTypeOptions}
+            </select>
+          </div>
+          <p class="notes">
+            Explicitly sets what kind of event this tile triggers. Leave on
+            <b>Auto-detect</b> to fall back to the legacy name/texture matching.
+            Changing this updates the tile's tracked type immediately (unless it
+            has already been consumed this run).
+          </p>
+        </div>
+
+        <div class="form-group">
+          <label>Reset on rest</label>
+          <div class="form-fields">
+            <input type="checkbox"
+                   name="flags.${MODULE_ID}.${pathingKey}.resetOnRest"
+                   data-dtype="Boolean"
+                   ${resetOnRest ? "checked" : ""} />
+          </div>
+          <p class="notes">
+            When checked, this tile is restored to its initial state (type +
+            texture) whenever the party rests, so a consumed event can trigger
+            again on the next expedition.
+          </p>
+        </div>
 
         <div class="form-group">
           <label>Persist after trigger</label>

@@ -183,6 +183,11 @@
       // Clear exploration debuffs now that rest has applied them
       await CAMP.State?.clearExplorationDebuffs?.();
 
+      // Notify other systems the rest finished (e.g. Dungeon Pathing restores
+      // any tiles flagged "Reset on rest"). Decoupled via hook so camp-system
+      // has no hard dependency on DP.
+      Hooks.callAll("fabula.restPerformed", actors);
+
       // 5 — Chat message
       await _postChatMessage();
 

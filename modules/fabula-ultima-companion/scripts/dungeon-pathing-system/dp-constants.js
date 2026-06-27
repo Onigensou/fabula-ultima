@@ -76,6 +76,7 @@
     ALERT:          "alert",
     DOOR:           "door",
     GUSTY:          "gusty",
+    DIRT:           "dirt",
     UNKNOWN:        "unknown",
   });
 
