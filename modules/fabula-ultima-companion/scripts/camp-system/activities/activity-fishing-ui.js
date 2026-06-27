@@ -1207,7 +1207,7 @@
       _isOwner       = _checkIsOwner(actorId);
       _catches       = [];
       _currentRound  = 1;
-      _totalRounds   = 3;
+      _totalRounds   = options?.totalRounds ?? 3;
       _battleTimeout = options?.battleTimeout ?? 0;
 
       if (_isOwner) {

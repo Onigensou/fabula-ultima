@@ -90,9 +90,10 @@
       }
       if (!participants?.length) return;
 
-      // Each angler fishes once, in sequence (the UI is a singleton).
+      // Each angler fishes ONE round, in sequence (the UI is a singleton).
+      // 4 party members → 4 rounds total across the table.
       for (const actor of participants) {
-        await fishing.execute(actor)
+        await fishing.execute(actor, null, { totalRounds: 1 })
           .catch(e => console.error(TAG, `Fishing session failed for ${actor?.name}:`, e));
       }
 
