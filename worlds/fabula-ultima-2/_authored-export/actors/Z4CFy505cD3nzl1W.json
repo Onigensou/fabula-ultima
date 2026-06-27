@@ -118,71 +118,6 @@
       "tint": "#ffffff",
       "transfer": false,
       "type": "base"
-    },
-    {
-      "_id": "vyQfgCk8zNabIYlp",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1781875195538,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [],
-      "description": "<p><em>Emergency Item:</em> ready — once per conflict.</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": null,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "KUfkeoHoBkKeHowc",
-          "originalParentId": "HiXFAkSm35bBGHfM",
-          "originalUuid": "Actor.Z4CFy505cD3nzl1W.Item.HiXFAkSm35bBGHfM.ActiveEffect.KUfkeoHoBkKeHowc"
-        },
-        "fabula-ultima-companion": {
-          "category": "buff",
-          "chargeKey": "emergency_item",
-          "charges": 1,
-          "chargesMax": 1,
-          "directorAppliedBy": {
-            "appliedAtRound": 0,
-            "effectLabel": "em_refresh",
-            "reactorActorUuid": "Actor.Z4CFy505cD3nzl1W",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.yKXp8TuB6WjGXCX0",
-            "skillUuid": "Actor.Z4CFy505cD3nzl1W.Item.HiXFAkSm35bBGHfM",
-            "turnsRemaining": null
-          },
-          "directorPermanent": true
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/12_MCH/heat_blast.png",
-      "name": "Emergency Item Ready",
-      "origin": "Actor.Z4CFy505cD3nzl1W.Item.HiXFAkSm35bBGHfM",
-      "sort": 0,
-      "statuses": [
-        "fud-emergency-item-ready"
-      ],
-      "system": {},
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
     }
   ],
   "flags": {
@@ -536,6 +471,7 @@
             }
           },
           "isCheck": false,
+          "name": "Golem Soulstone",
           "on_activate_effect_ref": "golemstone_shield",
           "skill_target": "One Ally",
           "skill_type": "Item",
@@ -916,6 +852,7 @@
             }
           },
           "isCheck": false,
+          "name": "Decoy Doll",
           "on_activate_effect_ref": "decoy_summon",
           "skill_target": "Self",
           "skill_type": "Item",
@@ -960,7 +897,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -979,8 +915,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "8wPV7YHkxgJ6Sl5J",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/FFIX_Phoenix_Down_Icon.webp",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -997,12 +931,30 @@
           "item_mdef_bonus": "0",
           "item_quantity": "1",
           "item_rarity": "Common",
+          "item_skill_active": {
+            "RZJ1UW2Ib3O36eCi": {
+              "id": "${item.id}",
+              "name": "Phoenix Feather",
+              "skill_cost": "-",
+              "skill_description": "<p><em>Phoenix Feather:</em> revive an ally to their Crisis score.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.Z4CFy505cD3nzl1W.Item.RZJ1UW2Ib3O36eCi"
+            }
+          },
           "item_type": "consumable",
           "mimic_ef": "100",
           "monster_ef": "100",
           "name": "Phoenix Feather",
           "optional_params": {},
           "plant_ef": "100",
+          "related_item_list": {
+            "RZJ1UW2Ib3O36eCi": {
+              "id": "${item.id}",
+              "name": "Phoenix Feather",
+              "related_item_description": "<p><em>Phoenix Feather:</em> revive an ally to their Crisis score.</p>",
+              "uuid": "Actor.Z4CFy505cD3nzl1W.Item.RZJ1UW2Ib3O36eCi"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
@@ -1011,7 +963,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.8wPV7YHkxgJ6Sl5J",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -1416,7 +1367,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -1436,8 +1386,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "A3VqPJRBDW8c1NnH",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Mega-Ether_from_Final_Fantasy_XIV_icon.webp",
           "ingredient_taste": "",
           "ingredient_taste2": "",
           "insect_ef": "100",
@@ -1457,6 +1405,16 @@
           "item_mdef_bonus": "0",
           "item_quantity": "1",
           "item_rarity": "Uncommon",
+          "item_skill_active": {
+            "AbyM4haZ1qLKAEH8": {
+              "id": "${item.id}",
+              "name": "Love Potion",
+              "skill_cost": "-",
+              "skill_description": "<p><em>Love Potion:</em> target enemy is Charmed.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.Z4CFy505cD3nzl1W.Item.AbyM4haZ1qLKAEH8"
+            }
+          },
           "item_type": "consumable",
           "mimic_ef": "100",
           "monster_ef": "100",
@@ -1468,6 +1426,14 @@
           "recipe_kind": "",
           "refine_count": "0",
           "refine_level": "0",
+          "related_item_list": {
+            "AbyM4haZ1qLKAEH8": {
+              "id": "${item.id}",
+              "name": "Love Potion",
+              "related_item_description": "<p><em>Love Potion:</em> target enemy is Charmed.</p>",
+              "uuid": "Actor.Z4CFy505cD3nzl1W.Item.AbyM4haZ1qLKAEH8"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
@@ -1477,7 +1443,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.A3VqPJRBDW8c1NnH",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -1599,6 +1564,7 @@
             }
           },
           "isCheck": false,
+          "name": "Spicy Cocktail",
           "on_activate_effect_ref": "spicy_activate",
           "skill_target": "Each enemy you can see",
           "skill_type": "Item",
@@ -1628,7 +1594,7 @@
       },
       "folder": "ft3358qUh5ZDldYQ",
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/Genshin/The_Viridescent_Hunt.webp",
-      "name": "Zarg's Bow - Light",
+      "name": "+3 Zarg's Bow - Light",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
         "default": 0
@@ -1646,7 +1612,7 @@
           "celestial_ef": "100",
           "check_bonus": "1",
           "construct_ef": "100",
-          "damage_bonus": "16",
+          "damage_bonus": 19,
           "demiHuman_ef": "100",
           "demon_ef": "100",
           "description": "<p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.EYcZ6QkAqiGBAxLB\" data-id=\"EYcZ6QkAqiGBAxLB\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Transform</span></strong></a></span></span>&nbsp;@UUID[Item.GYrsWYBQ6Hu7DnuA]{Zarg's Bow}</p><ul><li><p>Damage dealt by the weapon ignores <strong>Resistances</strong></p></li></ul>",
@@ -1680,9 +1646,11 @@
           "item_type": "weapon",
           "mimic_ef": "100",
           "monster_ef": "100",
-          "name": "Zarg's Bow - Light",
+          "name": "+3 Zarg's Bow - Light",
           "optional_params": {},
           "plant_ef": "100",
+          "refine_count": 3,
+          "refine_level": 3,
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "INS",
@@ -2040,6 +2008,139 @@
       "type": "equippableItem"
     },
     {
+      "_id": "EdVytW8FsFrySsuV",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782560368455,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "accessory",
+            "fromTemplate": "r0yZpLPAK9VXhM2p",
+            "itemId": "cN3u9EEjsbZVjxzb",
+            "itemName": "Spectacles",
+            "pickedOldProps": {
+              "cost": "500",
+              "def_bonus": "",
+              "defense": "0",
+              "defense_include_dex": false,
+              "initiative": "0",
+              "magic_defense": "0",
+              "magic_defense_include_ins": false,
+              "mdef_bonus": ""
+            },
+            "ts": 1769647436499
+          }
+        }
+      },
+      "folder": "5uQIy5BCy7UEVfcT",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/glass.png",
+      "name": "Spectacles",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 3100000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>Gain +1 to your Accuracy check</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flavor_text": "<p><em>Glasses stays on during battle</em></p>",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "500",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Uncommon",
+          "item_type": "accessory",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Spectacles",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "cN3u9EEjsbZVjxzb"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "egnjUSks1QXUeorA",
       "_stats": {
         "compendiumSource": null,
@@ -2164,7 +2265,6 @@
           "damage_bonus": "",
           "defense_target_type": "def",
           "description": "<p>This trigger activates at the end of your turn during a conflict, provided one or more</p><p>enemies present on the scene are suffering from a total of two or more different</p><p>status effects (such as one dazed and weak enemy, or one slow enemy and another</p><p>enraged enemy).</p>",
-          "details_roller": "Show",
           "duration": "-",
           "effect_table": {
             "0": {
@@ -2188,9 +2288,7 @@
             }
           },
           "heroic_requirement": "",
-          "id": "fIqMqHJBaoXfcJln",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Eve/CodeElectraSkill1.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -2220,8 +2318,7 @@
           "skill_target": "-",
           "skill_type": "Passive",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.fIqMqHJBaoXfcJln"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -2392,7 +2489,6 @@
           "damage_bonus": "",
           "defense_target_type": "def",
           "description": "<p>You can produce <strong>infusions</strong> and other gadgets on the fly.</p><p><strong>Infusions.</strong> When you successfully <strong>hit one or more targets with an attack</strong>, you may spend <strong>2 Inventory Points</strong> to produce a special infusion and apply its effect to that attack. If the attack had the <em>multi</em> property, the effect applies to <strong>each</strong> target. You cannot apply more than one infusion to the same attack; producing and using an infusion are both part of the attack.</p><ul><li><strong>Cryo / Pyro / Volt:</strong> deal 5 extra damage; the attack's damage becomes <strong>ice / fire / bolt</strong>.</li><li><strong>Cyclone / Exorcism / Seismic / Shadow:</strong> deal 5 extra damage; the attack's damage becomes <strong>air / light / earth / dark</strong>.</li><li><strong>Venom:</strong> deal 5 extra damage; the attack's damage becomes <strong>poison</strong>; each creature hit suffers <strong>poisoned</strong>.</li><li><strong>Vampire:</strong> heal HP equal to <strong>half the damage dealt</strong>. <em>Single-target attacks only.</em></li></ul>",
-          "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
@@ -2591,9 +2687,7 @@
           "gadget_infusion_tier": "3",
           "gadget_magitech_tier": "",
           "heroic_requirement": "",
-          "id": "H663NG14lmAbBtzp",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/12_MCH/hypercharge.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -2630,8 +2724,7 @@
           "skill_target": "Special",
           "skill_type": "Active",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.H663NG14lmAbBtzp"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -3111,7 +3204,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -3130,8 +3222,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "leAYO9ruiIajUdhU",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Mineral2.png",
           "ingredient_taste": "",
           "ingredient_taste2": "",
           "insect_ef": "100",
@@ -3151,6 +3241,16 @@
           "item_mdef_bonus": "0",
           "item_quantity": "1",
           "item_rarity": "Common",
+          "item_skill_active": {
+            "32rYly1hH9JwHQrH": {
+              "id": "${item.id}",
+              "name": "Golem Soulstone",
+              "skill_cost": "-",
+              "skill_description": "<p><em>Golem Soulstone:</em> target ally gains 10 Shield (keep the bigger).</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.Z4CFy505cD3nzl1W.Item.32rYly1hH9JwHQrH"
+            }
+          },
           "item_type": "consumable",
           "mimic_ef": "100",
           "monster_ef": "100",
@@ -3162,6 +3262,14 @@
           "recipe_kind": "",
           "refine_count": "0",
           "refine_level": "0",
+          "related_item_list": {
+            "32rYly1hH9JwHQrH": {
+              "id": "${item.id}",
+              "name": "Golem Soulstone",
+              "related_item_description": "<p><em>Golem Soulstone:</em> target ally gains 10 Shield (keep the bigger).</p>",
+              "uuid": "Actor.Z4CFy505cD3nzl1W.Item.32rYly1hH9JwHQrH"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
@@ -3171,7 +3279,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.leAYO9ruiIajUdhU",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -3632,12 +3739,30 @@
           "item_mdef_bonus": "0",
           "item_quantity": "1",
           "item_rarity": "Common",
+          "item_skill_active": {
+            "vCWp0cPzvaU9e5AW": {
+              "id": "${item.id}",
+              "name": "Café au Lait",
+              "skill_cost": "-",
+              "skill_description": "<p><em>Café au Lait:</em> you gain Swift.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.Z4CFy505cD3nzl1W.Item.vCWp0cPzvaU9e5AW"
+            }
+          },
           "item_type": "consumable",
           "mimic_ef": "100",
           "monster_ef": "100",
           "name": "Café au Lait",
           "optional_params": {},
           "plant_ef": "100",
+          "related_item_list": {
+            "vCWp0cPzvaU9e5AW": {
+              "id": "${item.id}",
+              "name": "Café au Lait",
+              "related_item_description": "<p><em>Café au Lait:</em> you gain Swift.</p>",
+              "uuid": "Actor.Z4CFy505cD3nzl1W.Item.vCWp0cPzvaU9e5AW"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
@@ -3943,7 +4068,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -3961,8 +4085,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "qPKh0SP1YQSPnaPl",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Pokemon/poke-doll.png",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -3979,12 +4101,30 @@
           "item_mdef_bonus": "0",
           "item_quantity": "1",
           "item_rarity": "Common",
+          "item_skill_active": {
+            "7V5swu31yb3p60cH": {
+              "id": "${item.id}",
+              "name": "Decoy Doll",
+              "skill_cost": "-",
+              "skill_description": "<p><em>Decoy Doll:</em> summon a Decoy Doll companion until the end of the scene.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.Z4CFy505cD3nzl1W.Item.7V5swu31yb3p60cH"
+            }
+          },
           "item_type": "consumable",
           "mimic_ef": "100",
           "monster_ef": "100",
           "name": "Decoy Doll",
           "optional_params": {},
           "plant_ef": "100",
+          "related_item_list": {
+            "7V5swu31yb3p60cH": {
+              "id": "${item.id}",
+              "name": "Decoy Doll",
+              "related_item_description": "<p><em>Decoy Doll:</em> summon a Decoy Doll companion until the end of the scene.</p>",
+              "uuid": "Actor.Z4CFy505cD3nzl1W.Item.7V5swu31yb3p60cH"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
@@ -3993,7 +4133,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.qPKh0SP1YQSPnaPl",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -4100,7 +4239,7 @@
             }
           },
           "isCheck": false,
-          "name": "Love Potion",
+          "name": "Skull Orb",
           "on_activate_effect_ref": "",
           "reaction_config_table": {
             "0": {
@@ -4112,7 +4251,6 @@
               "reaction_trigger": "creature_status_applied"
             }
           },
-          "skill_description": "<p><em>Skull Orb:</em> when you apply a Status Condition to an enemy, it takes 5 Dark damage.</p>",
           "skill_target": "",
           "skill_type": "Passive",
           "type_damage": ""
@@ -4163,6 +4301,7 @@
             }
           },
           "isCheck": false,
+          "name": "Phoenix Feather",
           "on_activate_effect_ref": "phoenix_revive",
           "skill_target": "One Ally",
           "skill_type": "Item",
@@ -4619,7 +4758,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -4637,8 +4775,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "tImoyJ8c71GeEmSi",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Log.png",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": true,
@@ -4669,7 +4805,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.tImoyJ8c71GeEmSi",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -4718,6 +4853,7 @@
             }
           },
           "isCheck": false,
+          "name": "Café au Lait",
           "on_activate_effect_ref": "cafeaulait_swift",
           "skill_target": "One Ally",
           "skill_type": "Item",
@@ -5072,7 +5208,7 @@
       },
       "folder": "ft3358qUh5ZDldYQ",
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/Genshin/The_Viridescent_Hunt.webp",
-      "name": "Zarg's Bow",
+      "name": "+3 Zarg's Bow",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
         "default": 0
@@ -5088,12 +5224,11 @@
           "beast_ef": "100",
           "category": "Bow",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "1",
           "construct_ef": "100",
           "custom_logic_action": "",
           "custom_logic_resolution": "",
-          "damage_bonus": "16",
+          "damage_bonus": 19,
           "demiHuman_ef": "100",
           "demon_ef": "100",
           "description": "<p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.EYcZ6QkAqiGBAxLB\" data-id=\"EYcZ6QkAqiGBAxLB\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Transform</span></strong></a></span></span>&nbsp;@UUID[Item.2mX266qZdTJYJXCy]{Zarg's Bow - Light}</p><ul><li><p>Damage dealt by the weapon ignores <strong>Resistances</strong></p></li></ul>",
@@ -5108,8 +5243,6 @@
           "hand_slots": "Two-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "xEHcsYyJhPaTCGcJ",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/Genshin/The_Viridescent_Hunt.webp",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": true,
@@ -5129,9 +5262,11 @@
           "item_type": "weapon",
           "mimic_ef": "100",
           "monster_ef": "100",
-          "name": "Zarg's Bow",
+          "name": "+3 Zarg's Bow",
           "optional_params": {},
           "plant_ef": "100",
+          "refine_count": 3,
+          "refine_level": 3,
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "INS",
@@ -5140,7 +5275,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.xEHcsYyJhPaTCGcJ",
           "vehicle_ef": "100",
           "weapon_range": "Ranged"
         },
@@ -5390,7 +5524,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -5408,8 +5541,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "Y5eLLDdPP97wkdvn",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Spicy%20Cocktail.gif",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -5427,6 +5558,14 @@
           "item_quantity": "3",
           "item_rarity": "Uncommon",
           "item_skill_active": {
+            "aCxWu8uKNvquNuvH": {
+              "id": "${item.id}",
+              "name": "Spicy Cocktail",
+              "skill_cost": "-",
+              "skill_description": "<p><em>Spicy Cocktail:</em> deal 20 Fire damage to all enemies; 50% chance to inflict Burn.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.Z4CFy505cD3nzl1W.Item.aCxWu8uKNvquNuvH"
+            },
             "ePP80aH48MygxCsV": {
               "id": "${item.id}",
               "name": "Spicy Cocktail",
@@ -5451,6 +5590,12 @@
           "optional_params": {},
           "plant_ef": "100",
           "related_item_list": {
+            "aCxWu8uKNvquNuvH": {
+              "id": "${item.id}",
+              "name": "Spicy Cocktail",
+              "related_item_description": "<p><em>Spicy Cocktail:</em> deal 20 Fire damage to all enemies; 50% chance to inflict Burn.</p>",
+              "uuid": "Actor.Z4CFy505cD3nzl1W.Item.aCxWu8uKNvquNuvH"
+            },
             "ePP80aH48MygxCsV": {
               "id": "${item.id}",
               "name": "Spicy Cocktail",
@@ -5472,7 +5617,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.Y5eLLDdPP97wkdvn",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -5557,7 +5701,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -5576,8 +5719,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "y8RTnXVs4sBr69J9",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/but.png",
           "ingredient_taste": "",
           "ingredient_taste2": "",
           "insect_ef": "100",
@@ -5635,7 +5776,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.y8RTnXVs4sBr69J9",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -5886,7 +6026,7 @@
       "blind_status": 0,
       "bond_1": "Blanche",
       "bond_2": "Hina",
-      "bond_3": "Fionia",
+      "bond_3": "Freonia",
       "bond_4": "Keren",
       "bond_5": "Raven",
       "bond_6": "",
@@ -6159,9 +6299,9 @@
       "critical_damage_bonus": 0,
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
-      "current_hp": "75",
+      "current_hp": 75,
       "current_ip": 4,
-      "current_mp": 20,
+      "current_mp": 70,
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/Zarg_Cut-in002.png",
       "cut_in_fumble": "",
@@ -6259,7 +6399,7 @@
       "emotion_3_2": "loyalty",
       "emotion_3_3": "",
       "emotion_4_1": "admiration",
-      "emotion_4_2": "",
+      "emotion_4_2": "loyalty",
       "emotion_4_3": "affection",
       "emotion_5_1": "",
       "emotion_5_2": "",
@@ -6416,6 +6556,13 @@
           "name": "Jumping Boots",
           "roll": "",
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.DnkD0FJseiBxJPbI"
+        },
+        "EdVytW8FsFrySsuV": {
+          "acess_description": "<ul><li><p>Gain +1 to your Accuracy check</p></li></ul>",
+          "id": "${item.id}",
+          "name": "Spectacles",
+          "roll": "",
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.EdVytW8FsFrySsuV"
         },
         "EszkNu7HfvFIMf2p": {
           "acess_description": "<ul>\n<li>Gain +2 bonus to any <strong>【DEX】</strong>check that related to Stealth or sneaking.</li>\n</ul>",
@@ -7332,7 +7479,7 @@
         },
         "AQprVL9AoxIbsz3D": {
           "id": "${item.id}",
-          "name": "Zarg's Bow - Light",
+          "name": "+3 Zarg's Bow - Light",
           "quantity": "",
           "roll": "",
           "type": "Bow",
@@ -7536,7 +7683,7 @@
         },
         "xEHcsYyJhPaTCGcJ": {
           "id": "${item.id}",
-          "name": "Zarg's Bow",
+          "name": "+3 Zarg's Bow",
           "quantity": "",
           "roll": "",
           "type": "Bow",
@@ -7564,7 +7711,7 @@
       "wlp_base": "8",
       "wlp_current": 8,
       "your_class_name": "Hunter",
-      "zenit": "3207",
+      "zenit": "2294",
       "zero_label": "Zero Power",
       "zero_power_description": "<p><strong>Zero Scourge</strong></p><p>Special rule: when you select this effect for your Zero Power, choose a damage type</p><p>among air, bolt, dark, earth, fire, ice, light, and poison; then, choose two status effects</p><p>among dazed, shaken, slow, and weak.</p><p>Choose any number of creatures you can see: each of them suffers damage of then</p><p>chosen type equal to【30 + half your level】and suffers the chosen status effects.</p>",
       "zero_power_macro": "",

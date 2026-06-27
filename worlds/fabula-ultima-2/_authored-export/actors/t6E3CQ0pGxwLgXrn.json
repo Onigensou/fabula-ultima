@@ -529,7 +529,6 @@
           "beast_ef": "100",
           "category": "Spear",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "16",
@@ -547,8 +546,6 @@
           "hand_slots": "Two-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "2na6LT4hqNFM2hhJ",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -579,7 +576,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.2na6LT4hqNFM2hhJ",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -622,7 +618,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -640,8 +635,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "32IdnR3tifOIbDCD",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/book.png",
           "insect_ef": "100",
           "ip_cost": "1",
           "isEquipped": false,
@@ -686,7 +679,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.32IdnR3tifOIbDCD",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -772,7 +764,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -790,8 +781,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "999BdRk7rsWKxGJr",
-          "img": "icons/commodities/tech/detonator-radio.webp",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -822,7 +811,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Item.999BdRk7rsWKxGJr",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -902,7 +890,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "5",
@@ -921,8 +908,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "9NaO4mJKNZjA0Uo4",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wand.png",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -953,7 +938,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.9NaO4mJKNZjA0Uo4",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -1006,10 +990,17 @@
         "container": null,
         "props": {
           "description": "<p>Target creature recovers 50 Mind Points.</p>",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion2.png",
           "ip_cost": "3",
           "isRelatedItem": false,
           "item_skill_active": {
+            "bSw96nwIhn8sDO2A": {
+              "id": "${item.id}",
+              "name": "Elixir",
+              "skill_cost": "-",
+              "skill_description": "<p>Target creature recovers 50 Mind Points.</p>",
+              "skill_maxLevel": 1,
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.bSw96nwIhn8sDO2A"
+            },
             "nTD1ZUzaAOV9TGT8": {
               "id": "${item.id}",
               "name": "Elixir",
@@ -1022,6 +1013,12 @@
           "item_type": "recipe",
           "name": "Elixir",
           "related_item_list": {
+            "bSw96nwIhn8sDO2A": {
+              "id": "${item.id}",
+              "name": "Elixir",
+              "related_item_description": "<p>Target creature recovers 50 Mind Points.</p>",
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.bSw96nwIhn8sDO2A"
+            },
             "nTD1ZUzaAOV9TGT8": {
               "id": "${item.id}",
               "name": "Elixir",
@@ -1192,7 +1189,6 @@
             }
           },
           "heroic_requirement": "",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion2.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -1382,7 +1378,6 @@
           "beast_ef": "100",
           "category": "Brawling",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "6",
@@ -1400,8 +1395,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "dcxsKeSOtqwxCZzY",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/glove.png",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -1432,7 +1425,6 @@
           "spirit_ef": "100",
           "type_damage": "Poison",
           "undead_ef": "100",
-          "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.dcxsKeSOtqwxCZzY",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -1565,7 +1557,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -1584,8 +1575,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "dY7K6TBgeCBn6v96",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Apple.png",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -1634,7 +1623,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.dY7K6TBgeCBn6v96",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -1811,7 +1799,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -1830,8 +1817,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "dMxhaNyxUqun78kN",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Apple%20o%20Archer.gif",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -1862,7 +1847,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.dMxhaNyxUqun78kN",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -1915,7 +1899,6 @@
         "container": null,
         "props": {
           "description": "<p>Target creature recovers 50 Hit Points.</p>",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion%20of%20healing.png",
           "ip_cost": "3",
           "isRelatedItem": false,
           "item_skill_active": {
@@ -1926,6 +1909,14 @@
               "skill_description": "<ul><li><p>Target creature <strong>recovers 50 HP</strong></p></li></ul>",
               "skill_maxLevel": 1,
               "uuid": "Item.jNN7WCFgjvU9wXr4"
+            },
+            "up1sbEZUSPX4kxID": {
+              "id": "${item.id}",
+              "name": "Remedy",
+              "skill_cost": "-",
+              "skill_description": "<p>Target creature recovers 50 Hit Points.</p>",
+              "skill_maxLevel": 1,
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.up1sbEZUSPX4kxID"
             }
           },
           "item_type": "recipe",
@@ -1936,6 +1927,12 @@
               "name": "Remedy",
               "related_item_description": "<ul><li><p>Target creature <strong>recovers 50 HP</strong></p></li></ul>",
               "uuid": "Item.jNN7WCFgjvU9wXr4"
+            },
+            "up1sbEZUSPX4kxID": {
+              "id": "${item.id}",
+              "name": "Remedy",
+              "related_item_description": "<p>Target creature recovers 50 Hit Points.</p>",
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.up1sbEZUSPX4kxID"
             }
           }
         },
@@ -2168,6 +2165,130 @@
       "type": "equippableItem"
     },
     {
+      "_id": "FW4tpwVEpjirTiJM",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782560341890,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "VzpCG9mySsd9sQSL",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/FFIX_Phoenix_Down_Icon.webp",
+      "name": "Phoenix Feather",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 1500000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>Revive one <strong>KO </strong>allies and restore their HP to their <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>score.</p></li></ul>",
+          "dragon_ef": "100",
+          "effect_table": {
+            "0": {
+              "effect_kind": "set_resource",
+              "effect_label": "phoenix_revive",
+              "grant_amount": "MAX_HP / 2",
+              "grant_resource": "hp",
+              "target_ref": "action_targets"
+            }
+          },
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flavor_text": "<p><em>It is said that in each feather resides the spirit of the Immortal Phoenix, a legendary bird who can rise from its ashes</em></p>",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "800",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Common",
+          "item_type": "consumable",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Phoenix Feather",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "skill_target": "One Ally",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "QXgHt7VEXEaVdPz1"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "G0bzxh7zKGOsiHuI",
       "_stats": {
         "compendiumSource": null,
@@ -2242,7 +2363,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -2260,8 +2380,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "cSynFyjRWqRbgrZx",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cloak.png",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -2292,7 +2410,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Item.cSynFyjRWqRbgrZx",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -2378,7 +2495,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -2396,8 +2512,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "ZZG5sHvIc3GH26w7",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Headgear/2215.gif",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -2429,7 +2543,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Item.ZZG5sHvIc3GH26w7",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -2675,7 +2788,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -2694,8 +2806,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "9oBfSGLR9f7cS94y",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Footgear/2437.gif",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": true,
@@ -2726,7 +2836,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.9oBfSGLR9f7cS94y",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -3100,7 +3209,6 @@
           "animation_script": "",
           "check_bonus": "0",
           "class": "",
-          "container": "",
           "cost": "-",
           "damage_bonus": "10",
           "defense_target_type": "def",
@@ -3116,7 +3224,6 @@
             }
           },
           "heroic_requirement": "",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cryst.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -3668,7 +3775,6 @@
           "beast_ef": "100",
           "category": "Firearm",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "8",
@@ -3686,8 +3792,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "Ok3TYVE0Od3BWygV",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gun.png",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -3718,7 +3822,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.Ok3TYVE0Od3BWygV",
           "vehicle_ef": "100",
           "weapon_range": "Ranged"
         },
@@ -3800,7 +3903,6 @@
           "beast_ef": "100",
           "category": "Bow",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "8",
@@ -3819,8 +3921,6 @@
           "hand_slots": "Two-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "LjsCfZeIPKluOR8E",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bow.png",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -3851,7 +3951,6 @@
           "spirit_ef": "100",
           "type_damage": "Fire",
           "undead_ef": "100",
-          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.LjsCfZeIPKluOR8E",
           "vehicle_ef": "100",
           "weapon_range": "Ranged"
         },
@@ -4104,13 +4203,28 @@
         "container": null,
         "props": {
           "description": "<p>One creature recovers from a single status effect.</p>",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/FFIX_Annoyntment_Icon_HD.webp",
           "ip_cost": "2",
           "isRelatedItem": false,
-          "item_skill_active": {},
+          "item_skill_active": {
+            "SbfpCwjsp0dq8squ": {
+              "id": "${item.id}",
+              "name": "Tonic",
+              "skill_cost": "-",
+              "skill_description": "<p>One creature recovers from a single status effect.</p>",
+              "skill_maxLevel": 1,
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.SbfpCwjsp0dq8squ"
+            }
+          },
           "item_type": "recipe",
           "name": "Tonic",
-          "related_item_list": {}
+          "related_item_list": {
+            "SbfpCwjsp0dq8squ": {
+              "id": "${item.id}",
+              "name": "Tonic",
+              "related_item_description": "<p>One creature recovers from a single status effect.</p>",
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.SbfpCwjsp0dq8squ"
+            }
+          }
         },
         "template": "ZoiV53VaLzeRsEps",
         "templateSystemUniqueVersion": 987283856,
@@ -4242,7 +4356,6 @@
           "animation_script": "",
           "check_bonus": "0",
           "class": "",
-          "container": "",
           "cost": "-",
           "damage_bonus": "0",
           "defense_target_type": "def",
@@ -4260,7 +4373,6 @@
             }
           },
           "heroic_requirement": "",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/FFIX_Annoyntment_Icon_HD.webp",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -4333,13 +4445,28 @@
         "container": null,
         "props": {
           "description": "<p>One creature suffers 10 damage of a type of your choice (Air, Bolt, Earth, Fire, or Ice).</p>",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cryst.png",
           "ip_cost": "2",
           "isRelatedItem": false,
-          "item_skill_active": {},
+          "item_skill_active": {
+            "O2gNiQJFYHmMfIrU": {
+              "id": "${item.id}",
+              "name": "Elemental Shard",
+              "skill_cost": "-",
+              "skill_description": "<p>One creature suffers 10 damage of a type of your choice (Air, Bolt, Earth, Fire, or Ice).</p>",
+              "skill_maxLevel": 1,
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.O2gNiQJFYHmMfIrU"
+            }
+          },
           "item_type": "recipe",
           "name": "Elemental Shard",
-          "related_item_list": {}
+          "related_item_list": {
+            "O2gNiQJFYHmMfIrU": {
+              "id": "${item.id}",
+              "name": "Elemental Shard",
+              "related_item_description": "<p>One creature suffers 10 damage of a type of your choice (Air, Bolt, Earth, Fire, or Ice).</p>",
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.O2gNiQJFYHmMfIrU"
+            }
+          }
         },
         "template": "ZoiV53VaLzeRsEps",
         "templateSystemUniqueVersion": 987283856,
@@ -4423,7 +4550,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -4441,8 +4567,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "cSynFyjRWqRbgrZx",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cloak.png",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -4473,7 +4597,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Item.cSynFyjRWqRbgrZx",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -4531,7 +4654,6 @@
             }
           },
           "heroic_requirement": "",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion%20of%20healing.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -4607,7 +4729,6 @@
           "beast_ef": "100",
           "category": "Firearm",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "13",
@@ -4625,8 +4746,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "vJWs8recTv3mtfVG",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gun.png",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -4657,7 +4776,6 @@
           "spirit_ef": "100",
           "type_damage": "Dark",
           "undead_ef": "100",
-          "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.vJWs8recTv3mtfVG",
           "vehicle_ef": "100",
           "weapon_range": "Ranged"
         },
@@ -4949,7 +5067,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "5",
@@ -4968,8 +5085,6 @@
           "hand_slots": "Two-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "ZbLoXQrkbqZIJkzr",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1916.gif",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -5024,7 +5139,6 @@
           "spirit_ef": "100",
           "type_damage": "Bolt",
           "undead_ef": "100",
-          "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.ZbLoXQrkbqZIJkzr",
           "vehicle_ef": "100",
           "weapon_range": "Ranged"
         },
@@ -5091,7 +5205,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -5109,8 +5222,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "zo95XuaxFO7dOAaS",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Hako%20Coupon.png",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -5141,7 +5252,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.zo95XuaxFO7dOAaS",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },

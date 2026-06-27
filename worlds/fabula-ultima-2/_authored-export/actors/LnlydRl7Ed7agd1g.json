@@ -12,6 +12,12 @@
     "custom-system-builder": {
       "version": "4.8.5"
     },
+    "fabula-ultima-companion": {
+      "idleAnimation": {
+        "bounce": false,
+        "float": false
+      }
+    },
     "theatre": {
       "baseinsert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Kalina/Kalina_Portrair002.png",
       "disabledefault": false,
@@ -128,7 +134,7 @@
           "insert": ""
         }
       },
-      "name": "Mysterious Girl",
+      "name": "Kalina",
       "optalign": "top",
       "settings": {
         "emote": null,
@@ -1562,7 +1568,7 @@
       },
       "token-variants": {
         "disableHUDButton": false,
-        "randomImgDefault": ""
+        "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Kalina_Standard.png"
       },
       "token-z": {
         "zIndex": 0

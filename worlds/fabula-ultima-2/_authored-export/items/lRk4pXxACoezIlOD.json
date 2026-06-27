@@ -314,7 +314,8 @@
           "actorUuid": "",
           "source": "World Item"
         }
-      }
+      },
+      "setId": "aquatic"
     },
     "fucompanion": {
       "itemMigratorBackup": {

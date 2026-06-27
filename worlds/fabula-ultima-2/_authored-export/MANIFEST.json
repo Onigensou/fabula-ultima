@@ -5072,7 +5072,7 @@
         "id": "CnueY54QHD80cmph",
         "name": "Diver Goggle",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "BmgIHS4DdDAT1rUc",
@@ -6320,7 +6320,7 @@
         "id": "ROQw6telXF9qyZC8",
         "name": "Ghostly Sheet",
         "type": "equippableItem",
-        "effects": 2
+        "effects": 3
       },
       {
         "id": "mmHnOv9fk8S2oXR9",
@@ -14357,6 +14357,18 @@
         "type": "character",
         "items": [
           {
+            "id": "rcyOz2H1OGzvSE0P",
+            "name": "+4 Ardent Yoroi"
+          },
+          {
+            "id": "oM6Bo3Hc4wV9ICa9",
+            "name": "+4 Titanic Shield"
+          },
+          {
+            "id": "cXbX8RdGLCiQ5V1d",
+            "name": "+5 Runic Shield"
+          },
+          {
             "id": "FJR1nkpCZNWfHH9v",
             "name": "Air Pendant"
           },
@@ -14367,10 +14379,6 @@
           {
             "id": "pTq1DAhDavGLShsn",
             "name": "Apple Juice"
-          },
-          {
-            "id": "kW12WGgIOK3KzsRi",
-            "name": "Ardent Yoroi"
           },
           {
             "id": "5eaTJGto8B0HIDhg",
@@ -14433,10 +14441,6 @@
             "name": "Heal"
           },
           {
-            "id": "fTIEKmOrVs5QhfB9",
-            "name": "Ignis Shield"
-          },
-          {
             "id": "JT5pvl5buIjL9JHX",
             "name": "Matador Cape"
           },
@@ -14461,8 +14465,8 @@
             "name": "Resourceful"
           },
           {
-            "id": "cXbX8RdGLCiQ5V1d",
-            "name": "Runic Shield"
+            "id": "XrwiCo9dqjD1UGJi",
+            "name": "Ruby Pendant"
           },
           {
             "id": "BXrs9fsYHnpaFTun",
@@ -14479,10 +14483,6 @@
           {
             "id": "TE0t2PzHnrOZOfHJ",
             "name": "Thread the Horns"
-          },
-          {
-            "id": "oM6Bo3Hc4wV9ICa9",
-            "name": "Titanic Shield"
           },
           {
             "id": "ZmZelFTyII167BrS",
@@ -16153,6 +16153,10 @@
             "name": "Pepetein"
           },
           {
+            "id": "FW4tpwVEpjirTiJM",
+            "name": "Phoenix Feather"
+          },
+          {
             "id": "ERZjg9YBPVLk6nsc",
             "name": "Remedy"
           },
@@ -17561,6 +17565,10 @@
         "type": "character",
         "items": [
           {
+            "id": "EhrhSD2uc4XZ3uGD",
+            "name": "+1 Full Plate"
+          },
+          {
             "id": "boDVDHvlhYwlW4hr",
             "name": "Absorb MP"
           },
@@ -17657,10 +17665,6 @@
             "name": "Entropic Magic"
           },
           {
-            "id": "EhrhSD2uc4XZ3uGD",
-            "name": "Full Plate"
-          },
-          {
             "id": "GLE6h2EmyLBSYgRX",
             "name": "Ghostly Sheet"
           },
@@ -17695,6 +17699,10 @@
           {
             "id": "pcCBP65FqbsMOF0h",
             "name": "Iceberg"
+          },
+          {
+            "id": "wdkyWxt43rlxEtTO",
+            "name": "Lens of Insight"
           },
           {
             "id": "20QAZWYIlUg4Uj6B",
@@ -17765,7 +17773,7 @@
             "name": "Zero Trigger: Foresight"
           }
         ],
-        "effects": 4
+        "effects": 5
       },
       {
         "id": "tzXbVfDYPgvu5wml",
@@ -18171,10 +18179,6 @@
             "name": "Chomp"
           },
           {
-            "id": "nh7ztiCLe2CtYdu9",
-            "name": "Dead Branch"
-          },
-          {
             "id": "u3oouZ93UHsyGpZd",
             "name": "Flamethrower"
           },
@@ -18189,6 +18193,10 @@
           {
             "id": "mPvukNO6W1XVqHxr",
             "name": "Voracious"
+          },
+          {
+            "id": "rEgmOuU0Fyfjgmlb",
+            "name": "Zombie Armor"
           }
         ],
         "effects": 0
@@ -18519,6 +18527,14 @@
         "type": "character",
         "items": [
           {
+            "id": "6Pry1DbGlFej0tVP",
+            "name": "+2 Ignis Shield"
+          },
+          {
+            "id": "BRNmLkWm9FSqbXRK",
+            "name": "+5 Swimsuit"
+          },
+          {
             "id": "fFHKCwDndsOmUg0q",
             "name": "Beyond the Realms of Death"
           },
@@ -18619,10 +18635,6 @@
             "name": "Steel Dagger"
           },
           {
-            "id": "BRNmLkWm9FSqbXRK",
-            "name": "Swimsuit"
-          },
-          {
             "id": "8TY9aPKKOzBSFkvv",
             "name": "Swordbreaker"
           },
@@ -18639,7 +18651,7 @@
             "name": "Zero Trigger: Shattered Phantasm"
           }
         ],
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "EHyFlGpLQLriK65C",
@@ -22360,6 +22372,14 @@
         "type": "character",
         "items": [
           {
+            "id": "xEHcsYyJhPaTCGcJ",
+            "name": "+3 Zarg's Bow"
+          },
+          {
+            "id": "AQprVL9AoxIbsz3D",
+            "name": "+3 Zarg's Bow - Light"
+          },
+          {
             "id": "4HAJia1ADJ8RijE8",
             "name": "Animal Fang"
           },
@@ -22504,6 +22524,10 @@
             "name": "Soul Steal"
           },
           {
+            "id": "EdVytW8FsFrySsuV",
+            "name": "Spectacles"
+          },
+          {
             "id": "aCxWu8uKNvquNuvH",
             "name": "Spicy Cocktail"
           },
@@ -22524,14 +22548,6 @@
             "name": "Warning Shot"
           },
           {
-            "id": "xEHcsYyJhPaTCGcJ",
-            "name": "Zarg's Bow"
-          },
-          {
-            "id": "AQprVL9AoxIbsz3D",
-            "name": "Zarg's Bow - Light"
-          },
-          {
             "id": "NwH4UInAFxCn958U",
             "name": "Zero Power: Meteor Shower"
           },
@@ -22540,7 +22556,7 @@
             "name": "Zero Trigger: Strategy"
           }
         ],
-        "effects": 2
+        "effects": 1
       },
       {
         "id": "eovuAdwJdbtn8rOr",

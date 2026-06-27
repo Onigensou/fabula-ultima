@@ -8,9 +8,71 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "dyu7NKFQnA6oiU1M",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782557987591,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "attack_accuracy_mod_all",
+          "mode": 2,
+          "priority": 20,
+          "value": "${and(isEquipped, ae(\"Wet\")) ? 3 : 0}$"
+        }
+      ],
+      "description": "",
+      "disabled": true,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "dyu7NKFQnA6oiU1M",
+          "originalParentId": "CnueY54QHD80cmph",
+          "originalUuid": "Item.CnueY54QHD80cmph.ActiveEffect.dyu7NKFQnA6oiU1M"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/Custom%20Icon/Swimsuit.png",
+      "name": "Diver Goggle",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "3.2.4"
+    },
+    "fabula-ultima-companion": {
+      "setId": "aquatic"
     },
     "fucompanion": {
       "itemMigratorBackup": {
@@ -73,6 +135,7 @@
       "beast_ef": "100",
       "category": "Arcane",
       "celestial_ef": "100",
+      "check": "Check",
       "check_bonus": "0",
       "construct_ef": "100",
       "damage_bonus": "0",
@@ -80,6 +143,7 @@
       "demon_ef": "100",
       "description": "<ul><li><p>When you're <strong>@UUID[JournalEntry.2rh5lyMNU5yL8Btk]{Wet}&nbsp;</strong>increase your Accuracy Checks by 3</p></li></ul>",
       "dragon_ef": "100",
+      "effect_table": {},
       "elemental_ef": "100",
       "enforcer_ef": "100",
       "fey_ef": "100",
@@ -90,13 +154,18 @@
       "hand_slots": "One-handed",
       "human_ef": "100",
       "humanoid_ef": "100",
+      "id": "CnueY54QHD80cmph",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Diver%20Goggle.gif",
+      "ingredient_taste": "",
+      "ingredient_taste2": "",
       "insect_ef": "100",
       "ip_cost": "",
       "isEquipped": false,
+      "isIngredient": false,
       "isKey": false,
       "isMartial": false,
       "isModule": false,
-      "isRelatedItem": false,
+      "isRelatedItem": true,
       "isSet": true,
       "isUnique": false,
       "item_baseDef": "0",
@@ -112,15 +181,22 @@
       "name": "Diver Goggle",
       "optional_params": {},
       "plant_ef": "100",
+      "reaction_config_table": {},
+      "recipe_dish_uuid": "",
+      "recipe_kind": "",
+      "refine_count": "0",
+      "refine_level": "0",
       "reptilian_ef": "100",
       "rolled_atr1": "DEX",
       "rolled_atr2": "DEX",
       "set_description": "<p><strong>【Set Bonus】</strong></p><p><strong>2-Piece</strong></p><ul><li><p>You're always <span style=\"font-family: var(--font-primary)\"><strong style=\"font-family: var(--font-primary); font-size: var(--font-size-14);\">@UUID[JournalEntry.2rh5lyMNU5yL8Btk]{Wet}</strong></span></p></li></ul>",
       "set_name": "Swift Swimmers",
+      "skill_target": "One Enemy",
       "soldier_ef": "100",
       "spirit_ef": "100",
       "type_damage": "Physical",
       "undead_ef": "100",
+      "uuid": "Item.CnueY54QHD80cmph",
       "vehicle_ef": "100",
       "weapon_range": "Melee"
     },
