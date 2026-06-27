@@ -8,6 +8,118 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "jl0e9I7HkPkBZqSs",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782552021867,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><em>Hawkeye:</em> your next ranged attack this scene deals extra damage.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "4GlvL0JbbYzL7AXq",
+          "originalParentId": "VdzUY6OaTy7vncGT",
+          "originalUuid": "Item.VdzUY6OaTy7vncGT.ActiveEffect.4GlvL0JbbYzL7AXq"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "chargeKey": "hawkeye_aim",
+          "charges": 1,
+          "chargesMax": 1,
+          "directorAppliedBy": {
+            "appliedAtRound": 5,
+            "effectLabel": "hawkeye_choose:Take aim — your next ranged attack deals +SL×2 extra damage",
+            "lifetimeMode": "on_activation",
+            "reactorActorUuid": "Actor.Z4CFy505cD3nzl1W",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.yKXp8TuB6WjGXCX0",
+            "skillUuid": "Actor.Z4CFy505cD3nzl1W.Item.SP5BT5DfIbe2os5C",
+            "turnsRemaining": null
+          },
+          "directorPermanent": true,
+          "lifetimeMode": "on_activation",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "chain_steps": "hawkeye_add, hawkeye_consume",
+                "effect_kind": "chain",
+                "effect_label": "hawkeye_fire"
+              },
+              "1": {
+                "damage_amount": "2",
+                "damage_operation": "add",
+                "damage_stage": "outgoing",
+                "effect_kind": "adjust_damage",
+                "effect_label": "hawkeye_add"
+              },
+              "2": {
+                "charge_key": "hawkeye_aim",
+                "count": 1,
+                "effect_kind": "consume_charge",
+                "effect_label": "hawkeye_consume",
+                "on_empty": "skip",
+                "target_ref": "hawkeye_self_ae"
+              },
+              "3": {
+                "candidate_source": "self",
+                "effect_kind": "targeting",
+                "effect_label": "hawkeye_self_ae"
+              }
+            },
+            "reaction_config_table": {
+              "0": {
+                "condition_formula": "ATTACK_IS_RANGED == 1",
+                "reaction_effect_ref": "hawkeye_fire",
+                "reaction_passive_mode": "on",
+                "reaction_passive_target": "self",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_will_deal_damage"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/GrandArcherPassive1.png",
+      "name": "Hawkeye",
+      "origin": "Actor.Z4CFy505cD3nzl1W.Item.SP5BT5DfIbe2os5C",
+      "sort": 0,
+      "statuses": [
+        "fud-hawkeye-aim"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.8.4"
@@ -359,6 +471,7 @@
             }
           },
           "isCheck": false,
+          "name": "Golem Soulstone",
           "on_activate_effect_ref": "golemstone_shield",
           "skill_target": "One Ally",
           "skill_type": "Item",
@@ -739,6 +852,7 @@
             }
           },
           "isCheck": false,
+          "name": "Decoy Doll",
           "on_activate_effect_ref": "decoy_summon",
           "skill_target": "Self",
           "skill_type": "Item",
@@ -783,7 +897,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -802,8 +915,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "8wPV7YHkxgJ6Sl5J",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/FFIX_Phoenix_Down_Icon.webp",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -852,7 +963,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.8wPV7YHkxgJ6Sl5J",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -1257,7 +1367,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -1277,8 +1386,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "A3VqPJRBDW8c1NnH",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Mega-Ether_from_Final_Fantasy_XIV_icon.webp",
           "ingredient_taste": "",
           "ingredient_taste2": "",
           "insect_ef": "100",
@@ -1298,6 +1405,16 @@
           "item_mdef_bonus": "0",
           "item_quantity": "1",
           "item_rarity": "Uncommon",
+          "item_skill_active": {
+            "AbyM4haZ1qLKAEH8": {
+              "id": "${item.id}",
+              "name": "Love Potion",
+              "skill_cost": "-",
+              "skill_description": "<p><em>Love Potion:</em> target enemy is Charmed.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.Z4CFy505cD3nzl1W.Item.AbyM4haZ1qLKAEH8"
+            }
+          },
           "item_type": "consumable",
           "mimic_ef": "100",
           "monster_ef": "100",
@@ -1309,6 +1426,14 @@
           "recipe_kind": "",
           "refine_count": "0",
           "refine_level": "0",
+          "related_item_list": {
+            "AbyM4haZ1qLKAEH8": {
+              "id": "${item.id}",
+              "name": "Love Potion",
+              "related_item_description": "<p><em>Love Potion:</em> target enemy is Charmed.</p>",
+              "uuid": "Actor.Z4CFy505cD3nzl1W.Item.AbyM4haZ1qLKAEH8"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
@@ -1318,7 +1443,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.A3VqPJRBDW8c1NnH",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -1440,6 +1564,7 @@
             }
           },
           "isCheck": false,
+          "name": "Spicy Cocktail",
           "on_activate_effect_ref": "spicy_activate",
           "skill_target": "Each enemy you can see",
           "skill_type": "Item",
@@ -1521,7 +1646,7 @@
           "item_type": "weapon",
           "mimic_ef": "100",
           "monster_ef": "100",
-          "name": "Zarg's Bow - Light",
+          "name": "+3 Zarg's Bow - Light",
           "optional_params": {},
           "plant_ef": "100",
           "refine_count": 3,
@@ -1887,7 +2012,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782528225410,
+        "createdTime": 1782560368455,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2140,7 +2265,6 @@
           "damage_bonus": "",
           "defense_target_type": "def",
           "description": "<p>This trigger activates at the end of your turn during a conflict, provided one or more</p><p>enemies present on the scene are suffering from a total of two or more different</p><p>status effects (such as one dazed and weak enemy, or one slow enemy and another</p><p>enraged enemy).</p>",
-          "details_roller": "Show",
           "duration": "-",
           "effect_table": {
             "0": {
@@ -2164,9 +2288,7 @@
             }
           },
           "heroic_requirement": "",
-          "id": "fIqMqHJBaoXfcJln",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Eve/CodeElectraSkill1.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -2196,8 +2318,7 @@
           "skill_target": "-",
           "skill_type": "Passive",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.fIqMqHJBaoXfcJln"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -2368,7 +2489,6 @@
           "damage_bonus": "",
           "defense_target_type": "def",
           "description": "<p>You can produce <strong>infusions</strong> and other gadgets on the fly.</p><p><strong>Infusions.</strong> When you successfully <strong>hit one or more targets with an attack</strong>, you may spend <strong>2 Inventory Points</strong> to produce a special infusion and apply its effect to that attack. If the attack had the <em>multi</em> property, the effect applies to <strong>each</strong> target. You cannot apply more than one infusion to the same attack; producing and using an infusion are both part of the attack.</p><ul><li><strong>Cryo / Pyro / Volt:</strong> deal 5 extra damage; the attack's damage becomes <strong>ice / fire / bolt</strong>.</li><li><strong>Cyclone / Exorcism / Seismic / Shadow:</strong> deal 5 extra damage; the attack's damage becomes <strong>air / light / earth / dark</strong>.</li><li><strong>Venom:</strong> deal 5 extra damage; the attack's damage becomes <strong>poison</strong>; each creature hit suffers <strong>poisoned</strong>.</li><li><strong>Vampire:</strong> heal HP equal to <strong>half the damage dealt</strong>. <em>Single-target attacks only.</em></li></ul>",
-          "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
@@ -2567,9 +2687,7 @@
           "gadget_infusion_tier": "3",
           "gadget_magitech_tier": "",
           "heroic_requirement": "",
-          "id": "H663NG14lmAbBtzp",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/12_MCH/hypercharge.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -2606,8 +2724,7 @@
           "skill_target": "Special",
           "skill_type": "Active",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.H663NG14lmAbBtzp"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -3087,7 +3204,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -3106,8 +3222,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "leAYO9ruiIajUdhU",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Mineral2.png",
           "ingredient_taste": "",
           "ingredient_taste2": "",
           "insect_ef": "100",
@@ -3127,6 +3241,16 @@
           "item_mdef_bonus": "0",
           "item_quantity": "1",
           "item_rarity": "Common",
+          "item_skill_active": {
+            "32rYly1hH9JwHQrH": {
+              "id": "${item.id}",
+              "name": "Golem Soulstone",
+              "skill_cost": "-",
+              "skill_description": "<p><em>Golem Soulstone:</em> target ally gains 10 Shield (keep the bigger).</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.Z4CFy505cD3nzl1W.Item.32rYly1hH9JwHQrH"
+            }
+          },
           "item_type": "consumable",
           "mimic_ef": "100",
           "monster_ef": "100",
@@ -3138,6 +3262,14 @@
           "recipe_kind": "",
           "refine_count": "0",
           "refine_level": "0",
+          "related_item_list": {
+            "32rYly1hH9JwHQrH": {
+              "id": "${item.id}",
+              "name": "Golem Soulstone",
+              "related_item_description": "<p><em>Golem Soulstone:</em> target ally gains 10 Shield (keep the bigger).</p>",
+              "uuid": "Actor.Z4CFy505cD3nzl1W.Item.32rYly1hH9JwHQrH"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
@@ -3147,7 +3279,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.leAYO9ruiIajUdhU",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -3608,12 +3739,30 @@
           "item_mdef_bonus": "0",
           "item_quantity": "1",
           "item_rarity": "Common",
+          "item_skill_active": {
+            "vCWp0cPzvaU9e5AW": {
+              "id": "${item.id}",
+              "name": "Café au Lait",
+              "skill_cost": "-",
+              "skill_description": "<p><em>Café au Lait:</em> you gain Swift.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.Z4CFy505cD3nzl1W.Item.vCWp0cPzvaU9e5AW"
+            }
+          },
           "item_type": "consumable",
           "mimic_ef": "100",
           "monster_ef": "100",
           "name": "Café au Lait",
           "optional_params": {},
           "plant_ef": "100",
+          "related_item_list": {
+            "vCWp0cPzvaU9e5AW": {
+              "id": "${item.id}",
+              "name": "Café au Lait",
+              "related_item_description": "<p><em>Café au Lait:</em> you gain Swift.</p>",
+              "uuid": "Actor.Z4CFy505cD3nzl1W.Item.vCWp0cPzvaU9e5AW"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
@@ -3919,7 +4068,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -3937,8 +4085,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "qPKh0SP1YQSPnaPl",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Pokemon/poke-doll.png",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -3955,12 +4101,30 @@
           "item_mdef_bonus": "0",
           "item_quantity": "1",
           "item_rarity": "Common",
+          "item_skill_active": {
+            "7V5swu31yb3p60cH": {
+              "id": "${item.id}",
+              "name": "Decoy Doll",
+              "skill_cost": "-",
+              "skill_description": "<p><em>Decoy Doll:</em> summon a Decoy Doll companion until the end of the scene.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.Z4CFy505cD3nzl1W.Item.7V5swu31yb3p60cH"
+            }
+          },
           "item_type": "consumable",
           "mimic_ef": "100",
           "monster_ef": "100",
           "name": "Decoy Doll",
           "optional_params": {},
           "plant_ef": "100",
+          "related_item_list": {
+            "7V5swu31yb3p60cH": {
+              "id": "${item.id}",
+              "name": "Decoy Doll",
+              "related_item_description": "<p><em>Decoy Doll:</em> summon a Decoy Doll companion until the end of the scene.</p>",
+              "uuid": "Actor.Z4CFy505cD3nzl1W.Item.7V5swu31yb3p60cH"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
@@ -3969,7 +4133,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.qPKh0SP1YQSPnaPl",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -4076,7 +4239,7 @@
             }
           },
           "isCheck": false,
-          "name": "Love Potion",
+          "name": "Skull Orb",
           "on_activate_effect_ref": "",
           "reaction_config_table": {
             "0": {
@@ -4088,7 +4251,6 @@
               "reaction_trigger": "creature_status_applied"
             }
           },
-          "skill_description": "<p><em>Skull Orb:</em> when you apply a Status Condition to an enemy, it takes 5 Dark damage.</p>",
           "skill_target": "",
           "skill_type": "Passive",
           "type_damage": ""
@@ -4105,7 +4267,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782528826391,
+        "createdTime": 1781934536119,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4139,6 +4301,7 @@
             }
           },
           "isCheck": false,
+          "name": "Phoenix Feather",
           "on_activate_effect_ref": "phoenix_revive",
           "skill_target": "One Ally",
           "skill_type": "Item",
@@ -4340,7 +4503,7 @@
               "visible": false
             }
           },
-          "img": "icons/skills/ranged/target-eye-orange.webp",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/GrandArcherPassive1.png",
           "name": "Hawkeye",
           "origin": null,
           "sort": 0,
@@ -4527,7 +4690,7 @@
                     "reaction_effect_ref": "ninjalog_nullify",
                     "reaction_passive_mode": "force",
                     "reaction_source": "self",
-                    "reaction_trigger": "creature_takes_damage"
+                    "reaction_trigger": "creature_targeted_by_action"
                   }
                 }
               }
@@ -4595,7 +4758,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -4613,8 +4775,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "tImoyJ8c71GeEmSi",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Log.png",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": true,
@@ -4645,7 +4805,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.tImoyJ8c71GeEmSi",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -4694,6 +4853,7 @@
             }
           },
           "isCheck": false,
+          "name": "Café au Lait",
           "on_activate_effect_ref": "cafeaulait_swift",
           "skill_target": "One Ally",
           "skill_type": "Item",
@@ -5064,7 +5224,6 @@
           "beast_ef": "100",
           "category": "Bow",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "1",
           "construct_ef": "100",
           "custom_logic_action": "",
@@ -5084,8 +5243,6 @@
           "hand_slots": "Two-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "xEHcsYyJhPaTCGcJ",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/Genshin/The_Viridescent_Hunt.webp",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": true,
@@ -5105,7 +5262,7 @@
           "item_type": "weapon",
           "mimic_ef": "100",
           "monster_ef": "100",
-          "name": "Zarg's Bow",
+          "name": "+3 Zarg's Bow",
           "optional_params": {},
           "plant_ef": "100",
           "refine_count": 3,
@@ -5118,7 +5275,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.xEHcsYyJhPaTCGcJ",
           "vehicle_ef": "100",
           "weapon_range": "Ranged"
         },
@@ -5368,7 +5524,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -5386,8 +5541,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "Y5eLLDdPP97wkdvn",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Spicy%20Cocktail.gif",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -5405,6 +5558,14 @@
           "item_quantity": "3",
           "item_rarity": "Uncommon",
           "item_skill_active": {
+            "aCxWu8uKNvquNuvH": {
+              "id": "${item.id}",
+              "name": "Spicy Cocktail",
+              "skill_cost": "-",
+              "skill_description": "<p><em>Spicy Cocktail:</em> deal 20 Fire damage to all enemies; 50% chance to inflict Burn.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.Z4CFy505cD3nzl1W.Item.aCxWu8uKNvquNuvH"
+            },
             "ePP80aH48MygxCsV": {
               "id": "${item.id}",
               "name": "Spicy Cocktail",
@@ -5429,6 +5590,12 @@
           "optional_params": {},
           "plant_ef": "100",
           "related_item_list": {
+            "aCxWu8uKNvquNuvH": {
+              "id": "${item.id}",
+              "name": "Spicy Cocktail",
+              "related_item_description": "<p><em>Spicy Cocktail:</em> deal 20 Fire damage to all enemies; 50% chance to inflict Burn.</p>",
+              "uuid": "Actor.Z4CFy505cD3nzl1W.Item.aCxWu8uKNvquNuvH"
+            },
             "ePP80aH48MygxCsV": {
               "id": "${item.id}",
               "name": "Spicy Cocktail",
@@ -5450,7 +5617,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.Y5eLLDdPP97wkdvn",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -5535,7 +5701,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -5554,8 +5719,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "y8RTnXVs4sBr69J9",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/but.png",
           "ingredient_taste": "",
           "ingredient_taste2": "",
           "insect_ef": "100",
@@ -5613,7 +5776,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.y8RTnXVs4sBr69J9",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -6138,7 +6300,7 @@
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
       "current_hp": 75,
-      "current_ip": "0",
+      "current_ip": 4,
       "current_mp": 70,
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/Zarg_Cut-in002.png",
@@ -7239,7 +7401,7 @@
         }
       },
       "skill_attack_damage": "0",
-      "skill_class_filter": "Tinkerer",
+      "skill_class_filter": "Sharpshooter",
       "skill_hideEffect": false,
       "skill_hp": "0",
       "skill_ip": "",

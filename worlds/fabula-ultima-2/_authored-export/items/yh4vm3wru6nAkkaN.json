@@ -14,7 +14,7 @@
     }
   },
   "folder": "4nfTLrlahxy3xTs8",
-  "img": "icons/skills/ranged/arrow-strike-glowing-orange.webp",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/11_BRD/barrage.png",
   "name": "Barrage",
   "ownership": {
     "JQGNzKpDPHJmcUIW": 3,
@@ -24,48 +24,80 @@
   "system": {
     "props": {
       "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
       "check_bonus": "0",
       "class": "Sharpshooter",
       "cost": "10 MP",
       "damage_bonus": "0",
       "defense_target_type": "def",
       "description": "<p>When you perform a <strong>ranged attack</strong>, you may spend <strong>10 Mind Points</strong> to have the attack target one additional creature. Loose a hail of shots!</p>",
+      "details_roller": "Show",
       "duration": "-",
       "effect_table": {
         "0": {
           "chain_steps": "barrage_add,barrage_cost",
+          "consume_self": false,
           "effect_kind": "chain",
-          "effect_label": "barrage_do"
+          "effect_label": "barrage_do",
+          "from_resource": "",
+          "menu_label": "",
+          "to_resource": ""
         },
         "1": {
+          "consume_self": false,
           "effect_kind": "add_target",
           "effect_label": "barrage_add",
+          "from_resource": "",
           "menu_description": "Spend 10 MP to target one additional creature.",
           "menu_label": "Barrage",
-          "target_ref": "barrage_pick"
+          "target_ref": "barrage_pick",
+          "to_resource": ""
         },
         "2": {
           "consume_amount": "10",
           "consume_resource": "mp",
+          "consume_self": false,
           "effect_kind": "consume_resource",
           "effect_label": "barrage_cost",
+          "from_resource": "",
+          "grant_amount": "",
+          "grant_resource": "",
+          "menu_label": "",
           "on_empty": "abort",
-          "target_ref": "self"
+          "target_ref": "self",
+          "to_resource": ""
         },
         "3": {
+          "allow_empty": false,
           "auto_confirm_when_obvious": false,
+          "auto_target": true,
           "candidate_source": "combat",
           "category": "enemy",
-          "count": 1,
+          "consume_self": false,
+          "count": "1",
           "effect_kind": "targeting",
           "effect_label": "barrage_pick",
+          "exclude": "",
           "exclude_action_targets": true,
+          "exclude_self": false,
+          "from_resource": "",
+          "iteration_mode": "together",
+          "menu_label": "",
           "mode": "exact",
-          "skip_when_passive": false
+          "skip_when_passive": false,
+          "target_filter": "",
+          "target_prompt": "",
+          "to_resource": ""
         }
       },
+      "gadget_alchemy_tier": "",
+      "gadget_infusion_tier": "",
+      "gadget_magitech_tier": "",
+      "heroic_requirement": "",
+      "id": "yh4vm3wru6nAkkaN",
       "ignore_hr": false,
-      "img": "icons/skills/ranged/arrow-strike-glowing-orange.webp",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/11_BRD/barrage.png",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,
@@ -76,23 +108,42 @@
       "max_level": "1",
       "name": "Barrage",
       "on_activate_effect_ref": "",
-      "post_damage_effect_ref": "",
+      "optional_params": {},
+      "pre_activate_effect_ref": "",
       "reaction_config_table": {
         "0": {
           "condition_formula": "ATTACK_IS_RANGED == 1",
+          "reaction_action_intent": "",
           "reaction_action_kind": "Attack",
+          "reaction_action_target": "",
+          "reaction_cause_filter": "",
+          "reaction_damage_source": "",
           "reaction_effect_ref": "barrage_do",
+          "reaction_origin_filter": "",
+          "reaction_ownership": "",
           "reaction_passive_mode": "ask",
+          "reaction_resource_filter": "",
+          "reaction_responder": "",
           "reaction_source": "self",
-          "reaction_trigger": "creature_performs_action"
+          "reaction_source_skill": "",
+          "reaction_status_filter": "",
+          "reaction_subject_kind": "",
+          "reaction_trigger": "creature_performs_action",
+          "requires_skill": ""
         }
       },
       "rolled_atr1": "-",
       "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
       "skill_range": "",
       "skill_target": "-",
       "skill_type": "Passive",
-      "type_damage": ""
+      "target_eligibility": "",
+      "type_damage": "",
+      "use_optional_params": false,
+      "uuid": "Item.yh4vm3wru6nAkkaN"
     },
     "template": "j0F5Msw5RZ8aIB3j",
     "templateSystemUniqueVersion": 2666163373,

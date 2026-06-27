@@ -1,0 +1,74 @@
+{
+  "_id": "TouMdewrn3xPmsMj",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1782551342953,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "coreAction": "study"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/book.png",
+  "name": "Encyclopedia Strike",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "3UYXnhsSCTo0lV68",
+    "props": {
+      "action_command": "",
+      "check_mode": "",
+      "cost": "",
+      "damage_bonus": "17",
+      "description": "<p>As a Skill Action, perform a free ranged attack with the Encyclopedia dealing +10 bonus damage (HR + 17 Physical). The Encyclopedia is then unequipped and vanishes from your inventory until the end of the scene; you may immediately perform an Equipment action as a Free Action.</p>",
+      "details_roller": "",
+      "effect_table": {
+        "0": {
+          "chain_steps": "encstrike_hide,encstrike_equip",
+          "effect_kind": "chain",
+          "effect_label": "encstrike_chain"
+        },
+        "1": {
+          "effect_kind": "hide_item",
+          "effect_label": "encstrike_hide"
+        },
+        "2": {
+          "action_ref": "equipment",
+          "effect_kind": "free_action",
+          "effect_label": "encstrike_equip",
+          "free_of_cost": "true"
+        }
+      },
+      "id": "TouMdewrn3xPmsMj",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/book.png",
+      "isCheck": true,
+      "isReaction": false,
+      "max_level": "1",
+      "name": "Encyclopedia Strike",
+      "on_activate_effect_ref": "encstrike_chain",
+      "rolled_atr1": "INS",
+      "rolled_atr2": "INS",
+      "skill_range": "Ranged",
+      "skill_target": "One Enemy",
+      "skill_type": "Active",
+      "type_damage": "Physical",
+      "uuid": "Item.TouMdewrn3xPmsMj"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": true,
+    "uniqueId": "TouMdewrn3xPmsMj"
+  },
+  "type": "equippableItem"
+}

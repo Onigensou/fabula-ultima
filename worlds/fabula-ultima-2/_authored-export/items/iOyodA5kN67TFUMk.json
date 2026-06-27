@@ -57,7 +57,7 @@
           "visible": false
         }
       },
-      "img": "icons/skills/ranged/arrow-strike-glowing-blue.webp",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/RenaSkill7.png",
       "name": "Powerful Shot",
       "origin": null,
       "sort": 0,
@@ -78,7 +78,7 @@
     }
   },
   "folder": "kmQEAefGfUhoR22y",
-  "img": "icons/skills/ranged/arrow-strike-glowing-blue.webp",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/RenaSkill7.png",
   "name": "Powerful Shot",
   "ownership": {
     "JQGNzKpDPHJmcUIW": 3,
@@ -91,6 +91,7 @@
       "cost": "",
       "description": "<p>When you hit one or more creatures with a <strong>ranged attack</strong>, that attack deals <strong>5 extra damage</strong> to each creature.</p><p>The amount of extra damage increases to <strong>10</strong> if you are <strong>level 40</strong> or higher.</p>",
       "heroic_requirement": "You must have learned all the Skills offered by the Sharpshooter Class.",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/RenaSkill7.png",
       "isCheck": false,
       "isHeroic": true,
       "isReaction": false,

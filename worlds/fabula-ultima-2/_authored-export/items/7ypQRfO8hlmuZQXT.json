@@ -14,7 +14,7 @@
     }
   },
   "folder": "4nfTLrlahxy3xTs8",
-  "img": "icons/skills/ranged/arrow-strike-glowing-teal.webp",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/RenaSkill1.png",
   "name": "Crossfire",
   "ownership": {
     "JQGNzKpDPHJmcUIW": 3,
@@ -24,38 +24,59 @@
   "system": {
     "props": {
       "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
       "check_bonus": "0",
       "class": "Sharpshooter",
       "cost": "Special",
       "damage_bonus": "0",
       "defense_target_type": "def",
       "description": "<p>After a creature you can see performs a <strong>ranged attack</strong>, you may spend an amount of <strong>Mind Points</strong> equal to the total Result of their Accuracy Check in order to have the attack <strong>fail automatically</strong> against all targets.</p><p>You can only use this Skill if you have a ranged weapon equipped, and it has no effect if the Accuracy Check was a critical success.</p>",
+      "details_roller": "Show",
       "duration": "-",
       "effect_table": {
         "0": {
           "chain_steps": "crossfire_block,crossfire_cost",
+          "consume_self": false,
           "effect_kind": "chain",
-          "effect_label": "crossfire_do"
+          "effect_label": "crossfire_do",
+          "from_resource": "",
+          "menu_label": "",
+          "to_resource": ""
         },
         "1": {
           "accuracy_amount": "0",
           "accuracy_operation": "set",
+          "consume_self": false,
           "effect_kind": "adjust_accuracy",
           "effect_label": "crossfire_block",
+          "from_resource": "",
           "menu_description": "Spend MP equal to the attacker's Accuracy Result to make the attack fail against all targets.",
-          "menu_label": "Crossfire"
+          "menu_label": "Crossfire",
+          "to_resource": ""
         },
         "2": {
           "consume_amount": "ATTACK_CHECK_RESULT",
           "consume_resource": "mp",
+          "consume_self": false,
           "effect_kind": "consume_resource",
           "effect_label": "crossfire_cost",
+          "from_resource": "",
+          "grant_amount": "",
+          "grant_resource": "",
+          "menu_label": "",
           "on_empty": "abort",
-          "target_ref": "self"
+          "target_ref": "self",
+          "to_resource": ""
         }
       },
+      "gadget_alchemy_tier": "",
+      "gadget_infusion_tier": "",
+      "gadget_magitech_tier": "",
+      "heroic_requirement": "",
+      "id": "7ypQRfO8hlmuZQXT",
       "ignore_hr": false,
-      "img": "icons/skills/ranged/arrow-strike-glowing-teal.webp",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/RenaSkill1.png",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,
@@ -66,24 +87,43 @@
       "max_level": "1",
       "name": "Crossfire",
       "on_activate_effect_ref": "",
-      "post_damage_effect_ref": "",
+      "optional_params": {},
+      "pre_activate_effect_ref": "",
       "reaction_config_table": {
         "0": {
           "condition_formula": "ATTACK_IS_RANGED == 1 && HAS_RANGED_WEAPON && ATTACK_IS_CRIT == 0 && CUR_MP >= ATTACK_CHECK_RESULT",
           "reaction_action_intent": "harmful",
           "reaction_action_kind": "Attack",
+          "reaction_action_target": "",
+          "reaction_cause_filter": "",
+          "reaction_damage_source": "",
+          "reaction_damage_type": "",
           "reaction_effect_ref": "crossfire_do",
+          "reaction_origin_filter": "",
+          "reaction_ownership": "",
           "reaction_passive_mode": "ask",
+          "reaction_resource_filter": "",
+          "reaction_responder": "",
           "reaction_source": "all",
-          "reaction_trigger": "creature_targeted_by_action"
+          "reaction_source_skill": "",
+          "reaction_status_filter": "",
+          "reaction_subject_kind": "",
+          "reaction_trigger": "creature_targeted_by_action",
+          "requires_skill": ""
         }
       },
       "rolled_atr1": "-",
       "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
       "skill_range": "",
       "skill_target": "-",
       "skill_type": "Passive",
-      "type_damage": ""
+      "target_eligibility": "",
+      "type_damage": "",
+      "use_optional_params": false,
+      "uuid": "Item.7ypQRfO8hlmuZQXT"
     },
     "template": "j0F5Msw5RZ8aIB3j",
     "templateSystemUniqueVersion": 2666163373,

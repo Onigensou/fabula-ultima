@@ -66,6 +66,7 @@
     hiddenDl: true,
     skipGroupOutcomeSound: false,
     revealTimeout: 2300,
+    checkBuffActions: [],
   };
 
   // ── Helpers ───────────────────────────────────────────────────────────────
@@ -77,6 +78,51 @@
   const esc  = s  => String(s ?? "")
     .replaceAll("&", "&amp;").replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;").replaceAll('"', "&quot;");
+
+  // ── Equipped-gear action-scoped Check buffs (e.g. Encyclopedia +2 Study) ──
+  // When the GM tags a Request Check with one or more named actions (Study /
+  // Stealth / Strength / Mobility), each tag is matched — purely BY STRING —
+  // against every selected actor's EQUIPPED-gear passive `check_buff` rows and
+  // any matching +N is folded into that actor's roll as a modifier. This reuses
+  // the exact engine the Study action already runs (sumEquippedCheckBuffs in
+  // battle-director/skill-effects.js); the dropdown just opens it up to arbitrary
+  // checks. cr-api.js is a CLASSIC script, so the module is reached by absolute
+  // URL (relative import() would resolve against the page, not this file) and the
+  // promise is cached WITHOUT a cache-bust so we share the canonical singleton.
+  let _seBuffFnPromise = null;
+  const getCheckBuffFn = () => {
+    if (!_seBuffFnPromise) {
+      _seBuffFnPromise = import(
+        `${window.location.origin}/modules/${MODULE_ID}/scripts/battle-director/skill-effects.js`
+      ).then(m => m?.sumEquippedCheckBuffs ?? null)
+       .catch(e => { console.warn(TAG, "check_buff: skill-effects import failed:", e); return null; });
+    }
+    return _seBuffFnPromise;
+  };
+
+  // Resolve an actor's equipped check_buff modifiers for the given action tokens.
+  // Returns [{label, value}] ready to merge into modifierParts. Deduped per gear
+  // source so picking two actions a single gear covers never double-counts.
+  async function resolveEquippedCheckBuffMods(actor, actions) {
+    const list = Array.isArray(actions)
+      ? actions.map(a => String(a ?? "").trim().toLowerCase()).filter(Boolean)
+      : [];
+    if (!actor || !list.length) return [];
+    const fn = await getCheckBuffFn();
+    if (typeof fn !== "function") return [];
+    const bySource = new Map(); // gear name → amount (first match wins per gear)
+    for (const cmd of list) {
+      let res = null;
+      try { res = fn(actor, cmd) ?? null; } catch (e) { console.warn(TAG, "check_buff resolve:", e); }
+      for (const p of (res?.parts ?? [])) {
+        const src = p?.source ?? "Equipment";
+        if (!bySource.has(src)) bySource.set(src, safeInt(p?.amount, 0));
+      }
+    }
+    return [...bySource.entries()]
+      .filter(([, amt]) => amt !== 0)
+      .map(([src, amt]) => ({ label: src, value: amt }));
+  }
 
   // Decide whether the final die should play intense anticipation.
   // Always intense if the total lands within 3 of DL (close call).
@@ -197,6 +243,42 @@
     } catch (e) { console.error(TAG, "consumeDivinationCharge:", e); return { ok: false }; }
   };
 
+  // ── Lucky Seven (Phase 2b) ─────────────────────────────────────────────────
+  // SELF-only (RAW "replace one of YOUR dice"): the checking actor replaces one
+  // rolled die with its "Lucky Number" (the replaced face becomes the new lucky
+  // number), spending the shared once-per-scene "Lucky Seven Ready" charge (the
+  // SAME budget Phase 1's set_check_die spends). Reads/writes via the generic
+  // charges API. Returns the ready + store effects + current lucky number, or
+  // null when unavailable (no Ready charge — out of combat / already used — or no
+  // Lucky Number store).
+  const chargesApi = () => globalThis?.FUCompanion?.api?.charges ?? null;
+  const LS_USED_SCENE_FLAG = "luckySevenUsedScene";
+  const currentSceneId = () => canvas?.scene?.id ?? game.scenes?.current?.id ?? game.scenes?.active?.id ?? null;
+  const findLuckyState = (actor) => {
+    const api = chargesApi();
+    if (!api || !actor) return null;
+    const store = api.findOnActor(actor, { key: "lucky_number" })[0];
+    if (!store) return null;                                  // no value store → never
+    const ready = api.findOnActor(actor, { key: "lucky_seven" })[0] ?? null;
+    const sceneId = currentSceneId();
+    const usedScene = store.effect.flags?.[MODULE_ID]?.[LS_USED_SCENE_FLAG] ?? null;
+    // Available IN combat via the "Lucky Seven Ready" charge (armed at
+    // conflict_start), OR — OUT of combat, where no Ready charge exists — once per
+    // Foundry scene, tracked by a scene-id marker on the store AE (auto-resets
+    // when the scene changes). A re-armed Ready charge (a new conflict) overrides
+    // a stale marker, so each new battle still grants a fresh use.
+    const available = !!ready || (!!sceneId && usedScene !== sceneId);
+    if (!available) return null;
+    return {
+      readyEffect: ready?.effect ?? null,
+      readyCharges: ready?.charges ?? 0,
+      storeEffect: store.effect,
+      luckyNumber: store.charges,
+      sceneId,
+      viaReady: !!ready,
+    };
+  };
+
   // ── Dice & math ───────────────────────────────────────────────────────────
   const rollDie = async (faces) => {
     const f    = Math.max(4, Math.min(20, safeInt(faces, 8)));
@@ -253,13 +335,14 @@
       const rollA    = await rollDie(dieA);
       const rollB    = singleDie ? rollA : await rollDie(dieB);
       const actorMods = globalThis.ONI?.CheckModifiers?.resolve?.(actor, context?.checkContext ?? null) ?? [];
-      const modParts = [...actorMods, ...(modifiers ?? [])];
+      const buffMods  = await resolveEquippedCheckBuffMods(actor, opts.checkBuffActions);
+      const modParts = [...actorMods, ...buffMods, ...(modifiers ?? [])];
       const computed = computeCheck(rollA, rollB, modParts, dl, singleDie);
       results.push({
         actorUuid: actor.uuid, actorName: actor.name, tokenImg: getTokenImg(actor),
         attrA, attrB, dieA, dieB, rollA, rollB, singleDie: !!singleDie,
         modifierParts: modParts, ...computed,
-        usedTrait: false, usedBond: false, usedDivination: false,
+        usedTrait: false, usedBond: false, usedDivination: false, usedLuckySeven: false,
         context: context ?? {},
       });
     }
@@ -594,6 +677,7 @@
           <button class="oni-cr-invoke-btn" data-action="trait"      data-slot="${pd.slotId}">🎭 Invoke Trait</button>
           <button class="oni-cr-invoke-btn" data-action="bond"       data-slot="${pd.slotId}">🤝 Invoke Bond</button>
           <button class="oni-cr-invoke-btn" data-action="divination" data-slot="${pd.slotId}">🔮 Divination</button>
+          <button class="oni-cr-invoke-btn" data-action="lucky"      data-slot="${pd.slotId}">🍀 Lucky Seven</button>
         </div>
 
         <div class="oni-cr-sep" data-zone="sep2" style="display:none"></div>
@@ -726,9 +810,18 @@
     const obsDivActor = (divReady && !(isOwner && selfDivAe)) ? findObserverDivinationActor(st.actorUuid) : null;
     st._obsDivActorUuid = obsDivActor?.uuid ?? null;
     const divUsable   = !!((isOwner && selfDivAe) || obsDivActor);
+    // Lucky Seven (Phase 2b) — SELF-only: the checker (owned by this client)
+    // replaces one die with its lucky number, gated on the shared once-per-scene
+    // "Lucky Seven Ready" charge (in-combat only). Same rolled / not-confirmed /
+    // not-crit-or-fumble / not-used gating as Divination.
+    const luckReady   = allowInvokes && isOwner && allRolled && !st.confirmed
+      && !st.result?.isCrit && !st.result?.isFumble && !st.usedLuckySeven;
+    const luckState   = luckReady ? findLuckyState(st._actor) : null;
+    const luckUsable  = !!luckState;
+    st._luckyNumber   = luckState?.luckyNumber ?? null;
     const anyInvoke    = st.canTrait || st.canBond || st.canDivination;
     const invokeEl = zone(el, "invoke");
-    const shouldShowInvoke = (canInvoke && anyInvoke) || divUsable;
+    const shouldShowInvoke = (canInvoke && anyInvoke) || divUsable || luckUsable;
     showZone(el, "invoke", shouldShowInvoke);
     let invokeJustShown = false;
     if (shouldShowInvoke && !st._invokeShown && invokeEl) {
@@ -757,6 +850,22 @@
           divBtn.style.display = "";
           divBtn.disabled = st.usedDivination || !divUsable;
           divBtn.classList.toggle("used", st.usedDivination);
+        }
+      }
+    }
+    // Lucky Seven — self-only; shows the current lucky number in the label.
+    {
+      const luckBtn = el.querySelector("[data-action='lucky']");
+      if (luckBtn) {
+        if (!luckUsable && !st.usedLuckySeven) {
+          luckBtn.style.display = "none";
+        } else {
+          luckBtn.style.display = "";
+          luckBtn.disabled = st.usedLuckySeven || !luckUsable;
+          luckBtn.classList.toggle("used", st.usedLuckySeven);
+          luckBtn.textContent = st._luckyNumber != null
+            ? `🍀 Lucky Seven (${st._luckyNumber})`
+            : "🍀 Lucky Seven";
         }
       }
     }
@@ -1080,10 +1189,11 @@
       panelStates.set(pd.slotId, {
         ...pd,
         rollA: null, rollB: null,
-        result: null, modifierParts: [...(opts?.modifiers ?? [])],
+        result: null, modifierParts: [...(pd.checkBuffMods ?? []), ...(opts?.modifiers ?? [])],
         canTrait: false, usedTrait: false,
         canBond: false,  usedBond: false,
         canDivination: false, usedDivination: false,
+        canLuckySeven: false, usedLuckySeven: false,
         confirmed: false, _actor: null, _bonds: null,
         _invokeShown: false, _confirmShown: false, _stampSounded: false,
       });
@@ -1256,6 +1366,7 @@
     if (action === "trait")      await invokeTrait(slot);
     else if (action === "bond")  await invokeBond(slot);
     else if (action === "divination") await invokeDivination(slot);
+    else if (action === "lucky") await invokeLuckySeven(slot);
   }
 
   async function invokeTrait(slot) {
@@ -1392,6 +1503,82 @@
     ui.notifications?.info(res.remaining > 0 ? `Divination used. ${res.remaining} charge${res.remaining === 1 ? "" : "s"} remaining.` : "Divination used. Active Effect ended.");
   }
 
+  // Lucky Seven (Phase 2b) — replace ONE die with the lucky number; the replaced
+  // face becomes the new lucky number. Spends the shared once-per-scene budget.
+  async function invokeLuckySeven(slot) {
+    const ses = _session;
+    if (!ses) return;
+    const st = ses.panelStates.get(slot);
+    if (!st || st.usedLuckySeven) return;
+    if (st.result?.isCrit || st.result?.isFumble) { ui.notifications?.warn("Cannot change a Critical or Fumble."); return; }
+
+    const checker = st._actor ?? await resolveActor(st.actorUuid);
+    const luck = findLuckyState(checker);
+    if (!luck) { ui.notifications?.warn("Lucky Seven unavailable (no Ready charge this scene)."); return; }
+
+    const isSingle = !!st.singleDie;
+    const L = luck.luckyNumber;
+
+    // Pick which die to replace (single-die checks have only die A).
+    let which = "A";
+    if (!isSingle) {
+      const rowsHtml = `
+        <div class="oni-cr-subpanel-row" data-value="A">
+          <div class="oni-cr-subpanel-lbl">First die (${esc(st.attrA)})</div>
+          <div class="oni-cr-subpanel-val">${st.rollA} → ${L}</div>
+        </div>
+        <div class="oni-cr-subpanel-row" data-value="B">
+          <div class="oni-cr-subpanel-lbl">Second die (${esc(st.attrB)})</div>
+          <div class="oni-cr-subpanel-val">${st.rollB} → ${L}</div>
+        </div>`;
+      const choice = await showSubPanel(`🍀 Lucky Seven — replace a die with ${L}`, rowsHtml, "Replace");
+      if (!choice) return;
+      which = choice === "B" ? "B" : "A";
+    }
+
+    const oldFace = which === "A" ? st.rollA : st.rollB;
+    const newA = which === "A" ? L : st.rollA;
+    const newB = which === "B" ? L : (st.rollB ?? st.rollA);
+
+    // Spend the once-per-scene budget first (abort if it fails): the Ready charge
+    // IN combat, else the scene-id marker OUT of combat. Always stamp the marker
+    // too, so a later out-of-combat check this same scene is correctly blocked.
+    const api = chargesApi();
+    if (luck.viaReady) {
+      const spent = await api.consume(luck.readyEffect, { count: 1, deleteWhenEmpty: true });
+      if (!spent?.ok) { ui.notifications?.error("Lucky Seven: could not spend the once-per-scene charge."); return; }
+    }
+    if (luck.sceneId) {
+      try { await luck.storeEffect.update({ [`flags.${MODULE_ID}.${LS_USED_SCENE_FLAG}`]: luck.sceneId }); }
+      catch (e) {
+        console.error(TAG, "Lucky Seven: scene-marker write failed:", e);
+        if (!luck.viaReady) { ui.notifications?.error("Lucky Seven: could not mark used this scene."); return; }
+      }
+    }
+
+    st.rollA = newA;
+    if (!isSingle) st.rollB = newB;
+    st.result = computeCheck(newA, isSingle ? newA : newB, st.modifierParts, ses.dl, ses.opts?.singleDie);
+    st.usedLuckySeven = true; st.canLuckySeven = false;
+
+    // The replaced face becomes the new lucky number (never delete the store).
+    try { await api.set(luck.storeEffect, oldFace, { deleteWhenEmpty: false }); }
+    catch (e) { console.warn(TAG, "Lucky-number writeback failed (swap still applied):", e); }
+
+    const modTotal = (st.modifierParts ?? []).reduce((a, p) => a + safeInt(p?.value, 0), 0);
+    const effTotal = (isSingle ? newA : newA + newB) + modTotal;
+    const animateDice = [{ die: which, value: which === "A" ? newA : newB, faces: which === "A" ? st.dieA : st.dieB, intense: pickIntense(ses.dl, effTotal) }];
+    const panelEl = getPanelEl(slot);
+    if (panelEl) {
+      showZone(panelEl, "result", false);
+      for (const { die, value, faces, intense } of animateDice) {
+        await animateDie(panelEl, die, value, faces, { intense });
+      }
+    }
+    broadcastUpdate(slot, animateDice); syncPanel(slot);
+    ui.notifications?.info(`Lucky Seven used. Your lucky number is now ${oldFace}.`);
+  }
+
   function broadcastUpdate(slot, animateDice = null, totalRollup = null) {
     const ses = _session;
     if (!ses) return;
@@ -1400,7 +1587,7 @@
     game.socket.emit(SOCKET_CH, {
       type: MSG_UPDATE,
       payload: { sessionId: ses.sessionId, slot, rollA: st.rollA, rollB: st.rollB,
-        modifierParts: st.modifierParts, usedTrait: st.usedTrait, usedBond: st.usedBond, usedDivination: st.usedDivination,
+        modifierParts: st.modifierParts, usedTrait: st.usedTrait, usedBond: st.usedBond, usedDivination: st.usedDivination, usedLuckySeven: st.usedLuckySeven,
         animateDice: animateDice ?? null, totalRollup: totalRollup ?? null },
     });
   }
@@ -1431,14 +1618,14 @@
     st.confirmed = true;
     syncPanel(slot);
 
-    const anyInvokeUsed = st.usedTrait || st.usedBond || st.usedDivination;
+    const anyInvokeUsed = st.usedTrait || st.usedBond || st.usedDivination || st.usedLuckySeven;
     const cp = {
       sessionId: ses.sessionId, slotId: slot, actorUuid: st.actorUuid,
       actorName: st.actorName, tokenImg: st.tokenImg ?? "",
       attrA: st.attrA, attrB: st.attrB, dieA: st.dieA, dieB: st.dieB,
       rollA: rA, rollB: rB, modifierParts: st.modifierParts,
       total: res.total, pass: res.pass, isCrit: res.isCrit, isFumble: res.isFumble,
-      usedTrait: st.usedTrait, usedBond: st.usedBond, usedDivination: st.usedDivination,
+      usedTrait: st.usedTrait, usedBond: st.usedBond, usedDivination: st.usedDivination, usedLuckySeven: st.usedLuckySeven,
       flippedOutcome: anyInvokeUsed && (st.initialPass !== res.pass),
       dl: ses.dl,
       context: ses.opts?.context ?? {}, singleDie,
@@ -1565,12 +1752,12 @@
       }
 
       if (msg.type === MSG_UPDATE) {
-        const { sessionId, slot, rollA, rollB, modifierParts, usedTrait, usedBond, usedDivination, animateDice, totalRollup } = msg.payload ?? {};
+        const { sessionId, slot, rollA, rollB, modifierParts, usedTrait, usedBond, usedDivination, usedLuckySeven, animateDice, totalRollup } = msg.payload ?? {};
         const ses = _session;
         if (!ses || ses.sessionId !== sessionId) return;
         const st = ses.panelStates.get(slot);
         if (!st) return;
-        Object.assign(st, { rollA, rollB, modifierParts: modifierParts ?? [], usedTrait, usedBond, usedDivination });
+        Object.assign(st, { rollA, rollB, modifierParts: modifierParts ?? [], usedTrait, usedBond, usedDivination, usedLuckySeven });
         const isSingle = !!st.singleDie;
         if (rollA !== null) st.result = computeCheck(rollA, isSingle ? rollA : (rollB ?? rollA), st.modifierParts, ses.dl, ses.opts?.singleDie);
         const panelEl = getPanelEl(slot);
@@ -1678,7 +1865,7 @@
       // A reactive intervention (invoke trait/bond/divination) flipped this open
       // check's pass↔fail. Causer = the checker (self-flip); the director bridge
       // also dispatches causer-side. mechanism best-effort from what was used.
-      const mechanism = cp.usedDivination ? "divination" : cp.usedTrait ? "invoke_trait" : cp.usedBond ? "invoke_bond" : "check";
+      const mechanism = cp.usedLuckySeven ? "lucky_seven" : cp.usedDivination ? "divination" : cp.usedTrait ? "invoke_trait" : cp.usedBond ? "invoke_bond" : "check";
       emit("oni:reactionPhase", {
         ...base,
         trigger: "creature_check_adjusted",
@@ -1706,15 +1893,20 @@
     // actor can occupy multiple panels (e.g. a Protector who takes a redirected
     // save in addition to their own rolls twice). All panel/confirm/socket
     // bookkeeping keys on slotId; actorUuid stays a data field for actor ops.
-    const panels = actors.map((actor, i) => {
+    const panels = await Promise.all(actors.map(async (actor, i) => {
       const dieA = getDieSize(actor, attrA);
+      // Per-actor equipped check_buff modifiers — computed authoritatively on the
+      // GM and shipped inside the panel payload (MSG_OPEN), so every client shows
+      // the identical bonus from the start. Empty unless the GM tagged actions.
+      const checkBuffMods = await resolveEquippedCheckBuffMods(actor, opts.checkBuffActions);
       return {
         slotId: `${actor.uuid}#${i}`,
         actorUuid: actor.uuid, actorName: actor.name, tokenImg: getTokenImg(actor),
         attrA, attrB, singleDie: opts.singleDie ?? false,
         dieA, dieB: opts.singleDie ? dieA : getDieSize(actor, attrB),
+        checkBuffMods,
       };
-    });
+    }));
     const expectedCount = panels.length;
 
     let _resolve;
@@ -1775,6 +1967,7 @@
       usedTrait:    cp.usedTrait,
       usedBond:     cp.usedBond,
       usedDivination: cp.usedDivination,
+      usedLuckySeven: cp.usedLuckySeven,
       context:      context ?? {},
     }));
   }
@@ -1788,6 +1981,7 @@
     opts.attrB = opts.singleDie ? opts.attrA : String(opts.attrB ?? "MIG").toUpperCase();
     opts.dl    = safeInt(opts.dl, 10);
     opts.modifiers = Array.isArray(opts.modifiers) ? opts.modifiers : [];
+    opts.checkBuffActions = Array.isArray(opts.checkBuffActions) ? opts.checkBuffActions : [];
 
     // Accept actor objects or UUID strings
     const rawActors = Array.isArray(actorsInput) ? actorsInput : [actorsInput];

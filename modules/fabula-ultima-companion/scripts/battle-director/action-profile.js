@@ -18,9 +18,10 @@ import { log, warn } from "./logger.js";
 import {
   evaluateFormula, buildSkillResolver, buildDamageBonusParts,
   resolveAccuracyParts, resolveOutgoingDamageParts, resolveRestoreParts, sumRestoreParts, applyGrantAdjust,
-  applyCritDamage, resolveIncomingReduction, healReceivingMultiplier, normalizeDamageType,
+  applyCritDamage, resolveIncomingReduction, healReceivingMultiplier, normalizeDamageType, applyAdjustOp,
 } from "./skill-formulas.js";
 import { applyAffinityToDamage, readWeaponEfficiency, snapshotTargetForToken } from "./snapshot.js";
+import { applyClassAffinityAndMult } from "./damage-ruleset.js";
 import { resolveResourceDef } from "./resources.js";
 import { deriveCheck } from "./check.js";
 import { previewEffectRow, resolveDamageElementOverride,
@@ -459,6 +460,25 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
       }
       if (reactionKeywords?.includes("pierce") && affinityCode === "RS") affinityCode = "NE";
       damageVal = applyAffinityToDamage(rawDamage, affinityCode);
+
+      // Damage-class affinity (strike/magic) + universal damage_taken_mult — the
+      // SAME incoming axes the effect ruleset applies, via the shared helper. The
+      // attack path historically skipped both (see damage-unification-plan.md), so
+      // an actor with affinity_class_strike:"IM" / damage_taken_mult≠1 (e.g. Ghostly
+      // Sheet: immune to Strike, 200% from all else) now has them honored on basic
+      // attacks too. strike = a weapon Attack (targets DEF); magic = a Spell
+      // (targets MDEF); other skills/MP = neither (null → both axes inert).
+      if (!primary.isMpDamage) {
+        const dmgClass = kind === "Attack" ? "strike"
+          : (kind === "Spell" || String(ar?.skillType ?? "").toLowerCase() === "spell") ? "magic"
+          : null;
+        const cm = applyClassAffinityAndMult(liveTarget, damageVal, {
+          damageClass: dmgClass,
+          elementAbsorbed: affinityCode === "AB",
+        });
+        damageVal = cm.value;
+        if (cm.absorbed && affinityCode !== "AB") affinityCode = "AB";
+      }
 
       effects.push({
         id: `primary-damage:${e.tokenUuid}`,
@@ -1025,7 +1045,7 @@ export async function buildActionViewFromAr(ar) {
 // pre-passive candidates (their appliesToTargetUuids should already be refreshed
 // via skill-effects.refreshReactionSubjects). Returns the projected delta
 // (perTargetResults, damage, hitTokenUuids, …) or null on hard failure.
-export async function recomputeActionProfile({ ar, targets = null, acceptedReactions = null, round = 0, attackMode = null, accuracyOverride = null, grantOverride = null, defenseOverrides = null } = {}) {
+export async function recomputeActionProfile({ ar, targets = null, acceptedReactions = null, round = 0, attackMode = null, accuracyOverride = null, grantOverride = null, defenseOverrides = null, damageOverrides = null } = {}) {
   if (!ar) return null;
   try {
     const srcTargets = Array.isArray(targets) ? targets : (Array.isArray(ar.targets) ? ar.targets : []);
@@ -1108,6 +1128,27 @@ export async function recomputeActionProfile({ ar, targets = null, acceptedReact
       }
       // Rebuild the hit list from the final per-target state (covers a +DEF miss).
       if (flipped) delta.hitTokenUuids = delta.perTargetResults.filter((r) => r.hit && r.tokenUuid).map((r) => r.tokenUuid);
+    }
+    // Incoming-damage override (adjust_damage reaction, e.g. Ninja Log "reduce to
+    // 0"): card-mutations soaked a target's OWN incoming damage, but buildPerTarget
+    // rebuilt the damage from the roll/profile. Re-apply each overridden slot's op
+    // on the rebuilt damage so the soak survives the recompute. PER-TARGET; runs
+    // AFTER the defense re-apply (which finalizes hit/miss). Mirrors defenseOverrides.
+    // damageOverrides: [{ tokenUuid, actorUuid, from, to, op, amount, via, reactorName }].
+    if (Array.isArray(damageOverrides) && damageOverrides.length && Array.isArray(delta?.perTargetResults)) {
+      for (const row of delta.perTargetResults) {
+        const ov = damageOverrides.find((o) =>
+          (o.tokenUuid && o.tokenUuid === row.tokenUuid) || (o.actorUuid && o.actorUuid === row.actorUuid));
+        if (!ov) continue;
+        const oldDmg = Math.max(0, Number(row.damage ?? 0) || 0);
+        const newDmg = Math.max(0, Math.floor(applyAdjustOp(oldDmg, String(ov.op ?? "set"), Number(ov.amount) || 0)));
+        let newRaw = Math.max(0, Number(row.rawDamage ?? 0) || 0);
+        if (newDmg <= 0) newRaw = 0;
+        else if (oldDmg > 0) newRaw = Math.max(0, Math.floor(newRaw * (newDmg / oldDmg)));
+        row.damage = newDmg;
+        row.rawDamage = newRaw;
+        row.damageOverride = { from: oldDmg, to: newDmg, via: ov.via, reactorName: ov.reactorName ?? null };
+      }
     }
     // Grant override (adjust_grant reaction, e.g. Cognitive Focus "+SL×2 healing to
     // my focus"): card-mutations boosted the matching targets' grant amount, but

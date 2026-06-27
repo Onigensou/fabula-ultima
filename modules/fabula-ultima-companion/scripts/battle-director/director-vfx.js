@@ -564,6 +564,23 @@ export function playMissVfx({ tokenUuid } = {}) {
   }
 }
 
+// ── Block VFX (a HIT nullified to 0 by a defender reaction — Ninja Log) ─────
+//
+// The cinematic twin of playMissVfx, but for an attack that LANDED yet dealt 0
+// because a defender's adjust_damage reaction (Ninja Log) soaked it. The loss
+// VFX never fires (amount 0 → early-return), so the hit would otherwise land with
+// no battlefield feedback. Float a steel "BLOCK" shield word + reuse the warmed
+// parry/resist cue. Same broadcasts-to-all-clients + graceful no-op rules.
+const BLOCK_SFX_URL = RESOURCE_VFX_SFX.resist;
+export function playBlockVfx({ tokenUuid } = {}) {
+  try {
+    emitDamageNumber({ kind: "block", tokenUuid });
+    throttledSfx(BLOCK_SFX_URL, 0.5);
+  } catch (e) {
+    warn("playBlockVfx threw", e);
+  }
+}
+
 // ── Immune VFX (attack/spell zeroed by IM affinity) ───────────────────────
 //
 // Immunity forces the damage to 0, so the loss VFX never fires (it early-returns

@@ -703,6 +703,7 @@
       allowInvokes     = true,
       postChat         = true,
       hiddenDl         = false,
+      checkBuffActions = [],   // forwarded to both helper + leader CR.request calls
     } = opts;
 
     const CR = globalThis.ONI?.CheckRequester;
@@ -774,6 +775,7 @@
         postChat:             false,
         modifiers:            [],
         hiddenDl,
+        checkBuffActions,
         skipGroupOutcomeSound: true,
         revealTimeout:        2000,
         context:              { groupCheck: true, phase: "helper" },
@@ -798,6 +800,7 @@
       postChat:     false,
       modifiers,
       hiddenDl,
+      checkBuffActions,
       context:      { groupCheck: true, phase: "leader", bonus },
     });
 

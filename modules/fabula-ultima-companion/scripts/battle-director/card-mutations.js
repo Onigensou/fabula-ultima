@@ -1059,6 +1059,90 @@ async function applyAdjustDefenseMutation(ctx, cand, row) {
   return "applied";
 }
 
+// ── Incoming-damage adjustment (effect_kind: "adjust_damage", DEFENDER) ───
+// The damage twin of adjust_defense: a `creature_targeted_by_action` reaction
+// on the TARGET reduces the damage IT is about to take from the in-flight
+// action, folded into the card's predicted per-target damage so the player
+// sees the soak BEFORE Apply (same surface as Verónica's DEF bump). Per-target
+// — only the reactor's own slot. ONLY the INCOMING stage is owned here; the
+// sender/outgoing stage rides computeSenderDamageBonuses at RESOLVE, so an
+// outgoing row is ignored (returns "skipped"). First user: Ninja Log
+// ("first time you take damage in a conflict → reduce that damage to 0").
+//   { effect_kind: "adjust_damage",
+//     damage_stage:     "incoming",                            // required
+//     damage_operation: "set"|"add"|"subtract"|"multiply"|"cap"|"floor",
+//     damage_amount:    <number | formula> }
+async function applyAdjustDamageMutation(ctx, cand, row) {
+  const { readAdjustment, applyAdjustOp } = await import("./skill-formulas.js");
+  const { op, amountFormula, stage } = readAdjustment(row, "damage");
+  // Defender card-mutation owns ONLY the incoming stage. Outgoing/sender
+  // adjustments are handled by computeSenderDamageBonuses at RESOLVE.
+  if (stage !== "incoming") return "skipped";
+
+  // Resolve the reactor (the creature reducing its OWN incoming damage). A
+  // `creature_targeted_by_action` reaction stamps `reactorActorUuid`; fall back
+  // to the carrier's owning actor (AE-on-equipped-gear → item → actor) for safety.
+  let reactorUuid = cand?.reactorActorUuid ?? null;
+  if (!reactorUuid) {
+    const { reactor } = await resolveReactionReactorSkill(ctx, cand);
+    reactorUuid = reactor?.uuid ?? null;
+  }
+  if (!reactorUuid) { warn("adjust_damage: could not resolve reactor — skipping"); return "failed"; }
+
+  // Resolve the operand (a bare number short-circuits; otherwise evaluate the
+  // formula against the reactor + the candidate's fire-time payload).
+  let amount = Number(amountFormula);
+  if (!Number.isFinite(amount)) {
+    try {
+      const { reactor, skill: skillForResolver } = await resolveReactionReactorSkill(ctx, cand);
+      const { buildSkillResolver, evaluateFormula } = await import("./skill-formulas.js");
+      const resolver = buildSkillResolver({
+        actor: reactor,
+        payload: cand?.payloadAtFire ?? null,
+        skill: skillForResolver,
+        round: ctx.ar?.round ?? 0,
+      });
+      amount = Number(evaluateFormula(amountFormula, resolver)) || 0;
+    } catch (e) {
+      warn("adjust_damage: formula eval threw — treating amount as 0", e);
+      amount = 0;
+    }
+  }
+
+  // Locate the reactor's own per-target slot (targets / perTargets are parallel).
+  const idx = ctx.targets.findIndex((t) => t?.actorUuid === reactorUuid);
+  if (idx < 0) {
+    log(`adjust_damage: reactor ${reactorUuid} not among the action's targets — no-op`);
+    return "failed";
+  }
+  const pt = ctx.perTargets[idx];
+  if (!pt) return "failed";
+
+  const oldDmg = Math.max(0, Number(pt.damage ?? 0) || 0);
+  const newDmg = Math.max(0, Math.floor(applyAdjustOp(oldDmg, op, amount)));
+  const via = cand?.carrierName ?? cand?.reactorActorName ?? "reaction";
+
+  // Mirror the reduction onto `rawDamage` so a later sender-side damage recompute
+  // (which re-derives damage = affinity(rawDamage + bonus)) can't resurrect the
+  // soaked damage. For the canonical "set 0", both go to 0; for a partial reduce
+  // we scale rawDamage by the same ratio (best-effort).
+  let newRaw = Math.max(0, Number(pt.rawDamage ?? 0) || 0);
+  if (newDmg <= 0) newRaw = 0;
+  else if (oldDmg > 0) newRaw = Math.max(0, Math.floor(newRaw * (newDmg / oldDmg)));
+
+  ctx.perTargets[idx] = {
+    ...pt,
+    damage: newDmg,
+    rawDamage: newRaw,
+    // Carry op + amount so the post-recompute re-apply (recomputeActionProfile)
+    // can re-run the operation against the freshly-rebuilt damage — mirrors how
+    // defenseOverride survives the recompute.
+    damageOverride: { from: oldDmg, to: newDmg, op, amount, via, reactorName: cand?.reactorActorName ?? null },
+  };
+  log(`adjust_damage: ${op} ${amount} on ${pt.name ?? reactorUuid} — damage ${oldDmg} → ${newDmg} (via ${via})`);
+  return "applied";
+}
+
 // ── Cost adjustment (effect_kind: "adjust_cost", card-mutation path) ──────
 // Performer/self reaction that reduces the in-flight SPELL's resource cost
 // (Hypercognition: "−SL MP, −SL×2 if the focus is the only target"). Action-level
@@ -1359,6 +1443,12 @@ export async function applyTargetSetMutation({ ar, accepted, attackerActor = nul
   const defenseOverrides = (mut.perTargetResults ?? [])
     .filter((p) => p?.defenseOverride)
     .map((p) => ({ tokenUuid: p.tokenUuid, actorUuid: p.actorUuid, ...p.defenseOverride }));
+  // Per-target incoming-damage overrides (adjust_damage / Ninja Log): collected
+  // like defenseOverrides and THREADED INTO the recompute so the rebuilt damage
+  // is re-soaked, instead of the recompute clobbering the reduction.
+  const damageOverrides = (mut.perTargetResults ?? [])
+    .filter((p) => p?.damageOverride)
+    .map((p) => ({ tokenUuid: p.tokenUuid, actorUuid: p.actorUuid, ...p.damageOverride }));
   let hitTokenUuids = null;
   // The recomputed action-level (headline) damage. When a mutation changed the roll
   // (check_reroll), the COMPUTE-time payload.damage has the STALE HR baked into
@@ -1382,7 +1472,7 @@ export async function applyTargetSetMutation({ ar, accepted, attackerActor = nul
     }
     const { recomputeActionProfile } = await import("./action-profile.js" + sfx);
     const delta = await recomputeActionProfile({
-      ar: mutatedAr, targets: mutatedTargets, acceptedReactions: accepted, round, accuracyOverride, grantOverride, defenseOverrides,
+      ar: mutatedAr, targets: mutatedTargets, acceptedReactions: accepted, round, accuracyOverride, grantOverride, defenseOverrides, damageOverrides,
     });
     if (Array.isArray(delta?.perTargetResults) && delta.perTargetResults.length) {
       perTargetResults = delta.perTargetResults;
@@ -1568,6 +1658,12 @@ export async function applyAcceptedCardMutations(arSnapshot, acceptedPrePassives
         // (Verónica). Per-target; only the reactor's slot recomputes hit/miss.
         const result = await applyAdjustDefenseMutation(ctx, cand, row);
         if (result === "applied") { mutationsApplied += 1; pushAdjuster(cand, "adjust_defense"); }
+      } else if (kind === "adjust_damage") {
+        // Defender-side: the targeted creature reduces the damage IT is about to
+        // take (Ninja Log → 0). Per-target; only the reactor's own slot. Skips
+        // the outgoing stage (sender bonuses own that at RESOLVE).
+        const result = await applyAdjustDamageMutation(ctx, cand, row);
+        if (result === "applied") mutationsApplied += 1;
       } else if (kind === "adjust_grant") {
         // Performer/self reaction heal-boost (Cognitive Focus). Reaction-context
         // adjust_grant ONLY — Potion Rain's in-chain adjust_grant never appears as

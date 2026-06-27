@@ -650,6 +650,18 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         const subject = _resolveActorByUuidSync(subjectUuid);
         return subject ? (Number(subject?.system?.props?.current_hp ?? 0) || 0) : 0;
       }
+      // Total (character) level of the trigger's SUBJECT creature — the twin of
+      // CHAR_LEVEL (caster level) for the TARGET. Reads payload.subjectActorUuid,
+      // so it requires a per-target context that threads the subject (per-victim
+      // effect loops set this). Used to compare target power vs the caster, e.g.
+      // Draconic Roar's "enemies lower level than you suffer a stronger debuff"
+      // (`TARGET_LEVEL < CHAR_LEVEL`). 0 when no subject is threaded.
+      case "TARGET_LEVEL": {
+        const subjectUuid = String(payload?.subjectActorUuid ?? "").trim();
+        if (!subjectUuid) return 0;
+        const subject = _resolveActorByUuidSync(subjectUuid);
+        return subject ? (Number(subject?.system?.props?.level ?? subject?.system?.level ?? 0) || 0) : 0;
+      }
       // Count of targets that PASSED the Check (hit). For Active Skill
       // RESOLVE, chainPayload populates payload.hitTargets (see
       // state-handlers.js Skill resolve). For attack RESOLVE the same
@@ -843,6 +855,16 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // roll info is threaded, so a `== 0` gate passes by default.
       case "ATTACK_IS_CRIT": return payload?.isCrit ? 1 : 0;
       case "ATTACK_IS_FUMBLE": return payload?.isFumble ? 1 : 0;
+      // The two FACES the in-flight Check rolled (die A = rA, die B = rB). 0 when
+      // no roll is threaded. Lets a reaction reference the actual rolled value —
+      // primarily for live menu-label interpolation (Lucky Seven's die picker
+      // shows "First die: 3 → 7"); the attribute NAMES travel as string vars
+      // (CHECK_DIE_A_ATTR / _B_ATTR), not here, since formulas are numeric.
+      case "CHECK_DIE_A": return Number(payload?.rollDieA ?? 0) || 0;
+      case "CHECK_DIE_B": return Number(payload?.rollDieB ?? 0) || 0;
+      // The flat check modifier (Accuracy/Magic bonus) on the in-flight Check.
+      // Lets a menu compute a post-swap total = kept die + new die + CHECK_BONUS.
+      case "CHECK_BONUS": return Number(payload?.rollCheckBonus ?? 0) || 0;
       // TRIGGER_IS_SELF — 1 when the action that fired this trigger IS this
       // reaction's own carrier skill, else 0. Scopes on-hit riders (Bite's
       // grappled bonus, Flame Breath's Burn, Sting's Oil) to the skill that

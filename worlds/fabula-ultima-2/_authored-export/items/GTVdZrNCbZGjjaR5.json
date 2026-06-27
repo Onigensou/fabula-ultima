@@ -8,6 +8,94 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "LGBVtsrgDippClmv",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782542435717,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "LGBVtsrgDippClmv",
+          "originalParentId": "GTVdZrNCbZGjjaR5",
+          "originalUuid": "Item.GTVdZrNCbZGjjaR5.ActiveEffect.LGBVtsrgDippClmv"
+        },
+        "fabula-ultima-companion": {
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "$deleted": false,
+                "chain_steps": "nullify_dmg,mark_spent",
+                "effect_kind": "chain",
+                "effect_label": "ninjalog_nullify"
+              },
+              "1": {
+                "$deleted": false,
+                "damage_amount": "0",
+                "damage_operation": "set",
+                "damage_stage": "incoming",
+                "effect_kind": "adjust_damage",
+                "effect_label": "nullify_dmg"
+              },
+              "2": {
+                "$deleted": false,
+                "ae_template_ref": "Ninja Log Spent",
+                "effect_kind": "apply_ae",
+                "effect_label": "mark_spent",
+                "target_ref": "self"
+              }
+            },
+            "name": "Ninja Log",
+            "reaction_config_table": {
+              "0": {
+                "$deleted": false,
+                "condition_formula": "HAS_STATUS_NINJA_LOG_SPENT == 0",
+                "reaction_effect_ref": "ninjalog_nullify",
+                "reaction_passive_mode": "force",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_targeted_by_action"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Log.png",
+      "name": "Ninja Log",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "3.2.4"

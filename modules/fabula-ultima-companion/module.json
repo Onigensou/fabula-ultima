@@ -194,6 +194,7 @@
     "scripts/check-roller/checkRoller-cardHydrate.js",
     "scripts/check-roller/checkRoller-invokeButtons.js",
     "scripts/check-roller/checkRoller-divinationButtons.js",
+    "scripts/check-roller/checkRoller-luckySevenButtons.js",
     "scripts/check-roller/checkRoller-buttonInstall.js",
     "scripts/opportunity-system/opportunity-config.js",
     "scripts/opportunity-system/effects/opportunity-effect-registry.js",

@@ -181,13 +181,33 @@ export async function gatherSkillsForActor(actor) {
     // isEquipped lives at system.props.isEquipped (CSB prop), NOT system.isEquipped.
     const isEquipped = item.system?.props?.isEquipped ?? false;
     if (!isEquipped) continue;
-    const granted = asObjectValues(item.system?.props?.item_skill_active);
-    for (const entry of granted) {
-      if (!entry?.uuid || seenUuids.has(entry.uuid)) continue;
-      if (knownNames.has(String(entry.name ?? "").trim().toLowerCase())) continue;
-      const cand = await buildCandidate(entry.uuid, actor, { source: "item-granted", sourceItem: item });
+    // item_skill_active is a KEYED map { <skillId>: { name, uuid, ... } }. The
+    // KEY is the linked `_skill`'s id and is always present; the inner `uuid`
+    // (and `id`) are DERIVED via a CSB template expression and can render empty
+    // (uuid:"", id:"${item.id}") when the gear's container projection prepares
+    // before the linked skill is ready — a cold-load (F5) derivation-order race
+    // that previously made the grant vanish from the menu. Iterating with keys
+    // lets us recover the skill id even when the projection is half-baked.
+    const grantMap = item.system?.props?.item_skill_active;
+    const grantEntries = grantMap && typeof grantMap === "object" && !Array.isArray(grantMap)
+      ? Object.entries(grantMap)
+      : asObjectValues(grantMap).map((e) => [String(e?.uuid ?? "").split(".").pop(), e]);
+    for (const [skillId, entry] of grantEntries) {
+      if (!entry) continue;
+      // Prefer the derived uuid; fall back to resolving the linked `_skill` by
+      // its id (the map key) directly off the actor — robust to the empty-uuid
+      // projection. Linked `_skill`s live on the actor with container===gear.id.
+      let skill = null;
+      if (entry.uuid) {
+        try { skill = await fromUuid(entry.uuid); } catch (e) { warn("skill-picker.gather: fromUuid failed", entry.uuid, e); }
+      }
+      if (!skill && skillId) skill = actor.items?.get?.(skillId) ?? null;
+      if (!skill) continue;
+      if (seenUuids.has(skill.uuid)) continue;
+      if (knownNames.has(String(skill.name ?? "").trim().toLowerCase())) continue;
+      const cand = candidateFromSkill(skill, actor, { source: "item-granted", sourceItem: item });
       if (!cand) continue;
-      seenUuids.add(entry.uuid);
+      seenUuids.add(skill.uuid);
       candidates.push(cand);
     }
   }
@@ -212,6 +232,13 @@ const CHARGE_LABELS = {
 // Build a candidate from props (shared by the live-item walk and the
 // fromUuid path). `skill` is the resolved Item doc.
 function candidateFromSkill(skill, actor, { source, sourceItem }) {
+  // Helper skills are sub-actions invoked only by another skill's `free_action`
+  // (e.g. each Starfall comet) — never a directly-pickable turn-action. Flagged
+  // via `flags.fabula-ultima-companion.helperSkill` (an item flag, NOT a CSB
+  // prop, so no template column). Skipped here so it stays out of BOTH the
+  // actor-owned and equipped-grant menus while free_action can still invoke it
+  // by name (which resolves against actor.items regardless of this flag).
+  if (skill.flags?.["fabula-ultima-companion"]?.helperSkill) return null;
   const p = skill.system?.props ?? {};
   const rawCost = String(p.cost ?? "");
   const parsedCost = parseSkillCost(rawCost);
@@ -468,16 +495,22 @@ export async function pickSkill({
     return null;
   }
 
-  // Group into sections (Spell mode splits offensive/normal; Skill mode splits
-  // actor-owned / item-granted).
+  // Group into sections. Spell mode splits the actor's KNOWN spells by
+  // offensive/normal, then lists equipment-granted spells (e.g. Lunar Bow ->
+  // Starfall) in their own "Item-Granted" section — mirroring the Skill menu's
+  // actor-owned / item-granted split so a player can tell a learned spell from
+  // one their gear is lending. Skill mode splits actor-owned / item-granted.
   const sections = [];
   const isSpellMode = Array.isArray(allowedSkillTypes) && allowedSkillTypes.length === 1
     && allowedSkillTypes[0].toLowerCase() === "spell";
   if (isSpellMode) {
-    const offensive = candidates.filter((c) => c.isOffensiveSpell);
-    const normal = candidates.filter((c) => !c.isOffensiveSpell);
-    if (offensive.length) sections.push({ label: "Offensive Spell", items: offensive });
-    if (normal.length)    sections.push({ label: "Normal Spell",    items: normal });
+    const known       = candidates.filter((c) => c.source !== "item-granted");
+    const itemGranted = candidates.filter((c) => c.source === "item-granted");
+    const offensive = known.filter((c) => c.isOffensiveSpell);
+    const normal    = known.filter((c) => !c.isOffensiveSpell);
+    if (offensive.length)   sections.push({ label: "Offensive Spell", items: offensive });
+    if (normal.length)      sections.push({ label: "Normal Spell",    items: normal });
+    if (itemGranted.length) sections.push({ label: "Item-Granted", hint: "from equipment", items: itemGranted });
   } else {
     const actorOwned  = candidates.filter((c) => c.source === "actor");
     const itemGranted = candidates.filter((c) => c.source === "item-granted");

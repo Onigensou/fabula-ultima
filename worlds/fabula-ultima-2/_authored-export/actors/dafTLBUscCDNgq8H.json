@@ -10,6 +10,69 @@
   },
   "effects": [
     {
+      "_id": "fWXyoM4Zn7zZYzA9",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782560305081,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><em>Lucky Seven Ready:</em> Lucky Seven is available this scene. Spent when used; refreshes each conflict.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "DIJbLrv3X5vkOVnj",
+          "originalParentId": "v56GvN63nvIYV4iJ",
+          "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.v56GvN63nvIYV4iJ.ActiveEffect.DIJbLrv3X5vkOVnj"
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "lucky_seven",
+          "charges": 1,
+          "chargesMax": 1,
+          "directorAppliedBy": {
+            "appliedAtRound": 0,
+            "effectLabel": "ls_arm",
+            "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.blzmhnVQPc3CAFe2",
+            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.v56GvN63nvIYV4iJ",
+            "turnsRemaining": 1
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/control/buff-flight-wings-runes-purple.webp",
+      "name": "Lucky Seven Ready",
+      "origin": "Actor.dafTLBUscCDNgq8H.Item.v56GvN63nvIYV4iJ",
+      "sort": 0,
+      "statuses": [
+        "fud-lucky-seven-ready"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
       "_id": "JpPnLqsLIkXtD2lm",
       "_stats": {
         "compendiumSource": null,
@@ -69,6 +132,286 @@
       "system": {
         "tags": []
       },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "nJmcpeI5iyCYiVQv",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782554655127,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>A reserve of foresight Hina spends to take the place of all creatures threatened by a single danger.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "propheticPoint01",
+          "originalParentId": "Lmzs6VllFRo44jZq",
+          "originalUuid": "Item.Lmzs6VllFRo44jZq.ActiveEffect.propheticPoint01"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "chargeKey": "prophecy",
+          "charges": 2,
+          "chargesMax": 99,
+          "directorAppliedBy": {
+            "appliedAtRound": 0,
+            "effectLabel": "pds_gain",
+            "lifetimeMode": "persistent_counter",
+            "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.blzmhnVQPc3CAFe2",
+            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.gm2w1NLdaEI7SzaQ",
+            "turnsRemaining": null
+          },
+          "directorPermanent": false,
+          "lifetimeMode": "persistent_counter"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/nocturnal_sect.png",
+      "name": "Prophecy Point",
+      "origin": "Actor.dafTLBUscCDNgq8H.Item.gm2w1NLdaEI7SzaQ",
+      "sort": 0,
+      "statuses": [
+        "fud-prophecy-point"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "nW9KaO1SljWW7CeG",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782540447661,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><em>Heart of Darkness:</em> armed for this scene.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "TQINaXFTRwWZBJvx",
+          "originalParentId": "EGYilCNAGvl2BldF",
+          "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF.ActiveEffect.TQINaXFTRwWZBJvx"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "chargeKey": "hod_ready",
+          "charges": 1,
+          "chargesMax": 1,
+          "directorAppliedBy": {
+            "appliedAtRound": 0,
+            "effectLabel": "hod_refresh",
+            "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.blzmhnVQPc3CAFe2",
+            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF",
+            "turnsRemaining": null
+          },
+          "directorPermanent": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/unholy/silhouette-evil-horned-giant.webp",
+      "name": "Heart of Darkness Ready",
+      "origin": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF",
+      "sort": 0,
+      "statuses": [
+        "fud-heart-of-darkness-ready"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "oTetvbwsT79Jb0vG",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782498356558,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><em>Lucky Number:</em> the value you may swap onto a die with Lucky Seven (starts at 7). Replacing a die makes the replaced value your new lucky number.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "oTetvbwsT79Jb0vG",
+          "originalParentId": "dafTLBUscCDNgq8H",
+          "originalUuid": "Actor.dafTLBUscCDNgq8H.ActiveEffect.oTetvbwsT79Jb0vG"
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "lucky_number",
+          "charges": 3,
+          "chargesMax": 7,
+          "directorAppliedBy": {
+            "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
+            "reactorTokenUuid": null,
+            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.v56GvN63nvIYV4iJ",
+            "turnsRemaining": null
+          },
+          "directorPermanent": true,
+          "lifetimeMode": "persistent_counter",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "$deleted": false,
+                "ae_duplicate_mode": "replace",
+                "ae_template_ref": "Lucky Seven Ready",
+                "effect_kind": "apply_ae",
+                "effect_label": "ls_arm",
+                "target_ref": "ls_self"
+              },
+              "1": {
+                "$deleted": false,
+                "chain_steps": "ls_consume, ls_menu",
+                "effect_kind": "chain",
+                "effect_label": "ls_root"
+              },
+              "2": {
+                "$deleted": false,
+                "charge_key": "lucky_seven",
+                "count": "1",
+                "effect_kind": "consume_charge",
+                "effect_label": "ls_consume",
+                "on_empty": "abort",
+                "target_ref": "ls_self"
+              },
+              "3": {
+                "$deleted": false,
+                "effect_kind": "open_action_menu",
+                "effect_label": "ls_menu",
+                "menu_option_descriptions": "New total: ${AE_CHARGES_LUCKY_NUMBER + CHECK_DIE_B + CHECK_BONUS}|New total: ${CHECK_DIE_A + AE_CHARGES_LUCKY_NUMBER + CHECK_BONUS}",
+                "menu_option_labels": "First die (${CHECK_DIE_A_ATTR}): ${CHECK_DIE_A} → ${AE_CHARGES_LUCKY_NUMBER}|Second die (${CHECK_DIE_B_ATTR}): ${CHECK_DIE_B} → ${AE_CHARGES_LUCKY_NUMBER}",
+                "menu_option_refs": "ls_die_a, ls_die_b",
+                "menu_subtitle": "Replace one die with your lucky number (${AE_CHARGES_LUCKY_NUMBER}); the replaced value becomes your new lucky number.",
+                "menu_title": "Lucky Seven"
+              },
+              "4": {
+                "$deleted": false,
+                "die_value": "",
+                "effect_kind": "set_check_die",
+                "effect_label": "ls_die_a",
+                "which_die": "A",
+                "writeback_carrier_charge": true
+              },
+              "5": {
+                "$deleted": false,
+                "die_value": "",
+                "effect_kind": "set_check_die",
+                "effect_label": "ls_die_b",
+                "which_die": "B",
+                "writeback_carrier_charge": true
+              },
+              "6": {
+                "$deleted": false,
+                "auto_confirm_when_obvious": true,
+                "candidate_source": "self",
+                "category": "",
+                "count": 1,
+                "effect_kind": "targeting",
+                "effect_label": "ls_self",
+                "exclude_self": false,
+                "iteration_mode": "together",
+                "mode": "exact",
+                "skip_when_passive": true
+              }
+            },
+            "name": "Lucky Seven",
+            "reaction_config_table": {
+              "0": {
+                "$deleted": false,
+                "condition_formula": "",
+                "reaction_effect_ref": "ls_arm",
+                "reaction_passive_mode": "force",
+                "reaction_source": "",
+                "reaction_trigger": "conflict_start"
+              },
+              "1": {
+                "$deleted": false,
+                "condition_formula": "ACTION_ROLLS_ACCURACY == 1 && ATTACK_IS_CRIT == 0 && ATTACK_IS_FUMBLE == 0 && AE_CHARGES_LUCKY_SEVEN_READY > 0",
+                "reaction_effect_ref": "ls_root",
+                "reaction_passive_mode": "ask",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_performs_action"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "name": "Lucky Number",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-lucky-number"
+      ],
+      "system": {},
       "tint": "#ffffff",
       "transfer": false,
       "type": "base"
@@ -283,6 +626,7 @@
             }
           },
           "isCheck": false,
+          "name": "Apple Juice",
           "on_activate_effect_ref": "applejuice_heal",
           "skill_target": "One Ally",
           "skill_type": "Item",
@@ -385,12 +729,30 @@
           "item_mdef_bonus": "0",
           "item_quantity": 1,
           "item_rarity": "Uncommon",
+          "item_skill_active": {
+            "wxQj3appp4uqcW8O": {
+              "id": "${item.id}",
+              "name": "Love Potion",
+              "skill_cost": "-",
+              "skill_description": "<p><em>Love Potion:</em> target enemy is Charmed.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.wxQj3appp4uqcW8O"
+            }
+          },
           "item_type": "consumable",
           "mimic_ef": "100",
           "monster_ef": "100",
           "name": "Love Potion",
           "optional_params": {},
           "plant_ef": "100",
+          "related_item_list": {
+            "wxQj3appp4uqcW8O": {
+              "id": "${item.id}",
+              "name": "Love Potion",
+              "related_item_description": "<p><em>Love Potion:</em> target enemy is Charmed.</p>",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.wxQj3appp4uqcW8O"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
@@ -472,6 +834,53 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "tbtry6egID5MOcxv"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "3jT2QfRSixKYGLMZ",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782542203691,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        },
+        "fabula-ultima-companion": {
+          "helperSkill": true
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/Genshin/Elegy_for_the_End.png",
+      "name": "Starfall Comet",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "zEo3OgMcD2P3ug1o",
+        "props": {
+          "cost": "0",
+          "damage_bonus": "15",
+          "description": "<p>A single Starfall comet. Deals <strong>【HR+15】 Light damage</strong> to one random enemy.</p>",
+          "isCheck": true,
+          "isOffensiveSpell": true,
+          "name": "Starfall Comet",
+          "skill_range": "Range",
+          "skill_target": "One Random Enemy",
+          "skill_type": "Spell",
+          "type_damage": "Light"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "3jT2QfRSixKYGLMZ"
       },
       "type": "equippableItem"
     },
@@ -847,12 +1256,30 @@
           "item_mdef_bonus": "0",
           "item_quantity": "1",
           "item_rarity": "Common",
+          "item_skill_active": {
+            "0EA2ziqCOEmJWUCK": {
+              "id": "${item.id}",
+              "name": "Apple Juice",
+              "skill_cost": "-",
+              "skill_description": "<p><em>Apple Juice:</em> target ally recovers 30 HP.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.0EA2ziqCOEmJWUCK"
+            }
+          },
           "item_type": "recipe",
           "mimic_ef": "100",
           "monster_ef": "100",
           "name": "Apple Juice",
           "optional_params": {},
           "plant_ef": "100",
+          "related_item_list": {
+            "0EA2ziqCOEmJWUCK": {
+              "id": "${item.id}",
+              "name": "Apple Juice",
+              "related_item_description": "<p><em>Apple Juice:</em> target ally recovers 30 HP.</p>",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.0EA2ziqCOEmJWUCK"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
@@ -927,7 +1354,6 @@
           "beast_ef": "100",
           "category": "Bow",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "8",
@@ -945,8 +1371,6 @@
           "hand_slots": "Two-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "720wa4E0ldJEqXG4",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bow.png",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -977,7 +1401,6 @@
           "spirit_ef": "100",
           "type_damage": "Air",
           "undead_ef": "100",
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.720wa4E0ldJEqXG4",
           "vehicle_ef": "100",
           "weapon_range": "Ranged"
         },
@@ -1057,7 +1480,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "10",
@@ -1075,8 +1497,6 @@
           "hand_slots": "Two-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "BGBKm7rItmmvzf31",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/2000.gif",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -1125,7 +1545,6 @@
           "spirit_ef": "100",
           "type_damage": "Bolt",
           "undead_ef": "100",
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.BGBKm7rItmmvzf31",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -1250,7 +1669,6 @@
           "damage_bonus": "2",
           "defense_target_type": "def",
           "description": "<p>After you suffer damage, you may immediately recover <strong>【SL × 2】</strong> Mind Points.</p>",
-          "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
@@ -1295,9 +1713,7 @@
           "gadget_infusion_tier": "",
           "gadget_magitech_tier": "",
           "heroic_requirement": "",
-          "id": "boDVDHvlhYwlW4hr",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/ElPass8.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -1349,8 +1765,7 @@
           "skill_type": "Passive",
           "target_eligibility": "",
           "type_damage": "MP",
-          "use_optional_params": false,
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.boDVDHvlhYwlW4hr"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -1513,7 +1928,6 @@
           "damage_bonus": "",
           "defense_target_type": "def",
           "description": "<p>Once per scene upon entering <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span>, you may choose a specific creature you can see that you don't have a <strong>Bond</strong> towards. If you do, create a <strong>Bond of hatred</strong> towards that creature.</p>",
-          "details_roller": "Show",
           "duration": "",
           "effect_table": {
             "0": {
@@ -1563,9 +1977,7 @@
             }
           },
           "heroic_requirement": "",
-          "id": "EGYilCNAGvl2BldF",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/grit.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -1577,9 +1989,6 @@
           "name": "Heart of Darkness",
           "on_activate_effect_ref": "",
           "optional_params": {},
-          "passive_check_bonus_formula": "",
-          "passive_damage_bonus_formula": "",
-          "post_damage_effect_ref": "",
           "reaction_config_table": {
             "0": {
               "$deleted": false,
@@ -1606,8 +2015,7 @@
           "skill_target": "",
           "skill_type": "Passive",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -1775,7 +2183,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1782528204348,
+            "createdTime": 1782560268033,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -2045,7 +2453,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -2063,8 +2470,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "EhrhSD2uc4XZ3uGD",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/2316.gif",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": true,
@@ -2084,7 +2489,7 @@
           "item_type": "armor",
           "mimic_ef": "100",
           "monster_ef": "100",
-          "name": "Full Plate",
+          "name": "+1 Full Plate",
           "optional_params": {},
           "plant_ef": "100",
           "refine_count": 1,
@@ -2097,7 +2502,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.EhrhSD2uc4XZ3uGD",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -2230,7 +2634,6 @@
           "damage_bonus": "",
           "defense_target_type": "def",
           "description": "<p>You glimpse briefly into the future. Until this spell ends, after a creature you can see performs a Check, if it was not a <strong>fumble</strong> nor a <strong>critical success</strong>, you may force that creature to reroll both dice. Once you have forced <strong>two</strong> rerolls this way, this spell ends.</p>",
-          "details_roller": "Show",
           "duration": "Scene",
           "effect_table": {
             "0": {
@@ -2253,9 +2656,7 @@
           "gadget_infusion_tier": "",
           "gadget_magitech_tier": "",
           "heroic_requirement": "",
-          "id": "FBWC6v9hhDqMlIaZ",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/divination.png",
           "isCheck": false,
           "isFacet": true,
           "isHeroic": false,
@@ -2279,8 +2680,7 @@
           "skill_type": "Spell",
           "target_eligibility": "",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.FBWC6v9hhDqMlIaZ"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -2405,6 +2805,74 @@
       "type": "equippableItem"
     },
     {
+      "_id": "gbwC7vk4bsQ56Knr",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782551343860,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        },
+        "fabula-ultima-companion": {
+          "coreAction": "study"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/book.png",
+      "name": "Encyclopedia Strike",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "IJPsdKmEyzpLjJu6",
+        "props": {
+          "cost": "",
+          "damage_bonus": "17",
+          "description": "<p>As a Skill Action, perform a free ranged attack with the Encyclopedia dealing +10 bonus damage (HR + 17 Physical). The Encyclopedia is then unequipped and vanishes from your inventory until the end of the scene; you may immediately perform an Equipment action as a Free Action.</p>",
+          "effect_table": {
+            "0": {
+              "chain_steps": "encstrike_hide,encstrike_equip",
+              "effect_kind": "chain",
+              "effect_label": "encstrike_chain"
+            },
+            "1": {
+              "effect_kind": "hide_item",
+              "effect_label": "encstrike_hide"
+            },
+            "2": {
+              "action_ref": "equipment",
+              "effect_kind": "free_action",
+              "effect_label": "encstrike_equip",
+              "free_of_cost": "true"
+            }
+          },
+          "isCheck": true,
+          "isReaction": false,
+          "max_level": "1",
+          "name": "Encyclopedia Strike",
+          "on_activate_effect_ref": "encstrike_chain",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "INS",
+          "skill_range": "Ranged",
+          "skill_target": "One Enemy",
+          "skill_type": "Active",
+          "type_damage": "Physical"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": true,
+        "uniqueId": "TouMdewrn3xPmsMj"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "GLE6h2EmyLBSYgRX",
       "_stats": {
         "compendiumSource": "Item.ROQw6telXF9qyZC8",
@@ -2414,6 +2882,71 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "1GllAe9pWMHjisGF",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1782556389023,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "flags.fabula-ultima-companion.affinity_class_strike",
+              "mode": 5,
+              "priority": 20,
+              "value": "IM"
+            },
+            {
+              "key": "flags.fabula-ultima-companion.damage_taken_mult",
+              "mode": 1,
+              "priority": 20,
+              "value": "2"
+            }
+          ],
+          "description": "<p>Gain resistance to <span style=\"text-decoration:underline\"><span style=\"font-family:Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;scrollbar-color:var(--color-scrollbar) var(--color-scrollbar-track);cursor:pointer;--content-link-background:rgba(0, 0, 0, 0.1);background-image:none !important;background-position:initial !important;background-size:initial !important;background-repeat:initial !important;background-attachment:initial !important;background-origin:initial !important;background-clip:initial !important;background-color:rgb(102, 102, 102);padding:0px !important;border:none !important;border-radius:2px;white-space:nowrap;word-break:break-all;color:rgb(72, 199, 116) !important;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:rgb(168, 255, 187) 0px 0px 4px;font-family:Signika, sans-serif;font-size:14px;font-style:normal;font-variant-ligatures:normal;font-variant-caps:normal;letter-spacing:normal;orphans:2;text-align:start;text-indent:0px;text-transform:none;widows:2;word-spacing:0px;-webkit-text-stroke-width:0px\"><strong><span style=\"text-decoration:underline\">Air</span></strong></a><strong><span style=\"text-decoration:underline\"> </span></strong><span style=\"text-decoration:underline\">damage</span></span></span></p>",
+          "disabled": true,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": 1,
+            "startTime": 298800,
+            "startTurn": 2,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "1GllAe9pWMHjisGF",
+              "originalParentId": "GLE6h2EmyLBSYgRX",
+              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.GLE6h2EmyLBSYgRX.ActiveEffect.1GllAe9pWMHjisGF"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+          "name": "Ghostly Sheet",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "3.2.4"
@@ -2457,7 +2990,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -2476,8 +3008,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "mSqhjefLPKGzHt9s",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Image/Ghastly%20Sheet.webp",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -2508,7 +3038,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.srAH3OHOoK0tvFih.Item.mSqhjefLPKGzHt9s",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -2673,7 +3202,6 @@
           "damage_bonus": "",
           "defense_target_type": "def",
           "description": "<p>Your maximum Hit Points are permanently increased by an amount equal to your base <strong>Insight</strong> die size (update your maximum HP if this size changes).</p><p>When a conflict scene begins, if you have learned the <strong>Divination</strong> spell, you gain <strong>1 Prophecy Point</strong>. You also gain <strong>1 Prophecy Point</strong> at the start of each even-numbered round (regardless of whether you have learned Divination). You lose all Prophecy Points at the end of each scene.</p><p>When <strong>one or more allies</strong> are threatened by a single attack, spell, or other danger, you may spend <strong>1 Prophecy Point</strong> to take the place of all those allies (any Checks that are part of the danger will be performed against you; you may declare the use of this Skill before or after the Checks have been made). The danger will affect you once for each creature it was threatening (including yourself, if you were among those creatures). Resolve each of these instances separately.</p>",
-          "details_roller": "Show",
           "duration": "",
           "effect_table": {
             "0": {
@@ -2733,9 +3261,7 @@
           "gadget_infusion_tier": "",
           "gadget_magitech_tier": "",
           "heroic_requirement": "You must have mastered one or more Classes among Entropist and Guardian.",
-          "id": "gm2w1NLdaEI7SzaQ",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/nocturnal_sect.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": true,
@@ -2782,8 +3308,7 @@
           "skill_type": "Passive",
           "target_eligibility": "",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.gm2w1NLdaEI7SzaQ"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -2919,6 +3444,7 @@
             }
           },
           "isCheck": false,
+          "name": "Grape Juice",
           "on_activate_effect_ref": "grapejuice_restore",
           "skill_target": "One Ally",
           "skill_type": "Item",
@@ -3166,7 +3692,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -3185,8 +3710,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "hxPlRSwOxHShzdRK",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/beast.png",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -3204,6 +3727,14 @@
           "item_quantity": "1",
           "item_rarity": "Rare",
           "item_skill_active": {
+            "O7KjXoyMd4zoGh5c": {
+              "id": "${item.id}",
+              "name": "Draconic Roar",
+              "skill_cost": "30 MP",
+              "skill_description": "<p>Unleash a terrifying roar. Deals <strong>【HR+13】 Non-Elemental damage</strong> to all enemies and inflicts each with a random <strong>Basic Debuff</strong>.</p><p>An enemy whose Level is lower than yours is afflicted by an even <strong>stronger debuff</strong> instead.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.O7KjXoyMd4zoGh5c"
+            },
             "Qd9b9T6zTFKe9aP7": {
               "id": "${item.id}",
               "name": "Draconic Roar",
@@ -3228,6 +3759,12 @@
           "optional_params": {},
           "plant_ef": "100",
           "related_item_list": {
+            "O7KjXoyMd4zoGh5c": {
+              "id": "${item.id}",
+              "name": "Draconic Roar",
+              "related_item_description": "<p>Unleash a terrifying roar. Deals <strong>【HR+13】 Non-Elemental damage</strong> to all enemies and inflicts each with a random <strong>Basic Debuff</strong>.</p><p>An enemy whose Level is lower than yours is afflicted by an even <strong>stronger debuff</strong> instead.</p>",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.O7KjXoyMd4zoGh5c"
+            },
             "Qd9b9T6zTFKe9aP7": {
               "id": "${item.id}",
               "name": "Draconic Roar",
@@ -3249,7 +3786,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.hxPlRSwOxHShzdRK",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -3273,6 +3809,9 @@
       "flags": {
         "custom-system-builder": {
           "version": "3.2.4"
+        },
+        "fabula-ultima-companion": {
+          "hiddenUntilBattleEnd": false
         },
         "fucompanion": {
           "itemMigratorBackup": {
@@ -3328,7 +3867,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "7",
@@ -3347,11 +3885,9 @@
           "hand_slots": "Two-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "IJPsdKmEyzpLjJu6",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/book.png",
           "insect_ef": "100",
           "ip_cost": "",
-          "isEquipped": false,
+          "isEquipped": true,
           "isKey": false,
           "isMartial": false,
           "isModule": false,
@@ -3365,12 +3901,46 @@
           "item_mdef_bonus": "0",
           "item_quantity": "1",
           "item_rarity": "Common",
+          "item_skill_active": {
+            "gbwC7vk4bsQ56Knr": {
+              "id": "${item.id}",
+              "name": "Encyclopedia Strike",
+              "skill_cost": "",
+              "skill_description": "<p>As a Skill Action, perform a free ranged attack with the Encyclopedia dealing +10 bonus damage (HR + 17 Physical). The Encyclopedia is then unequipped and vanishes from your inventory until the end of the scene; you may immediately perform an Equipment action as a Free Action.</p>",
+              "skill_maxLevel": 1,
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.gbwC7vk4bsQ56Knr"
+            }
+          },
+          "item_skill_passive": {
+            "pJES3zgWibJ7kiaq": {
+              "id": "${item.id}",
+              "name": "Encyclopedia (Passive)",
+              "skill_cost": "",
+              "skill_description": "<p>Equipped passive: +2 to Study Checks.</p>",
+              "skill_maxLevel": 1,
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.pJES3zgWibJ7kiaq"
+            }
+          },
           "item_type": "weapon",
           "mimic_ef": "100",
           "monster_ef": "100",
           "name": "Encyclopedia",
           "optional_params": {},
           "plant_ef": "100",
+          "related_item_list": {
+            "gbwC7vk4bsQ56Knr": {
+              "id": "${item.id}",
+              "name": "Encyclopedia Strike",
+              "related_item_description": "<p>As a Skill Action, perform a free ranged attack with the Encyclopedia dealing +10 bonus damage (HR + 17 Physical). The Encyclopedia is then unequipped and vanishes from your inventory until the end of the scene; you may immediately perform an Equipment action as a Free Action.</p>",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.gbwC7vk4bsQ56Knr"
+            },
+            "pJES3zgWibJ7kiaq": {
+              "id": "${item.id}",
+              "name": "Encyclopedia (Passive)",
+              "related_item_description": "<p>Equipped passive: +2 to Study Checks.</p>",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.pJES3zgWibJ7kiaq"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "INS",
           "rolled_atr2": "INS",
@@ -3379,7 +3949,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.IJPsdKmEyzpLjJu6",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -3460,7 +4029,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -3479,8 +4047,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "irzhS1BV9TsO7xlb",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/533.png",
           "insect_ef": "100",
           "ip_cost": "1",
           "isEquipped": false,
@@ -3506,6 +4072,14 @@
               "skill_maxLevel": 1,
               "uuid": "Actor.dafTLBUscCDNgq8H.Item.9FXaNplA7UfZ5y98"
             },
+            "h5q0pBru1vCPJ6Pr": {
+              "id": "${item.id}",
+              "name": "Grape Juice",
+              "skill_cost": "-",
+              "skill_description": "<p><em>Grape Juice:</em> target ally recovers 20 MP.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.h5q0pBru1vCPJ6Pr"
+            },
             "lbsUVF4g4J4Q6pYl": {
               "id": "${item.id}",
               "name": "Grape Juice",
@@ -3528,6 +4102,12 @@
               "related_item_description": "<ul><li><p>Target creature <strong>recovers 20 MP</strong></p></li></ul>",
               "uuid": "Actor.dafTLBUscCDNgq8H.Item.9FXaNplA7UfZ5y98"
             },
+            "h5q0pBru1vCPJ6Pr": {
+              "id": "${item.id}",
+              "name": "Grape Juice",
+              "related_item_description": "<p><em>Grape Juice:</em> target ally recovers 20 MP.</p>",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.h5q0pBru1vCPJ6Pr"
+            },
             "lbsUVF4g4J4Q6pYl": {
               "id": "${item.id}",
               "name": "Grape Juice",
@@ -3543,7 +4123,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.irzhS1BV9TsO7xlb",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -3592,7 +4171,6 @@
           "damage_bonus": "15",
           "defense_target_type": "mdef",
           "description": "<p>You consume a creature's psyche. The target loses <strong>【HR + 20】</strong> Mind Points. Then, you recover an amount of Mind Points equal to half the Mind Points loss they suffered (if the loss was reduced to 0 in some way, you recover none).</p>",
-          "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
@@ -3637,9 +4215,7 @@
           "gadget_infusion_tier": "",
           "gadget_magitech_tier": "",
           "heroic_requirement": "",
-          "id": "jb0jobWNa9rlKKjN",
           "ignore_hr": false,
-          "img": "icons/magic/death/hand-undead-skeleton-fire-pink.webp",
           "isCheck": true,
           "isFacet": true,
           "isHeroic": false,
@@ -3663,8 +4239,7 @@
           "skill_type": "Spell",
           "target_eligibility": "",
           "type_damage": "MP",
-          "use_optional_params": false,
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.jb0jobWNa9rlKKjN"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -3707,7 +4282,6 @@
           "damage_bonus": "",
           "defense_target_type": "def",
           "description": "<p>When Hina change the outcome of check (fail&gt; success or success&gt;fail), she gain 1 zero trigger.</p>",
-          "details_roller": "Show",
           "duration": "-",
           "effect_table": {
             "0": {
@@ -3733,9 +4307,7 @@
             }
           },
           "heroic_requirement": "",
-          "id": "Jfwp8uU0Ntyqhcjj",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Ain/APHA.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -3765,8 +4337,7 @@
           "skill_target": "-",
           "skill_type": "Passive",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.Jfwp8uU0Ntyqhcjj"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -3901,6 +4472,66 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "loJVZKaVMt8VxzCI"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "L1vZvNSNxlYlrQhu",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782542203691,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/Genshin/Elegy_for_the_End.png",
+      "name": "Starfall",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "zEo3OgMcD2P3ug1o",
+        "props": {
+          "cost": "30 MP",
+          "description": "<p><strong>Roulette Enemy.</strong> Summon 3 comets to fall on random enemies (repeats allowed). Each deals <strong>【HR+15】 Light damage</strong>.</p>",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "chain_repeat": "3",
+              "chain_steps": "starfall_comet_cast",
+              "effect_kind": "chain",
+              "effect_label": "starfall_chain"
+            },
+            "1": {
+              "$deleted": false,
+              "action_ref": "Starfall Comet",
+              "effect_kind": "free_action",
+              "effect_label": "starfall_comet_cast",
+              "free_of_cost": "true"
+            }
+          },
+          "isCheck": false,
+          "isOffensiveSpell": false,
+          "name": "Starfall",
+          "on_activate_effect_ref": "starfall_chain",
+          "skill_range": "Range",
+          "skill_target": "Self",
+          "skill_type": "Spell",
+          "type_damage": ""
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "L1vZvNSNxlYlrQhu"
       },
       "type": "equippableItem"
     },
@@ -4542,6 +5173,77 @@
       "type": "equippableItem"
     },
     {
+      "_id": "O7KjXoyMd4zoGh5c",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782538262044,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/beast.png",
+      "name": "Draconic Roar",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "hxPlRSwOxHShzdRK",
+        "props": {
+          "cost": "30 MP",
+          "description": "<p>Unleash a terrifying roar. Deals <strong>【HR+13】 Non-Elemental damage</strong> to all enemies and inflicts each with a random <strong>Basic Debuff</strong>.</p><p>An enemy whose Level is lower than yours is afflicted by an even <strong>stronger debuff</strong> instead.</p>",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "chain_steps": "roar_damage,roar_debuff",
+              "effect_kind": "chain",
+              "effect_label": "roar_chain"
+            },
+            "1": {
+              "$deleted": false,
+              "attacker_name": "Draconic Roar",
+              "damage_amount": "HR + 13",
+              "damage_element": "none",
+              "damage_ignore_affinity": true,
+              "effect_kind": "deal_damage",
+              "effect_label": "roar_damage",
+              "target_ref": "hit_action_targets"
+            },
+            "2": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_name_pool": "Dazed,Shaken,Slow,Weak",
+              "ae_name_pool_alt": "Enraged,Poisoned",
+              "ae_pool_alt_condition": "TARGET_LEVEL < CHAR_LEVEL",
+              "effect_kind": "apply_ae",
+              "effect_label": "roar_debuff",
+              "target_ref": "hit_action_targets"
+            }
+          },
+          "isCheck": true,
+          "isOffensiveSpell": false,
+          "name": "Draconic Roar",
+          "on_activate_effect_ref": "roar_chain",
+          "skill_target": "All Enemy",
+          "skill_type": "Active",
+          "type_damage": ""
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "O7KjXoyMd4zoGh5c"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "oe3OP8VmjHJpWJ41",
       "_stats": {
         "compendiumSource": "Item.wXvaSpnM04KZ2QFA",
@@ -4577,7 +5279,6 @@
           "damage_bonus": "",
           "defense_target_type": "def",
           "description": "<p>Choose and trigger <strong>3 Opportunity choice. </strong><em>(The same Opportunity cannot be chosen twice)</em></p>",
-          "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
@@ -4590,9 +5291,7 @@
             }
           },
           "heroic_requirement": "",
-          "id": "oe3OP8VmjHJpWJ41",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Add/DissemblerSkill9.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -4605,7 +5304,6 @@
           "on_activate_effect_ref": "million_opp",
           "optional_params": {},
           "reaction_config_table": {},
-          "reaction_effect_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
@@ -4615,8 +5313,7 @@
           "skill_target": "Self",
           "skill_type": "Active",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.oe3OP8VmjHJpWJ41"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -4704,7 +5401,6 @@
       "sort": 0,
       "system": {
         "props": {
-          "action_keywords": "pierce",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -4714,12 +5410,9 @@
           "damage_bonus": "25",
           "defense_target_type": "def",
           "description": "<p>A pillar of ice magic envelops your foe, suddenly dropping their body temperature to a critical level. The target suffers <strong>【HR + 25】</strong><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(166, 227, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span> damage. </p><p>Damage dealt by this spell ignores Resistances.</p>",
-          "details_roller": "Show",
           "duration": "Instantaneous",
           "heroic_requirement": "",
-          "id": "pcCBP65FqbsMOF0h",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/EMTrans6.png",
           "isCheck": true,
           "isFacet": true,
           "isHeroic": false,
@@ -4731,7 +5424,6 @@
           "name": "Iceberg",
           "optional_params": {},
           "reaction_config_table": {},
-          "reaction_effect_table": {},
           "rolled_atr1": "INS",
           "rolled_atr2": "WLP",
           "skill_animation_default": "",
@@ -4741,8 +5433,7 @@
           "skill_target": "One creature",
           "skill_type": "Spell",
           "type_damage": "Ice",
-          "use_optional_params": false,
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.pcCBP65FqbsMOF0h"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -4784,7 +5475,6 @@
           "beast_ef": "100",
           "category": "Spear",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "1",
           "construct_ef": "100",
           "damage_bonus": "12",
@@ -4802,8 +5492,6 @@
           "hand_slots": "Two-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "Pf1vhSjtOOTBXFkB",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -4834,7 +5522,6 @@
           "spirit_ef": "100",
           "type_damage": "Dark",
           "undead_ef": "100",
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.Pf1vhSjtOOTBXFkB",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -4842,6 +5529,62 @@
         "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "jqykkhAB5m9durso"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "pJES3zgWibJ7kiaq",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782550205118,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        },
+        "fabula-ultima-companion": {
+          "coreAction": "study"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/book.png",
+      "name": "Encyclopedia (Passive)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "IJPsdKmEyzpLjJu6",
+        "props": {
+          "cost": "",
+          "description": "<p>Equipped passive: +2 to Study Checks.</p>",
+          "effect_table": {
+            "0": {
+              "check_buff_action": "study",
+              "check_buff_amount": "2",
+              "effect_kind": "check_buff",
+              "effect_label": "enc_study_buff"
+            }
+          },
+          "isCheck": false,
+          "isReaction": false,
+          "max_level": "1",
+          "name": "Encyclopedia (Passive)",
+          "on_activate_effect_ref": "",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "INS",
+          "skill_target": "",
+          "skill_type": "Passive"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": true,
+        "uniqueId": "QjuNoo0rGl9iUWiO"
       },
       "type": "equippableItem"
     },
@@ -4880,7 +5623,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "6",
@@ -4890,7 +5632,6 @@
           "dragon_ef": "100",
           "elemental_ef": "100",
           "enforcer_ef": "100",
-          "equipped": true,
           "fey_ef": "100",
           "flora_ef": "100",
           "fungus_ef": "100",
@@ -4899,8 +5640,6 @@
           "hand_slots": "Two-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "qXvY2q2G2bjHFdu1",
-          "img": "icons/sundries/books/book-embossed-gold-green.webp",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -4932,7 +5671,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.qXvY2q2G2bjHFdu1",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -5001,7 +5739,6 @@
           "max_level": "3",
           "name": "Magical Artillery",
           "optional_params": {},
-          "passive_check_bonus_formula": "",
           "passive_logic_action": "",
           "reaction_config_table": {
             "0": {
@@ -5827,7 +6564,6 @@
           "damage_bonus": "",
           "defense_target_type": "def",
           "description": "<p>You imbue a weapon with elemental energy. Choose a damage type: <strong>air, bolt, earth, fire, or ice.</strong> Until this spell ends, all damage dealt by the weapon becomes of the chosen damage type. If you have that weapon equipped while you cast this spell, you may perform a <strong>free attack</strong> with it as part of the same action.</p><p> This spell can only be cast on a weapon equipped by a willing creature</p>",
-          "details_roller": "Show",
           "duration": "Scene",
           "effect_table": {
             "0": {
@@ -5924,9 +6660,7 @@
             }
           },
           "heroic_requirement": "",
-          "id": "TPnGoyaq70WSBzmj",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/EMTrans1.png",
           "isCheck": false,
           "isFacet": true,
           "isHeroic": false,
@@ -5940,7 +6674,6 @@
           "optional_params": {},
           "pre_activate_effect_ref": "ew_menu",
           "reaction_config_table": {},
-          "reaction_effect_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
@@ -5950,8 +6683,7 @@
           "skill_target": "One Weapon",
           "skill_type": "Spell",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.TPnGoyaq70WSBzmj"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -5995,7 +6727,6 @@
           "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<p>As long as you are suffering from one or more status effects, you gain the following effects:</p><ul><li><p>+1 bonus on all Checks for every status effect you are suffering from (up to a maximum of +3),</p></li><li><p>You deal 2 extra damage for every status effect you are suffering from <em>(be it with attacks, spells, Arcana, items or any other method; up to a maximum of 6 extra damage)</em>.</p></li></ul>",
-          "details_roller": "Show",
           "duration": "",
           "effect_table": {
             "0": {
@@ -6027,9 +6758,7 @@
           "gadget_infusion_tier": "",
           "gadget_magitech_tier": "",
           "heroic_requirement": "You must have mastered the Darkblade Class.",
-          "id": "TW4MHSzMcFgOQA4o",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/living_shadow.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": true,
@@ -6041,8 +6770,6 @@
           "name": "Adversity",
           "on_activate_effect_ref": "",
           "optional_params": {},
-          "passive_check_bonus_formula": "",
-          "passive_damage_bonus_formula": "",
           "pre_activate_effect_ref": "",
           "reaction_config_table": {
             "0": {
@@ -6099,8 +6826,7 @@
           "skill_type": "Passive",
           "target_eligibility": "",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.TW4MHSzMcFgOQA4o"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -6323,7 +7049,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782528224801,
+        "createdTime": 1782560293560,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -6485,7 +7211,6 @@
           "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points</strong>.</p><hr><p><strong>Skill Enhancement Lv. 20</strong> — The amount of Hit Points recovered increases to <strong>50</strong>.</p><p><strong>Skill Enhancement Lv. 40</strong> — The amount of Hit Points recovered increases to <strong>60</strong>.</p>",
-          "details_roller": "Show",
           "duration": "-",
           "effect_table": {
             "0": {
@@ -6498,9 +7223,7 @@
             }
           },
           "heroic_requirement": "",
-          "id": "Wtcdd42MQHwsOsSe",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/assize.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -6513,7 +7236,6 @@
           "on_activate_effect_ref": "heal_hp",
           "optional_params": {},
           "reaction_config_table": {},
-          "reaction_effect_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
@@ -6523,8 +7245,7 @@
           "skill_target": "Up to three creatures",
           "skill_type": "Spell",
           "type_damage": "healing",
-          "use_optional_params": false,
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.Wtcdd42MQHwsOsSe"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -6705,7 +7426,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "3",
@@ -6723,11 +7443,9 @@
           "hand_slots": "Two-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "XVCbb7lj05eYPQ3f",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Stave/Icon-Budding_Maple_Wand.webp",
           "insect_ef": "100",
           "ip_cost": "",
-          "isEquipped": true,
+          "isEquipped": false,
           "isKey": false,
           "isMartial": false,
           "isModule": false,
@@ -6741,6 +7459,16 @@
           "item_mdef_bonus": "0",
           "item_quantity": "1",
           "item_rarity": "Uncommon",
+          "item_skill_active": {
+            "oHXhszjXVKD0opBr": {
+              "id": "${item.id}",
+              "name": "Heal",
+              "skill_cost": "10 x T MP",
+              "skill_description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points</strong>.</p><hr><p><strong>Skill Enhancement Lv. 20</strong> — The amount of Hit Points recovered increases to <strong>50</strong>.</p><p><strong>Skill Enhancement Lv. 40</strong> — The amount of Hit Points recovered increases to <strong>60</strong>.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.oHXhszjXVKD0opBr"
+            }
+          },
           "item_type": "weapon",
           "mimic_ef": "100",
           "monster_ef": "100",
@@ -6759,6 +7487,12 @@
               "name": "Heal",
               "related_item_description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points.</strong></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>The amount of Hit Points recovers increase to <strong>50</strong></p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>The amount of Hit Points recovers increase to <strong>60</strong></p>",
               "uuid": "Item.iJXsSCRucVWJNRed"
+            },
+            "oHXhszjXVKD0opBr": {
+              "id": "${item.id}",
+              "name": "Heal",
+              "related_item_description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points</strong>.</p><hr><p><strong>Skill Enhancement Lv. 20</strong> — The amount of Hit Points recovered increases to <strong>50</strong>.</p><p><strong>Skill Enhancement Lv. 40</strong> — The amount of Hit Points recovered increases to <strong>60</strong>.</p>",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.oHXhszjXVKD0opBr"
             }
           },
           "reptilian_ef": "100",
@@ -6769,7 +7503,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.XVCbb7lj05eYPQ3f",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -6815,7 +7548,6 @@
           "damage_bonus": "15",
           "defense_target_type": "def",
           "description": "<p>You coat your foes under a thick layer of frost. Each target hit by this spell suffers <strong>【HR + 15】</strong><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(166, 227, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span> damage.</p><p><strong>Opportunity:</strong> Each target hit by this spell suffers <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span></p>",
-          "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
@@ -6829,9 +7561,7 @@
             }
           },
           "heroic_requirement": "",
-          "id": "yKqv5PofnFTTRRMI",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/AishaS9.png",
           "isCheck": true,
           "isFacet": true,
           "isHeroic": false,
@@ -6844,7 +7574,6 @@
           "on_activate_effect_ref": "glacies_opportunity",
           "optional_params": {},
           "reaction_config_table": {},
-          "reaction_effect_table": {},
           "rolled_atr1": "INS",
           "rolled_atr2": "WLP",
           "skill_animation_default": "",
@@ -6854,8 +7583,7 @@
           "skill_target": "Up to three creatures",
           "skill_type": "Spell",
           "type_damage": "Ice",
-          "use_optional_params": false,
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.yKqv5PofnFTTRRMI"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -6913,7 +7641,6 @@
           "damage_bonus": "",
           "defense_target_type": "mdef",
           "description": "<p>You trap a foe inside a circle of altered time and space. The target will perform one fewer action on their next turn <em>(to a minimum of 0 actions).</em></p>",
-          "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
@@ -6926,9 +7653,7 @@
             }
           },
           "heroic_requirement": "",
-          "id": "z1GsqcJC8bh4TOAs",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/DWTrans5.png",
           "isCheck": true,
           "isFacet": true,
           "isHeroic": false,
@@ -6941,7 +7666,6 @@
           "on_activate_effect_ref": "stop_slow",
           "optional_params": {},
           "reaction_config_table": {},
-          "reaction_effect_table": {},
           "rolled_atr1": "INS",
           "rolled_atr2": "WLP",
           "skill_animation_default": "",
@@ -6951,8 +7675,7 @@
           "skill_target": "One creature",
           "skill_type": "Spell",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.z1GsqcJC8bh4TOAs"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -7030,7 +7753,6 @@
           "beast_ef": "100",
           "category": "Bow",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "1",
           "construct_ef": "100",
           "damage_bonus": "6",
@@ -7038,6 +7760,7 @@
           "demon_ef": "100",
           "description": "<ul><li><p>Attack with this weapon ignores <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Hidden</span></strong></a></span></span></p></li><li><p>You may cast the spell <strong>【</strong>⚡<strong>Starfall】</strong></p></li></ul>",
           "dragon_ef": "100",
+          "effect_table": {},
           "elemental_ef": "100",
           "enforcer_ef": "100",
           "fey_ef": "100",
@@ -7049,11 +7772,12 @@
           "hand_slots": "Two-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "zEo3OgMcD2P3ug1o",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/Genshin/Elegy_for_the_End.png",
+          "ingredient_taste": "",
+          "ingredient_taste2": "",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
+          "isIngredient": false,
           "isKey": false,
           "isMartial": true,
           "isModule": false,
@@ -7068,6 +7792,30 @@
           "item_quantity": "1",
           "item_rarity": "Rare",
           "item_skill_active": {
+            "3jT2QfRSixKYGLMZ": {
+              "id": "${item.id}",
+              "name": "Starfall Comet",
+              "skill_cost": 0,
+              "skill_description": "<p>A single Starfall comet. Deals <strong>【HR+15】 Light damage</strong> to one random enemy.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.3jT2QfRSixKYGLMZ"
+            },
+            "L1vZvNSNxlYlrQhu": {
+              "id": "${item.id}",
+              "name": "Starfall",
+              "skill_cost": "30 MP",
+              "skill_description": "<p><strong>Roulette Enemy.</strong> Summon 3 comets to fall on random enemies (repeats allowed). Each deals <strong>【HR+15】 Light damage</strong>.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.L1vZvNSNxlYlrQhu"
+            },
+            "N8yUQ5shy1kYfjn1": {
+              "id": "${item.id}",
+              "name": "Starfall",
+              "skill_cost": "30 MP",
+              "skill_description": "<p><strong>Roulette Enemy.</strong> Summon comets to fall on random enemies. Deals <strong>【HR+15】 Light damage</strong>. Repeat this <strong>3 times</strong>.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.N8yUQ5shy1kYfjn1"
+            },
             "b760w07CqhFF1rDJ": {
               "id": "${item.id}",
               "name": "Starfall",
@@ -7091,7 +7839,30 @@
           "name": "Lunar Bow",
           "optional_params": {},
           "plant_ef": "100",
+          "reaction_config_table": {},
+          "recipe_dish_uuid": "",
+          "recipe_kind": "",
+          "refine_count": "0",
+          "refine_level": "0",
           "related_item_list": {
+            "3jT2QfRSixKYGLMZ": {
+              "id": "${item.id}",
+              "name": "Starfall Comet",
+              "related_item_description": "<p>A single Starfall comet. Deals <strong>【HR+15】 Light damage</strong> to one random enemy.</p>",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.3jT2QfRSixKYGLMZ"
+            },
+            "L1vZvNSNxlYlrQhu": {
+              "id": "${item.id}",
+              "name": "Starfall",
+              "related_item_description": "<p><strong>Roulette Enemy.</strong> Summon 3 comets to fall on random enemies (repeats allowed). Each deals <strong>【HR+15】 Light damage</strong>.</p>",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.L1vZvNSNxlYlrQhu"
+            },
+            "N8yUQ5shy1kYfjn1": {
+              "id": "${item.id}",
+              "name": "Starfall",
+              "related_item_description": "<p><strong>Roulette Enemy.</strong> Summon comets to fall on random enemies. Deals <strong>【HR+15】 Light damage</strong>. Repeat this <strong>3 times</strong>.</p>",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.N8yUQ5shy1kYfjn1"
+            },
             "Zcz1y0z4DrAHfx76": {
               "id": "${item.id}",
               "name": "Starfall",
@@ -7115,11 +7886,11 @@
           "rolled_atr1": "DEX",
           "rolled_atr2": "INS",
           "set_name": "",
+          "skill_target": "One Enemy",
           "soldier_ef": "100",
           "spirit_ef": "100",
           "type_damage": "Light",
           "undead_ef": "100",
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.zEo3OgMcD2P3ug1o",
           "vehicle_ef": "100",
           "weapon_range": "Ranged"
         },
@@ -8547,9 +9318,9 @@
       "magic_defense": 12,
       "magic_defense_mod": "0",
       "main_attrib_1": "INS",
-      "main_attrib_2": "WLP",
-      "main_details": "<ul><li><p>You may cast the spell 【📕Heal】</p></li></ul>",
-      "main_hand": "Budding Maple Wand",
+      "main_attrib_2": "INS",
+      "main_details": "<ul><li><p>You gain +2 to <strong>Study </strong>Checks</p></li><li><p>As a <strong>【Skill】</strong>Action, you may perform a <strong>Free Attack </strong>with this weapon, this attack range becomes <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Fcq1HgCEh3jxxELa\" data-id=\"Fcq1HgCEh3jxxELa\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Range</span></strong></a></span><strong>, </strong>and deal 10 bonus damage. <strong>Unequip </strong>this weapon, it disappear from your inventory until the end of this scene, Then, you may perform the <strong>【Equipment】</strong>Action as a Free Action.</p></li></ul>",
+      "main_hand": "Encyclopedia",
       "main_hand_attack": "",
       "manadrain_percentage": 0,
       "manadrain_value": 0,
@@ -9731,9 +10502,9 @@
       "turbulence_status": 0,
       "uuid": "Actor.dafTLBUscCDNgq8H",
       "weak_status": 0,
-      "weapon1_base_damage": "3",
+      "weapon1_base_damage": "7",
       "weapon1_base_mod": "0",
-      "weapon1_damage": 3,
+      "weapon1_damage": 7,
       "weapon1_damagetype": "Physical",
       "weapon1_mod": 0,
       "weapon2_damagetype": "-",

@@ -1345,7 +1345,22 @@ function getBaseValueForChange(actor, change) {
   // This creates the source baseline used by false gates.
   // ------------------------------------------------------------
 
+  // Seed AE multiply-accumulator flags to their identity (1) BEFORE every change
+  // application pass. Two reasons: (a) Foundry's MULTIPLY mode over an undefined
+  // value yields NaN (which is then dropped), so a stacking ×N flag needs a numeric
+  // base of 1 to exist first; (b) applyActiveEffects re-applies all changes over the
+  // CURRENT prepared data each pass, so the base must reset to 1 every pass or the
+  // multiplier would compound across passes. This is what lets multiple items each
+  // carrying a `damage_taken_mult` ×N MULTIPLY change compose (two ×2 → ×4). Read by
+  // the incoming-damage ruleset (damage-ruleset.js / apply-damage-core.js).
+  function seedAeAccumulators(actor) {
+    try {
+      foundry.utils.setProperty(actor, "flags.fabula-ultima-companion.damage_taken_mult", 1);
+    } catch (_) { /* non-fatal: ruleset defaults to 1 on read */ }
+  }
+
   function withGatedActorChanges(actor, callback) {
+    if (actor) seedAeAccumulators(actor);
     if (!isEnabled()) return callback();
     if (!actor) return callback();
 

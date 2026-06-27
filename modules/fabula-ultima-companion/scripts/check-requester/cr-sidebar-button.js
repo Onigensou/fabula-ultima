@@ -48,6 +48,21 @@ Hooks.once("ready", () => {
     const ATTRS_A = ["DEX", "INS", "MIG", "WLP"];
     const ATTRS_B = ["—",   "DEX", "INS", "MIG", "WLP"]; // "—" = 1-die
 
+    // ── Check-buff actions (multi-select) ─────────────────────────────────
+    // The GM may tag a requested Check with one or more named actions. At roll
+    // time each tagged action is matched — purely BY STRING — against every
+    // selected actor's equipped-gear passive `check_buff` rows (check_buff_action
+    // csv), and any matching +N is folded into the roll as a modifier. This is
+    // the SAME engine the Study action already uses (sumEquippedCheckBuffs); the
+    // dropdown just exposes it for arbitrary checks. `value` is the lowercase
+    // token compared to check_buff_action (e.g. Encyclopedia carries "study").
+    const CHECK_BUFF_OPTIONS = [
+      { label: "Study",    value: "study" },
+      { label: "Stealth",  value: "stealth" },
+      { label: "Strength", value: "strength" },
+      { label: "Mobility", value: "mobility" },
+    ];
+
     // ── DB resolver ───────────────────────────────────────────────────────
     const loadPartyActors = async () => {
       try {
@@ -319,6 +334,30 @@ Hooks.once("ready", () => {
           }
           .oni-creq-hidden-dl-row input[type=checkbox] { width:auto; padding:0; margin:0; }
 
+          /* ── Check-buff multi-select dropdown ─────────────────────────── */
+          .oni-creq-msel { position:relative; }
+          .oni-creq-msel-toggle {
+            width:100%; display:flex; align-items:center; justify-content:space-between;
+            padding:5px 8px; border-radius:6px; font-size:12px; font-family:inherit;
+            border:1px solid rgba(0,0,0,.2); background:rgba(0,0,0,.04);
+            color:inherit; cursor:pointer; line-height:1.3;
+          }
+          .oni-creq-msel-toggle:hover { background:rgba(0,0,0,.07); }
+          .oni-creq-msel-summary { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; opacity:.85; }
+          .oni-creq-msel-caret { opacity:.5; font-size:10px; margin-left:6px; flex-shrink:0; }
+          .oni-creq-msel-menu {
+            display:none; position:absolute; left:0; right:0; top:calc(100% + 3px); z-index:6;
+            background:#f6ebd3; border:1px solid rgba(87,58,33,.55); border-radius:8px;
+            box-shadow:0 8px 20px rgba(0,0,0,.28); padding:4px; flex-direction:column; gap:1px;
+          }
+          .oni-creq-msel-menu.open { display:flex; }
+          .oni-creq-msel-opt {
+            display:flex; align-items:center; gap:7px; padding:5px 8px; border-radius:5px;
+            font-size:12px; font-weight:700; color:#2b1f17; cursor:pointer; user-select:none;
+          }
+          .oni-creq-msel-opt:hover { background:rgba(87,58,33,.10); }
+          .oni-creq-msel-opt input[type=checkbox] { width:auto; padding:0; margin:0; cursor:pointer; }
+
           /* ── Empty state ──────────────────────────────────────────────── */
           .oni-creq-empty { font-size:12px; opacity:.5; font-style:italic; padding:4px 0; }
         </style>
@@ -395,16 +434,36 @@ Hooks.once("ready", () => {
               <div class="oni-creq-field oni-creq-dl-wrap">
                 <div class="oni-creq-field-lbl" id="oni-creq-dl-lbl">DL</div>
                 <input type="number" id="oni-creq-dl" name="dl" value="10" min="1" max="40" step="1">
-                <label class="oni-creq-hidden-dl-row">
-                  <input type="checkbox" id="oni-creq-hidden-dl" name="hidden-dl" checked>
-                  <span>Hidden (DL ?)</span>
-                </label>
               </div>
               <div class="oni-creq-field">
                 <div class="oni-creq-field-lbl">Context (optional)</div>
                 <input type="text" id="oni-creq-ctx" name="context" placeholder="e.g. Escape the collapsing bridge…">
               </div>
             </div>
+
+            <!-- Check Buff (multi) — folds equipped check_buff +N for matching action(s) -->
+            <div class="oni-creq-field" style="margin-top:9px;">
+              <div class="oni-creq-field-lbl">Check Buff (applies equipped bonus)</div>
+              <div class="oni-creq-msel" id="oni-creq-buff-msel">
+                <button type="button" class="oni-creq-msel-toggle" id="oni-creq-buff-toggle" aria-expanded="false">
+                  <span class="oni-creq-msel-summary" id="oni-creq-buff-summary">None</span>
+                  <span class="oni-creq-msel-caret">▾</span>
+                </button>
+                <div class="oni-creq-msel-menu" id="oni-creq-buff-menu">
+                  ${CHECK_BUFF_OPTIONS.map(o => `
+                    <label class="oni-creq-msel-opt">
+                      <input type="checkbox" class="oni-creq-buff-cb" value="${o.value}">
+                      <span>${o.label}</span>
+                    </label>`).join("")}
+                </div>
+              </div>
+            </div>
+
+            <!-- Hidden DL toggle -->
+            <label class="oni-creq-hidden-dl-row" style="margin-top:9px;">
+              <input type="checkbox" id="oni-creq-hidden-dl" name="hidden-dl" checked>
+              <span>Hidden (DL ?)</span>
+            </label>
           </div>
 
         </div>
@@ -535,6 +594,33 @@ Hooks.once("ready", () => {
             }, { passive: false });
           });
 
+          // ── Check-buff multi-select dropdown ────────────────────────────
+          const buffMsel    = document.getElementById("oni-creq-buff-msel");
+          const buffToggle  = document.getElementById("oni-creq-buff-toggle");
+          const buffMenu    = document.getElementById("oni-creq-buff-menu");
+          const buffSummary = document.getElementById("oni-creq-buff-summary");
+          function updateBuffSummary() {
+            const on = [...document.querySelectorAll(".oni-creq-buff-cb:checked")]
+              .map(c => c.parentElement.querySelector("span")?.textContent ?? c.value);
+            if (buffSummary) buffSummary.textContent = on.length ? on.join(", ") : "None";
+          }
+          if (buffToggle && buffMenu) {
+            buffToggle.addEventListener("click", e => {
+              e.stopPropagation();
+              const open = buffMenu.classList.toggle("open");
+              buffToggle.setAttribute("aria-expanded", open ? "true" : "false");
+            });
+            buffMenu.addEventListener("change", updateBuffSummary);
+            // Close on click outside (scoped to the dialog body so the listener
+            // dies with the dialog — no global leak).
+            document.getElementById("oni-creq-body")?.addEventListener("click", e => {
+              if (buffMsel && !buffMsel.contains(e.target)) {
+                buffMenu.classList.remove("open");
+                buffToggle.setAttribute("aria-expanded", "false");
+              }
+            });
+          }
+
           // Expose mode getter for the dialog callback
           window.__oni_creq_getMode = () => currentMode;
         })();
@@ -575,6 +661,11 @@ Hooks.once("ready", () => {
                 const context   = root.querySelector('[name="context"]')?.value?.trim() ?? "";
                 const hiddenDl  = !!root.querySelector('[name="hidden-dl"]')?.checked;
 
+                // Check-buff actions (multi) — tags this Check with named actions
+                // whose equipped check_buff +N gets folded into each roll.
+                const checkBuffActions = [...root.querySelectorAll('.oni-creq-buff-cb:checked')]
+                  .map(el => el.value);
+
                 // ── SKILL CHECK ──────────────────────────────────────────
                 if (mode === "skill-check") {
                   const checkedUuids = [...root.querySelectorAll('input[name="actor"]:checked')]
@@ -605,6 +696,7 @@ Hooks.once("ready", () => {
                       postChat:     true,
                       context,
                       hiddenDl,
+                      checkBuffActions,
                     }));
                   } catch (e) {
                     console.error(TAG, e);
@@ -658,6 +750,7 @@ Hooks.once("ready", () => {
                     allowInvokes: true,
                     postChat:     true,
                     hiddenDl,
+                    checkBuffActions,
                   }));
                 } catch (e) {
                   if (e?.message?.includes("cancelled")) { resolve(null); return; }

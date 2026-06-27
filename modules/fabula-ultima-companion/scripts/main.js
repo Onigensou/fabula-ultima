@@ -153,6 +153,47 @@ Hooks.once("ready", async () => {
 });
 
 /* ================================
+ *  Equipped-gear grant projection heal
+ * ================================ */
+
+// A gear item that grants a castable `_skill` while equipped exposes it via the
+// DERIVED `system.props.item_skill_active` projection (keyed by linked skill id).
+// On a cold load (F5) the gear's container projection can prepare BEFORE its
+// linked `_skill` data is ready, leaving entries with an empty `uuid` and an
+// unrendered `id` ("${item.id}"). Consumers keyed on that uuid then silently
+// drop the grant — e.g. the Spell/Skill picker omits the granted spell, so an
+// equipped Lunar Bow's "Starfall" vanishes from the menu until something re-
+// derives the gear. A single re-prepareData() rebuilds the projection cleanly.
+// We do it once at ready for every actor-owned gear whose projection looks half
+// baked, healing it for ALL consumers (picker, cast path, compose-action).
+function healGearSkillGrantProjections() {
+  const isBroken = (proj) => {
+    if (!proj || typeof proj !== "object") return false;
+    return Object.values(proj).some(
+      (e) => e && (!e.uuid || /\$\{/.test(String(e.id ?? ""))),
+    );
+  };
+  let healed = 0;
+  for (const actor of game.actors ?? []) {
+    for (const item of actor.items ?? []) {
+      if (!isBroken(item.system?.props?.item_skill_active)) continue;
+      try {
+        item.prepareData();
+        if (!isBroken(item.system?.props?.item_skill_active)) healed++;
+      } catch (e) {
+        console.warn(`[${MODULE_ID}] gear grant heal failed for ${item.name}`, e);
+      }
+    }
+  }
+  if (healed) console.debug(`[${MODULE_ID}] healed ${healed} equipped-gear skill-grant projection(s)`);
+}
+
+Hooks.once("ready", () => {
+  try { healGearSkillGrantProjections(); }
+  catch (e) { console.warn(`[${MODULE_ID}] healGearSkillGrantProjections threw`, e); }
+});
+
+/* ================================
  *  Local helpers used by demos
  * ================================ */
 

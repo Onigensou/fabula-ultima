@@ -14,6 +14,22 @@ function isPersisted(key) {
   return PERSIST_KEYS.has(key) || PERSIST_REGEX.test(key);
 }
 
+// Restore items that were hidden mid-battle by the `hide_item` effect (e.g. the
+// Encyclopedia's "disappears from your inventory until the end of this scene").
+// Delegates to the shared restore in skill-effects (clears the flag AND nulls any
+// stale equip-slot still naming the item) so battle-END and battle-START (PREP)
+// recover identically. Dynamic import — skill-effects is already loaded by now
+// and this keeps the battle-end module free of a heavy static dependency.
+async function restoreHiddenItems(actor) {
+  try {
+    const { restoreHiddenItems: restore } = await import("../skill-effects.js");
+    return await restore(actor);
+  } catch (e) {
+    warn(`[BattleEnd:Cleanup] restoreHiddenItems failed for ${actor?.name}:`, e);
+    return 0;
+  }
+}
+
 function walkContents(contents) {
   if (!Array.isArray(contents)) return [];
   const fields = [];
@@ -32,6 +48,9 @@ export async function runBattleEndResourceReset(endCtx) {
   for (const actorId of partyActorIds) {
     const actor = game.actors?.get?.(actorId);
     if (!actor) { warn(`[BattleEnd:Cleanup] Missing actor: ${actorId}`); continue; }
+
+    // Bring back any items hidden by `hide_item` during the fight.
+    await restoreHiddenItems(actor);
 
     const contents = actor.system?.body?.contents ?? [];
     const numberFields = walkContents(contents);

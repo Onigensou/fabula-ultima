@@ -89,7 +89,9 @@ await FUCompanion.api.test.runDirectorSkillSimulate({
 
 Use these BEFORE asking the user to playtest. The harness models almost everything.
 
-**Cache-bust caveat:** the harness cache-busts the entry module per call, so single-file edits inside the harness take effect immediately. Cross-module edits (`state-handlers.js` → `skill-effects.js` via static imports) require **Ctrl+Shift+R** — Foundry's bridge reload does NOT bust the ESM cache.
+**Cache-bust caveat:** the harness cache-busts the entry module per call, so single-file edits inside the harness take effect immediately. Most cross-module static-import edges still need **Ctrl+Shift+R** — Foundry's bridge reload does NOT bust the ESM cache.
+
+**Exception — the `state-handlers.js` → `skill-effects.js` edge is hot.** It's routed through the hot-reload registry (`hot-reload.js`): state-handlers calls into skill-effects via an `SE()` accessor instead of a static binding. The harness re-imports skill-effects fresh on every call automatically, and during a live session you can pick up a `skill-effects.js` edit with **no refresh** by calling `await FUCompanion.api.test.reloadHot()` (bumps the shared `globalThis.__FU_CB` token and re-imports every registered hot edge). To make another edge hot, give the consumer the same `registerHotModule(key, (t)=>import("./dep.js?cb="+t), staticNs)` + `DEP().fn(...)` treatment.
 
 ---
 

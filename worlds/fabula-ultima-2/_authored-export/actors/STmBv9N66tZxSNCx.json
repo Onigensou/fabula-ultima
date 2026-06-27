@@ -67,7 +67,7 @@
             },
             "1": {
               "attacker_name": "Pounce",
-              "damage_amount": "20",
+              "damage_amount": "HR + 20",
               "damage_element": "physical",
               "damage_ignore_affinity": false,
               "effect_kind": "deal_damage",
