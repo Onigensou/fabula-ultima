@@ -8,68 +8,6 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
-  "effects": [
-    {
-      "_id": "EtEEvdYYsIMLFgqk",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1782498763280,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [
-        {
-          "key": "activation",
-          "mode": 5,
-          "priority": 20,
-          "value": "0"
-        }
-      ],
-      "description": "",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": 298800,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "EtEEvdYYsIMLFgqk",
-          "originalParentId": "STmBv9N66tZxSNCx",
-          "originalUuid": "Actor.STmBv9N66tZxSNCx.ActiveEffect.EtEEvdYYsIMLFgqk"
-        },
-        "fabula-ultima-companion": {
-          "testBattleNoActions": true
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "icons/svg/downgrade.svg",
-      "name": "No Actions",
-      "origin": null,
-      "sort": 0,
-      "statuses": [
-        "fud-no-actions"
-      ],
-      "system": {},
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    }
-  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.8.5"

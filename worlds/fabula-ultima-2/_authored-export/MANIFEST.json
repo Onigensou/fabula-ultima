@@ -51,30 +51,6 @@
         "parent": null
       },
       {
-        "id": "vYGA1Df5lpa81zmP",
-        "name": "05",
-        "type": "Actor",
-        "parent": "fJwRfwyVVi2zSKmf"
-      },
-      {
-        "id": "ouXSuwb1SQ7kG23C",
-        "name": "10",
-        "type": "Actor",
-        "parent": "fJwRfwyVVi2zSKmf"
-      },
-      {
-        "id": "SS8ZppMF7PrIaoN5",
-        "name": "15",
-        "type": "Actor",
-        "parent": "fJwRfwyVVi2zSKmf"
-      },
-      {
-        "id": "0y6B2E56BKEgvtKF",
-        "name": "20",
-        "type": "Actor",
-        "parent": "fJwRfwyVVi2zSKmf"
-      },
-      {
         "id": "6mmwacB3WSm0f9bN",
         "name": "Accessories",
         "type": "Item",
@@ -195,12 +171,6 @@
         "parent": "NZzmXPcBYP9HDPXd"
       },
       {
-        "id": "6OGEMnDitYCBTPBx",
-        "name": "Artifacts",
-        "type": "JournalEntry",
-        "parent": null
-      },
-      {
         "id": "HwnnjljHsr5F7AqM",
         "name": "Aunction Trick",
         "type": "Item",
@@ -261,18 +231,6 @@
         "parent": "Vg0nGevL0N3Wqh0D"
       },
       {
-        "id": "GEaN2Y9MPwjRyNnd",
-        "name": "Battlemap",
-        "type": "Scene",
-        "parent": "DuRdEOgbsdCjJ7Pl"
-      },
-      {
-        "id": "KM8Cjqo7WaYYvfvp",
-        "name": "Battlemap",
-        "type": "Scene",
-        "parent": "0vjCyV7DLcWZeLif"
-      },
-      {
         "id": "cZFr8Jrws41eCfyO",
         "name": "Battlemap",
         "type": "Scene",
@@ -283,12 +241,6 @@
         "name": "BD Dev Test",
         "type": "Actor",
         "parent": null
-      },
-      {
-        "id": "GdwTTSq8EkWWPSAo",
-        "name": "Beginning Quest A",
-        "type": "Scene",
-        "parent": "MDKOkEdwbNw7sVNm"
       },
       {
         "id": "3jJfILdP7Xihm6nW",
@@ -337,12 +289,6 @@
         "name": "Boss Loot FX Macros Free",
         "type": "Compendium",
         "parent": null
-      },
-      {
-        "id": "spgePFh3MKZIRDl9",
-        "name": "BossDrop",
-        "type": "Item",
-        "parent": "Bg5DI4ep2SjF1yVR"
       },
       {
         "id": "gkxeb18rMnUvyuqk",
@@ -411,22 +357,10 @@
         "parent": "ao7MvDYKSVhEwWj3"
       },
       {
-        "id": "8QFpXYNVwjdYizLq",
-        "name": "Cerebro Lake",
-        "type": "RollTable",
-        "parent": "padrkH3YboI8X5kX"
-      },
-      {
         "id": "wfhbB1TfqBSosGCC",
         "name": "Chanter",
         "type": "Item",
         "parent": "VVjpCERIXMrOJna7"
-      },
-      {
-        "id": "WfZBCb2TE968VL53",
-        "name": "Chapter 1",
-        "type": "RollTable",
-        "parent": "O65HZww0YIiSDKFG"
       },
       {
         "id": "CKxwfsdNpLQQjmAJ",
@@ -477,12 +411,6 @@
         "parent": "PaPzgCs9Rd0kzMSB"
       },
       {
-        "id": "DzzuXxX1zd3RVWvJ",
-        "name": "Clock",
-        "type": "Actor",
-        "parent": null
-      },
-      {
         "id": "7YK1JzIbrhFv1VkL",
         "name": "Combat Begin Hook",
         "type": "Macro",
@@ -531,12 +459,6 @@
         "parent": "NZzmXPcBYP9HDPXd"
       },
       {
-        "id": "McFj3sovppMiaTHE",
-        "name": "Convict",
-        "type": "Actor",
-        "parent": "5L3oGG7qVgaFEu7t"
-      },
-      {
         "id": "Vg0nGevL0N3Wqh0D",
         "name": "Core System",
         "type": "Macro",
@@ -561,28 +483,10 @@
         "parent": "Nd8LnosrPid1eX1r"
       },
       {
-        "id": "oUzk94EFQKU0oBK7",
-        "name": "Current Dungeon",
-        "type": "Actor",
-        "parent": "kWJqZHPj06vaaOR3"
-      },
-      {
         "id": "MJiFIdO1Fzd4tOu2",
         "name": "Current NPC",
         "type": "Actor",
         "parent": "yrt0v9PKovSRpKQJ"
-      },
-      {
-        "id": "8iGPdATKULX2y28n",
-        "name": "Current Story",
-        "type": "Actor",
-        "parent": "7i0o1cnEBxFHsJBk"
-      },
-      {
-        "id": "9536CjVHiIiPJrCI",
-        "name": "Current Support",
-        "type": "Item",
-        "parent": "YORShE1NmdPqz17e"
       },
       {
         "id": "lrk2jhOW5Ok9sgH1",
@@ -603,12 +507,6 @@
         "parent": "w7jZN8CMjtlWQtyW"
       },
       {
-        "id": "mL1oG3DPOmE8jpI2",
-        "name": "Custom Spell",
-        "type": "Item",
-        "parent": "ffyJMvbd23HTZhEU"
-      },
-      {
         "id": "T8QGGKPw56hBvZ16",
         "name": "Custom Status FX",
         "type": "Macro",
@@ -619,18 +517,6 @@
         "name": "Cutscene",
         "type": "Macro",
         "parent": null
-      },
-      {
-        "id": "TPt2XZva8VcY3XAp",
-        "name": "Cutscene",
-        "type": "JournalEntry",
-        "parent": "cbmNVRq11ZV4wZwV"
-      },
-      {
-        "id": "MxgWRH60XdMzO55G",
-        "name": "Cutscene Map",
-        "type": "Scene",
-        "parent": "0vjCyV7DLcWZeLif"
       },
       {
         "id": "86vqr6Rr1MGBCXrX",
@@ -705,76 +591,16 @@
         "parent": "Vg0nGevL0N3Wqh0D"
       },
       {
-        "id": "JKkwg4D3fISgPgUh",
-        "name": "Discovery Drop",
-        "type": "Item",
-        "parent": "faDXweVXMG6e5TcA"
-      },
-      {
-        "id": "cMDy2NEGFMOgiEJy",
-        "name": "DuneMap",
-        "type": "Scene",
-        "parent": "bNXe9nP1lkpP6C4I"
-      },
-      {
-        "id": "5L3oGG7qVgaFEu7t",
-        "name": "DuneSandstorm",
-        "type": "Actor",
-        "parent": "KXawHdBm5geezZni"
-      },
-      {
-        "id": "bNXe9nP1lkpP6C4I",
-        "name": "DuneSandstorm",
-        "type": "Scene",
-        "parent": null
-      },
-      {
         "id": "3knBQp3gYXhOxj8G",
         "name": "Dungeon",
         "type": "Macro",
         "parent": null
       },
       {
-        "id": "TfEQEXO8Jj8FAGvo",
-        "name": "Dungeon",
-        "type": "JournalEntry",
-        "parent": "cbmNVRq11ZV4wZwV"
-      },
-      {
-        "id": "padrkH3YboI8X5kX",
-        "name": "Dungeon",
-        "type": "RollTable",
-        "parent": "E7SscnV8Uakvcc1F"
-      },
-      {
-        "id": "qoI4urVGgU3jtymH",
-        "name": "Dungeon",
-        "type": "JournalEntry",
-        "parent": null
-      },
-      {
-        "id": "YOofOskQKmE8gMeH",
-        "name": "Dungeon Blitz",
-        "type": "Scene",
-        "parent": "0vjCyV7DLcWZeLif"
-      },
-      {
-        "id": "ROiwQBmDpVy0oCPo",
-        "name": "Dungeon Map",
-        "type": "Scene",
-        "parent": "0vjCyV7DLcWZeLif"
-      },
-      {
         "id": "Y2fiyeU6qz5fXasm",
         "name": "Dungeon Pathcfinder",
         "type": "Macro",
         "parent": "ao7MvDYKSVhEwWj3"
-      },
-      {
-        "id": "8GkCU42PuopYdMNF",
-        "name": "Dungeon Tile",
-        "type": "Actor",
-        "parent": "79YVmB2p5sT1OBDH"
       },
       {
         "id": "FVPY9obeTXNGqk4v",
@@ -787,12 +613,6 @@
         "name": "Earth's PC",
         "type": "Actor",
         "parent": "eZWKkXNgeaFs6HSS"
-      },
-      {
-        "id": "zSl4gLFtLpUI1DUw",
-        "name": "Easy Route",
-        "type": "Actor",
-        "parent": "8GkCU42PuopYdMNF"
       },
       {
         "id": "VwGXmuqbwBOzXPgY",
@@ -837,12 +657,6 @@
         "parent": "341jxGTHbioINnUl"
       },
       {
-        "id": "hIrlKsiyq3vuA7ZM",
-        "name": "Elementalist",
-        "type": "Item",
-        "parent": "aUrIf2FMkrNzORKz"
-      },
-      {
         "id": "gx1Q3p8LBCYYEzQv",
         "name": "Elementalist Spell",
         "type": "Item",
@@ -879,12 +693,6 @@
         "parent": "EPe7ml6WmzFyqmol"
       },
       {
-        "id": "3kI9LE25lrqxT9Xl",
-        "name": "Encounter Drop",
-        "type": "Item",
-        "parent": "faDXweVXMG6e5TcA"
-      },
-      {
         "id": "ACbjEa7skiKy2L4p",
         "name": "Enemies",
         "type": "RollTable",
@@ -915,18 +723,6 @@
         "parent": "Zjdcb78RbBA1hP9j"
       },
       {
-        "id": "LabX3KoQfwb5lPvA",
-        "name": "Enforcer Mansion",
-        "type": "Scene",
-        "parent": "YOofOskQKmE8gMeH"
-      },
-      {
-        "id": "TjrL0p3smYDI6X4Q",
-        "name": "Enforcer Mansion",
-        "type": "RollTable",
-        "parent": "padrkH3YboI8X5kX"
-      },
-      {
         "id": "zgNNjli5yZ37TIdn",
         "name": "Enforcer Mansion",
         "type": "Macro",
@@ -937,12 +733,6 @@
         "name": "Entropist",
         "type": "Item",
         "parent": "341jxGTHbioINnUl"
-      },
-      {
-        "id": "qpw46aFVTAeQSyTP",
-        "name": "Entropist",
-        "type": "Item",
-        "parent": "aUrIf2FMkrNzORKz"
       },
       {
         "id": "tX9WPMEGfOLF9j97",
@@ -1005,12 +795,6 @@
         "parent": "EPe7ml6WmzFyqmol"
       },
       {
-        "id": "oFJgDoeCPoBzZB66",
-        "name": "Exploration Map",
-        "type": "Scene",
-        "parent": "0vjCyV7DLcWZeLif"
-      },
-      {
         "id": "w3VfIaSVNZ2MSTDB",
         "name": "Fabula Initiative",
         "type": "Macro",
@@ -1071,12 +855,6 @@
         "parent": "rHTlsgSS40PL5ZXd"
       },
       {
-        "id": "bJIpj8FlMc27TgOh",
-        "name": "Fishing",
-        "type": "RollTable",
-        "parent": "E7SscnV8Uakvcc1F"
-      },
-      {
         "id": "rHTlsgSS40PL5ZXd",
         "name": "Fishing",
         "type": "JournalEntry",
@@ -1131,28 +909,10 @@
         "parent": "3knBQp3gYXhOxj8G"
       },
       {
-        "id": "LpyguusfvlS7Pp3b",
-        "name": "Forest Lesnistrom",
-        "type": "JournalEntry",
-        "parent": "TfEQEXO8Jj8FAGvo"
-      },
-      {
-        "id": "WbuaDr7vb8771iCu",
-        "name": "Forest Lesnistrom",
-        "type": "RollTable",
-        "parent": "padrkH3YboI8X5kX"
-      },
-      {
         "id": "sjfEFOXNPczl2Idi",
         "name": "Fortune",
         "type": "Macro",
         "parent": "OnmQOiAz7vgNYZrN"
-      },
-      {
-        "id": "ysLwINNDarDAMXSq",
-        "name": "FreedomKey",
-        "type": "Item",
-        "parent": "Bg5DI4ep2SjF1yVR"
       },
       {
         "id": "AJgQVD7Q6DFwASCn",
@@ -1179,12 +939,6 @@
         "parent": "8Gw8I743DzSuS2WO"
       },
       {
-        "id": "aUrIf2FMkrNzORKz",
-        "name": "Generic Spell",
-        "type": "Item",
-        "parent": null
-      },
-      {
         "id": "6W2pFEmLDrLbwvXy",
         "name": "GM Permission Socket",
         "type": "Macro",
@@ -1195,18 +949,6 @@
         "name": "Gourmet",
         "type": "Item",
         "parent": "VVjpCERIXMrOJna7"
-      },
-      {
-        "id": "anidKMFiqo9qaGJq",
-        "name": "Gravity Strider",
-        "type": "RollTable",
-        "parent": "padrkH3YboI8X5kX"
-      },
-      {
-        "id": "sHvrK7IufBILWc0y",
-        "name": "Green",
-        "type": "Item",
-        "parent": "ffyJMvbd23HTZhEU"
       },
       {
         "id": "KWnuOptf4pQKCX5g",
@@ -1225,12 +967,6 @@
         "name": "Guardian",
         "type": "Item",
         "parent": "VVjpCERIXMrOJna7"
-      },
-      {
-        "id": "hyLtYwoivXKvfnuS",
-        "name": "Hard Route",
-        "type": "Actor",
-        "parent": "8GkCU42PuopYdMNF"
       },
       {
         "id": "9DMIQGfw5u0sBo5Q",
@@ -1353,12 +1089,6 @@
         "parent": "o9GnW8SK6lk2qkIs"
       },
       {
-        "id": "BDkKSz76tGYP6v9g",
-        "name": "Hexer",
-        "type": "Item",
-        "parent": "aUrIf2FMkrNzORKz"
-      },
-      {
         "id": "QfTUK4kRvO3ww1hK",
         "name": "Hexer",
         "type": "Item",
@@ -1401,12 +1131,6 @@
         "parent": "341jxGTHbioINnUl"
       },
       {
-        "id": "7ugEDb4vRij5v1OS",
-        "name": "Ice Cavern",
-        "type": "RollTable",
-        "parent": "padrkH3YboI8X5kX"
-      },
-      {
         "id": "VvYASbMLPz6BYMCE",
         "name": "Ice Cavern",
         "type": "Macro",
@@ -1425,22 +1149,10 @@
         "parent": "VVjpCERIXMrOJna7"
       },
       {
-        "id": "uxn1YZCbNnCqXnGo",
-        "name": "Illusionist",
-        "type": "Item",
-        "parent": "aUrIf2FMkrNzORKz"
-      },
-      {
         "id": "dhfFJlHW6EIUd4UD",
         "name": "Illusionist Spell",
         "type": "Item",
         "parent": "rpPOSjJwHOJs3mb4"
-      },
-      {
-        "id": "RufK6CUVQYwLejq0",
-        "name": "intro",
-        "type": "Scene",
-        "parent": "bNXe9nP1lkpP6C4I"
       },
       {
         "id": "zETd4wG6sCKZ3BmI",
@@ -1497,27 +1209,9 @@
         "parent": "SVTl3Xx6rQbe8a52"
       },
       {
-        "id": "uVoBlDGLfc42N4Vu",
-        "name": "Jakariko Shop",
-        "type": "Item",
-        "parent": "Bg5DI4ep2SjF1yVR"
-      },
-      {
         "id": "5fTI1CfujLAXR4wp",
         "name": "John's BGM",
         "type": "Playlist",
-        "parent": null
-      },
-      {
-        "id": "pNvF06pYPZeKjS05",
-        "name": "John's DM Journals",
-        "type": "JournalEntry",
-        "parent": null
-      },
-      {
-        "id": "MDKOkEdwbNw7sVNm",
-        "name": "John's DM Map",
-        "type": "Scene",
         "parent": null
       },
       {
@@ -1539,12 +1233,6 @@
         "parent": "eZWKkXNgeaFs6HSS"
       },
       {
-        "id": "HwP13CJoWTpllhwM",
-        "name": "Kanno Spell",
-        "type": "Item",
-        "parent": "ffyJMvbd23HTZhEU"
-      },
-      {
         "id": "cZ1E07Wmc0JNeuIz",
         "name": "Kanno's PC",
         "type": "Actor",
@@ -1557,12 +1245,6 @@
         "parent": "8VOe3tvHPz0c6uSz"
       },
       {
-        "id": "bLF9ovW1xUTIR9kP",
-        "name": "Kirin Spell",
-        "type": "Item",
-        "parent": "ffyJMvbd23HTZhEU"
-      },
-      {
         "id": "tp52625NWIbnzyLu",
         "name": "Kirin's PC",
         "type": "Actor",
@@ -1573,66 +1255,6 @@
         "name": "Kusai's PC",
         "type": "Actor",
         "parent": "eZWKkXNgeaFs6HSS"
-      },
-      {
-        "id": "IC9yfIaKsBf1Sjgq",
-        "name": "Lacus Frysta",
-        "type": "RollTable",
-        "parent": "bJIpj8FlMc27TgOh"
-      },
-      {
-        "id": "WDQXhU2A8yISSmO8",
-        "name": "Lacus Frysta",
-        "type": "RollTable",
-        "parent": "padrkH3YboI8X5kX"
-      },
-      {
-        "id": "anruACHcENWg7xeM",
-        "name": "Lacus Frysta",
-        "type": "Scene",
-        "parent": "oFJgDoeCPoBzZB66"
-      },
-      {
-        "id": "y3WsaaiEC1fOA2XP",
-        "name": "Lacus Frysta",
-        "type": "Scene",
-        "parent": "YOofOskQKmE8gMeH"
-      },
-      {
-        "id": "CPr6fXt28wJJz6Y8",
-        "name": "LairJered",
-        "type": "Scene",
-        "parent": "bNXe9nP1lkpP6C4I"
-      },
-      {
-        "id": "9kkvJtsIZWgEOgsk",
-        "name": "LairKira",
-        "type": "Scene",
-        "parent": "bNXe9nP1lkpP6C4I"
-      },
-      {
-        "id": "zr33DZdkIggPCHYm",
-        "name": "LairLokalt",
-        "type": "Scene",
-        "parent": "bNXe9nP1lkpP6C4I"
-      },
-      {
-        "id": "TJvT0ueUt2njc9Uw",
-        "name": "LairMafa",
-        "type": "Scene",
-        "parent": "bNXe9nP1lkpP6C4I"
-      },
-      {
-        "id": "fTdBcUBIxjvRmugx",
-        "name": "LairPufler",
-        "type": "Scene",
-        "parent": "bNXe9nP1lkpP6C4I"
-      },
-      {
-        "id": "W246BLvI5dKly2BP",
-        "name": "LairSharo",
-        "type": "Scene",
-        "parent": "bNXe9nP1lkpP6C4I"
       },
       {
         "id": "S5DmD23bHocycvgz",
@@ -1651,12 +1273,6 @@
         "name": "Learnt Recipe",
         "type": "Item",
         "parent": "3xHGNagIXPyzukcU"
-      },
-      {
-        "id": "S1XTScfiXNfd94tK",
-        "name": "Legacy",
-        "type": "Actor",
-        "parent": "7i0o1cnEBxFHsJBk"
       },
       {
         "id": "g3Fx4atqvZXStOey",
@@ -1725,22 +1341,10 @@
         "parent": "3knBQp3gYXhOxj8G"
       },
       {
-        "id": "eCjAhAPRKfpSe3JB",
-        "name": "Lumina Roo",
-        "type": "RollTable",
-        "parent": "padrkH3YboI8X5kX"
-      },
-      {
         "id": "SKCTAwXakqmTUJmz",
         "name": "Lustro Silva",
         "type": "Macro",
         "parent": "3knBQp3gYXhOxj8G"
-      },
-      {
-        "id": "gPrYjHtBLIVq7qkm",
-        "name": "Lustro Silva",
-        "type": "RollTable",
-        "parent": "padrkH3YboI8X5kX"
       },
       {
         "id": "OFXRN3P2p6Ce5ySM",
@@ -1753,12 +1357,6 @@
         "name": "Manual",
         "type": "Macro",
         "parent": "7BehFh18zI1r7x4Q"
-      },
-      {
-        "id": "PSfFB8tnE6LVUpOq",
-        "name": "Map",
-        "type": "Scene",
-        "parent": "0vjCyV7DLcWZeLif"
       },
       {
         "id": "yvRW0RqT5kwSxKFl",
@@ -1815,12 +1413,6 @@
         "parent": "5KFkUixjqI5c6PpK"
       },
       {
-        "id": "pGXFZwdTcrOIIgOO",
-        "name": "Mimic Spell",
-        "type": "Item",
-        "parent": "ffyJMvbd23HTZhEU"
-      },
-      {
         "id": "SpTN47wWBBsdBru5",
         "name": "Minigame",
         "type": "Macro",
@@ -1845,40 +1437,16 @@
         "parent": "VVjpCERIXMrOJna7"
       },
       {
-        "id": "Gdh443T6yYvJfvnq",
-        "name": "Monster",
-        "type": "Actor",
-        "parent": "Nqmn1vpH6bXEYRPT"
-      },
-      {
         "id": "Nd8LnosrPid1eX1r",
         "name": "Monster",
         "type": "Actor",
         "parent": "oVRjRmlshSvb68gK"
       },
       {
-        "id": "fJwRfwyVVi2zSKmf",
-        "name": "Monster",
-        "type": "Actor",
-        "parent": "5L3oGG7qVgaFEu7t"
-      },
-      {
-        "id": "kWJqZHPj06vaaOR3",
-        "name": "Monster",
-        "type": "Actor",
-        "parent": "79YVmB2p5sT1OBDH"
-      },
-      {
         "id": "s2HyzaOiZlCBSJKd",
         "name": "Mt. Elbrus",
         "type": "Macro",
         "parent": "3knBQp3gYXhOxj8G"
-      },
-      {
-        "id": "vpWdksCrr4vwOBN6",
-        "name": "Mt. Elbrus",
-        "type": "RollTable",
-        "parent": "padrkH3YboI8X5kX"
       },
       {
         "id": "ELkT5KGfrL9uJSpG",
@@ -1923,34 +1491,10 @@
         "parent": null
       },
       {
-        "id": "wOemd4vf0zpV3QeX",
-        "name": "Next Dungeon",
-        "type": "Actor",
-        "parent": "kWJqZHPj06vaaOR3"
-      },
-      {
         "id": "LNN6QSv7NRWdXUkf",
         "name": "Non-Offensive Spells",
         "type": "Item",
         "parent": "Ta27JAFtAPKOOZb8"
-      },
-      {
-        "id": "Q7QKDmcdaUuMOjR7",
-        "name": "Normal Route",
-        "type": "Actor",
-        "parent": "8GkCU42PuopYdMNF"
-      },
-      {
-        "id": "o0mHHmAoMhbfZgVQ",
-        "name": "Northland Hunter 01",
-        "type": "Scene",
-        "parent": "MDKOkEdwbNw7sVNm"
-      },
-      {
-        "id": "s63qUcZuHyC2moYO",
-        "name": "Northland Hunter Files",
-        "type": "JournalEntry",
-        "parent": "pNvF06pYPZeKjS05"
       },
       {
         "id": "l3l7DCQbkwSauDK5",
@@ -1977,18 +1521,6 @@
         "parent": "eZWKkXNgeaFs6HSS"
       },
       {
-        "id": "qDwfc35bksBaKkzS",
-        "name": "NPC",
-        "type": "Actor",
-        "parent": "Nqmn1vpH6bXEYRPT"
-      },
-      {
-        "id": "tdmrKpfBbmFVYNqM",
-        "name": "NPC",
-        "type": "Actor",
-        "parent": "5L3oGG7qVgaFEu7t"
-      },
-      {
         "id": "OnmQOiAz7vgNYZrN",
         "name": "NPC Macro",
         "type": "Macro",
@@ -1999,12 +1531,6 @@
         "name": "NPC Skill",
         "type": "Item",
         "parent": "w7jZN8CMjtlWQtyW"
-      },
-      {
-        "id": "7i0o1cnEBxFHsJBk",
-        "name": "NPCs",
-        "type": "Actor",
-        "parent": "79YVmB2p5sT1OBDH"
       },
       {
         "id": "8Gw8I743DzSuS2WO",
@@ -2043,39 +1569,9 @@
         "parent": "eZWKkXNgeaFs6HSS"
       },
       {
-        "id": "DuRdEOgbsdCjJ7Pl",
-        "name": "Omnious Passengers",
-        "type": "Scene",
-        "parent": null
-      },
-      {
-        "id": "Nqmn1vpH6bXEYRPT",
-        "name": "Omnious Passengers",
-        "type": "Actor",
-        "parent": null
-      },
-      {
-        "id": "gAGk9SX5FAxPe4aM",
-        "name": "Omnious Passengers",
-        "type": "JournalEntry",
-        "parent": null
-      },
-      {
         "id": "otziXYde7WVivcBZ",
         "name": "Omnious Passengers",
         "type": "Playlist",
-        "parent": null
-      },
-      {
-        "id": "faDXweVXMG6e5TcA",
-        "name": "Omnious Passengers item",
-        "type": "Item",
-        "parent": null
-      },
-      {
-        "id": "E7SscnV8Uakvcc1F",
-        "name": "Oni Campaign",
-        "type": "RollTable",
         "parent": null
       },
       {
@@ -2187,22 +1683,10 @@
         "parent": null
       },
       {
-        "id": "8mJfXdKYmmONftVP",
-        "name": "Player Obtain",
-        "type": "Item",
-        "parent": "Bg5DI4ep2SjF1yVR"
-      },
-      {
         "id": "vSFxAF7zafVYiiV6",
         "name": "Player Unique Equipment",
         "type": "Item",
         "parent": "yIXRZeBsb9OQyi02"
-      },
-      {
-        "id": "07iaQrGOTVkJNHgk",
-        "name": "Playing cards",
-        "type": "Actor",
-        "parent": "Nqmn1vpH6bXEYRPT"
       },
       {
         "id": "2AeMdFaayOxsueAv",
@@ -2265,18 +1749,6 @@
         "parent": "ZGmAHDAwnNaEYlhR"
       },
       {
-        "id": "TZFyydleomFAuYKA",
-        "name": "Ragnavaldr Hideout",
-        "type": "Actor",
-        "parent": "R9qxPTmZo1v6MBup"
-      },
-      {
-        "id": "XqSJLIqL1rJgdmW9",
-        "name": "Random Passengers",
-        "type": "Actor",
-        "parent": "qDwfc35bksBaKkzS"
-      },
-      {
         "id": "5uQIy5BCy7UEVfcT",
         "name": "Rare Accessories",
         "type": "Item",
@@ -2325,12 +1797,6 @@
         "parent": "AYqJLwzAu9WvlJ5C"
       },
       {
-        "id": "Zg2Xc46i4cjgVpu4",
-        "name": "Redcyclone",
-        "type": "Actor",
-        "parent": "5L3oGG7qVgaFEu7t"
-      },
-      {
         "id": "E2rHUSe9roqJD1FD",
         "name": "Revolver",
         "type": "Item",
@@ -2343,22 +1809,10 @@
         "parent": "E2rHUSe9roqJD1FD"
       },
       {
-        "id": "Bg5DI4ep2SjF1yVR",
-        "name": "Rinri Item",
-        "type": "Item",
-        "parent": null
-      },
-      {
         "id": "SVTl3Xx6rQbe8a52",
         "name": "Rinri PC",
         "type": "Actor",
         "parent": "eZWKkXNgeaFs6HSS"
-      },
-      {
-        "id": "KXawHdBm5geezZni",
-        "name": "Rinri Quest Folder",
-        "type": "Actor",
-        "parent": null
       },
       {
         "id": "0ATfYecuobCVkO7R",
@@ -2439,34 +1893,10 @@
         "parent": "yIXRZeBsb9OQyi02"
       },
       {
-        "id": "0aH0OnWE7Lhg4vxH",
-        "name": "Shop",
-        "type": "JournalEntry",
-        "parent": "cbmNVRq11ZV4wZwV"
-      },
-      {
-        "id": "S6wUD2ILTn8gBIvp",
-        "name": "Shop",
-        "type": "Item",
-        "parent": "JKkwg4D3fISgPgUh"
-      },
-      {
         "id": "5BViRJTo7UMhSADJ",
         "name": "Shops",
         "type": "Actor",
         "parent": "oVRjRmlshSvb68gK"
-      },
-      {
-        "id": "R9qxPTmZo1v6MBup",
-        "name": "Shops",
-        "type": "Actor",
-        "parent": "79YVmB2p5sT1OBDH"
-      },
-      {
-        "id": "xWRrpmcNPg4Ej2pb",
-        "name": "Shops",
-        "type": "Actor",
-        "parent": "Nqmn1vpH6bXEYRPT"
       },
       {
         "id": "nB2Ic5Lp2GGAi0C3",
@@ -2479,12 +1909,6 @@
         "name": "Silryantish PC",
         "type": "Actor",
         "parent": "eZWKkXNgeaFs6HSS"
-      },
-      {
-        "id": "G2Tuz32esw1gxH1a",
-        "name": "Sister Troubles",
-        "type": "Scene",
-        "parent": null
       },
       {
         "id": "43nZ7emlJwEzKbKs",
@@ -2613,58 +2037,16 @@
         "parent": "VVjpCERIXMrOJna7"
       },
       {
-        "id": "kJXqrhmtVcmqetEk",
-        "name": "Smuggler Port",
-        "type": "RollTable",
-        "parent": "bJIpj8FlMc27TgOh"
-      },
-      {
-        "id": "qEJi91NvHYwj7Y4D",
-        "name": "Smuggler Port",
-        "type": "Actor",
-        "parent": "R9qxPTmZo1v6MBup"
-      },
-      {
         "id": "SgcpTbzJ01cxKKRc",
         "name": "Smuggler Tunnel",
         "type": "Macro",
         "parent": "3knBQp3gYXhOxj8G"
       },
       {
-        "id": "cj7bIBX1Tr1yyEjx",
-        "name": "Smuggler Tunnel",
-        "type": "Scene",
-        "parent": "YOofOskQKmE8gMeH"
-      },
-      {
-        "id": "lC3U74dS2YnsUfgo",
-        "name": "Smuggler Tunnel",
-        "type": "RollTable",
-        "parent": "padrkH3YboI8X5kX"
-      },
-      {
         "id": "PouMEIXPkERtjRTH",
         "name": "Sniper",
         "type": "Item",
         "parent": "VVjpCERIXMrOJna7"
-      },
-      {
-        "id": "J6rSfHnSEA26Hu6G",
-        "name": "Sol",
-        "type": "Actor",
-        "parent": "Gdh443T6yYvJfvnq"
-      },
-      {
-        "id": "sp3L9xp7I91q3ucY",
-        "name": "Sol",
-        "type": "Actor",
-        "parent": "5L3oGG7qVgaFEu7t"
-      },
-      {
-        "id": "2InRmusly8yU0aEG",
-        "name": "Sols",
-        "type": "Actor",
-        "parent": "qDwfc35bksBaKkzS"
       },
       {
         "id": "JUN9vAQb8haKjHob",
@@ -2689,12 +2071,6 @@
         "name": "Spear",
         "type": "Item",
         "parent": "UmLsjl22ZsyVMcwY"
-      },
-      {
-        "id": "zlCNb11MolvXNaNX",
-        "name": "Special Tile",
-        "type": "Actor",
-        "parent": "8GkCU42PuopYdMNF"
       },
       {
         "id": "C5LAJaVZ1tj2Lxxn",
@@ -2733,12 +2109,6 @@
         "parent": "VVjpCERIXMrOJna7"
       },
       {
-        "id": "lWArYAJ7WMFMXOHx",
-        "name": "Spiritist",
-        "type": "Item",
-        "parent": "aUrIf2FMkrNzORKz"
-      },
-      {
         "id": "w8fzwQIgXEgGQJRq",
         "name": "Spiritist",
         "type": "Item",
@@ -2769,28 +2139,10 @@
         "parent": null
       },
       {
-        "id": "NufYvv2nbODEKNRT",
-        "name": "Support",
-        "type": "JournalEntry",
-        "parent": "cbmNVRq11ZV4wZwV"
-      },
-      {
         "id": "KaHxAKjZ3YSXPtmT",
         "name": "Support Module",
         "type": "Item",
         "parent": "Ez9xgSX6RMOw2a8b"
-      },
-      {
-        "id": "YORShE1NmdPqz17e",
-        "name": "Supports",
-        "type": "Item",
-        "parent": null
-      },
-      {
-        "id": "qdWTmXGjHeiaz5vK",
-        "name": "Supports",
-        "type": "Item",
-        "parent": "faDXweVXMG6e5TcA"
       },
       {
         "id": "V6fo91m4ATMoEWpi",
@@ -2883,18 +2235,6 @@
         "parent": "CsoK6dCz8B4ZOdcY"
       },
       {
-        "id": "ACsday1up8Xi7qi6",
-        "name": "The Frozen Waste",
-        "type": "JournalEntry",
-        "parent": "TfEQEXO8Jj8FAGvo"
-      },
-      {
-        "id": "oVmfyiKPDsWRDEsY",
-        "name": "The Frozen Waste",
-        "type": "RollTable",
-        "parent": "padrkH3YboI8X5kX"
-      },
-      {
         "id": "swIMVSs9063sq81P",
         "name": "The Frozen Waste",
         "type": "Macro",
@@ -2949,34 +2289,10 @@
         "parent": "CsoK6dCz8B4ZOdcY"
       },
       {
-        "id": "O65HZww0YIiSDKFG",
-        "name": "The Winterland Witch Trial",
-        "type": "RollTable",
-        "parent": "E7SscnV8Uakvcc1F"
-      },
-      {
         "id": "sWNAdVRHriwWY0ke",
         "name": "The Winterlands",
         "type": "JournalEntry",
         "parent": "u0yFmgmHlN3RV5lX"
-      },
-      {
-        "id": "0vjCyV7DLcWZeLif",
-        "name": "The Winterlands Witch Trial",
-        "type": "Scene",
-        "parent": null
-      },
-      {
-        "id": "79YVmB2p5sT1OBDH",
-        "name": "The Winterlands Witch Trial",
-        "type": "Actor",
-        "parent": null
-      },
-      {
-        "id": "cbmNVRq11ZV4wZwV",
-        "name": "The Winterlands Witch Trial",
-        "type": "JournalEntry",
-        "parent": null
       },
       {
         "id": "EPe7ml6WmzFyqmol",
@@ -3057,34 +2373,10 @@
         "parent": null
       },
       {
-        "id": "AR6INakK6TM8G8Md",
-        "name": "tower",
-        "type": "Actor",
-        "parent": "fJwRfwyVVi2zSKmf"
-      },
-      {
-        "id": "EKq1tUO0l2Ij9sPr",
-        "name": "tower",
-        "type": "Scene",
-        "parent": "bNXe9nP1lkpP6C4I"
-      },
-      {
-        "id": "OA6n4poPyZy021SH",
-        "name": "TowerDrop",
-        "type": "Item",
-        "parent": "Bg5DI4ep2SjF1yVR"
-      },
-      {
         "id": "Zwr7mqVgf9W12ewC",
         "name": "Trap",
         "type": "Item",
         "parent": "97p1xGjGPYztDsVo"
-      },
-      {
-        "id": "T5obITZcB97IkuXz",
-        "name": "Travel_map",
-        "type": "Scene",
-        "parent": "DuRdEOgbsdCjJ7Pl"
       },
       {
         "id": "DAg9RfuNcR9huljS",
@@ -3147,12 +2439,6 @@
         "parent": null
       },
       {
-        "id": "6JCv8rPMMtZuC2Hn",
-        "name": "UI Map",
-        "type": "Scene",
-        "parent": null
-      },
-      {
         "id": "ygx8Y9DyBOnKrntt",
         "name": "UI Toggle",
         "type": "Macro",
@@ -3175,12 +2461,6 @@
         "name": "Unique Shield",
         "type": "Item",
         "parent": "JkuUv7T8PCSZgcEO"
-      },
-      {
-        "id": "ffyJMvbd23HTZhEU",
-        "name": "Unique Spell",
-        "type": "Item",
-        "parent": null
       },
       {
         "id": "MeHDukSM0bajBTX4",
@@ -3219,46 +2499,10 @@
         "parent": "OeC0hsLCW5zTWD6w"
       },
       {
-        "id": "Y2tnl6jw8rPdcksu",
-        "name": "View_CutScene",
-        "type": "Scene",
-        "parent": "DuRdEOgbsdCjJ7Pl"
-      },
-      {
-        "id": "tXf3Tx2s4baw0yZO",
-        "name": "Villains",
-        "type": "Actor",
-        "parent": "qDwfc35bksBaKkzS"
-      },
-      {
-        "id": "vgwerQjD1VmqilAe",
-        "name": "Visitor",
-        "type": "Actor",
-        "parent": "KXawHdBm5geezZni"
-      },
-      {
-        "id": "48rtHevo4aHPYyrP",
-        "name": "visitor item",
-        "type": "Item",
-        "parent": "Bg5DI4ep2SjF1yVR"
-      },
-      {
         "id": "PXuHxOcp7hxBzeWg",
         "name": "Vrasta Severa",
         "type": "Macro",
         "parent": "3knBQp3gYXhOxj8G"
-      },
-      {
-        "id": "YRsm1MnW1Grfn4M0",
-        "name": "Vrasta Severa",
-        "type": "RollTable",
-        "parent": "padrkH3YboI8X5kX"
-      },
-      {
-        "id": "757iqFJcC32i3ddY",
-        "name": "Vyrona",
-        "type": "Actor",
-        "parent": "R9qxPTmZo1v6MBup"
       },
       {
         "id": "auzREntgpd3mEwx8",
@@ -3309,28 +2553,10 @@
         "parent": null
       },
       {
-        "id": "aayEVqEJMsxmlUyd",
-        "name": "Wiarachia Capital",
-        "type": "Actor",
-        "parent": "R9qxPTmZo1v6MBup"
-      },
-      {
         "id": "R48MubDtgNPZLb5r",
         "name": "Wiarachia Empire",
         "type": "Actor",
         "parent": "8Gw8I743DzSuS2WO"
-      },
-      {
-        "id": "BxfzLNoQD5o4ZaoE",
-        "name": "Winterland",
-        "type": "Actor",
-        "parent": "Gdh443T6yYvJfvnq"
-      },
-      {
-        "id": "NkZPKSP8XKTRmx4O",
-        "name": "Winterlands",
-        "type": "Actor",
-        "parent": "qDwfc35bksBaKkzS"
       },
       {
         "id": "QGWhvmRAHt4ibvnG",
@@ -3797,18 +3023,6 @@
         "effects": 0
       },
       {
-        "id": "s2axtENiMHZOXEBc",
-        "name": "Anomaly",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "xFhQPSTZVIDJ4gPo",
-        "name": "Anomaly",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "AODgzRmiVIrotwW1",
         "name": "Anthology of Forgotten Fable",
         "type": "equippableItem",
@@ -3817,12 +3031,6 @@
       {
         "id": "hiZmlgrL1M57Xqyh",
         "name": "Anti-Magic Bullet",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "ODQqacixTzDhX9DP",
-        "name": "Antipathy Round",
         "type": "equippableItem",
         "effects": 0
       },
@@ -4051,12 +3259,6 @@
       {
         "id": "fRlxkY3cVvDTNYwM",
         "name": "Artisan Mallet",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "B0yY8kGNwRcKjQpx",
-        "name": "Asguardian Shield",
         "type": "equippableItem",
         "effects": 0
       },
@@ -4631,12 +3833,6 @@
         "effects": 0
       },
       {
-        "id": "uf8ifn1JuEflXJ6E",
-        "name": "Blind",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "ugffxiCSwymr95bP",
         "name": "Blind",
         "type": "equippableItem",
@@ -4793,18 +3989,6 @@
         "effects": 0
       },
       {
-        "id": "Nfajs1rRnQeSrMQY",
-        "name": "Boots of Speed",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "9lAJqiXLeY47zDJy",
-        "name": "Boots of Speed b",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "xswSyDHMuKJdHGZf",
         "name": "Boots of Swiftness",
         "type": "equippableItem",
@@ -4891,12 +4075,6 @@
       {
         "id": "UiSlNZmem32fro7z",
         "name": "Bronze Sword",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "sy5Ag3eGyrGyGXC6",
-        "name": "Bubble Launcher",
         "type": "equippableItem",
         "effects": 0
       },
@@ -5033,12 +4211,6 @@
         "effects": 1
       },
       {
-        "id": "4JB8f52ldiDE8agB",
-        "name": "Cannabis Cookie",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "mPnznou5f7WIMz3U",
         "name": "Cannon",
         "type": "equippableItem",
@@ -5107,24 +4279,6 @@
       {
         "id": "UCGtDYsRkyH4IqBs",
         "name": "Cataclysm",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "22APL1LlDnZuW3rY",
-        "name": "Cataclysmic Flare Lv.1",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "lXmsw58QtJp2EkpT",
-        "name": "Cataclysmic Flare Lv.2",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "RG5Lbe5fWX3pQfab",
-        "name": "Cataclysmic Flare Lv.3",
         "type": "equippableItem",
         "effects": 0
       },
@@ -5209,12 +4363,6 @@
       {
         "id": "ezacj5Vj3FQXlcbW",
         "name": "Chef's Knife",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "Gcyd6Mu4OHqZH3Fu",
-        "name": "Cheshire",
         "type": "equippableItem",
         "effects": 0
       },
@@ -5502,12 +4650,6 @@
       },
       {
         "id": "feHphjgfvJqxp7Qa",
-        "name": "Create Phantasm: Strike",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "gdbhmvftaslt93qS",
         "name": "Create Phantasm: Strike",
         "type": "equippableItem",
         "effects": 0
@@ -5879,12 +5021,6 @@
         "effects": 0
       },
       {
-        "id": "awj31d2XM7DM7hev",
-        "name": "Deteriorate",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "gQNqXMnOYBQrQfoB",
         "name": "Deteriorate",
         "type": "equippableItem",
@@ -5892,12 +5028,6 @@
       },
       {
         "id": "k7gaSnhF7IynAnfG",
-        "name": "Detonate Phantasm",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "mzPqubjjXYaSdbmY",
         "name": "Detonate Phantasm",
         "type": "equippableItem",
         "effects": 0
@@ -5923,18 +5053,6 @@
       {
         "id": "6DBHquzZUxTCuu3F",
         "name": "Disarming Rhetoric",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "agDC4zoJ1qmNXERJ",
-        "name": "Disdainful Knife",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "0fiCzbG1Q6BD6Ylf",
-        "name": "Disdainful Knife b",
         "type": "equippableItem",
         "effects": 0
       },
@@ -5967,12 +5085,6 @@
         "name": "Divination",
         "type": "equippableItem",
         "effects": 1
-      },
-      {
-        "id": "uSB7oY06VmB18qEo",
-        "name": "Django",
-        "type": "equippableItem",
-        "effects": 0
       },
       {
         "id": "3Un5X30CM2z5J1pl",
@@ -6089,32 +5201,8 @@
         "effects": 0
       },
       {
-        "id": "OemPdYeOs5FkUj1M",
-        "name": "Drain Spirit (old)",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "7p7Yi9mS78uksj7V",
         "name": "Drain Vigor",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "I3pJvA7mt6xWqWyQ",
-        "name": "Drain Vigor",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "hMq4ZNTAGthVGVGD",
-        "name": "Dread Core b",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "JSGdpRion0BMIDpq",
-        "name": "Dream Flower",
         "type": "equippableItem",
         "effects": 0
       },
@@ -6197,20 +5285,8 @@
         "effects": 0
       },
       {
-        "id": "OWiE9KadNXPpPE6j",
-        "name": "Egg Bomb",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "2sPBBryQTqyGYT68",
         "name": "Ego Mask",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "OKMDqtEAtZZO74KW",
-        "name": "Eir",
         "type": "equippableItem",
         "effects": 0
       },
@@ -6581,18 +5657,6 @@
         "effects": 0
       },
       {
-        "id": "CZ3c8k2Sfasicgc4",
-        "name": "Essencia Demonica",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "iveFuZCCHJeKRb3B",
-        "name": "Essencia Demonica b",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "IPezvtbd25xqxmR8",
         "name": "Excaliblur",
         "type": "equippableItem",
@@ -6785,12 +5849,6 @@
         "effects": 0
       },
       {
-        "id": "MsBHuF8ptv0yCYwJ",
-        "name": "Fio",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "0sFCVCoM6FRrQP2f",
         "name": "Fire",
         "type": "equippableItem",
@@ -6839,18 +5897,6 @@
         "effects": 0
       },
       {
-        "id": "ANTuDJF60LMhgXHo",
-        "name": "Flame Ring",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "V4BiBbOZ629njfnD",
-        "name": "Flame Ring",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "eZCGq7YEO3hMYuSX",
         "name": "Flame Weapon",
         "type": "equippableItem",
@@ -6863,20 +5909,8 @@
         "effects": 0
       },
       {
-        "id": "1aeasNGWSCTtjxMt",
-        "name": "Flare",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "dVH1jCnm8Jz4FaN7",
         "name": "Flare",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "0HAZWF5qkPyo4InH",
-        "name": "Flare (Copy)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -7091,12 +6125,6 @@
         "effects": 0
       },
       {
-        "id": "fENvp5ysc5dizKxY",
-        "name": "Fulgur",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "RZJCu7gqGQL3qQkE",
         "name": "Fulgur Alta",
         "type": "equippableItem",
@@ -7119,12 +6147,6 @@
         "name": "Full Plate",
         "type": "equippableItem",
         "effects": 3
-      },
-      {
-        "id": "JReKcw8VQA7whmq9",
-        "name": "Furrcule De Beerot",
-        "type": "equippableItem",
-        "effects": 0
       },
       {
         "id": "1w2LjUOVhlbLR8nn",
@@ -7313,12 +6335,6 @@
         "effects": 0
       },
       {
-        "id": "EHEVaGG0p0cVb4Be",
-        "name": "Gilded Ring",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "FRwmrAhwe8xSLEXZ",
         "name": "Glacial Staff",
         "type": "equippableItem",
@@ -7332,12 +6348,6 @@
       },
       {
         "id": "YxXwy2Giyln0kuLT",
-        "name": "Glacies",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "aoaTh7KNuFECCPTm",
         "name": "Glacies",
         "type": "equippableItem",
         "effects": 0
@@ -7733,28 +6743,10 @@
         "effects": 0
       },
       {
-        "id": "M6ZinHuDilyMzi7Z",
-        "name": "Gushtar",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "eFCI8orv8lb9Umfe",
-        "name": "Haggis",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "pcVQKM3teguaitRy",
         "name": "Hako Coupon",
         "type": "equippableItem",
         "effects": 0
-      },
-      {
-        "id": "Z0K9j0wgBELkOcBA",
-        "name": "Hako's Panty",
-        "type": "equippableItem",
-        "effects": 2
       },
       {
         "id": "aAMzqFzs14MbNIKw",
@@ -7838,7 +6830,7 @@
         "id": "VdzUY6OaTy7vncGT",
         "name": "Hawkeye",
         "type": "equippableItem",
-        "effects": 3
+        "effects": 1
       },
       {
         "id": "vpWwubxgo2XBnjEE",
@@ -7971,12 +6963,6 @@
         "name": "Hekat Shield",
         "type": "equippableItem",
         "effects": 2
-      },
-      {
-        "id": "kbUczxNSNfxz4D4Y",
-        "name": "Helga",
-        "type": "equippableItem",
-        "effects": 0
       },
       {
         "id": "yo62fJfnUWRMWfc5",
@@ -8189,18 +7175,6 @@
         "effects": 0
       },
       {
-        "id": "ntR1CEGlLzrnCeo6",
-        "name": "Huma Determina",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "aVz5yelXy3mGABNc",
-        "name": "Huma Determina b",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "duaQp4cjNOboR9Gk",
         "name": "Hunter Boots",
         "type": "equippableItem",
@@ -8245,12 +7219,6 @@
       {
         "id": "onWV1WgJlvg1iRTG",
         "name": "Hydro Hex",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "q57uVgAzKW75Gc4c",
-        "name": "Hydro Pump",
         "type": "equippableItem",
         "effects": 0
       },
@@ -8346,12 +7314,6 @@
       },
       {
         "id": "EJ8qEpVDNMA0I1fi",
-        "name": "Ignis",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "sKCCfrDOv5dK5yYR",
         "name": "Ignis",
         "type": "equippableItem",
         "effects": 0
@@ -8585,12 +7547,6 @@
         "effects": 0
       },
       {
-        "id": "0Hps8OiNjRpeOPfd",
-        "name": "IP refill",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "XpSvvPKiAzoY4nqp",
         "name": "Iron Forest",
         "type": "equippableItem",
@@ -8617,18 +7573,6 @@
       {
         "id": "gZd0tjjo5y0GNzBs",
         "name": "Ishtingar",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "sYLzORrxIOhVrEaS",
-        "name": "Item Dowsing",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "HY1Z486mLrBMDUXP",
-        "name": "Item Dowsing b",
         "type": "equippableItem",
         "effects": 0
       },
@@ -8689,12 +7633,6 @@
       {
         "id": "JXTatbLpfQkBEZQT",
         "name": "IW-Unarmed Strike",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "lYL0pOwpmVT36CCE",
-        "name": "Jackey",
         "type": "equippableItem",
         "effects": 0
       },
@@ -8771,78 +7709,6 @@
         "effects": 2
       },
       {
-        "id": "hPWQP8qNxLF8LA3C",
-        "name": "Key of Beastiality",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "PywehadVaYbtBA1z",
-        "name": "Key of Beastiality b",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "zSeo4r5uJAYNwiSo",
-        "name": "Key of Construstion",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "l5imJ98GiREX6esH",
-        "name": "Key of Darkness",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "ruuHHroNmCsqu42o",
-        "name": "Key of Demonic (lost)",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "t88kBm9PmMjEqcy9",
-        "name": "Key of Demonic b",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "a6ahZqEx9hajaQOY",
-        "name": "Key of Elemental",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "iEXJEgZgb4otmg21",
-        "name": "Key of Humanity (lost)",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "QdKvWOheNHBhQXBg",
-        "name": "Key of Humanity b",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "uXqjq0xTMry1K6Zk",
-        "name": "Key of Immortality",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "xOjfmDVVCm5QMED1",
-        "name": "Key of Monstrosity",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "OdVnX8irX4UjNvPQ",
-        "name": "Key of Plantation",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "9o2rspcBHnzDTRIS",
         "name": "Kindle Fire",
         "type": "equippableItem",
@@ -8881,12 +7747,6 @@
       {
         "id": "Tx0zyuYgQLZkuqpJ",
         "name": "Koi Whisker",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "EcpMJISHYuoi04bU",
-        "name": "Kojiro",
         "type": "equippableItem",
         "effects": 0
       },
@@ -9347,26 +8207,8 @@
         "effects": 0
       },
       {
-        "id": "yEvAVSoq26QUCDX0",
-        "name": "MagiSphere: Angry Pepper Ball",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "TVhBQQMu37z9mkkb",
         "name": "Magitech Armament",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "2bq3QDtXnhVPWscx",
-        "name": "Magitech Binocular",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "giihZ5chYozJyPjr",
-        "name": "Magitech Binocular b",
         "type": "equippableItem",
         "effects": 0
       },
@@ -9611,12 +8453,6 @@
         "effects": 0
       },
       {
-        "id": "kn1Nz9oGWrncwu7z",
-        "name": "Mikhail",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "2p8NT6NWuFcfHsAS",
         "name": "Milk",
         "type": "equippableItem",
@@ -9691,12 +8527,6 @@
       {
         "id": "j47DUuczznf6bLWx",
         "name": "Minstrel Harp",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "lUm5nCgXPwivCWKo",
-        "name": "Miracle Essence",
         "type": "equippableItem",
         "effects": 0
       },
@@ -9989,12 +8819,6 @@
         "effects": 0
       },
       {
-        "id": "F3UWsvSZ0jhA0UF0",
-        "name": "Monster Repelant",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "nJXcfE31UpQ0rGJI",
         "name": "Moon Dancer Chakram",
         "type": "equippableItem",
@@ -10056,12 +8880,6 @@
       },
       {
         "id": "6pjBWpijmao9yHng",
-        "name": "Muddle",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "mnOxzYcWGKOsKRP6",
         "name": "Muddle",
         "type": "equippableItem",
         "effects": 0
@@ -10283,12 +9101,6 @@
         "effects": 0
       },
       {
-        "id": "zEXXbbut09psspMh",
-        "name": "Numen Attack",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "WxrG0dKPxxIpDvI2",
         "name": "Nunchaku",
         "type": "equippableItem",
@@ -10349,12 +9161,6 @@
         "effects": 0
       },
       {
-        "id": "ckkEwxSXMPK6JyQr",
-        "name": "Omega",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "MfVnXiq8A5QLYXJg",
         "name": "Omnidex",
         "type": "equippableItem",
@@ -10365,18 +9171,6 @@
         "name": "Opal Pendant",
         "type": "equippableItem",
         "effects": 1
-      },
-      {
-        "id": "AL6EXrbTRiLn4spI",
-        "name": "Orange Spice",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "yVPG0aBkkzT5Ti3m",
-        "name": "Orihacon",
-        "type": "equippableItem",
-        "effects": 2
       },
       {
         "id": "5xIXXUljf4JRv1uE",
@@ -10649,12 +9443,6 @@
         "effects": 0
       },
       {
-        "id": "GJncNkcUmuDLfKHO",
-        "name": "Plague",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "sGrWBZ1E4yDlVgSy",
         "name": "Plague",
         "type": "equippableItem",
@@ -10665,12 +9453,6 @@
         "name": "Plate Manica",
         "type": "equippableItem",
         "effects": 2
-      },
-      {
-        "id": "Z5E0OSG6PU9cuOL6",
-        "name": "Player Inventory",
-        "type": "equippableItem",
-        "effects": 0
       },
       {
         "id": "h796jftqMnc17n8d",
@@ -10823,20 +9605,8 @@
         "effects": 0
       },
       {
-        "id": "TSdb01Bxhc3vK9Bo",
-        "name": "Porco",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "EaSl6IwD3TfS7zBm",
         "name": "Portable Assembler",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "SzPruzCYn8ogCBov",
-        "name": "Portable Barrel Holder",
         "type": "equippableItem",
         "effects": 0
       },
@@ -11339,12 +10109,6 @@
         "effects": 0
       },
       {
-        "id": "30vfbYAHZu0bRtCz",
-        "name": "Rene",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "JD3qn4EcNupk8VLO",
         "name": "Repetition",
         "type": "equippableItem",
@@ -11471,18 +10235,6 @@
         "effects": 0
       },
       {
-        "id": "ODyPzODFOYsQ7vJ2",
-        "name": "Ring of Strong",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "9pW0BarcDuwFJWBL",
-        "name": "Ring of Strong b",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "Ykbs1UX7TZAfYOwl",
         "name": "Ring of Tales",
         "type": "equippableItem",
@@ -11545,12 +10297,6 @@
       {
         "id": "x2HmuRVSAnpKVoex",
         "name": "Ritual Arcanism (variant)",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "SSWhWcLuuUicnhGz",
-        "name": "Ritual Candle",
         "type": "equippableItem",
         "effects": 0
       },
@@ -11741,12 +10487,6 @@
         "effects": 2
       },
       {
-        "id": "PzU2PQA291o2onze",
-        "name": "Rustal's Flare",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "iTT3JNZKFeIE55ge",
         "name": "Rusty Pipe",
         "type": "equippableItem",
@@ -11861,18 +10601,6 @@
         "effects": 0
       },
       {
-        "id": "vW2feE4CNPWl6zsy",
-        "name": "Seastone Trident (lost)",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "zZDR1hsL2Go5rlgI",
-        "name": "Seastone Trident b",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "tXoEgHJxXgdd9t8a",
         "name": "Secondary Primer",
         "type": "equippableItem",
@@ -11927,12 +10655,6 @@
         "effects": 0
       },
       {
-        "id": "QQaglOgoT8r8FAJb",
-        "name": "Seething Blight",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "NAZlvtDB6iZX0mqr",
         "name": "Seigfried",
         "type": "equippableItem",
@@ -11977,18 +10699,6 @@
       {
         "id": "XZomcenPLhn7FpGI",
         "name": "Set Trap",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "A5WYivVMK6MUuYkQ",
-        "name": "Seva Beastiality",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "s0BsbYMNzITO4xW8",
-        "name": "Seva Beastiality b",
         "type": "equippableItem",
         "effects": 0
       },
@@ -12051,18 +10761,6 @@
         "name": "Shield of Spring",
         "type": "equippableItem",
         "effects": 2
-      },
-      {
-        "id": "5qiZPGnaJpht2O4j",
-        "name": "Shielding Ring",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "O60Tor2oOync88qa",
-        "name": "Ship-mounted machine gun",
-        "type": "equippableItem",
-        "effects": 0
       },
       {
         "id": "vNzVes988MJdlWGn",
@@ -12329,18 +11027,6 @@
         "effects": 0
       },
       {
-        "id": "Jp3WyjHBZkZxorhV",
-        "name": "Soul Conversion Ring",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "1qGWSvxRUr4n2oF9",
-        "name": "Soul Conversion Ring b",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "1qZYQN596w9F4YtT",
         "name": "Soul Eater",
         "type": "equippableItem",
@@ -12455,18 +11141,6 @@
         "effects": 0
       },
       {
-        "id": "nLap8iTSrzhHQ6uN",
-        "name": "Speed",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "nEaEDUwNvpCJJTa1",
-        "name": "Spell Edge",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "X8nWZK2iCZwZQ2dH",
         "name": "Spell Mimic",
         "type": "equippableItem",
@@ -12499,12 +11173,6 @@
       {
         "id": "dDT8OrIPHFQuyfQp",
         "name": "Spellweave",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "ZOcuOjRJnLprlgLK",
-        "name": "Spica",
         "type": "equippableItem",
         "effects": 0
       },
@@ -12719,22 +11387,10 @@
         "effects": 0
       },
       {
-        "id": "UwVBdtPn1b7q8Kpd",
-        "name": "Stop",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "Xf6q7cCeuczSTfXp",
         "name": "Stop",
         "type": "equippableItem",
         "effects": 1
-      },
-      {
-        "id": "fMOIi6Rw15EZKfJE",
-        "name": "Stop (old)",
-        "type": "equippableItem",
-        "effects": 0
       },
       {
         "id": "sCrX0Xv40KCLXzGs",
@@ -12761,12 +11417,6 @@
         "effects": 0
       },
       {
-        "id": "GZVLecN1kFLuuHGU",
-        "name": "Strela",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "8ULdiwfdgDOgtRex",
         "name": "Strength of the Five Wellspring",
         "type": "equippableItem",
@@ -12787,12 +11437,6 @@
       {
         "id": "I1ei4lpXd6dA8T3V",
         "name": "Strong Grip",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "1mSrlp9MkENXV8jr",
-        "name": "Strong Spirit",
         "type": "equippableItem",
         "effects": 0
       },
@@ -13145,12 +11789,6 @@
         "effects": 0
       },
       {
-        "id": "C1FR55h1SsY8GEpF",
-        "name": "Terra",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "oB6zQngnzWyl3VLx",
         "name": "Terra",
         "type": "equippableItem",
@@ -13179,24 +11817,6 @@
         "name": "Terrain Generator: Terrarium",
         "type": "equippableItem",
         "effects": 0
-      },
-      {
-        "id": "GGnxgwyNM2LO2pfA",
-        "name": "test item",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "3a1LLwzYB4uMfHaU",
-        "name": "Test new Item template",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "FMrEc91XoDowgOE5",
-        "name": "test skill",
-        "type": "equippableItem",
-        "effects": 1
       },
       {
         "id": "3VNzb7Sag7adOSXA",
@@ -13337,12 +11957,6 @@
         "effects": 0
       },
       {
-        "id": "D9shkKJyRiS5qc5U",
-        "name": "Thunderbolt",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "eMFnmNlwEks944Vk",
         "name": "Thunderbolt",
         "type": "equippableItem",
@@ -13477,12 +12091,6 @@
       {
         "id": "WiCs6a65AnrGEY8Q",
         "name": "Transfer Life",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "zHr4pvoKqVunprYK",
-        "name": "Transmute Cup",
         "type": "equippableItem",
         "effects": 0
       },
@@ -13627,30 +12235,6 @@
       {
         "id": "DjWuezz1QRrRxCEr",
         "name": "Tyrant's Scepter",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "xQLqzyuEelJlD0bk",
-        "name": "UberwidS",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "rcbqD5hempUwQywK",
-        "name": "UberwidS b",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "FwhaSV8LQb8Dpzeg",
-        "name": "Úlfarr",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "3BKWrwYhsdaDG3eN",
-        "name": "Umbra",
         "type": "equippableItem",
         "effects": 0
       },
@@ -13812,12 +12396,6 @@
       },
       {
         "id": "jLC0QzPXwRrpkY1e",
-        "name": "Ventus",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "wT2mM2zE8PKAhNLc",
         "name": "Ventus",
         "type": "equippableItem",
         "effects": 0
@@ -14041,12 +12619,6 @@
       {
         "id": "bjiYR2V7wNcjI3dv",
         "name": "Whirling Axe",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
-        "id": "jHWcsmZZGzbfiLue",
-        "name": "White Lady",
         "type": "equippableItem",
         "effects": 0
       },
@@ -14481,58 +13053,11 @@
         "effects": 0
       },
       {
-        "id": "XwG7NCxlzAgyzB5L",
-        "name": "???",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "lRBKHboc7pbAPwyN",
         "name": "???",
         "type": "character",
         "items": [],
         "effects": 1
-      },
-      {
-        "id": "rBErXby0uNH8KZFo",
-        "name": "????",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "G7ajE0eZLUlcl2Y6",
-        "name": "⭐️  Magitech Scorpion",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "x0kyniMOXjMyD3Pi",
-        "name": "⭐ Almazy",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "0HWy6F6Kv9CEDGQu",
-        "name": "⭐️ Alois",
-        "type": "character",
-        "items": [
-          {
-            "id": "ltXja1F47KkZeQgF",
-            "name": "Imperial Gunblade"
-          }
-        ],
-        "effects": 0
-      },
-      {
-        "id": "CCN5LD9slWVCuGum",
-        "name": "⭐ Alpha Howler",
-        "type": "character",
-        "items": [],
-        "effects": 0
       },
       {
         "id": "oVZvfkkXMdxmB3T9",
@@ -14553,41 +13078,6 @@
           }
         ],
         "effects": 0
-      },
-      {
-        "id": "9ktKjNRo6lksdn0Z",
-        "name": "⭐️ Carrion Lord",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "L9XOiepTcNYrbs9m",
-        "name": "⭐️ Carrion Lord (Copy)",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "W96EO81Ck6gg06tm",
-        "name": "⭐️ Dr. Warwick",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "CMT6UwIeF1G03JJa",
-        "name": "⭐ Eberon, the Defiler",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "9l27YMdBWjuKT2sC",
-        "name": "⭐️ Elenoa",
-        "type": "character",
-        "items": [],
-        "effects": 2
       },
       {
         "id": "P1uCkpNnxLRBNqZr",
@@ -14639,27 +13129,6 @@
             "name": "Zero Trigger: Suffering"
           }
         ],
-        "effects": 0
-      },
-      {
-        "id": "zRfCW6C42Q9YxWX2",
-        "name": "⭐️ Fortune",
-        "type": "character",
-        "items": [],
-        "effects": 2
-      },
-      {
-        "id": "htXmGKtuD40gtJhA",
-        "name": "⭐ Fortune, the Dark Merchant",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "jrJoyVRLqyu7KkVo",
-        "name": "⭐ Gigant Mammoth",
-        "type": "character",
-        "items": [],
         "effects": 0
       },
       {
@@ -14760,10 +13229,6 @@
         "type": "character",
         "items": [
           {
-            "id": "nmfkLFwbPowdW1SG",
-            "name": "Cleaving Strike"
-          },
-          {
             "id": "Wsf5LZFHVpVN0btT",
             "name": "Cleaving Strike"
           },
@@ -14836,10 +13301,6 @@
             "name": "Rock your World"
           },
           {
-            "id": "NVvlMGKo1GJ6wCGq",
-            "name": "Rock your World"
-          },
-          {
             "id": "EvGcS4Bw6TgoV0Fw",
             "name": "Shout my Soul"
           },
@@ -14859,10 +13320,6 @@
         "name": "⭐️ Masked Girl",
         "type": "character",
         "items": [
-          {
-            "id": "fARmlVMFFUwniWXE",
-            "name": "Draconic Roar"
-          },
           {
             "id": "AmcXC7n0jM0WujmT",
             "name": "Dragonfire Dive"
@@ -14916,34 +13373,6 @@
             "name": "Zero Trigger: Wind Rider"
           }
         ],
-        "effects": 0
-      },
-      {
-        "id": "Zlje0mcKmtQhgg40",
-        "name": "⭐️ Molten Paryashera",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "h4p6GHzVkkw1twaj",
-        "name": "⭐️ Pepel Zorya",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "P2mfHMXC5vPc5lY8",
-        "name": "⭐️ Pepel Zorya Unleash",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "4QPBT3eqiLGW0BZm",
-        "name": "⭐ Pohlotel",
-        "type": "character",
-        "items": [],
         "effects": 0
       },
       {
@@ -15031,20 +13460,6 @@
         "effects": 0
       },
       {
-        "id": "vhd9eozft2Gt971v",
-        "name": "⭐️ Spica",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "J6IHbTCn2gsdzneI",
-        "name": "⭐️ Veela, Winterland Witch",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
         "id": "KygETN50UthluNPl",
         "name": "⭐️ Wandering Flame",
         "type": "character",
@@ -15089,188 +13504,6 @@
         "effects": 0
       },
       {
-        "id": "HhhuAkJjHFpgpm8t",
-        "name": "⭐ Whaleman",
-        "type": "character",
-        "items": [],
-        "effects": 2
-      },
-      {
-        "id": "eUP7mGrdgXuBcSyJ",
-        "name": "⭐ Winterlands Reaper",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "C7jEeFTUMf9AhL48",
-        "name": "⭐ Yeti",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "dj4CF8lZQloQW56a",
-        "name": "⭐ Zabolot",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "Fieo4OvPt16PguN1",
-        "name": "⭐️ Zelianna",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "6ttM91aBQvMB4sTO",
-        "name": "⭐The All-Defiled",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "XyJxGgvCKUziP55E",
-        "name": "⭐Tunnel Stalker",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "IQo1XUncpZIFP4Gl",
-        "name": "⭐Yarrick, the Defiled",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "JeqwdjK1snfzg9Bt",
-        "name": "🌟 Ozmo",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "GVJP8SF76cGu6PiG",
-        "name": "🌟 Štír",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "ss4CfIRR4dS1VC1L",
-        "name": "10",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "PRR3GZPmxSPv9Y00",
-        "name": "10Clock",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "9t7QQNbDX5t8SIPV",
-        "name": "12Clock",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "2NIWmqtkqHzWFv0F",
-        "name": "2",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "n1v1H8vDXfABePY1",
-        "name": "3",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "y3KfZ7hBNJLhf1Wn",
-        "name": "4",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "K43Qz3hLH96Gv0cD",
-        "name": "4Clock",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "dBuFC47Bu7qSrt2U",
-        "name": "5",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "d6udx3elRhJOq0NZ",
-        "name": "6",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "i3smrlCm4h03fX0P",
-        "name": "6Clock",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "8qEVVPCnLNwihXaW",
-        "name": "7",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "vfs8VHucRUKQyfMT",
-        "name": "8",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "rO9IVeaalBwUYjxt",
-        "name": "8Clock",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "qcGhE5KUPhALAxNp",
-        "name": "9",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "hGFNvWook9jzSL32",
-        "name": "A",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "OOKa6nEunFZpNYzY",
-        "name": "Accessory Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
         "id": "IfNhgMkJ1pEYaaBY",
         "name": "Ace of Cards",
         "type": "character",
@@ -15312,41 +13545,6 @@
             "name": "Trap Card"
           }
         ],
-        "effects": 0
-      },
-      {
-        "id": "A5FW6xTiXSrtSJ5j",
-        "name": "Administrator",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "egeBqiyrTnUfzICI",
-        "name": "Advantage Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "lEEWFKFyZ0iZ4ppK",
-        "name": "Advantage Tile",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "PhgybQsUlGEMewyC",
-        "name": "Advisor Kurasume",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "7NZciRwIm1HbaJB6",
-        "name": "Ælftheryth the Overseer",
-        "type": "character",
-        "items": [],
         "effects": 0
       },
       {
@@ -15413,25 +13611,6 @@
         "effects": 0
       },
       {
-        "id": "TNVN2Dmty8ciWeKQ",
-        "name": "Air Turret",
-        "type": "character",
-        "items": [
-          {
-            "id": "ve6l9umXwFy0t4Rm",
-            "name": "Bomb"
-          }
-        ],
-        "effects": 0
-      },
-      {
-        "id": "1540YCMImx6yJMkj",
-        "name": "Airship",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "9olYMzELv0sPERYu",
         "name": "Albero",
         "type": "character",
@@ -15453,22 +13632,8 @@
         "effects": 0
       },
       {
-        "id": "Y4ytwkVSzkc54uOY",
-        "name": "Alert Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
         "id": "aYFc8cAMUmBs13wq",
         "name": "Alicia",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "nrESJ2n45f0OGG23",
-        "name": "Alois",
         "type": "character",
         "items": [],
         "effects": 0
@@ -15481,53 +13646,11 @@
         "effects": 1
       },
       {
-        "id": "zuA5Z1C7Lrh42fMo",
-        "name": "Ambush Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
         "id": "oqV7VyKrEptU0xXX",
         "name": "Andrey",
         "type": "character",
         "items": [],
         "effects": 1
-      },
-      {
-        "id": "LMmjkNjDM6jIaUEc",
-        "name": "Anemone",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "Pe9Rs9OSMUJ28s0y",
-        "name": "Angelfish",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "FqGkPx0SVhzDntUU",
-        "name": "Angelic Blader",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "jACkakL0DOwxeZLV",
-        "name": "Anio",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "cCVboB6Au6xAsdqt",
-        "name": "Anna",
-        "type": "character",
-        "items": [],
-        "effects": 0
       },
       {
         "id": "PUk8MzjcNsqU1jEZ",
@@ -15549,66 +13672,6 @@
           {
             "id": "G8NYkU8Eb9LcXbFj",
             "name": "Wind Up"
-          }
-        ],
-        "effects": 0
-      },
-      {
-        "id": "lEM9ESsq1eDSVAO8",
-        "name": "Aqua Divination",
-        "type": "character",
-        "items": [
-          {
-            "id": "nYepRyHx70xJwWuG",
-            "name": "Arcane Earring"
-          },
-          {
-            "id": "BxS28qeJeE1Z3s1I",
-            "name": "Elemental Ward"
-          },
-          {
-            "id": "xy7pCNZxAjedF19e",
-            "name": "Gorger Ward"
-          },
-          {
-            "id": "N45nFBummzmvY1Eq",
-            "name": "Hypno Pendulum"
-          },
-          {
-            "id": "Q3Zwvm12Yw5hiuvv",
-            "name": "Invisibility Cloak"
-          },
-          {
-            "id": "OTmRX4czNIyoySyq",
-            "name": "Lullaby Bell"
-          },
-          {
-            "id": "wB0WC7TbfAx8wA8Z",
-            "name": "Mage Seal"
-          },
-          {
-            "id": "9ZTifALXjXG1eqRC",
-            "name": "Magician Necklace"
-          },
-          {
-            "id": "af0wUQMZFDThVPgE",
-            "name": "Revealing Lens"
-          },
-          {
-            "id": "wP2JSUtHvPjaLPi2",
-            "name": "Shooting Star Fragment"
-          },
-          {
-            "id": "VEqOxjH7G2TcBH9X",
-            "name": "Soul Ring"
-          },
-          {
-            "id": "fa8V4EZRLdseekSN",
-            "name": "Survivor’s Crest"
-          },
-          {
-            "id": "prVoAwGahsdz4x59",
-            "name": "Watering Can"
           }
         ],
         "effects": 0
@@ -15710,13 +13773,6 @@
         "effects": 0
       },
       {
-        "id": "lzSmuXsbryGBOHBm",
-        "name": "Archbishop Cruxiana",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "cO1O5wwpMEPLNLv0",
         "name": "Arctic Narsissus",
         "type": "character",
@@ -15724,153 +13780,8 @@
         "effects": 0
       },
       {
-        "id": "sZdHfQxhJsesut9i",
-        "name": "Armor Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "SSuhdNHspW3XqCsl",
-        "name": "ArrowDoubleDown Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "0yZJAQXZrtHmt0ih",
-        "name": "ArrowDoubleLeft Tile",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "YmtIS5XKVTmg0V9p",
-        "name": "ArrowDoubleRight Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "nAsc9JEBWvmspn7U",
-        "name": "ArrowDoubleUp Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "fwZBLAM2TFPMX8Ri",
-        "name": "ArrowDown Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "6fhrOXZ331rEUlus",
-        "name": "ArrowLeft Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "zseILJBmGQsHxwoW",
-        "name": "ArrowRight Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "fr5jZ44DJDyOfCHM",
-        "name": "ArrowTripleDown Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "8oAPzh5Lvka7k2KB",
-        "name": "ArrowTripleLeft Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "cuPRy0QtRUX4jU70",
-        "name": "ArrowTripleRight Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "7hsXK6ENzPMqYR8J",
-        "name": "ArrowTripleUp Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "ZwXKs9nRHME8bCMZ",
-        "name": "ArrowUp Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "evJqlhIUYMDXrWC9",
-        "name": "Artillery Turret",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "jRmyEUXMPxPdDmNh",
         "name": "Asaka",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "pVma8ucho0sF62rY",
-        "name": "Ascaranda The Incarcerate",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "PUt59MJvwhqbT4qG",
-        "name": "Attacker Mech",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "OBSrhP0bM4Y0A9rj",
-        "name": "Automaton Knight",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "ShXK9TH2tjeQCTsp",
-        "name": "Avalanche Golem",
-        "type": "character",
-        "items": [
-          {
-            "id": "b7YKu9PCmPnfkZpg",
-            "name": "Golem Soulstone"
-          }
-        ],
-        "effects": 0
-      },
-      {
-        "id": "VX4QxrWvGbJ9AzKx",
-        "name": "Babadukh",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "dxi8lqsfjN25iEZj",
-        "name": "Balestrix",
         "type": "character",
         "items": [],
         "effects": 0
@@ -16372,108 +14283,11 @@
         "effects": 0
       },
       {
-        "id": "1LLliKF0dLk5Xtdl",
-        "name": "Basilisk",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "1UXK2X9SNM2ar6NO",
-        "name": "Battle Mage",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "w2Ugj35nARiZpvV4",
         "name": "Battle Rank",
         "type": "character",
         "items": [],
         "effects": 1
-      },
-      {
-        "id": "4ik0mqmvWnU5QbA9",
-        "name": "Battle Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "QLxbZ0yXobECLw0U",
-        "name": "Battle Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "bZRYvgrSbrnojKrh",
-        "name": "Battle Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "iFLbKASTDZdTfaSf",
-        "name": "Battle Tile",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "2U5MthxrDRMofSGl",
-        "name": "Beary Goods",
-        "type": "character",
-        "items": [
-          {
-            "id": "7QU0UCWU5ZkPmfip",
-            "name": "Blue Bovine"
-          },
-          {
-            "id": "4Da8HXn9g6QHbrPU",
-            "name": "Bomb"
-          },
-          {
-            "id": "iWcK7MObejx2zYLD",
-            "name": "Café au Lait"
-          },
-          {
-            "id": "RpRnSJVyczUGylCm",
-            "name": "Café au Lait Recipe"
-          },
-          {
-            "id": "hAcgvBat0wLhIsS8",
-            "name": "General Goods"
-          },
-          {
-            "id": "K2p9TnwjrvcE9Ehm",
-            "name": "Grease Oil"
-          },
-          {
-            "id": "g1yZeWxmdhx8X7uW",
-            "name": "Hot Chocolate"
-          },
-          {
-            "id": "kXTkknhhWeDfMZ8g",
-            "name": "Hot Chocolate Recipe"
-          },
-          {
-            "id": "ZIMHz3UCPUQL05Re",
-            "name": "Lipovitan-Z"
-          },
-          {
-            "id": "DI88QVwDIKqOBDda",
-            "name": "Pepetein"
-          }
-        ],
-        "effects": 0
-      },
-      {
-        "id": "sBicVXj8OsmwPCrv",
-        "name": "Bell boy",
-        "type": "character",
-        "items": [],
-        "effects": 0
       },
       {
         "id": "N5k5aBtdGBakHLGO",
@@ -16509,13 +14323,6 @@
             "name": "Throwing Tantrum"
           }
         ],
-        "effects": 0
-      },
-      {
-        "id": "1UiZld5Kyvb2NdX0",
-        "name": "Bezo",
-        "type": "character",
-        "items": [],
         "effects": 0
       },
       {
@@ -16679,28 +14486,7 @@
             "name": "Zero Trigger: Motivation"
           }
         ],
-        "effects": 1
-      },
-      {
-        "id": "HKeTb0P8J5Y70UdG",
-        "name": "Blank Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "Y4aVEt7JaLzcEIpV",
-        "name": "Blank Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "t0MEmjWxp5IueaMY",
-        "name": "Blank Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
+        "effects": 0
       },
       {
         "id": "UXagcMfhhqcSz7OZ",
@@ -16708,13 +14494,6 @@
         "type": "character",
         "items": [],
         "effects": 0
-      },
-      {
-        "id": "GzOjxjLlfSfgTV5e",
-        "name": "Blocked Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
       },
       {
         "id": "Lw66ZLMHRvJKedpj",
@@ -16737,71 +14516,8 @@
         "effects": 0
       },
       {
-        "id": "8UODzRDT38yquLbu",
-        "name": "Bob",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "kWBUflt7qchCseqa",
         "name": "Bobb's squad",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "BWdtkAMgBVNMKG9y",
-        "name": "Boglyn",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "m0lCRqmWSq0TshNH",
-        "name": "Bogy",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "QTWHbSwtR6efikMX",
-        "name": "Bogy (Copy)",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "1vUfiT6egx3jaBKU",
-        "name": "Bolt Element",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "dIBGnNXx0TXZM95Y",
-        "name": "Bomb Beetle",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "HTgO09l4pLHbiB5u",
-        "name": "Bombado",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "liimNp5UJSludjID",
-        "name": "Bone Beast",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "aTaGojPEm1kdPgqx",
-        "name": "Bread",
         "type": "character",
         "items": [],
         "effects": 0
@@ -16894,62 +14610,6 @@
         "effects": 0
       },
       {
-        "id": "f6wAQfUaP9xRnCWs",
-        "name": "Cactroll",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "EPIUEdHJEY9ScBbs",
-        "name": "Cait Sith",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "ky1XKn02VL9NLPqq",
-        "name": "Caleb Jr.",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "159mAFNFAfWawZV5",
-        "name": "Caleb the Sixth",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "ZbOTdBHYCeum9DSO",
-        "name": "Caleb's Servants",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "GiiH9xBdbscOE0Ns",
-        "name": "Camp Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "LWBL7YEJskMBzyxs",
-        "name": "Camp Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "X1j15ecjRW47kwLM",
-        "name": "Camp Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
         "id": "odJ9ogVtqWLRU5C0",
         "name": "Canis",
         "type": "character",
@@ -17019,20 +14679,6 @@
             "name": "Umbra Shield"
           }
         ],
-        "effects": 0
-      },
-      {
-        "id": "zZijXAS9rzKG4jzh",
-        "name": "Cannon Turret",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "2uyp3oRhcyvnThf3",
-        "name": "Captain Carcha",
-        "type": "character",
-        "items": [],
         "effects": 0
       },
       {
@@ -17204,20 +14850,6 @@
         "effects": 0
       },
       {
-        "id": "9EKlTQ7mZaHmHckD",
-        "name": "Chaos Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "GNR7ssThOwNLakAF",
-        "name": "Chempon",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "XLS7jIqK8iAToGYM",
         "name": "Cherry",
         "type": "character",
@@ -17316,114 +14948,6 @@
           }
         ],
         "effects": 1
-      },
-      {
-        "id": "9FQE9Ry8fdnmmQr1",
-        "name": "Cheshire",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "4BUb6Cf0Hl53RSbO",
-        "name": "Cheshire Lab Rats",
-        "type": "character",
-        "items": [
-          {
-            "id": "iEv5igPjzN19jPhk",
-            "name": "Adrenaline Potion"
-          },
-          {
-            "id": "0foeWRCUYvfJ1gzn",
-            "name": "Blue Bovine"
-          },
-          {
-            "id": "qWDpR6ImEaHw51d8",
-            "name": "Café au Lait"
-          },
-          {
-            "id": "aBVSpHU0wHlJOnw7",
-            "name": "Forget me Nut"
-          },
-          {
-            "id": "HrBGNVDeEGWIHDfq",
-            "name": "General Goods"
-          },
-          {
-            "id": "5KW29MNbr3kEh1uP",
-            "name": "Golem Fragment"
-          },
-          {
-            "id": "MKFP0yCNePw0V2cA",
-            "name": "Golem Soulstone Recipe"
-          },
-          {
-            "id": "8Hs4VlVrB9yiphVQ",
-            "name": "Lipovitan-Z"
-          },
-          {
-            "id": "0d9ZmQHVLCEFtoQ8",
-            "name": "Liquid Luck"
-          },
-          {
-            "id": "MVFbMa7m4OsFdnz2",
-            "name": "Magic Mushroom"
-          },
-          {
-            "id": "nuzAsOjyyjcFWUR5",
-            "name": "Momotaro Dumpling"
-          },
-          {
-            "id": "SZbz7RFtPrrEOhXC",
-            "name": "Pepetein"
-          },
-          {
-            "id": "k5MRM36i2Cb4HVgk",
-            "name": "Poison"
-          },
-          {
-            "id": "FfyVzjKmrqmX93Xm",
-            "name": "Polymorph Potion: Drakoza"
-          },
-          {
-            "id": "KevextNRWB0UG1Wj",
-            "name": "Sleep Potion"
-          },
-          {
-            "id": "sU7tvfiwcTtAjRvR",
-            "name": "Spicy Cocktail"
-          },
-          {
-            "id": "hpGKUwTSEM6Z2ofY",
-            "name": "Suspicious Potion"
-          },
-          {
-            "id": "HAf60OEkTpLjgDxT",
-            "name": "Terrain Destroyer"
-          }
-        ],
-        "effects": 0
-      },
-      {
-        "id": "KzV5Prk9PNdrnhA5",
-        "name": "Chest",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "OBPFabd15w8FXEsC",
-        "name": "Chilly",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "CYYJYRjnsA4lXrXP",
-        "name": "Chimera",
-        "type": "character",
-        "items": [],
-        "effects": 0
       },
       {
         "id": "TGB44APysDdXbJ5M",
@@ -17582,48 +15106,6 @@
         "effects": 0
       },
       {
-        "id": "W5FYWqG3Zue6LeEr",
-        "name": "Chrome Shell",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "IbMsZv2Nz8PDgDY0",
-        "name": "Clarkis",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "EflanaO9sxZRjfRF",
-        "name": "Clock Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "wKZZLmSQwPx39rs0",
-        "name": "Clortiris",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "DWAHTuWheJeBbLtd",
-        "name": "Cloukas",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "yd3YeT6WJqeIYHay",
-        "name": "Cockatrice",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "3KulR3t3i0HpcCid",
         "name": "Commander",
         "type": "character",
@@ -17674,34 +15156,6 @@
       {
         "id": "C7PsWytpMXK0PZSt",
         "name": "Commodities Shade",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "rDfLxFeQ5njYsrcv",
-        "name": "Consumable Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "3ddRligLzCFKjN16",
-        "name": "councillor 1",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "PhAn7T7bwEkTt3Fc",
-        "name": "councillor 2",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "U3SmDFXBTbsAudeT",
-        "name": "councillor 3",
         "type": "character",
         "items": [],
         "effects": 0
@@ -17835,13 +15289,6 @@
         "effects": 0
       },
       {
-        "id": "dCXXlDHDrrNpxYJZ",
-        "name": "Crazy Merman",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "5m6jyFCVzfBSzJvN",
         "name": "Creeps",
         "type": "character",
@@ -17892,18 +15339,6 @@
         "effects": 0
       },
       {
-        "id": "ik2o2KAR2WZoDgrB",
-        "name": "Cryo Gorger",
-        "type": "character",
-        "items": [
-          {
-            "id": "5MUf38xSGYoYG6WW",
-            "name": "Ice Stone"
-          }
-        ],
-        "effects": 0
-      },
-      {
         "id": "ZPPCxB0eOJPulEHv",
         "name": "Crysta",
         "type": "character",
@@ -17924,62 +15359,6 @@
         "effects": 0
       },
       {
-        "id": "5ib0jCWcyNIXBcVy",
-        "name": "Cultist Bloodmage",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "WZEAxRgM6embkX0c",
-        "name": "Cultist Knife Grinder",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "I8qyWvFKYBFXIbw9",
-        "name": "Cultist Reaper",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "6E1podxXOaByOQOT",
-        "name": "Cultist Strangler",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "pvbYCYMx6MD8gMar",
-        "name": "Cultist Summoner(C)",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "M1xyMGK77dbNwZHC",
-        "name": "Cultist Summoner(L)",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "gVkouM02pbNbnw8P",
-        "name": "Cultist Summoner(R)",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "JtnNdURCi9eynJcW",
-        "name": "Cultist Summoners",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "DMpK5Bi119jIrCFZ",
         "name": "Current Game",
         "type": "character",
@@ -17990,13 +15369,6 @@
         "id": "c4KeS3XNO9ZTPI9C",
         "name": "Current_Game",
         "type": "_template",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "z5ztx46p6NuVW2Cw",
-        "name": "Cursed Pumpkin",
-        "type": "character",
         "items": [],
         "effects": 0
       },
@@ -18120,13 +15492,6 @@
         "effects": 0
       },
       {
-        "id": "RolnwUgUd38tNS36",
-        "name": "Dani",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "QWZQf8dHv15P9PrR",
         "name": "Darkblade",
         "type": "character",
@@ -18171,100 +15536,11 @@
         "effects": 0
       },
       {
-        "id": "fZvgTJvzkUgcgkvr",
-        "name": "Darkness Orb",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "l8fjHpv8n9598Yad",
-        "name": "Dead Drop Arms",
-        "type": "character",
-        "items": [
-          {
-            "id": "OfvVMZkyOdHeM0OF",
-            "name": "Alchemusket"
-          },
-          {
-            "id": "XxHS3qekPNC13urw",
-            "name": "Desperado Coat"
-          },
-          {
-            "id": "LhpavcRVpnC4gYcr",
-            "name": "Hit Service"
-          },
-          {
-            "id": "HAIq5VrXjUasqDgL",
-            "name": "Kevlar Vest"
-          },
-          {
-            "id": "5RTQlJQ75uWwGm2O",
-            "name": "Magno Gloves"
-          },
-          {
-            "id": "1PoelTxmNVzN9KQ4",
-            "name": "Magnum Piercer"
-          },
-          {
-            "id": "nUulrvXwJoHy702w",
-            "name": "Runefang"
-          },
-          {
-            "id": "bMTuCTNpVk3etloZ",
-            "name": "Vaultbreaker"
-          }
-        ],
-        "effects": 0
-      },
-      {
-        "id": "DMHfh4ChYzXNkMGe",
-        "name": "Decoy Doll",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "aaFHi6m4MFkjuF9i",
-        "name": "Desert Yeti",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "Ah6f8NrPEWANnUUl",
-        "name": "Desolator",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "lzhCevPafFeg9MsU",
-        "name": "Desolator",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "B0BAER4BkiKCmo4M",
-        "name": "Dəniza",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "SX6EFbqVtKweL1A1",
         "name": "Dimitri",
         "type": "character",
         "items": [],
         "effects": 1
-      },
-      {
-        "id": "SxqiIEsUbZKchLhQ",
-        "name": "Django",
-        "type": "character",
-        "items": [],
-        "effects": 0
       },
       {
         "id": "XD0ToZXRMrmKbGR8",
@@ -18281,39 +15557,11 @@
         "effects": 0
       },
       {
-        "id": "ozNcrTBm3U4jBAkR",
-        "name": "Domovoi",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "yt1VXS18ghapnKi6",
-        "name": "Door Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "gaskNv9728ngwHkE",
-        "name": "Dr. Goodwill",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "dHHhddUo0N1IbH4H",
         "name": "Dr. Warwick",
         "type": "character",
         "items": [],
         "effects": 1
-      },
-      {
-        "id": "CKYU8bjtLi23Lkqk",
-        "name": "Drake",
-        "type": "character",
-        "items": [],
-        "effects": 0
       },
       {
         "id": "p6FjXtbyYL9bTQiW",
@@ -18325,27 +15573,6 @@
             "name": "Bolt Breath"
           }
         ],
-        "effects": 0
-      },
-      {
-        "id": "UNmLSzcGZgmFN79S",
-        "name": "Drakoza",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "lEpfPjy96zuvgDla",
-        "name": "Dread Jaws",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "kOTilcHEJuleo4D3",
-        "name": "Dreadmoth",
-        "type": "character",
-        "items": [],
         "effects": 0
       },
       {
@@ -18389,20 +15616,6 @@
         "effects": 0
       },
       {
-        "id": "CncbzUzcx6d5saCp",
-        "name": "Duch",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "39CW0CpB6ohErG12",
-        "name": "Dukh",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "QJQHCcYMElhzGqGn",
         "name": "Dummy Player",
         "type": "character",
@@ -18417,13 +15630,6 @@
       {
         "id": "5retEBY46NCv0ECe",
         "name": "Duo",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "YaJhG3cb97YKxCTQ",
-        "name": "Dust Imp",
         "type": "character",
         "items": [],
         "effects": 0
@@ -18449,36 +15655,8 @@
         "effects": 0
       },
       {
-        "id": "gZfHDxN85D8Z9CaG",
-        "name": "Eir",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "N4hYREOor4xOIaT1",
         "name": "Eisendrachian Knight",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "hky628fEpv3w3qYM",
-        "name": "Ekunda",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "KEC0HtF647W6hiyn",
-        "name": "Elder Yaro",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "9w3VjWcBHuI4qhgW",
-        "name": "Electro Gorger",
         "type": "character",
         "items": [],
         "effects": 0
@@ -18647,147 +15825,6 @@
         "effects": 1
       },
       {
-        "id": "I2SQxpyoTiE0hnBV",
-        "name": "Emergency Provisions",
-        "type": "character",
-        "items": [
-          {
-            "id": "G3qXIFCax1QKjRO2",
-            "name": "Bardiche"
-          },
-          {
-            "id": "Q4LJCIZ7LVNplGKp",
-            "name": "Beowulf"
-          },
-          {
-            "id": "JcHlXZRWCC3Qq0Vq",
-            "name": "Falling Rain"
-          },
-          {
-            "id": "cCWyWXDThuF17MgC",
-            "name": "Forest Hatchet"
-          },
-          {
-            "id": "TWgD0YFuOh6ua3mh",
-            "name": "Miner Hat"
-          },
-          {
-            "id": "SsTQEO2TrKjJetCD",
-            "name": "Rocinante"
-          },
-          {
-            "id": "X00iPwbZCy0QvC5e",
-            "name": "Rune Blade"
-          },
-          {
-            "id": "9kkK2AL2c9NYyg4n",
-            "name": "Valkyrie Spear"
-          },
-          {
-            "id": "DUwmlEBm8qYVrf51",
-            "name": "Zweihander"
-          }
-        ],
-        "effects": 0
-      },
-      {
-        "id": "cN7dzdrYcylZ6fqo",
-        "name": "Empire Blader",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "yd2yzb2u6k3CDfOl",
-        "name": "Empire Gunner",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "K1aWOJUvcDVxpLpP",
-        "name": "Empire_Guard",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "9F4aPZaXRI2o9y8K",
-        "name": "Empire_Guard_Leader",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "LlFOV2YiGUX0m5Kl",
-        "name": "Empire_Guard_Shielder",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "s6IiJGEzby78FZI0",
-        "name": "Empire_Pistolero",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "pgdHJaBW7MJIfxsc",
-        "name": "Enforcer Bruiser",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "j6eA87nZa969ELYG",
-        "name": "Enforcer Gunbreaker",
-        "type": "character",
-        "items": [
-          {
-            "id": "H0h2TIwEN6iJtOtc",
-            "name": "Gunsword"
-          }
-        ],
-        "effects": 0
-      },
-      {
-        "id": "IZ3IPSUpooTergXh",
-        "name": "Enforcer Punisher",
-        "type": "character",
-        "items": [
-          {
-            "id": "osU5LIBscqFgP0NY",
-            "name": "Mistress Mask"
-          }
-        ],
-        "effects": 1
-      },
-      {
-        "id": "VwNNTHvwD4secr17",
-        "name": "Enforcer Sharpshooter",
-        "type": "character",
-        "items": [
-          {
-            "id": "GXlANOeUyzb2Y4KD",
-            "name": "Sniper Rifle"
-          }
-        ],
-        "effects": 0
-      },
-      {
-        "id": "61apUa6slNqVwG5T",
-        "name": "Enforcer Suppressor",
-        "type": "character",
-        "items": [
-          {
-            "id": "9QiRygCpOKgPYeFR",
-            "name": "Riot Shield"
-          }
-        ],
-        "effects": 0
-      },
-      {
         "id": "JWpen4YPnH8azp22",
         "name": "Entropist",
         "type": "character",
@@ -18888,13 +15925,6 @@
         "effects": 1
       },
       {
-        "id": "xiw1tM4jkw8xLw5y",
-        "name": "Environment Effect",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "iC4cjDw832oviv1W",
         "name": "Esper",
         "type": "character",
@@ -18965,27 +15995,6 @@
           }
         ],
         "effects": 0
-      },
-      {
-        "id": "UNvmi1I7DObvih2U",
-        "name": "Event Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "ecX6kpuiJfjoiCeJ",
-        "name": "Event Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "rxpWQc10xLyYAbT6",
-        "name": "Event Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
       },
       {
         "id": "t6E3CQ0pGxwLgXrn",
@@ -19172,27 +16181,6 @@
         "effects": 0
       },
       {
-        "id": "DJQIovzLRuXMPhg0",
-        "name": "EXP Tracker",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "tULC8qZQawccBlqC",
-        "name": "Eye of Tragedy",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "CZLAR2B2AwyzcIi6",
-        "name": "Fanged Worm",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "9ubDCyNifyglcDUX",
         "name": "Farian Pasta",
         "type": "character",
@@ -19268,34 +16256,6 @@
         "effects": 0
       },
       {
-        "id": "oL0oLpWATR46128m",
-        "name": "Fi",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "4VKq4Ibam4XNkeqV",
-        "name": "Final Story Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "KnpmhXbNmFB72Xvf",
-        "name": "Fio",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "uF3GjZxZLhdhT5QA",
-        "name": "Fire Element",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "Q2SuQSgrAC2dZR2Y",
         "name": "Fire Slime",
         "type": "character",
@@ -19334,34 +16294,6 @@
           }
         ],
         "effects": 0
-      },
-      {
-        "id": "yK5JI0yPB6logw2C",
-        "name": "Fishbones",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "CS4eruKdE6TXIcRZ",
-        "name": "Fishing Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "LNnj5CXsjiryrKu5",
-        "name": "Fishing Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "P7tqgp6dv11KAYGc",
-        "name": "Fishing Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
       },
       {
         "id": "7tctrjqHphbwESjH",
@@ -19707,13 +16639,6 @@
         "effects": 0
       },
       {
-        "id": "e0fRBgc4UIv3tO6y",
-        "name": "Flaming Turret",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "UIbEMK63Rm0RldES",
         "name": "Floralist",
         "type": "character",
@@ -19830,79 +16755,6 @@
         "effects": 0
       },
       {
-        "id": "KADS1m4ou4muPzee",
-        "name": "Foka",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "202emHrepscrIVvo",
-        "name": "Folamia",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "MLp8Ahcpb02NE9hh",
-        "name": "Fortune",
-        "type": "character",
-        "items": [
-          {
-            "id": "cSFv6CbxfM8WsHV2",
-            "name": "Aunction Trick: Dirty Talk"
-          },
-          {
-            "id": "CykJvmoCMovcTJxh",
-            "name": "Aunction Trick: Power Bid"
-          },
-          {
-            "id": "ixR3WD82ddBUPEu9",
-            "name": "Aunction Trick: Study"
-          },
-          {
-            "id": "90Pg1SJIJAuwS10R",
-            "name": "BDSM Garment"
-          },
-          {
-            "id": "bYP2Qhv9fwmxC0jF",
-            "name": "Django"
-          },
-          {
-            "id": "Him4jC7CwtRJ7PLE",
-            "name": "Flashbang Grenade"
-          },
-          {
-            "id": "gsqCBOF2lUMbpnc5",
-            "name": "Magitech Armament"
-          },
-          {
-            "id": "9QXRpvxKD6H3774V",
-            "name": "Magitech Briefcase"
-          },
-          {
-            "id": "50G0AG050PXxmcxo",
-            "name": "Salamander"
-          },
-          {
-            "id": "juoIYqBkgCM2mzqV",
-            "name": "Scounter"
-          },
-          {
-            "id": "CZyMCM1Pr2l7OHRX",
-            "name": "Sidewinder Rev-II"
-          }
-        ],
-        "effects": 0
-      },
-      {
-        "id": "yZYx4Oj9wtqemXEd",
-        "name": "Fortune (Old Portrait)",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "QiBWDonGEx8xRyXv",
         "name": "Founding Festival Accessories Stall",
         "type": "character",
@@ -20002,13 +16854,6 @@
         "effects": 0
       },
       {
-        "id": "2eIqJCsbLmUL5Cmh",
-        "name": "Freeze Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
         "id": "SQRFySnufW5bQ6RD",
         "name": "Freonia",
         "type": "character",
@@ -20018,27 +16863,6 @@
       {
         "id": "REiWhq9LCn6WgjHG",
         "name": "Freya",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "edJOetOwIC5EKN4I",
-        "name": "Frost Element",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "JRdaUSsqrPmv7ght",
-        "name": "Frost Guardian",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "NBUM8mnF2Xz3Q22k",
-        "name": "Furrcule De Beerrot",
         "type": "character",
         "items": [],
         "effects": 0
@@ -20128,13 +16952,6 @@
         "effects": 0
       },
       {
-        "id": "bv7LV1LORLE56tag",
-        "name": "Gathering Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
         "id": "UYAabJiUZJ1uKers",
         "name": "Geist",
         "type": "character",
@@ -20202,39 +17019,6 @@
         "effects": 0
       },
       {
-        "id": "tOTn1PnJsYhnc1Sw",
-        "name": "GenericNPC",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "DBda0zK5vstoNZV5",
-        "name": "Genotrix",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "cPYDt1yYAQetZAch",
-        "name": "Genotrix (Mutant)",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "CSFBonzEE9iG7f78",
-        "name": "Geo Cube",
-        "type": "character",
-        "items": [
-          {
-            "id": "z994OsGpNytcDtXe",
-            "name": "Earth Stone"
-          }
-        ],
-        "effects": 0
-      },
-      {
         "id": "zRuXyepUutM2LY9H",
         "name": "Geo Gorger",
         "type": "character",
@@ -20255,51 +17039,6 @@
         "effects": 0
       },
       {
-        "id": "vz0GnaIwqdNSvP2l",
-        "name": "Geo Gorger (Copy)",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "KPqJMBXlTyWsQ4Os",
-        "name": "Ghoul",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "IRuklIaBHUjwiXPk",
-        "name": "Glacial Hand",
-        "type": "character",
-        "items": [
-          {
-            "id": "VSMTJn7qrhgwcnAx",
-            "name": "Ice Stone"
-          }
-        ],
-        "effects": 0
-      },
-      {
-        "id": "IXcQlDSSeuYB6LdB",
-        "name": "Glacier Crab",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "G7DKu4pxadLQgTOA",
-        "name": "Glacimite",
-        "type": "character",
-        "items": [
-          {
-            "id": "pZGheUnWJDfiItuE",
-            "name": "Golem Fragment"
-          }
-        ],
-        "effects": 0
-      },
-      {
         "id": "WpwYah7A9Vync3r6",
         "name": "Global_Database",
         "type": "_template",
@@ -20311,50 +17050,6 @@
         "name": "Global_Database (Copy)",
         "type": "_template",
         "items": [],
-        "effects": 0
-      },
-      {
-        "id": "s5cVB2tNXhnzTtR7",
-        "name": "Gloom n' Doom Tailor",
-        "type": "character",
-        "items": [
-          {
-            "id": "dPtUyGqRSp1eHwWk",
-            "name": "Behemoth Horn"
-          },
-          {
-            "id": "fa15oLOMcSJQEpWz",
-            "name": "Copycat"
-          },
-          {
-            "id": "5cCHRF2HQZ83QS3d",
-            "name": "Decoy Doll"
-          },
-          {
-            "id": "j1LlRHZWpxiQ7qq8",
-            "name": "Imp's Tail"
-          },
-          {
-            "id": "bH27dgVulmb3YVon",
-            "name": "Mushroom Cap"
-          },
-          {
-            "id": "VDbuMmlMm1FZP1yo",
-            "name": "Seance Beads"
-          },
-          {
-            "id": "kIwAfMXRBtzooB86",
-            "name": "Spectacles"
-          },
-          {
-            "id": "3zz2IRkGZBiiXReX",
-            "name": "Teddy Bear"
-          },
-          {
-            "id": "SWXWviLcfkfXRjHV",
-            "name": "Wolf Officer Hat"
-          }
-        ],
         "effects": 0
       },
       {
@@ -20392,13 +17087,6 @@
           }
         ],
         "effects": 0
-      },
-      {
-        "id": "M8iWAt6SP9KzRyjh",
-        "name": "Gold Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
       },
       {
         "id": "sVhTGFbBH4qo2q3n",
@@ -20444,27 +17132,6 @@
         "effects": 0
       },
       {
-        "id": "oAdUIkyLZ33rnGrC",
-        "name": "Granny Yaga",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "tMvN8Pz1UnKonEWk",
-        "name": "Gravity Strider",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "MimyTl34bjhYF6Rg",
-        "name": "Grigoriy",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "pZ0DEVMHTDhgFrPi",
         "name": "Guardian",
         "type": "character",
@@ -20502,131 +17169,6 @@
             "name": "Unbreakable"
           }
         ],
-        "effects": 0
-      },
-      {
-        "id": "TxQV2BzEFGhnDQaR",
-        "name": "Guardian Boar",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "ictJ3Ua6zb6Yl8Yl",
-        "name": "Guardian Robot",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "pUV69hrLr62E0bnl",
-        "name": "Gulbahar",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "feiSPnnyMGthRJOD",
-        "name": "Gunning Turret",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "k2PKtNAfNjgeQ3Y0",
-        "name": "Guns n' Blades",
-        "type": "character",
-        "items": [
-          {
-            "id": "jxNpAakfgBN4aRNF",
-            "name": "Bandit Jacket"
-          },
-          {
-            "id": "UypBqDXiT1Md12W0",
-            "name": "Bronze Sword"
-          },
-          {
-            "id": "0Xtqt7BkJJ87lGU6",
-            "name": "Desperado Coat"
-          },
-          {
-            "id": "1TiFN95Zbrppt1I3",
-            "name": "Falling Rain"
-          },
-          {
-            "id": "I3C5nbWdVIvEQJu2",
-            "name": "Flame Grenade"
-          },
-          {
-            "id": "UBq51tX5z6vVdi5f",
-            "name": "Greatsword"
-          },
-          {
-            "id": "0Y8NnqAfTB6iAj3V",
-            "name": "Gunsword"
-          },
-          {
-            "id": "DEHsjpWPVuoGfSBF",
-            "name": "Headhunter"
-          },
-          {
-            "id": "m0t8E95tER07PZkT",
-            "name": "Ironbuck"
-          },
-          {
-            "id": "Xt1ZOIdhJSVRdAb1",
-            "name": "Ishtingar"
-          },
-          {
-            "id": "Ko9DWmeYF62LntTF",
-            "name": "Kevlar Vest"
-          },
-          {
-            "id": "gPaeurhJWRZ0IcEJ",
-            "name": "Latrodectus"
-          },
-          {
-            "id": "rKJCD0Et7D876ix7",
-            "name": "Pistol"
-          },
-          {
-            "id": "ehICJCnIt8aNzrX9",
-            "name": "Rapier"
-          },
-          {
-            "id": "PV9E3g42VhjLcoYo",
-            "name": "Revolver"
-          },
-          {
-            "id": "f6Z9Vh0mZAQxdQRg",
-            "name": "Spellshot"
-          },
-          {
-            "id": "vvEKMbzzfiL6KBJ7",
-            "name": "Steel Dagger"
-          }
-        ],
-        "effects": 0
-      },
-      {
-        "id": "hdygBoxednUweIfc",
-        "name": "Gushtar",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "5SftgYYknNqn3WwQ",
-        "name": "Gushtar (F)",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "JhiZvYSMnvG3pKlG",
-        "name": "Gushtar (L)",
-        "type": "character",
-        "items": [],
         "effects": 0
       },
       {
@@ -20682,57 +17224,6 @@
             "name": "Waraxe(Heavy)"
           }
         ],
-        "effects": 0
-      },
-      {
-        "id": "f91GXNu9ryFqVTkA",
-        "name": "Haggis Haggle",
-        "type": "character",
-        "items": [
-          {
-            "id": "7IHKxnpBbUpf0TKb",
-            "name": "Blue Bovine"
-          },
-          {
-            "id": "XghJxJRtkWd2158Z",
-            "name": "Bomb"
-          },
-          {
-            "id": "xqUh9mX4erb2hCVs",
-            "name": "Café au Lait"
-          },
-          {
-            "id": "sWwRm9lfewcw5RvB",
-            "name": "General Goods"
-          },
-          {
-            "id": "mc7d82ROeXak3Q0L",
-            "name": "Grease Oil"
-          },
-          {
-            "id": "sRrQkpJSllZifGL0",
-            "name": "Hot Chocolate"
-          },
-          {
-            "id": "pyWB3IiRCm4YOE0R",
-            "name": "Lipovitan-Z"
-          },
-          {
-            "id": "KLxdNPFcDpaJEEn1",
-            "name": "Pepetein"
-          },
-          {
-            "id": "xssFc5aXDdJFVhbt",
-            "name": "Slave"
-          }
-        ],
-        "effects": 0
-      },
-      {
-        "id": "4ln24XtVeioyQnNd",
-        "name": "Hagis",
-        "type": "character",
-        "items": [],
         "effects": 0
       },
       {
@@ -20911,154 +17402,6 @@
         "effects": 0
       },
       {
-        "id": "xLMkoZdg3aLpREGj",
-        "name": "Hawk",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "2Fa594PFa1gTVQJH",
-        "name": "Hazard Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "Ko6zLKOhVdzmoa9V",
-        "name": "Hazard Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "MVZE6im8xl8WIfoL",
-        "name": "Hazard Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "LPifrnjpX15AiCrA",
-        "name": "Healing Tile",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "M6cpsLDyvCz0nEdy",
-        "name": "Healing Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "wB2R9XwHdZNqMbzd",
-        "name": "Healing Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "WWsZ3ZFM6XuGCvNY",
-        "name": "Heat Forge",
-        "type": "character",
-        "items": [
-          {
-            "id": "lozqBg8blE34nTyK",
-            "name": "Adept Fire Wand"
-          },
-          {
-            "id": "akyEeWFRts3PehX8",
-            "name": "Adept Ice Wand"
-          },
-          {
-            "id": "BypfqaS7TrCuASxd",
-            "name": "Adept Lightning Wand"
-          },
-          {
-            "id": "ALpm758PuGZLBW5t",
-            "name": "Apprentice Mage Robe"
-          },
-          {
-            "id": "zRHUL8Q05JspjJao",
-            "name": "Bag of Everburning Coal"
-          },
-          {
-            "id": "PYfMlz7YWx9ikEtv",
-            "name": "Black Belt"
-          },
-          {
-            "id": "UJ67JIca4zYDKltx",
-            "name": "Black Mage Wand"
-          },
-          {
-            "id": "OhQjRadwHV1Vp1hQ",
-            "name": "Earthmate Shovel"
-          },
-          {
-            "id": "HqPevLzRTXg6gWm0",
-            "name": "Fire Wand"
-          },
-          {
-            "id": "KuPKqiveLuasgxGP",
-            "name": "Fox Garb"
-          },
-          {
-            "id": "PRHXUN6TfuttSkyO",
-            "name": "Heat HANDS Replica"
-          },
-          {
-            "id": "yfppYQKfDBCMSbst",
-            "name": "Hellfist"
-          },
-          {
-            "id": "ThIbZwvDDL9aLidj",
-            "name": "Ice Wand"
-          },
-          {
-            "id": "Ny1BKWAWZJyMP4Qb",
-            "name": "Ignition Spear"
-          },
-          {
-            "id": "wdFePJLcKDavwufT",
-            "name": "Lightning Wand"
-          },
-          {
-            "id": "Ypo1YLiXYF3912nN",
-            "name": "Meditation Robe"
-          },
-          {
-            "id": "QqfvMZTUf2UM1dEI",
-            "name": "Red Tunic"
-          },
-          {
-            "id": "za9PRQ27HTsfP4AB",
-            "name": "Rune Blade"
-          },
-          {
-            "id": "kJ0gdx5NCWyQZ8xQ",
-            "name": "Tyrant's Scepter"
-          },
-          {
-            "id": "tnxaL8FG8J6YnMW4",
-            "name": "White Mage Staff"
-          },
-          {
-            "id": "R2qfWR0XP0ILcIYc",
-            "name": "Windpiercer"
-          }
-        ],
-        "effects": 0
-      },
-      {
-        "id": "tRz4Atd1zPoSDPlW",
-        "name": "Helga",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "STmBv9N66tZxSNCx",
         "name": "Hellhound",
         "type": "character",
@@ -21096,7 +17439,7 @@
             "name": "Warrior Seal"
           }
         ],
-        "effects": 1
+        "effects": 0
       },
       {
         "id": "OYFcMSkBHGLXlFwq",
@@ -21191,13 +17534,6 @@
             "name": "Where Evil Treads"
           }
         ],
-        "effects": 0
-      },
-      {
-        "id": "pjEepg6Vq7D6ug7J",
-        "name": "Hexeye",
-        "type": "character",
-        "items": [],
         "effects": 0
       },
       {
@@ -21569,13 +17905,6 @@
         "effects": 1
       },
       {
-        "id": "g2K54zkmg3hp2feV",
-        "name": "Hivekin",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "cEENPHma69ROe7sE",
         "name": "Hookleaf Nightshade",
         "type": "character",
@@ -21585,13 +17914,6 @@
       {
         "id": "yC5RLeD6oUhS1Xzd",
         "name": "Horse",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "SELbtLBE9piPcIhT",
-        "name": "Hunger",
         "type": "character",
         "items": [],
         "effects": 0
@@ -21702,39 +18024,6 @@
             "name": "Wild Reflexes"
           }
         ],
-        "effects": 0
-      },
-      {
-        "id": "mYb4cypv7PaUxRcE",
-        "name": "Hydrozoa",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "nisnn4WhVfUcNmCR",
-        "name": "Ice Golem",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "Ld2lRA2NZNicUvpw",
-        "name": "Ice Ring",
-        "type": "character",
-        "items": [
-          {
-            "id": "poiIQuTrg9znHBuG",
-            "name": "Ice Stone"
-          }
-        ],
-        "effects": 0
-      },
-      {
-        "id": "ZeFL2Kw88Hm7Zukp",
-        "name": "Ice Wyvern",
-        "type": "character",
-        "items": [],
         "effects": 0
       },
       {
@@ -22040,13 +18329,6 @@
         "effects": 0
       },
       {
-        "id": "tdqlDZHqkfvLuFHe",
-        "name": "Iron Hound",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "OjtngxWTQN9MMTcx",
         "name": "Ishasha Isu",
         "type": "character",
@@ -22068,27 +18350,6 @@
         "type": "character",
         "items": [],
         "effects": 0
-      },
-      {
-        "id": "1miXBJyzHLH6ixA5",
-        "name": "Item Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "RDjj1snaiMhn8m64",
-        "name": "Item Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "clZd1aPUjqrhj5Bs",
-        "name": "Item Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
       },
       {
         "id": "5uDUxA1WiDzBEO0C",
@@ -22147,53 +18408,11 @@
         "effects": 0
       },
       {
-        "id": "W1R1MwfR0h17yQsz",
-        "name": "Jack Frost",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "BSIcFlWKHLbpEeFt",
-        "name": "Jackey",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "z7B5pWCH5d59znxx",
-        "name": "Jakariko",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "nHgOpa63DvcFtmFe",
-        "name": "Jammer Drone",
-        "type": "character",
-        "items": [],
-        "effects": 2
-      },
-      {
-        "id": "9faR504Wvoy2ALP6",
-        "name": "Jeff",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "HMVout7kK8udbjEi",
         "name": "Jeweler Shade",
         "type": "character",
         "items": [],
         "effects": 0
-      },
-      {
-        "id": "uA3eGtV6NtlpHJfN",
-        "name": "Jump Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
       },
       {
         "id": "ed5SXJdyj3NlY31u",
@@ -22254,41 +18473,6 @@
           }
         ],
         "effects": 1
-      },
-      {
-        "id": "Z3kzyrXEYiQa4cq6",
-        "name": "Karman",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "tF0RqxVaErgMpqxy",
-        "name": "Kavalér Gunner",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "2r3jktlpikRn2KMn",
-        "name": "Kavalér Kickboxer",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "k5WeAsVoShvw11r6",
-        "name": "Kavalér Saber",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "oc4NBSIjHOm6GABl",
-        "name": "Kavalér Shielder",
-        "type": "character",
-        "items": [],
-        "effects": 0
       },
       {
         "id": "gdJZ1L1kv5mjTTMr",
@@ -22538,34 +18722,6 @@
         "effects": 0
       },
       {
-        "id": "3QNERSRqJARLw7UE",
-        "name": "Kira",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "2uQtYzyJTZdmi6TN",
-        "name": "Kobold Scout",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "C0gpAGEJBuw6vX36",
-        "name": "Kobold Wizard",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "yTNke8grxEwoQpBR",
-        "name": "Kojiro",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "zSCt4x8DUTuYUqTa",
         "name": "Koshka",
         "type": "character",
@@ -22670,13 +18826,6 @@
         "effects": 1
       },
       {
-        "id": "qbkWUkVgTtLZBoUl",
-        "name": "Koshka NPC",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "xy0vJO8VdFVgWC24",
         "name": "Kyuzou (Sample Villain)",
         "type": "character",
@@ -22693,41 +18842,6 @@
             "name": "Test Spell"
           }
         ],
-        "effects": 0
-      },
-      {
-        "id": "w1IAjGkVzhFux30p",
-        "name": "Lady Rozalyn",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "qog2QPl8kbxwnoKX",
-        "name": "Lakshmi",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "AWca4HVQIQafYQZa",
-        "name": "Lamia",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "vUplAY7seSTvmZ6F",
-        "name": "Lampa",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "1ZzI3edFx9jDJYYz",
-        "name": "Lava Golem",
-        "type": "character",
-        "items": [],
         "effects": 0
       },
       {
@@ -22759,13 +18873,6 @@
         "effects": 0
       },
       {
-        "id": "zcLsf4HU7rWB9KWc",
-        "name": "lieutenant Sergei",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "nyHr1MwzRKcGUdyW",
         "name": "Life Gorger",
         "type": "character",
@@ -22782,18 +18889,6 @@
             "id": "HPmZBHFvEayaBTMv",
             "name": "Life Residue"
           },
-          {
-            "id": "xv29h2B2X7EuECAI",
-            "name": "Mega-Remedy"
-          }
-        ],
-        "effects": 0
-      },
-      {
-        "id": "ivN44ESHLUfkLsfC",
-        "name": "Life Gorger (Copy)",
-        "type": "character",
-        "items": [
           {
             "id": "xv29h2B2X7EuECAI",
             "name": "Mega-Remedy"
@@ -22822,167 +18917,6 @@
         "effects": 0
       },
       {
-        "id": "2SxUQ2tqu3fcTzqw",
-        "name": "Lightning Jinn",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "N7E65pg9HPiWh6Ss",
-        "name": "Lilim",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "PRDn4EIkLifMrNbU",
-        "name": "Lingering Flame",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "0l2RBj7DlTqYQyEe",
-        "name": "Locked Advantage Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "UzfKAZZSpO7NxJ47",
-        "name": "Locked Advantage Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "gTYZvto6084CRoZK",
-        "name": "Locked Advantage Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "8DdWpEvLGU8y6ud0",
-        "name": "Locked Ambush Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "Gr1ZEThysbxRxpnp",
-        "name": "Locked Ambush Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "3Ch3HapHZqWUM3XV",
-        "name": "Locked Battle Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "I5u104o65uQVc4MR",
-        "name": "Locked Battle Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "d0L3ID6Zx2HK61UT",
-        "name": "Locked Battle Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "OXwKFEGelzalcywf",
-        "name": "Locked Hazard Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "WhmNfwtDSEm8ASVW",
-        "name": "Locked Hazard Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "SJngXzFwYk5b1kHk",
-        "name": "Locked Healing Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "qQXsvRcjGLCYL0pK",
-        "name": "Locked Healing Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "NixwnVck8FsUGBK6",
-        "name": "Locked Item Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "zuljESLYubQOdHY9",
-        "name": "Locked Item Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "4fU1ui3EMA9O6lKx",
-        "name": "Locked Skill Check Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "EyLcgbKl5f4ysfyD",
-        "name": "Locked Skill Check Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "3rN8ggRJbnUNsYqG",
-        "name": "Locked Treasure Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "VgZL5S4jiULOTxvb",
-        "name": "Locked Treasure Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "A4iZIyTVkJmcaf3C",
-        "name": "Lokalt",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "xupapJXwhtPbYmvm",
-        "name": "Loo",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "sr56xgKsKlkgdBXt",
         "name": "Looker",
         "type": "character",
@@ -23000,13 +18934,6 @@
             "name": "Mind Blast"
           }
         ],
-        "effects": 0
-      },
-      {
-        "id": "xThGrAogDGLdVCfR",
-        "name": "Loranthaceae",
-        "type": "character",
-        "items": [],
         "effects": 0
       },
       {
@@ -23050,114 +18977,6 @@
         "effects": 0
       },
       {
-        "id": "GnmiQwz9YET1SwZA",
-        "name": "Lost Soul",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "kQQWIXgYFgSEX8VK",
-        "name": "Lt. Sergei",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "DeMhXle6r65QGDhG",
-        "name": "Lt. Sergei (Copy)",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "vPYt8V56qGdjsNg3",
-        "name": "Ludvik",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "nnwuZKdLXDZIxUdZ",
-        "name": "Lurkara",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "3l5Mj5VePDKeNGmh",
-        "name": "M'anowar",
-        "type": "character",
-        "items": [
-          {
-            "id": "BwbBe7aKgxR4rOhE",
-            "name": "None"
-          }
-        ],
-        "effects": 0
-      },
-      {
-        "id": "mIL9ALmZpyO3IRpY",
-        "name": "M'anowar (Copy)",
-        "type": "character",
-        "items": [
-          {
-            "id": "BwbBe7aKgxR4rOhE",
-            "name": "None"
-          }
-        ],
-        "effects": 0
-      },
-      {
-        "id": "53VZdpttKNgfOEDd",
-        "name": "Mafa",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "mdxROPt7vdhSmdmu",
-        "name": "Magic shop",
-        "type": "character",
-        "items": [
-          {
-            "id": "0P4mJ62fbq5xZA93",
-            "name": "Cannabis Cookie"
-          },
-          {
-            "id": "0V48Xsr8pap40Wwa",
-            "name": "IP refill"
-          },
-          {
-            "id": "4nLeXgevS6DJX7UH",
-            "name": "Orange Spice"
-          },
-          {
-            "id": "xqj1txzH6zr6i7KA",
-            "name": "Speed"
-          },
-          {
-            "id": "He26KDKrK2RPEjSN",
-            "name": "White Lady"
-          }
-        ],
-        "effects": 0
-      },
-      {
-        "id": "wBbP6cKYh2ToQbJx",
-        "name": "Magitech Hound",
-        "type": "character",
-        "items": [],
-        "effects": 2
-      },
-      {
-        "id": "cULiHuxoRPD5URPp",
-        "name": "Mahinder",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "qwfrR47dzr9rjgTz",
         "name": "Malflorus",
         "type": "character",
@@ -23193,32 +19012,6 @@
             "name": "Mega-Elixir"
           }
         ],
-        "effects": 0
-      },
-      {
-        "id": "hKSLxm1KKvRq0SU7",
-        "name": "Mana Gorger (Copy)",
-        "type": "character",
-        "items": [
-          {
-            "id": "wJJ3Jqpeol4tUqQQ",
-            "name": "Mega-Elixir"
-          }
-        ],
-        "effects": 0
-      },
-      {
-        "id": "To3xwF8gbnAb7i8C",
-        "name": "Mandragora",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "LaXyF3SuTDmP8yHU",
-        "name": "MARI",
-        "type": "character",
-        "items": [],
         "effects": 0
       },
       {
@@ -23258,50 +19051,8 @@
         "effects": 0
       },
       {
-        "id": "kKE467eX1qm8uad9",
-        "name": "Marine Sphere",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "Dq3hdemnVmlr7AtH",
-        "name": "Mark",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "Uimy2u2FBu6vzUmH",
-        "name": "Martelle",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "oc3vcpyKST7kkh0C",
-        "name": "Martelle",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "l1zHhFSYjeMqiJ3g",
         "name": "Martelle?",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "rnUy3SLj8QHi2Itq",
-        "name": "Marude",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "pCYnVU28LWiSIWZ5",
-        "name": "Marya",
         "type": "character",
         "items": [],
         "effects": 0
@@ -23387,29 +19138,8 @@
         "effects": 0
       },
       {
-        "id": "y4WaPaZzVFeIFL7e",
-        "name": "Meduza",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "BpEvUEurjrwNGizO",
-        "name": "Mellow Ooze",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "rYSddM2fXCsrqZKj",
         "name": "Melvia",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "OerCjH49ER7SfHIw",
-        "name": "Mercenary",
         "type": "character",
         "items": [],
         "effects": 0
@@ -23447,50 +19177,8 @@
         "effects": 0
       },
       {
-        "id": "93e75Y29f9uoVEk2",
-        "name": "Merchant Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "I9vKpJyipXWjOwVP",
-        "name": "Merman",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "sZDv6bE310uMgQhR",
-        "name": "Metal Wing",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "6S5SjlBIWNzp2OOd",
-        "name": "Mikhail",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "M232YtaA1fJse4nE",
         "name": "Miles",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "XIBT2takxHbSUxBx",
-        "name": "Mimic",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "FzlIyev5TGBuCr2O",
-        "name": "Mist Dragon",
         "type": "character",
         "items": [],
         "effects": 0
@@ -23543,13 +19231,6 @@
             "name": "Spiritual Fortress"
           }
         ],
-        "effects": 0
-      },
-      {
-        "id": "92Vi8Qw1zfdNykqD",
-        "name": "Moroz",
-        "type": "character",
-        "items": [],
         "effects": 0
       },
       {
@@ -23611,20 +19292,6 @@
       {
         "id": "9NjVB8G2vHG3GvEC",
         "name": "Mother Jelly",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "TKzDnOwjTU2gnebI",
-        "name": "Moving Armor",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "otc0aNPReAszEmd0",
-        "name": "Mummy",
         "type": "character",
         "items": [],
         "effects": 0
@@ -23718,37 +19385,6 @@
         "effects": 0
       },
       {
-        "id": "cTWM4GolAJemDmf6",
-        "name": "Mystic Machina",
-        "type": "character",
-        "items": [
-          {
-            "id": "sq77bOkDNocSimxl",
-            "name": "Jumping Boots"
-          },
-          {
-            "id": "GWx32hPh8DQPQwPJ",
-            "name": "Smart Stim"
-          },
-          {
-            "id": "axJzI6RBGYVeVKfW",
-            "name": "Sniper Scope"
-          },
-          {
-            "id": "WlqpYhQU7RuXx2R2",
-            "name": "Sunglasses"
-          }
-        ],
-        "effects": 0
-      },
-      {
-        "id": "Nx6nVl6Mw9NlOLWO",
-        "name": "Natalia",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "IQdAebKiExUDRQT0",
         "name": "Necromancer",
         "type": "character",
@@ -23808,43 +19444,8 @@
         "effects": 1
       },
       {
-        "id": "lm74Kx6cKghXoQPk",
-        "name": "Nessie",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "UfkgFFDxTzflNEpk",
         "name": "Nibbler",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "OtAcv5rG8kzoRf0T",
-        "name": "Nicholas",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "XQN7GPyQIK5upwsc",
-        "name": "Nieźzly",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "V9nbdtSN9nFCqBU9",
-        "name": "Nightshade",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "Gv1zoUv9C7vJcIgi",
-        "name": "Nixie",
         "type": "character",
         "items": [],
         "effects": 0
@@ -23882,41 +19483,6 @@
         "effects": 0
       },
       {
-        "id": "JgVQrVWLgVy1Ht8B",
-        "name": "Nymph",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "wgU8DwSiyr4asmKv",
-        "name": "Obstacle Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "6ngTYx7XvlcwlXg8",
-        "name": "Odin",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "emOhbk8PNTB7JXuD",
-        "name": "Ogar",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "LKuljBKOILp1NgOc",
-        "name": "Okawa",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "dD0JTr0TeHYPjC7d",
         "name": "Oki (Copy)",
         "type": "character",
@@ -23946,13 +19512,6 @@
             "name": "Powerful Strike"
           }
         ],
-        "effects": 0
-      },
-      {
-        "id": "1Ttz84v9dv4g5Dvf",
-        "name": "Omnious Passengers",
-        "type": "character",
-        "items": [],
         "effects": 0
       },
       {
@@ -24013,20 +19572,6 @@
         "effects": 0
       },
       {
-        "id": "TVTP7nbHXU1su0AQ",
-        "name": "Ozmo Overworld",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "l0d2JazTEqZF6uGw",
-        "name": "Pacov",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "c2Cay1v87894JlC1",
         "name": "pakka",
         "type": "character",
@@ -24054,44 +19599,9 @@
         "effects": 0
       },
       {
-        "id": "JmJNuGuvX9TtyeCk",
-        "name": "Party Position",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "06d9Kr2Yd1bJURIl",
         "name": "Party_Template",
         "type": "_template",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "zif2eaXkx5zAu4Ui",
-        "name": "Pauline",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "DxJFOZDDnr3mp0Bk",
-        "name": "Pavel",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "cYt2MtsrKQktjpHe",
-        "name": "Pestervine",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "G4an4WBd7RQP3n8b",
-        "name": "Petra",
-        "type": "character",
         "items": [],
         "effects": 0
       },
@@ -24113,13 +19623,6 @@
             "name": "Umbra"
           }
         ],
-        "effects": 0
-      },
-      {
-        "id": "05KUM8fjml2NGcGV",
-        "name": "Phobo Gorger",
-        "type": "character",
-        "items": [],
         "effects": 0
       },
       {
@@ -24167,13 +19670,6 @@
             "name": "Strong Grip"
           }
         ],
-        "effects": 0
-      },
-      {
-        "id": "E63pGzbHvbnLS3hb",
-        "name": "Pipa",
-        "type": "character",
-        "items": [],
         "effects": 0
       },
       {
@@ -24265,20 +19761,6 @@
         "effects": 0
       },
       {
-        "id": "dqjdY097sTVSCUjH",
-        "name": "Poison Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "cOMNZTyDVBcfOOxG",
-        "name": "Polar Pot",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "5XB4kpQobwSqgCtp",
         "name": "Polka",
         "type": "character",
@@ -24326,27 +19808,6 @@
         "effects": 0
       },
       {
-        "id": "xaLUXMOUjG9VVg8f",
-        "name": "Porco",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "oDiPpbo48WxXw4ik",
-        "name": "Powder Keg",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "liIDFfEAINF1b3FW",
-        "name": "Praying Statue",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "WQ65541HPjKLpgkP",
         "name": "Prickle Boar",
         "type": "character",
@@ -24365,41 +19826,6 @@
       {
         "id": "yghaJlx5fcj6DtfX",
         "name": "Princess Hilde",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "X30GpQcsaWnvR1LF",
-        "name": "Psychic Rock",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "R3LrTBdtD4uUOv65",
-        "name": "Pufler",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "tNPDBCR3cTVv8Mde",
-        "name": "Putin",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "jWUSHZguqZlzoDWi",
-        "name": "Puzyr",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "yWV4akWcYsmCrZfe",
-        "name": "Pyro Gorger",
         "type": "character",
         "items": [],
         "effects": 0
@@ -24481,13 +19907,6 @@
         "effects": 0
       },
       {
-        "id": "fzmBmbXRfxl61Tp3",
-        "name": "Pyrshroom",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "NIzI8uoyqahenb39",
         "name": "RaiRai",
         "type": "character",
@@ -24537,153 +19956,6 @@
             "name": "Thunderbolt"
           }
         ],
-        "effects": 0
-      },
-      {
-        "id": "DRx3WFfSUN6v28IG",
-        "name": "Random Passenger A",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "iuUwHJjuo0tBx8s9",
-        "name": "Random Passenger B",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "wD2FiGsRYq1S8AaA",
-        "name": "Random Passenger C",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "9VOZcEap2vfAUp3k",
-        "name": "Random Passenger D",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "ZnIsBprTnJfFWlfr",
-        "name": "Random Passenger E",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "wTJ6SfvYgTRsfkBg",
-        "name": "Random Passenger F",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "3qhc6Yb9TGIsu6ur",
-        "name": "Random Passenger G",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "JtrhRWEnpCDGhJBc",
-        "name": "Random Passenger H",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "HPttmk2nlsExeyk0",
-        "name": "Random Passenger I",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "zuTd8DV6KnouJsSz",
-        "name": "Ranger",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "vPNYMGdbalkjzAjj",
-        "name": "Rare Monster Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "nblKLYO8vZ05OYwM",
-        "name": "RC Archer",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "cM6gQLm0bAQhlBIJ",
-        "name": "RC Brawler",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "4sJjE7iZGHJzeZu8",
-        "name": "RC E Archer",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "NlxMsTxHzUE6OpeN",
-        "name": "RC E Brawler",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "Za2MphORbZAVD1UH",
-        "name": "RC E Vanguard",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "UtKe47YplUANnnI7",
-        "name": "RC Magus",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "D2UYQFxmuAi2WbqL",
-        "name": "RC RighthandMan Jered",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "UdYaSducVIar5bno",
-        "name": "RC Sniper",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "OWtdinTXeDQwpfOI",
-        "name": "RC Striker",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "4CXKAZyDskuQ59mM",
-        "name": "RC Vanguard",
-        "type": "character",
-        "items": [],
         "effects": 0
       },
       {
@@ -24770,13 +20042,6 @@
         "effects": 0
       },
       {
-        "id": "GyQTtslQnNI75yZu",
-        "name": "Recipe Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
         "id": "eCYixWIWNNkoYG4j",
         "name": "Reefesia",
         "type": "character",
@@ -24848,29 +20113,8 @@
         "effects": 0
       },
       {
-        "id": "9rbb3Xi8qFWMQ6Yv",
-        "name": "Regretful Beast",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "hvYkqHaZVQCPiaNd",
-        "name": "Reily",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "LXKVMueCT8qB5SnF",
         "name": "Remedy Lily",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "k3gQbPWLJLJe9Ghx",
-        "name": "Rene",
         "type": "character",
         "items": [],
         "effects": 0
@@ -24974,13 +20218,6 @@
       {
         "id": "2ummyaGVMH4rEyGs",
         "name": "Rilmelia",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "foOYKvh1isp2RNvS",
-        "name": "Ritual beast",
         "type": "character",
         "items": [],
         "effects": 0
@@ -25161,18 +20398,6 @@
         "effects": 0
       },
       {
-        "id": "lPXAs8Swx2y2EwQa",
-        "name": "Rumbo",
-        "type": "character",
-        "items": [
-          {
-            "id": "PPZvr5cbOtJGkGcI",
-            "name": "Cleaning Agent"
-          }
-        ],
-        "effects": 0
-      },
-      {
         "id": "bCY4VbmO7SXDe7Tb",
         "name": "Rume",
         "type": "character",
@@ -25210,43 +20435,6 @@
             "name": "Spicy Cocktail"
           }
         ],
-        "effects": 0
-      },
-      {
-        "id": "9sFLAk1qSqdSG9gl",
-        "name": "Rune Bot",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "hVGWIx9Dzt1ITuJe",
-        "name": "Runic Artifact",
-        "type": "character",
-        "items": [
-          {
-            "id": "0TnsjE4WPo3o3Rl8",
-            "name": "Healing Sprig"
-          },
-          {
-            "id": "n1jK5r3DzEVXS3sm",
-            "name": "Seance Beads"
-          }
-        ],
-        "effects": 0
-      },
-      {
-        "id": "YGNimTQx78n8gIES",
-        "name": "Rusalka",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "OcQweohzABoxiWXJ",
-        "name": "Ryley",
-        "type": "character",
-        "items": [],
         "effects": 0
       },
       {
@@ -25294,85 +20482,8 @@
         "effects": 0
       },
       {
-        "id": "kJFoaul1oQQf6UCL",
-        "name": "Sample Monster A",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "8SXU23lyZz2V8lF9",
-        "name": "Sample Monster A (Copy)",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "PIF4g4jByCPwEWLN",
-        "name": "Sample Monster A (Copy) (Copy)",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "tIPsuWSVtcuA6Bpt",
-        "name": "Sample Monster A (Copy) (Copy) (Copy)",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "whwVMW0wBlmL3kqG",
-        "name": "Sand Rat",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "KTaJzoq6TdiAow3y",
-        "name": "Sandstorm Beast",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "eqpTpKndHLeMpely",
-        "name": "Sansa",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "Ry1oXqMvSt3rPAsN",
         "name": "Sardo",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "VXlqBI4ybeipYclT",
-        "name": "Scaldra",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "lhydWt3hIo9vMSt2",
-        "name": "Scrap Kavalér",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "scKC8rLWdWqmR2vo",
-        "name": "Seagass",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "pYsqvUDnl7dTN1a2",
-        "name": "Seastone Pillar",
         "type": "character",
         "items": [],
         "effects": 0
@@ -25385,50 +20496,8 @@
         "effects": 0
       },
       {
-        "id": "qnzP6yDgPhLZmkte",
-        "name": "Sergent Fedarik",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "kwFaHbrmQiZoPRQU",
         "name": "Serrated Rose",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "hdAQ06Iz7Vs80o78",
-        "name": "Settlement Tile",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "ih5v0v6GDAEHgm2F",
-        "name": "Shadow Hart",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "U2bbkMJFtPq9s8Oo",
-        "name": "Shadow Wolf",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "qOsFnb2P2impOqWe",
-        "name": "Shamba",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "oyGkGs7tGhB8VFSi",
-        "name": "Sharodin",
         "type": "character",
         "items": [],
         "effects": 0
@@ -25505,69 +20574,6 @@
         "effects": 0
       },
       {
-        "id": "bKB9oELh9aPfPU9L",
-        "name": "Shinobi",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "E0Nk33Xk4Ff8yi3P",
-        "name": "Shroomin",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "9rPwpl7hV9mOPeHl",
-        "name": "Siege Flyer",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "YWQzCYpIJ3AtpbHv",
-        "name": "Skeleton Mage",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "zYuyZj72a3Vf8mg6",
-        "name": "Skeleton Miner",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "XpNz8cnSvAopw1vI",
-        "name": "Skeleton Soldier",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "DGVTwxXaTi6mC46a",
-        "name": "Skill Check Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "MqheTbu4AxmkQrjT",
-        "name": "Skill Check Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "YovpVc1ypxZg4gj1",
-        "name": "Skill Check Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
         "id": "lugftOGyacKl3elU",
         "name": "Sky Stream",
         "type": "character",
@@ -25634,13 +20640,6 @@
         "effects": 0
       },
       {
-        "id": "BBcH6aB9ZtZwafyh",
-        "name": "Slippery Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
         "id": "vTNRJQnbzExoShmp",
         "name": "Sniper",
         "type": "character",
@@ -25674,41 +20673,6 @@
             "name": "Take Aim"
           }
         ],
-        "effects": 0
-      },
-      {
-        "id": "TGlb7xWG3dq5cJku",
-        "name": "Snow Howler",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "ipueP8jwd0G1k8Jp",
-        "name": "Snow Moth",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "ktk0VfE0OOLUGnu3",
-        "name": "Snow Owlbear",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "5kuSKDa1pqTf5b5h",
-        "name": "Snow Skitter",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "CoV80UIB226GSSoE",
-        "name": "Sol Soldier",
-        "type": "character",
-        "items": [],
         "effects": 0
       },
       {
@@ -25765,13 +20729,6 @@
             "name": "Spellweave"
           }
         ],
-        "effects": 0
-      },
-      {
-        "id": "9IViTn70u8GSKEHn",
-        "name": "Spica",
-        "type": "character",
-        "items": [],
         "effects": 0
       },
       {
@@ -25879,27 +20836,6 @@
             "name": "Vismagus"
           }
         ],
-        "effects": 0
-      },
-      {
-        "id": "c94pbebTPKa256Na",
-        "name": "Spook",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "9oBqLJ54ZVmOLwQT",
-        "name": "Spooky Tree",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "2bi4YD92HQh2R1fG",
-        "name": "Spring Turtle",
-        "type": "character",
-        "items": [],
         "effects": 0
       },
       {
@@ -26183,88 +21119,11 @@
         "effects": 0
       },
       {
-        "id": "3uhj2gldvaFXeBM8",
-        "name": "Star Spawn",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "yHMeuwEddosB5x9k",
-        "name": "Status Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "g39vVuOmtyQ70Cea",
-        "name": "Stealth Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "bh81ixSbMmh6o7y9",
-        "name": "Steel Serpent",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "9GZNb77KP5wxDUDx",
         "name": "Štír",
         "type": "character",
         "items": [],
         "effects": 1
-      },
-      {
-        "id": "4g3jqc9UtaqUtgt4",
-        "name": "Story Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "9h7g4WoEFp4Fk5lx",
-        "name": "Story Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "anQHBy2M70B9ZOQL",
-        "name": "Story Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "x18wOGazYYqtUQxc",
-        "name": "Strela",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "x6t7TaQBy98uU074",
-        "name": "Submariner",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "GepETuUrZd2m32Bh",
-        "name": "Submerge Book",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "Hk4UI66TU9uPtbK9",
-        "name": "Sunlight Orb",
-        "type": "character",
-        "items": [],
-        "effects": 0
       },
       {
         "id": "GhK19HvvDy8CiOmP",
@@ -26317,18 +21176,6 @@
       {
         "id": "nsr4lKXZPoUWAdvj",
         "name": "Suzume",
-        "type": "character",
-        "items": [
-          {
-            "id": "u0ro2ZN7ToX1S6cK",
-            "name": "Pistol"
-          }
-        ],
-        "effects": 0
-      },
-      {
-        "id": "Yt1mnuPGoDcj8n1g",
-        "name": "Suzume (Enlightened)",
         "type": "character",
         "items": [
           {
@@ -26628,29 +21475,8 @@
         "effects": 0
       },
       {
-        "id": "dp3nVDQE39D677dv",
-        "name": "test",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
         "id": "1Z5TmzgUQhOag38f",
         "name": "Test Character",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "F3B72y1bmVurNAMn",
-        "name": "TG sp-series 2000",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "QhAl55awO1q0TSQN",
-        "name": "The Crew",
         "type": "character",
         "items": [],
         "effects": 0
@@ -26663,65 +21489,6 @@
         "effects": 1
       },
       {
-        "id": "Y0p4lJMzeeXplvyh",
-        "name": "The Fortress",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "Nexqp1BEGJfZNaLM",
-        "name": "The Party",
-        "type": "character",
-        "items": [
-          {
-            "id": "YNZOIM8M1bb6QPsU",
-            "name": "Blue Bovine"
-          },
-          {
-            "id": "rWRDTQUwtEsPTBrE",
-            "name": "Diver Goggle"
-          },
-          {
-            "id": "Le9m4uRqgtbx9DlI",
-            "name": "Elemental Shard"
-          },
-          {
-            "id": "ZnxOND3o6axTWGil",
-            "name": "Elixir"
-          },
-          {
-            "id": "DtwTFgkHckOaphiX",
-            "name": "Golem Fragment"
-          },
-          {
-            "id": "2OKeVOM65sNpDPAM",
-            "name": "Magic Mushroom"
-          },
-          {
-            "id": "lQ1scTVTb0MkcOl2",
-            "name": "Magic Tent"
-          },
-          {
-            "id": "dscnIM2lMbQZPNZg",
-            "name": "Old Rod"
-          },
-          {
-            "id": "KfkZTzzuKN8psCmR",
-            "name": "Remedy"
-          },
-          {
-            "id": "02fjMbgvqwd3JwnE",
-            "name": "Swimsuit"
-          },
-          {
-            "id": "lYpi1L6j08PRm2Kt",
-            "name": "Tonic"
-          }
-        ],
-        "effects": 0
-      },
-      {
         "id": "9DzQpyEmnjYXKsim",
         "name": "Thomas",
         "type": "character",
@@ -26731,13 +21498,6 @@
       {
         "id": "29S8oUX9vgYiocm4",
         "name": "Tidehunter",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "0blrdc7l0cpJErkW",
-        "name": "Time Machine",
         "type": "character",
         "items": [],
         "effects": 0
@@ -26819,20 +21579,6 @@
         "effects": 0
       },
       {
-        "id": "4jEzEAvk7TTmRHQt",
-        "name": "Tormented Soul",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "YB4EIVJjiQp7pQ4c",
-        "name": "Tower",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
         "id": "UJl7NDpLj6L3AE13",
         "name": "Training Dummy",
         "type": "character",
@@ -26845,64 +21591,8 @@
         "effects": 0
       },
       {
-        "id": "0JzflkT11s5hefIb",
-        "name": "Trap Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "4qXNZNkLUY0h9g20",
-        "name": "Treasure Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "PDB3WWyUiiRWGBaY",
-        "name": "Treasure Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "sWJPzC7yXw0irpL9",
-        "name": "Treasure Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "0S71H4CLdUSA1G2u",
-        "name": "Twin Cannon",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "LBTtAqcPHl51xHGr",
-        "name": "Type 14 - Juggernaut",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "x5CiTChJkhUUDceM",
         "name": "Tyre",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "MK7k19IQIuT0erTT",
-        "name": "Ulfarr",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "TxmDAFnvadoNEls0",
-        "name": "Undead Urn",
         "type": "character",
         "items": [],
         "effects": 0
@@ -26929,27 +21619,6 @@
             "name": "Windy Wing"
           }
         ],
-        "effects": 0
-      },
-      {
-        "id": "gyQcZFLpy16Jcfs5",
-        "name": "Vampire Bat",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "mbQtnqNNBemhh6WW",
-        "name": "Vampire Bat",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "8wji0HiRrwDKRu0T",
-        "name": "Vaprus",
-        "type": "character",
-        "items": [],
         "effects": 0
       },
       {
@@ -27029,56 +21698,11 @@
         "effects": 0
       },
       {
-        "id": "XmufLDW19ZtatJzz",
-        "name": "Vasilius",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "tovACz245axNnY5u",
-        "name": "Velvet Glove Bar & Drink",
-        "type": "character",
-        "items": [
-          {
-            "id": "pYGsTy1TxflRHr98",
-            "name": "Copycat"
-          },
-          {
-            "id": "gQFPFW3JGNCcEyAy",
-            "name": "Jester Hat"
-          },
-          {
-            "id": "txnidKY5QSi9IKH1",
-            "name": "Revealing Lens"
-          },
-          {
-            "id": "HdfpUXTszK8oT7oJ",
-            "name": "Wolf Officer Hat"
-          }
-        ],
-        "effects": 0
-      },
-      {
         "id": "NQrQm0MTADFlU8Na",
         "name": "Victory Illustrations",
         "type": "character",
         "items": [],
         "effects": 1
-      },
-      {
-        "id": "k4QG1izyasXyEuAQ",
-        "name": "Vigil Sentry",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "qGd1NtGrnhnseOKQ",
-        "name": "Vila",
-        "type": "character",
-        "items": [],
-        "effects": 0
       },
       {
         "id": "hi5RUPDq2y0zQD89",
@@ -27097,13 +21721,6 @@
       {
         "id": "Yw64sV8zIYFbMtUF",
         "name": "Villager Kid",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "CP96nzz72Y0oLRoT",
-        "name": "Visitor Database",
         "type": "character",
         "items": [],
         "effects": 0
@@ -27198,29 +21815,8 @@
         "effects": 0
       },
       {
-        "id": "DsxY75nZfVy0gFXP",
-        "name": "Wailom",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "5Uyo51jXXO0igr14",
-        "name": "Walrog",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "jrYvtL9BARS1ZnUx",
         "name": "Wardwattle",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "x9Tg5BHmwBuHlDpn",
-        "name": "Water Sprite",
         "type": "character",
         "items": [],
         "effects": 0
@@ -27264,13 +21860,6 @@
           }
         ],
         "effects": 0
-      },
-      {
-        "id": "1XC7BZvMVPjliJOw",
-        "name": "Weapon Tile",
-        "type": "character",
-        "items": [],
-        "effects": 1
       },
       {
         "id": "B7LVbFjWz6qheddb",
@@ -27452,18 +22041,6 @@
         "effects": 0
       },
       {
-        "id": "XM1F408iqziarbXi",
-        "name": "Wind Orb (old)",
-        "type": "character",
-        "items": [
-          {
-            "id": "LodCjmQx1w1yf3YQ",
-            "name": "Wind Stone"
-          }
-        ],
-        "effects": 0
-      },
-      {
         "id": "ryC7CqN2kYKrZfpB",
         "name": "Wind Slime",
         "type": "character",
@@ -27481,34 +22058,6 @@
             "name": "Tackle"
           }
         ],
-        "effects": 0
-      },
-      {
-        "id": "CJgf2WbdvsdgH2Zw",
-        "name": "Wingfish",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "biSeaXk5Vq1Sho9d",
-        "name": "Winterland Witch Trail Global Database",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "WSBQriquIIEYFMhW",
-        "name": "Winterlands Troll",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "Tk6S8ZBFZNEbH1G8",
-        "name": "Wisp",
-        "type": "character",
-        "items": [],
         "effects": 0
       },
       {
@@ -27532,172 +22081,11 @@
         "effects": 0
       },
       {
-        "id": "4A35vtVNXr62rqWg",
-        "name": "Wolf (Old)",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "h0KbKH3tg8PBOiBn",
-        "name": "Wonderous Treasure Trove",
-        "type": "character",
-        "items": [
-          {
-            "id": "VTQA6OdFmgOzAJ7h",
-            "name": "Barrier Sphere"
-          },
-          {
-            "id": "QKVMi2feJGQ1CiB1",
-            "name": "Bible Black"
-          },
-          {
-            "id": "iQN23Q3mzBC4WcAt",
-            "name": "Biker Suit"
-          },
-          {
-            "id": "olOsmttOHIeB85Ss",
-            "name": "Crystal Powder"
-          },
-          {
-            "id": "HFkiRSJKUBObM43X",
-            "name": "Deadly Premonition"
-          },
-          {
-            "id": "NEFKiQbLrwq7ItAA",
-            "name": "Denki Massager"
-          },
-          {
-            "id": "Arpdn4siLQKuWLXv",
-            "name": "Forget me Nut"
-          },
-          {
-            "id": "eCm6jmgbcuBjjLBA",
-            "name": "General Goods"
-          },
-          {
-            "id": "JY25bLJNGy9dAUuU",
-            "name": "Ghostly Sheet"
-          },
-          {
-            "id": "5axTmPNRhISOewgD",
-            "name": "God Hand"
-          },
-          {
-            "id": "q5FMbDkUZgioKjvd",
-            "name": "Hako Coupon"
-          },
-          {
-            "id": "4Rm8DdoYjvYAfvL3",
-            "name": "Life Charm"
-          },
-          {
-            "id": "Kom1sZJFUNb2NSVm",
-            "name": "Lightning Greaves"
-          },
-          {
-            "id": "e2YwHel8YQdDHwBc",
-            "name": "Mad Carnival Torch"
-          },
-          {
-            "id": "GlCsNAyb0u9DaHzB",
-            "name": "Magic Mirror"
-          },
-          {
-            "id": "WhjMioRbVidtE3G8",
-            "name": "Mega-Elixir"
-          },
-          {
-            "id": "wGwRmcKoBjNZBA0k",
-            "name": "Mega-Remedy"
-          },
-          {
-            "id": "hYQLaooPUQK4cSIF",
-            "name": "Mixed Juice Recipe"
-          },
-          {
-            "id": "Y1oaLxPbfrGyQ0hP",
-            "name": "Phoenix Feather"
-          },
-          {
-            "id": "DC8k9HwoKAEHTIPm",
-            "name": "Rogue's Jacket"
-          },
-          {
-            "id": "6EMP9iA5rMzazICp",
-            "name": "Shooting Star Crystal"
-          },
-          {
-            "id": "jykxP25PqNoWChAo",
-            "name": "Tailwind"
-          },
-          {
-            "id": "7ymHsHD4JkKXRrgU",
-            "name": "Titanic Shield"
-          },
-          {
-            "id": "IbslSguhNYWZyyBS",
-            "name": "Turbo Tonic"
-          },
-          {
-            "id": "JFdqQlhrknt700wU",
-            "name": "Unstable Bomb"
-          },
-          {
-            "id": "yfjwOfpIhtJLKqp9",
-            "name": "Vibrator"
-          }
-        ],
-        "effects": 0
-      },
-      {
-        "id": "Aml66FvLBtAhqPuH",
-        "name": "Woolbat",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "zNVubpfZAMyOZf2i",
-        "name": "X",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "5z195WBEdfrKWfie",
         "name": "Yarrick",
         "type": "character",
         "items": [],
         "effects": 1
-      },
-      {
-        "id": "JG1DyVt8LkDvKegv",
-        "name": "Yarrick",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "E1RJIITF0pkamgWI",
-        "name": "Yarrick, the Monster Slayer",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "JIhwAhOwD7ciEB4c",
-        "name": "Yohunn",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "YTga9jguKuB2HzfA",
-        "name": "Yohunn",
-        "type": "character",
-        "items": [],
-        "effects": 0
       },
       {
         "id": "WPwExs9j90I3q2bm",
@@ -27928,13 +22316,6 @@
         "effects": 0
       },
       {
-        "id": "0C6SkvC1DDTDD0eG",
-        "name": "Zabolot's Tentacle",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "Z4CFy505cD3nzl1W",
         "name": "Zarg",
         "type": "character",
@@ -27990,10 +22371,6 @@
           {
             "id": "H663NG14lmAbBtzp",
             "name": "Gadgets"
-          },
-          {
-            "id": "azE4D7qDjwP7KjTO",
-            "name": "Generic NPC Skill Template"
           },
           {
             "id": "32rYly1hH9JwHQrH",
@@ -28153,55 +22530,6 @@
         "type": "character",
         "items": [],
         "effects": 1
-      },
-      {
-        "id": "29ybZEkg2zAZlTuL",
-        "name": "Zombie",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "uACsPSG4NLiS681z",
-        "name": "Zombie",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "JjvrQ5GJswb7hbLc",
-        "name": "Zombie Ice Climbers",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "Qdnvvj2kXeIzU5qE",
-        "name": "Zynapse Infantry",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "4rpKbX3pPl5vkK0P",
-        "name": "Zynapse Shielder",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "fWSRuY5KoSbjaeh4",
-        "name": "Zynapse Sniper",
-        "type": "character",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "OC0d9YgDTAuIgt09",
-        "name": "Zynapse Vanguard",
-        "type": "character",
-        "items": [],
-        "effects": 0
       }
     ]
   }
