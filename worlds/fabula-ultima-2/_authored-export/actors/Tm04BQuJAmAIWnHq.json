@@ -31,7 +31,7 @@
           "_id": "MgrvwCpxqFuMuBc6",
           "_stats": {
             "compendiumSource": null,
-            "coreVersion": "12.331",
+            "coreVersion": "12.343",
             "createdTime": 1767912605408,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
@@ -39,7 +39,7 @@
           },
           "changes": [
             {
-              "key": "attack_accuracy_mod_all",
+              "key": "check_mod_all",
               "mode": 2,
               "priority": null,
               "value": "2"
@@ -543,6 +543,8 @@
       },
       "attribute": "DARK",
       "battle_facing_direction": "right",
+      "bonus_hp": 0,
+      "bonus_mp": 0,
       "bow_ef": "100",
       "brawling_ef": "100",
       "condition_anomaly": "NA",
@@ -667,7 +669,7 @@
     },
     "statusEffects": {},
     "template": "yegF6R8aaymhrvCg",
-    "templateSystemUniqueVersion": 3867751361
+    "templateSystemUniqueVersion": 2114752673
   },
   "type": "character"
 }

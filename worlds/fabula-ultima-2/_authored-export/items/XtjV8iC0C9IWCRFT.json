@@ -161,7 +161,7 @@
       "_id": "YUliGz9ICI2IZe93",
       "_stats": {
         "compendiumSource": null,
-        "coreVersion": "12.331",
+        "coreVersion": "12.343",
         "createdTime": 1760747460002,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
@@ -169,7 +169,7 @@
       },
       "changes": [
         {
-          "key": "attack_accuracy_mod_melee",
+          "key": "check_mod_melee",
           "mode": 2,
           "priority": 1,
           "value": "99"

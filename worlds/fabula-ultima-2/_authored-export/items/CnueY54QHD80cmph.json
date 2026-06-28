@@ -21,14 +21,14 @@
       },
       "changes": [
         {
-          "key": "attack_accuracy_mod_all",
+          "key": "check_mod_all",
           "mode": 2,
           "priority": 20,
           "value": "${and(isEquipped, ae(\"Wet\")) ? 3 : 0}$"
         }
       ],
       "description": "",
-      "disabled": true,
+      "disabled": false,
       "duration": {
         "combat": null,
         "rounds": null,

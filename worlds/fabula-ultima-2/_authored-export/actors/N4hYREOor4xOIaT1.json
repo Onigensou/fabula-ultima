@@ -239,6 +239,8 @@
       "arcane_ef": "100",
       "attribute": "",
       "battle_facing_direction": "left",
+      "bonus_hp": 0,
+      "bonus_mp": 0,
       "bow_ef": "100",
       "brawling_ef": "100",
       "condition_anomaly": "NA",
@@ -361,7 +363,7 @@
     },
     "statusEffects": {},
     "template": "yegF6R8aaymhrvCg",
-    "templateSystemUniqueVersion": 3867751361
+    "templateSystemUniqueVersion": 2114752673
   },
   "type": "character"
 }

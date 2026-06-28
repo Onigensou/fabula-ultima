@@ -1458,7 +1458,7 @@
           "_id": "FUOvYTfwXyCWUISd",
           "_stats": {
             "compendiumSource": null,
-            "coreVersion": "12.331",
+            "coreVersion": "12.343",
             "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
@@ -1466,7 +1466,7 @@
           },
           "changes": [
             {
-              "key": "attack_accuracy_mod_all",
+              "key": "check_mod_all",
               "mode": 2,
               "priority": 1,
               "value": "${level}$"
@@ -2674,7 +2674,6 @@
       "rolled_atr2": "DEX",
       "shield_type": "",
       "shield_value": "0",
-      "skill_accuracy": "0",
       "skill_active_list": {
         "0ABI85nlDbMRY7aP": {
           "active_class": "Invoker",
@@ -3001,12 +3000,8 @@
           "uuid": "Actor.jXcju06TAPIgCtFn.Item.ziG7LVwf7ZcKqeht"
         }
       },
-      "skill_attack_damage": "0",
       "skill_class_filter": "Dancer",
       "skill_hideEffect": false,
-      "skill_hp": "0",
-      "skill_ip": "0",
-      "skill_mp": "0",
       "skill_type_filter": "All",
       "spell_class_filter": "",
       "spell_hideEffect": false,
@@ -3093,7 +3088,7 @@
       "xuwAn7u126GfFweU": []
     },
     "template": "OmwL5UqoVwjshkJo",
-    "templateSystemUniqueVersion": 2652892837
+    "templateSystemUniqueVersion": 2347495135
   },
   "type": "character"
 }

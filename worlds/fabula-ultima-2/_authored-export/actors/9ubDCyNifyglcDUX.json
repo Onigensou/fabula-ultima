@@ -1229,7 +1229,6 @@
       "rolled_atr2": "DEX",
       "shield_type": "",
       "shield_value": "0",
-      "skill_accuracy": "0",
       "skill_active_list": {
         "1O5wLraC90TDt7cL": {
           "active_class": "Arcanist Variant",
@@ -1388,12 +1387,8 @@
           "uuid": "Actor.9ubDCyNifyglcDUX.Item.jk5qJfFzCd4PGKs1"
         }
       },
-      "skill_attack_damage": "0",
       "skill_class_filter": "",
       "skill_hideEffect": false,
-      "skill_hp": "0",
-      "skill_ip": "",
-      "skill_mp": "0",
       "skill_type_filter": "All",
       "spell_class_filter": "",
       "spell_hideEffect": false,
@@ -1465,7 +1460,7 @@
       "xuwAn7u126GfFweU": []
     },
     "template": "OmwL5UqoVwjshkJo",
-    "templateSystemUniqueVersion": 2652892837
+    "templateSystemUniqueVersion": 2347495135
   },
   "type": "character"
 }

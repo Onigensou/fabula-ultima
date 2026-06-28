@@ -21,7 +21,7 @@
       },
       "changes": [
         {
-          "key": "attack_accuracy_mod_ranged",
+          "key": "check_mod_ranged",
           "mode": 2,
           "priority": 1,
           "value": "${level}$"

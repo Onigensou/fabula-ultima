@@ -337,7 +337,7 @@
   "system": {
     "activeConditionalModifierGroups": [],
     "props": {
-      "activation": "1",
+      "activation": "0",
       "affinity_1": "NA",
       "affinity_2": "IM",
       "affinity_3": "VU",
@@ -351,6 +351,8 @@
       "arcane_ef": "100",
       "attribute": "WIND",
       "battle_facing_direction": "left",
+      "bonus_hp": 0,
+      "bonus_mp": 0,
       "bow_ef": "100",
       "brawling_ef": "100",
       "condition_anomaly": "NA",
@@ -441,7 +443,7 @@
       "mdef_mod": "+3",
       "mig_base": "6",
       "mimic": false,
-      "name": "Aero Gorger",
+      "name": "BD Dummy Enemy",
       "normal_spell_list": {
         "mfYvdIL0F1kmwcuF": {
           "cost": "30 MP",
@@ -535,7 +537,7 @@
     },
     "statusEffects": {},
     "template": "yegF6R8aaymhrvCg",
-    "templateSystemUniqueVersion": 3867751361
+    "templateSystemUniqueVersion": 2114752673
   },
   "type": "character"
 }

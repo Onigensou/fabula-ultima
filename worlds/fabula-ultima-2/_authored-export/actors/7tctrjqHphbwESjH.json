@@ -615,7 +615,7 @@
           "_id": "t7zqjF8WFh19XCK7",
           "_stats": {
             "compendiumSource": null,
-            "coreVersion": "12.331",
+            "coreVersion": "12.343",
             "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
@@ -623,7 +623,7 @@
           },
           "changes": [
             {
-              "key": "attack_accuracy_mod_melee",
+              "key": "check_mod_melee",
               "mode": 2,
               "priority": 1,
               "value": "${level}$"

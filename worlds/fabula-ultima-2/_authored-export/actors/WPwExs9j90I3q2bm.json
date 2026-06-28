@@ -2454,7 +2454,7 @@
           "_id": "UwJOW7DPw9XCGPsZ",
           "_stats": {
             "compendiumSource": null,
-            "coreVersion": "12.331",
+            "coreVersion": "12.343",
             "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
@@ -2462,7 +2462,7 @@
           },
           "changes": [
             {
-              "key": "attack_accuracy_mod_ranged",
+              "key": "check_mod_ranged",
               "mode": 2,
               "priority": 1,
               "value": "${level}$"

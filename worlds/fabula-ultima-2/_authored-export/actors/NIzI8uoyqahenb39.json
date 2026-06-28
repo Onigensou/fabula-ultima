@@ -786,7 +786,7 @@
           },
           "changes": [
             {
-              "key": "attack_accuracy_mod_melee",
+              "key": "check_mod_melee",
               "mode": 2,
               "priority": 1,
               "value": "${level}$"
@@ -1144,43 +1144,6 @@
       },
       "clock_brainwave": "0",
       "clock_trade": "0",
-      "condition_anomaly": "NA",
-      "condition_bane": "NA",
-      "condition_berserk": "NA",
-      "condition_bleed": "NA",
-      "condition_blind": "NA",
-      "condition_burn": "NA",
-      "condition_charm": "NA",
-      "condition_confused": "NA",
-      "condition_curse": "NA",
-      "condition_dazed": "NA",
-      "condition_delayed": "NA",
-      "condition_despair": "NA",
-      "condition_disarmed": "NA",
-      "condition_doom": "NA",
-      "condition_enraged": "NA",
-      "condition_envenomed": "NA",
-      "condition_fatigue": "NA",
-      "condition_frightened": "NA",
-      "condition_grappled": "NA",
-      "condition_hypothermia": "NA",
-      "condition_isolate": "NA",
-      "condition_obscure": "NA",
-      "condition_oil": "NA",
-      "condition_panic": "NA",
-      "condition_paralyzed": "NA",
-      "condition_petrify": "NA",
-      "condition_poisoned": "NA",
-      "condition_shaken": "NA",
-      "condition_silence": "NA",
-      "condition_slow": "NA",
-      "condition_stagger": "NA",
-      "condition_suppress": "NA",
-      "condition_turbulence": "NA",
-      "condition_weak": "NA",
-      "condition_wet": "NA",
-      "condition_wither": "NA",
-      "condition_zombie": "NA",
       "consumable_list": {
         "FN1TCV2ZfCqEsr2T": {
           "consume_description": "<p>No Quality.</p>",
@@ -1466,7 +1429,6 @@
       "rolled_atr2": "MIG",
       "shield_type": "",
       "shield_value": "0",
-      "skill_accuracy": "0",
       "skill_active_list": {
         "2zh1NwfEGxnz32iy": {
           "active_class": "Arcanist",
@@ -1565,12 +1527,8 @@
           "uuid": "Actor.POfTyxhFiwCLyJFU.Item.zBTYyMVL1D2ZCs6I"
         }
       },
-      "skill_attack_damage": "0",
       "skill_class_filter": "",
       "skill_hideEffect": false,
-      "skill_hp": "0",
-      "skill_ip": "",
-      "skill_mp": "0",
       "skill_type_filter": "All",
       "spear_ef": "100",
       "spell_class_filter": "Elementalist",
@@ -1698,7 +1656,7 @@
       "xuwAn7u126GfFweU": []
     },
     "template": "OmwL5UqoVwjshkJo",
-    "templateSystemUniqueVersion": 2652892837
+    "templateSystemUniqueVersion": 2347495135
   },
   "type": "character"
 }

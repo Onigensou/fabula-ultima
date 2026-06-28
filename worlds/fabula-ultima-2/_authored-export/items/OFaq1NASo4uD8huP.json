@@ -13,7 +13,7 @@
       "_id": "FUOvYTfwXyCWUISd",
       "_stats": {
         "compendiumSource": null,
-        "coreVersion": "12.331",
+        "coreVersion": "12.343",
         "createdTime": 1757965164385,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
@@ -21,7 +21,7 @@
       },
       "changes": [
         {
-          "key": "attack_accuracy_mod_all",
+          "key": "check_mod_all",
           "mode": 2,
           "priority": 1,
           "value": "${level}$"
