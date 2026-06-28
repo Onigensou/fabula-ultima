@@ -53,6 +53,10 @@
     lastHoveredNodeId: null,
     hookIds:      [],
     _arrivalDepth: 0,   // recursion guard for processArrivalAt chains
+
+    isMainController: false, // cached: may THIS client drive dungeon movement?
+    _mcUnsubs:        [],    // Movement Control socket unsubscribe fns
+    _spectateNoticeAt: 0,    // throttle timestamp for the spectator notice
   };
 
   // ---------------------------------------------------------------------------
@@ -70,6 +74,89 @@
   function getCanvasView() {
     return canvas?.app?.view ?? canvas?.app?.renderer?.view
         ?? document.querySelector("#board canvas") ?? document.querySelector("canvas");
+  }
+
+  // Dungeon clicks only "play" while the Token control layer is active. On any
+  // other layer (Tiles, Drawings, Walls…) the GM is editing the scene, so
+  // movement/hover must be inert and the click must fall through to Foundry's
+  // native handling (e.g. double-click a tile to open its config). Scoped to GM
+  // callers only — players can't meaningfully switch layers, so we never risk
+  // blocking their movement.
+  function isPlayLayerActive() {
+    try { return canvas?.activeLayer === canvas?.tokens; }
+    catch { return false; }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Main Controller authority (ported from the exploration Movement Control
+  // system). In dungeon mode only the current Main Controller — or any GM —
+  // may drive party movement; everyone else spectates (read-only).
+  //
+  // Controller IDENTITY is owned by the shared Movement Control API
+  // (store/resolver/socket), which already runs on dungeon scenes — Fast Travel
+  // and Scene Travel already gate on it. We cache the answer here and re-check
+  // it on the same hooks plus the Movement Control hand-off broadcast, so a
+  // live "pass control" re-gates movement without a reload.
+  // ---------------------------------------------------------------------------
+  function getMovementControlApi() {
+    return globalThis.__ONI_MOVEMENT_CONTROL_API__
+      ?? globalThis.FUCompanion?.api?.MovementControl
+      ?? null;
+  }
+
+  async function refreshControllerAuthority() {
+    if (game.user?.isGM) { state.isMainController = true; return true; }
+
+    const api = getMovementControlApi();
+    if (!api?.isCurrentUserMainController) {
+      // API not ready yet — fail closed for players so movement stays gated.
+      state.isMainController = false;
+      return false;
+    }
+
+    try {
+      state.isMainController = !!(await api.isCurrentUserMainController());
+    } catch (e) {
+      state.isMainController = false;
+      console.warn(TAG, "refreshControllerAuthority failed", e?.message ?? e);
+    }
+    return state.isMainController;
+  }
+
+  function currentControllerName() {
+    const snap = getMovementControlApi()?.getLastSnapshot?.();
+    return snap?.resolvedController?.userName ?? null;
+  }
+
+  function notifySpectating() {
+    const now = Date.now();
+    if (now - state._spectateNoticeAt < 4000) return; // throttle nag
+    state._spectateNoticeAt = now;
+    const name = currentControllerName();
+    ui.notifications?.info?.(
+      name ? `Spectating — only ${name} can move the party.`
+           : "Spectating — only the Main Controller can move the party."
+    );
+  }
+
+  // Re-evaluate authority after a controller hand-off broadcast. The store flag
+  // write may still be propagating when the custom socket message arrives, so we
+  // check immediately and again after a short settle delay.
+  function installControllerAuthorityListeners() {
+    if (state._mcUnsubs.length) return;
+    const socket = globalThis.__ONI_MOVEMENT_CONTROL_SOCKET__
+      ?? globalThis.FUCompanion?.api?.MovementControlSocket
+      ?? null;
+    if (!socket?.on) return;
+
+    const types   = socket.MESSAGE_TYPES ?? {};
+    const onUpdate = () => {
+      refreshControllerAuthority().catch(() => {});
+      setTimeout(() => { refreshControllerAuthority().catch(() => {}); }, 150);
+    };
+
+    if (types.BROADCAST_STATE_UPDATED) state._mcUnsubs.push(socket.on(types.BROADCAST_STATE_UPDATED, onUpdate));
+    if (types.BROADCAST_REFRESH)       state._mcUnsubs.push(socket.on(types.BROADCAST_REFRESH, onUpdate));
   }
 
   // ---------------------------------------------------------------------------
@@ -308,6 +395,8 @@
 
     state.hoverHandler = (ev) => {
       if (!state.active || state.busy) return;
+      // Suppress hover sound/overlay while the GM edits tiles on a non-Token layer.
+      if (game.user?.isGM && !isPlayLayerActive()) return;
       if (state.neighborIds.size === 0) return;
       if (DP.ConfirmDialog?.isOpen) return;
 
@@ -362,6 +451,12 @@
     if (state.busy) { ui.notifications?.info?.("Movement in progress…"); return; }
     if (ev.button !== 0) return;
 
+    // GM tile-editing gate: when the GM is on a non-Token layer (e.g. Tiles), a
+    // click must NOT move the party token — bail out without preventDefault so
+    // the event falls through to Foundry's native handling (tile select /
+    // double-click config). Players are unaffected (always on the Token layer).
+    if (game.user?.isGM && !isPlayLayerActive()) return;
+
     // If the in-canvas confirm buttons are showing, let PIXI handle pointer events
     if (DP.ConfirmDialog?.isOpen) return;
 
@@ -377,6 +472,15 @@
 
     if (isCurrent)   { ui.notifications?.info?.("You are already on this tile."); return; }
     if (!isNeighbor) return; // tile out of range — correct behaviour, no need to notify
+
+    // — Main Controller gate —
+    // Only the current Main Controller (or any GM) may drive dungeon movement.
+    // Everyone else spectates: the click is a clean no-op (no preventDefault),
+    // so the read-only hover/helper affordances keep working for them.
+    if (!game.user?.isGM && !state.isMainController) {
+      notifySpectating();
+      return;
+    }
 
     ev.preventDefault();
     ev.stopPropagation();
@@ -567,6 +671,7 @@
     if (state.active) return;
     state.active = true;
     DP.Sound.preloadAll();
+    await refreshControllerAuthority();
     installClickListener();
     installHoverHandler();
     DP.HelperMode.activate();
@@ -632,10 +737,22 @@
   // Hooks
   // ---------------------------------------------------------------------------
   function installHooks() {
+    // Subscribe to Movement Control hand-off broadcasts so a "pass control"
+    // re-gates dungeon movement live on every client.
+    installControllerAuthorityListeners();
+
     const hCanvasReady = Hooks.on("canvasReady", async () => {
       await applyForScene(canvas.scene);
     });
     state.hookIds.push(["canvasReady", hCanvasReady]);
+
+    // A user's linked character (and thus controller eligibility) can change
+    // mid-session; re-evaluate authority when any user document updates.
+    const hUpdateUser = Hooks.on("updateUser", () => {
+      if (!state.active) return;
+      refreshControllerAuthority().catch(() => {});
+    });
+    state.hookIds.push(["updateUser", hUpdateUser]);
 
     const hCanvasTearDown = Hooks.on("canvasTearDown", () => {
       deactivate();

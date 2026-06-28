@@ -113,13 +113,10 @@
     return ALIAS[hit] ?? hit.replace(/\s+/g, "_");
   }
 
-  // Resolve a tile's type.  The explicit per-tile flag (set via the config
-  // dialog's Tile Type dropdown) is authoritative; name/texture inference is a
-  // fallback only for tiles that have NOT been given an explicit type.
-  //   Flag path: flags.<MODULE_ID>.dungeonPathing.tileType
+  // Resolve a tile's type purely from its name + texture (legacy name-string
+  // matching).  Kept as a thin wrapper around inferType() so callers and the
+  // public API don't need to change.
   function resolveType(tileDoc) {
-    const explicit = tileDoc?.getFlag?.(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.tileType`);
-    if (explicit) return String(explicit);
     return inferType(tileDoc);
   }
 
@@ -413,31 +410,6 @@
       return { states: getStates(scene), visited: getVisited(scene), fogRevealed: getRevealed(scene) };
     }
   };
-
-  // ── Re-sync cached state when the GM changes a tile's explicit type ─────────
-  // ensure() caches initialType/currentType once, so a later type change in the
-  // config dialog would otherwise go stale.  Rewrite the cached entry: update
-  // initialType, and currentType too while the tile is un-consumed (currentType
-  // still equals the old initialType — not "blank" or some other mutation).
-  Hooks.on("updateTile", async (tileDoc, changes) => {
-    if (!game.user?.isGM) return;
-    const newType = foundry.utils.getProperty(
-      changes, `flags.${DP.MODULE_ID}.${DP.PATHING_ROOT_KEY}.tileType`
-    );
-    if (newType === undefined) return;   // this update didn't touch the type flag
-
-    const scene = tileDoc.parent;
-    const entry = getStates(scene)[tileDoc.id];
-    if (!entry) return;   // not tracked yet — ensure() will pick it up on graph build
-
-    const resolved   = resolveType(tileDoc);   // honours the just-saved flag (or inference if cleared)
-    const wasConsumed = entry.currentType !== entry.initialType;
-    await scene.setFlag(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.tileStates.${tileDoc.id}`, {
-      ...entry,
-      initialType: resolved,
-      currentType: wasConsumed ? entry.currentType : resolved,
-    }).catch(e => console.warn(TAG, "updateTile type re-sync failed:", e));
-  });
 
   // ── Reset-on-rest: restore flagged tiles when the party rests ───────────────
   // RestAPI.perform() fires this hook after restoring the party (GM context).
