@@ -1,0 +1,15 @@
+{
+  "name": "csb-template",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Edit and validate Custom System Builder (CSB) template component trees — DOM-like editing + a two-tier validator (offline lint + in-game CSB parse).",
+  "bin": {
+    "csb": "bin/csb.js"
+  },
+  "scripts": {
+    "csb": "node bin/csb.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -60,6 +60,8 @@
 !/tools/safe-edit/**
 !/tools/parse-fu-pdfs/
 !/tools/parse-fu-pdfs/**
+!/tools/csb-template/
+!/tools/csb-template/**
 
 # -----------------------------
 # LevelDB runtime files — never commit these.
