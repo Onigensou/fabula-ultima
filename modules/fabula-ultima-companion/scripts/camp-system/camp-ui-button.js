@@ -222,6 +222,9 @@
       // (genuine solo-GM, no party clients) is ready; a null cache is not.
       const allReady    = partyKnown && (activeUsers.length === 0 || activeUsers.every(u => readyMap[u.id]));
       const iAmReady    = !!readyMap[userId];
+      // A spectator is an active non-GM client with no party entry. They can't
+      // ready up, so they only watch the lobby dots — hide their phase button.
+      const iAmParty    = partyKnown && ids.has(userId);
 
       wrap.classList.remove("hidden");
 
@@ -237,7 +240,8 @@
         }
       } else {
         if (phaseBtn) {
-          phaseBtn.style.display = "";
+          // Spectators (non-party clients) only watch the dots — no button.
+          phaseBtn.style.display = iAmParty ? "" : "none";
           phaseBtn.querySelector(".btn-emoji").textContent = cfg.emoji;
           phaseBtn.title = cfg.title;
           phaseBtn.classList.toggle("ready", iAmReady);
