@@ -29,7 +29,7 @@
       CAMP.Sound.play(CAMP.SFX.BOND_START);
 
       if (game.user?.isGM) {
-        _buildGMWait();
+        await _buildGMWait();
         return;
       }
 
@@ -520,9 +520,13 @@
   }
 
   // ── GM wait overlay ────────────────────────────────────────────────────────────
-  function _buildGMWait() {
+  async function _buildGMWait() {
     document.getElementById(OVL_ID)?.remove();
-    const activeUsers = (game.users?.contents ?? []).filter(u => u.active && !u.isGM);
+    // Only count active clients linked to a party member; spectators have no
+    // party entry and must not gate the bond-confirm wait.
+    const partyIds    = await CAMP.Party.getActiveUserIds().catch(() => []);
+    const activeUsers = (game.users?.contents ?? [])
+      .filter(u => u.active && !u.isGM && partyIds.includes(u.id));
     const confirmed   = CAMP.State.getBondConfirmed?.() ?? {};
     const dots = activeUsers.map(u => {
       const r = !!confirmed[u.id];

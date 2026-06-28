@@ -67,8 +67,7 @@
       case CAMP.PHASE.FREE_ROAM:
         _closeOverlay();
         CAMP.SleepUI.fadeIn();       // fade back in if coming from sleep
-        CAMP.Button.show();
-        CAMP.Button.render();
+        await CAMP.Button.show();    // show() refreshes the party cache, then renders
         break;
 
       // ── ACTIVITY SELECT ───────────────────────────────────────────────────
@@ -100,8 +99,7 @@
       // ── SLEEP LOBBY ───────────────────────────────────────────────────────
       case CAMP.PHASE.SLEEP_LOBBY:
         _closeOverlay();
-        CAMP.Button.show();
-        CAMP.Button.render();
+        await CAMP.Button.show();    // show() refreshes the party cache, then renders
         break;
 
       // ── SLEEPING ──────────────────────────────────────────────────────────
@@ -115,8 +113,7 @@
       // ── SET OUT LOBBY ─────────────────────────────────────────────────────
       case CAMP.PHASE.SET_OUT_LOBBY:
         CAMP.SleepUI.fadeIn();   // ensure screen is visible again
-        CAMP.Button.show();
-        CAMP.Button.render();
+        await CAMP.Button.show();    // show() refreshes the party cache, then renders
         break;
     }
   }

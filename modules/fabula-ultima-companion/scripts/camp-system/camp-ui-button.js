@@ -163,7 +163,21 @@
 
   // ── Public API ─────────────────────────────────────────────────────────────
   CAMP.Button = {
-    show() {
+    // Cached set of userIds that own a party member (db-resolved). render() is
+    // synchronous, so the async party resolution is cached here and the live
+    // `u.active` filter is applied per-render. Null until first resolved.
+    _partyUserIds: null,
+
+    // Resolve the party from the DB actor and cache the owning-user IDs. Only
+    // the party→user membership is cached (stable during a camp cycle); the
+    // active-client filter is applied live inside render().
+    async _refreshParty() {
+      const party = await CAMP.Party.resolve().catch(() => []);
+      this._partyUserIds = new Set(party.map(e => e.userId).filter(Boolean));
+      return this._partyUserIds;
+    },
+
+    async show() {
       ensureStyle();
       let wrap = document.getElementById(WRAP_ID);
       if (!wrap) wrap = _build();
@@ -172,6 +186,9 @@
       requestAnimationFrame(() => {
         wrap.querySelectorAll(".oni-camp-circle-btn").forEach(b => b.classList.add("visible"));
       });
+      // Populate the party cache before the first render so the lobby gate
+      // never evaluates against an empty/stale set.
+      await this._refreshParty();
       this.render();
     },
 
@@ -193,8 +210,17 @@
 
       const userId      = game.user?.id;
       const readyMap    = _getReadyMap(phase);
-      const activeUsers = (game.users?.contents ?? []).filter(u => u.active && !u.isGM);
-      const allReady    = activeUsers.length === 0 || activeUsers.every(u => readyMap[u.id]);
+      // Only count active clients linked to a party member (db-resolved).
+      // Spectator clients are active non-GM users with no party entry and must
+      // not gate the lobby. ids may be null on the very first render before the
+      // cache resolves; treat that as "no party members counted yet".
+      const ids         = this._partyUserIds;
+      const partyKnown  = ids instanceof Set;   // null = not yet resolved
+      const activeUsers = (game.users?.contents ?? [])
+        .filter(u => u.active && !u.isGM && (partyKnown ? ids.has(u.id) : false));
+      // Only advertise "all ready" once the party is resolved. An empty Set
+      // (genuine solo-GM, no party clients) is ready; a null cache is not.
+      const allReady    = partyKnown && (activeUsers.length === 0 || activeUsers.every(u => readyMap[u.id]));
       const iAmReady    = !!readyMap[userId];
 
       wrap.classList.remove("hidden");
@@ -219,7 +245,7 @@
         if (startBtn) startBtn.style.display = "none";
       }
 
-      // Lobby dots — always keyed by active non-GM users
+      // Lobby dots — keyed by active party-member clients (spectators excluded)
       if (dotsEl) {
         dotsEl.innerHTML = activeUsers.map(u => {
           const r = !!readyMap[u.id];
