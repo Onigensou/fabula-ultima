@@ -27,6 +27,7 @@ import { log, warn } from "./logger.js";
 import { reconcileSetBonuses } from "./set-bonus.js";
 
 const UNARM_STRIKE_ITEM_ID = "bwqZvS4NXw7bCrmV";
+const FLAG_NS = "fabula-ultima-companion";
 
 const ITEM_TYPE_WEAPON    = "weapon";
 const ITEM_TYPE_SHIELD    = "shield";
@@ -71,6 +72,153 @@ function partitionInventory(actor) {
 function indexByEquippedName(items, equippedName) {
   if (!equippedName) return -1;
   return items.findIndex((it) => it?.system?.props?.name === equippedName);
+}
+
+// ─── Weapon FORMS (Transform) ───────────────────────────────────────────
+//
+// A weapon may define alternate FORMS that share the weapon's identity (it's
+// the SAME Item, so its linked skills are retained) and re-project a subset of
+// its combat stats — element / weapon type / damage / accuracy. The form table
+// lives on the weapon's own props (`weapon_forms`, CSB-coerced to an object
+// keyed "0","1",… — same as weapon_list), with a flag fallback. The active
+// form index is a runtime flag (`activeForm`, 0 = base). The actual stat
+// re-projection happens in resolveAttackerWeapon (snapshot.js); here we only
+// surface the table for the Equipment card and toggle the selection flag.
+//
+// Returns a normalised, render-ready array (≥2 forms) or null.
+function weaponFormsOf(item) {
+  const raw = item?.system?.props?.weapon_forms;
+  const arr = (raw && typeof raw === "object")
+    ? Object.values(raw)
+    : (Array.isArray(item?.flags?.[FLAG_NS]?.weaponForms) ? item.flags[FLAG_NS].weaponForms : null);
+  if (!Array.isArray(arr) || arr.length < 2) return null;
+  return arr.map((f, i) => ({
+    idx: i,
+    label: String(f?.label ?? f?.type_damage ?? `Form ${i + 1}`),
+    element: String(f?.type_damage ?? ""),
+    weaponType: String(f?.weapon_type ?? ""),
+    damageBonus: Number(f?.damage_bonus ?? 0) || 0,
+    checkBonus: Number(f?.check_bonus ?? 0) || 0,
+  }));
+}
+function activeFormOf(item) {
+  return Number(item?.flags?.[FLAG_NS]?.activeForm ?? 0) || 0;
+}
+
+// Resolve the weapon Item currently worn in a hand slot ("main" | "off") by
+// matching the actor's slot prop (main_hand / off_hand) against item names —
+// the same source-of-truth resolveAttackerWeapon + the equip slot props use.
+function equippedWeaponInSlot(actor, slotKey) {
+  const props = actor?.system?.props ?? {};
+  const name = slotKey === "off" ? props.off_hand : props.main_hand;
+  if (!name) return null;
+  const { weapons } = partitionInventory(actor);
+  return weapons.find((w) => (w.system?.props?.name ?? w.name) === name) ?? null;
+}
+
+// Set the active form on the weapon worn in `slotKey`. Idempotent (no write
+// when already on that form). Returns a change descriptor for the card summary.
+export async function applyWeaponForm(actor, slotKey, formIdx) {
+  if (!actor) return { changed: false };
+  const item = equippedWeaponInSlot(actor, slotKey);
+  if (!item) return { changed: false };
+  const forms = weaponFormsOf(item);
+  if (!forms) return { changed: false };
+  const idx = Math.max(0, Math.min(Number(formIdx) | 0, forms.length - 1));
+  const cur = activeFormOf(item);
+  const base = { slot: slotKey, weaponName: item.name, formIdx: idx, formLabel: forms[idx].label };
+  if (cur === idx) return { changed: false, ...base };
+  try {
+    await item.setFlag(FLAG_NS, "activeForm", idx);
+  } catch (e) {
+    warn(`applyWeaponForm: setFlag failed on ${item.name}`, e);
+    return { changed: false, ...base };
+  }
+  log(`applyWeaponForm: ${actor.name}'s ${item.name} → ${forms[idx].label} (form ${idx})`);
+  return { changed: true, fromIdx: cur, ...base };
+}
+
+// Apply a { main, off } → formIndex selection map (the shape the Equipment card
+// collects). Skips slots not present / not finite. Returns { changed, changes[] }.
+export async function applyWeaponFormSelections(actor, selections) {
+  const out = { changed: false, changes: [] };
+  if (!actor || !selections || typeof selections !== "object") return out;
+  for (const slotKey of ["main", "off"]) {
+    if (!(slotKey in selections)) continue;
+    const idx = Number(selections[slotKey]);
+    if (!Number.isFinite(idx)) continue;
+    const r = await applyWeaponForm(actor, slotKey, idx);
+    if (r.changed) { out.changed = true; out.changes.push(r); }
+  }
+  return out;
+}
+
+// A weapon's free transform is available for `round` unless its own per-round
+// marker already stamps that round (per-weapon scope — each transformable weapon
+// has its own once-per-round free transform).
+function activeFormFreeAvailable(item, round) {
+  const used = Number(item?.flags?.[FLAG_NS]?.transformFreeUsedRound);
+  return !(Number.isFinite(used) && used === Number(round));
+}
+
+// The currently-equipped item id per slot (null when empty). Mirrors how the
+// Equipment card resolves "current" so a no-change submission reads as no change.
+function currentEquippedIds(actor) {
+  const props = actor?.system?.props ?? {};
+  const { weapons, shields, accessories } = partitionInventory(actor);
+  const hand = [...weapons, ...shields];
+  const byName = (list, name) => {
+    const i = indexByEquippedName(list, name);
+    return i >= 0 ? list[i].id : null;
+  };
+  return {
+    main: byName(hand, props.main_hand),
+    off: byName(hand, props.off_hand),
+    accessory1: byName(accessories, props.accessory_name),
+    accessory2: byName(accessories, props.accessory2_name),
+  };
+}
+
+// Decide the Equipment action's turn-economy at confirmation time. Per-weapon
+// scope: a transform is free if THAT weapon hasn't used its once-per-round free
+// transform. The whole Equipment action is FREE (returns to the menu, no action
+// spent) only when there is NO gear swap AND every changed weapon's transform is
+// individually free. A gear swap, or any already-used free transform, makes the
+// action cost the turn (but the transforms still apply). `freeUsedItemIds` lists
+// the weapons that consume their free allowance on this (free) action — RESOLVE
+// stamps each so a second free transform of the same weapon this round is paid.
+//
+// Returns { gearChanged, formChanged, free, freeUsedItemIds }.
+export function planEquipmentActionCost(actor, { equipmentSelections, weaponFormSelections } = {}, round = 0) {
+  const out = { gearChanged: false, formChanged: false, free: true, freeUsedItemIds: [] };
+  if (!actor) return out;
+
+  if (equipmentSelections && typeof equipmentSelections === "object") {
+    const cur = currentEquippedIds(actor);
+    for (const k of ["main", "off", "accessory1", "accessory2"]) {
+      if (!(k in equipmentSelections)) continue;
+      if ((equipmentSelections[k] || null) !== (cur[k] || null)) { out.gearChanged = true; break; }
+    }
+  }
+
+  const slotPlans = [];
+  if (weaponFormSelections && typeof weaponFormSelections === "object") {
+    for (const slotKey of ["main", "off"]) {
+      if (!(slotKey in weaponFormSelections)) continue;
+      const weapon = equippedWeaponInSlot(actor, slotKey);
+      const forms = weaponFormsOf(weapon);
+      if (!weapon || !forms) continue;
+      const want = Math.max(0, Math.min(Number(weaponFormSelections[slotKey]) | 0, forms.length - 1));
+      if (want === activeFormOf(weapon)) continue; // no change in this slot
+      out.formChanged = true;
+      slotPlans.push({ itemId: weapon.id, freeAvail: activeFormFreeAvailable(weapon, round) });
+    }
+  }
+
+  const paidTransform = slotPlans.some((p) => !p.freeAvail);
+  out.free = !out.gearChanged && !paidTransform;
+  out.freeUsedItemIds = out.free ? slotPlans.filter((p) => p.freeAvail).map((p) => p.itemId) : [];
+  return out;
 }
 
 // Public: gather everything the Equipment card needs to render the
@@ -167,7 +315,7 @@ function buildAccCandidate(it) {
   };
 }
 
-export function gatherEquipmentSlots(actor) {
+export function gatherEquipmentSlots(actor, { round = null } = {}) {
   if (!actor) return { slots: [], hasUnarmed: false };
 
   const { weapons, shields, accessories } = partitionInventory(actor);
@@ -203,12 +351,18 @@ export function gatherEquipmentSlots(actor) {
         currentItemId: mainIdx >= 0 ? handItems[mainIdx].id : null,
         currentName: mainIdx >= 0 ? handItems[mainIdx].system?.props?.name : "Unarmed",
         candidates: mainHandCandidates,
+        forms: mainIdx >= 0 ? weaponFormsOf(handItems[mainIdx]) : null,
+        activeForm: mainIdx >= 0 ? activeFormOf(handItems[mainIdx]) : 0,
+        freeAvail: (mainIdx >= 0 && round != null) ? activeFormFreeAvailable(handItems[mainIdx], round) : true,
       },
       {
         key: "off", label: "Off Hand",
         currentItemId: offIdx >= 0 ? handItems[offIdx].id : null,
         currentName: offIdx >= 0 ? handItems[offIdx].system?.props?.name : "Unarmed",
         candidates: offHandCandidates,
+        forms: offIdx >= 0 ? weaponFormsOf(handItems[offIdx]) : null,
+        activeForm: offIdx >= 0 ? activeFormOf(handItems[offIdx]) : 0,
+        freeAvail: (offIdx >= 0 && round != null) ? activeFormFreeAvailable(handItems[offIdx], round) : true,
       },
       {
         key: "accessory1", label: "Accessory",

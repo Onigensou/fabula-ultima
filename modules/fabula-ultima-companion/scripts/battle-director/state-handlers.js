@@ -2022,6 +2022,9 @@ const Declare = {
     director.ctx.pickedTargetUuids = null;
     director.ctx.hinderCheckConfig = null;
     director.ctx._composedBundle = null;
+    // Consume the free-transform return-to-menu flag — we've arrived back at the
+    // menu, so it must not leak into a later action's CLEANUP transition.
+    director.ctx.returnToMenuAfterCleanup = false;
 
     const token = canvas?.tokens?.get(snap.tokenId);
     if (!token) {
@@ -4777,6 +4780,44 @@ const Confirm = {
         equipmentSelections: result.equipmentSelections,
       });
     }
+    // Equipment card also collects per-hand weapon FORM picks (Transform) as
+    // { main, off } → formIndex. Merge so RESOLVE's equip_swap effect can apply
+    // them via applyWeaponFormSelections (rides the same Equipment action).
+    if (result.weaponFormSelections) {
+      director.ctx.actionResult = freezeActionResult({
+        ...director.ctx.actionResult,
+        weaponFormSelections: result.weaponFormSelections,
+      });
+    }
+    // Compute the Equipment action's turn-economy NOW (at confirmation), per the
+    // Transform design: a transform-only action whose changed weapons each still
+    // have their per-round free transform is FREE — it returns to the action menu
+    // without spending the turn (see the CLEANUP → DECLARE branch keyed on
+    // ctx.returnToMenuAfterCleanup, set in RESOLVE from ar.equipmentFree). A gear
+    // swap or an already-used free transform makes it cost the turn. Stamps
+    // `equipmentFree` + the weapon ids that consume their free allowance.
+    if (result.equipmentSelections || result.weaponFormSelections) {
+      try {
+        const ar2 = director.ctx.actionResult;
+        const econActor = ar2?.attacker?.actorUuid
+          ? await fromUuid(ar2.attacker.actorUuid).catch(() => null)
+          : null;
+        if (econActor) {
+          const { planEquipmentActionCost } = await import("./equipment-swap.js");
+          const plan = planEquipmentActionCost(econActor, {
+            equipmentSelections: ar2.equipmentSelections ?? null,
+            weaponFormSelections: ar2.weaponFormSelections ?? null,
+          }, director.dCombat?.round ?? 0);
+          director.ctx.actionResult = freezeActionResult({
+            ...ar2,
+            equipmentFree: plan.free,
+            transformFreeUsedItemIds: plan.freeUsedItemIds,
+          });
+          log(`CONFIRM equipment economy: ${plan.free ? "FREE (return to menu)" : "costs action"}` +
+              `${plan.freeUsedItemIds.length ? ` — free transform on ${plan.freeUsedItemIds.length} weapon(s)` : ""}`);
+        }
+      } catch (e) { warn("CONFIRM: equipment economy plan failed", e); }
+    }
     // Item card forwards the picked {mode, key, cost} for RESOLVE to
     // turn into a consume / spendIp commit.
     if (result.itemSelection) {
@@ -5103,8 +5144,24 @@ const Resolve = {
       await resolveAction(director, ar, { actionSkill: getCoreActionSkill("guard") });
     } else if (ar.kind === "Equipment") {
       // Common/Equipment carries a single equip_swap effect row that wraps
-      // applyEquipmentSwap(actor, ar.equipmentSelections).
+      // applyEquipmentSwap(actor, ar.equipmentSelections) + applyWeaponForm-
+      // Selections(actor, ar.weaponFormSelections).
       await resolveAction(director, ar, { actionSkill: getCoreActionSkill("equipment") });
+      // Per-weapon free-transform allowance: stamp each weapon that just spent
+      // its once-per-round free transform (computed at CONFIRM → transformFree-
+      // UsedItemIds), so a 2nd free transform of the SAME weapon this round is
+      // paid. Round-stamped, so it auto-refreshes next round.
+      const freeIds = Array.isArray(ar.transformFreeUsedItemIds) ? ar.transformFreeUsedItemIds : [];
+      if (freeIds.length && director.dCombat) {
+        const round = director.dCombat.round;
+        const econActor = ar.attacker?.actorUuid ? await fromUuid(ar.attacker.actorUuid).catch(() => null) : null;
+        for (const id of freeIds) {
+          const it = econActor?.items?.get?.(id);
+          if (!it) continue;
+          try { await it.setFlag("fabula-ultima-companion", "transformFreeUsedRound", round); }
+          catch (e) { warn(`RESOLVE Equipment: stamp free-transform flag failed on ${it.name}`, e); }
+        }
+      }
     } else if (ar.kind === "Skill" || ar.kind === "Item") {
       // Resolve a Skill cast OR Item use through the ONE pipeline — both are
       // skill-shaped sources. resolveAction debits cost (incl. the item cost:
@@ -5184,9 +5241,16 @@ const Resolve = {
     // rewind" symptoms both trace back here. The marker for "we're
     // mid-free-action" is the continuation stack: top frame is a
     // `freeAction:*` while the sub-flow is in flight.
-    if (director.dCombat && !topIsFreeAction(director.ctx)) {
+    // A FREE transform-only Equipment action (ar.equipmentFree, set at CONFIRM)
+    // does NOT spend the turn: leave currentTurnResolved false and flag the
+    // CLEANUP → DECLARE return-to-menu branch. Everything else resolves the turn
+    // as normal. (Carried on ctx, not actionResult — Cleanup.onEnter nulls
+    // actionResult before the CLEANUP transition reads this.)
+    const equipFreeReturn = !!ar?.equipmentFree && !topIsFreeAction(director.ctx);
+    if (director.dCombat && !topIsFreeAction(director.ctx) && !equipFreeReturn) {
       director.dCombat.currentTurnResolved = true;
     }
+    director.ctx.returnToMenuAfterCleanup = equipFreeReturn;
     // Label describes what the GM lands at on rewind: a checkpoint
     // AFTER this action's commit — resume routes via TURN_END → next
     // turn picker. For multi-pass attacks, distinguish the pass so

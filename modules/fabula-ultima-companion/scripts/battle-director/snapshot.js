@@ -201,18 +201,19 @@ export function resolveAttackerWeapon(actor, { which = "main" } = {}) {
   // prop names are genuinely inverted in the CSB template (off_mod_1 is
   // accuracy, off_mod_2 is damage) — that's not a typo, it mirrors the
   // shipped data shape.
-  const checkBonus = Number(
+  // `let` (not const): the weapon-form overlay below may re-project these.
+  let checkBonus = Number(
     isMain ? (props.weapon1_mod ?? 0) : (props.off_mod_1 ?? 0)
   ) || 0;
-  const damageBonus = Number(
+  let damageBonus = Number(
     isMain ? (props.weapon1_damage ?? 0) : (props.off_mod_2 ?? 0)
   ) || 0;
-  const damageType = String(
+  let damageType = String(
     isMain ? (props.weapon1_damagetype ?? "Physical") : (props.weapon2_damagetype ?? "Physical")
   );
 
   const range = String(entry?.weapon_range ?? "Melee");
-  const weaponType = String(entry?.weapon_type ?? entry?.category ?? entry?.type ?? "");
+  let weaponType = String(entry?.weapon_type ?? entry?.category ?? entry?.type ?? "");
 
   // Resolve the live weapon Item. The entry's `uuid` field is canonical (the
   // `id` field is an unresolved CSB template literal `${item.id}$`). When the
@@ -232,6 +233,39 @@ export function resolveAttackerWeapon(actor, { which = "main" } = {}) {
     ) ?? null;
   }
   const imageUrl = entry?.img ?? entry?.image ?? weaponItem?.img ?? null;
+
+  // ── Weapon-form overlay ────────────────────────────────────────────────
+  // A weapon may define alternate FORMS (e.g. Zarg's Bow: Physical ⇄ Light).
+  // A form shares the weapon's identity — it's the SAME Item, so its linked
+  // skills are retained — and only re-projects a subset of combat stats.
+  //   - form table: weaponItem.system.props.weapon_forms (flag fallback)
+  //   - active index: weaponItem.flags[FLAG_NS].activeForm (0 = base, no overlay)
+  // Element + weapon type are absolute overrides. Damage/accuracy are applied
+  // as DELTAS vs the weapon's BASE values, because checkBonus/damageBonus here
+  // already carry the CSB-derived actor buffs (weapon1_mod / weapon1_damage) —
+  // a flat override would silently discard those buffs.
+  try {
+    const wp = weaponItem?.system?.props ?? {};
+    // CSB stores a props array as an object keyed "0","1",… (same as
+    // weapon_list above) — normalise either shape to an ordered array.
+    const rawForms = (wp.weapon_forms && typeof wp.weapon_forms === "object")
+      ? wp.weapon_forms
+      : (weaponItem?.flags?.[FLAG_NS]?.weaponForms ?? null);
+    const forms = rawForms ? Object.values(rawForms) : [];
+    const fIdx = Number(weaponItem?.flags?.[FLAG_NS]?.activeForm ?? 0) || 0;
+    const form = (fIdx > 0 && fIdx < forms.length) ? forms[fIdx] : null;
+    if (form) {
+      if (form.type_damage) damageType = String(form.type_damage);
+      const ft = String(form.weapon_type ?? "").trim();
+      if (ft) weaponType = ft;
+      const baseDmg = Number(wp.damage_bonus ?? 0) || 0;
+      const baseAcc = Number(wp.check_bonus ?? 0) || 0;
+      const fDmg = Number(form.damage_bonus);
+      const fAcc = Number(form.check_bonus);
+      if (Number.isFinite(fDmg)) damageBonus += (fDmg - baseDmg);
+      if (Number.isFinite(fAcc)) checkBonus  += (fAcc - baseAcc);
+    }
+  } catch (e) { warn("resolveAttackerWeapon: weapon-form overlay failed", e); }
 
   return Object.freeze({
     hand: which,

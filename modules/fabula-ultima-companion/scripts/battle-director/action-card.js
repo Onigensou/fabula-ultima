@@ -1155,6 +1155,59 @@ export function ensureStyles() {
       font-size: 10.5px; font-weight: 800; letter-spacing: 0.32px; text-transform: uppercase;
       color: var(--fud-ink-soft, #4b4338);
     }
+    /* Transform — weapon-form chip row. Same parchment/gold language as the
+       equip dropdowns; the active form is filled gold, others outlined. */
+    .fud-bf-card .fud-bf-form-row {
+      display: flex; flex-direction: column; gap: 5px;
+      padding: 6px 0;
+      border-bottom: 1px dashed rgba(90, 106, 133, 0.25);
+    }
+    .fud-bf-card .fud-bf-form-row:last-child { border-bottom: none; }
+    /* Full-width segmented control: each form takes an equal share of the row. */
+    .fud-bf-card .fud-bf-form-chips { display: flex; gap: 6px; width: 100%; }
+    .fud-bf-card .fud-bf-form-chip {
+      flex: 1 1 0; min-width: 0;
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 7px 10px;
+      border-radius: 8px;
+      border: 1.5px solid var(--fud-stroke, #7a6a55);
+      background: rgba(255, 255, 255, 0.65);
+      color: var(--fud-ink, #3a3228);
+      font-size: 12px; font-weight: 700; text-align: center;
+      cursor: pointer; user-select: none;
+      transition: background-color 100ms ease, border-color 100ms ease, color 100ms ease;
+    }
+    .fud-bf-card .fud-bf-form-chip .fud-bf-form-label {
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .fud-bf-card .fud-bf-form-chip:hover { background: rgba(255, 255, 255, 0.9); border-color: var(--fud-gold-2, #b7935a); }
+    .fud-bf-card .fud-bf-form-chip.is-active {
+      background: var(--fud-gold-2, #b7935a);
+      border-color: var(--fud-gold-2, #b7935a);
+      color: #2b2114;
+      box-shadow: 0 0 6px rgba(183, 147, 90, 0.4);
+    }
+    /* Equipment Done-button economy indicator — tells the player whether the
+       current selection is a FREE action (returns to menu) or costs the turn. */
+    .fud-bf-card .fud-bf-equip-econ {
+      display: flex; justify-content: center; margin: 2px 0 6px;
+    }
+    .fud-bf-card .fud-bf-equip-free-ind {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 11px;
+      border-radius: 999px;
+      font-size: 11px; font-weight: 800; letter-spacing: 0.2px;
+      border: 1.5px solid transparent;
+    }
+    .fud-bf-card .fud-bf-equip-free-ind.is-free {
+      color: #1f6b32; background: rgba(64, 168, 88, 0.16); border-color: rgba(64, 168, 88, 0.55);
+    }
+    .fud-bf-card .fud-bf-equip-free-ind.is-paid {
+      color: #8a4b22; background: rgba(216, 167, 58, 0.16); border-color: rgba(216, 167, 58, 0.55);
+    }
+    .fud-bf-card .fud-bf-equip-free-ind.is-none {
+      color: var(--fud-ink-soft, #6b6253); background: rgba(120, 110, 90, 0.1); border-color: rgba(120, 110, 90, 0.3);
+    }
     .fud-bf-card .fud-bf-equip-trigger {
       display: grid;
       grid-template-columns: 44px 1fr 18px;
@@ -2861,7 +2914,7 @@ function buildStudyCard({ attacker, target, roll, tier, previousBest, improved }
   };
 }
 
-function buildEquipmentCard({ attacker, attackerActor }) {
+function buildEquipmentCard({ attacker, attackerActor, round }) {
   // Integrated swap UI — one custom dropdown per slot (Main / Off / Acc 1
   // / Acc 2). Each lists the current selection + every eligible item from
   // the actor's inventory, with icon + name + subtitle (element • type •
@@ -2878,7 +2931,7 @@ function buildEquipmentCard({ attacker, attackerActor }) {
   // it points at the same itemId — no double-equipping the same physical
   // item in both hands / both accessory slots.
   const slotInfo = attackerActor
-    ? tryBuild("equipment-slots", () => gatherEquipmentSlots(attackerActor))
+    ? tryBuild("equipment-slots", () => gatherEquipmentSlots(attackerActor, { round: round ?? null }))
     : { slots: [] };
 
   const groupOf = (key) =>
@@ -3077,18 +3130,56 @@ function buildEquipmentCard({ attacker, attackerActor }) {
         <div style="font-size:12px; opacity:0.7;">Couldn't read the actor's inventory.</div>
       </fieldset>`;
 
-  // Keep an "Open Sheet" fallback for armor / weight management / anything
-  // the inline UI doesn't surface.
-  const sheetUrl = attackerActor?.uuid ? String(attackerActor.uuid) : null;
-  const openSheetHTML = sheetUrl ? `
-    <div style="text-align:center; margin-top:6px;">
-      <div class="fud-btn fud-btn-open-sheet" style="display:inline-flex; padding:6px 12px; font-size:10.5px;"
-           data-fud-open-sheet="${escapeHtml(sheetUrl)}"
-           role="button" tabindex="0">
-        <i class="fa-solid fa-id-card" style="margin-right:6px;"></i>Full Sheet
-      </div>
-    </div>
-  ` : "";
+  // ── Transform section ──────────────────────────────────────────────────
+  // A worn weapon that defines ≥2 FORMS (e.g. Zarg's Bow: Physical ⇄ Light)
+  // gets a chip row to pick its active form. The form keeps the SAME weapon
+  // (its skills are retained); only its projected stats change. Picks are
+  // collected on Done as { main, off } → formIndex and applied in RESOLVE.
+  const formRows = slots
+    .filter((s) => (s.key === "main" || s.key === "off") && Array.isArray(s.forms) && s.forms.length > 1)
+    .map((slot) => {
+      // Weapon icon (same for every form of the slot) — shown in the hover.
+      const wepImg = (slot.candidates ?? []).find((c) => c.id === slot.currentItemId)?.img ?? null;
+      const chips = slot.forms.map((f) => {
+        // Hover-only detail: element / weapon type / accuracy + damage bonus,
+        // reusing the equip dwell-tooltip (data-fud-equip-stats / -desc), so the
+        // chip itself shows ONLY the form name. The same selector is wired on
+        // both the GM card and the player mirror.
+        const traits = [];
+        if (f.element) traits.push(`<span class="fud-bf-desc-tip-stat-trait">${escapeHtml(f.element)}</span>`);
+        if (f.weaponType) traits.push(`<span class="fud-bf-desc-tip-stat-trait">${escapeHtml(cap(f.weaponType))}</span>`);
+        traits.push(`<span class="fud-bf-desc-tip-stat-acc">ACC ${f.checkBonus >= 0 ? "+" : ""}${f.checkBonus}</span>`);
+        traits.push(`<span class="fud-bf-desc-tip-stat-dmg">DMG ${f.damageBonus >= 0 ? "+" : ""}${f.damageBonus}</span>`);
+        const iconHTML = wepImg
+          ? `<div style="width:34px;height:34px;flex:0 0 auto;border-radius:6px;border:1px solid var(--fud-stroke,#7a6a55);background-size:cover;background-position:center;background-image:url('${escapeHtml(safeImgUrl(wepImg))}')"></div>`
+          : "";
+        const descBody = `<div style="display:flex;align-items:center;gap:8px;">${iconHTML}<span>${escapeHtml(slot.currentName)} · ${escapeHtml(f.label)} form</span></div>`;
+        return `
+        <div class="fud-bf-form-chip ${f.idx === slot.activeForm ? "is-active" : ""}"
+             data-fud-form-idx="${f.idx}" role="button" tabindex="0"
+             data-fud-equip-desc-name="${escapeHtml(f.label)}"
+             data-fud-equip-stats="${escapeHtml(traits.join(""))}"
+             data-fud-equip-desc="${escapeHtml(descBody)}">
+          <span class="fud-bf-form-label">${escapeHtml(f.label)}</span>
+        </div>`;
+      }).join("");
+      const slotName = slot.label === "Off Hand" ? "Off-Hand Form" : "Main-Hand Form";
+      return `
+        <div class="fud-bf-form-row"
+             data-fud-form-slot="${escapeHtml(slot.key)}"
+             data-fud-form-current="${slot.activeForm}"
+             data-fud-form-initial="${slot.activeForm}"
+             data-fud-form-free-avail="${slot.freeAvail ? "1" : "0"}">
+          <div class="fud-bf-equip-label">${escapeHtml(slotName)}<span class="dot">•</span><span style="opacity:.65; font-weight:600;">${escapeHtml(slot.currentName)}</span></div>
+          <div class="fud-bf-form-chips">${chips}</div>
+        </div>`;
+    }).join("");
+  const formHTML = formRows
+    ? `<fieldset class="fud-bf-section">
+        <legend>Transform</legend>
+        ${formRows}
+      </fieldset>`
+    : "";
 
   return {
     titleIcon: `<i class="fa-solid fa-toolbox" style="font-size:20px; color:var(--fud-stroke,#7a6a55);"></i>`,
@@ -3105,9 +3196,12 @@ function buildEquipmentCard({ attacker, attackerActor }) {
         </div>
       </fieldset>
       ${slotsHTML}
-      ${openSheetHTML}
+      ${formHTML}
     `,
     buttons: `
+      <div class="fud-bf-equip-econ">
+        <span class="fud-bf-equip-free-ind is-none">No changes — returns to menu</span>
+      </div>
       <div class="fud-bf-btn-row">
         <div class="fud-btn fud-btn-confirm" data-fud-action="confirm" role="button" tabindex="0">Done</div>
         <div class="fud-btn fud-btn-cancel" data-fud-action="cancel" role="button" tabindex="0">Cancel</div>
@@ -4049,6 +4143,73 @@ export function stripHtmlForDesc(html) {
 // ─────────────────────────────────────────────────────────────────────
 // Public surface
 // ─────────────────────────────────────────────────────────────────────
+// ─── Transform (weapon-form) + Equipment economy — shared card helpers ──────
+// Used by BOTH the GM card (postActionCard) and the player mirror so the two
+// stay in lockstep. They operate on any container element (GM `root` / mirror
+// `wrapper`) via querySelector — no per-client state.
+
+// Select a weapon-form chip: mark it active, stamp the row's current index,
+// flag the row modified vs its initial form.
+function handleFormChipClick(container, formChip) {
+  const frow = formChip.closest(".fud-bf-form-row");
+  if (!frow) return;
+  for (const c of frow.querySelectorAll(".fud-bf-form-chip")) {
+    c.classList.toggle("is-active", c === formChip);
+  }
+  frow.dataset.fudFormCurrent = formChip.dataset.fudFormIdx || "0";
+  frow.classList.toggle("is-modified", frow.dataset.fudFormCurrent !== (frow.dataset.fudFormInitial || "0"));
+}
+
+// Collect the { main, off } → formIndex map from the card's form rows (or null).
+function collectWeaponFormSelections(container) {
+  const rows = container.querySelectorAll(".fud-bf-form-row[data-fud-form-slot]");
+  if (!rows.length) return null;
+  const map = {};
+  for (const r of rows) {
+    const slot = r.dataset.fudFormSlot;
+    if (slot) map[slot] = Number(r.dataset.fudFormCurrent || 0) || 0;
+  }
+  return map;
+}
+
+// Live read of the Equipment action's economy from the DOM — mirrors
+// planEquipmentActionCost (equipment-swap.js, the authoritative copy run at
+// CONFIRM): a gear change OR a changed form on a weapon whose per-round free
+// transform is spent (data-fud-form-free-avail !== "1", baked GM-side) makes the
+// action cost the turn. Returns { gearChanged, formChanged, free }.
+function computeEquipFreeState(container) {
+  let gearChanged = false;
+  for (const r of container.querySelectorAll(".fud-bf-equip-row[data-fud-equip-slot]")) {
+    if ((r.dataset.fudEquipCurrent || "") !== (r.dataset.fudEquipInitial || "")) { gearChanged = true; break; }
+  }
+  let formChanged = false, allFreeAvail = true;
+  for (const fr of container.querySelectorAll(".fud-bf-form-row[data-fud-form-slot]")) {
+    if ((fr.dataset.fudFormCurrent || "0") !== (fr.dataset.fudFormInitial || "0")) {
+      formChanged = true;
+      if (fr.dataset.fudFormFreeAvail !== "1") allFreeAvail = false;
+    }
+  }
+  return { gearChanged, formChanged, free: !gearChanged && allFreeAvail };
+}
+
+// Update the Equipment card's Done-button economy indicator in place.
+function updateEquipFreeIndicator(container) {
+  const ind = container.querySelector(".fud-bf-equip-free-ind");
+  if (!ind) return;
+  const { gearChanged, formChanged, free } = computeEquipFreeState(container);
+  ind.classList.remove("is-free", "is-paid", "is-none");
+  if (!gearChanged && !formChanged) {
+    ind.classList.add("is-none");
+    ind.textContent = "No changes — returns to menu";
+  } else if (free) {
+    ind.classList.add("is-free");
+    ind.textContent = "Free Action — won't end your turn";
+  } else {
+    ind.classList.add("is-paid");
+    ind.textContent = "Costs your Action";
+  }
+}
+
 export async function postActionCard({ director, kind, payload }) {
   // GM-only entry — this builds the authoritative card + manages the
   // resolve Promise that the state-handler awaits. Player clients see
@@ -4107,6 +4268,12 @@ export async function postActionCard({ director, kind, payload }) {
   // the FSM doesn't abort — the player can confirm and the dice that
   // were already rolled get applied. Sub-section failures are absorbed
   // by tryBuild() inside the builders.
+  // The Equipment card bakes each weapon's per-round free-transform availability
+  // (for the Done-button economy indicator) — it needs the authoritative BD round.
+  if (kind === "Equipment") {
+    effectivePayload = { ...effectivePayload, round: director?.dCombat?.round ?? 0 };
+  }
+
   let card = null;
   try {
     // Known kinds (Attack/Guard/Study/Hinder/Equipment/Skill/Item) route through
@@ -5960,6 +6127,7 @@ export async function postActionCard({ director, kind, payload }) {
           const trig = row.querySelector(".fud-bf-equip-trigger");
           if (trig) trig.setAttribute("aria-expanded", "false");
           try { hideDescTip(); } catch {}
+          updateEquipFreeIndicator(root);
           return;
         }
         // Trigger clicked — toggle this row's popover, close any others.
@@ -5986,6 +6154,15 @@ export async function postActionCard({ director, kind, payload }) {
           const t = r.querySelector(".fud-bf-equip-trigger");
           if (t) t.setAttribute("aria-expanded", "false");
         }
+      }
+
+      // Transform form-chip clicks (Equipment card) — shared with the mirror.
+      const formChip = ev.target?.closest?.(".fud-bf-form-chip");
+      if (formChip) {
+        ev.stopPropagation();
+        handleFormChipClick(root, formChip);
+        updateEquipFreeIndicator(root);
+        return;
       }
 
       // Item-card tab clicks — swap which panel is active. Tabs are
@@ -6046,6 +6223,9 @@ export async function postActionCard({ director, kind, payload }) {
         }
         extras.equipmentSelections = map;
       }
+      // Transform form picks — { main, off } → formIndex (shared collector).
+      const wf = collectWeaponFormSelections(root);
+      if (wf) extras.weaponFormSelections = wf;
       // Item card — current pick lives on the card root.
       if (root.dataset.fudItemMode && root.dataset.fudItemKey) {
         extras.itemSelection = {
@@ -6057,6 +6237,8 @@ export async function postActionCard({ director, kind, payload }) {
       finish(btn.dataset.fudAction, extras);
     };
     root.addEventListener("click", onClick);
+    // Initial economy indicator (Equipment card only; no-op otherwise).
+    try { updateEquipFreeIndicator(root); } catch {}
 
     // Description tooltip — body-mounted singleton so it can escape the
     // popover's overflow:auto clip and overflow the card itself. Shown
@@ -6897,6 +7079,7 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
             row.classList.remove("is-open");
             const trig = row.querySelector(".fud-bf-equip-trigger");
             if (trig) trig.setAttribute("aria-expanded", "false");
+            updateEquipFreeIndicator(wrapper);
             return;
           }
           // Trigger clicked — toggle popover, close others.
@@ -6919,6 +7102,14 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
             const t = r.querySelector(".fud-bf-equip-trigger");
             if (t) t.setAttribute("aria-expanded", "false");
           }
+        }
+        // Transform form-chip clicks (Equipment card) — shared with the GM card.
+        const formChip = ev.target?.closest?.(".fud-bf-form-chip");
+        if (formChip) {
+          ev.stopPropagation();
+          handleFormChipClick(wrapper, formChip);
+          updateEquipFreeIndicator(wrapper);
+          return;
         }
         // Item-card tab switch.
         const itemTab = ev.target?.closest?.(".fud-bf-item-tab");
@@ -6978,6 +7169,9 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
           }
           extras.equipmentSelections = map;
         }
+        // Transform form picks — { main, off } → formIndex (shared collector).
+        const wfMirror = collectWeaponFormSelections(wrapper);
+        if (wfMirror) extras.weaponFormSelections = wfMirror;
         // Item selection (mode/key/cost stamped on .fud-bf-card root)
         const cardEl = wrapper.querySelector(".fud-bf-card");
         if (cardEl?.dataset.fudItemMode && cardEl?.dataset.fudItemKey) {
@@ -7004,6 +7198,8 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
         }
       };
       wrapper.addEventListener("click", onClick);
+      // Initial economy indicator (Equipment card only; no-op otherwise).
+      try { updateEquipFreeIndicator(wrapper); } catch {}
     } else {
       // Non-owner observer — soft block: log a hint but consume the
       // click so it doesn't fall through to anything below.

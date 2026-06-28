@@ -218,9 +218,15 @@ export const TRANSITIONS = Object.freeze({
     // pendingPasses + passIndex; TARGET detects re-entry and skips the
     // weapon-mode picker.
     INTERNAL_DONE: {
-      next: (ctx) => (Array.isArray(ctx.pendingPasses) && ctx.pendingPasses.length > 0)
-        ? STATES.TARGET
-        : STATES.TURN_END
+      next: (ctx) =>
+        // A FREE transform-only Equipment action returns to the action menu
+        // (same actor, turn NOT advanced) instead of ending the turn — set in
+        // RESOLVE from ar.equipmentFree, survives Cleanup.onEnter (which nulls
+        // actionResult). DECLARE.onEnter clears the flag.
+        ctx.returnToMenuAfterCleanup ? STATES.DECLARE
+          : (Array.isArray(ctx.pendingPasses) && ctx.pendingPasses.length > 0)
+            ? STATES.TARGET
+            : STATES.TURN_END
     },
     [INTENTS.ABORT]: { next: STATES.STOPPED },
   },

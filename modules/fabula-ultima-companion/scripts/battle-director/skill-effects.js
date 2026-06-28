@@ -5429,19 +5429,48 @@ async function applyEquipSwapEffect(row, ctx) {
   const actor = ctx.reactorActor;
   if (!actor) return { ok: false, kind: "equip_swap", reason: "no-actor" };
   const selections = ctx.actionResult?.equipmentSelections ?? null;
-  if (!selections) {
-    log("skill-effects.equip_swap: no slot selections on action result — no-op");
+  // Weapon-form transform rides on the SAME Equipment card (see equipment-swap
+  // weaponFormsOf). Either / both may be present on a single Equipment action.
+  const formSelections = ctx.actionResult?.weaponFormSelections ?? null;
+  if (!selections && !formSelections) {
+    log("skill-effects.equip_swap: no slot/form selections on action result — no-op");
     return { ok: true, kind: "equip_swap", reason: "no-selections", applied: [] };
   }
   try {
-    const { applyEquipmentSwap } = await import("./equipment-swap.js");
-    const result = await applyEquipmentSwap(actor, selections);
-    if (result?.skipped) {
+    const { applyEquipmentSwap, applyWeaponFormSelections } = await import("./equipment-swap.js");
+    const applied = [];
+    let gearChanged = false;
+    if (selections) {
+      const result = await applyEquipmentSwap(actor, selections);
+      if (!result?.skipped) {
+        gearChanged = (result?.changes?.length ?? 0) > 0;
+        applied.push(...(result?.changes ?? []));
+      }
+    }
+    // Apply form AFTER the gear swap so the form lands on whatever weapon ends
+    // up worn in the slot. A transform keeps the item (skills retained) and only
+    // re-projects its stats via the snapshot overlay.
+    let formChanged = false;
+    if (formSelections) {
+      const tx = await applyWeaponFormSelections(actor, formSelections);
+      formChanged = tx.changed;
+      for (const c of tx.changes ?? []) {
+        applied.push({
+          slot: c.slot === "off" ? "Off Hand" : "Main Hand",
+          fromName: c.weaponName,
+          toName: `${c.weaponName} · ${c.formLabel}`,
+          icon: "🜂",
+        });
+      }
+    }
+    if (!applied.length) {
       log(`skill-effects.equip_swap: no changes for ${actor.name}`);
       return { ok: true, kind: "equip_swap", reason: "no-change", applied: [] };
     }
-    log(`skill-effects.equip_swap: committed ${result?.changes?.length ?? 0} change(s) for ${actor.name}`);
-    return { ok: true, kind: "equip_swap", applied: result?.changes ?? [] };
+    log(`skill-effects.equip_swap: committed ${applied.length} change(s) for ${actor.name}`);
+    // transformOnly = this action ONLY changed a weapon form (no gear swap), so
+    // it can qualify for the free-1st-per-round economy gate (wired separately).
+    return { ok: true, kind: "equip_swap", applied, transformOnly: formChanged && !gearChanged };
   } catch (e) {
     warn("skill-effects.equip_swap threw", e);
     return { ok: false, kind: "equip_swap", reason: "threw" };
