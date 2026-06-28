@@ -47,7 +47,12 @@
 
     refreshTimer: null,
     positionTimer: null,
-    destroyed: false
+    destroyed: false,
+
+    // True while the badge is docked above the dungeon/exploration control row
+    // (fixed bottom-left slot) instead of anchored to the #players list. Used to
+    // force the Pass fan-out to open upward into the empty canvas.
+    docked: false
   };
 
   function getDebug() {
@@ -113,8 +118,25 @@
     return false;
   }
 
+  // Whether the Main Controller concept (badge + pass hand-off) is active for a
+  // scene. This is broader than camera-follow: it is true for BOTH exploration
+  // and dungeon modes. Camera-follow / right-click movement remains exploration
+  // only (see getSceneCameraFollowEnabled), but the controller badge and the
+  // pass-control flow apply in dungeons too.
+  function isMainControllerSceneMode(scene) {
+    const fab = scene?.flags?.[MODULE_ID]?.[FABULA_ROOT_KEY];
+
+    const sceneMode = safeGet(fab, `${GENERAL_KEY}.${SCENE_MODE_KEY}`, null);
+    if (sceneMode === "dungeon")     return true;
+    if (sceneMode === "exploration") return true;
+    if (sceneMode === "none")        return false;
+
+    // Legacy fallback: the old cameraFollowToken boolean implied exploration.
+    return getSceneCameraFollowEnabled(scene);
+  }
+
   function isBadgeActiveForScene() {
-    return !!canvas?.ready && !!canvas?.scene && getSceneCameraFollowEnabled(canvas.scene);
+    return !!canvas?.ready && !!canvas?.scene && isMainControllerSceneMode(canvas.scene);
   }
 
   function ensureStyles() {
@@ -330,6 +352,27 @@
     const row = state.row;
     if (!root || !row) return;
 
+    // Dungeon / exploration: the bottom-left and top-left corners are occupied
+    // by the dungeon control UI (the round button row + the party status HUD),
+    // and the #players anchor lands inconsistently across clients (top-left on
+    // players, atop the button row on the GM). Dock the badge in a fixed slot
+    // directly above the dungeon button row instead, so the controller badge +
+    // Pass read as one coherent bottom-left control stack. Geometry is read
+    // defensively from the Dungeon Pathing UI constants (button row at
+    // BOTTOM=80, SIZE=64), with the same fallbacks dp-scan-mode.js uses.
+    if (isMainControllerSceneMode(canvas?.scene)) {
+      const btn       = globalThis.DungeonPathing?.UI?.SCAN_BUTTON;
+      const btnBottom = Number(btn?.BOTTOM ?? 80);
+      const btnSize   = Number(btn?.SIZE   ?? 64);
+      const gapAbove  = 10;
+      root.style.left   = "20px";
+      root.style.top    = "auto"; // override the stylesheet's top:0 so bottom anchors
+      root.style.bottom = `${btnBottom + btnSize + gapAbove}px`;
+      state.docked = true;
+      return;
+    }
+    state.docked = false;
+
     const playerEl = getPlayerListElement();
 
     if (!playerEl) {
@@ -351,6 +394,7 @@
     left = Math.max(viewportPad, Math.min(left, window.innerWidth - rootRect.width - viewportPad));
     top = Math.max(viewportPad, top);
 
+    root.style.bottom = ""; // clear any dock anchor from a previous scene
     root.style.left = `${Math.round(left)}px`;
     root.style.top = `${Math.round(top)}px`;
   }
@@ -473,6 +517,11 @@
     } else {
       direction = spaceBelow >= spaceAbove ? "down" : "up";
     }
+
+    // When docked above the dungeon button row, the space "below" the badge is
+    // occupied by that row and the #players list — always fan upward into the
+    // open canvas so the pass menu never overlaps the controls.
+    if (state.docked) direction = "up";
 
     return {
       direction,

@@ -138,8 +138,23 @@
     return false;
   }
 
+  // Whether the Main Controller concept (and therefore the pass-control fan-out)
+  // is active for a scene. Broader than camera-follow: true for BOTH exploration
+  // and dungeon modes. Camera-follow stays exploration only.
+  function isMainControllerSceneMode(scene) {
+    const fab = scene?.flags?.[MODULE_ID]?.[FABULA_ROOT_KEY];
+
+    const sceneMode = safeGet(fab, `${GENERAL_KEY}.${SCENE_MODE_KEY}`, null);
+    if (sceneMode === "dungeon")     return true;
+    if (sceneMode === "exploration") return true;
+    if (sceneMode === "none")        return false;
+
+    // Legacy fallback: the old cameraFollowToken boolean implied exploration.
+    return getSceneCameraFollowEnabled(scene);
+  }
+
   function isActiveForScene() {
-    return !!canvas?.ready && !!canvas?.scene && getSceneCameraFollowEnabled(canvas.scene);
+    return !!canvas?.ready && !!canvas?.scene && isMainControllerSceneMode(canvas.scene);
   }
 
   function ensureStyles() {
