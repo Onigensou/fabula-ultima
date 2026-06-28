@@ -49,9 +49,9 @@
 
   // WLP: catch chance bonus/penalty
   function _catchChance(castStrength, wlp) {
-    const base = 35 + castStrength * 0.45;
-    const wlpBonus = (wlp - 8) * 2;
-    return Math.min(95, Math.max(5, base + wlpBonus));
+    if (castStrength >= 97) return 100;              // Perfect cast → guaranteed bite
+    const wlpBonus = (wlp - 8) * 2;                  // WLP nudges the odds (flavor)
+    return Math.min(100, Math.max(25, castStrength + 10 + wlpBonus));
   }
 
   // WLP: fish tier given cast strength

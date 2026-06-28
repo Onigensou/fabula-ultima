@@ -200,7 +200,9 @@
   }
 
   function _catchChance(strength) {
-    return Math.min(95, Math.max(5, 35 + strength * 0.45 + (_stats.wlp - 8) * 2));
+    if (strength >= 97) return 100;                  // Perfect cast → guaranteed bite
+    const wlpBonus = (_stats.wlp - 8) * 2;           // WLP nudges the odds (flavor)
+    return Math.min(100, Math.max(25, strength + 10 + wlpBonus));
   }
 
   function _fishTier(strength) {
