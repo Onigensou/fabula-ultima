@@ -355,47 +355,73 @@ export async function saveDirectorState(director, opts = {}) {
       })),
     },
   };
-  try {
-    await dc.scene.setFlag(FLAG_NS, FLAG_KEY, state);
-    log(`persistence.save: dCombat ${dc.id} → scene ${dc.scene.name} (round ${dc.round}, ${dc.combatants.length} combatants)`);
-  } catch (e) {
-    warn("persistence.save: setFlag failed", e);
+  // Capture the rewind history snapshot FIRST. `snapshotCombatantActors` READS
+  // actor state (HP/MP/AEs) in-memory — no network — and is the ONLY part of this
+  // function whose ordering matters to a caller: it must read actor state BEFORE
+  // the caller mutates actors (RESOLVE saves a "pre-reaction" checkpoint, then
+  // settleInstance drains post-action triggers that change those actors). Once
+  // `entry.actors` is built the snapshot is frozen, so the two DB WRITES below
+  // (setFlag + pushToHistory — the only network round-trips here) no longer gate
+  // that contract and can be deferred. `skipHistory` opts out of the snapshot +
+  // history write entirely (diagnostic / out-of-band resaves).
+  let historyEntry = null;
+  if (!opts.skipHistory) {
+    try {
+      const actors = await snapshotCombatantActors(dc);
+      // Snapshot standaloneFired entries at save time so a rewind can
+      // restore EXACTLY the reaction decisions that existed when the
+      // save was taken. Previously the rewind path cleared the flag
+      // wholesale — that wiped decisions made BEFORE the save (e.g.
+      // Hina clicked HS, save fires, then rewind → Hina's "fired"
+      // entry vanishes → HS re-spawns on SRW re-entry, even though
+      // she'd already committed to it in the rewound timeline).
+      let standaloneFired = null;
+      try {
+        standaloneFired = dc.scene.getFlag(FLAG_NS, "standaloneFired") ?? null;
+      } catch (e) {
+        warn("persistence.save: standaloneFired snapshot failed", e);
+      }
+      historyEntry = {
+        ...state,
+        id: foundry.utils?.randomID?.() ?? `hist-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        label: String(opts.label ?? ""),
+        description: String(opts.description ?? ""),
+        actors,
+        ...(standaloneFired ? { standaloneFired } : {}),
+      };
+    } catch (e) {
+      warn("persistence.save: history snapshot failed", e);
+    }
   }
 
-  // Push a history entry for the rewind tool. Separate flag, separate
-  // write — keeps reload-survival reads cheap (small JSON) and isolates
-  // any history-side failure from the reload-survival write that just
-  // succeeded above. `skipHistory` lets diagnostic / out-of-band saves
-  // opt out (e.g. an internal-only resave that shouldn't clutter the
-  // rewind list).
-  if (opts.skipHistory) return;
-  try {
-    const actors = await snapshotCombatantActors(dc);
-    // Snapshot standaloneFired entries at save time so a rewind can
-    // restore EXACTLY the reaction decisions that existed when the
-    // save was taken. Previously the rewind path cleared the flag
-    // wholesale — that wiped decisions made BEFORE the save (e.g.
-    // Hina clicked HS, save fires, then rewind → Hina's "fired"
-    // entry vanishes → HS re-spawns on SRW re-entry, even though
-    // she'd already committed to it in the rewound timeline).
-    let standaloneFired = null;
+  // The reload-survival flag + the rewind-history push. Two separate flags /
+  // writes — keeps reload-survival reads cheap (small JSON) and isolates any
+  // history-side failure from the reload-survival write.
+  const writeFlags = async () => {
     try {
-      standaloneFired = dc.scene.getFlag(FLAG_NS, "standaloneFired") ?? null;
+      await dc.scene.setFlag(FLAG_NS, FLAG_KEY, state);
+      log(`persistence.save: dCombat ${dc.id} → scene ${dc.scene.name} (round ${dc.round}, ${dc.combatants.length} combatants)`);
     } catch (e) {
-      warn("persistence.save: standaloneFired snapshot failed", e);
+      warn("persistence.save: setFlag failed", e);
     }
-    const entry = {
-      ...state,
-      id: foundry.utils?.randomID?.() ?? `hist-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-      label: String(opts.label ?? ""),
-      description: String(opts.description ?? ""),
-      actors,
-      ...(standaloneFired ? { standaloneFired } : {}),
-    };
-    await pushToHistory(dc.scene, entry);
-  } catch (e) {
-    warn("persistence.save: history push failed", e);
+    if (historyEntry) {
+      try { await pushToHistory(dc.scene, historyEntry); }
+      catch (e) { warn("persistence.save: history push failed", e); }
+    }
+  };
+
+  // `deferWrites` — the snapshot (the only ordering-critical step) is already
+  // captured above, so fire the DB writes in the BACKGROUND and return now,
+  // keeping the caller's critical path off two network round-trips. Used by
+  // RESOLVE so the FSM advances toward the next turn's menu without waiting on
+  // the checkpoint to land (a reload during the brief write window just resumes
+  // at the prior checkpoint — same tolerance every fire-and-forget save site
+  // already has).
+  if (opts.deferWrites) {
+    writeFlags().catch((e) => warn("persistence.save: deferred writes failed", e));
+    return;
   }
+  await writeFlags();
 }
 
 // ── Per-actor snapshot (rewind tool) ────────────────────────────────────

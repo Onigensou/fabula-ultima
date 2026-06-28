@@ -3933,46 +3933,106 @@ export function composeActionCardObject({ kind, payload }) {
 // few fields they own/derive: CONFIRM swaps in the invoke-stamped attacker,
 // post-splice targets/perTargetResults, the live prePassives, and the
 // onAddTargetApply callback; the harness uses these defaults as-is.
+// The exact set of (serializable, snapshot-only) fields the card builders read.
+// `prePassives` is handled separately (acceptedPrePassives fallback) and the live
+// `attackerActor` doc is deliberately NOT here — only buildEquipmentCard reads it,
+// and Equipment stays on the HTML-broadcast path (see projectActionCardRenderPayload
+// + ACTION_CARD_LOCAL_RENDER_KINDS). Keep this list and the builders' destructures
+// in lockstep: a builder that starts reading a new `ar.*` field must add it here.
+const ACTION_CARD_RENDER_KEYS = [
+  "attacker", "weapon", "targets", "roll", "damage", "perTargetResults",
+  "attackMode", "passIndex", "totalPasses",
+  // Guard / Study / Hinder / Item:
+  "coverTarget", "target", "tier", "previousBest", "improved", "dl", "success",
+  "itemCandidates", "ip",
+  // Skill / Spell:
+  "skillName", "skillImg", "skillType", "defenseTargetType", "skillRange",
+  "skillTarget", "damageType", "hasDamage", "hasHealing", "rawCost",
+  "costSerialized", "descriptionHtml",
+];
+
 export function composeActionCardRenderPayload(ar) {
+  const out = {};
+  for (const k of ACTION_CARD_RENDER_KEYS) out[k] = ar[k];
+  out.prePassives = Array.isArray(ar.acceptedPrePassives) ? ar.acceptedPrePassives
+    : (Array.isArray(ar.prePassives) ? ar.prePassives : []);
+  return out;
+}
+
+// Kinds whose cards are pure functions of serializable snapshot data, so a mirror
+// client can re-render them LOCALLY from a compact payload instead of receiving the
+// full rendered HTML over the socket (a big bandwidth cut on slow links — the same
+// spec-not-HTML pattern reaction menus + the HUD already use). Equipment (needs the
+// live actor for its swap dropdowns) and Item (interactive tabs/rows) + any unknown
+// kind stay on the HTML path.
+const ACTION_CARD_LOCAL_RENDER_KINDS = new Set(["Attack", "Guard", "Study", "Hinder", "Skill"]);
+
+// Display-only projection of a reaction candidate — exactly the fields
+// buildReactionPills reads. The full candidate carries GM-only resolution state
+// (payloadAtFire, chosen picks, callbacks) we must neither need nor ship.
+function projectPrePassiveForRender(p) {
   return {
-    attacker: ar.attacker,
-    weapon: ar.weapon,
-    targets: ar.targets,
-    roll: ar.roll,
-    damage: ar.damage,
-    perTargetResults: ar.perTargetResults,
-    attackMode: ar.attackMode,
-    passIndex: ar.passIndex,
-    totalPasses: ar.totalPasses,
-    prePassives: Array.isArray(ar.acceptedPrePassives) ? ar.acceptedPrePassives
-      : (Array.isArray(ar.prePassives) ? ar.prePassives : []),
-    // Guard-specific:
-    coverTarget: ar.coverTarget,
-    // Study-specific:
-    target: ar.target,
-    tier: ar.tier,
-    previousBest: ar.previousBest,
-    improved: ar.improved,
-    // Hinder-specific:
-    dl: ar.dl,
-    success: ar.success,
-    // Item-specific:
-    itemCandidates: ar.itemCandidates,
-    ip: ar.ip,
-    // Skill/Spell-specific:
-    skillName: ar.skillName,
-    skillImg: ar.skillImg,
-    skillType: ar.skillType,
-    defenseTargetType: ar.defenseTargetType,
-    skillRange: ar.skillRange,
-    skillTarget: ar.skillTarget,
-    damageType: ar.damageType,
-    hasDamage: ar.hasDamage,
-    hasHealing: ar.hasHealing,
-    rawCost: ar.rawCost,
-    costSerialized: ar.costSerialized,
-    descriptionHtml: ar.descriptionHtml,
+    rowKey: p?.rowKey ?? null,
+    carrierUuid: p?.carrierUuid ?? null,
+    carrierName: p?.carrierName ?? null,
+    carrierImg: p?.carrierImg ?? null,
+    carrierDescription: p?.carrierDescription ?? null,
+    mode: p?.mode ?? null,
+    available: p?.available,
+    unavailableKind: p?.unavailableKind ?? null,
+    unavailableReason: p?.unavailableReason ?? null,
+    reactorActorUuid: p?.reactorActorUuid ?? null,
+    reactorActorName: p?.reactorActorName ?? null,
+    reactorIsPlayer: p?.reactorIsPlayer ?? null,
+    reactorOwnerUserId: p?.reactorOwnerUserId ?? null,
   };
+}
+
+// Compact, JSON-safe render payload for a mirror client. Projects the GM's actual
+// effectivePayload through the canonical render-key set (so CONFIRM's overrides —
+// invoke-stamped attacker, post-splice targets/perTargetResults — travel exactly as
+// rendered) and shrinks the reaction candidates to their display fields. Returns
+// null for nothing to render.
+function projectActionCardRenderPayload(payload) {
+  if (!payload) return null;
+  const out = {};
+  for (const k of ACTION_CARD_RENDER_KEYS) out[k] = payload[k];
+  out.prePassives = (Array.isArray(payload.prePassives) ? payload.prePassives : [])
+    .map(projectPrePassiveForRender);
+  return out;
+}
+
+// Assemble the action-card root <div> from a composed card object + reaction
+// candidates — the SINGLE source of the card's outer DOM template, shared by the
+// GM spawn (postActionCard) and the player-side local mirror render so the two are
+// byte-identical. Does not attach to the document (the caller owns placement +
+// the is-visible transition). Returns the root element and the initial pending-
+// reaction count (the GM gates Confirm / auto-resolve on it).
+function assembleActionCardRoot({ card, prePassives, rootId }) {
+  const list = Array.isArray(prePassives) ? prePassives : [];
+  const askPassives = list.filter((p) => p?.mode === "ask" && p?.available !== false);
+  const reactionRowHtml = list.length ? buildReactionPillRow(list) : "";
+  const initialPending = askPassives.length;
+  const innerHTML = `
+    <div class="fud-bf-card" role="dialog" aria-label="${escapeHtml(card.titleText)}"${initialPending > 0 ? ` data-fud-reactions-pending="${initialPending}"` : ""}>
+      <div class="fud-bf-header">
+        <div class="fud-bf-portrait-slot left">${card.portraits?.left ?? ""}</div>
+        <div class="fud-bf-title-row">
+          ${card.titleIcon ?? ""}
+          <span class="fud-bf-title">${escapeHtml(card.titleText)}</span>
+        </div>
+        <div class="fud-bf-portrait-slot right">${card.portraits?.right ?? ""}</div>
+      </div>
+      ${card.subtitle ?? ""}
+      <div class="fud-bf-body">${card.body}</div>
+      ${reactionRowHtml}
+      ${card.buttons}
+    </div>
+  `;
+  const root = document.createElement("div");
+  root.id = rootId;
+  root.innerHTML = innerHTML;
+  return { root, initialPending };
 }
 
 export function stripHtmlForDesc(html) {
@@ -4113,46 +4173,25 @@ export async function postActionCard({ director, kind, payload }) {
       } catch { p.reactorOwnerUserId = null; }
     }
   }
-  // Only AVAILABLE ask pills are "pending" — they have Apply/Skip and gate
-  // Confirm. Unavailable ask pills (surfaced dimmed with a reason, e.g. "Low IP")
-  // are non-interactive, so counting them would lock Confirm forever (nothing to
-  // click). They're excluded here AND not rendered with Apply/Skip.
-  const askPassives = prePassives.filter((p) => p?.mode === "ask" && p?.available !== false);
-  const reactionRowHtml = prePassives.length ? buildReactionPillRow(prePassives) : "";
-  const initialPending = askPassives.length;
-
-  const innerHTML = `
-    <div class="fud-bf-card" role="dialog" aria-label="${escapeHtml(card.titleText)}"${initialPending > 0 ? ` data-fud-reactions-pending="${initialPending}"` : ""}>
-      <div class="fud-bf-header">
-        <div class="fud-bf-portrait-slot left">${card.portraits?.left ?? ""}</div>
-        <div class="fud-bf-title-row">
-          ${card.titleIcon ?? ""}
-          <span class="fud-bf-title">${escapeHtml(card.titleText)}</span>
-        </div>
-        <div class="fud-bf-portrait-slot right">${card.portraits?.right ?? ""}</div>
-      </div>
-      ${card.subtitle ?? ""}
-      <div class="fud-bf-body">${card.body}</div>
-      ${reactionRowHtml}
-      ${card.buttons}
-    </div>
-  `;
-  const root = document.createElement("div");
-  root.id = ROOT_ID;
-  root.innerHTML = innerHTML;
+  // Assemble the card via the shared template (single source with the player-side
+  // mirror render). `initialPending` (count of actionable ask pills) gates Confirm
+  // / auto-resolve later in this function.
+  const { root, initialPending } = assembleActionCardRoot({ card, prePassives, rootId: ROOT_ID });
   document.body.appendChild(root);
   requestAnimationFrame(() => root.classList.add("is-visible"));
 
   log("Battlefield action card spawned", card.titleText);
 
-  // Broadcast the rendered card to all active non-GM clients so they
-  // see the same card as the GM. Owner gets interactive buttons; other
-  // observers get a read-only mirror. See [[director-player-driven-input]].
+  // Broadcast the card to all active non-GM clients so they see the same card as
+  // the GM. Owner gets interactive buttons; other observers get a read-only mirror.
+  // See [[director-player-driven-input]].
   //
-  // We send the rendered outerHTML (simplest portable representation —
-  // re-deriving the card on each client requires importing the whole
-  // builder graph). Owner detection uses the attacker actor UUID
-  // embedded in the payload.
+  // For kinds the client can re-derive (ACTION_CARD_LOCAL_RENDER_KINDS) we ship a
+  // COMPACT render payload and let the mirror rebuild the card locally from the
+  // shared builders — far less over the wire than the full rendered HTML, which is
+  // the dominant slow-client latency for "card opens late". Equipment / Item /
+  // unknown kinds fall back to shipping the rendered outerHTML. Owner detection
+  // uses the attacker actor UUID embedded in the payload.
   let ownerUserId = null;
   try {
     const attackerActorUuid = payload?.attacker?.actorUuid
@@ -4161,7 +4200,9 @@ export async function postActionCard({ director, kind, payload }) {
     ownerUserId = attackerActorUuid
       ? (await resolveCardOwnerUserId(attackerActorUuid))
       : null;
-    const cardHTML = root.outerHTML;
+    const useLocalRender = ACTION_CARD_LOCAL_RENDER_KINDS.has(kind);
+    const renderPayload = useLocalRender ? projectActionCardRenderPayload(effectivePayload) : null;
+    const cardHTML = useLocalRender ? null : root.outerHTML;
     // Broadcast to ALL non-primary clients: players + secondary GMs.
     const onlineNonPrimary = (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id);
     for (const u of onlineNonPrimary) {
@@ -4175,6 +4216,7 @@ export async function postActionCard({ director, kind, payload }) {
             ownerUserId,
             attackerActorUuid,
             html: cardHTML,
+            renderPayload,
             actionResult: director.ctx.actionResult ?? null,
           },
         });
@@ -6202,6 +6244,64 @@ function clearReactionPillTimer(pillEl) {
   }
 }
 
+// Flip a reaction pill to its terminal resolved state (Applied / Skipped) in the
+// local DOM. Shared by the GM's pill-update broadcast handler AND the player-side
+// OPTIMISTIC skip — so a Skip reads as resolved instantly on slow links instead of
+// waiting two socket hops (click → GM, GM → echo) for the visual flip. Idempotent:
+// re-running with the same decision is a no-op (the actions block is already gone,
+// so the selector no longer matches and the classes are already set). `pendingCount`
+// SETS the card counter when the GM supplies its authoritative value; omitted (the
+// optimistic path) it decrements the local counter by one.
+function resolveReactionPillDom(pillEl, cardEl, decision, { pendingCount = null } = {}) {
+  if (!pillEl) return;
+  clearReactionPillTimer(pillEl);
+  delete pillEl.dataset.fudReactionSubmitting;
+  delete pillEl.dataset.fudReactionAckPending;
+  pillEl.classList.remove("is-submitting");
+  pillEl.dataset.fudReactionPending = "0";
+  pillEl.classList.add("is-resolved", decision === "apply" ? "is-applied" : "is-skipped");
+  // Replace whatever's in the actions slot ("Waiting for…" chip on a non-owner
+  // mirror; Apply/Skip buttons on the owner's) with the final status chip.
+  const actions = pillEl.querySelector(".fud-bf-reaction-actions, .fud-bf-reaction-status.is-waiting");
+  if (actions) {
+    actions.outerHTML = `<span class="fud-bf-reaction-status">${decision === "apply" ? "Applied" : "Skipped"}</span>`;
+  }
+  if (cardEl) {
+    const next = pendingCount != null
+      ? Math.max(0, Number(pendingCount))
+      : Math.max(0, Number(cardEl.dataset.fudReactionsPending ?? 0) - 1);
+    if (next > 0) cardEl.dataset.fudReactionsPending = String(next);
+    else delete cardEl.dataset.fudReactionsPending;
+  }
+}
+
+// Roll an OPTIMISTICALLY-resolved pill back to its actionable state, rebuilding the
+// Apply/Skip controls the optimistic commit replaced with a status chip. Used only
+// by the no-response net: the host never acknowledged the click (dropped socket), so
+// we restore the buttons (the delegated click handler lives on the card wrapper, so
+// fresh buttons work without rebinding) and re-bump the card's pending counter the
+// optimistic commit had decremented.
+function restoreReactionPillButtons(pillEl, cardEl) {
+  if (!pillEl) return;
+  clearReactionPillTimer(pillEl);
+  delete pillEl.dataset.fudReactionSubmitting;
+  delete pillEl.dataset.fudReactionAckPending;
+  pillEl.classList.remove("is-submitting", "is-resolved", "is-applied", "is-skipped");
+  pillEl.dataset.fudReactionPending = "1";
+  const status = pillEl.querySelector(".fud-bf-reaction-status");
+  if (status) {
+    status.outerHTML =
+      `<div class="fud-bf-reaction-actions">` +
+      `<div class="fud-btn fud-btn-reaction fud-btn-reaction-apply" data-fud-reaction-action="apply" role="button" tabindex="0">Apply</div>` +
+      `<div class="fud-btn fud-btn-reaction fud-btn-reaction-skip" data-fud-reaction-action="skip" role="button" tabindex="0">Skip</div>` +
+      `</div>`;
+  }
+  if (cardEl) {
+    const cur = Number(cardEl.dataset.fudReactionsPending ?? 0);
+    cardEl.dataset.fudReactionsPending = String(cur + 1);
+  }
+}
+
 // Clear the no-response retry timer(s) on invoke buttons once the GM's reroll /
 // invoke-update broadcast lands. `type` ("trait"|"bond") narrows it; omitted
 // clears both. Invoke needs no GM ack: the player commits all choices in their
@@ -6361,9 +6461,12 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
     if (!pillEl) return;
     // "ack" — the GM received the click and is resolving it (possibly awaiting a
     // secondary pick on this client). Cancel the no-response retry timer but keep
-    // the pill submitting; the final Applied/Skipped/revert follows.
+    // the pill submitting; the final Applied/Skipped/revert follows. Also clear
+    // the optimistic-skip ack flag so its no-response net stands down — the host
+    // has the click, so the locally-resolved Skipped state is confirmed.
     if (menuSpec.decision === "ack") {
       clearReactionPillTimer(pillEl);
+      delete pillEl.dataset.fudReactionAckPending;
       return;
     }
     // The GM responded — stop the retry timer regardless of outcome.
@@ -6371,28 +6474,17 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
     // "revert" — the owner's secondary pick was cancelled; restore the pill to
     // its actionable (pending) state so they can click Apply/Skip again. The
     // Apply/Skip buttons were left in place during "submitting", so we only
-    // clear the in-flight flags.
+    // clear the in-flight flags. (Skip never reverts — it opens no picker — so a
+    // revert always lands on an apply-path pill whose buttons are intact.)
     if (menuSpec.decision === "revert") {
       restoreReactionPillToActionable(pillEl);
       return;
     }
+    // Final state — flip to resolved using the GM's authoritative pending count.
+    // For a pill the owner already resolved optimistically (Skip) this is an
+    // idempotent confirm; for every other mirror it's the first resolution.
     const decision = menuSpec.decision === "apply" ? "apply" : "skip";
-    delete pillEl.dataset.fudReactionSubmitting;
-    pillEl.classList.remove("is-submitting");
-    pillEl.dataset.fudReactionPending = "0";
-    pillEl.classList.add("is-resolved", decision === "apply" ? "is-applied" : "is-skipped");
-    // Replace whatever's in the actions slot ("Waiting for…" chip on
-    // non-owner mirror; Apply/Skip buttons on owner mirror that
-    // somehow missed the local click) with the final status chip.
-    const actions = pillEl.querySelector(".fud-bf-reaction-actions, .fud-bf-reaction-status.is-waiting");
-    if (actions) {
-      actions.outerHTML = `<span class="fud-bf-reaction-status">${decision === "apply" ? "Applied" : "Skipped"}</span>`;
-    }
-    if (cardEl) {
-      const next = Math.max(0, Number(menuSpec.pendingCount ?? 0));
-      if (next > 0) cardEl.dataset.fudReactionsPending = String(next);
-      else delete cardEl.dataset.fudReactionsPending;
-    }
+    resolveReactionPillDom(pillEl, cardEl, decision, { pendingCount: menuSpec.pendingCount ?? 0 });
   });
 
   // Card body re-render handler — propagates a GM-side full-body rebuild
@@ -6412,8 +6504,27 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
     // Primary GM renders the card locally in postActionCard; skip the mirror
     // so there's no duplicate card on the director's own client.
     if (isActiveDirector()) return;
-    if (!menuSpec.html) {
-      warn("action-card MENU_OPEN: missing html");
+    // Resolve the card HTML — either shipped verbatim (Equipment / Item / unknown
+    // kind) or re-derived LOCALLY from the compact render payload via the SAME
+    // builders + template the GM used (Attack / Skill / Guard / Study / Hinder).
+    // Local render keeps the heavy rendered HTML off the wire for the common
+    // in-combat cards — the main slow-client win.
+    let cardHtml = menuSpec.html ?? null;
+    if (!cardHtml && menuSpec.renderPayload) {
+      try {
+        const built = composeActionCardObject({ kind: menuSpec.cardKind, payload: menuSpec.renderPayload });
+        if (built) {
+          const { root } = assembleActionCardRoot({
+            card: built,
+            prePassives: menuSpec.renderPayload.prePassives,
+            rootId: ROOT_ID,
+          });
+          cardHtml = root.outerHTML;
+        }
+      } catch (e) { warn("action-card MENU_OPEN: local render threw", e); }
+    }
+    if (!cardHtml) {
+      warn("action-card MENU_OPEN: no html and no renderPayload to render");
       return;
     }
 
@@ -6439,7 +6550,7 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
     // (e.g. "fud-bf-action-card-root") so styles attach correctly.
     const wrapper = document.createElement("div");
     wrapper.id = MIRROR_ROOT_ID;
-    wrapper.innerHTML = menuSpec.html;
+    wrapper.innerHTML = cardHtml;
     document.body.appendChild(wrapper);
 
     // Permission gate. Two layers:
@@ -6511,6 +6622,38 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
       const rowKey  = pill.dataset.fudReactionKey ?? "";
       const carrier = pill.dataset.fudReactionCarrier ?? "";
       const decision = reactionBtn.dataset.fudReactionAction === "apply" ? "apply" : "skip";
+
+      // ── OPTIMISTIC SKIP ──────────────────────────────────────────────────
+      // A Skip is terminal and never opens a secondary picker, so its outcome is
+      // fully determined the instant it's clicked. Resolve it locally NOW instead
+      // of waiting two socket hops (click → GM, GM → echo) for the visual flip —
+      // on a slow connection that round-trip is exactly the "I clicked but nothing
+      // happened" lag. We still emit the choice so the GM records it; the GM's
+      // immediate "ack" confirms receipt and its final "skip" echo (with the
+      // authoritative pending count) reconciles. No-response net: if the host
+      // never even ACKs (dropped socket), roll the pill back to actionable so it's
+      // recoverable instead of stuck looking resolved while the table stalls.
+      if (decision === "skip") {
+        const cardEl = pill.closest(".fud-bf-card");
+        resolveReactionPillDom(pill, cardEl, "skip");
+        pill.dataset.fudReactionAckPending = "1";
+        clearReactionPillTimer(pill);
+        pill._fudSubmitTimer = setTimeout(() => {
+          pill._fudSubmitTimer = null;
+          if (!pill.isConnected) return;
+          if (pill.dataset.fudReactionAckPending !== "1") return; // GM acked → keep resolved
+          restoreReactionPillButtons(pill, cardEl);
+          try { ui.notifications?.warn("No response from the host — tap Skip again."); } catch {}
+        }, REACTION_SUBMIT_TIMEOUT_MS);
+        channel.emit({
+          type: INTENTS.REACTION_CHOICE,
+          body: { rowKey, carrierUuid: carrier, decision: "skip" },
+          combatId: menuSpec.combatId,
+        });
+        return;
+      }
+
+      // ── APPLY ────────────────────────────────────────────────────────────
       // Do NOT commit visually yet. The GM resolves the reaction — running any
       // secondary picker (target select / option-menu) on THIS client first —
       // and only then broadcasts the final Applied/Skipped via pill-update. This

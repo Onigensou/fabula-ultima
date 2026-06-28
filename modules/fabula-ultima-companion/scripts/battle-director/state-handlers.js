@@ -5204,9 +5204,16 @@ const Resolve = {
       ? ` (Pass ${ar.passIndex}/${ar.totalPasses})`
       : "";
     const rvPhase = rewindPhaseLabel(director.ctx, rvDc?.round);
+    // deferWrites: the rewind snapshot (the only step that must read actor state
+    // BEFORE settleInstance mutates it, just below) is captured synchronously
+    // inside saveDirectorState before it returns; the two DB writes then run in
+    // the background. This keeps the two flag-write round-trips off the RESOLVE
+    // critical path so the FSM advances toward the next turn's menu sooner — the
+    // perceived "menu doesn't open as the phase ends" gap on slower connections.
     await saveDirectorState(director, {
       label: `${rvPhase} · After ${rvName}'s Action${rvPassTag}`,
       description: describeActionForRewind(ar),
+      deferWrites: true,
     }).catch((e) => warn("RESOLVE: saveDirectorState failed", e));
 
     // Drain any post-action passive triggers queued during the body of
