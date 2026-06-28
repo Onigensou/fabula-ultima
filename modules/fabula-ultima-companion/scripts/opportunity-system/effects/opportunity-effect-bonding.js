@@ -267,8 +267,12 @@
         return;
       }
 
-      // OPP_BOND_DONE — GM receives confirmed changelog from player; broadcasts FX
+      // OPP_BOND_DONE — GM receives confirmed changelog from player; broadcasts FX.
+      // Multi-GM dedupe: both GM clients receive this, so gate to the primary GM —
+      // otherwise the bond FX + banner play (and rebroadcast) twice.
       if (msg?.type === MSG_DONE && game.user?.isGM) {
+        const isPrimary = globalThis.ONI?.OpportunitySystem?.isPrimaryGM;
+        if (isPrimary && !isPrimary()) return;
         const { actorUuid, actorName, changelog } = msg.payload ?? {};
         if (!changelog?.length) return;
         const payload = { actorName, actorUuid, changelog };

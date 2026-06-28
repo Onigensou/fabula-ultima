@@ -44,6 +44,11 @@
 
       game.socket.on(RAW_CH, async (msg) => {
         if (!game.user?.isGM) return;
+        // Multi-GM dedupe: this raw channel broadcasts to BOTH GM clients (unlike
+        // the socketlib executeAsGM handlers below, which auto-route to one GM).
+        // Gate to the primary GM so tickPartyAEs / markVisited / activateScene /
+        // markFogRevealed each run exactly once (double AE ticks otherwise).
+        if (DP.isPrimaryGM && !DP.isPrimaryGM()) return;
 
         if (msg?.type === MSG_MV) {
           const { sceneId, tileId } = msg.payload ?? {};

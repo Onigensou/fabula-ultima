@@ -224,6 +224,9 @@
     game.socket.on(SOCKET_CH, async (msg) => {
       if (msg?.type !== MSG_TYPE) return;
       if (!game.user?.isGM) return;
+      // Multi-GM dedupe: both GMs receive the player's trigger. Gate to the
+      // primary GM so the dig lobby + tier outcome (damage / transform) run once.
+      if (DP.isPrimaryGM && !DP.isPrimaryGM()) return;
 
       const { sceneId, tileId, tokenId } = msg.payload ?? {};
       const scene    = game.scenes.get(sceneId);

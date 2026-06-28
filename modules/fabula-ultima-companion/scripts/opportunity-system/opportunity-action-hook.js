@@ -32,9 +32,18 @@
     const actionCardId = card.actionCardId;
     if (!actionCardId) return;
 
-    // Only the attacker's owner processes this on their client
+    // Only one client processes this card. With an owning player, that's the
+    // owner's client. With no resolvable owner (GM-owned NPC / unknown), the
+    // card renders on BOTH GM clients in the dual-GM (Co-DM) setup — gate to the
+    // primary GM so the offer + Advantage-charge consume don't run twice. offer()
+    // re-resolves the real owner and routes the picker to a player if there is one.
     const ownerUserId = payload?.meta?.ownerUserId;
-    if (ownerUserId && game.user.id !== ownerUserId) return;
+    if (ownerUserId) {
+      if (game.user.id !== ownerUserId) return;
+    } else if (game.user?.isGM) {
+      const isPrimary = globalThis.ONI?.OpportunitySystem?.isPrimaryGM;
+      if (isPrimary && !isPrimary()) return;
+    }
 
     // ── Consume opportunityAdvantage charge on first render of this card ────
     // The AE's changes entry (check_mod_all / attack_accuracy_mod_all) was

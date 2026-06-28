@@ -121,6 +121,23 @@
     return null;
   }
 
+  // ── Multi-GM host gate (dedupe) ─────────────────────────────────────────────
+  // The game normally runs two GM clients (main GM + Co-DM). Foundry delivers
+  // every socket broadcast to BOTH, so any GM-side resolution handler runs twice
+  // unless it's gated to a single "host" GM. This returns true only on the
+  // primary active GM (core's game.users.activeGM, i.e. the lowest-id active GM),
+  // with an id-sort fallback for core versions that lack activeGM.
+  // See the GM Host / Anti-Dedupe pattern (Idiom A).
+  function isPrimaryGM() {
+    if (!game.user?.isGM) return false;
+    const active = game.users?.activeGM ?? null;
+    if (active) return active.id === game.user.id;
+    const firstGM = game.users
+      ?.filter?.(u => u.isGM && u.active)
+      ?.sort?.((a, b) => String(a.id).localeCompare(String(b.id)))?.[0];
+    return firstGM ? firstGM.id === game.user.id : true;
+  }
+
   // ── Dramatic animation (plays locally on every client) ──────────────────────
   // Injects a one-shot CSS animation: bold option name flies left→center (slow)→right.
   const DRAMATIC_STYLE_ID = "oni-opp-dramatic-css";
@@ -519,7 +536,10 @@
 
         game.socket.emit(SOCKET_CH, {
           type:    MSG_PICKED,
-          payload: { offerKey, actorUuid, actorName, optionId: picked.optionId, context, preResult: picked.preResult },
+          // gmInitiated: this pick answers a GM-routed OPP_OFFER, so exactly one
+          // GM (the initiator) owns the matching _pending entry and must run the
+          // resolution. Distinguishes it from a player-initiated local pick.
+          payload: { offerKey, actorUuid, actorName, optionId: picked.optionId, context, preResult: picked.preResult, gmInitiated: true },
         });
         return;
       }
@@ -527,11 +547,22 @@
       // OPP_PICKED — GM plays banner + runs post phase + chat card
       //              preResult (if any) was already run on the player's client
       if (msg.type === MSG_PICKED && game.user?.isGM) {
-        const { offerKey, actorUuid, actorName, optionId, context, preResult } = msg.payload ?? {};
+        const { offerKey, actorUuid, actorName, optionId, context, preResult, gmInitiated } = msg.payload ?? {};
+
+        // Multi-GM dedupe: applyAndAnnounce broadcasts the banner, runs the
+        // effect's post handler (real mutations — AEs, chat cards, clocks) and
+        // posts the result card. It must run on exactly ONE GM client.
+        //  - GM-initiated offer: only the GM that owns the matching _pending
+        //    entry resolves (preserves the original "resolve after await"
+        //    ordering even when the Co-DM GM was the initiator).
+        //  - Player-initiated offer (action pipeline): no GM holds _pending, so
+        //    the primary GM resolves and the second GM bails.
+        const pending = _pending.get(offerKey);
+        if (gmInitiated ? !pending : !isPrimaryGM()) return;
+
         await applyAndAnnounce({ actorUuid, actorName, optionId, context, preResult })
           .catch(e => console.error(TAG, "applyAndAnnounce error:", e));
 
-        const pending = _pending.get(offerKey);
         if (pending) { _pending.delete(offerKey); pending.resolve({ optionId }); }
         return;
       }
@@ -564,6 +595,7 @@
   const api = {
     offer,
     processCheckCrits,
+    isPrimaryGM,
     get OPTIONS()       { return getConfig()?.OPTIONS ?? []; },
     get staggerMs()     { return _staggerMs; },
     set staggerMs(v)    { _staggerMs     = Math.max(0,   Number(v) || 0); },

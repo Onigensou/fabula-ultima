@@ -114,6 +114,10 @@
     game.socket.on(SOCKET_CH, async (msg) => {
       if (msg?.type !== MSG_TYPE) return;
       if (!game.user?.isGM) return;
+      // Multi-GM dedupe: both GMs receive the player's trigger. Gate to the
+      // primary GM so only one fishing lobby opens (the _busy guard below is
+      // per-client and does NOT prevent the second GM from opening its own).
+      if (DP.isPrimaryGM && !DP.isPrimaryGM()) return;
 
       const { sceneId, tileId } = msg.payload ?? {};
       const scene   = game.scenes.get(sceneId);

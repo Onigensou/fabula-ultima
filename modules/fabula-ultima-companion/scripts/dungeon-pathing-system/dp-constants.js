@@ -6,6 +6,25 @@
 
   DP.MODULE_ID        = "fabula-ultima-companion";
   DP.FABULA_ROOT_KEY  = "oniFabula";
+
+  // ── Multi-GM host gate (dedupe) ─────────────────────────────────────────────
+  // The game normally runs two GM clients (main GM + Co-DM). Player-triggered
+  // tile events / turns fan out over raw game.socket, which delivers to BOTH GMs,
+  // so any GM-side resolution handler runs twice unless gated to a single "host".
+  // Returns true only on the primary active GM (core's game.users.activeGM —
+  // the lowest-id active GM), with an id-sort fallback for cores without it.
+  // See the GM Host / Anti-Dedupe pattern (Idiom A). NOTE: socketlib's
+  // executeAsGM already routes to one GM, so only the raw-socket handlers need
+  // this; the treasure system gates separately via its own authority model.
+  DP.isPrimaryGM = function isPrimaryGM() {
+    if (!game.user?.isGM) return false;
+    const active = game.users?.activeGM ?? null;
+    if (active) return active.id === game.user.id;
+    const firstGM = game.users
+      ?.filter?.(u => u.isGM && u.active)
+      ?.sort?.((a, b) => String(a.id).localeCompare(String(b.id)))?.[0];
+    return firstGM ? firstGM.id === game.user.id : true;
+  };
   DP.GENERAL_KEY      = "general";
   DP.SCENE_MODE_KEY   = "sceneMode";
   DP.PATHING_ROOT_KEY = "dungeonPathing";

@@ -603,6 +603,7 @@
       // Mark scene visited (non-GM → GM)
       if (msg?.type === MSG_VISITED) {
         if (!game.user?.isGM) return;
+        if (DP.isPrimaryGM && !DP.isPrimaryGM()) return;   // multi-GM dedupe
         const scene = game.scenes.get(msg.payload?.sceneId);
         if (scene) await markSceneVisited(scene);
         return;
@@ -611,6 +612,10 @@
       // Cross-scene travel request (player → GM)
       if (msg?.type === MSG_TRAVEL) {
         if (!game.user?.isGM) return;
+        // Multi-GM dedupe: gate to one GM so the destination token isn't
+        // created twice and the scene isn't activated twice (delete-then-create
+        // race in setupTokenAndActivate).
+        if (DP.isPrimaryGM && !DP.isPrimaryGM()) return;
         const { toSceneId, actorId, spawnX, spawnY, fromSceneId } = msg.payload ?? {};
         const dest = game.scenes.get(toSceneId);
         if (!dest) { console.warn(TAG, "travel: destination not found:", toSceneId); return; }

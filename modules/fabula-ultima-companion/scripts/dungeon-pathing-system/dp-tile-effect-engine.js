@@ -411,6 +411,10 @@
     game.socket.on(SOCKET_CH, async (msg) => {
       // ── GM: apply resource/AE changes, create chat card, re-broadcast VFX ──
       if (msg?.type === MSG_APPLY && game.user?.isGM) {
+        // Multi-GM dedupe: both GMs receive this. Gate to the primary GM so the
+        // resource/AE mutation + chat card don't apply twice. (VFX below still
+        // plays on every client.)
+        if (DP.isPrimaryGM && !DP.isPrimaryGM()) return;
         try {
           const { actorUuids, cfg, tileLabel, tokenId, sceneId } = msg.payload ?? {};
           const actors = [];
