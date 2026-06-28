@@ -2876,7 +2876,7 @@
         "id": "Uml73l4MKy1gSJYU",
         "name": "Adversity",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "W8cC2u8sBR5DSRWg",
@@ -8204,7 +8204,7 @@
         "id": "QBLyfikwHBnhhcGf",
         "name": "Magical Artillery",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "3nrod81ulEj4BbOB",

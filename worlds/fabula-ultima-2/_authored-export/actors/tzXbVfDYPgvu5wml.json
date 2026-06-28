@@ -4612,6 +4612,63 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "naMPID0s2Ae73BzI",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1782675568041,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "check_mod_magic",
+              "mode": 2,
+              "priority": 1,
+              "value": "${hasWeapon(\"arcane\") ? level * 2 : 0}$"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "naMPID0s2Ae73BzI",
+              "originalParentId": "RBdT18zr2DzwwA0E",
+              "originalUuid": "Actor.tzXbVfDYPgvu5wml.Item.RBdT18zr2DzwwA0E.ActiveEffect.naMPID0s2Ae73BzI"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/enochian.png",
+          "name": "Magical Artillery",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -4645,7 +4702,7 @@
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
-          "isReaction": true,
+          "isReaction": false,
           "isZeroPower": false,
           "level": "3",
           "max_level": "3",
@@ -4653,17 +4710,7 @@
           "optional_params": {},
           "passive_check_bonus_formula": "HAS_ARCANE_WEAPON * ACTION_IS_SPELL * SL * 2",
           "passive_logic_action": "<p>const TAG = \"[PASSIVE][MagicalArtillery][Action]\";</p><p>const norm = (v) =&gt; String(v ?? \"\").trim().toLowerCase();</p><p>const isAutoPassiveExecution =</p><p>__PAYLOAD?.meta?.isPassiveExecution === true ||</p><p>__PAYLOAD?.isPassiveExecution === true ||</p><p>norm(__PAYLOAD?.meta?.executionMode) === \"autopassive\" ||</p><p>norm(__PAYLOAD?.executionMode) === \"autopassive\";</p><p>const skipHidden = (reason = \"\") =&gt; {</p><p>__PAYLOAD.meta = __PAYLOAD.meta || {};</p><p>__PAYLOAD.meta.hidePassiveCard = true;</p><p>return context.skipPassive(reason, { notify: false });</p><p>};</p><p>// Important:</p><p>// This passive should modify the ORIGINAL spell action payload,</p><p>// not the later standalone auto-passive self execution.</p><p>if (isAutoPassiveExecution) {</p><p>return skipHidden(\"\");</p><p>}</p><p>const passiveOwner =</p><p>__PASSIVE_ACTOR ??</p><p>context.passiveOwner ??</p><p>null;</p><p>const passiveItem =</p><p>__PASSIVE_ITEM ??</p><p>context.passiveItem ??</p><p>null;</p><p>if (!passiveOwner || !passiveItem) {</p><p>return skipHidden(\"\");</p><p>}</p><p>// --------------------------------------------------</p><p>// 1) Check action type = Offensive Spell</p><p>// --------------------------------------------------</p><p>const listType = norm(</p><p>__PAYLOAD?.meta?.listType ??</p><p>__PAYLOAD?.listType ??</p><p>\"\"</p><p>);</p><p>const detectedActionType = norm(</p><p>context.helpers?.getDetectedActionType?.() ?? \"\"</p><p>);</p><p>const actionTypeDebug =</p><p>context.helpers?.getActionTypeDebug?.() ?? {};</p><p>const isSpellish =</p><p>detectedActionType === \"spell\" ||</p><p>actionTypeDebug?.isSpell === true ||</p><p>__PAYLOAD?.meta?.isSpellish === true ||</p><p>__PAYLOAD?.dataCore?.isSpell === true;</p><p>const isOffensiveSpell = listType === \"offensive spell\";</p><p>if (!isSpellish || !isOffensiveSpell) {</p><p>return skipHidden(\"\");</p><p>}</p><p>// --------------------------------------------------</p><p>// 2) Manual equipped Arcane weapon check</p><p>// Avoid the missing helper on your current runtime build.</p><p>// --------------------------------------------------</p><p>const toBool = (v) =&gt;</p><p>v === true || v === \"true\" || v === 1 || v === \"1\";</p><p>const getProps = (item) =&gt;</p><p>item?.system?.props ?? item?.system ?? {};</p><p>const normCategory = (v) =&gt; {</p><p>const s = norm(v);</p><p>const aliases = {</p><p>arcana: \"arcane\",</p><p>arcane: \"arcane\",</p><p>wand: \"arcane\",</p><p>staff: \"arcane\",</p><p>tome: \"arcane\"</p><p>};</p><p>return aliases[s] ?? s;</p><p>};</p><p>const equippedWeapons = Array.from(passiveOwner?.items ?? []).filter((item) =&gt; {</p><p>const p = getProps(item);</p><p>const isEquipped = [</p><p>p?.isEquipped,</p><p>p?.equipped,</p><p>item?.system?.equipped,</p><p>item?.equipped,</p><p>item?.isEquipped</p><p>].some(toBool);</p><p>const itemType = norm(</p><p>p?.item_type ??</p><p>item?.system?.item_type ??</p><p>item?.type ??</p><p>\"\"</p><p>);</p><p>return isEquipped &amp;&amp; itemType === \"weapon\";</p><p>});</p><p>const hasArcaneWeapon = equippedWeapons.some((item) =&gt; {</p><p>const p = getProps(item);</p><p>const cat = normCategory(</p><p>p?.category ??</p><p>item?.system?.category ??</p><p>item?.category ??</p><p>\"\"</p><p>);</p><p>return cat === \"arcane\";</p><p>});</p><p>if (!hasArcaneWeapon) {</p><p>return skipHidden(\"\");</p><p>}</p><p>// --------------------------------------------------</p><p>// 3) Skill level</p><p>// --------------------------------------------------</p><p>const skillLevel = Math.max(</p><p>0,</p><p>Number(</p><p>passiveItem?.level ??</p><p>passiveItem?.system?.props?.level ??</p><p>passiveItem?.system?.level ??</p><p>passiveItem?.system?.props?.active_level ??</p><p>passiveItem?.system?.props?.passive_level ??</p><p>0</p><p>) || 0</p><p>);</p><p>const bonusToAdd = skillLevel * 2;</p><p>if (bonusToAdd &lt;= 0) {</p><p>return skipHidden(\"\");</p><p>}</p><p>// --------------------------------------------------</p><p>// 4) Apply bonus to Magic Check</p><p>// Update BOTH checkBonus and total.</p><p>// --------------------------------------------------</p><p>__PAYLOAD.accuracy = __PAYLOAD.accuracy || {};</p><p>const beforeCheckBonus = Number(__PAYLOAD?.accuracy?.checkBonus ?? 0) || 0;</p><p>const beforeBonusField = Number(__PAYLOAD?.accuracy?.bonus ?? 0) || 0;</p><p>const beforeTotalRaw = Number(__PAYLOAD?.accuracy?.total ?? NaN);</p><p>const beforeTotal = Number.isFinite(beforeTotalRaw) ? beforeTotalRaw : null;</p><p>// If this spell somehow has no accuracy object, quietly do nothing.</p><p>if (beforeTotal === null) {</p><p>return skipHidden(\"\");</p><p>}</p><p>__PAYLOAD.accuracy.checkBonus = beforeCheckBonus + bonusToAdd;</p><p>__PAYLOAD.accuracy.bonus = beforeBonusField + bonusToAdd;</p><p>__PAYLOAD.accuracy.total = beforeTotal + bonusToAdd;</p><p>// --------------------------------------------------</p><p>// 5) Debug</p><p>// --------------------------------------------------</p><p>__PAYLOAD.meta = __PAYLOAD.meta || {};</p><p>__PAYLOAD.meta.magicalArtilleryDebug = {</p><p>passiveOwner: passiveOwner?.name ?? null,</p><p>passiveItem: passiveItem?.name ?? null,</p><p>listType,</p><p>detectedActionType,</p><p>isSpellish,</p><p>isOffensiveSpell,</p><p>hasArcaneWeapon,</p><p>equippedWeapons: equippedWeapons.map((w) =&gt; ({</p><p>name: w?.name ?? null,</p><p>category: normCategory(</p><p>getProps(w)?.category ??</p><p>w?.system?.category ??</p><p>w?.category ??</p><p>\"\"</p><p>)</p><p>})),</p><p>skillLevel,</p><p>bonusAdded: bonusToAdd,</p><p>checkBonusBefore: beforeCheckBonus,</p><p>checkBonusAfter: __PAYLOAD.accuracy.checkBonus,</p><p>totalBefore: beforeTotal,</p><p>totalAfter: __PAYLOAD.accuracy.total</p><p>};</p><p>console.log(TAG, \"APPLIED\", __PAYLOAD.meta.magicalArtilleryDebug);</p><p>context.log(\"Magical Artillery applied\", __PAYLOAD.meta.magicalArtilleryDebug);</p>",
-          "reaction_config_table": {
-            "0": {
-              "$deleted": false,
-              "reaction_damage_amount": "",
-              "reaction_damage_type": "",
-              "reaction_passive_mode": "ask",
-              "reaction_passive_target": "",
-              "reaction_source": "self",
-              "reaction_trigger": "creature_performs_action"
-            }
-          },
+          "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
@@ -5174,6 +5221,69 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "NeaiAARO6S2ak8u6",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1782672918095,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "check_mod_all",
+              "mode": 2,
+              "priority": 1,
+              "value": "${min(STATUS_COUNT, 3)}$"
+            },
+            {
+              "key": "extra_damage_mod_all",
+              "mode": 2,
+              "priority": 1,
+              "value": "${min(STATUS_COUNT * 2, 6)}$"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "NeaiAARO6S2ak8u6",
+              "originalParentId": "TW4MHSzMcFgOQA4o",
+              "originalUuid": "Actor.tzXbVfDYPgvu5wml.Item.TW4MHSzMcFgOQA4o.ActiveEffect.NeaiAARO6S2ak8u6"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/living_shadow.png",
+          "name": "Adversity",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -5198,31 +5308,14 @@
           "defense_target_type": "def",
           "description": "<p>As long as you are suffering from one or more status effects, you gain the following effects:</p><ul><li><p>+1 bonus on all Checks for every status effect you are suffering from (up to a maximum of +3),</p></li><li><p>You deal 2 extra damage for every status effect you are suffering from <em>(be it with attacks, spells, Arcana, items or any other method; up to a maximum of 6 extra damage)</em>.</p></li></ul>",
           "duration": "",
-          "effect_table": {
-            "0": {
-              "$deleted": false,
-              "accuracy_amount": "min(STATUS_COUNT, 3)",
-              "accuracy_operation": "add",
-              "effect_kind": "adjust_accuracy",
-              "effect_label": "adv_acc"
-            },
-            "1": {
-              "$deleted": false,
-              "damage_amount": "min(STATUS_COUNT * 2, 6)",
-              "damage_operation": "add",
-              "damage_stage": "outgoing",
-              "effect_kind": "adjust_damage",
-              "effect_label": "adv_dmg",
-              "target_ref": ""
-            }
-          },
+          "effect_table": {},
           "heroic_requirement": "You must have mastered the Darkblade Class.",
           "ignore_hr": false,
           "isCheck": false,
           "isFacet": false,
           "isHeroic": true,
           "isOffensiveSpell": false,
-          "isReaction": true,
+          "isReaction": false,
           "isZeroPower": false,
           "level": "1",
           "max_level": "1",
@@ -5230,34 +5323,7 @@
           "optional_params": {},
           "passive_check_bonus_formula": "",
           "passive_damage_bonus_formula": "",
-          "reaction_config_table": {
-            "0": {
-              "$deleted": false,
-              "condition_formula": "STATUS_COUNT > 0",
-              "reaction_action_kind": "Attack,Spell,Skill",
-              "reaction_damage_amount": "",
-              "reaction_damage_type": "",
-              "reaction_effect_ref": "adv_acc",
-              "reaction_passive_mode": "on",
-              "reaction_passive_target": "self",
-              "reaction_source": "self",
-              "reaction_source_skill": "",
-              "reaction_trigger": "creature_performs_action"
-            },
-            "1": {
-              "$deleted": false,
-              "condition_formula": "STATUS_COUNT > 0 && DAMAGE_IS_HP == 1",
-              "reaction_action_kind": "",
-              "reaction_damage_amount": "",
-              "reaction_damage_type": "",
-              "reaction_effect_ref": "adv_dmg",
-              "reaction_passive_mode": "on",
-              "reaction_passive_target": "self",
-              "reaction_source": "self",
-              "reaction_source_skill": "",
-              "reaction_trigger": "creature_will_deal_damage"
-            }
-          },
+          "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_information": "",

@@ -8,6 +8,63 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "tkVZovM7vBPTmufF",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782675567941,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "check_mod_magic",
+          "mode": 2,
+          "priority": 1,
+          "value": "${hasWeapon(\"arcane\") ? level * 2 : 0}$"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "tkVZovM7vBPTmufF",
+          "originalParentId": "QBLyfikwHBnhhcGf",
+          "originalUuid": "Item.QBLyfikwHBnhhcGf.ActiveEffect.tkVZovM7vBPTmufF"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/enochian.png",
+      "name": "Magical Artillery",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
@@ -35,22 +92,14 @@
       "defense_target_type": "def",
       "description": "<p>When you cast an <strong>【⚡Offensive Spell】</strong>, if you have an <strong>arcane</strong> weapon equipped, you gain a bonus to your Magic Check equal to <strong>【SL × 2】</strong></p>",
       "duration": "",
-      "effect_table": {
-        "0": {
-          "$deleted": false,
-          "accuracy_amount": "SL * 2",
-          "accuracy_operation": "add",
-          "effect_kind": "adjust_accuracy",
-          "effect_label": "ma_acc"
-        }
-      },
+      "effect_table": {},
       "heroic_requirement": "",
       "ignore_hr": false,
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,
       "isOffensiveSpell": false,
-      "isReaction": true,
+      "isReaction": false,
       "isZeroPower": false,
       "level": "3",
       "max_level": "3",
@@ -58,20 +107,7 @@
       "optional_params": {},
       "passive_check_bonus_formula": "",
       "passive_logic_action": "",
-      "reaction_config_table": {
-        "0": {
-          "$deleted": false,
-          "condition_formula": "HAS_ARCANE_WEAPON == 1 && ACTION_IS_OFFENSIVE_SPELL == 1",
-          "reaction_action_kind": "Attack,Spell,Skill",
-          "reaction_damage_amount": "",
-          "reaction_damage_type": "",
-          "reaction_effect_ref": "ma_acc",
-          "reaction_passive_mode": "force",
-          "reaction_passive_target": "",
-          "reaction_source": "self",
-          "reaction_trigger": "creature_performs_action"
-        }
-      },
+      "reaction_config_table": {},
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_default": "",
