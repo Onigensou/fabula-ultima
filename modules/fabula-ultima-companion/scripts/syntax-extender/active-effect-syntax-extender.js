@@ -12,7 +12,21 @@
   const MODULE_ID = "fabula-ultima-companion";
   const TAG = "[ONI][AE-Syntax]";
 
-  const HELPERS = ["ae", "aeUuid", "aeStatus", "countAe", "aeValue"];
+  const HELPERS = ["ae", "aeUuid", "aeStatus", "countAe", "aeValue", "hasWeapon", "countWeapons"];
+
+  // Weapon-category aliases — mirrors normalizeWeaponCategory() in
+  // passive-modifier-engine.js / formula-evaluator.js so hasWeapon("staff")
+  // matches an arcane weapon exactly like the reaction-side HAS_ARCANE_WEAPON.
+  const WEAPON_CATEGORY_ALIASES = {
+    arcana: "arcane", arcane: "arcane", wand: "arcane", staff: "arcane", tome: "arcane",
+    dagger: "dagger", knife: "dagger",
+    flail: "flail", mace: "flail"
+  };
+  const normalizeWeaponCategory = (value) => {
+    const v = String(value ?? "").trim().toLowerCase();
+    if (!v) return "";
+    return WEAPON_CATEGORY_ALIASES[v] ?? v;
+  };
 
   // Degraded-mode floor for the shared "state" identifier vocabulary. The
   // CANONICAL source is globalThis["oni.IdentifierRegistry"] (loaded from
@@ -183,7 +197,7 @@
 
   const hasCustomSyntax = (value) => {
     if (typeof value !== "string") return false;
-    if (/\b(?:ae|aeUuid|aeStatus|countAe|aeValue|propAtLeast)\s*\(/.test(value)) return true;
+    if (/\b(?:ae|aeUuid|aeStatus|countAe|aeValue|propAtLeast|hasWeapon|countWeapons)\s*\(/.test(value)) return true;
     // Shared "state" identifiers (STATUS_COUNT, …) — bare UPPER_SNAKE tokens,
     // kept in sync with the reaction/BD evaluators via the identifier registry.
     // Matched even when the registry is absent (degraded-mode floor) so the
@@ -489,6 +503,45 @@
   };
 
   // ------------------------------------------------------------
+  // Weapon-category detection
+  // ------------------------------------------------------------
+  // Replicates the reaction-side HAS_ARCANE_WEAPON gate (passive-modifier-engine
+  // _hasArcaneWeapon, lines ~527-534): an item is a counted weapon if it is
+  // type "weapon", equipped, and its normalized category matches. This lets a
+  // passive accuracy/damage skill that gated on an equipped weapon category
+  // (e.g. Magical Artillery) be authored as a transfer AE instead of a reaction.
+
+  const isWeaponItem = (item) => {
+    const p = item?.system?.props ?? {};
+    const t = String(p.item_type ?? item?.system?.item_type ?? item?.type ?? "").trim().toLowerCase();
+    return t === "weapon";
+  };
+
+  const isWeaponEquipped = (item) => {
+    const p = item?.system?.props ?? {};
+    const candidates = [p.isEquipped, p.equipped, item?.system?.equipped, item?.equipped, item?.isEquipped];
+    return candidates.some(v => v === true || v === "true" || v === 1 || v === "1");
+  };
+
+  const itemWeaponCategory = (item) => {
+    const p = item?.system?.props ?? {};
+    return normalizeWeaponCategory(p.category ?? item?.system?.category ?? item?.category ?? "");
+  };
+
+  // Count of EQUIPPED weapons of the given category on the actor.
+  const countEquippedWeapons = (actor, category) => {
+    const wanted = normalizeWeaponCategory(category);
+    if (!actor || !wanted) return 0;
+    let count = 0;
+    for (const item of safeArrayFrom(actor.items)) {
+      if (!isWeaponItem(item)) continue;
+      if (!isWeaponEquipped(item)) continue;
+      if (itemWeaponCategory(item) === wanted) count++;
+    }
+    return count;
+  };
+
+  // ------------------------------------------------------------
   // Syntax transform
   // ------------------------------------------------------------
 
@@ -575,6 +628,30 @@
         return valueToReturn;
       }
     );
+
+    // hasWeapon("arcane") — true if the actor has an EQUIPPED weapon of that
+    // category (aliases normalized: staff/wand/tome → arcane, etc.). The AE
+    // equivalent of the reaction-side HAS_ARCANE_WEAPON gate.
+    output = output.replace(/\bhasWeapon\s*\(\s*(['"])(.*?)\1\s*\)/g, (_match, _quote, category) => {
+      const result = countEquippedWeapons(actor, category) > 0;
+
+      if (isDebug()) {
+        console.log(TAG, `hasWeapon("${category}") =>`, result, actor?.name ?? null);
+      }
+
+      return result ? "true" : "false";
+    });
+
+    // countWeapons("dagger") — number of EQUIPPED weapons of that category.
+    output = output.replace(/\bcountWeapons\s*\(\s*(['"])(.*?)\1\s*\)/g, (_match, _quote, category) => {
+      const result = countEquippedWeapons(actor, category);
+
+      if (isDebug()) {
+        console.log(TAG, `countWeapons("${category}") =>`, result, actor?.name ?? null);
+      }
+
+      return String(result);
+    });
 
     // ae("Wet")
     output = output.replace(/\bae\s*\(\s*(['"])(.*?)\1\s*\)/g, (_match, _quote, name) => {
