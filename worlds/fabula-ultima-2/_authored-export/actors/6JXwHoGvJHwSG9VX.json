@@ -1,20 +1,20 @@
 {
-  "_id": "kts7CUs98ea2rG6Q",
+  "_id": "6JXwHoGvJHwSG9VX",
   "_stats": {
     "compendiumSource": null,
     "coreVersion": "12.343",
-    "createdTime": 1782624612213,
+    "createdTime": 1782637681645,
     "duplicateSource": "Actor.ik2o2KAR2WZoDgrB",
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
   "effects": [
     {
-      "_id": "t36UGirFansBnB8G",
+      "_id": "B3ILQQf0IsP40A32",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": null,
+        "createdTime": 1782637681777,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -41,9 +41,9 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "t36UGirFansBnB8G",
-          "originalParentId": "kts7CUs98ea2rG6Q",
-          "originalUuid": "Actor.kts7CUs98ea2rG6Q.ActiveEffect.t36UGirFansBnB8G"
+          "originalId": "B3ILQQf0IsP40A32",
+          "originalParentId": "6JXwHoGvJHwSG9VX",
+          "originalUuid": "Actor.6JXwHoGvJHwSG9VX.ActiveEffect.B3ILQQf0IsP40A32"
         },
         "fabula-ultima-companion": {
           "testBattleNoActions": true
