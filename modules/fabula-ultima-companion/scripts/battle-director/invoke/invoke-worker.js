@@ -218,8 +218,20 @@ export async function handleInvokeTrait({ director, ar, root, invokeState, prePi
   const newAr    = recomputeArAfterInvoke(arAfterPay, newRoll);
 
   invokeState.trait            = true;
-  director.ctx.actionResult    = newAr;
-  director.ctx.invokeState     = { ...invokeState };
+  // Stamp the result onto the per-card invokeState so the caller can sync its
+  // own snapshot (cardAr) — the source of truth for presentation/targeting.
+  invokeState.lastAr           = newAr;
+  // Only update the SHARED live slot if this card is still the active action;
+  // otherwise the director has moved on and writing here would clobber a
+  // different action's result. The caller's drift guard normally prevents us
+  // reaching here on a mismatch — this is the defence for a drift that happens
+  // mid-dialog (while the HUD is open).
+  if ((director.ctx.actionResult?._instanceId ?? null) === (ar?._instanceId ?? null)) {
+    director.ctx.actionResult  = newAr;
+    director.ctx.invokeState   = { ...invokeState };
+  } else {
+    warn("[BD][Invoke] live actionResult drifted from this card — skipping ctx write-back (trait)");
+  }
 
   // Presentation (reroll animation → card patch → chime → crit cut-in) is owned
   // by the caller (action-card presentTraitReroll), so it can broadcast the one
@@ -288,8 +300,14 @@ export async function handleInvokeBond({ director, ar, root, invokeState, prePic
 
   invokeState.bond             = true;
   invokeState.bondInfo         = { index: chosen.index, name: chosen.name, bonus: chosen.bonus };
-  director.ctx.actionResult    = newAr;
-  director.ctx.invokeState     = { ...invokeState };
+  // See handleInvokeTrait: stamp the per-card snapshot, guard the shared slot.
+  invokeState.lastAr           = newAr;
+  if ((director.ctx.actionResult?._instanceId ?? null) === (ar?._instanceId ?? null)) {
+    director.ctx.actionResult  = newAr;
+    director.ctx.invokeState   = { ...invokeState };
+  } else {
+    warn("[BD][Invoke] live actionResult drifted from this card — skipping ctx write-back (bond)");
+  }
 
   patchCardDom(root, newAr, invokeState);
   log(`[BD][Invoke] Bond — "${chosen.name}" +${chosen.bonus} total:${ar.roll.total}→${newRoll.total}`);

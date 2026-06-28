@@ -4228,6 +4228,19 @@ export async function postActionCard({ director, kind, payload }) {
   // Mutated by invoke-worker; read by patchCardDom and the click handler.
   const invokeState = { trait: false, bond: false };
 
+  // ── Per-card action-result identity (invoke targeting) ───────────────────
+  // `director.ctx.actionResult` is a single SHARED slot that every FSM state
+  // overwrites. Invoke must reroll/pay for the actor THIS card belongs to —
+  // not whatever action the director happens to be tracking when the button
+  // is clicked (e.g. after the GM selects another token). So capture the
+  // card's own result + its stable instance id up front, mirror the live slot
+  // into `cardAr` (kept in sync as invoke mutates it), and key every invoke
+  // read off `cardAr` instead of the shared slot. `cardInstanceId` lets the
+  // handlers detect when the director has genuinely moved on to a different
+  // action and refuse, rather than acting on the wrong actor.
+  let cardAr = director.ctx.actionResult;
+  const cardInstanceId = cardAr?._instanceId ?? null;
+
   return new Promise((resolve) => {
     let resolved = false;
     let despawnTid = null;
@@ -5466,7 +5479,7 @@ export async function postActionCard({ director, kind, payload }) {
     const broadcastInvokeUpdate = () => {
       const menuSpec = {
         kind: "action-card-invoke-update",
-        actionResult: director.ctx.actionResult,
+        actionResult: cardAr,
         invokeState: { ...invokeState },
       };
       for (const u of (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id)) {
@@ -5488,7 +5501,7 @@ export async function postActionCard({ director, kind, payload }) {
     // actionResult + attacker actor. Bond hearts are precomputed here so the
     // receiving client needs no actor read-permission.
     const buildSpectatorPayload = async (type) => {
-      const ar = director.ctx.actionResult;
+      const ar = cardAr;
       if (!ar?.roll) return null;
       let actorName = "The attacker";
       let bonds = [];
@@ -5574,7 +5587,7 @@ export async function postActionCard({ director, kind, payload }) {
     // land. One authoritative roll drives all clients (the tumble frames are
     // local flavor; the landed value is identical everywhere).
     const presentTraitReroll = async ({ choice, oldTotal }) => {
-      const newAr = director.ctx.actionResult;
+      const newAr = cardAr;
       const roll  = newAr?.roll;
       if (!roll) return;
       const intense  = !!(roll.isCrit || roll.isFumble);
@@ -5686,24 +5699,38 @@ export async function postActionCard({ director, kind, payload }) {
             const type = body.type; // "trait" | "bond"
             const fromUserId = intent.fromUserId ?? null;
             log(`postActionCard: remote INVOKE_CHOICE received (${type})`);
-            const oldTotal = director.ctx.actionResult?.roll?.total ?? 0;
+            // Drift guard: if the director has moved on to a different action,
+            // this card is no longer the live action — never reroll/charge the
+            // wrong actor just because the live slot changed. Re-arm and bail.
+            const liveInst = director.ctx.actionResult?._instanceId ?? null;
+            if (liveInst && cardInstanceId && liveInst !== cardInstanceId) {
+              warn(`postActionCard: INVOKE_CHOICE ignored — card ${cardInstanceId} is no longer the live action (live ${liveInst})`);
+              ui.notifications?.warn("This action is no longer active — invoke can't be applied.");
+              armInvokeAwait();
+              return;
+            }
+            const oldTotal = cardAr?.roll?.total ?? 0;
             let ok = false;      // truthy on success (trait: choice string, bond: true)
             try {
               const worker = await import(`./invoke/invoke-worker.js?cb=${Date.now()}`);
               if (type === "trait") {
                 ok = await worker.handleInvokeTrait({
-                  director, ar: director.ctx.actionResult, root, invokeState,
+                  director, ar: cardAr, root, invokeState,
                   prePickedChoice: body.choice ?? null,
                 });
               } else if (type === "bond") {
                 ok = await worker.handleInvokeBond({
-                  director, ar: director.ctx.actionResult, root, invokeState,
+                  director, ar: cardAr, root, invokeState,
                   prePickedBondIndex: body.bondIndex ?? null,
                 });
               }
             } catch (e) {
               warn("postActionCard: INVOKE_CHOICE handler threw", e);
             }
+            // Sync the card's snapshot with the rerolled/bonused result the
+            // worker produced (it stamps invokeState.lastAr), so presentation
+            // and any second invoke read the updated values — not the slot.
+            if (ok) cardAr = invokeState.lastAr ?? cardAr;
             if (ok && type === "trait") {
               // Reroll: animate the dice on every client's open HUD, then patch
               // the card. Replaces the silent invoke-update + spectator-close.
@@ -5797,13 +5824,20 @@ export async function postActionCard({ director, kind, payload }) {
             const hud = await import("./invoke/invoke-hud.js");
             // Toggle: re-clicking an open invoke HUD closes it instead of reopening
             if (hud.getActiveType() === type) {
-              hud.dismissActive({ root, ar: director?.ctx?.actionResult });
+              hud.dismissActive({ root, ar: cardAr });
               // Tear down the read-only mirror on the rest of the table too.
               closeSpectatorHud({ excludeUserId: game.user?.id, cancelled: true, type });
               return;
             }
+            // Drift guard — same as the remote path: don't invoke on a card the
+            // director has moved past (would target the wrong, now-live actor).
+            const liveInst = director.ctx.actionResult?._instanceId ?? null;
+            if (liveInst && cardInstanceId && liveInst !== cardInstanceId) {
+              ui.notifications?.warn("This action is no longer active — invoke can't be applied.");
+              return;
+            }
             const worker = await import(`./invoke/invoke-worker.js?cb=${Date.now()}`);
-            const ar = director.ctx.actionResult;
+            const ar = cardAr;
             const oldTotal = ar?.roll?.total ?? 0;
             // GM is the actor → open the read-only spectator HUD on everyone
             // else (exclude self; the GM gets the real interactive HUD below).
@@ -5817,6 +5851,8 @@ export async function postActionCard({ director, kind, payload }) {
             } else {
               ok = await worker.handleInvokeBond({ director, ar, root, invokeState, onSelectionChange: onSel });
             }
+            // Sync the card snapshot with the worker's result before presenting.
+            if (ok) cardAr = invokeState.lastAr ?? cardAr;
             // GM invoked on their own card.
             if (ok && type === "trait") {
               // Reroll: animate the GM's open HUD + broadcast so the table
