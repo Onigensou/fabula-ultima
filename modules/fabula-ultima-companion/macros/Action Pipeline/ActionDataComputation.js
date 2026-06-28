@@ -1149,7 +1149,7 @@ function getUniversalDamageBonus(props) {
     const rA = await (new Roll(`1d${dA}`)).evaluate();
     const rB = await (new Roll(`1d${dB}`)).evaluate();
 
-    const accuracyActorMod = Number(actorProps?.attack_accuracy_mod_all ?? 0);
+    const accuracyActorMod = Number(actorProps?.check_mod_all ?? 0);
     const total = (rA.total + rB.total + Number(bonus || 0) + accuracyActorMod);
     const hr    = Math.max(rA.total, rB.total);
     const diff  = Math.abs(rA.total - rB.total);

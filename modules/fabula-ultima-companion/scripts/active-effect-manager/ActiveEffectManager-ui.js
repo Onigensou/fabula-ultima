@@ -2556,7 +2556,7 @@ function isAllowedStatusModifierKey(key) {
 
   // These are the combat/status modifier families shown in the Status tab.
   return (
-    /^(attack_accuracy_mod_|extra_damage_mod_|damage_receiving_mod_)/.test(k) ||
+    /^(check_mod_|extra_damage_mod_|damage_receiving_mod_)/.test(k) ||
     /^damage_.*_mod_/.test(k) ||
     /_(damage|accuracy|critical|crit|reduction|receiving|affinity|efficiency|mod|bonus|penalty|multiplier|percentage|percent)$/.test(k) ||
     /(damage|accuracy|critical|crit|reduction|receiving|affinity|efficiency|weapon|melee|ranged|spell|magic|physical|air|bolt|dark|earth|fire|ice|light|poison)/.test(k)
@@ -2655,11 +2655,11 @@ function collectCoreSuggestionEntries() {
 }
 
 const BUILTIN_GAMEPLAY_MODIFIER_KEYS = [
-  // Accuracy
-  "attack_accuracy_mod_all",
-  "attack_accuracy_mod_melee",
-  "attack_accuracy_mod_ranged",
-  "attack_accuracy_mod_magic",
+  // Check (accuracy unified into checks — 2026-06-28 refactor)
+  "check_mod_all",
+  "check_mod_melee",
+  "check_mod_ranged",
+  "check_mod_magic",
 
   // Extra Damage — attack range / action type
   "extra_damage_mod_all",
@@ -2838,10 +2838,11 @@ function scoreNativeSuggestion(query, entry) {
     score += 3200;
   }
 
-  // Typing "accuracy_mod" should find attack_accuracy_mod_*.
+  // Typing "check_mod" / "accuracy" / "check" should find check_mod_*
+  // (accuracy was unified into checks — 2026-06-28 refactor).
   if (
-    (q.includes("accuracy_mod") || q.includes("accuracy")) &&
-    key.startsWith("attack_accuracy_mod_")
+    (q.includes("check_mod") || q.includes("accuracy") || q.includes("check")) &&
+    key.startsWith("check_mod_")
   ) {
     score += 3000;
   }

@@ -402,7 +402,15 @@ Hooks.once("ready", () => {
       // inferCategory() so a single source of truth governs what counts as a
       // status effect across the reaction debuff_count filter AND this
       // identifier. Returns 0 if the registry is unavailable (fail-soft).
-      case "STATUS_COUNT": return _countStatusesOnActor(reactorActor);
+      case "STATUS_COUNT": {
+        // Single source of truth: the shared identifier registry (which uses
+        // the 4-path debuff superset). Fall back to the local 1-path counter
+        // only if the registry hasn't loaded.
+        const reg = globalThis["oni.IdentifierRegistry"];
+        return reg?.countDebuffs
+          ? reg.countDebuffs(reactorActor)
+          : _countStatusesOnActor(reactorActor);
+      }
       // Action outcomes — per-event reads on the damage-card trigger payload
       // (Create Damage Card emits one trigger per affected target with
       // finalValue + valueType set on the payload).

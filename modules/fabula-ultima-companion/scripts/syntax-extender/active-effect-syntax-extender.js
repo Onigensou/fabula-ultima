@@ -166,8 +166,14 @@
   };
 
   const hasCustomSyntax = (value) => {
-    return typeof value === "string"
-      && /\b(?:ae|aeUuid|aeStatus|countAe|aeValue|propAtLeast)\s*\(/.test(value);
+    if (typeof value !== "string") return false;
+    if (/\b(?:ae|aeUuid|aeStatus|countAe|aeValue|propAtLeast)\s*\(/.test(value)) return true;
+    // Shared "state" identifiers from the identifier registry (STATUS_COUNT, …)
+    // — bare UPPER_SNAKE tokens, kept in sync with the reaction/BD evaluators.
+    const names = globalThis["oni.IdentifierRegistry"]?.stateIdentifierNames;
+    if (Array.isArray(names) && names.length
+        && new RegExp("\\b(?:" + names.join("|") + ")\\b").test(value)) return true;
+    return false;
   };
 
   const getDocName = (doc) => {
@@ -484,6 +490,23 @@
 
     const actor = context.actor ?? null;
     let output = value;
+
+    // Shared "state" identifiers (STATUS_COUNT, …) — resolved through the SAME
+    // registry the reaction/BD evaluators use, so the vocabulary stays in sync.
+    // Each bare UPPER_SNAKE token is replaced with its resolved number before
+    // CSB's mathjs evaluates the ${ ... }$. No event payload at derivation time
+    // (payload = null), so event-scoped identifiers are intentionally absent.
+    const idReg = globalThis["oni.IdentifierRegistry"];
+    if (actor && idReg?.resolveState && Array.isArray(idReg.stateIdentifierNames)) {
+      for (const name of idReg.stateIdentifierNames) {
+        const tokenRe = new RegExp("\\b" + name + "\\b", "g");
+        if (!tokenRe.test(output)) continue;
+        const resolved = idReg.resolveState(name, actor, null);
+        const numeric = Number.isFinite(Number(resolved)) ? Number(resolved) : 0;
+        output = output.replace(new RegExp("\\b" + name + "\\b", "g"), String(numeric));
+        if (isDebug()) console.log(TAG, `${name} =>`, numeric, actor?.name ?? null);
+      }
+    }
 
     maybeWarnFormula({
       value,

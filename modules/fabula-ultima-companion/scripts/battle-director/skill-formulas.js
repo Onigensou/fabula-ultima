@@ -1577,6 +1577,11 @@ const RAW_DEBUFF_STATUSES = new Set([
 ]);
 
 function countStatusDebuffs(actor) {
+  // Single source of truth: delegate to the shared identifier registry when
+  // present (see scripts/shared/identifier-registry.js). The body below is a
+  // fail-soft fallback for the case the registry hasn't loaded.
+  const reg = globalThis["oni.IdentifierRegistry"];
+  if (reg?.countDebuffs) return reg.countDebuffs(actor);
   if (!actor?.effects) return 0;
   const effects = Array.from(actor.effects);
   const aem = globalThis.FUCompanion?.api?.activeEffectManager;
@@ -1892,7 +1897,7 @@ function normalizeModRange(range) {
 }
 
 // ── Per-AE attribution ─────────────────────────────────────────────────
-// The actor sheet derives each modifier prop (e.g. attack_accuracy_mod_ranged)
+// The actor sheet derives each modifier prop (e.g. check_mod_ranged)
 // as the SUM of every AE that writes to it, so the prop alone can't tell us
 // WHICH skill contributed. To surface the source name in the action card
 // ("Ranged Weapon Mastery +1" instead of "Accuracy (Ranged) +1") we walk the
@@ -1963,11 +1968,13 @@ export function attributeModParts({ actor, key, total, label, sign = 1 } = {}) {
 }
 
 // ── Accuracy (added to the attack/spell Check total) ───────────────────
-// `kind`: "melee" | "ranged" | "magic". `check_mod_all` applies to EVERY
-// check — and an Attack is a Check — so it is included for attacks too
-// (confirmed by design 2026-06-07). `skill_accuracy` is intentionally
-// absent (already in weapon.checkBonus, see header). Pass `actor` to get
-// per-skill source names; `props` alone falls back to the generic label.
+// `kind`: "melee" | "ranged" | "magic". Accuracy IS a Check — the legacy
+// `attack_accuracy_mod_*` props were unified into `check_mod_*` (2026-06-28
+// template refactor), so `check_mod_all` applies to every check (attacks
+// included) and the range variants refine attacks of that range.
+// `skill_accuracy` is intentionally absent (already in weapon.checkBonus,
+// see header). Pass `actor` to get per-skill source names; `props` alone
+// falls back to the generic label.
 export function resolveAccuracyParts({ actor = null, props = null, kind = null } = {}) {
   const p = props ?? actor?.system?.props ?? null;
   if (!p) return [];
@@ -1976,11 +1983,10 @@ export function resolveAccuracyParts({ actor = null, props = null, kind = null }
     const total = _mnum(p[key]);
     if (total !== 0) parts.push(...attributeModParts({ actor, key, total, label }));
   };
-  add("attack_accuracy_mod_all", "Accuracy (All)");
-  if (kind === "melee")  add("attack_accuracy_mod_melee",  "Accuracy (Melee)");
-  if (kind === "ranged") add("attack_accuracy_mod_ranged", "Accuracy (Ranged)");
-  if (kind === "magic")  add("attack_accuracy_mod_magic",  "Accuracy (Magic)");
-  add("check_mod_all", "Check Bonus");
+  add("check_mod_all", "Check (All)");
+  if (kind === "melee")  add("check_mod_melee",  "Check (Melee)");
+  if (kind === "ranged") add("check_mod_ranged", "Check (Ranged)");
+  if (kind === "magic")  add("check_mod_magic",  "Check (Magic)");
   return parts;
 }
 

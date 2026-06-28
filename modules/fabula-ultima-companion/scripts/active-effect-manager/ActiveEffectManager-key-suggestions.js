@@ -199,11 +199,11 @@ skipPartyActors: true
 ];
 
 const FOCUSED_BUILTIN_GAMEPLAY_KEYS = [
-  // Accuracy
-  { key: "attack_accuracy_mod_all", category: "Attack Accuracy" },
-  { key: "attack_accuracy_mod_melee", category: "Attack Accuracy" },
-  { key: "attack_accuracy_mod_ranged", category: "Attack Accuracy" },
-  { key: "attack_accuracy_mod_magic", category: "Attack Accuracy" },
+  // Check (accuracy unified into checks — 2026-06-28 refactor)
+  { key: "check_mod_all", category: "Check" },
+  { key: "check_mod_melee", category: "Check" },
+  { key: "check_mod_ranged", category: "Check" },
+  { key: "check_mod_magic", category: "Check" },
 
   // Extra Damage — general / range / spell
   { key: "extra_damage_mod_all", category: "Extra Damage" },
@@ -836,8 +836,8 @@ function isAllowedGameplayKeyFamily(key) {
   if (/^(defense|magic_defense)$/.test(k)) return true;
   if (/^(bonus|override)_(defense|magic_defense)$/.test(k)) return true;
 
-  // Accuracy.
-  if (/^attack_accuracy_mod_(all|melee|ranged|magic)$/.test(k)) return true;
+  // Check (accuracy unified into checks — 2026-06-28 refactor).
+  if (/^check_mod_(all|melee|ranged|magic)$/.test(k)) return true;
 
   // Extra damage.
   if (

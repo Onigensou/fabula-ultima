@@ -178,7 +178,7 @@ export function attrDieSize(actor, key) {
 // (attribute "SHI"). Caller decides whether to fall back to the other hand
 // or refuse the action.
 //
-// Buff effects (extra_damage_mod_*, attack_accuracy_mod_*) are NOT applied
+// Buff effects (extra_damage_mod_*, check_mod_*) are NOT applied
 // here — that's a later slice. We surface the raw weapon stats so the
 // Compute state can roll them; buff aggregation happens above.
 export function resolveAttackerWeapon(actor, { which = "main" } = {}) {

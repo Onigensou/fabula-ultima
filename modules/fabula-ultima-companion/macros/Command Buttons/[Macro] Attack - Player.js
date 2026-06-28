@@ -154,10 +154,10 @@ async function fabulaUltimaAttack() {
   };
 
   const extraAccuracyInfo = {
-    all:    Number(actor.system?.props?.attack_accuracy_mod_all    ?? 0),
-    melee:  Number(actor.system?.props?.attack_accuracy_mod_melee  ?? 0),
-    ranged: Number(actor.system?.props?.attack_accuracy_mod_ranged ?? 0),
-    magic:  Number(actor.system?.props?.attack_accuracy_mod_magic  ?? 0),
+    all:    Number(actor.system?.props?.check_mod_all    ?? 0),
+    melee:  Number(actor.system?.props?.check_mod_melee  ?? 0),
+    ranged: Number(actor.system?.props?.check_mod_ranged ?? 0),
+    magic:  Number(actor.system?.props?.check_mod_magic  ?? 0),
   };
 
   // Tooltip “buffDetails” map (unchanged)
@@ -199,7 +199,7 @@ async function fabulaUltimaAttack() {
         <span id="selectedWeaponAccuracyDetails" style="background-color: rgba(0, 0, 0, 0.60); color: #fff; text-align: center; padding: 5px 10px; margin: 0 0 0 5px; border-radius: 6px; position: absolute; z-index: 1; width: 200px">
           ${generateDetailBuffHoverBox(
             [{ name: "Weapon Accuracy", value: weapons[0].accuracyBonus }]
-            .concat(buffDetails['attack_accuracy_mod_all'], buffDetails['attack_accuracy_mod_' + weapons[0].weaponRange.toLowerCase()])
+            .concat(buffDetails['check_mod_all'], buffDetails['check_mod_' + weapons[0].weaponRange.toLowerCase()])
           )}
         </span>
       </div>
@@ -264,7 +264,7 @@ async function fabulaUltimaAttack() {
           <span id="selectedWeaponAccuracyDetails" style="background-color: rgba(0, 0, 0, 0.60); color: #fff; text-align: center; padding: 5px 10px; margin: 0 0 0 5px; border-radius: 6px; position: absolute; z-index: 1; width: 200px">
             ${generateDetailBuffHoverBox(
               [{ name: "Weapon Accuracy", value: W.accuracyBonus }]
-              .concat(buffDetails['attack_accuracy_mod_all'], buffDetails['attack_accuracy_mod_' + rangeKey])
+              .concat(buffDetails['check_mod_all'], buffDetails['check_mod_' + rangeKey])
             )}
           </span>
         `);

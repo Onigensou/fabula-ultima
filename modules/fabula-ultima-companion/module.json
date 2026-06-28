@@ -31,6 +31,7 @@
     "scripts/richtext-script-converter-api.js",
     "scripts/battle-log/battlelog-clear.js",
     "scripts/token-mask-bootstrapper.js",
+    "scripts/shared/identifier-registry.js",
     "scripts/syntax-extender/active-effect-syntax-extender.js",
     "scripts/syntax-extender/syntaxExtender-conditionalChangeGate.js",
     "scripts/resource-ui-manager.js",
