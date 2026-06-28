@@ -5558,7 +5558,7 @@
           "accessory_quantity": 1,
           "accessory_set": false,
           "id": "${item.id}",
-          "name": "Scounter",
+          "name": "Scouter",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.K930IlotZVBYPrDO"
         },
         "NSroFUhwOiCZsAqy": {

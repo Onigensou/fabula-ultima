@@ -4259,6 +4259,12 @@
         "effects": 0
       },
       {
+        "id": "tgcZ9aHO4LzlcxA2",
+        "name": "Cat Ears (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "5su5PxiW5lwGHx70",
         "name": "Cataclysm",
         "type": "equippableItem",
@@ -7823,6 +7829,12 @@
         "effects": 0
       },
       {
+        "id": "fABWj5MvuADYTbpR",
+        "name": "Lens of Insight (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "kPMIUSuEpQ8Az5HK",
         "name": "Lethal Dosage",
         "type": "equippableItem",
@@ -10608,7 +10620,13 @@
       },
       {
         "id": "bUSzzJWSTpDdpf6S",
-        "name": "Scounter",
+        "name": "Scouter",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "AQqb37jPpVi1h6j6",
+        "name": "Scouter (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -10981,6 +10999,12 @@
       {
         "id": "YNRwUI8yD6PLZo5U",
         "name": "Sneaker",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "nWasi2AW6FFlUKCN",
+        "name": "Sneaker (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -14312,6 +14336,13 @@
         "effects": 1
       },
       {
+        "id": "kts7CUs98ea2rG6Q",
+        "name": "BD Dummy Enemy",
+        "type": "character",
+        "items": [],
+        "effects": 1
+      },
+      {
         "id": "N5k5aBtdGBakHLGO",
         "name": "Berserker",
         "type": "character",
@@ -16188,6 +16219,10 @@
             "name": "Ring of the Pupil"
           },
           {
+            "id": "KSepKK2J2itbHUUK",
+            "name": "Scouter (Passive)"
+          },
+          {
             "id": "2na6LT4hqNFM2hhJ",
             "name": "Serpent Spear"
           },
@@ -17744,6 +17779,10 @@
             "name": "Lens of Insight"
           },
           {
+            "id": "sNQBVLstuZSz5EZC",
+            "name": "Lens of Insight (Passive)"
+          },
+          {
             "id": "20QAZWYIlUg4Uj6B",
             "name": "Love Potion"
           },
@@ -17797,7 +17836,11 @@
           },
           {
             "id": "ljZLoe65h3hnWTYc",
-            "name": "Scounter"
+            "name": "Scouter"
+          },
+          {
+            "id": "wGMngSNcL0icOQiw",
+            "name": "Scouter (Passive)"
           },
           {
             "id": "KVCOLRQv6anedDGI",
@@ -18610,6 +18653,10 @@
             "name": "Cat Ears"
           },
           {
+            "id": "7WC6heFnxC7s3Zqr",
+            "name": "Cat Ears (Passive)"
+          },
+          {
             "id": "HuvAVqZwbORQENz9",
             "name": "Cognitive Focus"
           },
@@ -18696,6 +18743,10 @@
           {
             "id": "05OeWaPbNYmWjD0T",
             "name": "Sneaker"
+          },
+          {
+            "id": "gTVVty4CEgxlH0J5",
+            "name": "Sneaker (Passive)"
           },
           {
             "id": "RSnilc4zgPeVi4ib",
@@ -21006,6 +21057,10 @@
             "name": "Cat Ears"
           },
           {
+            "id": "SCwltDHCSmP9fPuW",
+            "name": "Cat Ears (Passive)"
+          },
+          {
             "id": "XIQeu3LXXwMA7XY6",
             "name": "Cursed Sword"
           },
@@ -22116,6 +22171,10 @@
             "name": "Lens of Insight"
           },
           {
+            "id": "kJjLVV3KCLRQGcOr",
+            "name": "Lens of Insight (Passive)"
+          },
+          {
             "id": "sX8AEhn7jGWiL4wo",
             "name": "Mage Seal"
           },
@@ -22241,6 +22300,10 @@
           {
             "id": "MW9Qma1EzFN4gnNY",
             "name": "Cat Ears"
+          },
+          {
+            "id": "ksZwRP9of370emug",
+            "name": "Cat Ears (Passive)"
           },
           {
             "id": "k7CNhaKwcWuBCDSr",

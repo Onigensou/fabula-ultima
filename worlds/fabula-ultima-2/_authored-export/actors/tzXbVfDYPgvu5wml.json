@@ -7508,7 +7508,7 @@
         "wxglZhHU9cSYnD30": {
           "acess_description": "<ul><li>Once at the start of a<strong>&nbsp;Conflict</strong> scene, you may perform the <strong>【Study】</strong>action as a&nbsp;<strong>Free Action</strong></li></ul>",
           "id": "${item.id}",
-          "name": "Scounter",
+          "name": "Scouter",
           "roll": "",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.wxglZhHU9cSYnD30"
         },

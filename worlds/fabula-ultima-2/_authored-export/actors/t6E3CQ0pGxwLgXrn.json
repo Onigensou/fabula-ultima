@@ -2891,6 +2891,69 @@
       "type": "equippableItem"
     },
     {
+      "_id": "KSepKK2J2itbHUUK",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782624787307,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/vizor.png",
+      "name": "Scouter (Passive)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "08uDbIorrsmW2YXB",
+        "props": {
+          "cost": "",
+          "description": "<ul><li>Once at the start of a<strong>&nbsp;Conflict</strong> scene, you may perform the <strong>【Study】</strong>action as a&nbsp;<strong>Free Action</strong></li></ul>",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "allowed_types": "Study",
+              "check_bonus_formula": "",
+              "damage_bonus_formula": "",
+              "effect_kind": "open_action_menu",
+              "effect_label": "sc_study",
+              "free_mode": true
+            }
+          },
+          "isCheck": false,
+          "name": "Scouter (Passive)",
+          "on_activate_effect_ref": "",
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "",
+              "reaction_effect_ref": "sc_study",
+              "reaction_passive_mode": "ask",
+              "reaction_source": "",
+              "reaction_trigger": "conflict_start"
+            }
+          },
+          "skill_target": "Self",
+          "skill_type": "Passive",
+          "type_damage": ""
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "AQqb37jPpVi1h6j6"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "MrFTlBwxcu4IyIU5",
       "_stats": {
         "compendiumSource": "Item.a9elI6g2FZ6qPY51",
@@ -6455,7 +6518,7 @@
         "08uDbIorrsmW2YXB": {
           "acess_description": "<ul><li>Once at the start of a<strong>&nbsp;Conflict</strong> scene, you may perform the <strong>【Study】</strong>action as a&nbsp;<strong>Free Action</strong></li></ul>",
           "id": "${item.id}",
-          "name": "Scounter",
+          "name": "Scouter",
           "roll": "",
           "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.08uDbIorrsmW2YXB"
         },

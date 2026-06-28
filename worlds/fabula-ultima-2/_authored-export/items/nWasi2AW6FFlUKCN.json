@@ -1,0 +1,54 @@
+{
+  "_id": "nWasi2AW6FFlUKCN",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1782624610623,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {}
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/sneak.png",
+  "name": "Sneaker (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "YNRwUI8yD6PLZo5U",
+    "props": {
+      "cost": "",
+      "description": "<p>Equipped passive: +2 to Study Checks.</p>",
+      "effect_table": {
+        "0": {
+          "check_buff_action": "stealth",
+          "check_buff_amount": "2",
+          "effect_kind": "check_buff",
+          "effect_label": "sneaker_stealth_buff"
+        }
+      },
+      "isCheck": false,
+      "isReaction": false,
+      "max_level": "1",
+      "name": "Sneaker (Passive)",
+      "on_activate_effect_ref": "",
+      "rolled_atr1": "INS",
+      "rolled_atr2": "INS",
+      "skill_target": "",
+      "skill_type": "Passive"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": true,
+    "uniqueId": "nWasi2AW6FFlUKCN"
+  },
+  "type": "equippableItem"
+}
