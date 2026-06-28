@@ -14,6 +14,22 @@
 
   const HELPERS = ["ae", "aeUuid", "aeStatus", "countAe", "aeValue"];
 
+  // Degraded-mode floor for the shared "state" identifier vocabulary. The
+  // CANONICAL source is globalThis["oni.IdentifierRegistry"] (loaded from
+  // esmodules on a world relaunch). This list is consulted ONLY when the
+  // registry is absent — e.g. an F5 before a relaunch pulled the registry in —
+  // so an unresolved STATUS_COUNT-style token degrades to 0 (the effect goes
+  // inert) instead of leaking a bare identifier into CSB's mathjs, which would
+  // compute the WHOLE prop to `undefined` and break the carrier's checks/damage.
+  // Keep in sync with identifier-registry.js STATE_IDENTIFIERS when ids are added.
+  const FALLBACK_STATE_IDENTIFIERS = ["STATUS_COUNT"];
+
+  // Registry names when loaded, else the local degraded-mode floor.
+  const getStateIdentifierNames = () => {
+    const names = globalThis["oni.IdentifierRegistry"]?.stateIdentifierNames;
+    return (Array.isArray(names) && names.length) ? names : FALLBACK_STATE_IDENTIFIERS;
+  };
+
   const state = {
     settingsRegistered: false,
 
@@ -168,10 +184,13 @@
   const hasCustomSyntax = (value) => {
     if (typeof value !== "string") return false;
     if (/\b(?:ae|aeUuid|aeStatus|countAe|aeValue|propAtLeast)\s*\(/.test(value)) return true;
-    // Shared "state" identifiers from the identifier registry (STATUS_COUNT, …)
-    // — bare UPPER_SNAKE tokens, kept in sync with the reaction/BD evaluators.
-    const names = globalThis["oni.IdentifierRegistry"]?.stateIdentifierNames;
-    if (Array.isArray(names) && names.length
+    // Shared "state" identifiers (STATUS_COUNT, …) — bare UPPER_SNAKE tokens,
+    // kept in sync with the reaction/BD evaluators via the identifier registry.
+    // Matched even when the registry is absent (degraded-mode floor) so the
+    // token is routed into transformValue, which degrades it to 0 rather than
+    // leaving it to poison the prop.
+    const names = getStateIdentifierNames();
+    if (names.length
         && new RegExp("\\b(?:" + names.join("|") + ")\\b").test(value)) return true;
     return false;
   };
@@ -496,16 +515,21 @@
     // Each bare UPPER_SNAKE token is replaced with its resolved number before
     // CSB's mathjs evaluates the ${ ... }$. No event payload at derivation time
     // (payload = null), so event-scoped identifiers are intentionally absent.
+    // DEGRADED MODE: if the registry isn't loaded (or can't resolve), the token
+    // is substituted with 0 — the effect goes inert, which is far safer than
+    // leaving a bare identifier for mathjs to choke on (poisons the whole prop).
     const idReg = globalThis["oni.IdentifierRegistry"];
-    if (actor && idReg?.resolveState && Array.isArray(idReg.stateIdentifierNames)) {
-      for (const name of idReg.stateIdentifierNames) {
-        const tokenRe = new RegExp("\\b" + name + "\\b", "g");
-        if (!tokenRe.test(output)) continue;
+    const stateNames = getStateIdentifierNames();
+    for (const name of stateNames) {
+      const tokenRe = new RegExp("\\b" + name + "\\b", "g");
+      if (!tokenRe.test(output)) continue;
+      let numeric = 0;
+      if (actor && idReg?.resolveState) {
         const resolved = idReg.resolveState(name, actor, null);
-        const numeric = Number.isFinite(Number(resolved)) ? Number(resolved) : 0;
-        output = output.replace(new RegExp("\\b" + name + "\\b", "g"), String(numeric));
-        if (isDebug()) console.log(TAG, `${name} =>`, numeric, actor?.name ?? null);
+        numeric = Number.isFinite(Number(resolved)) ? Number(resolved) : 0;
       }
+      output = output.replace(new RegExp("\\b" + name + "\\b", "g"), String(numeric));
+      if (isDebug()) console.log(TAG, `${name} =>`, numeric, actor?.name ?? null, idReg ? "(registry)" : "(fallback 0)");
     }
 
     maybeWarnFormula({
