@@ -2222,6 +2222,8 @@
       "bond_4": "",
       "bond_5": "",
       "bond_6": "",
+      "bonus_hp": 0,
+      "bonus_mp": 0,
       "bow_ef": "100",
       "brawling_ef": "100",
       "char_identity": "",
@@ -2556,6 +2558,9 @@
         }
       },
       "origin": "",
+      "override_all_damage_type": "None",
+      "override_attack_damage_type": "None",
+      "override_spell_damage_type": "None",
       "quirk_description": "<p>When you cast an 【⚡Offensive Spell】that deals <strong>non-physical</strong> damage, you may have your <strong>damage type </strong>for all your 【⚔️Attack】becomes the same type as the spell you cast until the end of this scene or until you cast a 【⚡Offensive Spell】with a different damage type.</p><p>During your next turn after you trigger this effect, whenever you <strong>hit </strong>an enemy with a <strong>weapon </strong>you have equipped, recovers <strong>3 Mind Point.</strong></p>",
       "quirk_name": "Sword Enchanter",
       "relationship_1": "",
@@ -2809,7 +2814,7 @@
       "xuwAn7u126GfFweU": []
     },
     "template": "OmwL5UqoVwjshkJo",
-    "templateSystemUniqueVersion": 2347495135
+    "templateSystemUniqueVersion": 782969161
   },
   "type": "character"
 }

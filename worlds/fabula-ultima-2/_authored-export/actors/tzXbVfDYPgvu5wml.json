@@ -6436,7 +6436,7 @@
       "bond_5": "",
       "bond_6": "",
       "bond_temp": "Training Dummy C",
-      "bonus_hp": 2244,
+      "bonus_hp": 12,
       "bonus_mp": 0,
       "bow_ef": "100",
       "brawling_ef": "100",
@@ -8071,6 +8071,9 @@
         }
       },
       "origin": "Fareast",
+      "override_all_damage_type": "None",
+      "override_attack_damage_type": "None",
+      "override_spell_damage_type": "None",
       "quirk_description": "<p><span class=\"fontstyle0\">When a rule or ability requires you to spend </span><span class=\"fontstyle2\">100 or fewer </span><span class=\"fontstyle0\">Hit Points, Mind Points, or<br>Inventory Points, you may suffer </span><span class=\"fontstyle2\">1d8 Instability Points </span><span class=\"fontstyle0\">to ignore that cost.</span></p><p><span class=\"fontstyle0\">At the end of each session, you lose </span><span class=\"fontstyle2\">1d6 Instability Points </span><span class=\"fontstyle0\">(to a minimum of zero).</span></p><p><span class=\"fontstyle0\">If your </span><span class=\"fontstyle2\">Instability Points </span><span class=\"fontstyle0\">ever reach </span><span class=\"fontstyle2\">10 or more</span><span class=\"fontstyle0\">, you are immediately reduced to 0 Hit<br>Points and must </span><span class=\"fontstyle2\">Surrender</span><span class=\"fontstyle0\">.</span></p><p><span class=\"fontstyle0\">The consequences of this Surrender should be closely tied<br>to you losing control of your abilities. Then, you lose all </span><span class=\"fontstyle2\">Instability Points</span> <br style=\" font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-align: -webkit-auto; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; -webkit-text-size-adjust: auto; -webkit-text-stroke-width: 0px; \">3</p>",
       "quirk_name": "FUGITIVE EXPERIMENT",
       "relationship_1": "You cheater!!",
@@ -9670,7 +9673,7 @@
       "xuwAn7u126GfFweU": []
     },
     "template": "OmwL5UqoVwjshkJo",
-    "templateSystemUniqueVersion": 2347495135
+    "templateSystemUniqueVersion": 782969161
   },
   "type": "character"
 }
