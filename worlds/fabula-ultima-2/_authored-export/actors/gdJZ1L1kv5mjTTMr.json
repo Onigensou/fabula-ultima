@@ -10,6 +10,173 @@
   },
   "effects": [
     {
+      "_id": "2qOJbI2f3FNI3gkq",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782752502642,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_3",
+          "mode": 0,
+          "priority": 1,
+          "value": "VU"
+        },
+        {
+          "key": "wet_status",
+          "mode": 5,
+          "priority": 1,
+          "value": "true"
+        }
+      ],
+      "description": "<p>Gain <strong>Bolt </strong>vulnerability</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "sKaI09DfDAMkJkyy",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.sKaI09DfDAMkJkyy"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-wet",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "fabula-ultima-companion": {
+          "crossScene": true,
+          "directorPermanent": true,
+          "setBonus": "Swift Swimmers:2:ae",
+          "setBonusSig": "{\"n\":\"Wet\",\"s\":[\"5FFBDg2y54bpqgat\"],\"c\":[{\"k\":\"affinity_3\",\"m\":0,\"v\":\"VU\"},{\"k\":\"wet_status\",\"m\":5,\"v\":\"true\"}],\"di\":false,\"du\":{},\"dp\":true,\"cs\":true}",
+          "wetStatusBooleanPatchBackup_v1": {
+            "changes": [
+              {
+                "key": "affinity_3",
+                "mode": 0,
+                "priority": 1,
+                "value": "VU"
+              }
+            ],
+            "createdAt": 1777713393201,
+            "effectName": "Wet",
+            "effectUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.sKaI09DfDAMkJkyy",
+            "parentName": "Debuff",
+            "parentType": "Item"
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/flying_sardine.png",
+      "name": "Wet",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "5FFBDg2y54bpqgat"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "5Lot51lutFv94DAQ",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782745487357,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><em>Brainwave Clock:</em> Your accumulated psychic charge (0–4 sections), filled and spent by Esper gifts.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "29UUG0oHiOSptHRN",
+          "originalParentId": "hZF1clWz4uuZixDS",
+          "originalUuid": "Actor.gdJZ1L1kv5mjTTMr.Item.hZF1clWz4uuZixDS.ActiveEffect.29UUG0oHiOSptHRN"
+        },
+        "fabula-ultima-companion": {
+          "category": "Other",
+          "chargeKey": "brainwave",
+          "charges": 0,
+          "chargesMax": 4,
+          "directorAppliedBy": {
+            "appliedAtRound": 0,
+            "effectLabel": "pg_seed_clock",
+            "lifetimeMode": "persistent_counter",
+            "reactorActorUuid": "Actor.gdJZ1L1kv5mjTTMr",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.ZH501Ky1kDKHFCPp",
+            "skillUuid": "Actor.gdJZ1L1kv5mjTTMr.Item.hZF1clWz4uuZixDS",
+            "turnsRemaining": null
+          },
+          "lifetimeMode": "persistent_counter",
+          "reactionConfig": {
+            "effect_table": {},
+            "reaction_config_table": {}
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Add/DiabolicEsperPassive3.png",
+      "name": "Brainwave Clock",
+      "origin": "Actor.gdJZ1L1kv5mjTTMr.Item.hZF1clWz4uuZixDS",
+      "sort": 0,
+      "statuses": [
+        "fud-brainwave-clock"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
       "_id": "6L2aafqjK0JG5eOJ",
       "_stats": {
         "compendiumSource": null,
@@ -76,6 +243,183 @@
           "food"
         ]
       },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "gizCPyr6DS1pOlZv",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782745487960,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "7Gs3jJ2pHzcKD0il",
+          "originalParentId": "qdGOPTKJQ2YI6LUl",
+          "originalUuid": "Item.qdGOPTKJQ2YI6LUl.ActiveEffect.7Gs3jJ2pHzcKD0il"
+        },
+        "fabula-ultima-companion": {
+          "category": "Other",
+          "chargeKey": "bortd_death_save",
+          "charges": 1,
+          "chargesMax": 1,
+          "directorAppliedBy": {
+            "appliedAtRound": 0,
+            "effectLabel": "bortd_seed_mark",
+            "lifetimeMode": "on_activation",
+            "reactorActorUuid": "Actor.gdJZ1L1kv5mjTTMr",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.ZH501Ky1kDKHFCPp",
+            "skillUuid": "Actor.gdJZ1L1kv5mjTTMr.Item.fFHKCwDndsOmUg0q",
+            "turnsRemaining": null
+          },
+          "lifetimeMode": "on_activation",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "candidate_source": "self",
+                "effect_kind": "targeting",
+                "effect_label": "bortd_self"
+              },
+              "1": {
+                "chain_steps": "bortd_b_heal, bortd_b_zero",
+                "effect_kind": "chain",
+                "effect_label": "bortd_death"
+              },
+              "2": {
+                "effect_kind": "grant",
+                "effect_label": "bortd_b_heal",
+                "grant_amount": "SL * AE_CHARGES_GRAVE_POINTS",
+                "grant_resource": "hp",
+                "target_ref": "bortd_self"
+              },
+              "3": {
+                "charge_ae_name": "Grave Points",
+                "charge_amount": "0",
+                "charge_operation": "set",
+                "effect_kind": "adjust_charges",
+                "effect_label": "bortd_b_zero",
+                "target_ref": "bortd_self"
+              }
+            },
+            "reaction_config_table": {
+              "0": {
+                "condition_formula": "CUR_HP <= 0 && AE_CHARGES_GRAVE_POINTS > 0",
+                "consume_self": true,
+                "reaction_effect_ref": "bortd_death",
+                "reaction_passive_mode": "on",
+                "reaction_passive_target": "self",
+                "reaction_resource_filter": "hp",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_lose_resource"
+              }
+            }
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/Shadowed_Vigil.png",
+      "name": "Beyond the Realms of Death",
+      "origin": "Actor.gdJZ1L1kv5mjTTMr.Item.fFHKCwDndsOmUg0q",
+      "sort": 0,
+      "statuses": [
+        "fud-beyond-realms"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "LGPfnY5jKS6nDnCW",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782745487960,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p><em>Grave Points:</em> Necromantic energy gathered from creatures near death, spent by Necromancer skills.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "RjuPzSEVXVHPNE22",
+          "originalParentId": "qdGOPTKJQ2YI6LUl",
+          "originalUuid": "Item.qdGOPTKJQ2YI6LUl.ActiveEffect.RjuPzSEVXVHPNE22"
+        },
+        "fabula-ultima-companion": {
+          "category": "Other",
+          "chargeKey": "grave",
+          "charges": 0,
+          "chargesMax": 2,
+          "directorAppliedBy": {
+            "appliedAtRound": 0,
+            "effectLabel": "bortd_seed_gp",
+            "lifetimeMode": "persistent_counter",
+            "reactorActorUuid": "Actor.gdJZ1L1kv5mjTTMr",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.ZH501Ky1kDKHFCPp",
+            "skillUuid": "Actor.gdJZ1L1kv5mjTTMr.Item.fFHKCwDndsOmUg0q",
+            "turnsRemaining": null
+          },
+          "lifetimeMode": "persistent_counter",
+          "reactionConfig": {
+            "effect_table": {},
+            "reaction_config_table": {}
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/death/skull-energy-light-purple.webp",
+      "name": "Grave Points",
+      "origin": "Actor.gdJZ1L1kv5mjTTMr.Item.fFHKCwDndsOmUg0q",
+      "sort": 0,
+      "statuses": [
+        "fud-grave-points"
+      ],
+      "system": {},
       "tint": "#ffffff",
       "transfer": false,
       "type": "base"
@@ -548,7 +892,7 @@
       "_stats": {
         "compendiumSource": "Item.CnueY54QHD80cmph",
         "coreVersion": "12.343",
-        "createdTime": 1782566182098,
+        "createdTime": 1782742271224,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5864,14 +6208,31 @@
       "accessory2_name": "Diver Goggle",
       "accessory_details": "<ul>\n<li>Lower the chance of being targeted by attacks.</li>\n<li>Gain +1 to Skill Checks that require <strong>【DEX】</strong></li>\n</ul>",
       "accessory_name": "Cat Ears",
+      "activation": 1,
+      "affinity_1": "RS",
+      "affinity_2": "NA",
+      "affinity_3": "VU",
+      "affinity_4": "NA",
+      "affinity_5": "NA",
+      "affinity_6": "RS",
+      "affinity_7": "NA",
+      "affinity_8": "NA",
+      "affinity_9": "NA",
       "animation_table": {},
+      "anomaly_status": 0,
       "arcane_ef": "100",
       "arcanism": false,
       "armor_details": "<ul><li><p>When you're <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.2rh5lyMNU5yL8Btk\" data-id=\"2rh5lyMNU5yL8Btk\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Wet</span></strong></a></span><strong>, </strong>Treat your <strong>【DEX】</strong>size as <strong>D12,&nbsp;</strong></p></li><li><p>Gain +2 to all Skill Checks that require <strong>【DEX】</strong></p></li></ul>",
       "armor_mod": "1",
       "armor_name": "Swimsuit",
       "backstory": "",
+      "bane_status": 0,
+      "base_defense": 6,
+      "base_magic_defense": 12,
       "battle_facing_direction": "left",
+      "berserk_status": 0,
+      "bleed_status": 0,
+      "blind_status": 0,
       "bond_1": "Blanche",
       "bond_2": "Hina",
       "bond_3": "Zarg",
@@ -5879,15 +6240,37 @@
       "bond_5": "Geist",
       "bond_6": "",
       "bond_temp": "",
+      "bonus_defense": 3,
+      "bonus_dex": 0,
       "bonus_hp": 0,
+      "bonus_ins": 0,
+      "bonus_magic_defense": 1,
+      "bonus_mig": 0,
       "bonus_mp": 0,
+      "bonus_wlp": 0,
       "bow_ef": "100",
       "brawling_ef": "100",
+      "burn_status": 0,
       "camp_activity_description_1": "<p><span style=\"font-family: Signika, 'Noto Sans', Inter, 'Segoe UI', system-ui, -apple-system, sans-serif\">Exploration Yourself or one ally</span></p><p style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); margin: 0.5em 0px; color: rgb(59, 42, 25); font-family: Signika, 'Noto Sans', Inter, 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgba(0, 0, 0, 0.05); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial\"><span style=\"font-family: Signika, 'Noto Sans', Inter, 'Segoe UI', system-ui, -apple-system, sans-serif\">You spend your time looking for useful items; describe how, then roll 1d6.</span></p><p style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); margin: 0.5em 0px; color: rgb(59, 42, 25); font-family: Signika, 'Noto Sans', Inter, 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgba(0, 0, 0, 0.05); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial\"><span style=\"font-family: Signika, 'Noto Sans', Inter, 'Segoe UI', system-ui, -apple-system, sans-serif\">w 1. Ouch! You recover half the normal amount of HP and MP during this rest.</span></p><p style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); margin: 0.5em 0px; color: rgb(59, 42, 25); font-family: Signika, 'Noto Sans', Inter, 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgba(0, 0, 0, 0.05); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial\"><span style=\"font-family: Signika, 'Noto Sans', Inter, 'Segoe UI', system-ui, -apple-system, sans-serif\">w 2. Not what I was looking for... The target regains 2 Inventory Points.</span></p><p style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); margin: 0.5em 0px; color: rgb(59, 42, 25); font-family: Signika, 'Noto Sans', Inter, 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgba(0, 0, 0, 0.05); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial\"><span style=\"font-family: Signika, 'Noto Sans', Inter, 'Segoe UI', system-ui, -apple-system, sans-serif\">w 3-5. Hoho, this can be useful! The target regains 3 Inventory Points.</span></p><p style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); margin: 0.5em 0px; color: rgb(59, 42, 25); font-family: Signika, 'Noto Sans', Inter, 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgba(0, 0, 0, 0.05); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial\"><span style=\"font-family: Signika, 'Noto Sans', Inter, 'Segoe UI', system-ui, -apple-system, sans-serif\">w 6. Jackpot! The target regains 3 Inventory Points, and you also find an amount of</span></p><p style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); margin: 0.5em 0px; color: rgb(59, 42, 25); font-family: Signika, 'Noto Sans', Inter, 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgba(0, 0, 0, 0.05); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial\"><span style=\"font-family: Signika, 'Noto Sans', Inter, 'Segoe UI', system-ui, -apple-system, sans-serif\">zenit equal to 【your character’s level × 50】.</span></p>",
       "camp_activity_description_2": "<p><span style=\"font-family: Signika, 'Noto Sans', Inter, 'Segoe UI', system-ui, -apple-system, sans-serif\">Training Yourself</span></p><p style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); margin: 0.5em 0px; color: rgb(59, 42, 25); font-family: Signika, 'Noto Sans', Inter, 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgba(0, 0, 0, 0.05); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial\"><span style=\"font-family: Signika, 'Noto Sans', Inter, 'Segoe UI', system-ui, -apple-system, sans-serif\">Once before the next rest, if you are about to suffer one or more status effects from</span></p><p style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); margin: 0.5em 0px; color: rgb(59, 42, 25); font-family: Signika, 'Noto Sans', Inter, 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgba(0, 0, 0, 0.05); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial\"><span style=\"font-family: Signika, 'Noto Sans', Inter, 'Segoe UI', system-ui, -apple-system, sans-serif\">the same source, you may instead choose not to suffer any of those status effects.</span></p>",
       "camp_activity_name_1": "Exploration",
       "camp_activity_name_2": "Training",
+      "chanter_volume_mp_header": "MP",
+      "chanter_volume_mp_high": 30,
+      "chanter_volume_mp_low": 10,
+      "chanter_volume_mp_medium": 20,
+      "chanter_volume_target_high": "Every enemy who can hear you.",
+      "chanter_volume_target_low": "Yourself <b>or</b> another creature you can see who can hear you.",
+      "chanter_volume_target_medium": "Every ally who can hear you.",
       "char_identity": "Seductive Mistress Firefox Lycanthrope ",
+      "character_exp_multiplier": 1,
+      "character_zenit_multiplier": 1,
+      "charm_status": 0,
+      "check_mod_all": 0,
+      "check_mod_magic": 0,
+      "check_mod_melee": 0,
+      "check_mod_ranged": 0,
+      "check_roller": "Roll!",
       "chimerism": false,
       "class_list": {
         "0": {
@@ -5925,6 +6308,44 @@
       "clock_brainwave": "0",
       "clock_grave": "2",
       "clock_trade": "0",
+      "condition_anomaly": "",
+      "condition_bane": "",
+      "condition_berserk": "",
+      "condition_bleed": "",
+      "condition_blind": "",
+      "condition_burn": "",
+      "condition_charm": "",
+      "condition_confused": "",
+      "condition_curse": "",
+      "condition_dazed": "",
+      "condition_delayed": "",
+      "condition_despair": "",
+      "condition_disarmed": "",
+      "condition_doom": "",
+      "condition_enraged": "",
+      "condition_envenomed": "",
+      "condition_fatigue": "",
+      "condition_frightened": "",
+      "condition_grappled": "",
+      "condition_hypothermia": "",
+      "condition_isolate": "",
+      "condition_obscure": "",
+      "condition_oil": "",
+      "condition_panic": "",
+      "condition_paralyzed": "",
+      "condition_petrify": "",
+      "condition_poisoned": "",
+      "condition_shaken": "",
+      "condition_silence": "",
+      "condition_slow": "",
+      "condition_stagger": "",
+      "condition_suppress": "",
+      "condition_turbulence": "",
+      "condition_weak": "",
+      "condition_wet": "",
+      "condition_wither": "",
+      "condition_zombie": "",
+      "confused_status": 0,
       "consumable_list": {
         "3OEHGnZS4s2Hyw53": {
           "consume_description": "<blockquote>\n<ul>\n<li><em>Gain <strong>Focus</strong> for the rest of the scene.<strong> (</strong>Increase your <strong>【INS】</strong> die by 1 stage </em>(to a maximum for D12))<em>&nbsp;</em></li>\n</ul>\n</blockquote>",
@@ -5967,16 +6388,54 @@
           "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.xSKzwZ5v6AVCRvDF"
         }
       },
+      "cooking_roller": "🔪Cook!",
+      "critical_damage_bonus": 0,
+      "critical_damage_multiplier": 1,
+      "critical_dice_range": 0,
       "current_hp": "89",
       "current_ip": "8",
       "current_mp": "104",
+      "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/Keren_Cut-in002.png",
       "cut_in_fumble": "",
       "cut_in_offset_y": "",
       "cut_in_zero_power": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/cutin%20placeholder/Keren_Cut-in001.png",
       "dagger_ef": "100",
+      "damage_receiving_mod_air": 0,
+      "damage_receiving_mod_all": 0,
+      "damage_receiving_mod_bolt": 0,
+      "damage_receiving_mod_dark": 0,
+      "damage_receiving_mod_earth": 0,
+      "damage_receiving_mod_fire": 0,
+      "damage_receiving_mod_ice": 0,
+      "damage_receiving_mod_light": 0,
+      "damage_receiving_mod_melee": 0,
+      "damage_receiving_mod_physical": 2,
+      "damage_receiving_mod_poison": 0,
+      "damage_receiving_mod_range": 0,
+      "damage_receiving_percentage_air": 0,
+      "damage_receiving_percentage_all": 0,
+      "damage_receiving_percentage_bolt": 0,
+      "damage_receiving_percentage_dark": 0,
+      "damage_receiving_percentage_earth": 0,
+      "damage_receiving_percentage_fire": 0,
+      "damage_receiving_percentage_ice": 0,
+      "damage_receiving_percentage_light": 0,
+      "damage_receiving_percentage_melee": 0,
+      "damage_receiving_percentage_physical": "0%",
+      "damage_receiving_percentage_poison": 0,
+      "damage_receiving_percentage_range": 0,
+      "dazed_status": 0,
       "default_facing_direction": "left",
+      "defense": 9,
+      "delayed_status": 0,
+      "despair_status": 0,
       "dex_base": "6",
+      "dex_current": 6,
+      "disarmed_status": 0,
+      "doom_status": 0,
+      "draw_card": "Draw",
+      "draw_card_copy1": "Use",
       "elementalism": false,
       "emotion_1_1": "admiration",
       "emotion_1_2": "loyalty",
@@ -5999,20 +6458,57 @@
       "emotion_temp_1": "",
       "emotion_temp_2": "",
       "emotion_temp_3": "",
+      "enmity": 100,
+      "enraged_status": 0,
       "entropism": false,
+      "envenomed_status": 0,
+      "exp_meter": "1.73",
       "experience": "1.73",
       "experience_ui": "0",
+      "extra_damage_mod_air": 0,
+      "extra_damage_mod_all": 1,
+      "extra_damage_mod_arcane": 0,
+      "extra_damage_mod_bolt": 0,
+      "extra_damage_mod_bow": 0,
+      "extra_damage_mod_brawling": 0,
+      "extra_damage_mod_dagger": 0,
+      "extra_damage_mod_dark": 0,
+      "extra_damage_mod_earth": 0,
+      "extra_damage_mod_fire": 0,
+      "extra_damage_mod_firearm": 0,
+      "extra_damage_mod_flail": 0,
+      "extra_damage_mod_heavy": 0,
+      "extra_damage_mod_ice": 0,
+      "extra_damage_mod_item": 0,
+      "extra_damage_mod_light": 0,
+      "extra_damage_mod_melee": 0,
+      "extra_damage_mod_physical": 0,
+      "extra_damage_mod_poison": 0,
+      "extra_damage_mod_ranged": 0,
+      "extra_damage_mod_spear": 0,
+      "extra_damage_mod_spell": 0,
+      "extra_damage_mod_sword": 0,
+      "extra_damage_mod_thrown": 0,
       "fabula_point": "1",
+      "fatigue_status": 0,
       "firearm_ef": "100",
       "flail_ef": "100",
+      "frightened_status": 0,
+      "grappled_status": 0,
       "heavy_ef": "100",
+      "hypothermia_status": 0,
       "icon_offset_x": "0",
       "icon_offset_y": "22",
       "icon_scale": "1.4",
+      "id": "gdJZ1L1kv5mjTTMr",
       "illusionism": true,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Keren/Portrait/Keren_Portrait001.png",
       "init_penalty": "0",
       "ins_base": "12",
+      "ins_current": 12,
+      "inventory_label": "💼 Inventory",
       "inventory_list": {},
+      "ip_reduction_value": 0,
       "isAwake": false,
       "isBounce": false,
       "isClarity": false,
@@ -6030,6 +6526,7 @@
       "isSwift": false,
       "isWeak": false,
       "is_martialarmor": false,
+      "isolate_status": 0,
       "itemContainer2": {
         "BRNmLkWm9FSqbXRK": {
           "armor_description": "<p><ul><li><p>When you're <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.2rh5lyMNU5yL8Btk\" data-id=\"2rh5lyMNU5yL8Btk\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Wet</span></strong></a></span><strong>, </strong>Treat your <strong>【DEX】</strong>size as <strong>D12,&nbsp;</strong></p></li><li><p>Gain +2 to all Skill Checks that require <strong>【DEX】</strong></p></li></ul></p>",
@@ -6193,6 +6690,7 @@
           "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.z6mOPSuVVWNMvLfK"
         }
       },
+      "item_restore_mod": 0,
       "key_list": {
         "alJIkZKIha6tZRiL": {
           "id": "${item.id}",
@@ -6203,13 +6701,25 @@
         }
       },
       "level": "34",
+      "lifesteal_percentage": 0,
+      "lifesteal_value": 0,
+      "magic_defense": 13,
       "magic_defense_mod": "1",
       "main_attrib_1": "DEX",
       "main_attrib_2": "INS",
       "main_details": "<ul><li><p>When a creature 【⚔️Attack】you and <strong>missed, </strong>there's a chance to inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.SNK1IJTKfxjAy2NS\" data-id=\"SNK1IJTKfxjAy2NS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bane</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>to the attacker</p></li><li><p>You may perform the skill 【💥Weapon Break】</p></li></ul>",
       "main_hand": "Swordbreaker",
+      "main_hand_attack": "",
+      "manadrain_percentage": 0,
+      "manadrain_value": 0,
+      "max_hp": 89,
+      "max_ip": 8,
+      "max_mp": 104,
       "memories_list": {},
+      "memory": "Memories",
       "mig_base": "6",
+      "mig_current": 6,
+      "minimum_critical_dice": 6,
       "name": "Keren",
       "normal_spell_list": {
         "IWyEiMupyiMMM7my": {
@@ -6280,12 +6790,16 @@
         }
       },
       "notes_text": "<p>Exploration Yourself or one ally</p><p>You spend your time looking for useful items; describe how, then roll 1d6.</p><p>w 1. Ouch! You recover half the normal amount of HP and MP during this rest.</p><p>w 2. Not what I was looking for... The target regains 2 Inventory Points.</p><p>w 3-5. Hoho, this can be useful! The target regains 3 Inventory Points.</p><p>w 6. Jackpot! The target regains 3 Inventory Points, and you also find an amount of</p><p>zenit equal to 【your character’s level × 50】.</p><p></p><p></p><p>Training Yourself</p><p>Once before the next rest, if you are about to suffer one or more status effects from</p><p>the same source, you may instead choose not to suffer any of those status effects.</p>",
+      "obscure_status": 0,
       "off_attrib_1": "SHI",
       "off_attrib_2": "SHI",
       "off_base_mod_1": "2",
       "off_base_mod_2": "0",
       "off_details": "<ul>\n<li>You have Resistance to<strong> Fire</strong>&nbsp;damage.</li>\n</ul>",
       "off_hand": "+2 Ignis Shield",
+      "off_hand_attack": "",
+      "off_mod_1": 2,
+      "off_mod_2": 0,
       "offensive_spell_list": {
         "2JQjJkiP9OBk2z5o": {
           "class": "Illusionist",
@@ -6453,10 +6967,24 @@
           "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.ygs90OQ6AduK3pH6"
         }
       },
+      "oil_status": 0,
       "origin": "",
       "override_all_damage_type": "None",
       "override_attack_damage_type": "None",
+      "override_damage_type": "None",
+      "override_defense": 0,
+      "override_dex": 0,
+      "override_ins": 0,
+      "override_magic_defense": 0,
+      "override_mig": 0,
       "override_spell_damage_type": "None",
+      "override_wlp": 0,
+      "panic_status": 0,
+      "paralyze_status": 0,
+      "petrify_status": 0,
+      "place_card_vanguard": "Place",
+      "poisoned_status": 0,
+      "populate_deck": "Populate",
       "quirk_description": "<p>You hail from the wealthiest, most influential family in this region. On what do they</p><p>base their fortune and reputation? Are you the only heir? What is it about your family</p><p>you really can’t stand, and why did it lead you to join the other characters?</p><p>If you choose this <strong>Quirk</strong> during <strong>character creation</strong>, increase your initial savings (see</p><p><strong>Core Rulebook</strong>, page 165) by 1000 zenit.</p><p>Additionally, you are accompanied by two fiercely loyal bodyguards: give them a name</p><p>and describe their appearance. They do not have an <strong>NPC profile</strong> and never take part in</p><p><strong>Checks</strong> or conflicts, but you are inseparable and they somehow appear whenever you</p><p>need their help. They offer the following benefits:</p><ul><li><p><strong>Be careful!</strong> When you suffer damage, you may halve it.</p></li><li><p><strong>Here is the information you previously requested</strong>. During a Rest, you may ask the</p></li></ul><p><strong>Game Master</strong> one question; they will answer truthfully.</p><ul><li><p><strong>Stay down, I'll take care of this!</strong> When you create an elemental shard, you may have</p></li></ul><p>it deal extra damage equal to <em>【</em><strong>5 + half your level</strong><em>】</em>.</p><p>Whenever you make use of one of these benefits, your bodyguards suffer 1d6 Fatigue</p><p>Points; as long as they have 10 or more Fatigue Points, you cannot rely on them.</p><p>Fatigue is shared between bodyguards; it is not tracked individually.</p><p>At the end of each session (approximately four hours of play), your bodyguards recover</p><p>from 1d6 Fatigue Points (to a minimum of zero).</p>",
       "quirk_name": "STUBBORN SCION",
       "relationship_1": "MeatShield Pet",
@@ -6465,14 +6993,20 @@
       "relationship_4": "EntityFriend",
       "relationship_5": "Spec",
       "relationship_6": "",
+      "reset_cards": "Resets",
+      "resolve_set": "Resolve",
       "resource_value_1": "0",
       "resource_value_2": "0",
       "resource_value_3": "0",
+      "reveal_cards": "Reveal",
       "ritualism": false,
       "rolled_atr1": "INS",
       "rolled_atr2": "DEX",
+      "shaken_status": 0,
       "shield_type": "",
       "shield_value": "0",
+      "shuffle_deck": "Shuffle",
+      "silence_status": 0,
       "skill_active_list": {
         "2JQjJkiP9OBk2z5o": {
           "active_class": "Illusionist",
@@ -6898,18 +7432,26 @@
       "skill_class_filter": "",
       "skill_hideEffect": false,
       "skill_type_filter": "All",
+      "slow_status": 0,
       "spear_ef": "100",
       "spell_class_filter": "",
       "spell_hideEffect": false,
       "spiritism": false,
       "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Keren/Keren_Battler002.webm",
       "sprite_standard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Keren/Keren_Standard.png",
+      "stagger_status": 0,
+      "suppress_status": 0,
       "sword_ef": "100",
       "theme": "Dungeon Plunderer ",
       "thrown_ef": "100",
+      "turbulence_status": 0,
+      "uuid": "Actor.gdJZ1L1kv5mjTTMr",
+      "weak_status": 0,
       "weapon1_base_damage": "5",
       "weapon1_base_mod": "0",
+      "weapon1_damage": 5,
       "weapon1_damagetype": "Physical",
+      "weapon1_mod": 0,
       "weapon2_damagetype": "-",
       "weapon_list": {
         "33mIsYsdD1nqOXXH": {
@@ -7105,15 +7647,21 @@
           "weapon_range": "Melee"
         }
       },
+      "wet_status": 0,
+      "wither_status": 0,
       "wlp_base": "10",
+      "wlp_current": 10,
       "your_class_name": "",
       "zenit": "7259",
+      "zero_label": "Zero Power",
       "zero_power_description": "<p>Shatter all phantom. Deal damage to all enemy equal to <strong>【(shattered phantom x 20) + 20】</strong> <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(226, 88, 34) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span> damage.</p>",
       "zero_power_macro": "",
       "zero_power_name": "Last Den of Cinders",
       "zero_power_showMacro": false,
       "zero_power_value": "3",
-      "zero_trigger_description": "<p>Every time a Phantasm shattered, gain 1 zero trigger</p>"
+      "zero_trigger_description": "<p>Every time a Phantasm shattered, gain 1 zero trigger</p>",
+      "zero_trigger_label": "Trigger",
+      "zombie_status": 0
     },
     "statusEffects": {
       "1QPHKNWo17z0bBmX": [],
@@ -7168,7 +7716,7 @@
       "xuwAn7u126GfFweU": []
     },
     "template": "OmwL5UqoVwjshkJo",
-    "templateSystemUniqueVersion": 782969161
+    "templateSystemUniqueVersion": 782969162
   },
   "type": "character"
 }

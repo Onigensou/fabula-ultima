@@ -1,0 +1,46 @@
+{
+  "_id": "o6uG6sr3yp6WbDCA",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1782741971046,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "V6fo91m4ATMoEWpi",
+  "img": "icons/svg/aura.svg",
+  "name": "Swift Swimmers — Equipment Set",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "id": "o6uG6sr3yp6WbDCA",
+      "img": "icons/svg/aura.svg",
+      "name": "Swift Swimmers — Equipment Set",
+      "set_bonus_table": {
+        "0": {
+          "bonus_ae_ref": "Wet",
+          "bonus_label": "Always Wet",
+          "bonus_skill_ref": "",
+          "pieces": "2"
+        }
+      },
+      "set_name": "Swift Swimmers",
+      "uuid": "Item.o6uG6sr3yp6WbDCA"
+    },
+    "template": "G5TD2bhPplfTQkn1",
+    "templateSystemUniqueVersion": 100000004,
+    "unique": false,
+    "uniqueId": "o6uG6sr3yp6WbDCA"
+  },
+  "type": "equippableItem"
+}

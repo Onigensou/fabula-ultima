@@ -2633,6 +2633,12 @@
         "effects": 0
       },
       {
+        "id": "G5TD2bhPplfTQkn1",
+        "name": "_Equipment Set Template",
+        "type": "_equippableItemTemplate",
+        "effects": 0
+      },
+      {
         "id": "ZoiV53VaLzeRsEps",
         "name": "_Item Template",
         "type": "_equippableItemTemplate",
@@ -11573,6 +11579,12 @@
         "effects": 0
       },
       {
+        "id": "o6uG6sr3yp6WbDCA",
+        "name": "Swift Swimmers — Equipment Set",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "lRk4pXxACoezIlOD",
         "name": "Swimsuit",
         "type": "equippableItem",
@@ -14336,7 +14348,7 @@
         "effects": 1
       },
       {
-        "id": "6JXwHoGvJHwSG9VX",
+        "id": "38resZ4CU7Kn7TX0",
         "name": "BD Dummy Enemy",
         "type": "character",
         "items": [],
@@ -18769,7 +18781,7 @@
             "name": "Zero Trigger: Shattered Phantasm"
           }
         ],
-        "effects": 1
+        "effects": 5
       },
       {
         "id": "EHyFlGpLQLriK65C",
