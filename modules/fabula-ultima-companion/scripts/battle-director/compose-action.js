@@ -396,10 +396,7 @@ async function composeAttack({ director, snap, token, eligible, cancelSentinel, 
   if (!picked) return { cancelled: true, reason: "weapon-mode-cancelled" };
   const attackMode = picked;
 
-  // Target pick. We deliberately picks only ONE target for the FIRST
-  // pass — multi-pass attacks (two-weapon) will re-enter TARGET on GM
-  // for pass 2 (FSM-driven; player picks via per-pick lag for the second
-  // pass — that's an acceptable v1 cost since two-weapon is uncommon).
+  // Target pick.
   const enemies = eligible?.enemies ?? [];
   if (!enemies.length) {
     ui.notifications?.warn("No eligible enemy targets on this scene.");
@@ -422,21 +419,63 @@ async function composeAttack({ director, snap, token, eligible, cancelSentinel, 
     return { cancelled: true, reason: "no eligible targets" };
   }
 
-  const result = await raceCancel(
-    requestTargeting({
-      director,
-      eligible: filtered,
-      mode: "exact",
-      count: 1,
-      titleText: `Pick a target for ${snap.name}'s Attack`,
-      // Tear down the canvas rings + banner if our race resolves
-      // against us (e.g. GM committed locally while we were picking).
-      externalCancel: cancelSentinel,
-    }),
-    cancelSentinel,
-  );
-  if (!result || !result.ok) {
-    return { cancelled: true, reason: result?.cancelled ? "target-cancelled" : "target-failed" };
+  // Multi-pass (two-weapon) deliberately picks only ONE target for the FIRST
+  // pass — pass 2 re-enters TARGET on the GM (FSM-driven; per-pick lag for the
+  // second pass — an acceptable cost since two-weapon is uncommon). A
+  // single-pass attack instead honors the equipped weapon's own `skill_target`
+  // (e.g. Zarg's Bow "Up to two creatures" → Multi(2)), resolved through the
+  // same plan resolver the NPC-attack composer and GM-side resolveActionTargets
+  // use, so the player pre-picks up to N here and the GM trusts that pre-compose.
+  const isMultiPass = attackMode === "two-weapon" || attackMode === "two-weapon-off-first";
+
+  let targetUuids;
+  if (isMultiPass) {
+    const result = await raceCancel(
+      requestTargeting({
+        director, eligible: filtered, mode: "exact", count: 1,
+        titleText: `Pick a target for ${snap.name}'s Attack`,
+        // Tear down the canvas rings + banner if our race resolves
+        // against us (e.g. GM committed locally while we were picking).
+        externalCancel: cancelSentinel,
+      }),
+      cancelSentinel,
+    );
+    if (!result || !result.ok) {
+      return { cancelled: true, reason: result?.cancelled ? "target-cancelled" : "target-failed" };
+    }
+    targetUuids = [...result.tokenUuids];
+  } else {
+    // Resolve the actor so the plan can evaluate any formula count (CHAR_LEVEL,
+    // SL=1 without a skill, …). The weapon drives targeting — no backing skill.
+    let actorDoc = null;
+    try { actorDoc = await fromUuid(snap.actorUuid); } catch {}
+    const skillTargetText = String(currentWeapon?.skillTarget ?? "").trim();
+    const plan = resolveTargetPlan({
+      actor: actorDoc, skill: null, skillTargetText,
+      eligibleCount: filtered.length, round: director?.dCombat?.round ?? 0,
+    });
+    if (plan.mode === "random") {
+      // GM-side roulette resolves the actual target; pre-compose none.
+      targetUuids = [];
+    } else if (plan.mode === "all") {
+      targetUuids = filtered.map((e) => e.tokenUuid);
+    } else {
+      if (plan.capNote) ui.notifications?.info(plan.capNote);
+      const result = await raceCancel(
+        requestTargeting({
+          director, eligible: filtered, mode: plan.mode, count: plan.count,
+          titleText: plan.count > 1
+            ? `Pick up to ${plan.count} targets for ${snap.name}'s Attack`
+            : `Pick a target for ${snap.name}'s Attack`,
+          externalCancel: cancelSentinel,
+        }),
+        cancelSentinel,
+      );
+      if (!result || !result.ok) {
+        return { cancelled: true, reason: result?.cancelled ? "target-cancelled" : "target-failed" };
+      }
+      targetUuids = [...result.tokenUuids];
+    }
   }
 
   return {
@@ -444,7 +483,7 @@ async function composeAttack({ director, snap, token, eligible, cancelSentinel, 
     bundle: {
       command: "Attack",
       attackMode,
-      targetUuids: [...result.tokenUuids],
+      targetUuids,
     },
   };
 }

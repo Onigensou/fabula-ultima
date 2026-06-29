@@ -1193,10 +1193,18 @@ export function extractTargetCountFromText(text, { isUpTo, resolver }) {
 // confirm-time gate (which surfaces the precise shortfall).
 export function resolveTargetPlan({ actor, skill, skillTargetText, eligibleCount = Infinity, round = 0 }) {
   const text = String(skillTargetText ?? "").trim();
-  const resolver = (actor && skill)
+  // Build the count resolver from the ACTOR alone — a backing skill Item is NOT
+  // required. Literal/word counts ("Up to two creatures") and actor-derived
+  // formulas (CHAR_LEVEL, CUR_HP, …) resolve without one; SL just defaults to 1.
+  // This is what lets a PC weapon attack (skill === null — the equipped weapon
+  // drives targeting, not a skill Item) honor a multi-target `skill_target`
+  // instead of silently collapsing to a single target. extractTargetCountFromText
+  // tolerates a null resolver (literal/word numbers don't need it; an actor-less
+  // formula falls back to 1), so the no-actor case keeps its old "1" behavior.
+  const resolver = actor
     ? buildSkillResolver({ actor, payload: null, skill, round })
     : null;
-  const countFrom = (t, isUpTo) => resolver ? extractTargetCountFromText(t, { isUpTo, resolver }) : 1;
+  const countFrom = (t, isUpTo) => extractTargetCountFromText(t, { isUpTo, resolver });
   const poolClamp = (n) => Math.max(1, Number.isFinite(eligibleCount) ? Math.min(n, eligibleCount) : n);
 
   const isRandom = /\brandom\b/i.test(text);
