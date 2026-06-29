@@ -62,7 +62,12 @@ const RES_ACCENT_A   = "#ffb340";   // vivid orange (light)
 const RES_ACCENT_B   = "#ff6a00";   // vivid orange (deep)
 const RES_CFG_KEY       = "fu-dhud-res-cfg";     // localStorage (per-client visual prefs)
 const RES_SCALE_DEFAULT = 1.6;                   // CSS fallback for --dhud-res-scale
-const RES_CFG_DEFAULT = Object.freeze({ scale: 1.6, x: -15, y: -3, iconScale: 1.25, iconX: -6, iconY: -6 });
+const RES_CFG_DEFAULT = Object.freeze({
+  scale: 1.6, x: -15, y: -3,           // whole overlay
+  iconScale: 1.25, iconX: -6, iconY: -6, // floating icon
+  gaugeScale: 1.0, gaugeX: 0, gaugeY: 0, // the bar / points number
+  segGap: 3,                             // px between ramp segments
+});
 const ACTION_RESSCALE   = "FU_DIRECTOR_HUD_RESSCALE";
 
 // ── per-key registry  { key → { root, cards, offFns } } ─────────────────────
@@ -379,11 +384,16 @@ function injectStyles() {
    on the row so each tick parallelograms uniformly without fighting the seg-pop
    transform. */
 .dhud-resgauge {
-  display: inline-flex; gap: 3px; align-items: center;
-  transform: skewX(-18deg); margin: 0 3px;
+  display: inline-flex; align-items: flex-end;        /* ramp rises from a baseline */
+  gap: var(--dhud-res-seg-gap, 3px);
+  transform-origin: left bottom; margin: 0 3px;
+  /* skew (slant) + independent bar position/scale from the tuner */
+  transform: skewX(-18deg)
+             translate(var(--dhud-res-gauge-x, 0px), var(--dhud-res-gauge-y, 0px))
+             scale(var(--dhud-res-gauge-scale, 1));
 }
 .dhud-resseg {
-  width: 7px; height: 12px; border-radius: 1.5px;
+  width: 7px; height: 12px; border-radius: 1.5px;     /* height overridden inline (ramp) */
   background: rgba(255,255,255,.18); box-shadow: inset 0 0 0 1px rgba(0,0,0,.45);
   transition: background .18s ease;
 }
@@ -412,7 +422,12 @@ function injectStyles() {
   color: #fff; text-shadow: 0 3px 4px rgba(0,0,0,.95), 0 0 3px rgba(0,0,0,.85);
 }
 .dhud-resval { font-size: .76rem; }
-.dhud-resnum { font-size: .92rem; color: #ffe9a8; }
+.dhud-resnum {
+  font-size: .92rem; color: #ffe9a8; display: inline-block;
+  transform-origin: left center;
+  transform: translate(var(--dhud-res-gauge-x, 0px), var(--dhud-res-gauge-y, 0px))
+             scale(var(--dhud-res-gauge-scale, 1));
+}
 .dhud-respts .dhud-resnum::before {
   content: "✦"; margin-right: .18rem; color: var(--dhud-res-a);
   font-style: normal; font-size: .8em;
@@ -435,8 +450,12 @@ function injectStyles() {
 // ── custom-resource chips ───────────────────────────────────────────────────
 function segInner(r) {
   if (r.m <= RES_SEG_MAX) {
-    return Array.from({ length: r.m }, (_, i) =>
-      `<i class="dhud-resseg ${i < r.v ? "on" : ""}"></i>`).join("");
+    // Ramp-up: first segment shortest, last tallest (rises from a shared baseline).
+    const MIN = 6, MAX = 17;
+    return Array.from({ length: r.m }, (_, i) => {
+      const h = r.m <= 1 ? MAX : Math.round(MIN + (MAX - MIN) * (i / (r.m - 1)));
+      return `<i class="dhud-resseg ${i < r.v ? "on" : ""}" style="height:${h}px"></i>`;
+    }).join("");
   }
   return `<span class="dhud-resbar2"><span class="dhud-resbar2fill" style="width:${pct(r.v, r.m)}"></span></span>`;
 }
@@ -715,6 +734,10 @@ function applyResCfgVars(bar, cfg) {
   bar.style.setProperty("--dhud-res-icon-scale", clamp(Number(cfg.iconScale) || 1, 0.3, 5));
   bar.style.setProperty("--dhud-res-icon-x", `${Number(cfg.iconX) || 0}px`);
   bar.style.setProperty("--dhud-res-icon-y", `${Number(cfg.iconY) || 0}px`);
+  bar.style.setProperty("--dhud-res-gauge-scale", clamp(Number(cfg.gaugeScale) || 1, 0.3, 5));
+  bar.style.setProperty("--dhud-res-gauge-x", `${Number(cfg.gaugeX) || 0}px`);
+  bar.style.setProperty("--dhud-res-gauge-y", `${Number(cfg.gaugeY) || 0}px`);
+  bar.style.setProperty("--dhud-res-seg-gap", `${Math.max(0, Number(cfg.segGap) || 0)}px`);
 }
 function applyResCfgAll(cfg) {
   document.querySelectorAll(".dhud-resbar").forEach(b => applyResCfgVars(b, cfg));
