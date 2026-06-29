@@ -63,11 +63,12 @@ const RES_ACCENT_B   = "#ff6a00";   // vivid orange (deep)
 const RES_CFG_KEY       = "fu-dhud-res-cfg";     // localStorage (per-client visual prefs)
 const RES_SCALE_DEFAULT = 1.6;                   // CSS fallback for --dhud-res-scale
 const RES_CFG_DEFAULT = Object.freeze({
-  scale: 1.6, x: -15, y: -3,           // whole overlay
-  iconScale: 1.25, iconX: -6, iconY: -6, // floating icon
-  gaugeScale: 1.0, gaugeX: 0, gaugeY: 0, // the bar / points number
-  segGap: 3,                             // px between ramp segments
-  ramp: 0.6,                             // 0 = flat (no ramp) → larger = steeper crescendo
+  scale: 1.6, x: -15, y: -3,               // whole overlay
+  iconScale: 1.25, iconX: -6, iconY: -6,   // floating icon
+  gaugeScale: 1.45, gaugeX: -5, gaugeY: -3, // the bar / points number
+  segGap: 0,                               // px between segments
+  ramp: 0,                                 // 0 = flat (no ramp) → larger = steeper crescendo
+  segHeight: 12,                           // px height of a (flat) segment
 });
 const ACTION_RESSCALE   = "FU_DIRECTOR_HUD_RESSCALE";
 
@@ -396,9 +397,9 @@ function injectStyles() {
 .dhud-resseg {
   --i: 0; --n: 1;
   width: 7px; border-radius: 1.5px;
-  /* flat 12px baseline + ramp: later segments grow taller as --dhud-res-ramp rises.
-     ramp 0 = every segment 12px (flat). --i/--n are set per-segment inline. */
-  height: calc(12px + var(--dhud-res-ramp, 0.6) * (8px * var(--i) / max(var(--n) - 1, 1)));
+  /* baseline height (tunable) + ramp: later segments grow taller as --dhud-res-ramp
+     rises. ramp 0 = every segment the baseline height. --i/--n set per-segment inline. */
+  height: calc(var(--dhud-res-seg-h, 12px) + var(--dhud-res-ramp, 0) * (8px * var(--i) / max(var(--n) - 1, 1)));
   background: rgba(255,255,255,.18); box-shadow: inset 0 0 0 1px rgba(0,0,0,.45);
   transition: background .18s ease, height .18s ease;
 }
@@ -743,7 +744,8 @@ function applyResCfgVars(bar, cfg) {
   bar.style.setProperty("--dhud-res-seg-gap", `${Math.max(0, Number(cfg.segGap) || 0)}px`);
   // ramp: 0 is a valid value (flat), so don't fall through `|| default`.
   const ramp = Number(cfg.ramp);
-  bar.style.setProperty("--dhud-res-ramp", Number.isFinite(ramp) ? clamp(ramp, 0, 4) : 0.6);
+  bar.style.setProperty("--dhud-res-ramp", Number.isFinite(ramp) ? clamp(ramp, 0, 4) : 0);
+  bar.style.setProperty("--dhud-res-seg-h", `${clamp(Number(cfg.segHeight) || 12, 4, 60)}px`);
 }
 function applyResCfgAll(cfg) {
   document.querySelectorAll(".dhud-resbar").forEach(b => applyResCfgVars(b, cfg));
