@@ -86,6 +86,14 @@ Hooks.once("ready", () => {
       return Number.isFinite(n) ? n : null;
     }
 
+    // An AE tagged `system.tags: ["resource"]` is surfaced on the Battle Director
+    // player HUD instead of the token, so its token icon is suppressed here to
+    // declutter the effect row. Same `system.tags` store the HUD reader checks.
+    function isHudResourceEffect(effect) {
+      const t = effect?.system?.tags;
+      return Array.isArray(t) && t.some(x => String(x).toLowerCase() === "resource");
+    }
+
     function clearBadge(iconSprite) {
       if (!iconSprite?.children?.length) return;
       const old = iconSprite.children.find(c => c?.[BADGE_MARKER]);
@@ -324,7 +332,28 @@ Hooks.once("ready", () => {
       const original = cls.prototype[method];
 
       cls.prototype[method] = async function patchedDrawEffects(...args) {
-        const result = await original.apply(this, args);
+        // Hide HUD-resource icons by filtering the actor's temporaryEffects for
+        // the duration of this draw — pre-layout, so the effect row has no gap
+        // (vs. removing a sprite afterward). A configurable own-property shadows
+        // the prototype getter and is deleted in `finally`, so the change is
+        // local to this single draw call and fully reversible.
+        const actor = this.actor;
+        let restoreTE = null;
+        if (actor) {
+          try {
+            const all = actor.temporaryEffects;
+            const filtered = all.filter(e => !isHudResourceEffect(e));
+            if (filtered.length !== all.length) {
+              Object.defineProperty(actor, "temporaryEffects", { value: filtered, configurable: true });
+              restoreTE = () => { try { delete actor.temporaryEffects; } catch (_e) {} };
+            }
+          } catch (_e) { /* fall through — show icons rather than break the draw */ }
+        }
+
+        let result;
+        try { result = await original.apply(this, args); }
+        finally { if (restoreTE) restoreTE(); }
+
         try { scheduleChargeBadges(this); }
         catch (e) { warn("scheduleChargeBadges failed inside drawEffects wrapper.", e); }
         return result;
