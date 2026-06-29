@@ -50,6 +50,17 @@ const P_IP_M = "system.props.max_ip";
 const P_ZP_V = "system.props.zero_power_value";
 const ZP_MAX  = 6;
 
+// ── custom-resource (tagged AE) reading ─────────────────────────────────────
+// An Active Effect opts into the HUD by carrying `system.tags` including
+// "resource". Display value/cap come from the existing charges flags
+// (flags.fabula-ultima-companion.charges / chargesMax). A "points" tag (or a
+// blank/zero max) renders as an uncapped running counter instead of a clock.
+const RES_TAG        = "resource";
+const RES_POINTS_TAG = "points";
+const RES_SEG_MAX    = 12;          // beyond this many segments, use a continuous bar
+const RES_ACCENT_A   = "#b98cff";   // violet → magenta — distinct from HP/MP/ZP
+const RES_ACCENT_B   = "#ff79c6";
+
 // ── per-key registry  { key → { root, cards, offFns } } ─────────────────────
 const byKey = new Map();
 
@@ -78,6 +89,56 @@ const readZP = a => {
   const v = Number(pick(a, P_ZP_V));
   return { v: Number.isFinite(v) ? Math.max(0, v) : 0, m: ZP_MAX };
 };
+
+const lc = s => String(s ?? "").toLowerCase();
+
+// Lower-cased `system.tags` array of an Active Effect (the canonical AE tag store
+// — same field the Battle Director already reads to count debuffs).
+function aeTags(eff) {
+  const t = eff?.system?.tags;
+  return Array.isArray(t) ? t.map(lc) : [];
+}
+
+// Strip the trailing noun so chips read "Brainwave 3/4" not "Brainwave Clock 3/4".
+function shortResName(n) {
+  const s = String(n ?? "");
+  return s.replace(/\s*(clock|gauge|meter|points?)\s*$/i, "").trim() || s;
+}
+
+// Every HUD-tagged resource currently on the actor, newest-grant order.
+function collectHudResources(actor) {
+  const out = [], seen = new Set();
+  let effs = [];
+  try { effs = Array.from(actor?.allApplicableEffects?.() ?? []); } catch { effs = []; }
+  for (const eff of effs) {
+    if (!eff) continue;
+    const tags = aeTags(eff);
+    if (!tags.includes(RES_TAG)) continue;
+    const uid = eff.id ?? eff.name;
+    if (seen.has(uid)) continue;
+    seen.add(uid);
+    const f = eff.flags?.[MODULE_ID] ?? {};
+    const v    = Number(f.charges);
+    const mRaw = Number(f.chargesMax);
+    out.push({
+      uid,
+      name:   shortResName(eff.name),
+      img:    eff.img ?? eff.icon ?? "",
+      v:      Number.isFinite(v) ? Math.max(0, v) : 0,
+      m:      Number.isFinite(mRaw) && mRaw > 0 ? mRaw : null,
+      points: tags.includes(RES_POINTS_TAG),
+    });
+  }
+  return out;
+}
+
+// An AE update/create/delete belongs to this actor if the effect's parent is the
+// actor (actor-direct) or an item owned by the actor (item-granted).
+function effBelongsToActor(eff, actorId) {
+  const p = eff?.parent;
+  if (!p) return false;
+  return p.id === actorId || p.parent?.id === actorId;
+}
 
 function glideNumber(node, from, to, ms = 420) {
   if (!node) return;
@@ -161,7 +222,7 @@ function injectStyles() {
   position: relative; min-width: 22rem; max-width: 28rem;
   background: linear-gradient(180deg, rgba(18,18,20,0), rgba(12,12,14,0)) !important;
   border: none; border-radius: .9rem; padding: 1rem;
-  box-shadow: 0 12px 28px rgba(0,0,0,0.45); backdrop-filter: blur(3px); overflow: hidden;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.45); backdrop-filter: blur(3px); overflow: visible;
 }
 .dhud-top { display: flex; align-items: center; gap: .5rem; margin-bottom: .12rem; }
 .dhud-name {
@@ -236,11 +297,133 @@ function injectStyles() {
   0%   { filter: brightness(1.15); }
   100% { filter: brightness(1); }
 }
+
+/* ── custom-resource overlay ──────────────────────────────────────────────
+   Floats just below the panel's bottom edge (under the ZP bar), jittered
+   right. position:absolute → contributes NO layout height, so every panel
+   stays the same size and the row stays aligned regardless of resource count.
+   Up to 2 columns (set inline from the resource count), then wraps downward. */
+.dhud-resbar {
+  --dhud-res-a: ${RES_ACCENT_A}; --dhud-res-b: ${RES_ACCENT_B};
+  position: absolute; top: 100%; left: 0; right: 0;
+  margin-top: .3rem; transform: translateX(1.15rem);   /* jitter right */
+  display: grid; justify-content: end; align-content: start;
+  gap: .3rem .4rem; pointer-events: none;
+}
+.dhud-reschip {
+  display: inline-flex; align-items: center; gap: .32rem;
+  padding: .16rem .5rem .16rem .28rem; border-radius: .7rem;
+  background: linear-gradient(180deg, rgba(20,16,28,.62), rgba(10,8,14,.74));
+  border: 1px solid rgba(255,255,255,.14);
+  box-shadow: 0 6px 16px rgba(0,0,0,.45); backdrop-filter: blur(3px);
+  animation: dhudResIn .42s ease both; white-space: nowrap;
+}
+@keyframes dhudResIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.dhud-resicon {
+  width: 1.15rem; height: 1.15rem; border-radius: .35rem; object-fit: cover;
+  flex: 0 0 auto; background: transparent !important; border: none !important;
+  outline: none !important; box-shadow: 0 0 0 1px rgba(0,0,0,.5);
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,.6));
+}
+.dhud-resname {
+  font-family: "Merriweather", system-ui, sans-serif;
+  font-size: .72rem; font-weight: 700; letter-spacing: .02em; color: #fff;
+  transform: skewX(-8deg);
+  text-shadow: 0 3px 4px rgba(0,0,0,.95), 0 0 3px rgba(0,0,0,.85);
+}
+.dhud-resgauge { display: inline-flex; gap: 2px; align-items: center; }
+.dhud-resseg {
+  width: 7px; height: 11px; border-radius: 2px;
+  background: rgba(255,255,255,.18); box-shadow: inset 0 0 0 1px rgba(0,0,0,.45);
+  transition: background .18s ease;
+}
+.dhud-resseg.on {
+  background: linear-gradient(180deg, var(--dhud-res-a), var(--dhud-res-b));
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.35), 0 0 4px rgba(185,140,255,.55);
+}
+.dhud-resbar2 {
+  position: relative; width: 4.5rem; height: .55rem; border-radius: .4rem;
+  overflow: hidden; background: rgba(0,0,0,.5); box-shadow: inset 0 0 0 1px rgba(0,0,0,.6);
+}
+.dhud-resbar2fill {
+  position: absolute; left: 0; top: 0; bottom: 0;
+  background: linear-gradient(90deg, var(--dhud-res-a), var(--dhud-res-b));
+  transition: width .24s ease;
+}
+.dhud-resval, .dhud-resnum {
+  font-family: "Merriweather", monospace; font-weight: 700; font-style: italic;
+  color: #fff; text-shadow: 0 3px 4px rgba(0,0,0,.95), 0 0 3px rgba(0,0,0,.85);
+}
+.dhud-resval { font-size: .76rem; }
+.dhud-resnum { font-size: .92rem; color: #ffe9a8; }
+.dhud-respts .dhud-resnum::before {
+  content: "✦"; margin-right: .18rem; color: var(--dhud-res-a);
+  font-style: normal; font-size: .8em;
+}
+.dhud-res-full .dhud-resgauge {
+  animation: dhudResPulse 1.1s ease-in-out infinite alternate;
+}
+@keyframes dhudResPulse {
+  0%   { filter: drop-shadow(0 0 0 rgba(185,140,255,0)); }
+  100% { filter: drop-shadow(0 0 6px rgba(255,121,198,.75)); }
+}
+.dhud-res-flash { animation: dhudFlash .35s ease; }
 `;
   const st = document.createElement("style");
   st.id = STYLE_ID;
   st.textContent = css;
   document.head.appendChild(st);
+}
+
+// ── custom-resource chips ───────────────────────────────────────────────────
+function resChipHtml(r) {
+  const icon = r.img ? `<img class="dhud-resicon" src="${r.img}" alt="">` : "";
+
+  // Points (or any uncapped resource): icon + name + running number, no bar.
+  if (r.points || !r.m) {
+    return `<div class="dhud-reschip dhud-respts" data-uid="${r.uid}">
+        ${icon}<span class="dhud-resname">${r.name}</span>
+        <span class="dhud-resnum">${nice(r.v)}</span>
+      </div>`;
+  }
+
+  // Clock: segmented gauge (continuous bar past RES_SEG_MAX segments) + N/max.
+  const full = r.v >= r.m;
+  const gauge = r.m <= RES_SEG_MAX
+    ? `<span class="dhud-resgauge">${
+        Array.from({ length: r.m }, (_, i) =>
+          `<i class="dhud-resseg ${i < r.v ? "on" : ""}"></i>`).join("")
+      }</span>`
+    : `<span class="dhud-resbar2"><span class="dhud-resbar2fill" style="width:${pct(r.v, r.m)}"></span></span>`;
+
+  return `<div class="dhud-reschip dhud-resclock ${full ? "dhud-res-full" : ""}" data-uid="${r.uid}">
+      ${icon}<span class="dhud-resname">${r.name}</span>
+      ${gauge}
+      <span class="dhud-resval">${nice(r.v)}/${nice(r.m)}</span>
+    </div>`;
+}
+
+// (Re)build the resource overlay that floats below the panel. Absolute + zero
+// layout height, so panels stay the same size regardless of resource count.
+// Up to 2 columns, then wrap downward. No tagged resources → no overlay.
+function renderResources(panel, actor) {
+  if (!panel) return;
+  const list = collectHudResources(actor);
+  let bar = panel.querySelector(".dhud-resbar");
+  if (!list.length) { bar?.remove(); return; }
+  if (!bar) {
+    bar = document.createElement("div");
+    bar.className = "dhud-resbar";
+    panel.appendChild(bar);
+  }
+  bar.style.gridTemplateColumns = `repeat(${Math.min(list.length, 2)}, max-content)`;
+  bar.innerHTML = list.map(resChipHtml).join("");
+  bar.classList.remove("dhud-res-flash");
+  void bar.offsetWidth;
+  bar.classList.add("dhud-res-flash");
 }
 
 // ── card DOM builder ──────────────────────────────────────────────────────────
@@ -281,6 +464,7 @@ function makeCard(actor, token) {
   const hpCur  = card.querySelector(".dhud-hpcur");
   const mpNum  = card.querySelector(".dhud-mpmini .num");
   const ipRow  = card.querySelector(".dhud-ip");
+  const panel  = card.querySelector(".dhud-panel");
 
   tintHp(hpFill, hp.v, hp.m);
   hpFill.style.width = pct(hp.v, hp.m); flash(hpFill);
@@ -288,7 +472,9 @@ function makeCard(actor, token) {
   zpFill.style.width = pct(zp.v, zp.m); flash(zpFill);
   zpFill.classList.toggle("dhud-glow", zp.v >= zp.m);
 
-  return { el: card, hpFill, mpFill, zpFill, hpCur, mpNum, ipRow };
+  renderResources(panel, actor);
+
+  return { el: card, hpFill, mpFill, zpFill, hpCur, mpNum, ipRow, panel };
 }
 
 function updateCard(card, actor) {
@@ -359,7 +545,25 @@ function buildLocally(key, entries) {
       if (typeof chg?.name === "string") setName(chg.name || tok?.actor?.name);
       if (tok.actor) updateCard(card, tok.actor);
     });
-    offFns.push(() => Hooks.off("updateActor", h1), () => Hooks.off("updateToken", h2));
+
+    // Custom resources live on Active Effect charge flags, so they change via
+    // the AE hooks (not updateActor). Rebuild only the resource overlay — kept
+    // off updateCard so an HP tick doesn't flash the gauges.
+    const onAE = eff => {
+      if (!effBelongsToActor(eff, actor.id)) return;
+      const live = game.actors?.get(actor.id);
+      if (live) renderResources(card.panel, live);
+    };
+    const h3 = Hooks.on("createActiveEffect", onAE);
+    const h4 = Hooks.on("updateActiveEffect", onAE);
+    const h5 = Hooks.on("deleteActiveEffect", onAE);
+    offFns.push(
+      () => Hooks.off("updateActor", h1),
+      () => Hooks.off("updateToken", h2),
+      () => Hooks.off("createActiveEffect", h3),
+      () => Hooks.off("updateActiveEffect", h4),
+      () => Hooks.off("deleteActiveEffect", h5),
+    );
 
     root.appendChild(card.el);
     cards.set(actor.id, card);
