@@ -65,10 +65,10 @@ const RES_SCALE_DEFAULT = 1.6;                   // CSS fallback for --dhud-res-
 const RES_CFG_DEFAULT = Object.freeze({
   scale: 1.6, x: -15, y: -3,               // whole overlay
   iconScale: 1.25, iconX: -6, iconY: -6,   // floating icon
-  gaugeScale: 1.45, gaugeX: -5, gaugeY: -3, // the bar / points number
+  gaugeScale: 1.45, gaugeX: -4, gaugeY: -2, // the bar / points number
   segGap: 0,                               // px between segments
   ramp: 0,                                 // 0 = flat (no ramp) → larger = steeper crescendo
-  segHeight: 12,                           // px height of a (flat) segment
+  segHeight: 13,                           // px height of a (flat) segment
 });
 const ACTION_RESSCALE   = "FU_DIRECTOR_HUD_RESSCALE";
 
