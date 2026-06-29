@@ -58,10 +58,11 @@ const ZP_MAX  = 6;
 const RES_TAG        = "resource";
 const RES_POINTS_TAG = "points";
 const RES_SEG_MAX    = 12;          // beyond this many segments, use a continuous bar
-const RES_ACCENT_A   = "#b98cff";   // violet → magenta — distinct from HP/MP/ZP
-const RES_ACCENT_B   = "#ff79c6";
-const RES_SCALE_KEY     = "fu-dhud-res-scale";   // localStorage key (per-client pref)
-const RES_SCALE_DEFAULT = 1.5;                   // base overlay scale
+const RES_ACCENT_A   = "#ffb340";   // vivid orange (light)
+const RES_ACCENT_B   = "#ff6a00";   // vivid orange (deep)
+const RES_CFG_KEY       = "fu-dhud-res-cfg";     // localStorage (per-client visual prefs)
+const RES_SCALE_DEFAULT = 1.55;                  // CSS fallback for --dhud-res-scale
+const RES_CFG_DEFAULT = Object.freeze({ scale: 1.55, x: 0, y: 0, iconScale: 1.0, iconX: 0, iconY: 0 });
 const ACTION_RESSCALE   = "FU_DIRECTOR_HUD_RESSCALE";
 
 // ── per-key registry  { key → { root, cards, offFns } } ─────────────────────
@@ -314,27 +315,35 @@ function injectStyles() {
      macro / FUCompanion.api.directorHud.setResScale). Origin top-right keeps the
      overlay anchored under the panel's right edge as it grows. */
   transform-origin: top right;
-  transform: translateX(1.15rem) scale(var(--dhud-res-scale, ${RES_SCALE_DEFAULT}));
+  transform: translate(calc(1.15rem + var(--dhud-res-x, 0px)), var(--dhud-res-y, 0px)) scale(var(--dhud-res-scale, ${RES_SCALE_DEFAULT}));
   display: grid; justify-content: end; align-content: start;
   gap: .3rem .4rem; pointer-events: none;
 }
 .dhud-reschip {
+  position: relative;
   display: inline-flex; align-items: center; gap: .32rem;
-  padding: .16rem .5rem .16rem .28rem; border-radius: .7rem;
-  background: linear-gradient(180deg, rgba(20,16,28,.62), rgba(10,8,14,.74));
-  border: 1px solid rgba(255,255,255,.14);
+  padding: .16rem .5rem .16rem 1.75rem;   /* left room for the floating icon */
+  border-radius: .7rem;
+  background: linear-gradient(180deg, rgba(28,18,8,.62), rgba(14,9,4,.74));
+  border: 1px solid rgba(255,170,80,.20);
   box-shadow: 0 6px 16px rgba(0,0,0,.45); backdrop-filter: blur(3px);
-  animation: dhudResIn .42s ease both; white-space: nowrap;
+  white-space: nowrap;
 }
+.dhud-res-enter { animation: dhudResIn .42s ease both; }
 @keyframes dhudResIn {
   from { opacity: 0; transform: translateY(-6px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+/* Icon is a floating overlay on the chip (its own size + x/y tuner), so it can be
+   enlarged to sit ON TOP of the panel. Anchored left-centre; vars from the tuner. */
 .dhud-resicon {
-  width: 1.15rem; height: 1.15rem; border-radius: .35rem; object-fit: cover;
-  flex: 0 0 auto; background: transparent !important; border: none !important;
-  outline: none !important; box-shadow: 0 0 0 1px rgba(0,0,0,.5);
-  filter: drop-shadow(0 1px 2px rgba(0,0,0,.6));
+  position: absolute; left: .3rem; top: 50%;
+  width: 1.35rem; height: 1.35rem; border-radius: .35rem; object-fit: cover;
+  transform-origin: left center;
+  transform: translate(var(--dhud-res-icon-x, 0px), calc(-50% + var(--dhud-res-icon-y, 0px))) scale(var(--dhud-res-icon-scale, 1));
+  background: transparent !important; border: none !important; outline: none !important;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.5); filter: drop-shadow(0 2px 4px rgba(0,0,0,.7));
+  z-index: 2; pointer-events: none;
 }
 .dhud-resname {
   font-family: "Merriweather", system-ui, sans-serif;
@@ -350,7 +359,13 @@ function injectStyles() {
 }
 .dhud-resseg.on {
   background: linear-gradient(180deg, var(--dhud-res-a), var(--dhud-res-b));
-  box-shadow: inset 0 0 0 1px rgba(0,0,0,.35), 0 0 4px rgba(185,140,255,.55);
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.35), 0 0 5px rgba(255,150,40,.6);
+}
+.dhud-seg-pop { animation: dhudSegPop .3s ease; }
+@keyframes dhudSegPop {
+  0%   { transform: scale(.4); }
+  60%  { transform: scale(1.25); }
+  100% { transform: scale(1); }
 }
 .dhud-resbar2 {
   position: relative; width: 4.5rem; height: .55rem; border-radius: .4rem;
@@ -375,8 +390,8 @@ function injectStyles() {
   animation: dhudResPulse 1.1s ease-in-out infinite alternate;
 }
 @keyframes dhudResPulse {
-  0%   { filter: drop-shadow(0 0 0 rgba(185,140,255,0)); }
-  100% { filter: drop-shadow(0 0 6px rgba(255,121,198,.75)); }
+  0%   { filter: drop-shadow(0 0 0 rgba(255,150,40,0)); }
+  100% { filter: drop-shadow(0 0 7px rgba(255,120,20,.85)); }
 }
 .dhud-res-flash { animation: dhudFlash .35s ease; }
 `;
@@ -387,37 +402,69 @@ function injectStyles() {
 }
 
 // ── custom-resource chips ───────────────────────────────────────────────────
-function resChipHtml(r) {
-  const icon = r.img ? `<img class="dhud-resicon" src="${r.img}" alt="">` : "";
-
-  // Points (or any uncapped resource): icon + name + running number, no bar.
-  if (r.points || !r.m) {
-    return `<div class="dhud-reschip dhud-respts" data-uid="${r.uid}">
-        ${icon}<span class="dhud-resname">${r.name}</span>
-        <span class="dhud-resnum">${nice(r.v)}</span>
-      </div>`;
+function segInner(r) {
+  if (r.m <= RES_SEG_MAX) {
+    return Array.from({ length: r.m }, (_, i) =>
+      `<i class="dhud-resseg ${i < r.v ? "on" : ""}"></i>`).join("");
   }
-
-  // Clock: segmented gauge (continuous bar past RES_SEG_MAX segments) + N/max.
-  const full = r.v >= r.m;
-  const gauge = r.m <= RES_SEG_MAX
-    ? `<span class="dhud-resgauge">${
-        Array.from({ length: r.m }, (_, i) =>
-          `<i class="dhud-resseg ${i < r.v ? "on" : ""}"></i>`).join("")
-      }</span>`
-    : `<span class="dhud-resbar2"><span class="dhud-resbar2fill" style="width:${pct(r.v, r.m)}"></span></span>`;
-
-  // Clock: the filled segments ARE the count readout — no N/max label.
-  return `<div class="dhud-reschip dhud-resclock ${full ? "dhud-res-full" : ""}" data-uid="${r.uid}">
-      ${icon}<span class="dhud-resname">${r.name}</span>
-      ${gauge}
-    </div>`;
+  return `<span class="dhud-resbar2"><span class="dhud-resbar2fill" style="width:${pct(r.v, r.m)}"></span></span>`;
 }
 
-// (Re)build the resource overlay that floats below the panel. Absolute + zero
-// layout height, so panels stay the same size regardless of resource count.
-// Up to 2 columns, then wrap downward. No tagged resources → no overlay.
-function renderResources(panel, actor) {
+function buildChip(r) {
+  const isPts = r.points || !r.m;
+  const chip = document.createElement("div");
+  chip.className = `dhud-reschip dhud-res-enter ${isPts ? "dhud-respts" : "dhud-resclock"}`;
+  chip.dataset.uid = r.uid;
+  const icon = r.img ? `<img class="dhud-resicon" src="${r.img}" alt="">` : "";
+  const body = isPts
+    ? `<span class="dhud-resnum">${nice(r.v)}</span>`
+    : `<span class="dhud-resgauge">${segInner(r)}</span>`;
+  chip.innerHTML = `${icon}<span class="dhud-resname">${r.name}</span>${body}`;
+  if (!isPts) chip.classList.toggle("dhud-res-full", r.v >= r.m);
+  chip._lastV = r.v; chip._lastM = r.m;
+  return chip;
+}
+
+// Update a chip's gauge/number IN PLACE — the chip never re-spawns. `animate`
+// pops a newly-filled segment / glides the points number; otherwise sets values
+// silently (first build / reload). This is what keeps a mid-battle charge change
+// from replaying the whole panel's entrance animation.
+function updateChip(chip, r, animate) {
+  const isPts = r.points || !r.m;
+  if (isPts) {
+    const numEl = chip.querySelector(".dhud-resnum");
+    if (numEl) {
+      const prev = Number(chip._lastV) || 0;
+      if (animate && prev !== r.v) glideNumber(numEl, prev, r.v, 380);
+      else numEl.textContent = nice(r.v);
+    }
+  } else {
+    chip.classList.toggle("dhud-res-full", r.v >= r.m);
+    const gauge = chip.querySelector(".dhud-resgauge");
+    if (gauge) {
+      if (r.m <= RES_SEG_MAX) {
+        let segs = gauge.querySelectorAll(".dhud-resseg");
+        if (segs.length !== r.m) { gauge.innerHTML = segInner(r); segs = gauge.querySelectorAll(".dhud-resseg"); }
+        segs.forEach((s, i) => {
+          const on = i < r.v, was = s.classList.contains("on");
+          s.classList.toggle("on", on);
+          if (animate && on && !was) { s.classList.remove("dhud-seg-pop"); void s.offsetWidth; s.classList.add("dhud-seg-pop"); }
+        });
+      } else {
+        let fill = gauge.querySelector(".dhud-resbar2fill");
+        if (!fill) { gauge.innerHTML = segInner(r); fill = gauge.querySelector(".dhud-resbar2fill"); }
+        if (fill) fill.style.width = pct(r.v, r.m);
+      }
+    }
+  }
+  chip._lastV = r.v; chip._lastM = r.m;
+}
+
+// Reconcile the overlay against the actor's tagged resources. Floats below the
+// panel (absolute, zero layout height). First call spawns the overlay + chips
+// (entrance); later calls only update changed gauges in place — a brand-new
+// resource granted mid-battle still entrance-animates as its own chip.
+function renderResources(panel, actor, { animate = false } = {}) {
   if (!panel) return;
   const list = collectHudResources(actor);
   let bar = panel.querySelector(".dhud-resbar");
@@ -428,11 +475,18 @@ function renderResources(panel, actor) {
     panel.appendChild(bar);
   }
   bar.style.gridTemplateColumns = `repeat(${Math.min(list.length, 2)}, max-content)`;
-  bar.style.setProperty("--dhud-res-scale", storedResScale());
-  bar.innerHTML = list.map(resChipHtml).join("");
-  bar.classList.remove("dhud-res-flash");
-  void bar.offsetWidth;
-  bar.classList.add("dhud-res-flash");
+  applyResCfgVars(bar, readResCfg());
+
+  const have = new Map(
+    Array.from(bar.querySelectorAll(".dhud-reschip")).map(c => [c.dataset.uid, c]));
+  const want = new Set(list.map(r => r.uid));
+  for (const [uid, el] of have) if (!want.has(uid)) el.remove();
+
+  for (const r of list) {
+    const existing = have.get(r.uid);
+    if (existing) updateChip(existing, r, animate);
+    else bar.appendChild(buildChip(r));   // new grant mid-battle → entrance-animates
+  }
 }
 
 // ── card DOM builder ──────────────────────────────────────────────────────────
@@ -561,7 +615,7 @@ function buildLocally(key, entries) {
     const onAE = eff => {
       if (!effBelongsToActor(eff, actor.id)) return;
       const live = game.actors?.get(actor.id);
-      if (live) renderResources(card.panel, live);
+      if (live) renderResources(card.panel, live, { animate: true });
     };
     const h3 = Hooks.on("createActiveEffect", onAE);
     const h4 = Hooks.on("updateActiveEffect", onAE);
@@ -597,37 +651,39 @@ function destroyLocally(key) {
   log(`[DirectorHud] destroyed key=${key}`);
 }
 
-// ── resource-overlay scale (client-tunable via the Resource HUD Scale macro) ──
-function clampScale(n) {
-  const v = Number(n);
-  return Number.isFinite(v) ? clamp(v, 0.5, 4) : RES_SCALE_DEFAULT;
-}
-function storedResScale() {
+// ── resource-overlay visual prefs (client-tunable via the Resource HUD Tuner) ──
+function readResCfg() {
   try {
-    const v = Number(window.localStorage?.getItem(RES_SCALE_KEY));
-    return Number.isFinite(v) && v > 0 ? clampScale(v) : RES_SCALE_DEFAULT;
-  } catch { return RES_SCALE_DEFAULT; }
+    const raw = JSON.parse(window.localStorage?.getItem(RES_CFG_KEY) || "{}");
+    return { ...RES_CFG_DEFAULT, ...(raw && typeof raw === "object" ? raw : {}) };
+  } catch { return { ...RES_CFG_DEFAULT }; }
 }
-function applyResScaleDom(v) {
-  const sc = clampScale(v);
-  document.querySelectorAll(".dhud-resbar").forEach(b => b.style.setProperty("--dhud-res-scale", sc));
-  return sc;
+function writeResCfg(cfg) {
+  try { window.localStorage?.setItem(RES_CFG_KEY, JSON.stringify(cfg)); } catch { /* */ }
 }
-function persistResScale(v) {
-  try { window.localStorage?.setItem(RES_SCALE_KEY, String(clampScale(v))); } catch { /* */ }
+function applyResCfgVars(bar, cfg) {
+  bar.style.setProperty("--dhud-res-scale", clamp(Number(cfg.scale) || RES_SCALE_DEFAULT, 0.5, 4));
+  bar.style.setProperty("--dhud-res-x", `${Number(cfg.x) || 0}px`);
+  bar.style.setProperty("--dhud-res-y", `${Number(cfg.y) || 0}px`);
+  bar.style.setProperty("--dhud-res-icon-scale", clamp(Number(cfg.iconScale) || 1, 0.3, 5));
+  bar.style.setProperty("--dhud-res-icon-x", `${Number(cfg.iconX) || 0}px`);
+  bar.style.setProperty("--dhud-res-icon-y", `${Number(cfg.iconY) || 0}px`);
 }
+function applyResCfgAll(cfg) {
+  document.querySelectorAll(".dhud-resbar").forEach(b => applyResCfgVars(b, cfg));
+}
+function getResCfg() { return readResCfg(); }
 // Drag preview: apply locally only (no persist / no broadcast).
-function previewResScale(v) { return applyResScaleDom(v); }
-// Commit: persist locally, apply locally, broadcast to every other client.
-function setResScale(v) {
-  const sc = clampScale(v);
-  persistResScale(sc);
-  applyResScaleDom(sc);
+function previewResCfg(cfg) { applyResCfgAll({ ...RES_CFG_DEFAULT, ...cfg }); }
+// Commit: merge, persist, apply locally, broadcast to every other client.
+function setResCfg(cfg) {
+  const merged = { ...readResCfg(), ...cfg };
+  writeResCfg(merged);
+  applyResCfgAll(merged);
   const socket = ensureSocket();
-  if (socket) { try { socket.executeForOthers(ACTION_RESSCALE, { scale: sc }); } catch { /* */ } }
-  return sc;
+  if (socket) { try { socket.executeForOthers(ACTION_RESSCALE, { cfg: merged }); } catch { /* */ } }
+  return merged;
 }
-function getResScale() { return storedResScale(); }
 
 // ── socket ────────────────────────────────────────────────────────────────────
 function ensureSocket() {
@@ -651,9 +707,11 @@ function ensureSocket() {
     catch (e) { warn("[DirectorHud] socket DESTROY error:", e); }
   });
 
-  socket.register(ACTION_RESSCALE, ({ scale } = {}) => {
-    try { persistResScale(scale); applyResScaleDom(scale); }
-    catch (e) { warn("[DirectorHud] socket RESSCALE error:", e); }
+  socket.register(ACTION_RESSCALE, (data = {}) => {
+    try {
+      const cfg = data.cfg ?? (data.scale != null ? { ...readResCfg(), scale: data.scale } : null);
+      if (cfg) { const m = { ...RES_CFG_DEFAULT, ...cfg }; writeResCfg(m); applyResCfgAll(m); }
+    } catch (e) { warn("[DirectorHud] socket RESSCALE error:", e); }
   });
 
   _socket = socket;
@@ -682,7 +740,11 @@ Hooks.once("ready", () => {
   globalThis.FUCompanion = globalThis.FUCompanion || {};
   globalThis.FUCompanion.api = globalThis.FUCompanion.api || {};
   globalThis.FUCompanion.api.directorHud = Object.freeze({
-    setResScale, getResScale, previewResScale,
+    getResCfg, setResCfg, previewResCfg,
+    // legacy single-scale aliases
+    getResScale: () => readResCfg().scale,
+    setResScale: (n) => setResCfg({ scale: n }),
+    previewResScale: (n) => previewResCfg({ ...readResCfg(), scale: n }),
   });
 });
 Hooks.on("canvasReady",    () => tryReloadRecovery("canvasReady"));
