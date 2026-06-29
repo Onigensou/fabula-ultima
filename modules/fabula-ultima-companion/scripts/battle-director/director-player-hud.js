@@ -60,6 +60,9 @@ const RES_POINTS_TAG = "points";
 const RES_SEG_MAX    = 12;          // beyond this many segments, use a continuous bar
 const RES_ACCENT_A   = "#b98cff";   // violet → magenta — distinct from HP/MP/ZP
 const RES_ACCENT_B   = "#ff79c6";
+const RES_SCALE_KEY     = "fu-dhud-res-scale";   // localStorage key (per-client pref)
+const RES_SCALE_DEFAULT = 1.5;                   // base overlay scale
+const ACTION_RESSCALE   = "FU_DIRECTOR_HUD_RESSCALE";
 
 // ── per-key registry  { key → { root, cards, offFns } } ─────────────────────
 const byKey = new Map();
@@ -306,7 +309,12 @@ function injectStyles() {
 .dhud-resbar {
   --dhud-res-a: ${RES_ACCENT_A}; --dhud-res-b: ${RES_ACCENT_B};
   position: absolute; top: 100%; left: 0; right: 0;
-  margin-top: .3rem; transform: translateX(1.15rem);   /* jitter right */
+  margin-top: .3rem;
+  /* jitter right + client-tunable scale (set live by the Resource HUD Scale
+     macro / FUCompanion.api.directorHud.setResScale). Origin top-right keeps the
+     overlay anchored under the panel's right edge as it grows. */
+  transform-origin: top right;
+  transform: translateX(1.15rem) scale(var(--dhud-res-scale, ${RES_SCALE_DEFAULT}));
   display: grid; justify-content: end; align-content: start;
   gap: .3rem .4rem; pointer-events: none;
 }
@@ -399,10 +407,10 @@ function resChipHtml(r) {
       }</span>`
     : `<span class="dhud-resbar2"><span class="dhud-resbar2fill" style="width:${pct(r.v, r.m)}"></span></span>`;
 
+  // Clock: the filled segments ARE the count readout — no N/max label.
   return `<div class="dhud-reschip dhud-resclock ${full ? "dhud-res-full" : ""}" data-uid="${r.uid}">
       ${icon}<span class="dhud-resname">${r.name}</span>
       ${gauge}
-      <span class="dhud-resval">${nice(r.v)}/${nice(r.m)}</span>
     </div>`;
 }
 
@@ -420,6 +428,7 @@ function renderResources(panel, actor) {
     panel.appendChild(bar);
   }
   bar.style.gridTemplateColumns = `repeat(${Math.min(list.length, 2)}, max-content)`;
+  bar.style.setProperty("--dhud-res-scale", storedResScale());
   bar.innerHTML = list.map(resChipHtml).join("");
   bar.classList.remove("dhud-res-flash");
   void bar.offsetWidth;
@@ -588,6 +597,38 @@ function destroyLocally(key) {
   log(`[DirectorHud] destroyed key=${key}`);
 }
 
+// ── resource-overlay scale (client-tunable via the Resource HUD Scale macro) ──
+function clampScale(n) {
+  const v = Number(n);
+  return Number.isFinite(v) ? clamp(v, 0.5, 4) : RES_SCALE_DEFAULT;
+}
+function storedResScale() {
+  try {
+    const v = Number(window.localStorage?.getItem(RES_SCALE_KEY));
+    return Number.isFinite(v) && v > 0 ? clampScale(v) : RES_SCALE_DEFAULT;
+  } catch { return RES_SCALE_DEFAULT; }
+}
+function applyResScaleDom(v) {
+  const sc = clampScale(v);
+  document.querySelectorAll(".dhud-resbar").forEach(b => b.style.setProperty("--dhud-res-scale", sc));
+  return sc;
+}
+function persistResScale(v) {
+  try { window.localStorage?.setItem(RES_SCALE_KEY, String(clampScale(v))); } catch { /* */ }
+}
+// Drag preview: apply locally only (no persist / no broadcast).
+function previewResScale(v) { return applyResScaleDom(v); }
+// Commit: persist locally, apply locally, broadcast to every other client.
+function setResScale(v) {
+  const sc = clampScale(v);
+  persistResScale(sc);
+  applyResScaleDom(sc);
+  const socket = ensureSocket();
+  if (socket) { try { socket.executeForOthers(ACTION_RESSCALE, { scale: sc }); } catch { /* */ } }
+  return sc;
+}
+function getResScale() { return storedResScale(); }
+
 // ── socket ────────────────────────────────────────────────────────────────────
 function ensureSocket() {
   if (_socket) return _socket;
@@ -608,6 +649,11 @@ function ensureSocket() {
   socket.register(ACTION_DESTROY, ({ key } = {}) => {
     try { destroyLocally(key); }
     catch (e) { warn("[DirectorHud] socket DESTROY error:", e); }
+  });
+
+  socket.register(ACTION_RESSCALE, ({ scale } = {}) => {
+    try { persistResScale(scale); applyResScaleDom(scale); }
+    catch (e) { warn("[DirectorHud] socket RESSCALE error:", e); }
   });
 
   _socket = socket;
@@ -631,6 +677,13 @@ function tryReloadRecovery(trigger) {
 Hooks.once("ready", () => {
   ensureSocket();
   tryReloadRecovery("ready");
+
+  // Public handle for the Resource HUD Scale macro / console tuning.
+  globalThis.FUCompanion = globalThis.FUCompanion || {};
+  globalThis.FUCompanion.api = globalThis.FUCompanion.api || {};
+  globalThis.FUCompanion.api.directorHud = Object.freeze({
+    setResScale, getResScale, previewResScale,
+  });
 });
 Hooks.on("canvasReady",    () => tryReloadRecovery("canvasReady"));
 Hooks.on("canvasTearDown", () => {
