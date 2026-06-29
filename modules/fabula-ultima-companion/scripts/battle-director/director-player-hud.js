@@ -67,6 +67,7 @@ const RES_CFG_DEFAULT = Object.freeze({
   iconScale: 1.25, iconX: -6, iconY: -6, // floating icon
   gaugeScale: 1.0, gaugeX: 0, gaugeY: 0, // the bar / points number
   segGap: 3,                             // px between ramp segments
+  ramp: 0.6,                             // 0 = flat (no ramp) → larger = steeper crescendo
 });
 const ACTION_RESSCALE   = "FU_DIRECTOR_HUD_RESSCALE";
 
@@ -393,9 +394,13 @@ function injectStyles() {
              scale(var(--dhud-res-gauge-scale, 1));
 }
 .dhud-resseg {
-  width: 7px; height: 12px; border-radius: 1.5px;     /* height overridden inline (ramp) */
+  --i: 0; --n: 1;
+  width: 7px; border-radius: 1.5px;
+  /* flat 12px baseline + ramp: later segments grow taller as --dhud-res-ramp rises.
+     ramp 0 = every segment 12px (flat). --i/--n are set per-segment inline. */
+  height: calc(12px + var(--dhud-res-ramp, 0.6) * (8px * var(--i) / max(var(--n) - 1, 1)));
   background: rgba(255,255,255,.18); box-shadow: inset 0 0 0 1px rgba(0,0,0,.45);
-  transition: background .18s ease;
+  transition: background .18s ease, height .18s ease;
 }
 .dhud-resseg.on {
   background: linear-gradient(180deg, var(--dhud-res-a), var(--dhud-res-b));
@@ -450,12 +455,10 @@ function injectStyles() {
 // ── custom-resource chips ───────────────────────────────────────────────────
 function segInner(r) {
   if (r.m <= RES_SEG_MAX) {
-    // Ramp-up: first segment shortest, last tallest (rises from a shared baseline).
-    const MIN = 6, MAX = 17;
-    return Array.from({ length: r.m }, (_, i) => {
-      const h = r.m <= 1 ? MAX : Math.round(MIN + (MAX - MIN) * (i / (r.m - 1)));
-      return `<i class="dhud-resseg ${i < r.v ? "on" : ""}" style="height:${h}px"></i>`;
-    }).join("");
+    // Ramp-up: each segment carries its index/count as custom props; the height is
+    // computed in CSS from --dhud-res-ramp so the ramp slider updates it live.
+    return Array.from({ length: r.m }, (_, i) =>
+      `<i class="dhud-resseg ${i < r.v ? "on" : ""}" style="--i:${i};--n:${r.m}"></i>`).join("");
   }
   return `<span class="dhud-resbar2"><span class="dhud-resbar2fill" style="width:${pct(r.v, r.m)}"></span></span>`;
 }
@@ -738,6 +741,9 @@ function applyResCfgVars(bar, cfg) {
   bar.style.setProperty("--dhud-res-gauge-x", `${Number(cfg.gaugeX) || 0}px`);
   bar.style.setProperty("--dhud-res-gauge-y", `${Number(cfg.gaugeY) || 0}px`);
   bar.style.setProperty("--dhud-res-seg-gap", `${Math.max(0, Number(cfg.segGap) || 0)}px`);
+  // ramp: 0 is a valid value (flat), so don't fall through `|| default`.
+  const ramp = Number(cfg.ramp);
+  bar.style.setProperty("--dhud-res-ramp", Number.isFinite(ramp) ? clamp(ramp, 0, 4) : 0.6);
 }
 function applyResCfgAll(cfg) {
   document.querySelectorAll(".dhud-resbar").forEach(b => applyResCfgVars(b, cfg));
