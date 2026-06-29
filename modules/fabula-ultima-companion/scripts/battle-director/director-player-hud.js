@@ -61,8 +61,8 @@ const RES_SEG_MAX    = 12;          // beyond this many segments, use a continuo
 const RES_ACCENT_A   = "#ffb340";   // vivid orange (light)
 const RES_ACCENT_B   = "#ff6a00";   // vivid orange (deep)
 const RES_CFG_KEY       = "fu-dhud-res-cfg";     // localStorage (per-client visual prefs)
-const RES_SCALE_DEFAULT = 1.55;                  // CSS fallback for --dhud-res-scale
-const RES_CFG_DEFAULT = Object.freeze({ scale: 1.55, x: 0, y: 0, iconScale: 1.0, iconX: 0, iconY: 0 });
+const RES_SCALE_DEFAULT = 1.6;                   // CSS fallback for --dhud-res-scale
+const RES_CFG_DEFAULT = Object.freeze({ scale: 1.6, x: -15, y: -3, iconScale: 1.25, iconX: -6, iconY: -6 });
 const ACTION_RESSCALE   = "FU_DIRECTOR_HUD_RESSCALE";
 
 // ── per-key registry  { key → { root, cards, offFns } } ─────────────────────
@@ -96,6 +96,23 @@ const readZP = a => {
 
 const lc = s => String(s ?? "").toLowerCase();
 
+// Per-resource tint helpers. A configured AE colour (single hex) becomes the bar's
+// dark stop; the light stop + glow are derived from it.
+function lightenHex(hex, amt) {
+  const m = /^#?([0-9a-f]{6})$/i.exec(String(hex ?? "").trim());
+  if (!m) return null;
+  const n = parseInt(m[1], 16);
+  const mix = c => Math.round(c + (255 - c) * amt);
+  const r = mix((n >> 16) & 255), g = mix((n >> 8) & 255), b = mix(n & 255);
+  return `#${((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1)}`;
+}
+function hexToRgba(hex, a) {
+  const m = /^#?([0-9a-f]{6})$/i.exec(String(hex ?? "").trim());
+  if (!m) return null;
+  const n = parseInt(m[1], 16);
+  return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`;
+}
+
 // Lower-cased `system.tags` array of an Active Effect (the canonical AE tag store
 // — same field the Battle Director already reads to count debuffs).
 function aeTags(eff) {
@@ -124,6 +141,9 @@ function collectHudResources(actor) {
     const f = eff.flags?.[MODULE_ID] ?? {};
     const v    = Number(f.charges);
     const mRaw = Number(f.chargesMax);
+    // Per-resource tint (authored in the AE Charges config). Absent → default orange.
+    const hex    = typeof f.hudResourceColor === "string" ? f.hudResourceColor.trim() : "";
+    const colorB = /^#?[0-9a-f]{6}$/i.test(hex) ? (hex.startsWith("#") ? hex : `#${hex}`) : null;
     out.push({
       uid,
       name:   shortResName(eff.name),
@@ -131,6 +151,9 @@ function collectHudResources(actor) {
       v:      Number.isFinite(v) ? Math.max(0, v) : 0,
       m:      Number.isFinite(mRaw) && mRaw > 0 ? mRaw : null,
       points: tags.includes(RES_POINTS_TAG),
+      colorA: colorB ? lightenHex(colorB, 0.42) : null,
+      colorB,
+      glow:   colorB ? hexToRgba(colorB, 0.65) : null,
     });
   }
   return out;
@@ -309,6 +332,7 @@ function injectStyles() {
    Up to 2 columns (set inline from the resource count), then wraps downward. */
 .dhud-resbar {
   --dhud-res-a: ${RES_ACCENT_A}; --dhud-res-b: ${RES_ACCENT_B};
+  --dhud-res-glow: rgba(255,150,40,.6);
   position: absolute; top: 100%; left: 0; right: 0;
   margin-top: .3rem;
   /* jitter right + client-tunable scale (set live by the Resource HUD Scale
@@ -351,15 +375,21 @@ function injectStyles() {
   transform: skewX(-8deg);
   text-shadow: 0 3px 4px rgba(0,0,0,.95), 0 0 3px rgba(0,0,0,.85);
 }
-.dhud-resgauge { display: inline-flex; gap: 2px; align-items: center; }
+/* Slanted "super gauge" — segments skew right (forward-slash lean). The skew is
+   on the row so each tick parallelograms uniformly without fighting the seg-pop
+   transform. */
+.dhud-resgauge {
+  display: inline-flex; gap: 3px; align-items: center;
+  transform: skewX(-18deg); margin: 0 3px;
+}
 .dhud-resseg {
-  width: 7px; height: 11px; border-radius: 2px;
+  width: 7px; height: 12px; border-radius: 1.5px;
   background: rgba(255,255,255,.18); box-shadow: inset 0 0 0 1px rgba(0,0,0,.45);
   transition: background .18s ease;
 }
 .dhud-resseg.on {
   background: linear-gradient(180deg, var(--dhud-res-a), var(--dhud-res-b));
-  box-shadow: inset 0 0 0 1px rgba(0,0,0,.35), 0 0 5px rgba(255,150,40,.6);
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.35), 0 0 5px var(--dhud-res-glow);
 }
 .dhud-seg-pop { animation: dhudSegPop .3s ease; }
 @keyframes dhudSegPop {
@@ -370,6 +400,7 @@ function injectStyles() {
 .dhud-resbar2 {
   position: relative; width: 4.5rem; height: .55rem; border-radius: .4rem;
   overflow: hidden; background: rgba(0,0,0,.5); box-shadow: inset 0 0 0 1px rgba(0,0,0,.6);
+  transform: skewX(-18deg); margin: 0 3px;
 }
 .dhud-resbar2fill {
   position: absolute; left: 0; top: 0; bottom: 0;
@@ -390,8 +421,8 @@ function injectStyles() {
   animation: dhudResPulse 1.1s ease-in-out infinite alternate;
 }
 @keyframes dhudResPulse {
-  0%   { filter: drop-shadow(0 0 0 rgba(255,150,40,0)); }
-  100% { filter: drop-shadow(0 0 7px rgba(255,120,20,.85)); }
+  0%   { filter: drop-shadow(0 0 0 transparent); }
+  100% { filter: drop-shadow(0 0 7px var(--dhud-res-glow)); }
 }
 .dhud-res-flash { animation: dhudFlash .35s ease; }
 `;
@@ -410,6 +441,20 @@ function segInner(r) {
   return `<span class="dhud-resbar2"><span class="dhud-resbar2fill" style="width:${pct(r.v, r.m)}"></span></span>`;
 }
 
+// Per-chip tint: a configured colour overrides the default orange CSS vars; no
+// colour removes the overrides so the chip falls back to .dhud-resbar's default.
+function applyChipColor(chip, r) {
+  if (r.colorA && r.colorB) {
+    chip.style.setProperty("--dhud-res-a", r.colorA);
+    chip.style.setProperty("--dhud-res-b", r.colorB);
+    if (r.glow) chip.style.setProperty("--dhud-res-glow", r.glow);
+  } else {
+    chip.style.removeProperty("--dhud-res-a");
+    chip.style.removeProperty("--dhud-res-b");
+    chip.style.removeProperty("--dhud-res-glow");
+  }
+}
+
 function buildChip(r) {
   const isPts = r.points || !r.m;
   const chip = document.createElement("div");
@@ -420,6 +465,7 @@ function buildChip(r) {
     ? `<span class="dhud-resnum">${nice(r.v)}</span>`
     : `<span class="dhud-resgauge">${segInner(r)}</span>`;
   chip.innerHTML = `${icon}<span class="dhud-resname">${r.name}</span>${body}`;
+  applyChipColor(chip, r);
   if (!isPts) chip.classList.toggle("dhud-res-full", r.v >= r.m);
   chip._lastV = r.v; chip._lastM = r.m;
   return chip;
@@ -430,6 +476,7 @@ function buildChip(r) {
 // silently (first build / reload). This is what keeps a mid-battle charge change
 // from replaying the whole panel's entrance animation.
 function updateChip(chip, r, animate) {
+  applyChipColor(chip, r);
   const isPts = r.points || !r.m;
   if (isPts) {
     const numEl = chip.querySelector(".dhud-resnum");

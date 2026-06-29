@@ -42,14 +42,17 @@
 
   function readExistingFlags(effect) {
     const flags = effect?.flags?.[MODULE_ID] ?? {};
+    const colorRaw = typeof flags.hudResourceColor === "string" ? flags.hudResourceColor.trim() : "";
     return {
       charges:    safeInt(flags.charges, ""),
       chargesMax: safeInt(flags.chargesMax, ""),
-      chargeKey:  (typeof flags.chargeKey === "string" ? flags.chargeKey : "")
+      chargeKey:  (typeof flags.chargeKey === "string" ? flags.chargeKey : ""),
+      // Player-HUD tint for a custom resource (AE tagged `resource`). Blank = default orange.
+      hudColor:   /^#[0-9a-f]{6}$/i.test(colorRaw) ? colorRaw : ""
     };
   }
 
-  function buildPanelHtml({ charges, chargesMax, chargeKey }) {
+  function buildPanelHtml({ charges, chargesMax, chargeKey, hudColor }) {
     const c = charges === "" ? "" : String(charges);
     const m = chargesMax === "" ? "" : String(chargesMax);
     const k = String(chargeKey ?? "")
@@ -57,6 +60,7 @@
       .replaceAll("<", "&lt;")
       .replaceAll(">", "&gt;")
       .replaceAll('"', "&quot;");
+    const col = /^#[0-9a-f]{6}$/i.test(hudColor ?? "") ? hudColor : "#ff6a00";
 
     return `
       <fieldset class="${PANEL_MARKER_CLASS}" style="margin-top: .5rem;">
@@ -99,6 +103,16 @@
                    placeholder="e.g. divination">
           </div>
           <p class="notes">Feature identifier so consumers (Divination button, future skills) only consume their own charges. Leave blank for "any charged AE".</p>
+        </div>
+
+        <div class="form-group">
+          <label>HUD Resource Tint</label>
+          <div class="form-fields">
+            <input type="color"
+                   name="flags.${MODULE_ID}.hudResourceColor"
+                   value="${col}">
+          </div>
+          <p class="notes">Bar colour on the Battle Director player HUD (only for AEs tagged <code>resource</code>). Default is orange.</p>
         </div>
       </fieldset>
     `;
