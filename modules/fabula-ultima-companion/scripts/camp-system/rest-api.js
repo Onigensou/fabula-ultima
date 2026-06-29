@@ -63,7 +63,10 @@
   }
 
   function isPermanent(effect) {
-    return effect.statuses?.has?.("permanent") === true;
+    // The "permanent" status OR the director-permanent flag (equipment-managed
+    // effects like an Equipment Set's "always Wet") survive Rest cleanup.
+    return effect.statuses?.has?.("permanent") === true
+      || effect.flags?.["fabula-ultima-companion"]?.directorPermanent === true;
   }
 
   function getAudioHelper() {

@@ -24,7 +24,7 @@
 // during a single action." Legacy macro hides armor mid-combat too.
 
 import { log, warn } from "./logger.js";
-import { reconcileSetBonuses } from "./set-bonus.js";
+import { reconcileSetBonuses, withManagedEquip } from "./set-bonus.js";
 
 const UNARM_STRIKE_ITEM_ID = "bwqZvS4NXw7bCrmV";
 const FLAG_NS = "fabula-ultima-companion";
@@ -453,7 +453,13 @@ export async function applyEquipmentSwap(actor, selections) {
     warn("applyEquipmentSwap: no selections");
     return { changes: [], skipped: true };
   }
+  // BD owns this equip: suppress the ambient set-bonus hook for the actor while
+  // we drive it, so BD reconciles (below) on its own terms and the hook can't
+  // race or pre-empt a BD pre-step. The hook resumes for out-of-band changes.
+  return withManagedEquip(actor, () => _applyEquipmentSwap(actor, selections));
+}
 
+async function _applyEquipmentSwap(actor, selections) {
   const { weapons, shields, accessories } = partitionInventory(actor);
   const handItems = [...weapons, ...shields];
 
@@ -636,6 +642,12 @@ export async function applyEquipmentSwap(actor, selections) {
 // CHANGE what's worn, call applyEquipmentSwap instead — this only reconciles.)
 export async function reconcileEquip(actor) {
   if (!actor) return { changed: 0 };
+  // Same BD-orchestration guard as applyEquipmentSwap: this is a BD-driven
+  // repair sweep, so the ambient hook stands down while it runs.
+  return withManagedEquip(actor, () => _reconcileEquip(actor));
+}
+
+async function _reconcileEquip(actor) {
   const { weapons, shields, accessories } = partitionInventory(actor);
   const handItems = [...weapons, ...shields];
   const props = actor.system?.props ?? {};

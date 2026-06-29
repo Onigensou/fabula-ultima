@@ -50,6 +50,11 @@ export function isCleanseAction(item) {
 export function isDebuffEffect(e) {
   if (!e || e.disabled) return false;
   const f = e.flags ?? {};
+  // Permanent, equipment-managed effects (e.g. an Equipment Set's "always Wet")
+  // are NOT player-removable debuffs — Cleanse skips them. Only the equip
+  // threshold (set-bonus reconcile) removes them.
+  const fu = f["fabula-ultima-companion"] ?? {};
+  if (fu.directorPermanent === true || fu.setBonus) return false;
   const tags = [
     ...(Array.isArray(e.system?.tags) ? e.system.tags : []),
     ...(Array.isArray(e.tags) ? e.tags : []),
