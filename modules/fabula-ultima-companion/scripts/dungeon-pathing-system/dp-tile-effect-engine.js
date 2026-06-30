@@ -227,11 +227,22 @@
     ]));
 
     if (cfg.useResourceChange) {
-      for (const actor of actors) {
-        const row = rowMap.get(actor.uuid);
+      // Each actor.update triggers a full CSB prepareData recompute (~300-600ms,
+      // synchronous, scales with item count — it re-prepares the actor AND every
+      // embedded item). On a targetMode:"all" tile that is 4 back-to-back blocking
+      // recomputes; under real multiplayer load the resulting memory spike was the
+      // likely OOM/host-reboot trigger (see project_scorched_tile_lag_rootcause).
+      // Yield a macrotask BETWEEN members so the browser can paint and GC can run
+      // between recomputes, smoothing the freeze and lowering peak memory. This is
+      // tile-path-only; the shared applyToActor (used by combat reactions / Battle
+      // Director's own engine does NOT touch it) is left untouched.
+      for (let i = 0; i < actors.length; i++) {
+        const actor = actors[i];
+        const row   = rowMap.get(actor.uuid);
         row.resource = await applyResourceDelta(actor, cfg).catch(e => {
           console.error(TAG, `resource delta failed for ${actor.name}:`, e); return null;
         });
+        if (i < actors.length - 1) await new Promise(r => setTimeout(r, 0));
       }
     }
 
