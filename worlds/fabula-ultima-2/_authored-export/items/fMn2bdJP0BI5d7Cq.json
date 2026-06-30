@@ -1,0 +1,89 @@
+{
+  "_id": "fMn2bdJP0BI5d7Cq",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1782843154304,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
+  "name": "The Tormentor (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "xktj2JJX7QZ5z6jA",
+    "props": {
+      "cost": "",
+      "description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "chain_steps": "tm_bonus, tm_benign",
+          "damage_amount": "floor(TARGET_CURRENT_HP * (0.2 - 0.1 * TARGET_IS_CHAMPION))",
+          "damage_cause": "damage",
+          "damage_element": "physical",
+          "damage_ignore_affinity": true,
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "chain",
+          "effect_label": "tm_root",
+          "target_ref": ""
+        },
+        "1": {
+          "$deleted": false,
+          "damage_amount": "floor(TARGET_CURRENT_HP * (0.2 - 0.1 * TARGET_IS_CHAMPION))",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "tm_bonus",
+          "target_ref": ""
+        },
+        "2": {
+          "$deleted": false,
+          "action_keyword": "benign",
+          "damage_amount": "TARGET_CURRENT_HP - 1",
+          "damage_operation": "cap",
+          "damage_stage": "outgoing",
+          "effect_kind": "apply_action_keyword",
+          "effect_label": "tm_benign",
+          "target_ref": ""
+        }
+      },
+      "isCheck": false,
+      "name": "Scouter (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "$deleted": false,
+          "condition_formula": "",
+          "reaction_action_intent": "",
+          "reaction_effect_ref": "tm_root",
+          "reaction_passive_mode": "force",
+          "reaction_requires_weapon_used": true,
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        }
+      },
+      "skill_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": ""
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "fMn2bdJP0BI5d7Cq"
+  },
+  "type": "equippableItem"
+}

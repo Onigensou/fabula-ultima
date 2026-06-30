@@ -1356,6 +1356,15 @@ function getBaseValueForChange(actor, change) {
   function seedAeAccumulators(actor) {
     try {
       foundry.utils.setProperty(actor, "flags.fabula-ultima-companion.damage_taken_mult", 1);
+      // Attacker-side OUTGOING damage multiplier FAMILY, scoped by action kind
+      // (Bane writes _attack ×0.5). Read by action-profile.buildPerTarget as
+      // `damage_dealt_mult_all × damage_dealt_mult_<kind>`. Same seed-to-1 rationale
+      // so MULTIPLY-mode AEs compose instead of NaN-ing over undefined. Seeds the
+      // universal key + the damage-dealing kinds; supporting a NEW kind only needs
+      // its name added to this list.
+      for (const k of ["all", "attack", "spell", "skill"]) {
+        foundry.utils.setProperty(actor, `flags.fabula-ultima-companion.damage_dealt_mult_${k}`, 1);
+      }
     } catch (_) { /* non-fatal: ruleset defaults to 1 on read */ }
   }
 

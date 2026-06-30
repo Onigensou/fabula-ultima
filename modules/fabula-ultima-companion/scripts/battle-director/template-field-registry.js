@@ -367,6 +367,15 @@ export const REACTION_CONFIG_REQUIRED_COLUMNS = [
   // within one BD round (counter resets each round, wiped at combat end). Wandering
   // Flame's Ignition caps Burn-triggered MP/ZP gains at 3/round.
   textCol("reaction_max_per_round", "Max Per Round", { tooltip: "Limit how many times this reaction can fire within a single BD round (e.g. 3). The row is hidden/skipped once its quota is spent for the round; resets each round. Blank or 0 = unlimited." }),
+  // Weapon-USED gate (the gear `_skill`-inside-a-WEAPON model). When CHECKED, this
+  // row only fires if the weapon backing the carrier is the one ACTUALLY USED in the
+  // triggering action (carrier-is-weapon, else the carrier's `system.container`
+  // weapon). Constrains only the acting attacker; a spell/other-weapon hit won't
+  // proc it. UNCHECKED (default) = live whenever the carrier/container is merely
+  // EQUIPPED — accessory-like, so a weapon skill can still be equip-activated. Read
+  // by reactionWeaponUsedSatisfied (skill-effects.js). Morrigan's "on hit with THIS
+  // weapon, recover 10 MP" sets this.
+  checkboxCol("reaction_requires_weapon_used", "Requires Weapon Used", { tooltip: "CHECK for an on-use weapon rider: the row fires only when the weapon backing this skill (its own type, or its container weapon) is the one actually used in the action — not on a spell or a different weapon, and only for the acting attacker. UNCHECK (default) = fires whenever the weapon/gear is merely equipped (accessory-like)." }),
 ];
 
 // Map a table key → its required columns, for the boot sync to iterate.

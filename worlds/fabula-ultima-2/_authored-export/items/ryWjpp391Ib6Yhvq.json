@@ -1,0 +1,81 @@
+{
+  "_id": "ryWjpp391Ib6Yhvq",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1782842952270,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
+  "name": "Muscly Arm (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "KRD2oLQnj3dgVq0j",
+    "props": {
+      "cost": "",
+      "description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "ae_template_ref": "Stagger",
+          "effect_kind": "apply_ae",
+          "effect_label": "ma_stagger",
+          "target_ref": "trigger_subject"
+        },
+        "1": {
+          "$deleted": false,
+          "ae_template_ref": "Frightened",
+          "effect_kind": "apply_ae",
+          "effect_label": "ma_fright",
+          "target_ref": "trigger_subject"
+        }
+      },
+      "isCheck": false,
+      "name": "Scouter (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "$deleted": false,
+          "condition_formula": "HIT_MARGIN >= 5",
+          "reaction_action_intent": "",
+          "reaction_effect_ref": "ma_stagger",
+          "reaction_passive_mode": "force",
+          "reaction_requires_weapon_used": true,
+          "reaction_source": "self",
+          "reaction_trigger": "creature_deals_damage"
+        },
+        "1": {
+          "$deleted": false,
+          "condition_formula": "HIT_MARGIN >= 8",
+          "reaction_action_intent": "",
+          "reaction_effect_ref": "ma_fright",
+          "reaction_passive_mode": "force",
+          "reaction_requires_weapon_used": true,
+          "reaction_source": "self",
+          "reaction_trigger": "creature_deals_damage"
+        }
+      },
+      "skill_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": ""
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "ryWjpp391Ib6Yhvq"
+  },
+  "type": "equippableItem"
+}

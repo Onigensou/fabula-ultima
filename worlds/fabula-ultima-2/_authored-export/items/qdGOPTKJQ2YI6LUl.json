@@ -70,18 +70,47 @@
                 "effect_kind": "adjust_charges",
                 "effect_label": "bortd_b_zero",
                 "target_ref": "bortd_self"
+              },
+              "bortd_cap": {
+                "consume_self": true,
+                "damage_amount": "CUR_HP - 1",
+                "damage_operation": "cap",
+                "damage_stage": "incoming",
+                "effect_kind": "adjust_damage",
+                "effect_label": "bortd_cap"
+              },
+              "bortd_death": {
+                "chain_steps": "bortd_cap, bortd_heal, bortd_zero",
+                "effect_kind": "chain",
+                "effect_label": "bortd_death"
+              },
+              "bortd_heal": {
+                "effect_kind": "grant",
+                "effect_label": "bortd_heal",
+                "grant_amount": "SL_BEYOND_THE_REALMS_OF_DEATH * AE_CHARGES_GRAVE_POINTS - 1",
+                "grant_resource": "hp",
+                "target_ref": "self"
+              },
+              "bortd_zero": {
+                "charge_ae_name": "Grave Points",
+                "charge_amount": "0",
+                "charge_operation": "set",
+                "effect_kind": "adjust_charges",
+                "effect_label": "bortd_zero",
+                "target_ref": "self"
               }
             },
             "reaction_config_table": {
               "0": {
-                "condition_formula": "CUR_HP <= 0 && AE_CHARGES_GRAVE_POINTS > 0",
+                "condition_formula": "AE_CHARGES_GRAVE_POINTS > 0",
                 "consume_self": true,
+                "reaction_damage_outcome": "would_reduce_to_zero",
                 "reaction_effect_ref": "bortd_death",
                 "reaction_passive_mode": "on",
                 "reaction_passive_target": "self",
                 "reaction_resource_filter": "hp",
                 "reaction_source": "self",
-                "reaction_trigger": "creature_lose_resource"
+                "reaction_trigger": "creature_takes_damage"
               }
             }
           }

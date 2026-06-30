@@ -399,8 +399,10 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       if (Number.isFinite(n)) return n;
     }
     switch (name) {
-      // Skill level
-      case "SL": return Number(skill?.system?.level ?? skill?.system?.props?.skill_level ?? skill?.system?.props?.level ?? 1) || 1;
+      // Skill level — base level + any RUNTIME boost (gear/effects that raise a
+      // skill's EFFECTIVE level without persistently mutating system.level; see
+      // skillLevelBonus). Floored at 1 like the bare base read.
+      case "SL": return Math.max(1, (Number(skill?.system?.level ?? skill?.system?.props?.skill_level ?? skill?.system?.props?.level ?? 1) || 1) + skillLevelBonus(actor, skill));
       // Character (caster) total level — sum of class levels in
       // Fabula Ultima, lives at `actor.system.props.level`. Used by
       // skills that scale on the caster's overall power (Heal's
@@ -650,6 +652,16 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         const subject = _resolveActorByUuidSync(subjectUuid);
         return subject ? (Number(subject?.system?.props?.current_hp ?? 0) || 0) : 0;
       }
+      // 1 iff the trigger's SUBJECT creature is Champion-rank (NPC rank lives at
+      // system.props.npc_rank — soldier/elite/champion/companion). Twin of
+      // TARGET_CURRENT_HP (same subjectActorUuid resolve). Used by The Tormentor's
+      // "20% current-HP bonus damage, reduced to 10% vs Champions".
+      case "TARGET_IS_CHAMPION": {
+        const subjectUuid = String(payload?.subjectActorUuid ?? "").trim();
+        if (!subjectUuid) return 0;
+        const subject = _resolveActorByUuidSync(subjectUuid);
+        return String(subject?.system?.props?.npc_rank ?? "").trim().toLowerCase() === "champion" ? 1 : 0;
+      }
       // Total (character) level of the trigger's SUBJECT creature — the twin of
       // CHAR_LEVEL (caster level) for the TARGET. Reads payload.subjectActorUuid,
       // so it requires a per-target context that threads the subject (per-victim
@@ -680,6 +692,14 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // Returns 0 on creature_deals_damage (per-target) — use this identifier
       // only in creature_completes_attack rows.
       case "ALL_TARGETS_HIT": return payload?.allTargetsHit ? 1 : 0;
+      // 1 if the action is a basic weapon ATTACK (ar.kind/view.kind === "Attack").
+      // Reads payload.actionKind. The Attack twin of ACTION_IS_SPELL — lets a reaction
+      // scope to the Attack action ONLY: e.g. Swordbreaker's on-miss Bane fires on a
+      // missed ATTACK, not a missed offensive spell/skill (both stamp actionKind
+      // "Skill"). Available wherever the payload carries actionKind (creature_miss_action,
+      // the *_completes_* / performs_action payloads).
+      case "ACTION_IS_ATTACK":
+        return String(payload?.actionKind ?? "").toLowerCase() === "attack" ? 1 : 0;
       // 1 if the action is a Spell. Reads payload.actionKind (the real kind on the
       // post-resolve completion payloads — Consume's "deal damage WITH A SPELL"
       // gate) OR payload.actionSkillType (the casting item's skill_type, carried on
@@ -1367,13 +1387,40 @@ function countEquippedItemsOfType(actor, item_type) {
   return count;
 }
 
+// Slug a skill NAME into the suffix used by the runtime skill-level-boost
+// flag family: lowercase, non-alphanumeric runs collapsed to "_", edges
+// trimmed. "Capote" → "capote", "Thread the Horns" → "thread_the_horns".
+export function skillNameSlug(name) {
+  return String(name ?? "").trim().toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
+}
+
+// RUNTIME skill-level boost. Gear/effects can raise a skill's EFFECTIVE level
+// at resolution time — WITHOUT persistently mutating skill.system.level — by
+// carrying an AE that ADDs to a flag in the
+//   flags.fabula-ultima-companion.skill_level_bonus_<slug>
+// family (<slug> = skillNameSlug of the target skill's name), plus a universal
+// `skill_level_bonus_all` that lifts every skill. Mirrors the check_mod_* /
+// damage_dealt_mult_* idiom: the scope lives in the flag NAME, so this is fully
+// data-driven with no per-skill engine branch. Matador Cape's "【Provoke】SL+1"
+// rides `skill_level_bonus_capote` +1 while equipped. ADD-mode flags need no
+// accumulator seeding (an absent flag reads as 0). Read by the `SL` identifier
+// (both formula evaluators) and getNamedSkillLevel so SL_<NAME> reflects it too.
+export function skillLevelBonus(actor, skill) {
+  const fns = actor?.flags?.["fabula-ultima-companion"];
+  if (!fns || !skill) return Number(fns?.skill_level_bonus_all) || 0;
+  const slug = skillNameSlug(skill?.name);
+  const perSkill = slug ? (Number(fns[`skill_level_bonus_${slug}`]) || 0) : 0;
+  return perSkill + (Number(fns.skill_level_bonus_all) || 0);
+}
+
 // Current SL of the named skill on the actor, 0 if not owned. Used by
 // the dynamic `SL_<NAME>` formula identifier — Dual Shieldbearer reads
 // `SL_DEFENSIVE_MASTERY` to add the bearer's Defensive Mastery SL as
 // the Twin Shields damage rider. Skill items expose level at
 // `system.level`, `system.props.skill_level`, or `system.props.level`
 // depending on template — check all three (same fallback chain as the
-// `SL` identifier in buildSkillResolver).
+// `SL` identifier in buildSkillResolver). Includes the runtime skill-level
+// boost (skillLevelBonus) so a gear-boosted skill scales SL_<NAME> too.
 function getNamedSkillLevel(actor, wantedLower) {
   if (!actor) return 0;
   const items = actor.items?.contents ?? (Array.isArray(actor.items) ? actor.items : []);
@@ -1383,7 +1430,8 @@ function getNamedSkillLevel(actor, wantedLower) {
       ?? item?.system?.props?.skill_level
       ?? item?.system?.props?.level
       ?? 0);
-    return Number.isFinite(lvl) ? Math.max(0, lvl) : 0;
+    const base = Number.isFinite(lvl) ? Math.max(0, lvl) : 0;
+    return base + skillLevelBonus(actor, item);
   }
   return 0;
 }
@@ -1968,10 +2016,17 @@ export function attributeModParts({ actor, key, total, label, sign = 1 } = {}) {
 }
 
 // ── Accuracy (added to the attack/spell Check total) ───────────────────
-// `kind`: "melee" | "ranged" | "magic". Accuracy IS a Check — the legacy
-// `attack_accuracy_mod_*` props were unified into `check_mod_*` (2026-06-28
-// template refactor), so `check_mod_all` applies to every check (attacks
-// included) and the range variants refine attacks of that range.
+// `kind`: "melee" | "ranged" | "magic". Accuracy IS a Check, but the keys
+// have different SCOPES:
+//   check_mod_all       → EVERY check (request checks, accuracy, any) — the
+//                         universal modifier (legacy attack_accuracy_mod_all
+//                         unified here 2026-06-28).
+//   check_mod_accuracy  → ALL accuracy checks, both strike (melee/ranged) AND
+//                         magic (spell attacks), but NOT non-attack checks
+//                         (Study/Stealth/request). Applied unconditionally for
+//                         every attack kind below. Use this for "+N Accuracy"
+//                         gear (Spectacles, Diver Goggle) — NOT check_mod_all.
+//   check_mod_melee/ranged/magic → per-range refinement of attacks of that kind.
 // `skill_accuracy` is intentionally absent (already in weapon.checkBonus,
 // see header). Pass `actor` to get per-skill source names; `props` alone
 // falls back to the generic label.
@@ -1984,6 +2039,7 @@ export function resolveAccuracyParts({ actor = null, props = null, kind = null }
     if (total !== 0) parts.push(...attributeModParts({ actor, key, total, label }));
   };
   add("check_mod_all", "Check (All)");
+  add("check_mod_accuracy", "Accuracy");          // all accuracy checks (strike + magic)
   if (kind === "melee")  add("check_mod_melee",  "Check (Melee)");
   if (kind === "ranged") add("check_mod_ranged", "Check (Ranged)");
   if (kind === "magic")  add("check_mod_magic",  "Check (Magic)");

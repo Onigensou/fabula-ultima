@@ -8,6 +8,65 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "mbuJt9elh4skK4c7",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782841985072,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "check_mod_accuracy",
+          "mode": 2,
+          "priority": 20,
+          "value": "${isEquipped ? 1 : 0}$"
+        }
+      ],
+      "description": "<p>+1 to your Accuracy Check.</p>",
+      "disabled": true,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "EdXTZBYlPGG9p1LD",
+          "originalParentId": "EdVytW8FsFrySsuV",
+          "originalUuid": "Actor.Z4CFy505cD3nzl1W.Item.EdVytW8FsFrySsuV.ActiveEffect.EdXTZBYlPGG9p1LD"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/glass.png",
+      "name": "Spectacles",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"

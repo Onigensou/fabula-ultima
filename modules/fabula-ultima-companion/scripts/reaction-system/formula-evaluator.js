@@ -370,13 +370,23 @@ Hooks.once("ready", () => {
     const combat       = ctx.combat ?? game.combat ?? null;
 
     switch (name) {
-      // Skill level
+      // Skill level — base + any RUNTIME boost from the
+      // flags.fabula-ultima-companion.skill_level_bonus_<slug> family (+ the
+      // universal _all). Kept in lock-step with skill-formulas.js skillLevelBonus
+      // (inlined here to keep the reaction-system module decoupled from the BD one).
       case "SL": {
         const lv = firingSkill?.level
                 ?? firingSkill?.system?.props?.level
                 ?? firingSkill?.system?.level
                 ?? 0;
-        return Math.max(0, Number(lv) || 0);
+        const base = Math.max(0, Number(lv) || 0);
+        const fns = reactorActor?.flags?.["fabula-ultima-companion"];
+        if (!fns) return base;
+        const slug = String(firingSkill?.name ?? "").trim().toLowerCase()
+          .replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
+        const bonus = (slug ? (Number(fns[`skill_level_bonus_${slug}`]) || 0) : 0)
+                    + (Number(fns.skill_level_bonus_all) || 0);
+        return base + bonus;
       }
       // Combat / payload introspection — used by condition_formula gates.
       case "ROUND": return Number(combat?.round ?? 0) || 0;

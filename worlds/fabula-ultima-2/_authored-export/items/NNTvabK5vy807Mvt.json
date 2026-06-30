@@ -8,6 +8,65 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "PuOTcqHv24hs597Y",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782841985095,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "condition_charm",
+          "mode": 5,
+          "priority": 1,
+          "value": "${isEquipped ? 'IM' : 'NA'}$"
+        }
+      ],
+      "description": "<p>You are immune to Charm.</p>",
+      "disabled": true,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "fk1NoE1O8effoaUl",
+          "originalParentId": "JOEi8X46SkQ5tRNG",
+          "originalUuid": "Actor.gdJZ1L1kv5mjTTMr.Item.JOEi8X46SkQ5tRNG.ActiveEffect.fk1NoE1O8effoaUl"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/2612.gif",
+      "name": "Fairy Ring",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"

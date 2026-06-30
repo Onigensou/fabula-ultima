@@ -1699,6 +1699,87 @@
       "type": "equippableItem"
     },
     {
+      "_id": "dRcIZVwyNg8wx56q",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782842951871,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
+      "name": "Muscly Arm (Passive)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "zRnplMHtTwTQOsbg",
+        "props": {
+          "cost": "",
+          "description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "ae_template_ref": "Stagger",
+              "effect_kind": "apply_ae",
+              "effect_label": "ma_stagger",
+              "target_ref": "trigger_subject"
+            },
+            "1": {
+              "$deleted": false,
+              "ae_template_ref": "Frightened",
+              "effect_kind": "apply_ae",
+              "effect_label": "ma_fright",
+              "target_ref": "trigger_subject"
+            }
+          },
+          "isCheck": false,
+          "name": "Scouter (Passive)",
+          "on_activate_effect_ref": "",
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "HIT_MARGIN >= 5",
+              "reaction_action_intent": "",
+              "reaction_effect_ref": "ma_stagger",
+              "reaction_passive_mode": "force",
+              "reaction_requires_weapon_used": true,
+              "reaction_source": "self",
+              "reaction_trigger": "creature_deals_damage"
+            },
+            "1": {
+              "$deleted": false,
+              "condition_formula": "HIT_MARGIN >= 8",
+              "reaction_action_intent": "",
+              "reaction_effect_ref": "ma_fright",
+              "reaction_passive_mode": "force",
+              "reaction_requires_weapon_used": true,
+              "reaction_source": "self",
+              "reaction_trigger": "creature_deals_damage"
+            }
+          },
+          "skill_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
+          "skill_target": "Self",
+          "skill_type": "Passive",
+          "type_damage": ""
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "AQqb37jPpVi1h6j6"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "drRzxcrhLzYzNU4w",
       "_stats": {
         "compendiumSource": "Item.E1dOu3pYQKL60blD",
@@ -2470,8 +2551,8 @@
             {
               "key": "bonus_defense",
               "mode": 2,
-              "priority": 2,
-              "value": "${and(isEquipped, ae(\"Crisis\")) ? 1 : 0}$"
+              "priority": null,
+              "value": "${and(isEquipped, ae(\"Crisis\")) ? (item_def_bonus * 1) : 0}$"
             }
           ],
           "description": "<p>Gain more defense while in Crisis</p>",
@@ -2578,6 +2659,61 @@
           "system": {
             "tags": []
           },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        },
+        {
+          "_id": "UpLaTI0Vps6bD9QH",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1782839068104,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "flags.fabula-ultima-companion.skill_level_bonus_provoke",
+              "mode": 2,
+              "priority": null,
+              "value": "${isEquipped ? 1 : 0}$"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "UpLaTI0Vps6bD9QH",
+              "originalParentId": "JT5pvl5buIjL9JHX",
+              "originalUuid": "Actor.uJFaNQCSvwwsr2AW.Item.JT5pvl5buIjL9JHX.ActiveEffect.UpLaTI0Vps6bD9QH"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/skills/social/intimidation-impressing.webp",
+          "name": "Provoke SL+1",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
           "tint": "#ffffff",
           "transfer": true,
           "type": "base"
@@ -3637,7 +3773,7 @@
               "reaction_trigger": "round_start"
             },
             "2": {
-              "condition_formula": "AE_CHARGES_COUNTER_PASS >= 1",
+              "condition_formula": "ACTION_IS_ATTACK == 1 && AE_CHARGES_COUNTER_PASS >= 1",
               "reaction_action_intent": "harmful",
               "reaction_action_kind": "",
               "reaction_cause_filter": "",
@@ -4563,7 +4699,7 @@
           "optional_params": {},
           "reaction_config_table": {
             "0": {
-              "condition_formula": "ATTACK_IS_MELEE == 1",
+              "condition_formula": "ACTION_IS_ATTACK == 1 && ATTACK_IS_MELEE == 1",
               "reaction_action_intent": "harmful",
               "reaction_action_kind": "",
               "reaction_cause_filter": "",
@@ -4864,7 +5000,7 @@
           "reaction_config_table": {
             "0": {
               "$deleted": false,
-              "condition_formula": "MISS_MARGIN >= 6 - SL",
+              "condition_formula": "ACTION_IS_ATTACK == 1 && MISS_MARGIN >= 6 - SL",
               "reaction_action_intent": "harmful",
               "reaction_action_kind": "",
               "reaction_action_target": "",
@@ -5239,7 +5375,7 @@
             },
             "1": {
               "$deleted": false,
-              "condition_formula": "",
+              "condition_formula": "ACTION_IS_ATTACK == 1",
               "reaction_action_intent": "harmful",
               "reaction_action_kind": "",
               "reaction_action_target": "",
@@ -7510,7 +7646,7 @@
       "xuwAn7u126GfFweU": []
     },
     "template": "OmwL5UqoVwjshkJo",
-    "templateSystemUniqueVersion": 782969161
+    "templateSystemUniqueVersion": 782969163
   },
   "type": "character"
 }

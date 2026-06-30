@@ -10,40 +10,65 @@
   },
   "effects": [
     {
-      "_id": "5oBWJC32T06XP3oK",
+      "_id": "aee6jLIZUtF2oVaf",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782554346662,
+        "createdTime": 1782834506618,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
-      "changes": [
-        {
-          "key": "affinity_1",
-          "mode": 5,
-          "priority": 1,
-          "value": "${isEquipped ? 'RS' : 'NA'}$"
-        }
-      ],
-      "description": "<p>Gain resistance to <span style=\"text-decoration:underline\"><span style=\"font-family:Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;scrollbar-color:var(--color-scrollbar) var(--color-scrollbar-track);cursor:pointer;--content-link-background:rgba(0, 0, 0, 0.1);background-image:none !important;background-position:initial !important;background-size:initial !important;background-repeat:initial !important;background-attachment:initial !important;background-origin:initial !important;background-clip:initial !important;background-color:rgb(102, 102, 102);padding:0px !important;border:none !important;border-radius:2px;white-space:nowrap;word-break:break-all;color:rgb(72, 199, 116) !important;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:rgb(168, 255, 187) 0px 0px 4px;font-family:Signika, sans-serif;font-size:14px;font-style:normal;font-variant-ligatures:normal;font-variant-caps:normal;letter-spacing:normal;orphans:2;text-align:start;text-indent:0px;text-transform:none;widows:2;word-spacing:0px;-webkit-text-stroke-width:0px\"><strong><span style=\"text-decoration:underline\">Air</span></strong></a><strong><span style=\"text-decoration:underline\"> </span></strong><span style=\"text-decoration:underline\">damage</span></span></span></p>",
+      "changes": [],
+      "description": "<p>When a creature Attacks you and misses, 50% chance to inflict Bane on the attacker.</p>",
       "disabled": true,
       "duration": {
         "combat": null,
         "rounds": null,
         "seconds": null,
-        "startRound": 1,
-        "startTime": 298800,
-        "startTurn": 2,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
         "turns": null
       },
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "5oBWJC32T06XP3oK",
+          "originalId": "aee6jLIZUtF2oVaf",
           "originalParentId": "uNsw1vWtAssZo4Bz",
-          "originalUuid": "Item.uNsw1vWtAssZo4Bz.ActiveEffect.5oBWJC32T06XP3oK"
+          "originalUuid": "Item.uNsw1vWtAssZo4Bz.ActiveEffect.aee6jLIZUtF2oVaf"
+        },
+        "fabula-ultima-companion": {
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "$deleted": false,
+                "chance_percent": "50",
+                "chance_then_ref": "sb_bane",
+                "effect_kind": "chance",
+                "effect_label": "sb_roll"
+              },
+              "1": {
+                "$deleted": false,
+                "ae_template_ref": "Bane",
+                "effect_kind": "apply_ae",
+                "effect_label": "sb_bane",
+                "target_ref": "trigger_subject"
+              }
+            },
+            "name": "Swordbreaker",
+            "reaction_config_table": {
+              "0": {
+                "$deleted": false,
+                "condition_formula": "ACTION_IS_ATTACK == 1",
+                "reaction_action_intent": "harmful",
+                "reaction_effect_ref": "sb_roll",
+                "reaction_passive_mode": "force",
+                "reaction_source": "enemy",
+                "reaction_trigger": "creature_miss_action"
+              }
+            }
+          }
         },
         "statuscounter": {
           "config": {
@@ -54,7 +79,7 @@
           "visible": false
         }
       },
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1224.gif",
       "name": "Swordbreaker",
       "origin": null,
       "sort": 0,

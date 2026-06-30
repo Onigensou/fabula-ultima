@@ -1705,7 +1705,14 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
-      "changes": [],
+      "changes": [
+        {
+          "key": "affinity_2",
+          "mode": 0,
+          "priority": 1,
+          "value": "VU"
+        }
+      ],
       "description": "<p>Gain <strong>Air </strong>vulnerability</p>",
       "disabled": false,
       "duration": {
@@ -2364,7 +2371,14 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
-      "changes": [],
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.damage_dealt_mult_attack",
+          "mode": 1,
+          "priority": 20,
+          "value": "0.5"
+        }
+      ],
       "description": "<p>Reduce <strong>Attack </strong>damage</p>",
       "disabled": false,
       "duration": {

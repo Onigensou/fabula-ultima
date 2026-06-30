@@ -4355,6 +4355,12 @@
         "effects": 0
       },
       {
+        "id": "YLEEg7gkU9c9Ihd8",
+        "name": "Charm",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
         "id": "4Ew4B2v0hxhzGnpE",
         "name": "Charred Bone",
         "type": "equippableItem",
@@ -5780,7 +5786,7 @@
         "id": "NNTvabK5vy807Mvt",
         "name": "Fairy Ring",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "G8fBxPWSabEzD5V6",
@@ -8366,7 +8372,7 @@
         "id": "53Usenn5H4oDCDzD",
         "name": "Matador Cape",
         "type": "equippableItem",
-        "effects": 3
+        "effects": 4
       },
       {
         "id": "wTVhkpDfiM0BKfe2",
@@ -8903,6 +8909,12 @@
         "effects": 0
       },
       {
+        "id": "AN5Vw7iyc7hSIXvH",
+        "name": "Morrigan (Passive)",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "TnkMbLJTebjn9S0a",
         "name": "Moth Trap",
         "type": "equippableItem",
@@ -8961,6 +8973,12 @@
         "name": "Muscly Arm",
         "type": "equippableItem",
         "effects": 2
+      },
+      {
+        "id": "ryWjpp391Ib6Yhvq",
+        "name": "Muscly Arm (Passive)",
+        "type": "equippableItem",
+        "effects": 0
       },
       {
         "id": "0ZeLgAjsaqKARG91",
@@ -11180,7 +11198,7 @@
         "id": "cN3u9EEjsbZVjxzb",
         "name": "Spectacles",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "xp8F3W3gtYpTGXSi",
@@ -11603,12 +11621,6 @@
         "effects": 0
       },
       {
-        "id": "OYuq20fwd3AjFy4H",
-        "name": "Swordbreak",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "uNsw1vWtAssZo4Bz",
         "name": "Swordbreaker",
         "type": "equippableItem",
@@ -11828,7 +11840,7 @@
         "id": "PEujSuuwyAkzwOAl",
         "name": "Teddy Bear",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "ueXM3rkOpzD5hBKq",
@@ -11905,6 +11917,12 @@
       {
         "id": "xktj2JJX7QZ5z6jA",
         "name": "The Tormentor",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "fMn2bdJP0BI5d7Cq",
+        "name": "The Tormentor (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -12638,7 +12656,7 @@
         "id": "1nYCUBF2hIDBDALx",
         "name": "Weapon Break",
         "type": "equippableItem",
-        "effects": 1
+        "effects": 0
       },
       {
         "id": "Hwc20u1gKTj1foQz",
@@ -12727,6 +12745,12 @@
       {
         "id": "quJxn5TAZFaY5i7C",
         "name": "Windpiercer",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "8rxdGdcaGpaqA7mc",
+        "name": "Windpiercer (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -14348,7 +14372,7 @@
         "effects": 1
       },
       {
-        "id": "38resZ4CU7Kn7TX0",
+        "id": "OIfS1dWhZv3OpKVH",
         "name": "BD Dummy Enemy",
         "type": "character",
         "items": [],
@@ -14505,6 +14529,10 @@
           {
             "id": "zRnplMHtTwTQOsbg",
             "name": "Muscly Arm"
+          },
+          {
+            "id": "dRcIZVwyNg8wx56q",
+            "name": "Muscly Arm (Passive)"
           },
           {
             "id": "WBMByjJUKDlD8TmE",
@@ -17827,6 +17855,10 @@
             "name": "Morrigan"
           },
           {
+            "id": "ziGuceXkDrtTMBp9",
+            "name": "Morrigan (Passive)"
+          },
+          {
             "id": "qXvY2q2G2bjHFdu1",
             "name": "Orb"
           },
@@ -17879,8 +17911,16 @@
             "name": "The Tormentor"
           },
           {
+            "id": "YUYi5J6GgRHVbEtd",
+            "name": "The Tormentor (Passive)"
+          },
+          {
             "id": "720wa4E0ldJEqXG4",
             "name": "Windpiercer"
+          },
+          {
+            "id": "jepGtMgwfkkCznXk",
+            "name": "Windpiercer (Passive)"
           },
           {
             "id": "oe3OP8VmjHJpWJ41",
@@ -17891,7 +17931,7 @@
             "name": "Zero Trigger: Foresight"
           }
         ],
-        "effects": 1
+        "effects": 3
       },
       {
         "id": "tzXbVfDYPgvu5wml",
@@ -18669,6 +18709,10 @@
             "name": "Cat Ears (Passive)"
           },
           {
+            "id": "rs7BtA731yHZPcDn",
+            "name": "Charm"
+          },
+          {
             "id": "HuvAVqZwbORQENz9",
             "name": "Cognitive Focus"
           },
@@ -18773,6 +18817,10 @@
             "name": "Thermokinesis"
           },
           {
+            "id": "vYbUJ2PfG3lQDDcn",
+            "name": "Weapon Break"
+          },
+          {
             "id": "OoQjrz63C5m8OOoc",
             "name": "Zero Power: Last Den of Cinders"
           },
@@ -18781,7 +18829,7 @@
             "name": "Zero Trigger: Shattered Phantasm"
           }
         ],
-        "effects": 5
+        "effects": 2
       },
       {
         "id": "EHyFlGpLQLriK65C",
@@ -21660,8 +21708,29 @@
         "effects": 0
       },
       {
+        "id": "PNdPbPJD7EnTgiLb",
+        "name": "Test Caster",
+        "type": "character",
+        "items": [],
+        "effects": 1
+      },
+      {
         "id": "1Z5TmzgUQhOag38f",
         "name": "Test Character",
+        "type": "character",
+        "items": [],
+        "effects": 0
+      },
+      {
+        "id": "Xu9NOUE15qM7A9jV",
+        "name": "Test Target Ally",
+        "type": "character",
+        "items": [],
+        "effects": 1
+      },
+      {
+        "id": "WJnlTHuNJaILbnrc",
+        "name": "Test Target Enemy",
         "type": "character",
         "items": [],
         "effects": 0

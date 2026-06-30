@@ -154,7 +154,7 @@
       "optional_params": {},
       "reaction_config_table": {
         "0": {
-          "condition_formula": "ATTACK_IS_MELEE == 1",
+          "condition_formula": "ACTION_IS_ATTACK == 1 && ATTACK_IS_MELEE == 1",
           "reaction_action_intent": "harmful",
           "reaction_action_kind": "",
           "reaction_cause_filter": "",

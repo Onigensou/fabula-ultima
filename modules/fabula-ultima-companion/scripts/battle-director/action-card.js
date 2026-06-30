@@ -33,6 +33,7 @@ import { resourceLabel } from "./resources.js";
 import { displayElement } from "./skill-formulas.js";
 import { lookupTerm } from "./keyword-registry.js";
 import { toggleKeywordTooltip, dismissKeywordTooltip } from "./keyword-tooltip.js";
+import { isAutoFireReactionMode } from "./reaction-modes.js";
 
 // Resolve which active non-GM user owns the given actor doc. Returns
 // userId or null. Deterministic on multi-owner actors (sort by id).
@@ -3643,7 +3644,7 @@ function buildReactionPills(prePassives) {
   // are NOT collapsed (each carries a distinct per-row decision or reason badge).
   const seenAuto = new Set();
   const deduped = visible.filter((p) => {
-    const isAuto = (p.mode === "on" || p.mode === "force") && p.available !== false;
+    const isAuto = isAutoFireReactionMode(p.mode) && p.available !== false;
     if (!isAuto) return true;
     const key = `${p.carrierUuid ?? p.carrierName ?? ""}::${p.reactorActorUuid ?? "self"}`;
     if (seenAuto.has(key)) return false;
@@ -3712,7 +3713,7 @@ function buildReactionPills(prePassives) {
           <span class="fud-bf-reaction-status fud-bf-reaction-reason">${reason}</span>
         </div>`;
     }
-    if (p.mode === "on" || p.mode === "force") {
+    if (isAutoFireReactionMode(p.mode)) {
       return `
         <div class="fud-bf-reaction-pill is-auto ${sideClass}" data-fud-reaction-key="${safeKey}" data-fud-reaction-carrier="${safeCarrier}"${reactorAttr}${ownerAttr}${tipAttrs}>
           ${iconHtml}
@@ -4230,14 +4231,16 @@ export async function postActionCard({ director, kind, payload }) {
   const prior = _overlays.get(director.combatId);
   if (prior) { try { prior.cleanup(); } catch {} _overlays.delete(director.combatId); }
 
-  // Pre-compute bonus from auto-accepted ("on"-mode) pre-passives so the
+  // Pre-compute bonus from auto-accepted (on/force) pre-passives so the
   // damage header reflects passive bonuses before the player confirms.
   // "ask"-mode passives are uncertain — we don't pre-apply them to the header.
+  // on AND force both auto-apply (isAutoFireReactionMode) — force is engine-
+  // mandatory but otherwise identical to on, so it must fold into the damage too.
   // Fire-and-forget: any throw leaves effectivePayload = payload (no bonus shown).
   let effectivePayload = payload;
   {
     const autoPassives = (Array.isArray(payload?.prePassives) ? payload.prePassives : [])
-      .filter((p) => p?.mode === "on" && p?.available !== false);
+      .filter((p) => isAutoFireReactionMode(p?.mode) && p?.available !== false);
     if (autoPassives.length && payload?.attackerActor && Array.isArray(payload?.perTargetResults)) {
       try {
         const { computeSenderDamageBonuses } = await import("./skill-effects.js");
@@ -4484,7 +4487,7 @@ export async function postActionCard({ director, kind, payload }) {
       // when unavailable (can't pay cost): a surfaced-dimmed on/force pill must
       // never auto-fire, or RESOLVE would try to consume a resource the actor
       // doesn't have. It stays a dimmed informational pill instead.
-      if ((p.mode === "on" || p.mode === "force") && p.available !== false) reactionDecisionMap.set(key, "apply");
+      if (isAutoFireReactionMode(p.mode) && p.available !== false) reactionDecisionMap.set(key, "apply");
       if (p.mode === "off") reactionDecisionMap.set(key, "skip");
     }
 
@@ -5580,7 +5583,7 @@ export async function postActionCard({ director, kind, payload }) {
     (async () => {
       try {
         for (const p of prePassives ?? []) {
-          if (!(p?.mode === "on" || p?.mode === "force")) continue;
+          if (!isAutoFireReactionMode(p?.mode)) continue;
           if (reactionDecisionMap.get(`${p.rowKey}:${p.carrierUuid}`) !== "apply") continue;
           if (Array.isArray(p.chosenMenuPicks)) continue;   // already resolved
           try {

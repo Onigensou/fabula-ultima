@@ -21,7 +21,7 @@
       },
       "changes": [
         {
-          "key": "check_mod_all",
+          "key": "check_mod_accuracy",
           "mode": 2,
           "priority": 20,
           "value": "${and(isEquipped, ae(\"Wet\")) ? 3 : 0}$"

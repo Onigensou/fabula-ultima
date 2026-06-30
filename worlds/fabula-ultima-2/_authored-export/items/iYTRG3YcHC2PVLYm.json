@@ -177,7 +177,7 @@
         },
         "1": {
           "$deleted": false,
-          "condition_formula": "",
+          "condition_formula": "ACTION_IS_ATTACK == 1",
           "reaction_action_intent": "harmful",
           "reaction_action_kind": "",
           "reaction_action_target": "",

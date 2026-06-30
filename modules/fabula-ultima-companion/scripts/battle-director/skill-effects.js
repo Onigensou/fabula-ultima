@@ -26,6 +26,7 @@ import { findAndConsume, findOnActor as findChargeAEsOnActor } from "./skill-cha
 import { readPropNum, resolveAffinity } from "./snapshot.js";
 import { computeIncomingDamage } from "./damage-ruleset.js";
 import { appendBattleLog, buildDamageRow } from "./director-battle-log.js";
+import { isAutoFireReactionMode } from "./reaction-modes.js";
 
 const FLAG_NS = "fabula-ultima-companion";
 
@@ -1275,6 +1276,37 @@ function containerReactionInPlay(item, casterActor) {
   return container.system?.props?.isEquipped === true;
 }
 
+// Per-ROW weapon-USED gate. A reaction row may DECLARE (via the checkbox column
+// `reaction_requires_weapon_used`) that it only fires when the weapon BACKING it
+// is the one actually used in the triggering action — the gear `_skill`-inside-
+// a-weapon rider (Morrigan's "on hit with THIS weapon, recover MP"). This is
+// opt-in PER ROW, NOT inferred from container type: a weapon-container skill left
+// UNCHECKED stays equip-activated (accessory-like), so future "just by equipping"
+// weapon effects keep working. The backing weapon = the carrier item itself if a
+// weapon, else its `system.container` if THAT is a weapon. Only the ACTING
+// attacker is constrained (a bystander reacting to someone else's hit isn't gated
+// by the attacker's weapon); a spell / different-weapon hit fails the gate
+// (payload.weaponUuid null or mismatched). Fail-open when the row doesn't opt in
+// or has no weapon backing, so ordinary rows are never affected.
+function reactionWeaponUsedSatisfied(row, item, casterActor, payload) {
+  const w = row?.reaction_requires_weapon_used;
+  const wants = (w === true || w === 1 || w === "true" || w === "1");
+  if (!wants) return true;
+  const actingUuid = payload?.sourceActorUuid ?? null;
+  const reactorIsActor = !!actingUuid && casterActor?.uuid === actingUuid;
+  if (!reactorIsActor) return true; // only constrains the acting attacker
+  let weapon = null;
+  if (String(item?.system?.props?.item_type ?? "").toLowerCase() === "weapon") {
+    weapon = item;
+  } else {
+    const cId = item?.system?.container;
+    const c = cId ? casterActor?.items?.get?.(cId) : null;
+    if (c && String(c.system?.props?.item_type ?? "").toLowerCase() === "weapon") weapon = c;
+  }
+  if (!weapon) return true; // misauthored (no weapon backing) → don't silently kill it
+  return weapon.uuid === (payload?.weaponUuid ?? null); // spell → null → false
+}
+
 // NOTE: the old `skillActionPassiveApplies` item-level gate (which used an
 // item's `skill_type` to decide whether its reaction rows were "ambient" vs.
 // "self-scoped to the acting skill") was REMOVED 2026-06-15. `skill_type`
@@ -1420,6 +1452,7 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
     for (const key of Object.keys(rc)) {
       const row = rc[key];
       if (!shouldKeep(row)) continue;
+      if (!reactionWeaponUsedSatisfied(row, item, casterActor, payload)) continue;
       if (!(await passesMatchFilters(row, item, casterActor, payload))) continue;
       const refLabel = String(row.reaction_effect_ref ?? "").trim();
       let { available, unavailableKind, unavailableReason } =
@@ -1659,7 +1692,7 @@ export async function firePreAcceptedCandidate({ director, casterActor, candidat
   // Visual-first: show passive card before the effect applies so players
   // see the trigger before it acts. Only for auto-fire rows (on / force);
   // ask-mode rows already have a blade menu as visual feedback.
-  if ((candidate.mode === "on" || candidate.mode === "force") && ctx.reactorToken) {
+  if (isAutoFireReactionMode(candidate.mode) && ctx.reactorToken) {
     try {
       const { enqueuePassiveCard } = await import("./passive-card-ui/director-passive-card-ui.js");
       await enqueuePassiveCard({

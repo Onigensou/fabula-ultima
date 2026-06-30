@@ -92,8 +92,8 @@
         {
           "key": "bonus_defense",
           "mode": 2,
-          "priority": 2,
-          "value": "${and(isEquipped, ae(\"Crisis\")) ? 1 : 0}$"
+          "priority": null,
+          "value": "${and(isEquipped, ae(\"Crisis\")) ? (item_def_bonus * 1) : 0}$"
         }
       ],
       "description": "<p>Gain more defense while in Crisis</p>",
@@ -203,6 +203,61 @@
       "tint": "#ffffff",
       "transfer": true,
       "type": "base"
+    },
+    {
+      "_id": "qgjY95Z8SK3V1EXJ",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782841985806,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.skill_level_bonus_provoke",
+          "mode": 2,
+          "priority": null,
+          "value": "${isEquipped ? 1 : 0}$"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "UpLaTI0Vps6bD9QH",
+          "originalParentId": "JT5pvl5buIjL9JHX",
+          "originalUuid": "Actor.uJFaNQCSvwwsr2AW.Item.JT5pvl5buIjL9JHX.ActiveEffect.UpLaTI0Vps6bD9QH"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/skills/social/intimidation-impressing.webp",
+      "name": "Provoke SL+1",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
     }
   ],
   "flags": {
@@ -250,6 +305,7 @@
       "beast_ef": "100",
       "category": "Arcane",
       "celestial_ef": "100",
+      "check": "Check",
       "check_bonus": "0",
       "construct_ef": "100",
       "damage_bonus": "0",
@@ -267,6 +323,8 @@
       "hand_slots": "One-handed",
       "human_ef": "100",
       "humanoid_ef": "100",
+      "id": "53Usenn5H4oDCDzD",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/2700.gif",
       "insect_ef": "100",
       "ip_cost": "",
       "isEquipped": false,
@@ -290,7 +348,7 @@
           "skill_cost": "5 MP",
           "skill_description": "<p>You may use an <strong>action</strong> and spend 5 Mind Points to perform an Opposed <strong>【MIG + WLP】</strong> Check against a creature you can see — describe how you taunt them! If you succeed, the target suffers <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\" data-id=\"XkuOy0BFvKJTewGS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Enraged</span></strong></a></span></span> and<span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.c4sYPClmvld4TEK8\" data-id=\"c4sYPClmvld4TEK8\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Provoked</span></strong></a><strong><span style=\"text-decoration: underline;\">.</span></strong></span> This compulsion ends if you fall unconscious or leave the scene, if the creature is no longer <strong>enraged</strong>, or if they are successfully provoked by someone else.</p><p>You gain a bonus equal to <strong>【SL】</strong> to your <strong>【MIG + WLP】</strong> Checks for this Skill.</p>",
           "skill_maxLevel": 5,
-          "uuid": ""
+          "uuid": "Item.2B9RJckS8vLJqPXC"
         }
       },
       "item_type": "accessory",
@@ -299,12 +357,14 @@
       "name": "Matador Cape",
       "optional_params": {},
       "plant_ef": "100",
+      "refine_count": "0",
+      "refine_level": "0",
       "related_item_list": {
         "2B9RJckS8vLJqPXC": {
           "id": "${item.id}",
           "name": "Provoke",
           "related_item_description": "<p>You may use an <strong>action</strong> and spend 5 Mind Points to perform an Opposed <strong>【MIG + WLP】</strong> Check against a creature you can see — describe how you taunt them! If you succeed, the target suffers <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\" data-id=\"XkuOy0BFvKJTewGS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Enraged</span></strong></a></span></span> and<span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.c4sYPClmvld4TEK8\" data-id=\"c4sYPClmvld4TEK8\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Provoked</span></strong></a><strong><span style=\"text-decoration: underline;\">.</span></strong></span> This compulsion ends if you fall unconscious or leave the scene, if the creature is no longer <strong>enraged</strong>, or if they are successfully provoked by someone else.</p><p>You gain a bonus equal to <strong>【SL】</strong> to your <strong>【MIG + WLP】</strong> Checks for this Skill.</p>",
-          "uuid": ""
+          "uuid": "Item.2B9RJckS8vLJqPXC"
         }
       },
       "reptilian_ef": "100",
@@ -315,6 +375,7 @@
       "spirit_ef": "100",
       "type_damage": "Physical",
       "undead_ef": "100",
+      "uuid": "Item.53Usenn5H4oDCDzD",
       "vehicle_ef": "100",
       "weapon_range": "Melee"
     },

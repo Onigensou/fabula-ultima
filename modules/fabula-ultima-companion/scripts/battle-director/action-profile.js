@@ -319,6 +319,29 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
     ? 0
     : (check.isFumble ? 0 : (check.hr ?? 0));
 
+  // Attacker-side outgoing-damage multiplier, scoped by action kind via a flag
+  // FAMILY (data-driven — NO literal kind check): the universal
+  // `damage_dealt_mult_all` × the per-kind `damage_dealt_mult_<kind>` (e.g.
+  // _attack / _spell / _skill). Each defaults to 1 and is seeded in
+  // seedAeAccumulators so MULTIPLY-mode AEs compose (and don't NaN over undefined).
+  // First user: the Bane status writes `damage_dealt_mult_attack ×0.5` → halves
+  // ONLY the bearer's Attack damage (the scope lives in the flag NAME, not here).
+  // A future "scale spell / skill / all damage" status is data-only — write the
+  // matching flag, no engine change. Attributed to the setting AE in the breakdown.
+  const _fns = liveAttacker?.flags?.["fabula-ultima-companion"] ?? {};
+  const _dealtKey = `damage_dealt_mult_${String(kind).toLowerCase()}`;
+  const atkDmgMult = (Number(_fns.damage_dealt_mult_all) || 1) * (Number(_fns[_dealtKey]) || 1);
+  const atkMultSource = () => {
+    const aes = liveAttacker?.appliedEffects ?? liveAttacker?.effects?.contents ?? [];
+    for (const ae of aes) {
+      if (ae?.disabled) continue;
+      if ((ae.changes ?? []).some((c) =>
+        c.key === `flags.fabula-ultima-companion.${_dealtKey}` ||
+        c.key === "flags.fabula-ultima-companion.damage_dealt_mult_all")) return ae.name;
+    }
+    return "Damage dealt";
+  };
+
   for (const e of targets) {
     const defStat = pickDef(e);
     const { hit, pierceMiss, outcome } = resolveTargetOutcome({ check, kind, primary, defStat, rolled, isPreRoll });
@@ -368,7 +391,7 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
       // pre-roll card's generic "potential damage" range).
       const ignoreHR = check.grantHrAsZero || String(ctx?.attackMode ?? "").startsWith("two-weapon");
       const rawAt = (h) => {
-        const d = foldOps(h + primary.damageBonus + primary.outgoingTotal, targetOps);
+        const d = foldOps(Math.floor((h + primary.damageBonus + primary.outgoingTotal) * atkDmgMult), targetOps);
         return Math.max(0, Math.floor(d));
       };
       const lo = ignoreHR ? 0 : (maxHR > 0 ? 1 : 0);
@@ -383,7 +406,11 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
         breakdown: [], preAffinity: null, affinity: affinityCode, range: damageRange,
       });
     } else if (primary.mode === "damage" && (hit || pierceMiss)) {
-      const outBase = effectiveHr + primary.damageBonus + primary.outgoingTotal;
+      const preMult = effectiveHr + primary.damageBonus + primary.outgoingTotal;
+      const outBase = Math.floor(preMult * atkDmgMult);
+      if (atkDmgMult !== 1 && outBase !== preMult) {
+        damageModParts.push({ source: atkMultSource(), amount: outBase - preMult });
+      }
       rawDamage = pierceMiss ? Math.ceil(outBase / 2) : outBase;
 
       // Target actor for the incoming layer (DR + weapon efficiency), fetched
@@ -478,6 +505,23 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
         });
         damageVal = cm.value;
         if (cm.absorbed && affinityCode !== "AB") affinityCode = "AB";
+      }
+
+      // Benign keyword — "if this attack would reduce a creature to 0 HP, they
+      // hold on at 1 HP instead." Applied LAST, AFTER affinity + class-affinity +
+      // damage_taken_mult, so the cap binds on the truly-final damage and is robust
+      // even against a target Vulnerable to the element (an outgoing/pre-affinity
+      // cap would let the ×2 push it lethal again). The keyword reaches here either
+      // inherently on the action (primary.keywords) or via an apply_action_keyword
+      // "benign" effect on a reaction (reactionKeywords). Only binds when lethal.
+      const isBenign = primary.keywords?.includes("benign") || reactionKeywords?.includes("benign");
+      if (isBenign && liveTarget && damageVal > 0) {
+        const tgtHp = Number(liveTarget?.system?.props?.current_hp ?? 0) || 0;
+        if (tgtHp > 0 && damageVal > tgtHp - 1) {
+          const capped = Math.max(0, tgtHp - 1);
+          reactionParts.push({ source: "Benign (no kill)", amount: capped - damageVal });
+          damageVal = capped;
+        }
       }
 
       effects.push({

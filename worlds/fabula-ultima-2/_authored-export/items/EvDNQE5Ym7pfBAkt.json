@@ -149,7 +149,7 @@
           "reaction_trigger": "round_start"
         },
         "2": {
-          "condition_formula": "AE_CHARGES_COUNTER_PASS >= 1",
+          "condition_formula": "ACTION_IS_ATTACK == 1 && AE_CHARGES_COUNTER_PASS >= 1",
           "reaction_action_intent": "harmful",
           "reaction_action_kind": "",
           "reaction_cause_filter": "",

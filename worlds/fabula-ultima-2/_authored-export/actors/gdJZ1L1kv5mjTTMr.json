@@ -107,76 +107,6 @@
       "type": "base"
     },
     {
-      "_id": "5Lot51lutFv94DAQ",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1782745487357,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [],
-      "description": "<p><em>Brainwave Clock:</em> Your accumulated psychic charge (0–4 sections), filled and spent by Esper gifts.</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": 298800,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "29UUG0oHiOSptHRN",
-          "originalParentId": "hZF1clWz4uuZixDS",
-          "originalUuid": "Actor.gdJZ1L1kv5mjTTMr.Item.hZF1clWz4uuZixDS.ActiveEffect.29UUG0oHiOSptHRN"
-        },
-        "fabula-ultima-companion": {
-          "category": "Other",
-          "chargeKey": "brainwave",
-          "charges": 0,
-          "chargesMax": 4,
-          "directorAppliedBy": {
-            "appliedAtRound": 0,
-            "effectLabel": "pg_seed_clock",
-            "lifetimeMode": "persistent_counter",
-            "reactorActorUuid": "Actor.gdJZ1L1kv5mjTTMr",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.ZH501Ky1kDKHFCPp",
-            "skillUuid": "Actor.gdJZ1L1kv5mjTTMr.Item.hZF1clWz4uuZixDS",
-            "turnsRemaining": null
-          },
-          "lifetimeMode": "persistent_counter",
-          "reactionConfig": {
-            "effect_table": {},
-            "reaction_config_table": {}
-          }
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Add/DiabolicEsperPassive3.png",
-      "name": "Brainwave Clock",
-      "origin": "Actor.gdJZ1L1kv5mjTTMr.Item.hZF1clWz4uuZixDS",
-      "sort": 0,
-      "statuses": [
-        "fud-brainwave-clock"
-      ],
-      "system": {},
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
       "_id": "6L2aafqjK0JG5eOJ",
       "_stats": {
         "compendiumSource": null,
@@ -243,183 +173,6 @@
           "food"
         ]
       },
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "gizCPyr6DS1pOlZv",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1782745487960,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [],
-      "description": "",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": 298800,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "7Gs3jJ2pHzcKD0il",
-          "originalParentId": "qdGOPTKJQ2YI6LUl",
-          "originalUuid": "Item.qdGOPTKJQ2YI6LUl.ActiveEffect.7Gs3jJ2pHzcKD0il"
-        },
-        "fabula-ultima-companion": {
-          "category": "Other",
-          "chargeKey": "bortd_death_save",
-          "charges": 1,
-          "chargesMax": 1,
-          "directorAppliedBy": {
-            "appliedAtRound": 0,
-            "effectLabel": "bortd_seed_mark",
-            "lifetimeMode": "on_activation",
-            "reactorActorUuid": "Actor.gdJZ1L1kv5mjTTMr",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.ZH501Ky1kDKHFCPp",
-            "skillUuid": "Actor.gdJZ1L1kv5mjTTMr.Item.fFHKCwDndsOmUg0q",
-            "turnsRemaining": null
-          },
-          "lifetimeMode": "on_activation",
-          "reactionConfig": {
-            "effect_table": {
-              "0": {
-                "candidate_source": "self",
-                "effect_kind": "targeting",
-                "effect_label": "bortd_self"
-              },
-              "1": {
-                "chain_steps": "bortd_b_heal, bortd_b_zero",
-                "effect_kind": "chain",
-                "effect_label": "bortd_death"
-              },
-              "2": {
-                "effect_kind": "grant",
-                "effect_label": "bortd_b_heal",
-                "grant_amount": "SL * AE_CHARGES_GRAVE_POINTS",
-                "grant_resource": "hp",
-                "target_ref": "bortd_self"
-              },
-              "3": {
-                "charge_ae_name": "Grave Points",
-                "charge_amount": "0",
-                "charge_operation": "set",
-                "effect_kind": "adjust_charges",
-                "effect_label": "bortd_b_zero",
-                "target_ref": "bortd_self"
-              }
-            },
-            "reaction_config_table": {
-              "0": {
-                "condition_formula": "CUR_HP <= 0 && AE_CHARGES_GRAVE_POINTS > 0",
-                "consume_self": true,
-                "reaction_effect_ref": "bortd_death",
-                "reaction_passive_mode": "on",
-                "reaction_passive_target": "self",
-                "reaction_resource_filter": "hp",
-                "reaction_source": "self",
-                "reaction_trigger": "creature_lose_resource"
-              }
-            }
-          }
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/Shadowed_Vigil.png",
-      "name": "Beyond the Realms of Death",
-      "origin": "Actor.gdJZ1L1kv5mjTTMr.Item.fFHKCwDndsOmUg0q",
-      "sort": 0,
-      "statuses": [
-        "fud-beyond-realms"
-      ],
-      "system": {},
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "LGPfnY5jKS6nDnCW",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1782745487960,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [],
-      "description": "<p><em>Grave Points:</em> Necromantic energy gathered from creatures near death, spent by Necromancer skills.</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": 298800,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "RjuPzSEVXVHPNE22",
-          "originalParentId": "qdGOPTKJQ2YI6LUl",
-          "originalUuid": "Item.qdGOPTKJQ2YI6LUl.ActiveEffect.RjuPzSEVXVHPNE22"
-        },
-        "fabula-ultima-companion": {
-          "category": "Other",
-          "chargeKey": "grave",
-          "charges": 0,
-          "chargesMax": 2,
-          "directorAppliedBy": {
-            "appliedAtRound": 0,
-            "effectLabel": "bortd_seed_gp",
-            "lifetimeMode": "persistent_counter",
-            "reactorActorUuid": "Actor.gdJZ1L1kv5mjTTMr",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.ZH501Ky1kDKHFCPp",
-            "skillUuid": "Actor.gdJZ1L1kv5mjTTMr.Item.fFHKCwDndsOmUg0q",
-            "turnsRemaining": null
-          },
-          "lifetimeMode": "persistent_counter",
-          "reactionConfig": {
-            "effect_table": {},
-            "reaction_config_table": {}
-          }
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "icons/magic/death/skull-energy-light-purple.webp",
-      "name": "Grave Points",
-      "origin": "Actor.gdJZ1L1kv5mjTTMr.Item.fFHKCwDndsOmUg0q",
-      "sort": 0,
-      "statuses": [
-        "fud-grave-points"
-      ],
-      "system": {},
       "tint": "#ffffff",
       "transfer": false,
       "type": "base"
@@ -910,7 +663,7 @@
           },
           "changes": [
             {
-              "key": "check_mod_all",
+              "key": "check_mod_accuracy",
               "mode": 2,
               "priority": 20,
               "value": "${and(isEquipped, ae(\"Wet\")) ? 3 : 0}$"
@@ -1720,40 +1473,65 @@
       },
       "effects": [
         {
-          "_id": "oEs0Qyv4rntx0zDF",
+          "_id": "MaPjOGqYKo934I2a",
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": null,
+            "createdTime": 1782834503222,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
           },
-          "changes": [
-            {
-              "key": "affinity_1",
-              "mode": 5,
-              "priority": 1,
-              "value": "${isEquipped ? 'RS' : 'NA'}$"
-            }
-          ],
-          "description": "<p>Gain resistance to <span style=\"text-decoration:underline\"><span style=\"font-family:Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;scrollbar-color:var(--color-scrollbar) var(--color-scrollbar-track);cursor:pointer;--content-link-background:rgba(0, 0, 0, 0.1);background-image:none !important;background-position:initial !important;background-size:initial !important;background-repeat:initial !important;background-attachment:initial !important;background-origin:initial !important;background-clip:initial !important;background-color:rgb(102, 102, 102);padding:0px !important;border:none !important;border-radius:2px;white-space:nowrap;word-break:break-all;color:rgb(72, 199, 116) !important;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:rgb(168, 255, 187) 0px 0px 4px;font-family:Signika, sans-serif;font-size:14px;font-style:normal;font-variant-ligatures:normal;font-variant-caps:normal;letter-spacing:normal;orphans:2;text-align:start;text-indent:0px;text-transform:none;widows:2;word-spacing:0px;-webkit-text-stroke-width:0px\"><strong><span style=\"text-decoration:underline\">Air</span></strong></a><strong><span style=\"text-decoration:underline\"> </span></strong><span style=\"text-decoration:underline\">damage</span></span></span></p>",
+          "changes": [],
+          "description": "<p>When a creature Attacks you and misses, 50% chance to inflict Bane on the attacker.</p>",
           "disabled": false,
           "duration": {
             "combat": null,
             "rounds": null,
             "seconds": null,
-            "startRound": 1,
-            "startTime": 298800,
-            "startTurn": 2,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
             "turns": null
           },
           "flags": {
             "custom-system-builder": {
               "isFromTemplate": false,
-              "originalId": "oEs0Qyv4rntx0zDF",
+              "originalId": "MaPjOGqYKo934I2a",
               "originalParentId": "8TY9aPKKOzBSFkvv",
-              "originalUuid": "Actor.gdJZ1L1kv5mjTTMr.Item.8TY9aPKKOzBSFkvv.ActiveEffect.oEs0Qyv4rntx0zDF"
+              "originalUuid": "Actor.gdJZ1L1kv5mjTTMr.Item.8TY9aPKKOzBSFkvv.ActiveEffect.MaPjOGqYKo934I2a"
+            },
+            "fabula-ultima-companion": {
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "$deleted": false,
+                    "chance_percent": "50",
+                    "chance_then_ref": "sb_bane",
+                    "effect_kind": "chance",
+                    "effect_label": "sb_roll"
+                  },
+                  "1": {
+                    "$deleted": false,
+                    "ae_template_ref": "Bane",
+                    "effect_kind": "apply_ae",
+                    "effect_label": "sb_bane",
+                    "target_ref": "trigger_subject"
+                  }
+                },
+                "name": "Swordbreaker",
+                "reaction_config_table": {
+                  "0": {
+                    "$deleted": false,
+                    "condition_formula": "ACTION_IS_ATTACK == 1",
+                    "reaction_action_intent": "harmful",
+                    "reaction_effect_ref": "sb_roll",
+                    "reaction_passive_mode": "force",
+                    "reaction_source": "enemy",
+                    "reaction_trigger": "creature_miss_action"
+                  }
+                }
+              }
             },
             "statuscounter": {
               "config": {
@@ -1764,7 +1542,7 @@
               "visible": false
             }
           },
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1224.gif",
           "name": "Swordbreaker",
           "origin": null,
           "sort": 0,
@@ -1822,6 +1600,7 @@
           "beast_ef": "100",
           "category": "Dagger",
           "celestial_ef": "100",
+          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "5",
@@ -1829,6 +1608,7 @@
           "demon_ef": "100",
           "description": "<ul><li><p>When a creature 【⚔️Attack】you and <strong>missed, </strong>there's a chance to inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.SNK1IJTKfxjAy2NS\" data-id=\"SNK1IJTKfxjAy2NS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bane</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>to the attacker</p></li><li><p>You may perform the skill 【💥Weapon Break】</p></li></ul>",
           "dragon_ef": "100",
+          "effect_table": {},
           "elemental_ef": "100",
           "enforcer_ef": "100",
           "fey_ef": "100",
@@ -1839,9 +1619,14 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
+          "id": "8TY9aPKKOzBSFkvv",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1224.gif",
+          "ingredient_taste": "",
+          "ingredient_taste2": "",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": true,
+          "isIngredient": false,
           "isKey": false,
           "isMartial": false,
           "isModule": false,
@@ -1897,6 +1682,11 @@
           "name": "Swordbreaker",
           "optional_params": {},
           "plant_ef": "100",
+          "reaction_config_table": {},
+          "recipe_dish_uuid": "",
+          "recipe_kind": "",
+          "refine_count": "0",
+          "refine_level": "0",
           "related_item_list": {
             "1nYCUBF2hIDBDALx": {
               "id": "${item.id}",
@@ -1927,10 +1717,12 @@
           "rolled_atr1": "DEX",
           "rolled_atr2": "INS",
           "set_name": "<Set Name>",
+          "skill_target": "One Enemy",
           "soldier_ef": "100",
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
+          "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.8TY9aPKKOzBSFkvv",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -3352,18 +3144,47 @@
                     "effect_kind": "adjust_charges",
                     "effect_label": "bortd_b_zero",
                     "target_ref": "bortd_self"
+                  },
+                  "bortd_cap": {
+                    "consume_self": true,
+                    "damage_amount": "CUR_HP - 1",
+                    "damage_operation": "cap",
+                    "damage_stage": "incoming",
+                    "effect_kind": "adjust_damage",
+                    "effect_label": "bortd_cap"
+                  },
+                  "bortd_death": {
+                    "chain_steps": "bortd_cap, bortd_heal, bortd_zero",
+                    "effect_kind": "chain",
+                    "effect_label": "bortd_death"
+                  },
+                  "bortd_heal": {
+                    "effect_kind": "grant",
+                    "effect_label": "bortd_heal",
+                    "grant_amount": "SL_BEYOND_THE_REALMS_OF_DEATH * AE_CHARGES_GRAVE_POINTS - 1",
+                    "grant_resource": "hp",
+                    "target_ref": "self"
+                  },
+                  "bortd_zero": {
+                    "charge_ae_name": "Grave Points",
+                    "charge_amount": "0",
+                    "charge_operation": "set",
+                    "effect_kind": "adjust_charges",
+                    "effect_label": "bortd_zero",
+                    "target_ref": "self"
                   }
                 },
                 "reaction_config_table": {
                   "0": {
-                    "condition_formula": "CUR_HP <= 0 && AE_CHARGES_GRAVE_POINTS > 0",
+                    "condition_formula": "AE_CHARGES_GRAVE_POINTS > 0",
                     "consume_self": true,
+                    "reaction_damage_outcome": "would_reduce_to_zero",
                     "reaction_effect_ref": "bortd_death",
                     "reaction_passive_mode": "on",
                     "reaction_passive_target": "self",
                     "reaction_resource_filter": "hp",
                     "reaction_source": "self",
-                    "reaction_trigger": "creature_lose_resource"
+                    "reaction_trigger": "creature_takes_damage"
                   }
                 }
               }
@@ -4780,6 +4601,65 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "fk1NoE1O8effoaUl",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1782826964207,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "condition_charm",
+              "mode": 5,
+              "priority": 1,
+              "value": "${isEquipped ? 'IM' : 'NA'}$"
+            }
+          ],
+          "description": "<p>You are immune to Charm.</p>",
+          "disabled": true,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "fk1NoE1O8effoaUl",
+              "originalParentId": "JOEi8X46SkQ5tRNG",
+              "originalUuid": "Actor.gdJZ1L1kv5mjTTMr.Item.JOEi8X46SkQ5tRNG.ActiveEffect.fk1NoE1O8effoaUl"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/2612.gif",
+          "name": "Fairy Ring",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -5442,6 +5322,145 @@
       "type": "equippableItem"
     },
     {
+      "_id": "rs7BtA731yHZPcDn",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782829655290,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "V3xPVOxriJAWVDok",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1782830374686,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "cannot_target_uuids",
+              "mode": 5,
+              "priority": 0,
+              "value": "${casterActorUuid}$"
+            }
+          ],
+          "description": "<p>Can't target the charmer or include them as the target of actions.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 1,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "isPredefined": true,
+              "originalId": "jbXGFAky9kNXeW5R",
+              "originalParentId": "XVOWOq9oUmEECGrU",
+              "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.jbXGFAky9kNXeW5R"
+            },
+            "dfreds-convenient-effects": {
+              "ceEffectId": "ce-charmed",
+              "isBackup": false,
+              "isConvenient": true,
+              "isDynamic": false,
+              "isTemporary": false,
+              "isViewable": true
+            },
+            "fabula-ultima-companion": {
+              "chargeKey": "charmed",
+              "charges": 3,
+              "chargesMax": 3,
+              "lifetimeMode": ""
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Heart.png",
+          "name": "Charmed",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-charmed"
+          ],
+          "system": {
+            "tags": [
+              "debuff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/assize.png",
+      "name": "Charm",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "JOEi8X46SkQ5tRNG",
+        "props": {
+          "cost": "15 MP",
+          "description": "<p>Cast 【✨ Charm】: 15 MP, One Creature. 50% chance to inflict Charmed for 1 Round.</p>",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "chance_percent": "50",
+              "chance_then_ref": "charm_apply",
+              "effect_kind": "chance",
+              "effect_label": "charm_roll"
+            },
+            "1": {
+              "$deleted": false,
+              "ae_duration_rounds": "1",
+              "ae_template_ref": "Charmed",
+              "effect_kind": "apply_ae",
+              "effect_label": "charm_apply",
+              "target_ref": "action_targets"
+            }
+          },
+          "isCheck": false,
+          "isOffensiveSpell": false,
+          "name": "Charm",
+          "on_activate_effect_ref": "charm_roll",
+          "skill_description": "",
+          "skill_target": "One Creature",
+          "skill_type": "Spell",
+          "type_damage": ""
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "rs7BtA731yHZPcDn"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "RSnilc4zgPeVi4ib",
       "_stats": {
         "compendiumSource": "Item.ZXaslUkB4sJRWJn3",
@@ -5528,6 +5547,119 @@
         "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "ZXaslUkB4sJRWJn3"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "vYbUJ2PfG3lQDDcn",
+      "_stats": {
+        "compendiumSource": "Item.Hwc20u1gKTj1foQz",
+        "coreVersion": "12.343",
+        "createdTime": 1782833392874,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Raven/Weaponbreaker.png",
+      "name": "Weapon Break",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": "8TY9aPKKOzBSFkvv",
+        "props": {
+          "active_effect_config_table": {
+            "0": {
+              "$deleted": false,
+              "active_effect_application": "add",
+              "active_effect_apply_mode": "percentage",
+              "active_effect_dice_1": "",
+              "active_effect_dice_2": "",
+              "active_effect_dl": "0",
+              "active_effect_id": "oxdUhOMQzOpthbHK",
+              "active_effect_percent": "100",
+              "active_effect_target": "enemy",
+              "active_effect_trigger": "on_hit"
+            }
+          },
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "10 MP",
+          "damage_bonus": "",
+          "defense_target_type": "def",
+          "description": "<p>On <strong>hit, </strong>Inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.SNK1IJTKfxjAy2NS\" data-id=\"SNK1IJTKfxjAy2NS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bane</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>to the target</p>",
+          "duration": "3 Rounds",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "ae_template_ref": "Bane",
+              "effect_kind": "apply_ae",
+              "effect_label": "wb_bane",
+              "target_ref": "hit_action_targets"
+            }
+          },
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Weapon Break",
+          "on_activate_effect_ref": "wb_bane",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "MIG",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Melee",
+          "skill_target": "One Creature",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "vYbUJ2PfG3lQDDcn"
       },
       "type": "equippableItem"
     },
@@ -6227,7 +6359,7 @@
       "armor_name": "Swimsuit",
       "backstory": "",
       "bane_status": 0,
-      "base_defense": 6,
+      "base_defense": 12,
       "base_magic_defense": 12,
       "battle_facing_direction": "left",
       "berserk_status": 0,
@@ -6266,6 +6398,7 @@
       "character_exp_multiplier": 1,
       "character_zenit_multiplier": 1,
       "charm_status": 0,
+      "check_mod_accuracy": 3,
       "check_mod_all": 0,
       "check_mod_magic": 0,
       "check_mod_melee": 0,
@@ -6394,7 +6527,7 @@
       "critical_dice_range": 0,
       "current_hp": "89",
       "current_ip": "8",
-      "current_mp": "104",
+      "current_mp": 84,
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/Keren_Cut-in002.png",
       "cut_in_fumble": "",
@@ -6427,11 +6560,11 @@
       "damage_receiving_percentage_range": 0,
       "dazed_status": 0,
       "default_facing_direction": "left",
-      "defense": 9,
+      "defense": 15,
       "delayed_status": 0,
       "despair_status": 0,
       "dex_base": "6",
-      "dex_current": 6,
+      "dex_current": 12,
       "disarmed_status": 0,
       "doom_status": 0,
       "draw_card": "Draw",
@@ -6973,7 +7106,7 @@
       "override_attack_damage_type": "None",
       "override_damage_type": "None",
       "override_defense": 0,
-      "override_dex": 0,
+      "override_dex": 12,
       "override_ins": 0,
       "override_magic_defense": 0,
       "override_mig": 0,
@@ -7716,7 +7849,7 @@
       "xuwAn7u126GfFweU": []
     },
     "template": "OmwL5UqoVwjshkJo",
-    "templateSystemUniqueVersion": 782969162
+    "templateSystemUniqueVersion": 782969163
   },
   "type": "character"
 }

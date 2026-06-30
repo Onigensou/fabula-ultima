@@ -1,0 +1,139 @@
+{
+  "_id": "YLEEg7gkU9c9Ihd8",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1782841985113,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "V3xPVOxriJAWVDok",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "cannot_target_uuids",
+          "mode": 5,
+          "priority": 0,
+          "value": "${casterActorUuid}$"
+        }
+      ],
+      "description": "<p>Can't target the charmer or include them as the target of actions.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 1,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "jbXGFAky9kNXeW5R",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.jbXGFAky9kNXeW5R"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-charmed",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "charmed",
+          "charges": 3,
+          "chargesMax": 3,
+          "lifetimeMode": ""
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Heart.png",
+      "name": "Charmed",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-charmed"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/assize.png",
+  "name": "Charm",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "NNTvabK5vy807Mvt",
+    "props": {
+      "cost": "15 MP",
+      "description": "<p>Cast 【✨ Charm】: 15 MP, One Creature. 50% chance to inflict Charmed for 1 Round.</p>",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "chance_percent": "50",
+          "chance_then_ref": "charm_apply",
+          "effect_kind": "chance",
+          "effect_label": "charm_roll"
+        },
+        "1": {
+          "$deleted": false,
+          "ae_duration_rounds": "1",
+          "ae_template_ref": "Charmed",
+          "effect_kind": "apply_ae",
+          "effect_label": "charm_apply",
+          "target_ref": "action_targets"
+        }
+      },
+      "isCheck": false,
+      "isOffensiveSpell": false,
+      "name": "Charm",
+      "on_activate_effect_ref": "charm_roll",
+      "skill_description": "",
+      "skill_target": "One Creature",
+      "skill_type": "Spell",
+      "type_damage": ""
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "YLEEg7gkU9c9Ihd8"
+  },
+  "type": "equippableItem"
+}
