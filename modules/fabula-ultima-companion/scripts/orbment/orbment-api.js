@@ -39,8 +39,15 @@ async function setSlotsAndCompile(item, slots) {
   return recompileOrbment(item);
 }
 
-// ── install(itemOrUuid, slotIndex, augmentId) ─────────────────────────────────
-export async function install(itemOrUuid, slotIndex, augmentId) {
+// Read/clamp an actor's Zenit (currency lives at system.props.zenit).
+function readZenit(actor) { return Math.max(0, Number(actor?.system?.props?.zenit ?? 0)); }
+
+// ── install(itemOrUuid, slotIndex, augmentId, options?) ───────────────────────
+// options.deductZenit (default TRUE): charge the augment's RAW cost from the
+// carrying actor's Zenit, blocking if they can't afford it — the NORMAL gameplay
+// path (shop / game system). Pass `{ deductZenit: false }` for the GM MANUAL
+// backstage edit: modify orbment freely without touching actor Zenit.
+export async function install(itemOrUuid, slotIndex, augmentId, options = {}) {
   assertGM();
   const item = await resolveItem(itemOrUuid);
   const kind = validateItem(item);
@@ -62,11 +69,31 @@ export async function install(itemOrUuid, slotIndex, augmentId) {
   if (dupeSlot !== -1)
     throw new Error(`Orbment: "${augment.label}" is already installed in slot ${dupeSlot + 1}.`);
 
+  // Zenit economy. Default = deduct (normal gameplay); GM manual passes false.
+  const deductZenit = options.deductZenit !== false;
+  const actor = item.parent;
+  const cost = Math.max(0, Number(augment.cost ?? 0));
+  if (deductZenit && cost > 0) {
+    const have = readZenit(actor);
+    if (have < cost)
+      throw new Error(`Orbment: ${actor.name} can't afford ${augment.label} (need ${cost} z, have ${have} z).`);
+  }
+
   const slots = orb.slots.slice();
   slots[idx] = augmentId;
   const res = await setSlotsAndCompile(item, slots);
-  try { ui.notifications?.info(`Installed ${augment.label} into ${item.name} (slot ${idx + 1}).`); } catch {}
-  console.debug(TAG, "install", { item: item.name, idx, augmentId, res });
+
+  // Charge AFTER a successful compile so a failed install never bills the actor.
+  if (deductZenit && cost > 0) {
+    try { await actor.update({ "system.props.zenit": readZenit(actor) - cost }); }
+    catch (e) { console.warn(TAG, "zenit deduct failed", e); }
+  }
+
+  try {
+    const note = deductZenit && cost > 0 ? ` (−${cost} z)` : " (no charge)";
+    ui.notifications?.info(`Installed ${augment.label} into ${item.name}, slot ${idx + 1}${note}.`);
+  } catch {}
+  console.debug(TAG, "install", { item: item.name, idx, augmentId, deductZenit, cost, res });
   return res;
 }
 
@@ -111,6 +138,8 @@ export async function list(itemOrUuid) {
     itemName: item.name,
     itemType: kind,
     rarity: String(item.system?.props?.item_rarity ?? ""),
+    actorName: item.parent?.name ?? "",
+    actorZenit: readZenit(item.parent),
     slotCount: slotCountOf(item),
     slots: orb.slots.map((id) => {
       const a = getAugment(id);

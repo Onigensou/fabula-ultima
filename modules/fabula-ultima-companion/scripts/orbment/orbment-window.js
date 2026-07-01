@@ -31,6 +31,9 @@ export class OrbmentWindow {
     this._itemUuid = itemUuid;
     this._root = null;
     this._selectedSlot = 0;
+    // Zenit economy: OFF by default = GM MANUAL backstage edit (no charge). Toggle
+    // ON to charge the RAW cost (simulate the normal shop/gameplay purchase).
+    this._chargeZenit = false;
     this._onUpdateItem = null;
   }
 
@@ -44,9 +47,11 @@ export class OrbmentWindow {
     // tooltip palette (fud-* tokens) so this window reads as native FU UI.
     s.textContent = `
       #${WIN_ID} {
-        --ptop:#f6f1e6; --pbot:#ebe3d0; --stroke:#7a6a55; --ink:#3a3228;
+        /* Wrapper is the DEEPER parchment; option/slot cells are LIGHTER so the
+           interactive panels read as raised above the shell. */
+        --ptop:#efe3c6; --pbot:#e4d3ac; --stroke:#7a6a55; --ink:#3a3228;
         --gold:#a07a28; --gold-lite:#c9a24a; --hi:#FFBB55; --brown:87,58,33;
-        --cell-top:#f6ebd3; --cell-bot:#e7d3b1;
+        --cell-top:#faf6ee; --cell-bot:#f3ecdd;
         position: fixed; top: 12vh; left: 50%; transform: translateX(-50%);
         width: 620px; max-width: 92vw; max-height: 78vh; overflow: hidden;
         display: flex; flex-direction: column; z-index: 10000;
@@ -57,9 +62,9 @@ export class OrbmentWindow {
       }
       #${WIN_ID} .fu-orb-header {
         display: flex; align-items: center; gap: 10px; padding: 12px 14px; cursor: move;
-        background: linear-gradient(180deg, #efe4c9, #e6d6b3);
+        background: linear-gradient(180deg, #e6d6b1, #d9c79d);
         border-bottom: 2px solid rgba(var(--brown),.45);
-        box-shadow: inset 0 1px 0 rgba(255,255,255,.5);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,.45);
       }
       #${WIN_ID} .fu-orb-title { font-size: 16px; font-weight: 900; flex: 1; color: var(--ink); }
       #${WIN_ID} .fu-orb-sub { font-size: 11px; font-weight: 600; color: var(--gold); margin-top: 2px; }
@@ -117,6 +122,15 @@ export class OrbmentWindow {
       #${WIN_ID} .fu-orb-aug .meta .sm { font-size: 11px; color: var(--ink); opacity: .72; }
       #${WIN_ID} .fu-orb-aug .cost { font-size: 12px; font-weight: 700; color: var(--gold); white-space: nowrap; }
       #${WIN_ID} .fu-orb-link { font-size: 11px; color: var(--ink); opacity: .7; font-style: italic; margin: 4px 0 2px; }
+      #${WIN_ID} .fu-orb-econ {
+        display: flex; align-items: center; justify-content: space-between; gap: 10px;
+        padding: 6px 10px; margin-bottom: 8px; border-radius: 8px;
+        border: 1.5px solid rgba(var(--brown),.3); background: rgba(var(--brown),.06);
+      }
+      #${WIN_ID} .fu-orb-charge { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--ink); cursor: pointer; user-select: none; }
+      #${WIN_ID} .fu-orb-charge input { accent-color: var(--gold-lite); cursor: pointer; }
+      #${WIN_ID} .fu-orb-wallet { font-size: 12px; color: var(--gold); }
+      #${WIN_ID} .fu-orb-wallet b { color: var(--ink); }
       #${WIN_ID}::-webkit-scrollbar, #${WIN_ID} .fu-orb-body::-webkit-scrollbar { width: 10px; }
       #${WIN_ID} .fu-orb-body::-webkit-scrollbar-thumb { background: rgba(var(--brown),.35); border-radius: 6px; }
     `;
@@ -186,6 +200,15 @@ export class OrbmentWindow {
       ? `<div class="fu-orb-link">🔗 Linked group: changes mirror to ${data.linkGroup.length} items (transform weapon).</div>`
       : "";
 
+    const chargeChecked = this._chargeZenit ? "checked" : "";
+    const econBar = `
+      <div class="fu-orb-econ">
+        <label class="fu-orb-charge" title="Off = GM manual edit (free). On = charge the augment cost from the actor's Zenit.">
+          <input type="checkbox" ${chargeChecked}> Charge Zenit on install
+        </label>
+        <span class="fu-orb-wallet">${esc(data.actorName || "Actor")}: <b>${(data.actorZenit ?? 0).toLocaleString()}</b> z</span>
+      </div>`;
+
     this._root.innerHTML = `
       <div class="fu-orb-header">
         <div style="font-size:20px">🔮</div>
@@ -199,6 +222,7 @@ export class OrbmentWindow {
         <div class="fu-orb-slots">${slotsHtml}</div>
         ${linkNote}
         <div class="fu-orb-sectionhdr">Available Augments — click to install into selected slot</div>
+        ${econBar}
         ${augHtml || `<div style="opacity:.6">No augments apply to this item type.</div>`}
       </div>`;
     this._wireChrome();
@@ -228,11 +252,15 @@ export class OrbmentWindow {
         catch (e) { ui.notifications?.error(e.message); }
       });
     });
+    const charge = this._root.querySelector(".fu-orb-charge input");
+    if (charge) charge.addEventListener("change", (ev) => { this._chargeZenit = !!ev.target.checked; });
     this._root.querySelectorAll(".fu-orb-aug").forEach((el) => {
       if (el.classList.contains("is-installed")) return;
       el.addEventListener("click", async () => {
-        try { await OrbmentApi.install(this._itemUuid, this._selectedSlot, el.dataset.aug); await this._refresh(); }
-        catch (e) { ui.notifications?.error(e.message); }
+        try {
+          await OrbmentApi.install(this._itemUuid, this._selectedSlot, el.dataset.aug, { deductZenit: this._chargeZenit });
+          await this._refresh();
+        } catch (e) { ui.notifications?.error(e.message); }
       });
     });
   }
