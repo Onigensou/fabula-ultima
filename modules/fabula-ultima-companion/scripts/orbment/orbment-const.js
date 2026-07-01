@@ -30,11 +30,12 @@ export const ORBMENT_FLAG = "orbment";
 export const ORBMENT_TAG = "orbment";
 export const ORBMENT_ROW_PREFIX = "orbment_";
 
-// Fenced region the compiler owns inside an item's description HTML, so the
-// installed-augment summary is visible on the plain sheet without clobbering
-// author prose. Everything BETWEEN the markers is compiler-managed.
-export const DESC_START = "<!-- ORBMENT:START -->";
-export const DESC_END   = "<!-- ORBMENT:END -->";
+// Visible sentinel that marks the START of the compiler-managed summary block in
+// an item's description. Must be a VISIBLE string (not an HTML comment) — CSB /
+// ProseMirror strips comments on re-serialization, which orphaned the block and
+// caused duplicates. The block is always appended last, so the compiler strips
+// from this sentinel to end.
+export const DESC_SENTINEL = "🔮 Orbment";
 
 // Rarity → slot count. Common/Uncommon (or blank) = 1, Rare = 2, Legendary = 3.
 // Derived at runtime from item_rarity so it self-updates if rarity changes.

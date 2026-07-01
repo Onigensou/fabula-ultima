@@ -37,6 +37,8 @@ export class OrbmentWindow {
     // When set, the window shows the secondary "choose one" picker for a
     // parameterized augment: { id, label, icon, prompt, options }.
     this._picking = null;
+    // Active category tab for the right column (offensive/defensive/enhancement).
+    this._activeTab = "offensive";
     this._onUpdateItem = null;
   }
 
@@ -55,8 +57,8 @@ export class OrbmentWindow {
         --ptop:#f6f1e6; --pbot:#ebe3d0; --stroke:#7a6a55; --ink:#3a3228;
         --gold:#a07a28; --gold-lite:#c9a24a; --hi:#FFBB55; --brown:87,58,33;
         --cell-top:#fffdf7; --cell-bot:#fbf6ea; --cell-border:#8a6a44;
-        position: fixed; top: 12vh; left: 50%; transform: translateX(-50%);
-        width: 620px; max-width: 92vw; max-height: 78vh; overflow: hidden;
+        position: fixed; top: 11vh; left: 50%; transform: translateX(-50%);
+        width: 830px; max-width: 95vw; max-height: 80vh; overflow: hidden;
         display: flex; flex-direction: column; z-index: 10000;
         background: linear-gradient(180deg, var(--ptop), var(--pbot));
         color: var(--ink); border: 2px solid var(--stroke); border-radius: 14px;
@@ -77,10 +79,26 @@ export class OrbmentWindow {
         color: var(--ink); font-size: 14px; line-height: 1; transition: all .12s ease;
       }
       #${WIN_ID} .fu-orb-x:hover { background: #e35151; border-color: #e35151; color: #fff8e7; }
-      #${WIN_ID} .fu-orb-body { padding: 12px 14px; overflow-y: auto; }
-      #${WIN_ID} .fu-orb-slots { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+      /* Two-column body: slots on the left, tabbed option list on the right. */
+      #${WIN_ID} .fu-orb-body { display: flex; flex-direction: row; align-items: stretch; overflow: hidden; min-height: 0; }
+      #${WIN_ID} .fu-orb-col-left {
+        flex: 0 0 258px; padding: 12px 12px 12px 14px; overflow-y: auto;
+        border-right: 2px solid rgba(var(--brown),.28); display: flex; flex-direction: column;
+      }
+      #${WIN_ID} .fu-orb-col-right { flex: 1 1 auto; min-width: 0; padding: 12px 14px 12px 12px; display: flex; flex-direction: column; overflow: hidden; }
+      #${WIN_ID} .fu-orb-tabs { display: flex; gap: 4px; margin-bottom: 8px; flex-wrap: wrap; }
+      #${WIN_ID} .fu-orb-tab {
+        flex: 1 1 auto; padding: 6px 8px; border-radius: 8px 8px 0 0; cursor: pointer;
+        font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px;
+        border: 2px solid var(--cell-border); border-bottom: none; color: var(--gold);
+        background: linear-gradient(180deg, #efe4c9, #e4d3ac); transition: filter .12s ease, background .12s ease, color .12s ease;
+      }
+      #${WIN_ID} .fu-orb-tab.is-active { color: var(--ink); background: linear-gradient(180deg, var(--cell-top), var(--cell-bot)); box-shadow: inset 0 2px 0 var(--hi); }
+      #${WIN_ID} .fu-orb-tab:hover:not(.is-active) { filter: brightness(1.04); }
+      #${WIN_ID} .fu-orb-list { flex: 1 1 auto; overflow-y: auto; padding-right: 4px; }
+      #${WIN_ID} .fu-orb-slots { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
       #${WIN_ID} .fu-orb-slot {
-        flex: 1 1 160px; min-height: 66px; border-radius: 10px; padding: 8px 34px 8px 10px;
+        width: 100%; min-height: 56px; border-radius: 10px; padding: 8px 34px 8px 10px;
         border: 2px solid var(--cell-border);
         background: radial-gradient(120% 80% at 50% 0%, rgba(255,255,255,.5) 0%, transparent 45%),
           linear-gradient(180deg, var(--cell-top) 0%, var(--cell-bot) 100%);
@@ -152,8 +170,8 @@ export class OrbmentWindow {
       #${WIN_ID} .fu-orb-aug .cost { font-size: 12px; font-weight: 700; color: var(--gold); white-space: nowrap; }
       #${WIN_ID} .fu-orb-link { font-size: 11px; color: var(--ink); opacity: .7; font-style: italic; margin: 4px 0 2px; }
       #${WIN_ID} .fu-orb-econ {
-        display: flex; align-items: center; justify-content: space-between; gap: 10px;
-        padding: 6px 10px; margin-bottom: 8px; border-radius: 8px;
+        display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
+        padding: 7px 9px; margin-top: auto; border-radius: 8px;
         border: 1.5px solid rgba(var(--brown),.3); background: rgba(var(--brown),.06);
       }
       #${WIN_ID} .fu-orb-charge { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--ink); cursor: pointer; user-select: none; }
@@ -197,8 +215,27 @@ export class OrbmentWindow {
     this._render(data);
   }
 
+  _augRowHtml(a, installedIds) {
+    // Param augments are never "installed" (many variants) — only simple ones grey out.
+    const cls = (!a.param && installedIds.has(a.id)) ? "is-installed" : (a.pending ? "is-pending" : "");
+    const tag = a.pending ? `<span class="fu-orb-soon">soon</span>`
+      : (a.param ? `<span class="fu-orb-choose">choose ▾</span>` : "");
+    return `<div class="fu-orb-aug ${cls}" data-aug="${esc(a.id)}" data-pending="${a.pending ? 1 : 0}" data-param="${a.param ? 1 : 0}">
+      <div class="ic">${esc(a.icon)}</div>
+      <div class="meta"><div class="nm">${esc(a.label)}${tag}</div><div class="sm">${esc(a.summary)}</div></div>
+      <div class="cost">${a.cost} z</div>
+    </div>`;
+  }
+
   _render(data) {
+    const CAT_LABEL = { offensive: "Offensive", enhancement: "Enhancement", defensive: "Defensive" };
+    const CAT_ORDER = ["offensive", "enhancement", "defensive"];
+    const present = CAT_ORDER.filter((c) => data.available.some((a) => (a.category || "") === c));
+    if (!present.includes(this._activeTab)) this._activeTab = present[0] || "";
+
     const installedIds = new Set(data.slots.filter(Boolean).map((s) => s.id));
+
+    // ── LEFT: slots (vertical stack) + link note + econ bar ──
     const slotsHtml = data.slots.map((s, i) => {
       const sel = i === this._selectedSlot ? "is-selected" : "";
       if (s) {
@@ -216,29 +253,8 @@ export class OrbmentWindow {
       </div>`;
     }).join("");
 
-    // Group the catalog by section (offensive / enhancement / defensive) so a
-    // weapon shows its weapon qualities and armor/shield show theirs, sectioned.
-    const CAT_LABEL = { offensive: "Offensive", enhancement: "Enhancement", defensive: "Defensive" };
-    const CAT_ORDER = ["offensive", "enhancement", "defensive"];
-    const groups = {};
-    for (const a of data.available) (groups[a.category || "other"] ||= []).push(a);
-    const augHtml = CAT_ORDER.filter((c) => groups[c]?.length).map((c) => {
-      const rows = groups[c].map((a) => {
-        // Param augments are never "installed" (many variants) — only simple ones grey out.
-        const cls = (!a.param && installedIds.has(a.id)) ? "is-installed" : (a.pending ? "is-pending" : "");
-        const tag = a.pending ? `<span class="fu-orb-soon">soon</span>`
-          : (a.param ? `<span class="fu-orb-choose">choose ▾</span>` : "");
-        return `<div class="fu-orb-aug ${cls}" data-aug="${esc(a.id)}" data-pending="${a.pending ? 1 : 0}" data-param="${a.param ? 1 : 0}">
-          <div class="ic">${esc(a.icon)}</div>
-          <div class="meta"><div class="nm">${esc(a.label)}${tag}</div><div class="sm">${esc(a.summary)}</div></div>
-          <div class="cost">${a.cost} z</div>
-        </div>`;
-      }).join("");
-      return `<div class="fu-orb-catlabel">${CAT_LABEL[c] || c}</div>${rows}`;
-    }).join("");
-
     const linkNote = (data.linkGroup?.length > 1)
-      ? `<div class="fu-orb-link">🔗 Linked group: changes mirror to ${data.linkGroup.length} items (transform weapon).</div>`
+      ? `<div class="fu-orb-link">🔗 Linked group: changes mirror to ${data.linkGroup.length} items.</div>`
       : "";
 
     const chargeChecked = this._chargeZenit ? "checked" : "";
@@ -250,6 +266,25 @@ export class OrbmentWindow {
         <span class="fu-orb-wallet">${esc(data.actorName || "Actor")}: <b>${(data.actorZenit ?? 0).toLocaleString()}</b> z</span>
       </div>`;
 
+    // ── RIGHT: tabs + list, OR the secondary picker ──
+    let rightHtml;
+    if (this._picking) {
+      const p = this._picking;
+      const opts = p.options.map((o) => `<div class="fu-orb-aug" data-opt="${esc(o.value)}">
+          <div class="ic">${esc(o.icon || p.icon)}</div>
+          <div class="meta"><div class="nm">${esc(o.label)}</div></div>
+        </div>`).join("");
+      rightHtml = `
+        <div class="fu-orb-sectionhdr"><a class="fu-orb-back">← Back</a>&nbsp;&nbsp;${esc(p.icon)} ${esc(p.label)} — ${esc(p.prompt)}</div>
+        <div class="fu-orb-list">${opts}</div>`;
+    } else {
+      const tabs = present.map((c) => `<button class="fu-orb-tab ${c === this._activeTab ? "is-active" : ""}" data-tab="${c}">${CAT_LABEL[c] || c}</button>`).join("");
+      const rows = data.available.filter((a) => (a.category || "") === this._activeTab).map((a) => this._augRowHtml(a, installedIds)).join("");
+      rightHtml = `
+        <div class="fu-orb-tabs">${tabs}</div>
+        <div class="fu-orb-list">${rows || `<div style="opacity:.6">No augments in this category.</div>`}</div>`;
+    }
+
     this._root.innerHTML = `
       <div class="fu-orb-header">
         <div style="font-size:20px">🔮</div>
@@ -259,28 +294,16 @@ export class OrbmentWindow {
         <button class="fu-orb-x" title="Close">✕</button>
       </div>
       <div class="fu-orb-body">
-        <div class="fu-orb-sectionhdr">Slots</div>
-        <div class="fu-orb-slots">${slotsHtml}</div>
-        ${linkNote}
-        ${this._picking ? this._renderPicker(this._picking, econBar) : `
-          <div class="fu-orb-sectionhdr">Available Augments — click to install into selected slot</div>
+        <div class="fu-orb-col-left">
+          <div class="fu-orb-sectionhdr">Slots</div>
+          <div class="fu-orb-slots">${slotsHtml}</div>
+          ${linkNote}
           ${econBar}
-          ${augHtml || `<div style="opacity:.6">No augments apply to this item type.</div>`}`}
+        </div>
+        <div class="fu-orb-col-right">${rightHtml}</div>
       </div>`;
     this._wireChrome();
     this._wireBody();
-  }
-
-  // Secondary "choose one" picker for parameterized augments.
-  _renderPicker(p, econBar) {
-    const opts = p.options.map((o) => `<div class="fu-orb-aug" data-opt="${esc(o.value)}">
-        <div class="ic">${esc(o.icon || p.icon)}</div>
-        <div class="meta"><div class="nm">${esc(o.label)}</div></div>
-      </div>`).join("");
-    return `
-      <div class="fu-orb-sectionhdr"><a class="fu-orb-back">← Back</a>&nbsp;&nbsp;${esc(p.icon)} ${esc(p.label)} — ${esc(p.prompt)}</div>
-      ${econBar}
-      ${opts}`;
   }
 
   _wireChrome() {
@@ -308,6 +331,11 @@ export class OrbmentWindow {
     });
     const charge = this._root.querySelector(".fu-orb-charge input");
     if (charge) charge.addEventListener("change", (ev) => { this._chargeZenit = !!ev.target.checked; });
+
+    // Category tabs (right column).
+    this._root.querySelectorAll(".fu-orb-tab").forEach((el) => {
+      el.addEventListener("click", () => { this._activeTab = el.dataset.tab; this._render(this._data); });
+    });
 
     // Back out of the picker.
     const back = this._root.querySelector(".fu-orb-back");

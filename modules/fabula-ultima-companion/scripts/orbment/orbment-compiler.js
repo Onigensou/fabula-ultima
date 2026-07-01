@@ -16,7 +16,7 @@
 
 import {
   FLAG_NS, ORBMENT_FLAG, ORBMENT_TAG, ORBMENT_ROW_PREFIX,
-  DESC_START, DESC_END, slotCountOf, itemKindOf, readOrbment, nameStem,
+  DESC_SENTINEL, slotCountOf, itemKindOf, readOrbment, nameStem,
 } from "./orbment-const.js";
 import { resolveAugment } from "./augment-registry.js";
 
@@ -128,14 +128,19 @@ function buildProjection(installedAugments, itemType) {
 }
 
 // ── Description summary block (fenced, author-safe) ────────────────────────────
-const DESC_BLOCK_RE = new RegExp(
-  `${DESC_START.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}[\\s\\S]*?${DESC_END.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`,
-  "g",
-);
 function stripDescBlock(html) {
-  // Remove EVERY prior orbment block (guards against duplicates that accumulated
-  // before this was global), then collapse leftover blank lines.
-  return String(html ?? "").replace(DESC_BLOCK_RE, "").replace(/\n{3,}/g, "\n\n").trimEnd();
+  // Strip the orbment block by its VISIBLE sentinel ("🔮 Orbment"), NOT by HTML
+  // comment markers — CSB/ProseMirror strips comments on re-serialization, which
+  // orphaned the old block and caused duplicates. The block is always appended
+  // LAST, so cut from the FIRST sentinel to end (removes any accumulated dupes),
+  // backing up over immediately-preceding wrapper tags (<hr>/<p>/<strong>).
+  const s = String(html ?? "");
+  const idx = s.indexOf(DESC_SENTINEL);
+  if (idx === -1) return s.replace(/\n{3,}/g, "\n\n").trimEnd();
+  const before = s.slice(0, idx);
+  const lead = before.match(/(?:\s*<hr\s*\/?>)?\s*(?:<p[^>]*>)?\s*(?:<strong[^>]*>)?\s*$/i);
+  const cut = lead ? idx - lead[0].length : idx;
+  return s.slice(0, cut).replace(/\n{3,}/g, "\n\n").trimEnd();
 }
 function buildDescBlock(item, summary) {
   const count = slotCountOf(item);
@@ -146,7 +151,8 @@ function buildDescBlock(item, summary) {
       ? `<li><b>Slot ${i + 1}:</b> ${hit.label} — <i>${hit.detail}</i></li>`
       : `<li><b>Slot ${i + 1}:</b> <span style="opacity:.6">(empty)</span></li>`);
   }
-  return `${DESC_START}\n<hr><p><b>🔮 Orbment</b></p><ul style="margin:.2em 0">${rows.join("")}</ul>\n${DESC_END}`;
+  // Heading carries the sentinel; no HTML-comment fence (ProseMirror eats those).
+  return `<hr><p><strong>${DESC_SENTINEL}</strong></p><ul style="margin:.2em 0">${rows.join("")}</ul>`;
 }
 
 // ── Apply the projection to ONE item ──────────────────────────────────────────
