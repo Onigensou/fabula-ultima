@@ -4868,7 +4868,7 @@
         "id": "XVOWOq9oUmEECGrU",
         "name": "Debuff",
         "type": "activeEffectContainer",
-        "effects": 50
+        "effects": 51
       },
       {
         "id": "ZnzHJ5RiISPz0Bll",
@@ -5155,6 +5155,12 @@
       {
         "id": "D32pUz6M6e1smWrB",
         "name": "Dragontrap Bow",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "WNWoQrisHlUuxSny",
+        "name": "Dragontrap Bow (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -17628,6 +17634,14 @@
           {
             "id": "eSIh2SB8tc4Ux4vz",
             "name": "Dragontrap Bow"
+          },
+          {
+            "id": "52LOaEsbEpFYhbru",
+            "name": "Dragontrap Bow (Passive)"
+          },
+          {
+            "id": "emTXtdbsz6owxFeI",
+            "name": "Dragontrap Bow (Passive)"
           },
           {
             "id": "jb0jobWNa9rlKKjN",

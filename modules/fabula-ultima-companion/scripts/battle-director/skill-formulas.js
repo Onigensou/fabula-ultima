@@ -662,6 +662,31 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         const subject = _resolveActorByUuidSync(subjectUuid);
         return String(subject?.system?.props?.npc_rank ?? "").trim().toLowerCase() === "champion" ? 1 : 0;
       }
+      // 1 iff the trigger's SUBJECT is currently Flying (and NOT already grounded).
+      // Mirrors snapshot.targetIsFlying — kept inline to avoid a skill-formulas <->
+      // snapshot import cycle (snapshot already imports this module). A
+      // `flying_grounded` suppressor AE negates flight; otherwise flight = the
+      // "flying" CONFIG status OR an AE named "Flying". Gates Dragontrap Bow's
+      // force-land so it only fires on airborne targets (TARGET_IS_FLYING == 1).
+      case "TARGET_IS_FLYING": {
+        const subjectUuid = String(payload?.subjectActorUuid ?? "").trim();
+        if (!subjectUuid) return 0;
+        const subject = _resolveActorByUuidSync(subjectUuid);
+        if (!subject) return 0;
+        const effs = subject.appliedEffects ?? subject.effects?.contents ?? subject.effects ?? [];
+        for (const ae of effs) {
+          if (ae?.disabled) continue;
+          if ((ae.changes ?? []).some((ch) => ch?.key === "flying_grounded")) return 0;
+        }
+        const flyId = (CONFIG.statusEffects ?? []).find(
+          (s) => String(s.name ?? s.label ?? "").trim().toLowerCase() === "flying"
+        )?.id ?? null;
+        if (flyId && subject.statuses?.has?.(flyId)) return 1;
+        return (subject.effects ?? []).some?.((e) => !e.disabled && (
+          (flyId && e.statuses?.has?.(flyId)) ||
+          String(e.name ?? "").trim().toLowerCase() === "flying"
+        )) ? 1 : 0;
+      }
       // Total (character) level of the trigger's SUBJECT creature — the twin of
       // CHAR_LEVEL (caster level) for the TARGET. Reads payload.subjectActorUuid,
       // so it requires a per-target context that threads the subject (per-victim

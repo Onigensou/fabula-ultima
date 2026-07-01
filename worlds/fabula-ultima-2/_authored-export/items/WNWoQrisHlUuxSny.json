@@ -1,0 +1,65 @@
+{
+  "_id": "WNWoQrisHlUuxSny",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1782921835865,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
+  "name": "Dragontrap Bow (Passive)",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "D32pUz6M6e1smWrB",
+    "props": {
+      "cost": "",
+      "description": "<p>When you hit a Flying target with this weapon, you may force it to land until the end of the round.</p>",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "ae_template_ref": "Grounded",
+          "effect_kind": "apply_ae",
+          "effect_label": "dt_ground",
+          "target_ref": "trigger_subject"
+        }
+      },
+      "isCheck": false,
+      "name": "Scouter (Passive)",
+      "on_activate_effect_ref": "",
+      "reaction_config_table": {
+        "0": {
+          "$deleted": false,
+          "condition_formula": "TARGET_IS_FLYING == 1",
+          "reaction_action_intent": "",
+          "reaction_effect_ref": "dt_ground",
+          "reaction_passive_mode": "ask",
+          "reaction_requires_weapon_used": true,
+          "reaction_source": "self",
+          "reaction_trigger": "creature_deals_damage"
+        }
+      },
+      "reaction_source_skill": "",
+      "skill_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
+      "skill_target": "Self",
+      "skill_type": "Passive",
+      "type_damage": ""
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "WNWoQrisHlUuxSny"
+  },
+  "type": "equippableItem"
+}
