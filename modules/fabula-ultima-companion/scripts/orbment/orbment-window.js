@@ -40,59 +40,85 @@ export class OrbmentWindow {
     if (document.getElementById(STYLE_ID)) return;
     const s = document.createElement("style");
     s.id = STYLE_ID;
+    // Warm parchment theme — mirrors the Battle Director invoke-HUD / keyword
+    // tooltip palette (fud-* tokens) so this window reads as native FU UI.
     s.textContent = `
       #${WIN_ID} {
+        --ptop:#f6f1e6; --pbot:#ebe3d0; --stroke:#7a6a55; --ink:#3a3228;
+        --gold:#a07a28; --gold-lite:#c9a24a; --hi:#FFBB55; --brown:87,58,33;
+        --cell-top:#f6ebd3; --cell-bot:#e7d3b1;
         position: fixed; top: 12vh; left: 50%; transform: translateX(-50%);
         width: 620px; max-width: 92vw; max-height: 78vh; overflow: hidden;
         display: flex; flex-direction: column; z-index: 10000;
-        background: linear-gradient(180deg, #1c1b22, #14131a);
-        color: #e9e6f0; border: 1px solid rgba(180,150,255,0.35);
-        border-radius: 12px; box-shadow: 0 18px 48px rgba(0,0,0,0.55);
-        font-family: "Signika", sans-serif;
+        background: linear-gradient(180deg, var(--ptop), var(--pbot));
+        color: var(--ink); border: 2px solid var(--stroke); border-radius: 14px;
+        box-shadow: 0 16px 48px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.45) inset;
+        font-family: "Inter","Signika","Segoe UI",system-ui,sans-serif;
       }
       #${WIN_ID} .fu-orb-header {
-        display: flex; align-items: center; gap: 10px; padding: 12px 14px;
-        border-bottom: 1px solid rgba(180,150,255,0.22); cursor: move;
-        background: rgba(120,90,200,0.12);
+        display: flex; align-items: center; gap: 10px; padding: 12px 14px; cursor: move;
+        background: linear-gradient(180deg, #efe4c9, #e6d6b3);
+        border-bottom: 2px solid rgba(var(--brown),.45);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,.5);
       }
-      #${WIN_ID} .fu-orb-title { font-size: 16px; font-weight: 700; flex: 1; }
-      #${WIN_ID} .fu-orb-sub { font-size: 11px; opacity: .7; }
+      #${WIN_ID} .fu-orb-title { font-size: 16px; font-weight: 900; flex: 1; color: var(--ink); }
+      #${WIN_ID} .fu-orb-sub { font-size: 11px; font-weight: 600; color: var(--gold); margin-top: 2px; }
       #${WIN_ID} .fu-orb-x {
-        cursor: pointer; width: 26px; height: 26px; border-radius: 6px; border: none;
-        background: rgba(255,255,255,0.08); color: #e9e6f0; font-size: 15px;
+        cursor: pointer; width: 26px; height: 26px; border-radius: 7px;
+        border: 1.5px solid rgba(var(--brown),.3); background: rgba(var(--brown),.1);
+        color: var(--ink); font-size: 14px; line-height: 1; transition: all .12s ease;
       }
-      #${WIN_ID} .fu-orb-x:hover { background: rgba(255,90,90,0.35); }
+      #${WIN_ID} .fu-orb-x:hover { background: #e35151; border-color: #e35151; color: #fff8e7; }
       #${WIN_ID} .fu-orb-body { padding: 12px 14px; overflow-y: auto; }
-      #${WIN_ID} .fu-orb-slots { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+      #${WIN_ID} .fu-orb-slots { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
       #${WIN_ID} .fu-orb-slot {
         flex: 1 1 160px; min-height: 66px; border-radius: 10px; padding: 8px 10px;
-        border: 1px dashed rgba(180,150,255,0.35); background: rgba(255,255,255,0.03);
-        cursor: pointer; transition: all .12s ease; position: relative;
+        border: 2px solid rgba(var(--brown),.5);
+        background: radial-gradient(120% 80% at 50% 0%, rgba(255,255,255,.4) 0%, transparent 40%),
+          linear-gradient(180deg, var(--cell-top) 0%, var(--cell-bot) 100%);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,.5), 0 3px 8px rgba(0,0,0,.12);
+        cursor: pointer; transition: filter .1s ease, border-color .12s ease, box-shadow .12s ease; position: relative;
       }
-      #${WIN_ID} .fu-orb-slot.is-selected { border-style: solid; border-color: #b58cff; background: rgba(140,100,220,0.16); }
-      #${WIN_ID} .fu-orb-slot.is-filled { border-style: solid; }
-      #${WIN_ID} .fu-orb-slot .lbl { font-size: 11px; opacity: .6; text-transform: uppercase; letter-spacing: .5px; }
-      #${WIN_ID} .fu-orb-slot .aug { font-size: 15px; font-weight: 700; margin-top: 3px; }
-      #${WIN_ID} .fu-orb-slot .sum { font-size: 11px; opacity: .75; margin-top: 2px; }
+      #${WIN_ID} .fu-orb-slot:hover { filter: brightness(1.04); }
+      #${WIN_ID} .fu-orb-slot.is-selected {
+        border-color: var(--hi);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,.6), 0 0 0 2px rgba(255,187,85,.3), 0 3px 8px rgba(0,0,0,.15);
+      }
+      #${WIN_ID} .fu-orb-slot .lbl { font-size: 10px; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: .6px; }
+      #${WIN_ID} .fu-orb-slot .aug { font-size: 15px; font-weight: 800; margin-top: 3px; color: var(--ink); }
+      #${WIN_ID} .fu-orb-slot .sum { font-size: 11px; color: var(--ink); opacity: .7; margin-top: 2px; }
       #${WIN_ID} .fu-orb-slot .rm {
-        position: absolute; top: 6px; right: 6px; border: none; border-radius: 5px;
-        background: rgba(255,255,255,0.08); color: #e9e6f0; cursor: pointer; font-size: 12px; padding: 1px 6px;
+        position: absolute; top: 6px; right: 6px; border: 1px solid rgba(var(--brown),.3); border-radius: 6px;
+        background: rgba(var(--brown),.12); color: var(--ink); cursor: pointer; font-size: 11px; padding: 1px 6px; line-height: 1.3;
+        transition: all .12s ease;
       }
-      #${WIN_ID} .fu-orb-slot .rm:hover { background: rgba(255,90,90,0.4); }
-      #${WIN_ID} .fu-orb-sectionhdr { font-size: 12px; text-transform: uppercase; letter-spacing: .6px; opacity: .65; margin: 6px 0; }
+      #${WIN_ID} .fu-orb-slot .rm:hover { background: #e35151; border-color: #e35151; color: #fff8e7; }
+      #${WIN_ID} .fu-orb-sectionhdr {
+        display: flex; align-items: center; gap: 7px; font-size: 11px; font-weight: 800;
+        text-transform: uppercase; letter-spacing: .6px; color: var(--gold); margin: 12px 0 7px;
+      }
+      #${WIN_ID} .fu-orb-sectionhdr::before {
+        content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--gold-lite);
+        box-shadow: 0 0 6px rgba(201,162,74,.8); flex: 0 0 auto;
+      }
       #${WIN_ID} .fu-orb-aug {
-        display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px;
-        border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.02);
-        cursor: pointer; margin-bottom: 6px;
+        display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px;
+        border: 2px solid rgba(var(--brown),.4);
+        background: linear-gradient(180deg, var(--cell-top), var(--cell-bot));
+        box-shadow: inset 0 1px 0 rgba(255,255,255,.45);
+        cursor: pointer; margin-bottom: 6px; transition: filter .1s ease, border-color .12s ease, box-shadow .12s ease;
       }
-      #${WIN_ID} .fu-orb-aug:hover { background: rgba(140,100,220,0.14); border-color: rgba(180,150,255,0.4); }
-      #${WIN_ID} .fu-orb-aug.is-installed { opacity: .4; cursor: not-allowed; }
+      #${WIN_ID} .fu-orb-aug:hover { filter: brightness(1.04); border-color: var(--hi); box-shadow: 0 0 0 2px rgba(255,187,85,.28), 0 3px 8px rgba(0,0,0,.14); }
+      #${WIN_ID} .fu-orb-aug.is-installed { opacity: .45; filter: grayscale(.4); cursor: not-allowed; }
+      #${WIN_ID} .fu-orb-aug.is-installed:hover { border-color: rgba(var(--brown),.4); box-shadow: inset 0 1px 0 rgba(255,255,255,.45); filter: grayscale(.4); }
       #${WIN_ID} .fu-orb-aug .ic { font-size: 20px; width: 26px; text-align: center; }
       #${WIN_ID} .fu-orb-aug .meta { flex: 1; }
-      #${WIN_ID} .fu-orb-aug .meta .nm { font-weight: 700; font-size: 14px; }
-      #${WIN_ID} .fu-orb-aug .meta .sm { font-size: 11px; opacity: .72; }
-      #${WIN_ID} .fu-orb-aug .cost { font-size: 12px; opacity: .8; white-space: nowrap; }
-      #${WIN_ID} .fu-orb-link { font-size: 11px; opacity: .6; margin-top: 8px; }
+      #${WIN_ID} .fu-orb-aug .meta .nm { font-weight: 800; font-size: 14px; color: var(--ink); }
+      #${WIN_ID} .fu-orb-aug .meta .sm { font-size: 11px; color: var(--ink); opacity: .72; }
+      #${WIN_ID} .fu-orb-aug .cost { font-size: 12px; font-weight: 700; color: var(--gold); white-space: nowrap; }
+      #${WIN_ID} .fu-orb-link { font-size: 11px; color: var(--ink); opacity: .7; font-style: italic; margin: 4px 0 2px; }
+      #${WIN_ID}::-webkit-scrollbar, #${WIN_ID} .fu-orb-body::-webkit-scrollbar { width: 10px; }
+      #${WIN_ID} .fu-orb-body::-webkit-scrollbar-thumb { background: rgba(var(--brown),.35); border-radius: 6px; }
     `;
     document.head.appendChild(s);
   }
