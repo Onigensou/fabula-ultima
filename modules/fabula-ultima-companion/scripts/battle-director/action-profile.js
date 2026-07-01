@@ -85,6 +85,18 @@ function describePrimary({ view, ar, weapon, liveAttacker, resolver, grant = nul
   const keywords = parseActionKeywords(view);
 
   if (kind === "Attack") {
+    // An Attack's `view.source` is null (buildActionViewFromAr), so inherent
+    // action keywords are declared on the WEAPON's own `action_keywords` prop and
+    // surfaced on the weapon snapshot. Fold them into the keyword set so a
+    // weapon-borne keyword like Pierce is read at the PRIMARY stage — where
+    // pierceMiss (50%-on-miss) and the RS→NE downgrade are decided — exactly like
+    // a skill's inherent keyword. (Benign works as a reaction keyword because it's
+    // a hit-time cap; Pierce cannot, so it MUST be inherent here.)
+    const weaponKeywords = String(weapon?.actionKeywords ?? "")
+      .split(/[,\n]+/).map((s) => s.trim().toLowerCase()).filter(Boolean);
+    const attackKeywords = weaponKeywords.length
+      ? [...new Set([...keywords, ...weaponKeywords])]
+      : keywords;
     const native = weapon?.damageType ?? "Physical";
     const overridden = resolveDamageElementOverride({ actor: liveAttacker, scope: "attack", native });
     const element = String(overridden ?? native ?? "Physical").toLowerCase();
@@ -103,10 +115,11 @@ function describePrimary({ view, ar, weapon, liveAttacker, resolver, grant = nul
       damageBonus: (Number(weapon?.damageBonus ?? 0) || 0) + grantDb,
       outgoingParts, outgoingTotal: outgoingParts.reduce((s, p) => s + p.amount, 0),
       rangeKind, weaponKey, nativeElement: native, overriddenElement: overridden,
-      // Pierce is a property of the action (weapon flag OR a `pierce` action keyword),
-      // not of being an Attack — unified so a pierce SPELL (Iceberg) behaves identically.
-      pierce: !!weapon?.hasPierce || keywords.includes("pierce"),
-      keywords,
+      // Pierce is a property of the action (a `pierce` action keyword — inherent on
+      // the weapon or, for a spell like Iceberg, on the skill), not of being an
+      // Attack. `weapon?.hasPierce` stays for the NPC pseudo-weapon path.
+      pierce: !!weapon?.hasPierce || attackKeywords.includes("pierce"),
+      keywords: attackKeywords,
     };
   }
 

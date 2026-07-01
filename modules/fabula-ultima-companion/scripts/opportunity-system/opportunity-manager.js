@@ -324,11 +324,25 @@
 
     const portrait = await resolvePortrait(actorUuid);
 
+    // Resolve the acting actor so equipment-gated options can be filtered
+    // per-wearer. An option with `requiresFlag` is only offered when the actor
+    // carries a truthy flags["fabula-ultima-companion"].<flag> (e.g. Bunny Tail's
+    // equip-toggled `opp_lucky`). Options without requiresFlag are always offered.
+    let flagActor = null;
+    if (actorUuid) {
+      try {
+        const doc = await fromUuid(actorUuid);
+        flagActor = doc?.actor ?? (doc?.documentName === "Actor" ? doc : null);
+      } catch (_) { /* unresolved actor → gated options simply won't appear */ }
+    }
+    const hasOptionFlag = f => !!flagActor?.getFlag?.("fabula-ultima-companion", f);
+
     // excludeIds removes already-chosen options (A Million Possibility: "the same
     // Opportunity cannot be chosen twice") — a filtered list is equivalent to
     // greying them out, since an absent option can't be picked.
     const ex = new Set(excludeIds ?? []);
-    const options = (cfg.OPTIONS ?? []).filter(o => !ex.has(o.id));
+    const options = (cfg.OPTIONS ?? [])
+      .filter(o => !ex.has(o.id) && (!o.requiresFlag || hasOptionFlag(o.requiresFlag)));
 
     return dialog.showPicker({
       actorName,
@@ -385,8 +399,14 @@
 
     // 3. Post-banner phase
     if (handler?.post) {
-      await handler.post({ actorUuid, actorName, optionId, option, context }, preResult)
-        .catch(e => console.error(TAG, `Effect post error (${optionId}):`, e));
+      const postResult = await handler.post({ actorUuid, actorName, optionId, option, context }, preResult)
+        .catch(e => { console.error(TAG, `Effect post error (${optionId}):`, e); return null; });
+      // An effect may return { resultSummary: <html> } to surface its mechanical
+      // outcome (e.g. Lucky's rolled Zenit) ON the generic result card below — so
+      // the final card the player reads shows the actual result, not just the
+      // option's description. Generic + opt-in: effects that post their own rich
+      // card just return nothing.
+      if (postResult?.resultSummary) context.resultSummary = postResult.resultSummary;
     }
 
     // 4. Post result chat card

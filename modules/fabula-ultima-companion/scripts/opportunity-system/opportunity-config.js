@@ -104,6 +104,21 @@
       color: "#5a5a5a",
       gmApproveNeeded: true,
     },
+    {
+      // Equipment-granted opportunity (Bunny Tail). `requiresFlag` gates it to
+      // actors that carry the named FUCompanion flag — the picker only offers it
+      // when the acting actor has it set (Bunny Tail's equip-toggled AE sets
+      // `flags.fabula-ultima-companion.opp_lucky`). Options WITHOUT requiresFlag
+      // are always offered (unchanged). Reusable for any future gear-granted
+      // opportunity: add an option with its own requiresFlag + gear AE.
+      id: "lucky",
+      label: "Lucky",
+      description: "Roll 5d100. You gain Zenit equal to the result.",
+      icon: "fa-clover",
+      color: "#3fa34d",
+      gmApproveNeeded: false,
+      requiresFlag: "opp_lucky",
+    },
   ];
 
   window["oni.OpportunityConfig"] = Object.freeze({ OPTIONS: Object.freeze(OPTIONS) });

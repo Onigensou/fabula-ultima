@@ -60,11 +60,12 @@ Hooks.once("ready", () => {
     // Ears "+1 to any check") fold in whenever ANY action is tagged, and selecting
     // "Any" alone applies those universal bonuses to a check outside the named four.
     const CHECK_BUFF_OPTIONS = [
-      { label: "Any",      value: "any" },
-      { label: "Study",    value: "study" },
-      { label: "Stealth",  value: "stealth" },
-      { label: "Strength", value: "strength" },
-      { label: "Mobility", value: "mobility" },
+      { label: "Any",          value: "any" },
+      { label: "Study",        value: "study" },
+      { label: "Stealth",      value: "stealth" },
+      { label: "Strength",     value: "strength" },
+      { label: "Mobility",     value: "mobility" },
+      { label: "Intimidation", value: "intimidation" },
     ];
 
     // ── DB resolver ───────────────────────────────────────────────────────

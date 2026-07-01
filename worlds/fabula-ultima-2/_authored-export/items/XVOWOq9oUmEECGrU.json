@@ -1740,6 +1740,12 @@
           "isTemporary": false,
           "isViewable": true
         },
+        "fabula-ultima-companion": {
+          "chargeKey": "turbulence",
+          "charges": 3,
+          "chargesMax": 3,
+          "lifetimeMode": "target_turn_end"
+        },
         "statuscounter": {
           "config": {
             "multiplyEffect": true,

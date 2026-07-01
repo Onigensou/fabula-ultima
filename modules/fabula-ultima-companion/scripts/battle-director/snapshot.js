@@ -292,6 +292,14 @@ export function resolveAttackerWeapon(actor, { which = "main" } = {}) {
     // card's Effect section. Mirrors the NPC pseudo-weapon so a PC weapon with
     // an on-hit effect shows it on the attack card too.
     descriptionHtml: String(weaponItem?.system?.props?.description ?? ""),
+    // Inherent always-on action keywords declared on the weapon Item via its
+    // `action_keywords` prop (comma/newline list — the SAME keyword vocabulary
+    // skills use, e.g. "pierce"). An Attack's `view.source` is null, so
+    // describePrimary folds these off the weapon snapshot into primary.keywords
+    // (parity with a skill's inherent keywords). This is how a weapon carries a
+    // mechanical action keyword like Pierce (Windpiercer) — no bespoke per-quality
+    // boolean; a future benign weapon is just action_keywords:"benign".
+    actionKeywords: String(weaponItem?.system?.props?.action_keywords ?? ""),
   });
 }
 

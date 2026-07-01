@@ -82,6 +82,7 @@
           <div style="font-size:.78rem;opacity:.75;line-height:1.4;">
             ${esc(option?.description ?? "")}
           </div>
+          ${context?.resultSummary ? `<div style="margin-top:7px;padding-top:7px;border-top:1px solid rgba(255,255,255,.12);font-size:.82rem;line-height:1.45;">${context.resultSummary}</div>` : ""}
         </div>
       </div>`;
 

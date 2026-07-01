@@ -212,6 +212,7 @@
     "scripts/opportunity-system/effects/opportunity-effect-progress.js",
     "scripts/opportunity-system/effects/opportunity-effect-scan.js",
     "scripts/opportunity-system/effects/opportunity-effect-unmask.js",
+    "scripts/opportunity-system/effects/opportunity-effect-lucky.js",
     "scripts/opportunity-system/opportunity-chat-card.js",
     "scripts/opportunity-system/opportunity-dialog.js",
     "scripts/opportunity-system/opportunity-manager.js",
