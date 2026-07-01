@@ -66,9 +66,10 @@ export function readOrbment(item) {
   return {
     version: Number(raw?.version ?? 1) || 1,
     slots,
-    // baseSkillTarget is only meaningful once captured (first compile). undefined
-    // = "not captured yet"; the compiler snapshots the intrinsic value then.
-    baseSkillTarget: raw?.baseSkillTarget,
+    // baseProps: [{key,value}] — intrinsic values the compiler snapshotted before
+    // a props-augment overrode them, so removal restores them exactly. Empty until
+    // the first props-projection captures them.
+    baseProps: Array.isArray(raw?.baseProps) ? raw.baseProps : [],
     linkGroup: Array.isArray(raw?.linkGroup) ? raw.linkGroup.filter(Boolean) : null,
   };
 }
