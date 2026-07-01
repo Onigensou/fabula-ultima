@@ -31,12 +31,32 @@
 const ADD = 2;       // CONST.ACTIVE_EFFECT_MODES.ADD
 const OVERRIDE = 5;  // CONST.ACTIVE_EFFECT_MODES.OVERRIDE
 
-// Equip-gated AE values (CSB formula syntax). Numeric add / override-string.
+// Equip-gated numeric AE value (CSB formula syntax).
 const equipGated = (n) => `\${isEquipped ? ${n} : 0}$`;
-const equipGatedStr = (v, off = "NA") => `\${isEquipped ? '${v}' : '${off}'}$`;
 
-// Status → an immunity AE change (condition_<status> forced to IM while worn).
-const immunityChange = (status) => ({ key: `condition_${status}`, mode: OVERRIDE, value: equipGatedStr("IM") });
+// Status immunity AE change: force condition_<status> to "IM" (mode OVERRIDE).
+// Not formula-gated — the compiler disables the AE while the item is unworn
+// (mirrors the world "Status Immunity" item), so a plain "IM" is correct.
+const immunityChange = (status) => ({ key: `condition_${status}`, mode: OVERRIDE, value: "IM" });
+
+// Affinity resistance/immunity AE change. aeAffinityFloor(code) sets affinity_<idx>
+// to code (RS/IM/…) but PRESERVES an already-better IM/AB (won't downgrade) — the
+// world's Bodyguard helper. Equip-gating is via the compiler's disabled sync.
+const affinityChange = (idx, code) => ({ key: `affinity_${idx}`, mode: OVERRIDE, value: `aeAffinityFloor("${code}")` });
+
+// Damage type → affinity_N index. Derived + verified on Fire Slime
+// (Actor.Q2SuQSgrAC2dZR2Y): affinity_6=fire(AB), _7=ice(VU), _9=poison(IM) pin the
+// order to the extra_damage_mod element sequence. physical=affinity_1 (Swordbreaker).
+const ELEMENTS = [
+  { el: "air",    idx: 2, icon: "💨", label: "Air" },
+  { el: "bolt",   idx: 3, icon: "⚡", label: "Bolt" },
+  { el: "dark",   idx: 4, icon: "🌑", label: "Dark" },
+  { el: "earth",  idx: 5, icon: "⛰️", label: "Earth" },
+  { el: "fire",   idx: 6, icon: "🔥", label: "Fire" },
+  { el: "ice",    idx: 7, icon: "❄️", label: "Ice" },
+  { el: "light",  idx: 8, icon: "☀️", label: "Light" },
+  { el: "poison", idx: 9, icon: "☠️", label: "Poison" },
+];
 
 // Every debuff condition the actor tracks (from the CSB template) — Perfect
 // Health forces them all to IM.
@@ -161,20 +181,22 @@ export const AUGMENTS = [
   },
 
   // ═══ DEFENSIVE — Weapon (p.269) + Armor & Shield (p.280) ═══════════════════
-  {
-    id: "antistatus", label: "Antistatus", icon: "🚫", cost: 500, category: "defensive",
-    appliesTo: ["weapon", "armor", "shield"], pending: true,
-    summary: "You are immune to a single status effect (choose one).",
-    ruleText: "You are immune to a single status effect.",
-    // Mechanism confirmed (condition_<status>: IM) but needs a status picker —
-    // pending the choice-picker feature.
-  },
-  {
-    id: "resistance", label: "Resistance", icon: "🛡️", cost: 700, category: "defensive",
-    appliesTo: ["weapon", "armor", "shield"], pending: true,
-    summary: "Resistance to a single damage type (not physical).",
-    ruleText: "You have Resistance to a single damage type (not physical damage).",
-  },
+  // Antistatus — one per Basic 4 status (no picker, per design).
+  ...["slow", "dazed", "shaken", "weak"].map((st) => ({
+    id: `antistatus_${st}`, label: `Antistatus: ${cap(st)}`, icon: "🚫", cost: 500, category: "defensive",
+    appliesTo: ["weapon", "armor", "shield"],
+    summary: `You are immune to ${st}.`,
+    ruleText: `You are immune to the ${st} status effect.`,
+    ae: { name: `Antistatus ${cap(st)} (Orbment)`, changes: [immunityChange(st)] },
+  })),
+  // Resistance — one per non-physical damage type (affinity_<idx> floored to RS).
+  ...ELEMENTS.map((e) => ({
+    id: `resistance_${e.el}`, label: `Resistance: ${e.label}`, icon: e.icon, cost: 700, category: "defensive",
+    appliesTo: ["weapon", "armor", "shield"],
+    summary: `Resistance to ${e.label} damage.`,
+    ruleText: `You have Resistance to ${e.label} damage.`,
+    ae: { name: `Resistance ${e.label} (Orbment)`, changes: [affinityChange(e.idx, "RS")] },
+  })),
   {
     id: "amulet", label: "Amulet", icon: "🔮", cost: 800, category: "defensive",
     appliesTo: ["weapon"],
@@ -196,17 +218,20 @@ export const AUGMENTS = [
     ruleText: "You have Resistance to two damage types (not physical damage).",
   },
   {
-    id: "swordbreaker", label: "Swordbreaker", icon: "🛡️", cost: 1000, category: "defensive",
-    appliesTo: ["weapon", "armor", "shield"], pending: true,
+    id: "swordbreaker", label: "Swordbreaker", icon: "🗡️", cost: 1000, category: "defensive",
+    appliesTo: ["weapon", "armor", "shield"],
     summary: "Resistance to physical damage.",
     ruleText: "You have Resistance to physical damage.",
+    ae: { name: "Swordbreaker (Orbment)", changes: [affinityChange(1, "RS")] },
   },
-  {
-    id: "immunity", label: "Immunity", icon: "🚫", cost: 1500, category: "defensive",
-    appliesTo: ["weapon", "armor", "shield"], pending: true,
-    summary: "Immunity to a single damage type (not physical).",
-    ruleText: "You have Immunity to a single damage type (not physical damage).",
-  },
+  // Immunity — one per non-physical damage type (affinity_<idx> floored to IM).
+  ...ELEMENTS.map((e) => ({
+    id: `immunity_${e.el}`, label: `Immunity: ${e.label}`, icon: e.icon, cost: 1500, category: "defensive",
+    appliesTo: ["weapon", "armor", "shield"],
+    summary: `Immunity to ${e.label} damage.`,
+    ruleText: `You have Immunity to ${e.label} damage.`,
+    ae: { name: `Immunity ${e.label} (Orbment)`, changes: [affinityChange(e.idx, "IM")] },
+  })),
   {
     id: "omnishield", label: "Omnishield", icon: "🛡️", cost: 2000, category: "defensive",
     appliesTo: ["weapon"],

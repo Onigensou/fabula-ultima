@@ -224,7 +224,12 @@ async function applyToItem(item, slots, linkGroup) {
     catch (e) { warn(`AE delete failed on ${item.name}`, e); }
   }
   if (proj.aeDocs.length) {
-    try { await item.createEmbeddedDocuments("ActiveEffect", proj.aeDocs); }
+    // Equip-gate: start disabled when the item isn't currently worn, so affinity
+    // / condition-immunity AEs (which can't self-gate via an isEquipped formula)
+    // don't apply off-body. equipment-swap's AE sync maintains this on swaps.
+    const worn = !!item.system?.props?.isEquipped;
+    const docs = proj.aeDocs.map((d) => ({ ...d, disabled: !worn }));
+    try { await item.createEmbeddedDocuments("ActiveEffect", docs); }
     catch (e) { warn(`AE create failed on ${item.name}`, e); }
   }
 
