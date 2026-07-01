@@ -138,7 +138,10 @@ function stripDescBlock(html) {
   const idx = s.indexOf(DESC_SENTINEL);
   if (idx === -1) return s.replace(/\n{3,}/g, "\n\n").trimEnd();
   const before = s.slice(0, idx);
-  const lead = before.match(/(?:\s*<hr\s*\/?>)?\s*(?:<p[^>]*>)?\s*(?:<strong[^>]*>)?\s*$/i);
+  // Back up over the block's OPENING wrapper run (whitespace, <hr>, and opening
+  // p/strong/b/em/span tags — covers both the old <b> and new <strong> block
+  // formats). Only opening tags, so we stop at any author close-tag.
+  const lead = before.match(/(?:\s|<hr\s*\/?>|<(?:p|strong|b|em|span)\b[^>]*>)*$/i);
   const cut = lead ? idx - lead[0].length : idx;
   return s.slice(0, cut).replace(/\n{3,}/g, "\n\n").trimEnd();
 }
