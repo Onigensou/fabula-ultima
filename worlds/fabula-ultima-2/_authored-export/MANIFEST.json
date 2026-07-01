@@ -2597,12 +2597,6 @@
     ],
     "items": [
       {
-        "id": "r0yZpLPAK9VXhM2p",
-        "name": "_Accessory Equipment",
-        "type": "_equippableItemTemplate",
-        "effects": 0
-      },
-      {
         "id": "se0MJ24EFYF4OiGf",
         "name": "_Action Template",
         "type": "_equippableItemTemplate",
@@ -2611,18 +2605,6 @@
       {
         "id": "nS5URyF3aoxhvPsZ",
         "name": "_Active Effects",
-        "type": "_equippableItemTemplate",
-        "effects": 0
-      },
-      {
-        "id": "5Z0gKtN5R51ebJOa",
-        "name": "_Armor Equipment",
-        "type": "_equippableItemTemplate",
-        "effects": 0
-      },
-      {
-        "id": "xdZPhVF8AnmwQEPM",
-        "name": "_Consumeable Template",
         "type": "_equippableItemTemplate",
         "effects": 0
       },
@@ -2651,30 +2633,6 @@
         "effects": 0
       },
       {
-        "id": "XfUpjwaovj4v9AjI",
-        "name": "_Non Offensive Spell",
-        "type": "_equippableItemTemplate",
-        "effects": 0
-      },
-      {
-        "id": "FZmpKcQRP7hZQqbV",
-        "name": "_Offensive Spell",
-        "type": "_equippableItemTemplate",
-        "effects": 0
-      },
-      {
-        "id": "VJCHYWOx1mPsMSip",
-        "name": "_Recipe Template",
-        "type": "_equippableItemTemplate",
-        "effects": 0
-      },
-      {
-        "id": "tJixj9vNEQd3F0IO",
-        "name": "_Shield Equipment",
-        "type": "_equippableItemTemplate",
-        "effects": 0
-      },
-      {
         "id": "j0F5Msw5RZ8aIB3j",
         "name": "_Skill Template",
         "type": "_equippableItemTemplate",
@@ -2683,18 +2641,6 @@
       {
         "id": "Sodp3LYHuhrZI5xO",
         "name": "_Skill Template (Copy)",
-        "type": "_equippableItemTemplate",
-        "effects": 0
-      },
-      {
-        "id": "lUpHsEfBDEY3BeNq",
-        "name": "_Support Equipment",
-        "type": "_equippableItemTemplate",
-        "effects": 0
-      },
-      {
-        "id": "gIRU9XGqYeMBwBN9",
-        "name": "_Weapon Equipment",
         "type": "_equippableItemTemplate",
         "effects": 0
       },
@@ -13033,34 +12979,6 @@
     ],
     "actors": [
       {
-        "id": "Z1r6hn2K7q4SQ1yL",
-        "name": "_FabU Char Template v.Nougat",
-        "type": "_template",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "Dx16KeWcJzikM7dh",
-        "name": "_FabU Char Template v2.fire",
-        "type": "_template",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "uuFfIZoHrsbGA6Fk",
-        "name": "_FabU Char Template v2.fire (Alt-Tab))",
-        "type": "_template",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "gN4AtNuVF4Tc5LxK",
-        "name": "_FabU Char Template v2.fire (Tab)",
-        "type": "_template",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "OmwL5UqoVwjshkJo",
         "name": "_FabU Char Template v3.fire",
         "type": "_template",
@@ -13068,7 +12986,7 @@
         "effects": 0
       },
       {
-        "id": "N6ahjuHb0FjN5Y0Q",
+        "id": "ZyLr1pP30Uzs4GNR",
         "name": "_FabU Char Template v3.fire (Copy)",
         "type": "_template",
         "items": [],
@@ -13077,41 +12995,6 @@
       {
         "id": "hoxC3HFCtMYGScIo",
         "name": "_FabU Classes Template",
-        "type": "_template",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "xPzJq2lz2XnEp75D",
-        "name": "_FabU Shopkeeper Template",
-        "type": "_template",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "BP2shJtrEJwlsTAT",
-        "name": "_FabU Shopkeeper v.2 Template",
-        "type": "_template",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "xpgk9Gju2qngTO5x",
-        "name": "_FabU Shopkeeper v.2 Template (Copy)",
-        "type": "_template",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "NjeE2sLx8I99P66F",
-        "name": "_FabU Villain Template",
-        "type": "_template",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "yibwK7D0bMmrmXhL",
-        "name": "_Fabula NPC template",
         "type": "_template",
         "items": [],
         "effects": 0
@@ -19825,13 +19708,6 @@
             "name": "Wind Glider"
           }
         ],
-        "effects": 0
-      },
-      {
-        "id": "06d9Kr2Yd1bJURIl",
-        "name": "Party_Template",
-        "type": "_template",
-        "items": [],
         "effects": 0
       },
       {
