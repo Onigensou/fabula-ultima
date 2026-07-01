@@ -20,7 +20,7 @@ const esc = (v) => String(v ?? "")
 
 export class OrbmentWindow {
   static open(itemUuid) {
-    if (_instance) { _instance._itemUuid = itemUuid; _instance._refresh(); _instance._focus(); return _instance; }
+    if (_instance && !_instance._closing) { _instance._itemUuid = itemUuid; _instance._refresh(); _instance._focus(); return _instance; }
     _instance = new OrbmentWindow(itemUuid);
     _instance._build();
     return _instance;
@@ -59,8 +59,9 @@ export class OrbmentWindow {
         --ptop:#f6f1e6; --pbot:#ebe3d0; --stroke:#7a6a55; --ink:#3a3228;
         --gold:#a07a28; --gold-lite:#c9a24a; --hi:#FFBB55; --brown:87,58,33;
         --cell-top:#fffdf7; --cell-bot:#fbf6ea; --cell-border:#8a6a44;
-        position: fixed; top: 11vh; left: 50%; transform: translateX(-50%);
+        position: fixed; top: 11vh; /* left set in JS so transform is free for the pop animation */
         width: 830px; max-width: 95vw; max-height: 80vh; overflow: hidden;
+        will-change: transform, opacity;
         display: flex; flex-direction: column; z-index: 10000;
         background: linear-gradient(180deg, var(--ptop), var(--pbot));
         color: var(--ink); border: 2px solid var(--stroke); border-radius: 14px;
@@ -211,9 +212,12 @@ export class OrbmentWindow {
     this._ensureStyle();
     const root = document.createElement("div");
     root.id = WIN_ID;
+    root.style.opacity = "0"; // avoid a flash before the pop-in
     document.body.appendChild(root);
     this._root = root;
+    this._centerHorizontally();
     await this._refresh();
+    this._animateIn();
 
     // Re-render if the underlying item changes out-of-band.
     this._onUpdateItem = (doc) => {
@@ -222,11 +226,64 @@ export class OrbmentWindow {
     Hooks.on("updateItem", this._onUpdateItem);
   }
 
+  _centerHorizontally() {
+    const el = this._root;
+    if (!el) return;
+    const w = el.offsetWidth || 830;
+    el.style.left = `${Math.max(8, Math.round((window.innerWidth - w) / 2))}px`;
+  }
+
+  // Center of the source item sheet, so the pop originates from the equipment window.
+  _sourceRect() {
+    try {
+      const doc = fromUuidSync(this._itemUuid);
+      const raw = doc?.sheet?.element;
+      const node = raw instanceof HTMLElement ? raw : (raw?.[0] ?? (typeof raw?.get === "function" ? raw.get(0) : null));
+      const rr = node?.getBoundingClientRect?.();
+      if (!rr || !rr.width) return null;
+      return { cx: rr.left + rr.width / 2, cy: rr.top + rr.height / 2 };
+    } catch { return null; }
+  }
+
+  _animateIn() {
+    const el = this._root;
+    if (!el) return;
+    // Anchor the scale toward the source equipment window (fallback: upper-center).
+    let origin = "50% 30%";
+    try {
+      const src = this._sourceRect();
+      const r = el.getBoundingClientRect();
+      if (src && r.width) {
+        const ox = Math.max(0, Math.min(100, ((src.cx - r.left) / r.width) * 100));
+        const oy = Math.max(0, Math.min(100, ((src.cy - r.top) / r.height) * 100));
+        origin = `${ox}% ${oy}%`;
+      }
+    } catch {}
+    el.style.transformOrigin = origin;
+    el.style.transform = "scale(.8)"; // match keyframe 0 (opacity already 0) → no pre-anim flash
+    try {
+      el.animate(
+        [{ transform: "scale(.8)", opacity: 0 }, { transform: "scale(1)", opacity: 1 }],
+        { duration: 210, easing: "cubic-bezier(.2,.9,.25,1)", fill: "forwards" },
+      );
+    } catch { el.style.opacity = ""; el.style.transform = ""; }
+  }
+
   _destroy() {
+    if (this._closing) return;
+    this._closing = true;
     if (this._onUpdateItem) { Hooks.off("updateItem", this._onUpdateItem); this._onUpdateItem = null; }
-    this._root?.remove();
-    this._root = null;
-    _instance = null;
+    const el = this._root;
+    const done = () => { el?.remove(); this._root = null; if (_instance === this) _instance = null; };
+    if (!el) return done();
+    try {
+      const anim = el.animate(
+        [{ transform: "scale(1)", opacity: 1 }, { transform: "scale(.86)", opacity: 0 }],
+        { duration: 150, easing: "cubic-bezier(.4,0,.6,1)", fill: "forwards" },
+      );
+      anim.onfinish = done;
+      anim.oncancel = done;
+    } catch { done(); }
   }
 
   async _refresh() {
