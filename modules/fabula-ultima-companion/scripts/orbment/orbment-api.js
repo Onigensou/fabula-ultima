@@ -61,6 +61,8 @@ export async function install(itemOrUuid, slotIndex, augmentId, options = {}) {
   if (!augment) throw new Error(`Orbment: unknown augment "${augmentId}".`);
   if (!augment.appliesTo.includes(kind))
     throw new Error(`Orbment: "${augment.label}" cannot go on a ${kind}.`);
+  if (augment.pending)
+    throw new Error(`Orbment: "${augment.label}" is in the catalog but its automation isn't wired yet.`);
 
   const orb = readOrbment(item);
   // Disallow the same augment in two slots (RAW: an item can't gain a Quality it
@@ -147,7 +149,9 @@ export async function list(itemOrUuid) {
     }),
     linkGroup: orb.linkGroup ?? [item.id],
     available: augmentsForItemType(kind).map((a) => ({
-      id: a.id, label: a.label, icon: a.icon, summary: a.summary, cost: a.cost, kind: a.props ? "prop" : a.rider ? "rider" : "stat",
+      id: a.id, label: a.label, icon: a.icon, summary: a.summary, cost: a.cost,
+      category: a.category ?? "", pending: !!a.pending,
+      kind: a.props ? "prop" : a.rider ? "rider" : a.ae ? "stat" : "none",
     })),
   };
 }

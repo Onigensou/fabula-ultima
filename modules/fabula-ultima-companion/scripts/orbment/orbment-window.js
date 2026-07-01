@@ -47,11 +47,11 @@ export class OrbmentWindow {
     // tooltip palette (fud-* tokens) so this window reads as native FU UI.
     s.textContent = `
       #${WIN_ID} {
-        /* Wrapper is the DEEPER parchment; option/slot cells are LIGHTER so the
-           interactive panels read as raised above the shell. */
-        --ptop:#efe3c6; --pbot:#e4d3ac; --stroke:#7a6a55; --ink:#3a3228;
+        /* Light parchment wrapper; option/slot cells near-WHITE and popped out
+           with a darker brown border so they stand off the warm shell. */
+        --ptop:#f6f1e6; --pbot:#ebe3d0; --stroke:#7a6a55; --ink:#3a3228;
         --gold:#a07a28; --gold-lite:#c9a24a; --hi:#FFBB55; --brown:87,58,33;
-        --cell-top:#faf6ee; --cell-bot:#f3ecdd;
+        --cell-top:#fffdf7; --cell-bot:#fbf6ea; --cell-border:#8a6a44;
         position: fixed; top: 12vh; left: 50%; transform: translateX(-50%);
         width: 620px; max-width: 92vw; max-height: 78vh; overflow: hidden;
         display: flex; flex-direction: column; z-index: 10000;
@@ -62,9 +62,9 @@ export class OrbmentWindow {
       }
       #${WIN_ID} .fu-orb-header {
         display: flex; align-items: center; gap: 10px; padding: 12px 14px; cursor: move;
-        background: linear-gradient(180deg, #e6d6b1, #d9c79d);
+        background: linear-gradient(180deg, #efe4c9, #e6d6b3);
         border-bottom: 2px solid rgba(var(--brown),.45);
-        box-shadow: inset 0 1px 0 rgba(255,255,255,.45);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,.5);
       }
       #${WIN_ID} .fu-orb-title { font-size: 16px; font-weight: 900; flex: 1; color: var(--ink); }
       #${WIN_ID} .fu-orb-sub { font-size: 11px; font-weight: 600; color: var(--gold); margin-top: 2px; }
@@ -77,27 +77,31 @@ export class OrbmentWindow {
       #${WIN_ID} .fu-orb-body { padding: 12px 14px; overflow-y: auto; }
       #${WIN_ID} .fu-orb-slots { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
       #${WIN_ID} .fu-orb-slot {
-        flex: 1 1 160px; min-height: 66px; border-radius: 10px; padding: 8px 10px;
-        border: 2px solid rgba(var(--brown),.5);
-        background: radial-gradient(120% 80% at 50% 0%, rgba(255,255,255,.4) 0%, transparent 40%),
+        flex: 1 1 160px; min-height: 66px; border-radius: 10px; padding: 8px 34px 8px 10px;
+        border: 2px solid var(--cell-border);
+        background: radial-gradient(120% 80% at 50% 0%, rgba(255,255,255,.5) 0%, transparent 45%),
           linear-gradient(180deg, var(--cell-top) 0%, var(--cell-bot) 100%);
-        box-shadow: inset 0 1px 0 rgba(255,255,255,.5), 0 3px 8px rgba(0,0,0,.12);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,.7), 0 3px 8px rgba(0,0,0,.12);
         cursor: pointer; transition: filter .1s ease, border-color .12s ease, box-shadow .12s ease; position: relative;
       }
-      #${WIN_ID} .fu-orb-slot:hover { filter: brightness(1.04); }
+      #${WIN_ID} .fu-orb-slot:hover { filter: brightness(1.02); }
       #${WIN_ID} .fu-orb-slot.is-selected {
         border-color: var(--hi);
-        box-shadow: inset 0 1px 0 rgba(255,255,255,.6), 0 0 0 2px rgba(255,187,85,.3), 0 3px 8px rgba(0,0,0,.15);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,.8), 0 0 0 2px rgba(255,187,85,.35), 0 3px 8px rgba(0,0,0,.15);
       }
       #${WIN_ID} .fu-orb-slot .lbl { font-size: 10px; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: .6px; }
       #${WIN_ID} .fu-orb-slot .aug { font-size: 15px; font-weight: 800; margin-top: 3px; color: var(--ink); }
       #${WIN_ID} .fu-orb-slot .sum { font-size: 11px; color: var(--ink); opacity: .7; margin-top: 2px; }
+      /* Remove = small round corner button, vertically centered on the slot's right edge. */
       #${WIN_ID} .fu-orb-slot .rm {
-        position: absolute; top: 6px; right: 6px; border: 1px solid rgba(var(--brown),.3); border-radius: 6px;
-        background: rgba(var(--brown),.12); color: var(--ink); cursor: pointer; font-size: 11px; padding: 1px 6px; line-height: 1.3;
-        transition: all .12s ease;
+        position: absolute; top: 50%; right: 7px; transform: translateY(-50%);
+        width: 20px; height: 20px; padding: 0; display: flex; align-items: center; justify-content: center;
+        border: 1px solid rgba(var(--brown),.35); border-radius: 50%;
+        background: rgba(255,255,255,.7); color: var(--ink); cursor: pointer; font-size: 11px; line-height: 1;
+        box-shadow: 0 1px 2px rgba(0,0,0,.15); transition: all .12s ease; opacity: .55;
       }
-      #${WIN_ID} .fu-orb-slot .rm:hover { background: #e35151; border-color: #e35151; color: #fff8e7; }
+      #${WIN_ID} .fu-orb-slot:hover .rm { opacity: 1; }
+      #${WIN_ID} .fu-orb-slot .rm:hover { background: #e35151; border-color: #e35151; color: #fff8e7; transform: translateY(-50%) scale(1.12); }
       #${WIN_ID} .fu-orb-sectionhdr {
         display: flex; align-items: center; gap: 7px; font-size: 11px; font-weight: 800;
         text-transform: uppercase; letter-spacing: .6px; color: var(--gold); margin: 12px 0 7px;
@@ -108,14 +112,26 @@ export class OrbmentWindow {
       }
       #${WIN_ID} .fu-orb-aug {
         display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px;
-        border: 2px solid rgba(var(--brown),.4);
+        border: 2px solid var(--cell-border);
         background: linear-gradient(180deg, var(--cell-top), var(--cell-bot));
-        box-shadow: inset 0 1px 0 rgba(255,255,255,.45);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,.7), 0 1px 3px rgba(0,0,0,.1);
         cursor: pointer; margin-bottom: 6px; transition: filter .1s ease, border-color .12s ease, box-shadow .12s ease;
       }
-      #${WIN_ID} .fu-orb-aug:hover { filter: brightness(1.04); border-color: var(--hi); box-shadow: 0 0 0 2px rgba(255,187,85,.28), 0 3px 8px rgba(0,0,0,.14); }
+      #${WIN_ID} .fu-orb-aug:hover { border-color: var(--hi); box-shadow: 0 0 0 2px rgba(255,187,85,.3), 0 3px 8px rgba(0,0,0,.14); }
       #${WIN_ID} .fu-orb-aug.is-installed { opacity: .45; filter: grayscale(.4); cursor: not-allowed; }
-      #${WIN_ID} .fu-orb-aug.is-installed:hover { border-color: rgba(var(--brown),.4); box-shadow: inset 0 1px 0 rgba(255,255,255,.45); filter: grayscale(.4); }
+      #${WIN_ID} .fu-orb-aug.is-installed:hover { border-color: var(--cell-border); box-shadow: inset 0 1px 0 rgba(255,255,255,.7); filter: grayscale(.4); }
+      #${WIN_ID} .fu-orb-aug.is-pending { opacity: .5; cursor: default; border-style: dashed; }
+      #${WIN_ID} .fu-orb-aug.is-pending:hover { border-color: var(--cell-border); box-shadow: inset 0 1px 0 rgba(255,255,255,.7); }
+      #${WIN_ID} .fu-orb-soon {
+        font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px;
+        color: #8a6a44; background: rgba(var(--brown),.14); border: 1px solid rgba(var(--brown),.3);
+        border-radius: 5px; padding: 0 4px; margin-left: 6px; vertical-align: middle;
+      }
+      #${WIN_ID} .fu-orb-catlabel {
+        font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .8px;
+        color: var(--gold); opacity: .85; margin: 10px 0 5px 2px;
+      }
+      #${WIN_ID} .fu-orb-catlabel:first-child { margin-top: 2px; }
       #${WIN_ID} .fu-orb-aug .ic { font-size: 20px; width: 26px; text-align: center; }
       #${WIN_ID} .fu-orb-aug .meta { flex: 1; }
       #${WIN_ID} .fu-orb-aug .meta .nm { font-weight: 800; font-size: 14px; color: var(--ink); }
@@ -187,13 +203,23 @@ export class OrbmentWindow {
       </div>`;
     }).join("");
 
-    const augHtml = data.available.map((a) => {
-      const installed = installedIds.has(a.id) ? "is-installed" : "";
-      return `<div class="fu-orb-aug ${installed}" data-aug="${esc(a.id)}">
-        <div class="ic">${esc(a.icon)}</div>
-        <div class="meta"><div class="nm">${esc(a.label)}</div><div class="sm">${esc(a.summary)}</div></div>
-        <div class="cost">${a.cost} z</div>
-      </div>`;
+    // Group the catalog by section (offensive / enhancement / defensive) so a
+    // weapon shows its weapon qualities and armor/shield show theirs, sectioned.
+    const CAT_LABEL = { offensive: "Offensive", enhancement: "Enhancement", defensive: "Defensive" };
+    const CAT_ORDER = ["offensive", "enhancement", "defensive"];
+    const groups = {};
+    for (const a of data.available) (groups[a.category || "other"] ||= []).push(a);
+    const augHtml = CAT_ORDER.filter((c) => groups[c]?.length).map((c) => {
+      const rows = groups[c].map((a) => {
+        const cls = installedIds.has(a.id) ? "is-installed" : (a.pending ? "is-pending" : "");
+        const tag = a.pending ? `<span class="fu-orb-soon">soon</span>` : "";
+        return `<div class="fu-orb-aug ${cls}" data-aug="${esc(a.id)}" data-pending="${a.pending ? 1 : 0}">
+          <div class="ic">${esc(a.icon)}</div>
+          <div class="meta"><div class="nm">${esc(a.label)}${tag}</div><div class="sm">${esc(a.summary)}</div></div>
+          <div class="cost">${a.cost} z</div>
+        </div>`;
+      }).join("");
+      return `<div class="fu-orb-catlabel">${CAT_LABEL[c] || c}</div>${rows}`;
     }).join("");
 
     const linkNote = (data.linkGroup?.length > 1)
@@ -256,6 +282,10 @@ export class OrbmentWindow {
     if (charge) charge.addEventListener("change", (ev) => { this._chargeZenit = !!ev.target.checked; });
     this._root.querySelectorAll(".fu-orb-aug").forEach((el) => {
       if (el.classList.contains("is-installed")) return;
+      if (el.dataset.pending === "1") {
+        el.addEventListener("click", () => ui.notifications?.info("This augment is in the catalog but its automation isn't wired yet."));
+        return;
+      }
       el.addEventListener("click", async () => {
         try {
           await OrbmentApi.install(this._itemUuid, this._selectedSlot, el.dataset.aug, { deductZenit: this._chargeZenit });
