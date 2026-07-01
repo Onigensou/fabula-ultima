@@ -877,6 +877,12 @@ Hooks.once("ready", () => {
   // it). Idempotent. See [[battle-followup]].
   try { initWanderingFlameEntrance(); } catch (e) { warn("initWanderingFlameEntrance threw", e); }
   try { registerWanderingFlameAmbush(); } catch (e) { warn("registerWanderingFlameAmbush threw", e); }
+  // Equipment Orbment system — dynamic import so it needs no module.json esmodules
+  // entry (a hard reload picks it up; no Setup relaunch). Self-contained under
+  // scripts/orbment/. See [[project_equipment_orbment]].
+  import("../orbment/orbment-bootstrap.js")
+    .then((m) => m.initOrbment())
+    .catch((e) => warn("initOrbment failed to load", e));
   const root = (globalThis.FUCompanion = globalThis.FUCompanion ?? {});
   const api = (root.api = root.api ?? {});
   const exp = (api.experimental = api.experimental ?? {});
