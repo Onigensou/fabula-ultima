@@ -8,7 +8,7 @@
 // heavy lifting; this layer is validation + a thin ergonomic surface for the UI.
 
 import { FLAG_NS, ORBMENT_FLAG, readOrbment, slotCountOf, itemKindOf } from "./orbment-const.js";
-import { getAugment, augmentsForItemType } from "./augment-registry.js";
+import { getAugment, augmentsForItemType, resolveAugment } from "./augment-registry.js";
 import { recompileOrbment } from "./orbment-compiler.js";
 
 const TAG = "[Orbment]";
@@ -64,12 +64,23 @@ export async function install(itemOrUuid, slotIndex, augmentId, options = {}) {
   if (augment.pending)
     throw new Error(`Orbment: "${augment.label}" is in the catalog but its automation isn't wired yet.`);
 
+  // Parameterized augments ("choose one") require a valid param value.
+  let param = options.param ?? null;
+  if (augment.param) {
+    const valid = augment.param.options.some((o) => o.value === param);
+    if (!valid) throw new Error(`Orbment: "${augment.label}" needs a choice — pick one of its options.`);
+  } else {
+    param = null; // ignore any stray param on a non-parameterized augment
+  }
+  const view = resolveAugment(augmentId, param);
+
   const orb = readOrbment(item);
-  // Disallow the same augment in two slots (RAW: an item can't gain a Quality it
-  // already has). Re-installing into its OWN slot is a no-op-ish refresh.
-  const dupeSlot = orb.slots.findIndex((s, i) => s === augmentId && i !== idx);
+  // Disallow the exact same augment+choice in two slots (RAW: an item can't gain
+  // a Quality it already has). Different choices of the same augment are allowed
+  // (e.g. Resistance: Fire and Resistance: Ice).
+  const dupeSlot = orb.slots.findIndex((s, i) => s && s.id === augmentId && (s.param ?? null) === param && i !== idx);
   if (dupeSlot !== -1)
-    throw new Error(`Orbment: "${augment.label}" is already installed in slot ${dupeSlot + 1}.`);
+    throw new Error(`Orbment: "${view.label}" is already installed in slot ${dupeSlot + 1}.`);
 
   // Zenit economy. Default = deduct (normal gameplay); GM manual passes false.
   const deductZenit = options.deductZenit !== false;
@@ -82,7 +93,7 @@ export async function install(itemOrUuid, slotIndex, augmentId, options = {}) {
   }
 
   const slots = orb.slots.slice();
-  slots[idx] = augmentId;
+  slots[idx] = { id: augmentId, param };
   const res = await setSlotsAndCompile(item, slots);
 
   // Charge AFTER a successful compile so a failed install never bills the actor.
@@ -93,9 +104,9 @@ export async function install(itemOrUuid, slotIndex, augmentId, options = {}) {
 
   try {
     const note = deductZenit && cost > 0 ? ` (−${cost} z)` : " (no charge)";
-    ui.notifications?.info(`Installed ${augment.label} into ${item.name}, slot ${idx + 1}${note}.`);
+    ui.notifications?.info(`Installed ${view.label} into ${item.name}, slot ${idx + 1}${note}.`);
   } catch {}
-  console.debug(TAG, "install", { item: item.name, idx, augmentId, deductZenit, cost, res });
+  console.debug(TAG, "install", { item: item.name, idx, augmentId, param, deductZenit, cost, res });
   return res;
 }
 
@@ -114,8 +125,8 @@ export async function remove(itemOrUuid, slotIndex) {
   slots[idx] = null;
   const res = await setSlotsAndCompile(item, slots);
   try {
-    const a = getAugment(prev);
-    if (a) ui.notifications?.info(`Removed ${a.label} from ${item.name} (slot ${idx + 1}).`);
+    const v = prev ? resolveAugment(prev.id, prev.param) : null;
+    if (v) ui.notifications?.info(`Removed ${v.label} from ${item.name} (slot ${idx + 1}).`);
   } catch {}
   return res;
 }
@@ -143,15 +154,17 @@ export async function list(itemOrUuid) {
     actorName: item.parent?.name ?? "",
     actorZenit: readZenit(item.parent),
     slotCount: slotCountOf(item),
-    slots: orb.slots.map((id) => {
-      const a = getAugment(id);
-      return a ? { id: a.id, label: a.label, icon: a.icon, summary: a.summary, cost: a.cost } : null;
+    slots: orb.slots.map((slot) => {
+      if (!slot) return null;
+      const v = resolveAugment(slot.id, slot.param);
+      return v ? { id: v.id, param: v.param, label: v.label, icon: v.icon, summary: v.summary, cost: v.cost } : null;
     }),
     linkGroup: orb.linkGroup ?? [item.id],
     available: augmentsForItemType(kind).map((a) => ({
       id: a.id, label: a.label, icon: a.icon, summary: a.summary, cost: a.cost,
       category: a.category ?? "", pending: !!a.pending,
-      kind: a.props ? "prop" : a.rider ? "rider" : a.ae ? "stat" : "none",
+      // Parameterized augments expose their picker options ("choose one").
+      param: a.param ? { prompt: a.param.prompt, options: a.param.options } : null,
     })),
   };
 }

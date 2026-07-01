@@ -18,7 +18,7 @@ import {
   FLAG_NS, ORBMENT_FLAG, ORBMENT_TAG, ORBMENT_ROW_PREFIX,
   DESC_START, DESC_END, slotCountOf, itemKindOf, readOrbment, nameStem,
 } from "./orbment-const.js";
-import { getAugment } from "./augment-registry.js";
+import { resolveAugment } from "./augment-registry.js";
 
 const TAG = "[Orbment]";
 const log  = (...a) => console.debug(TAG, ...a);
@@ -128,14 +128,14 @@ function buildProjection(installedAugments, itemType) {
 }
 
 // ── Description summary block (fenced, author-safe) ────────────────────────────
+const DESC_BLOCK_RE = new RegExp(
+  `${DESC_START.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}[\\s\\S]*?${DESC_END.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`,
+  "g",
+);
 function stripDescBlock(html) {
-  const s = String(html ?? "");
-  const start = s.indexOf(DESC_START);
-  const end = s.indexOf(DESC_END);
-  if (start !== -1 && end !== -1 && end > start) {
-    return (s.slice(0, start) + s.slice(end + DESC_END.length)).replace(/\n{3,}/g, "\n\n");
-  }
-  return s;
+  // Remove EVERY prior orbment block (guards against duplicates that accumulated
+  // before this was global), then collapse leftover blank lines.
+  return String(html ?? "").replace(DESC_BLOCK_RE, "").replace(/\n{3,}/g, "\n\n").trimEnd();
 }
 function buildDescBlock(item, summary) {
   const count = slotCountOf(item);
@@ -154,7 +154,7 @@ async function applyToItem(item, slots, linkGroup) {
   const itemType = itemKindOf(item);
 
   const installed = slots
-    .map((id, slotIndex) => (id ? { slotIndex, augment: getAugment(id) } : null))
+    .map((slot, slotIndex) => (slot ? { slotIndex, augment: resolveAugment(slot.id, slot.param) } : null))
     .filter((x) => x && x.augment);
 
   const proj = buildProjection(installed, itemType);

@@ -34,6 +34,9 @@ export class OrbmentWindow {
     // Zenit economy: OFF by default = GM MANUAL backstage edit (no charge). Toggle
     // ON to charge the RAW cost (simulate the normal shop/gameplay purchase).
     this._chargeZenit = false;
+    // When set, the window shows the secondary "choose one" picker for a
+    // parameterized augment: { id, label, icon, prompt, options }.
+    this._picking = null;
     this._onUpdateItem = null;
   }
 
@@ -132,6 +135,16 @@ export class OrbmentWindow {
         color: var(--gold); opacity: .85; margin: 10px 0 5px 2px;
       }
       #${WIN_ID} .fu-orb-catlabel:first-child { margin-top: 2px; }
+      #${WIN_ID} .fu-orb-choose {
+        font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px;
+        color: var(--gold); background: rgba(160,122,40,.12); border: 1px solid rgba(160,122,40,.35);
+        border-radius: 5px; padding: 0 5px; margin-left: 6px; vertical-align: middle;
+      }
+      #${WIN_ID} .fu-orb-back {
+        cursor: pointer; color: var(--gold); font-weight: 800; text-decoration: none;
+        padding: 1px 6px; border-radius: 5px; border: 1px solid rgba(160,122,40,.35); background: rgba(160,122,40,.1);
+      }
+      #${WIN_ID} .fu-orb-back:hover { background: rgba(160,122,40,.22); }
       #${WIN_ID} .fu-orb-aug .ic { font-size: 20px; width: 26px; text-align: center; }
       #${WIN_ID} .fu-orb-aug .meta { flex: 1; }
       #${WIN_ID} .fu-orb-aug .meta .nm { font-weight: 800; font-size: 14px; color: var(--ink); }
@@ -211,9 +224,11 @@ export class OrbmentWindow {
     for (const a of data.available) (groups[a.category || "other"] ||= []).push(a);
     const augHtml = CAT_ORDER.filter((c) => groups[c]?.length).map((c) => {
       const rows = groups[c].map((a) => {
-        const cls = installedIds.has(a.id) ? "is-installed" : (a.pending ? "is-pending" : "");
-        const tag = a.pending ? `<span class="fu-orb-soon">soon</span>` : "";
-        return `<div class="fu-orb-aug ${cls}" data-aug="${esc(a.id)}" data-pending="${a.pending ? 1 : 0}">
+        // Param augments are never "installed" (many variants) — only simple ones grey out.
+        const cls = (!a.param && installedIds.has(a.id)) ? "is-installed" : (a.pending ? "is-pending" : "");
+        const tag = a.pending ? `<span class="fu-orb-soon">soon</span>`
+          : (a.param ? `<span class="fu-orb-choose">choose ▾</span>` : "");
+        return `<div class="fu-orb-aug ${cls}" data-aug="${esc(a.id)}" data-pending="${a.pending ? 1 : 0}" data-param="${a.param ? 1 : 0}">
           <div class="ic">${esc(a.icon)}</div>
           <div class="meta"><div class="nm">${esc(a.label)}${tag}</div><div class="sm">${esc(a.summary)}</div></div>
           <div class="cost">${a.cost} z</div>
@@ -247,12 +262,25 @@ export class OrbmentWindow {
         <div class="fu-orb-sectionhdr">Slots</div>
         <div class="fu-orb-slots">${slotsHtml}</div>
         ${linkNote}
-        <div class="fu-orb-sectionhdr">Available Augments — click to install into selected slot</div>
-        ${econBar}
-        ${augHtml || `<div style="opacity:.6">No augments apply to this item type.</div>`}
+        ${this._picking ? this._renderPicker(this._picking, econBar) : `
+          <div class="fu-orb-sectionhdr">Available Augments — click to install into selected slot</div>
+          ${econBar}
+          ${augHtml || `<div style="opacity:.6">No augments apply to this item type.</div>`}`}
       </div>`;
     this._wireChrome();
     this._wireBody();
+  }
+
+  // Secondary "choose one" picker for parameterized augments.
+  _renderPicker(p, econBar) {
+    const opts = p.options.map((o) => `<div class="fu-orb-aug" data-opt="${esc(o.value)}">
+        <div class="ic">${esc(o.icon || p.icon)}</div>
+        <div class="meta"><div class="nm">${esc(o.label)}</div></div>
+      </div>`).join("");
+    return `
+      <div class="fu-orb-sectionhdr"><a class="fu-orb-back">← Back</a>&nbsp;&nbsp;${esc(p.icon)} ${esc(p.label)} — ${esc(p.prompt)}</div>
+      ${econBar}
+      ${opts}`;
   }
 
   _wireChrome() {
@@ -280,10 +308,40 @@ export class OrbmentWindow {
     });
     const charge = this._root.querySelector(".fu-orb-charge input");
     if (charge) charge.addEventListener("change", (ev) => { this._chargeZenit = !!ev.target.checked; });
+
+    // Back out of the picker.
+    const back = this._root.querySelector(".fu-orb-back");
+    if (back) back.addEventListener("click", () => { this._picking = null; this._render(this._data); });
+
+    // Picker MODE: each option installs the augment with that param value.
+    if (this._picking) {
+      this._root.querySelectorAll("[data-opt]").forEach((el) => {
+        el.addEventListener("click", async () => {
+          const pick = this._picking;
+          try {
+            await OrbmentApi.install(this._itemUuid, this._selectedSlot, pick.id, { param: el.dataset.opt, deductZenit: this._chargeZenit });
+            this._picking = null;
+            await this._refresh();
+          } catch (e) { ui.notifications?.error(e.message); }
+        });
+      });
+      return;
+    }
+
+    // Catalog MODE: simple augments install directly; parameterized ones open the picker.
     this._root.querySelectorAll(".fu-orb-aug").forEach((el) => {
       if (el.classList.contains("is-installed")) return;
       if (el.dataset.pending === "1") {
         el.addEventListener("click", () => ui.notifications?.info("This augment is in the catalog but its automation isn't wired yet."));
+        return;
+      }
+      if (el.dataset.param === "1") {
+        el.addEventListener("click", () => {
+          const entry = (this._data.available || []).find((a) => a.id === el.dataset.aug);
+          if (!entry?.param) return;
+          this._picking = { id: entry.id, label: entry.label, icon: entry.icon, prompt: entry.param.prompt, options: entry.param.options };
+          this._render(this._data);
+        });
         return;
       }
       el.addEventListener("click", async () => {

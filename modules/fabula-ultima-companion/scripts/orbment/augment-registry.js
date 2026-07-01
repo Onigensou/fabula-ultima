@@ -1,52 +1,45 @@
 // scripts/orbment/augment-registry.js
 //
-// The AUGMENT REGISTRY — static, data-driven definitions of every orbment an
-// equipment slot can hold. Modelled on keyword-registry.js: a hardcoded table.
+// The AUGMENT REGISTRY — static, data-driven definitions of every orbment.
 //
-// The catalog mirrors the RAW Quality tables:
-//   • Weapon qualities        — Core p.269 (offensive + defensive)
-//   • Armor & Shield qualities — Core p.280 (enhancement + defensive)
-// Accessories can NOT be augmented (enforced in the API/validateItem).
+// Catalog mirrors the RAW Quality tables (Weapon p.269, Armor & Shield p.280).
+// Accessories can NOT be augmented (enforced in the API).
 //
-// `appliesTo` filters which item types (weapon/armor/shield) may receive an
-// augment — this is the "sort by item type" the window uses. `category`
+// `appliesTo` filters by item type (weapon/armor/shield); `category`
 // (offensive|defensive|enhancement) groups the picker within a type.
 //
-// Each augment compiles via one or more projections the rest of the module reads
-// (props / rider / ae — see orbment-compiler.js). Augments whose world mechanism
-// isn't cleanly wired yet carry `pending: true`: they appear in the catalog
-// (complete + sorted) but the API blocks installing them, and the window dims
-// them with a "soon" tag. This keeps the list honest — no broken installs.
+// PARAMETERIZED augments ("choose one" qualities — Status, Antistatus, Resistance,
+// Immunity) carry a `param` block (prompt + options) and a `build(value)` fn that
+// returns the effective projection + display for the chosen value. The window
+// opens a secondary picker for these; the slot stores { id, param }. Non-param
+// augments declare props / rider / ae directly. `resolveAugment(id, param)` yields
+// a unified VIEW (label/summary/icon + projection) used by the compiler + UI.
 //
-// Verified mechanisms (test bridge, 2026-07-01):
-//   • stat AE  → key bonus_defense / bonus_magic_defense / check_mod_accuracy /
-//     extra_damage_mod_<X>, mode ADD, value `${isEquipped ? N : 0}$` (equip-gated).
-//   • status immunity → key condition_<status>, mode OVERRIDE, value
-//     `${isEquipped ? 'IM' : 'NA'}$`.
-//   • defense_target_type "mdef" (Magical); skill_target text (Multi).
-// Deferred (mechanism unconfirmed → pending): affinity resistances (positional
-//   affinity_1..9, element↔index mapping), species Hunter, and the init/magic/
-//   heal Up-lines (actor keys not yet found).
+// Projections the compiler reads: props (item.system.props overrides), rider
+// (reaction_config_table + effect_table rows), ae (embedded ActiveEffect).
+//
+// `pending: true` = in the catalog but not wired (install blocked, "soon" tag).
+//
+// Verified mechanisms (bridge 2026-07-01): stat AE keys bonus_defense /
+// bonus_magic_defense / check_mod_accuracy / extra_damage_mod_<X>; status
+// immunity condition_<status>="IM" (OVERRIDE); affinity resistance
+// affinity_<idx>=aeAffinityFloor("RS"/"IM"); element↔index verified on Fire Slime.
 
 const ADD = 2;       // CONST.ACTIVE_EFFECT_MODES.ADD
 const OVERRIDE = 5;  // CONST.ACTIVE_EFFECT_MODES.OVERRIDE
 
-// Equip-gated numeric AE value (CSB formula syntax).
 const equipGated = (n) => `\${isEquipped ? ${n} : 0}$`;
 
-// Status immunity AE change: force condition_<status> to "IM" (mode OVERRIDE).
-// Not formula-gated — the compiler disables the AE while the item is unworn
-// (mirrors the world "Status Immunity" item), so a plain "IM" is correct.
+// Status immunity change: force condition_<status> to "IM". Equip-gated by the
+// compiler disabling the AE off-body (matches the world "Status Immunity" item).
 const immunityChange = (status) => ({ key: `condition_${status}`, mode: OVERRIDE, value: "IM" });
 
-// Affinity resistance/immunity AE change. aeAffinityFloor(code) sets affinity_<idx>
-// to code (RS/IM/…) but PRESERVES an already-better IM/AB (won't downgrade) — the
-// world's Bodyguard helper. Equip-gating is via the compiler's disabled sync.
+// Affinity change: aeAffinityFloor(code) sets affinity_<idx> to code but preserves
+// an already-better IM/AB (won't downgrade) — the world's Bodyguard helper.
 const affinityChange = (idx, code) => ({ key: `affinity_${idx}`, mode: OVERRIDE, value: `aeAffinityFloor("${code}")` });
 
-// Damage type → affinity_N index. Derived + verified on Fire Slime
-// (Actor.Q2SuQSgrAC2dZR2Y): affinity_6=fire(AB), _7=ice(VU), _9=poison(IM) pin the
-// order to the extra_damage_mod element sequence. physical=affinity_1 (Swordbreaker).
+// Damage type → affinity_N index (verified on Fire Slime Actor.Q2SuQSgrAC2dZR2Y:
+// affinity_6=fire/AB, _7=ice/VU, _9=poison/IM). physical=affinity_1 (Swordbreaker).
 const ELEMENTS = [
   { el: "air",    idx: 2, icon: "💨", label: "Air" },
   { el: "bolt",   idx: 3, icon: "⚡", label: "Bolt" },
@@ -57,15 +50,16 @@ const ELEMENTS = [
   { el: "light",  idx: 8, icon: "☀️", label: "Light" },
   { el: "poison", idx: 9, icon: "☠️", label: "Poison" },
 ];
+const elementOf = (val) => ELEMENTS.find((e) => e.el === val) ?? null;
 
-// Every debuff condition the actor tracks (from the CSB template) — Perfect
-// Health forces them all to IM.
-const ALL_CONDITIONS = [
-  "slow","dazed","weak","shaken","poisoned","enraged","silence","stagger","frightened",
-  "paralyzed","confused","panic","grappled","envenomed","burn","blind","zombie","wither",
-  "bleed","obscure","fatigue","charm","berserk","despair","doom","bane","curse","wet","oil",
-  "petrify","hypothermia","turbulence","delayed","isolate","suppress","disarmed","anomaly",
-];
+// The Basic Status Effects (Perfect Health covers exactly these).
+const BASIC_STATUSES = ["slow", "weak", "dazed", "shaken", "enraged", "poisoned"];
+
+// Shared on-hit status rider builder (Status / Status Plus).
+const onHitStatusRider = (status) => ({
+  trigger: "creature_deals_damage",
+  effects: [{ effect_kind: "apply_ae", ae_template_ref: cap(status), target_ref: "hit_action_targets", ae_duplicate_mode: "refresh" }],
+});
 
 export const AUGMENTS = [
   // ═══ WEAPON — Offensive (Core p.269) ═══════════════════════════════════════
@@ -105,26 +99,22 @@ export const AUGMENTS = [
     ruleText: "Attacks with the weapon have multi (2).",
     props: { skill_target: "Up to two creatures" },
   },
-  ...["dazed", "shaken", "slow", "weak"].map((st) => ({
-    id: `status_${st}`, label: `Status: ${cap(st)}`, icon: "☠️", cost: 1500, category: "offensive",
+  {
+    id: "status", label: "Status", icon: "☠️", cost: 1500, category: "offensive",
     appliesTo: ["weapon"],
-    summary: `Each target hit by the weapon suffers ${st}.`,
-    ruleText: `Each target hit by the weapon suffers ${st}.`,
-    rider: {
-      trigger: "creature_deals_damage",
-      effects: [{ effect_kind: "apply_ae", ae_template_ref: cap(st), target_ref: "hit_action_targets", ae_duplicate_mode: "refresh" }],
-    },
-  })),
-  ...["enraged", "poisoned"].map((st) => ({
-    id: `status_${st}`, label: `Status+: ${cap(st)}`, icon: "☠️", cost: 2000, category: "offensive",
+    summary: "Each target hit suffers a chosen status (dazed / shaken / slow / weak).",
+    ruleText: "Each target hit by the weapon suffers the chosen status.",
+    param: { prompt: "Choose a status to inflict", options: ["dazed", "shaken", "slow", "weak"].map((s) => ({ value: s, label: cap(s), icon: "☠️" })) },
+    build: (v) => ({ label: `Status: ${cap(v)}`, summary: `Each target hit suffers ${v}.`, icon: "☠️", rider: onHitStatusRider(v) }),
+  },
+  {
+    id: "status_plus", label: "Status Plus", icon: "☠️", cost: 2000, category: "offensive",
     appliesTo: ["weapon"],
-    summary: `Each target hit by the weapon suffers ${st}.`,
-    ruleText: `Each target hit by the weapon suffers ${st}.`,
-    rider: {
-      trigger: "creature_deals_damage",
-      effects: [{ effect_kind: "apply_ae", ae_template_ref: cap(st), target_ref: "hit_action_targets", ae_duplicate_mode: "refresh" }],
-    },
-  })),
+    summary: "Each target hit suffers a chosen status (enraged / poisoned).",
+    ruleText: "Each target hit by the weapon suffers the chosen status.",
+    param: { prompt: "Choose a status to inflict", options: ["enraged", "poisoned"].map((s) => ({ value: s, label: cap(s), icon: "☠️" })) },
+    build: (v) => ({ label: `Status+: ${cap(v)}`, summary: `Each target hit suffers ${v}.`, icon: "☠️", rider: onHitStatusRider(v) }),
+  },
 
   // ═══ ARMOR & SHIELD — Enhancement (Core p.280) ═════════════════════════════
   {
@@ -166,37 +156,32 @@ export const AUGMENTS = [
     ae: { name: "Spell Up (Orbment)", changes: [{ key: "extra_damage_mod_spell", mode: ADD, value: equipGated(5) }] },
   },
   {
-    id: "weapon_up_melee", label: "Weapon Up (Melee)", icon: "⚔️", cost: 2000, category: "enhancement",
+    id: "weapon_up", label: "Weapon Up", icon: "⚔️", cost: 2000, category: "enhancement",
     appliesTo: ["armor", "shield"],
-    summary: "Your melee weapon attacks deal 5 extra damage.",
-    ruleText: "Your attacks with melee weapons deal 5 extra damage.",
-    ae: { name: "Weapon Up — Melee (Orbment)", changes: [{ key: "extra_damage_mod_melee", mode: ADD, value: equipGated(5) }] },
-  },
-  {
-    id: "weapon_up_ranged", label: "Weapon Up (Ranged)", icon: "🏹", cost: 2000, category: "enhancement",
-    appliesTo: ["armor", "shield"],
-    summary: "Your ranged weapon attacks deal 5 extra damage.",
-    ruleText: "Your attacks with ranged weapons deal 5 extra damage.",
-    ae: { name: "Weapon Up — Ranged (Orbment)", changes: [{ key: "extra_damage_mod_ranged", mode: ADD, value: equipGated(5) }] },
+    summary: "Your weapon attacks (melee or ranged) deal 5 extra damage.",
+    ruleText: "Your attacks with the chosen weapon type deal 5 extra damage.",
+    param: { prompt: "Choose weapon type", options: [{ value: "melee", label: "Melee", icon: "⚔️" }, { value: "ranged", label: "Ranged", icon: "🏹" }] },
+    build: (v) => ({ label: `Weapon Up: ${cap(v)}`, summary: `Your ${v} weapon attacks deal 5 extra damage.`, icon: v === "ranged" ? "🏹" : "⚔️",
+      ae: { name: `Weapon Up — ${cap(v)} (Orbment)`, changes: [{ key: `extra_damage_mod_${v}`, mode: ADD, value: equipGated(5) }] } }),
   },
 
   // ═══ DEFENSIVE — Weapon (p.269) + Armor & Shield (p.280) ═══════════════════
-  // Antistatus — one per Basic 4 status (no picker, per design).
-  ...["slow", "dazed", "shaken", "weak"].map((st) => ({
-    id: `antistatus_${st}`, label: `Antistatus: ${cap(st)}`, icon: "🚫", cost: 500, category: "defensive",
+  {
+    id: "antistatus", label: "Antistatus", icon: "🚫", cost: 500, category: "defensive",
     appliesTo: ["weapon", "armor", "shield"],
-    summary: `You are immune to ${st}.`,
-    ruleText: `You are immune to the ${st} status effect.`,
-    ae: { name: `Antistatus ${cap(st)} (Orbment)`, changes: [immunityChange(st)] },
-  })),
-  // Resistance — one per non-physical damage type (affinity_<idx> floored to RS).
-  ...ELEMENTS.map((e) => ({
-    id: `resistance_${e.el}`, label: `Resistance: ${e.label}`, icon: e.icon, cost: 700, category: "defensive",
+    summary: "Immunity to a chosen status (slow / dazed / shaken / weak).",
+    ruleText: "You are immune to the chosen status effect.",
+    param: { prompt: "Choose a status", options: ["slow", "dazed", "shaken", "weak"].map((s) => ({ value: s, label: cap(s), icon: "🚫" })) },
+    build: (v) => ({ label: `Antistatus: ${cap(v)}`, summary: `Immune to ${v}.`, icon: "🚫", ae: { name: `Antistatus ${cap(v)} (Orbment)`, changes: [immunityChange(v)] } }),
+  },
+  {
+    id: "resistance", label: "Resistance", icon: "🛡️", cost: 700, category: "defensive",
     appliesTo: ["weapon", "armor", "shield"],
-    summary: `Resistance to ${e.label} damage.`,
-    ruleText: `You have Resistance to ${e.label} damage.`,
-    ae: { name: `Resistance ${e.label} (Orbment)`, changes: [affinityChange(e.idx, "RS")] },
-  })),
+    summary: "Resistance to a chosen damage type (not physical).",
+    ruleText: "You have Resistance to a chosen damage type (not physical damage).",
+    param: { prompt: "Choose a damage type", options: ELEMENTS.map((e) => ({ value: e.el, label: e.label, icon: e.icon })) },
+    build: (v) => { const e = elementOf(v); return e ? { label: `Resistance: ${e.label}`, summary: `Resistance to ${e.label} damage.`, icon: e.icon, ae: { name: `Resistance ${e.label} (Orbment)`, changes: [affinityChange(e.idx, "RS")] } } : {}; },
+  },
   {
     id: "amulet", label: "Amulet", icon: "🔮", cost: 800, category: "defensive",
     appliesTo: ["weapon"],
@@ -224,14 +209,14 @@ export const AUGMENTS = [
     ruleText: "You have Resistance to physical damage.",
     ae: { name: "Swordbreaker (Orbment)", changes: [affinityChange(1, "RS")] },
   },
-  // Immunity — one per non-physical damage type (affinity_<idx> floored to IM).
-  ...ELEMENTS.map((e) => ({
-    id: `immunity_${e.el}`, label: `Immunity: ${e.label}`, icon: e.icon, cost: 1500, category: "defensive",
+  {
+    id: "immunity", label: "Immunity", icon: "🚫", cost: 1500, category: "defensive",
     appliesTo: ["weapon", "armor", "shield"],
-    summary: `Immunity to ${e.label} damage.`,
-    ruleText: `You have Immunity to ${e.label} damage.`,
-    ae: { name: `Immunity ${e.label} (Orbment)`, changes: [affinityChange(e.idx, "IM")] },
-  })),
+    summary: "Immunity to a chosen damage type (not physical).",
+    ruleText: "You have Immunity to a chosen damage type (not physical damage).",
+    param: { prompt: "Choose a damage type", options: ELEMENTS.map((e) => ({ value: e.el, label: e.label, icon: e.icon })) },
+    build: (v) => { const e = elementOf(v); return e ? { label: `Immunity: ${e.label}`, summary: `Immunity to ${e.label} damage.`, icon: e.icon, ae: { name: `Immunity ${e.label} (Orbment)`, changes: [affinityChange(e.idx, "IM")] } } : {}; },
+  },
   {
     id: "omnishield", label: "Omnishield", icon: "🛡️", cost: 2000, category: "defensive",
     appliesTo: ["weapon"],
@@ -248,9 +233,9 @@ export const AUGMENTS = [
   {
     id: "perfect_health", label: "Perfect Health", icon: "💠", cost: 2000, category: "defensive",
     appliesTo: ["weapon", "armor", "shield"],
-    summary: "You are immune to all status effects.",
-    ruleText: "You are immune to all status effects.",
-    ae: { name: "Perfect Health (Orbment)", changes: ALL_CONDITIONS.map(immunityChange) },
+    summary: "Immune to all Basic Status Effects.",
+    ruleText: "You are immune to all Basic Status Effects (Slow, Weak, Dazed, Shaken, Enraged, Poisoned).",
+    ae: { name: "Perfect Health (Orbment)", changes: BASIC_STATUSES.map(immunityChange) },
   },
 ];
 
@@ -262,8 +247,27 @@ export function getAugment(id) {
   return _BY_ID.get(String(id ?? "")) ?? null;
 }
 
-// All augments installable on a given item_type ("weapon"|"armor"|"shield"),
-// preserving registry order (offensive → enhancement → defensive by section).
+// A unified VIEW of an augment for a chosen param (null for non-param augments):
+// resolves the display (label/summary/icon) + projection (props/rider/ae).
+export function resolveAugment(id, param = null) {
+  const a = getAugment(id);
+  if (!a) return null;
+  const view = {
+    id: a.id, label: a.label, icon: a.icon, summary: a.summary, cost: a.cost,
+    category: a.category ?? "", appliesTo: a.appliesTo, pending: !!a.pending,
+    param: param ?? null, props: a.props, rider: a.rider, ae: a.ae,
+  };
+  if (typeof a.build === "function") {
+    const b = a.build(param) || {};
+    view.label = b.label ?? view.label;
+    view.summary = b.summary ?? view.summary;
+    view.icon = b.icon ?? view.icon;
+    view.props = b.props; view.rider = b.rider; view.ae = b.ae;
+  }
+  return view;
+}
+
+// All augments installable on a given item_type, preserving registry order.
 export function augmentsForItemType(itemType) {
   const t = String(itemType ?? "").trim().toLowerCase();
   return AUGMENTS.filter((a) => a.appliesTo.includes(t));

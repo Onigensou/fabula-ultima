@@ -55,13 +55,23 @@ export function slotCountOf(item) {
   return slotCountForRarity(item?.system?.props?.item_rarity);
 }
 
+// Normalize a stored slot to { id, param } | null. Legacy slots were bare id
+// strings (param-less) — coerce them so both shapes read the same.
+export function normalizeSlot(s) {
+  if (!s) return null;
+  if (typeof s === "string") return { id: s, param: null };
+  if (typeof s === "object" && s.id) return { id: String(s.id), param: s.param ?? null };
+  return null;
+}
+
 // Read the raw orbment record off an item's flags (never null — normalized).
+// `slots` is an array of { id, param } | null.
 export function readOrbment(item) {
   const raw = item?.flags?.[FLAG_NS]?.[ORBMENT_FLAG] ?? null;
   const count = slotCountOf(item);
   const slots = new Array(count).fill(null);
   if (raw && Array.isArray(raw.slots)) {
-    for (let i = 0; i < count; i++) slots[i] = raw.slots[i] ?? null;
+    for (let i = 0; i < count; i++) slots[i] = normalizeSlot(raw.slots[i]);
   }
   return {
     version: Number(raw?.version ?? 1) || 1,
