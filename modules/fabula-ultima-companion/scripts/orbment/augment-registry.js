@@ -78,7 +78,7 @@ export const AUGMENTS = [
   },
   {
     id: "piercing", label: "Piercing", icon: "🩸", cost: 400, category: "offensive",
-    appliesTo: ["weapon"],
+    appliesTo: ["weapon"], keyword: "Pierce",
     summary: "Damage dealt by the weapon ignores Resistances.",
     ruleText: "Damage dealt by the weapon ignores Resistances.",
     rider: {
@@ -94,7 +94,7 @@ export const AUGMENTS = [
   },
   {
     id: "multi", label: "Multi (2)", icon: "🎯", cost: 1000, category: "offensive",
-    appliesTo: ["weapon"],
+    appliesTo: ["weapon"], keyword: "Multi",
     summary: "Attacks strike up to 2 different targets.",
     ruleText: "Attacks with the weapon have multi (2).",
     props: { skill_target: "Up to two creatures" },
@@ -105,7 +105,7 @@ export const AUGMENTS = [
     summary: "Each target hit suffers a chosen status (dazed / shaken / slow / weak).",
     ruleText: "Each target hit by the weapon suffers the chosen status.",
     param: { prompt: "Choose a status to inflict", options: ["dazed", "shaken", "slow", "weak"].map((s) => ({ value: s, label: cap(s), icon: "☠️" })) },
-    build: (v) => ({ label: `Status: ${cap(v)}`, summary: `Each target hit suffers ${v}.`, icon: "☠️", rider: onHitStatusRider(v) }),
+    build: (v) => ({ label: `Status: ${cap(v)}`, summary: `Each target hit suffers ${v}.`, icon: "☠️", keyword: cap(v), rider: onHitStatusRider(v) }),
   },
   {
     id: "status_plus", label: "Status Plus", icon: "☠️", cost: 2000, category: "offensive",
@@ -113,7 +113,7 @@ export const AUGMENTS = [
     summary: "Each target hit suffers a chosen status (enraged / poisoned).",
     ruleText: "Each target hit by the weapon suffers the chosen status.",
     param: { prompt: "Choose a status to inflict", options: ["enraged", "poisoned"].map((s) => ({ value: s, label: cap(s), icon: "☠️" })) },
-    build: (v) => ({ label: `Status+: ${cap(v)}`, summary: `Each target hit suffers ${v}.`, icon: "☠️", rider: onHitStatusRider(v) }),
+    build: (v) => ({ label: `Status+: ${cap(v)}`, summary: `Each target hit suffers ${v}.`, icon: "☠️", keyword: cap(v), rider: onHitStatusRider(v) }),
   },
 
   // ═══ ARMOR & SHIELD — Enhancement (Core p.280) ═════════════════════════════
@@ -256,6 +256,9 @@ export function resolveAugment(id, param = null) {
     id: a.id, label: a.label, icon: a.icon, summary: a.summary, cost: a.cost,
     category: a.category ?? "", appliesTo: a.appliesTo, pending: !!a.pending,
     param: param ?? null, props: a.props, rider: a.rider, ae: a.ae,
+    // Keyword-registry term this augment surfaces (Multi/Pierce/status…) for the
+    // clickable-keyword link in the description block.
+    keyword: a.keyword ?? null,
   };
   if (typeof a.build === "function") {
     const b = a.build(param) || {};
@@ -263,6 +266,7 @@ export function resolveAugment(id, param = null) {
     view.summary = b.summary ?? view.summary;
     view.icon = b.icon ?? view.icon;
     view.props = b.props; view.rider = b.rider; view.ae = b.ae;
+    if (b.keyword !== undefined) view.keyword = b.keyword;
   }
   return view;
 }

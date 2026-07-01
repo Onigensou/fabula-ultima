@@ -19,6 +19,7 @@ import {
   DESC_SENTINEL, slotCountOf, itemKindOf, readOrbment, nameStem,
 } from "./orbment-const.js";
 import { resolveAugment } from "./augment-registry.js";
+import { lookupTerm } from "../battle-director/keyword-registry.js";
 
 const TAG = "[Orbment]";
 const log  = (...a) => console.debug(TAG, ...a);
@@ -77,10 +78,13 @@ function buildProjection(installedAugments, itemType) {
     // An augment only projects onto an item whose type it applies to (a shared
     // transform group is same-type, but this keeps mixed groups honest).
     if (!augment.appliesTo.includes(itemType)) {
-      summary.push({ slotIndex, label: augment.label, detail: "(n/a for this item)" });
+      summary.push({ slotIndex, label: augment.label, detail: "(n/a for this item)", kwUuid: null });
       continue;
     }
-    summary.push({ slotIndex, label: augment.label, detail: augment.summary });
+    // Keyword-registry link: makes the label a clickable term in the BD action
+    // card (hoisted keyword chip / inline status chip) and on the item sheet.
+    const kwUuid = augment.keyword ? (lookupTerm(augment.keyword)?.key ?? null) : null;
+    summary.push({ slotIndex, label: augment.label, detail: augment.summary, kwUuid });
 
     // props
     if (augment.props) {
@@ -150,9 +154,13 @@ function buildDescBlock(item, summary) {
   const rows = [];
   for (let i = 0; i < count; i++) {
     const hit = summary.find((s) => s.slotIndex === i);
-    rows.push(hit
-      ? `<li><b>Slot ${i + 1}:</b> ${hit.label} — <i>${hit.detail}</i></li>`
-      : `<li><b>Slot ${i + 1}:</b> <span style="opacity:.6">(empty)</span></li>`);
+    if (!hit) { rows.push(`<li><b>Slot ${i + 1}:</b> <span style="opacity:.6">(empty)</span></li>`); continue; }
+    // A keyword augment renders its label as a content-link so BD's keyword
+    // registry surfaces it as a clickable chip (Multi/Pierce/status…).
+    const labelHtml = hit.kwUuid
+      ? `<a class="content-link" data-uuid="${hit.kwUuid}">${hit.label}</a>`
+      : hit.label;
+    rows.push(`<li><b>Slot ${i + 1}:</b> ${labelHtml} — <i>${hit.detail}</i></li>`);
   }
   // Heading carries the sentinel; no HTML-comment fence (ProseMirror eats those).
   return `<hr><p><strong>${DESC_SENTINEL}</strong></p><ul style="margin:.2em 0">${rows.join("")}</ul>`;
