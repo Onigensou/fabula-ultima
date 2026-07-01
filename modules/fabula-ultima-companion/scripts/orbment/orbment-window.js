@@ -39,6 +39,8 @@ export class OrbmentWindow {
     this._picking = null;
     // Active category tab for the right column (offensive/defensive/enhancement).
     this._activeTab = "offensive";
+    // Staged augment awaiting Confirm: { id, param, label, icon, cost }.
+    this._staged = null;
     this._onUpdateItem = null;
   }
 
@@ -82,13 +84,14 @@ export class OrbmentWindow {
       /* Two-column body: slots on the left, tabbed option list on the right. */
       #${WIN_ID} .fu-orb-body { display: flex; flex-direction: row; align-items: stretch; overflow: hidden; min-height: 0; }
       #${WIN_ID} .fu-orb-col-left {
-        flex: 0 0 258px; padding: 12px 12px 12px 14px; overflow-y: auto;
+        flex: 0 0 312px; padding: 12px 12px 12px 14px; overflow-y: auto;
         border-right: 2px solid rgba(var(--brown),.28); display: flex; flex-direction: column;
       }
       #${WIN_ID} .fu-orb-col-right { flex: 1 1 auto; min-width: 0; padding: 12px 14px 12px 12px; display: flex; flex-direction: column; overflow: hidden; }
-      #${WIN_ID} .fu-orb-tabs { display: flex; gap: 4px; margin-bottom: 8px; flex-wrap: wrap; }
+      #${WIN_ID} .fu-orb-tabs { display: flex; flex-direction: row; flex-wrap: nowrap; gap: 4px; margin-bottom: 8px; }
       #${WIN_ID} .fu-orb-tab {
-        flex: 1 1 auto; padding: 6px 8px; border-radius: 8px 8px 0 0; cursor: pointer;
+        flex: 1 1 0; width: auto; min-width: 0; box-sizing: border-box;
+        padding: 6px 8px; border-radius: 8px 8px 0 0; cursor: pointer;
         font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px;
         border: 2px solid var(--cell-border); border-bottom: none; color: var(--gold);
         background: linear-gradient(180deg, #efe4c9, #e4d3ac); transition: filter .12s ease, background .12s ease, color .12s ease;
@@ -96,9 +99,9 @@ export class OrbmentWindow {
       #${WIN_ID} .fu-orb-tab.is-active { color: var(--ink); background: linear-gradient(180deg, var(--cell-top), var(--cell-bot)); box-shadow: inset 0 2px 0 var(--hi); }
       #${WIN_ID} .fu-orb-tab:hover:not(.is-active) { filter: brightness(1.04); }
       #${WIN_ID} .fu-orb-list { flex: 1 1 auto; overflow-y: auto; padding-right: 4px; }
-      #${WIN_ID} .fu-orb-slots { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+      #${WIN_ID} .fu-orb-slots { display: flex; flex-direction: column; gap: 7px; margin-bottom: 10px; }
       #${WIN_ID} .fu-orb-slot {
-        width: 100%; min-height: 56px; border-radius: 10px; padding: 8px 34px 8px 10px;
+        width: 100%; min-height: 42px; border-radius: 9px; padding: 6px 30px 6px 10px;
         border: 2px solid var(--cell-border);
         background: radial-gradient(120% 80% at 50% 0%, rgba(255,255,255,.5) 0%, transparent 45%),
           linear-gradient(180deg, var(--cell-top) 0%, var(--cell-bot) 100%);
@@ -110,9 +113,10 @@ export class OrbmentWindow {
         border-color: var(--hi);
         box-shadow: inset 0 1px 0 rgba(255,255,255,.8), 0 0 0 2px rgba(255,187,85,.35), 0 3px 8px rgba(0,0,0,.15);
       }
-      #${WIN_ID} .fu-orb-slot .lbl { font-size: 10px; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: .6px; }
-      #${WIN_ID} .fu-orb-slot .aug { font-size: 15px; font-weight: 800; margin-top: 3px; color: var(--ink); }
-      #${WIN_ID} .fu-orb-slot .sum { font-size: 11px; color: var(--ink); opacity: .7; margin-top: 2px; }
+      #${WIN_ID} .fu-orb-slot .lbl { font-size: 9px; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: .6px; }
+      #${WIN_ID} .fu-orb-slot .aug { font-size: 14px; font-weight: 800; margin-top: 1px; color: var(--ink); line-height: 1.15; }
+      #${WIN_ID} .fu-orb-slot .sum { font-size: 10px; color: var(--ink); opacity: .65; margin-top: 1px; line-height: 1.2; }
+      #${WIN_ID} .fu-orb-slot.is-staged { border-style: dashed; border-color: var(--hi); background: linear-gradient(180deg, #fffdf7, #fdf3dd); }
       /* Remove = small round corner button, vertically centered on the slot's right edge. */
       #${WIN_ID} .fu-orb-slot .rm {
         position: absolute; top: 50%; right: 7px; transform: translateY(-50%);
@@ -178,6 +182,25 @@ export class OrbmentWindow {
       #${WIN_ID} .fu-orb-charge input { accent-color: var(--gold-lite); cursor: pointer; }
       #${WIN_ID} .fu-orb-wallet { font-size: 12px; color: var(--gold); }
       #${WIN_ID} .fu-orb-wallet b { color: var(--ink); }
+      /* Confirm/Cancel footer (staging bar) */
+      #${WIN_ID} .fu-orb-footer {
+        display: flex; align-items: center; justify-content: space-between; gap: 12px;
+        padding: 9px 14px; border-top: 2px solid rgba(var(--brown),.4);
+        background: linear-gradient(180deg, #efe4c9, #e6d6b3);
+      }
+      #${WIN_ID} .fu-orb-footer .info { font-size: 13px; color: var(--ink); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      #${WIN_ID} .fu-orb-footer .info b { color: var(--ink); }
+      #${WIN_ID} .fu-orb-footer .info .free { color: var(--gold); font-weight: 700; }
+      #${WIN_ID} .fu-orb-btns { display: flex; gap: 8px; flex: 0 0 auto; }
+      #${WIN_ID} .fu-orb-btn {
+        width: auto; box-sizing: border-box; cursor: pointer; padding: 6px 16px; border-radius: 9px;
+        font-size: 13px; font-weight: 800; border: 2px solid transparent; transition: filter .1s ease;
+      }
+      #${WIN_ID} .fu-orb-btn-confirm { background: linear-gradient(180deg, #c9a24a, #a07a28); color: #fff8e7; box-shadow: 0 2px 6px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.25); }
+      #${WIN_ID} .fu-orb-btn-confirm:hover { filter: brightness(1.09); }
+      #${WIN_ID} .fu-orb-btn-cancel { background: rgba(var(--brown),.1); color: var(--ink); border-color: rgba(var(--brown),.35); }
+      #${WIN_ID} .fu-orb-btn-cancel:hover { background: rgba(var(--brown),.2); }
+      #${WIN_ID} .fu-orb-aug.is-staged { border-color: var(--hi); box-shadow: 0 0 0 2px rgba(255,187,85,.4), 0 3px 8px rgba(0,0,0,.14); }
       #${WIN_ID}::-webkit-scrollbar, #${WIN_ID} .fu-orb-body::-webkit-scrollbar { width: 10px; }
       #${WIN_ID} .fu-orb-body::-webkit-scrollbar-thumb { background: rgba(var(--brown),.35); border-radius: 6px; }
     `;
@@ -216,8 +239,10 @@ export class OrbmentWindow {
   }
 
   _augRowHtml(a, installedIds) {
+    const stagedHere = this._staged && this._staged.id === a.id && !a.param;
     // Param augments are never "installed" (many variants) — only simple ones grey out.
-    const cls = (!a.param && installedIds.has(a.id)) ? "is-installed" : (a.pending ? "is-pending" : "");
+    const cls = (!a.param && installedIds.has(a.id)) ? "is-installed"
+      : (a.pending ? "is-pending" : (stagedHere ? "is-staged" : ""));
     const tag = a.pending ? `<span class="fu-orb-soon">soon</span>`
       : (a.param ? `<span class="fu-orb-choose">choose ▾</span>` : "");
     return `<div class="fu-orb-aug ${cls}" data-aug="${esc(a.id)}" data-pending="${a.pending ? 1 : 0}" data-param="${a.param ? 1 : 0}">
@@ -237,7 +262,16 @@ export class OrbmentWindow {
 
     // ── LEFT: slots (vertical stack) + link note + econ bar ──
     const slotsHtml = data.slots.map((s, i) => {
-      const sel = i === this._selectedSlot ? "is-selected" : "";
+      const isSel = i === this._selectedSlot;
+      const sel = isSel ? "is-selected" : "";
+      // Staging preview on the selected slot.
+      if (isSel && this._staged) {
+        return `<div class="fu-orb-slot is-staged ${sel}" data-slot="${i}">
+          <div class="lbl">Slot ${i + 1} • staging</div>
+          <div class="aug">${esc(this._staged.icon)} ${esc(this._staged.label)}</div>
+          <div class="sum">${s ? `replaces ${esc(s.label)}` : "confirm to install"}</div>
+        </div>`;
+      }
       if (s) {
         return `<div class="fu-orb-slot is-filled ${sel}" data-slot="${i}">
           <button class="rm" data-remove="${i}" title="Remove">✕</button>
@@ -301,7 +335,17 @@ export class OrbmentWindow {
           ${econBar}
         </div>
         <div class="fu-orb-col-right">${rightHtml}</div>
-      </div>`;
+      </div>
+      ${this._staged ? `
+        <div class="fu-orb-footer">
+          <div class="info">Install <b>${esc(this._staged.icon)} ${esc(this._staged.label)}</b> → Slot ${this._selectedSlot + 1}
+            ${(this._chargeZenit && this._staged.cost > 0) ? `<span class="free">(−${this._staged.cost} z)</span>` : `<span class="free">(free)</span>`}
+          </div>
+          <div class="fu-orb-btns">
+            <button class="fu-orb-btn fu-orb-btn-cancel">Cancel</button>
+            <button class="fu-orb-btn fu-orb-btn-confirm">✓ Confirm</button>
+          </div>
+        </div>` : ""}`;
     this._wireChrome();
     this._wireBody();
   }
@@ -330,53 +374,65 @@ export class OrbmentWindow {
       });
     });
     const charge = this._root.querySelector(".fu-orb-charge input");
-    if (charge) charge.addEventListener("change", (ev) => { this._chargeZenit = !!ev.target.checked; });
+    if (charge) charge.addEventListener("change", (ev) => { this._chargeZenit = !!ev.target.checked; this._render(this._data); });
 
     // Category tabs (right column).
     this._root.querySelectorAll(".fu-orb-tab").forEach((el) => {
       el.addEventListener("click", () => { this._activeTab = el.dataset.tab; this._render(this._data); });
     });
 
+    // Confirm / Cancel (commit or clear the staged augment).
+    const confirmBtn = this._root.querySelector(".fu-orb-btn-confirm");
+    if (confirmBtn) confirmBtn.addEventListener("click", async () => {
+      const st = this._staged;
+      if (!st) return;
+      try {
+        await OrbmentApi.install(this._itemUuid, this._selectedSlot, st.id, { param: st.param, deductZenit: this._chargeZenit });
+        this._staged = null; this._picking = null;
+        await this._refresh();
+      } catch (e) { ui.notifications?.error(e.message); }
+    });
+    const cancelBtn = this._root.querySelector(".fu-orb-btn-cancel");
+    if (cancelBtn) cancelBtn.addEventListener("click", () => { this._staged = null; this._picking = null; this._render(this._data); });
+
     // Back out of the picker.
     const back = this._root.querySelector(".fu-orb-back");
     if (back) back.addEventListener("click", () => { this._picking = null; this._render(this._data); });
 
-    // Picker MODE: each option installs the augment with that param value.
+    // Picker MODE: choosing an option STAGES the augment (with its param).
     if (this._picking) {
       this._root.querySelectorAll("[data-opt]").forEach((el) => {
-        el.addEventListener("click", async () => {
+        el.addEventListener("click", () => {
           const pick = this._picking;
-          try {
-            await OrbmentApi.install(this._itemUuid, this._selectedSlot, pick.id, { param: el.dataset.opt, deductZenit: this._chargeZenit });
-            this._picking = null;
-            await this._refresh();
-          } catch (e) { ui.notifications?.error(e.message); }
+          const opt = pick.options.find((o) => o.value === el.dataset.opt);
+          this._staged = { id: pick.id, param: el.dataset.opt, label: `${pick.label}: ${opt?.label ?? el.dataset.opt}`, icon: opt?.icon || pick.icon, cost: pick.cost };
+          this._picking = null;
+          this._render(this._data);
         });
       });
       return;
     }
 
-    // Catalog MODE: simple augments install directly; parameterized ones open the picker.
+    // Catalog MODE: simple augments STAGE directly; parameterized open the picker.
     this._root.querySelectorAll(".fu-orb-aug").forEach((el) => {
       if (el.classList.contains("is-installed")) return;
       if (el.dataset.pending === "1") {
         el.addEventListener("click", () => ui.notifications?.info("This augment is in the catalog but its automation isn't wired yet."));
         return;
       }
+      const entry = (this._data.available || []).find((a) => a.id === el.dataset.aug);
+      if (!entry) return;
       if (el.dataset.param === "1") {
         el.addEventListener("click", () => {
-          const entry = (this._data.available || []).find((a) => a.id === el.dataset.aug);
-          if (!entry?.param) return;
-          this._picking = { id: entry.id, label: entry.label, icon: entry.icon, prompt: entry.param.prompt, options: entry.param.options };
+          if (!entry.param) return;
+          this._picking = { id: entry.id, label: entry.label, icon: entry.icon, cost: entry.cost, prompt: entry.param.prompt, options: entry.param.options };
           this._render(this._data);
         });
         return;
       }
-      el.addEventListener("click", async () => {
-        try {
-          await OrbmentApi.install(this._itemUuid, this._selectedSlot, el.dataset.aug, { deductZenit: this._chargeZenit });
-          await this._refresh();
-        } catch (e) { ui.notifications?.error(e.message); }
+      el.addEventListener("click", () => {
+        this._staged = { id: entry.id, param: null, label: entry.label, icon: entry.icon, cost: entry.cost };
+        this._render(this._data);
       });
     });
   }
