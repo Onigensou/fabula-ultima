@@ -3086,7 +3086,7 @@
         "id": "kBVCZiHd3Y8Fd7VH",
         "name": "Arc Wand",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "36xO7InIbrbVP2Kx",
@@ -7658,7 +7658,7 @@
         "id": "yOJKXAQJq4R2mzCa",
         "name": "Jumping Boots",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "9mEeAoPKlrCCQjRN",
@@ -14261,7 +14261,7 @@
         "effects": 1
       },
       {
-        "id": "OIfS1dWhZv3OpKVH",
+        "id": "SXAye7LuhV50w0ju",
         "name": "BD Dummy Enemy",
         "type": "character",
         "items": [],
@@ -17828,7 +17828,7 @@
             "name": "Zero Trigger: Foresight"
           }
         ],
-        "effects": 3
+        "effects": 2
       },
       {
         "id": "tzXbVfDYPgvu5wml",
@@ -22583,6 +22583,10 @@
           {
             "id": "QfaU0E6iq829nPxO",
             "name": "Maid cap"
+          },
+          {
+            "id": "gVovemTOophkXbck",
+            "name": "Maid cap (Passive)"
           },
           {
             "id": "tImoyJ8c71GeEmSi",

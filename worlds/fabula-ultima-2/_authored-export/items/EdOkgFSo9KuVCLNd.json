@@ -52,13 +52,14 @@
       "skill_animation_mode": "default",
       "skill_information": "",
       "skill_range": "",
+      "skill_tags": "potion",
       "skill_target": "-",
       "skill_type": "Item",
       "type_damage": "Heal",
       "use_optional_params": false
     },
     "template": "j0F5Msw5RZ8aIB3j",
-    "templateSystemUniqueVersion": 2666163373,
+    "templateSystemUniqueVersion": 425443881,
     "unique": false,
     "uniqueId": "EdOkgFSo9KuVCLNd"
   },

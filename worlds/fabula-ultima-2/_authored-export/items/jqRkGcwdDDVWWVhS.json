@@ -67,13 +67,14 @@
       "skill_animation_mode": "default",
       "skill_information": "",
       "skill_range": "Any",
+      "skill_tags": "potion",
       "skill_target": "One Creature",
       "skill_type": "Item",
       "type_damage": "",
       "use_optional_params": false
     },
     "template": "j0F5Msw5RZ8aIB3j",
-    "templateSystemUniqueVersion": 2666163373,
+    "templateSystemUniqueVersion": 425443881,
     "unique": false,
     "uniqueId": "jqRkGcwdDDVWWVhS"
   },

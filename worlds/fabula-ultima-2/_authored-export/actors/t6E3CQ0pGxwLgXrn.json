@@ -367,7 +367,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 790996852,
         "unique": false,
         "uniqueId": "VKB7qLNF1XBdN7yX"
       },
@@ -471,7 +471,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 790996852,
         "unique": false,
         "uniqueId": "VXGW0EAulcUnmnZd"
       },
@@ -574,7 +574,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 790996852,
         "unique": false,
         "uniqueId": "BykEf2Th3dTmg02o"
       },
@@ -706,7 +706,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 790996852,
         "unique": false,
         "uniqueId": "999BdRk7rsWKxGJr"
       },
@@ -833,7 +833,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 790996852,
         "unique": false,
         "uniqueId": "ul6xqem2wH1VnYQK"
       },
@@ -919,7 +919,7 @@
           }
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 790996852,
         "unique": false,
         "uniqueId": "NlUsrJJRcIOWJVWc"
       },
@@ -1027,7 +1027,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 790996852,
         "unique": false,
         "uniqueId": "kMbhsJ2cDIFndrKy"
       },
@@ -1097,13 +1097,14 @@
           "skill_animation_mode": "default",
           "skill_information": "",
           "skill_range": "Any",
+          "skill_tags": "potion",
           "skill_target": "One Creature",
           "skill_type": "Item",
           "type_damage": "",
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
+        "templateSystemUniqueVersion": 425443881,
         "unique": false,
         "uniqueId": "nTD1ZUzaAOV9TGT8"
       },
@@ -1194,7 +1195,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 790996852,
         "unique": false,
         "uniqueId": "y61V2VLRAwlVDgcM"
       },
@@ -1320,7 +1321,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 790996852,
         "unique": false,
         "uniqueId": "2v7Z5aljbQkZyDzl"
       },
@@ -1410,7 +1411,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 790996852,
         "unique": false,
         "uniqueId": "zmWvwyaGbwhC8NZV"
       },
@@ -1518,7 +1519,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 790996852,
         "unique": false,
         "uniqueId": "lBseodHWvi4UfGnw"
       },
@@ -1628,7 +1629,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 790996852,
         "unique": false,
         "uniqueId": "Ll5YDptyYjmwjuhW"
       },
@@ -1742,7 +1743,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 790996852,
         "unique": false,
         "uniqueId": "dhGCKitpetFxtw3o"
       },
@@ -1828,7 +1829,7 @@
           }
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 790996852,
         "unique": false,
         "uniqueId": "G2cjE5FjEIntUewf"
       },
@@ -1918,7 +1919,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 790996852,
         "unique": false,
         "uniqueId": "W12k5UVEouxIPrDf"
       },
@@ -2049,7 +2050,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 790996852,
         "unique": false,
         "uniqueId": "aw8gObqyBismsZzi"
       },
@@ -2173,7 +2174,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 790996852,
         "unique": false,
         "uniqueId": "QXgHt7VEXEaVdPz1"
       },
@@ -2305,7 +2306,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 790996852,
         "unique": false,
         "uniqueId": "cSynFyjRWqRbgrZx"
       },
@@ -2395,7 +2396,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 790996852,
         "unique": false,
         "uniqueId": "pJGT7NB0fQhri3Ji"
       },
@@ -2485,7 +2486,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 790996852,
         "unique": false,
         "uniqueId": "B1s2K9VLjc4XF4GB"
       },
@@ -2598,7 +2599,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 790996852,
         "unique": false,
         "uniqueId": "xswSyDHMuKJdHGZf"
       },
@@ -2751,7 +2752,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 790996852,
         "unique": false,
         "uniqueId": "2dTUIP5vUweRF9ir"
       },
@@ -2884,7 +2885,7 @@
           "weapon_range": "Ranged"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 790996852,
         "unique": false,
         "uniqueId": "8mXI5OJRvKbBpmsm"
       },
@@ -2947,7 +2948,7 @@
           "type_damage": ""
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
+        "templateSystemUniqueVersion": 425443881,
         "unique": false,
         "uniqueId": "AQqb37jPpVi1h6j6"
       },
@@ -3036,7 +3037,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 790996852,
         "unique": false,
         "uniqueId": "a9elI6g2FZ6qPY51"
       },
@@ -3125,7 +3126,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 790996852,
         "unique": false,
         "uniqueId": "yVFJkol5V9OWvceZ"
       },
@@ -3196,13 +3197,14 @@
           "skill_animation_mode": "default",
           "skill_information": "",
           "skill_range": "Any",
+          "skill_tags": "",
           "skill_target": "One Creature",
           "skill_type": "Item",
           "type_damage": "VAR_ELEMENT",
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
+        "templateSystemUniqueVersion": 425443881,
         "unique": false,
         "uniqueId": "dQq1DsQ1nkurbQlG"
       },
@@ -3294,7 +3296,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 790996852,
         "unique": false,
         "uniqueId": "Vj0Vth8l3zMAUOoh"
       },
@@ -3676,7 +3678,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 790996852,
         "unique": false,
         "uniqueId": "g0S7SNOw5EJcJd1T"
       },
@@ -3780,7 +3782,7 @@
           "weapon_range": "Ranged"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 790996852,
         "unique": false,
         "uniqueId": "1wIUPlab2ewtnYe1"
       },
@@ -3909,7 +3911,7 @@
           "weapon_range": "Ranged"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 790996852,
         "unique": false,
         "uniqueId": "7rqRLdk9jF3m9xe2"
       },
@@ -4019,7 +4021,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 790996852,
         "unique": false,
         "uniqueId": "4nci4od0SV6KHykc"
       },
@@ -4109,7 +4111,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 790996852,
         "unique": false,
         "uniqueId": "T5NyBaTQauMIui6n"
       },
@@ -4181,7 +4183,7 @@
           }
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 790996852,
         "unique": false,
         "uniqueId": "oeVIkRiMnPERPb7W"
       },
@@ -4272,7 +4274,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 790996852,
         "unique": false,
         "uniqueId": "2flmzfFbo1y8MCq5"
       },
@@ -4345,13 +4347,14 @@
           "skill_animation_mode": "default",
           "skill_information": "",
           "skill_range": "Any",
+          "skill_tags": "potion",
           "skill_target": "One Creature",
           "skill_type": "Item",
           "type_damage": "",
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
+        "templateSystemUniqueVersion": 425443881,
         "unique": false,
         "uniqueId": "jqRkGcwdDDVWWVhS"
       },
@@ -4423,7 +4426,7 @@
           }
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 790996852,
         "unique": false,
         "uniqueId": "m7lvj7mR2ec7Kt0h"
       },
@@ -4555,7 +4558,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 790996852,
         "unique": false,
         "uniqueId": "cSynFyjRWqRbgrZx"
       },
@@ -4625,13 +4628,14 @@
           "skill_animation_mode": "default",
           "skill_information": "",
           "skill_range": "Any",
+          "skill_tags": "potion",
           "skill_target": "One Creature",
           "skill_type": "Item",
           "type_damage": "",
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
+        "templateSystemUniqueVersion": 425443881,
         "unique": false,
         "uniqueId": "jNN7WCFgjvU9wXr4"
       },
@@ -4734,7 +4738,7 @@
           "weapon_range": "Ranged"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 790996852,
         "unique": false,
         "uniqueId": "4qXalxoKZVy8h2wD"
       },
@@ -4824,7 +4828,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 790996852,
         "unique": false,
         "uniqueId": "aITJntRz2m10Rgeo"
       },
@@ -4963,7 +4967,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 790996852,
         "unique": false,
         "uniqueId": "KoC4PHdQrp7r4rM9"
       },
@@ -5089,7 +5093,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 790996852,
         "unique": false,
         "uniqueId": "37zrTkcEtdrwiIIF"
       },
@@ -5247,7 +5251,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 790996852,
         "unique": false,
         "uniqueId": "clx7re0RW1nsaQN0"
       },
@@ -5362,7 +5366,7 @@
           "weapon_range": "Ranged"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 790996852,
         "unique": false,
         "uniqueId": "lqIjqJNa8wCrWW0p"
       },
@@ -5475,7 +5479,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "templateSystemUniqueVersion": 790996852,
         "unique": false,
         "uniqueId": "pcVQKM3teguaitRy"
       },
@@ -5618,23 +5622,8 @@
       "away_name_3": "",
       "away_name_4": "",
       "battle_bgm": "Fabula Battle Theme",
-      "battle_log": "[\n  {\n    \"ts\": \"2026-06-30T18:34:16.135Z\",\n    \"accuracy\": \"4\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Melee\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"elementless\",\n      \"weaponType\": \"Flail\"\n    },\n    \"miss\": true,\n    \"summary\": \"Hina misses BD Dummy Enemy\"\n  },\n  {\n    \"ts\": \"2026-06-30T18:34:24.657Z\",\n    \"accuracy\": \"10\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Melee\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Flail\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 17,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999999,\n        \"to\": 999982\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 17 Null damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-06-30T18:53:23.731Z\",\n    \"accuracy\": \"11\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Melee\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Flail\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 17,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999982,\n        \"to\": 999965\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 17 Null damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-06-30T19:08:17.887Z\",\n    \"accuracy\": \"10\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Melee\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Flail\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 200010,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999965,\n        \"to\": 799955\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 200010 Null damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-06-30T19:15:48.523Z\",\n    \"accuracy\": \"5\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Melee\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"elementless\",\n      \"weaponType\": \"Flail\"\n    },\n    \"miss\": true,\n    \"summary\": \"Hina misses BD Dummy Enemy\"\n  },\n  {\n    \"ts\": \"2026-06-30T19:15:56.013Z\",\n    \"accuracy\": \"6\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Melee\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"elementless\",\n      \"weaponType\": \"Flail\"\n    },\n    \"miss\": true,\n    \"summary\": \"Hina misses BD Dummy Enemy\"\n  },\n  {\n    \"ts\": \"2026-06-30T19:19:22.878Z\",\n    \"accuracy\": \"9\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Melee\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Flail\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 80012,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 799955,\n        \"to\": 719943\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 80012 Null damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-01T14:33:11.580Z\",\n    \"accuracy\": \"13\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 0,\n      \"effectiveness\": \"Immune\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 719943,\n        \"to\": 719943\n      },\n      \"mp\": null,\n      \"shield\": null,\n      \"affected\": false,\n      \"noEffectReason\": \"Immune\"\n    },\n    \"summary\": \"Hina deals 0 Null damage to BD Dummy Enemy [Immune]\"\n  },\n  {\n    \"ts\": \"2026-07-01T14:33:17.535Z\",\n    \"accuracy\": \"7\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 0,\n      \"effectiveness\": \"Immune\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 719943,\n        \"to\": 719943\n      },\n      \"mp\": null,\n      \"shield\": null,\n      \"affected\": false,\n      \"noEffectReason\": \"Immune\"\n    },\n    \"summary\": \"Hina deals 0 Null damage to BD Dummy Enemy [Immune]\"\n  },\n  {\n    \"ts\": \"2026-07-01T14:33:42.102Z\",\n    \"accuracy\": \"15\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 20,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 719943,\n        \"to\": 719923\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 20 Null damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-01T14:33:48.956Z\",\n    \"accuracy\": \"13\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 36,\n      \"effectiveness\": \"Vulnerable\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 719923,\n        \"to\": 719887\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 36 Null damage to BD Dummy Enemy [Vulnerable]\"\n  },\n  {\n    \"ts\": \"2026-07-01T14:33:57.078Z\",\n    \"accuracy\": \"13\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 38,\n      \"effectiveness\": \"Vulnerable\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 719887,\n        \"to\": 719849\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 38 Null damage to BD Dummy Enemy [Vulnerable]\"\n  },\n  {\n    \"ts\": \"2026-07-01T14:34:02.248Z\",\n    \"accuracy\": \"13\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 20,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 719849,\n        \"to\": 719829\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 20 Null damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-01T15:00:17.745Z\",\n    \"accuracy\": \"8\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 15,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 719829,\n        \"to\": 719814\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 15 Null damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-01T16:31:35.688Z\",\n    \"accuracy\": \"6\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"elementless\",\n      \"weaponType\": \"Bow\"\n    },\n    \"miss\": true,\n    \"summary\": \"Hina misses BD Dummy Enemy\"\n  },\n  {\n    \"ts\": \"2026-07-01T16:31:41.304Z\",\n    \"accuracy\": \"2\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"elementless\",\n      \"weaponType\": \"Bow\"\n    },\n    \"miss\": true,\n    \"summary\": \"Hina misses BD Dummy Enemy\"\n  },\n  {\n    \"ts\": \"2026-07-01T16:31:46.873Z\",\n    \"accuracy\": \"7\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"elementless\",\n      \"weaponType\": \"Bow\"\n    },\n    \"miss\": true,\n    \"summary\": \"Hina misses BD Dummy Enemy\"\n  },\n  {\n    \"ts\": \"2026-07-01T16:31:52.378Z\",\n    \"accuracy\": \"3\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"elementless\",\n      \"weaponType\": \"Bow\"\n    },\n    \"miss\": true,\n    \"summary\": \"Hina misses BD Dummy Enemy\"\n  },\n  {\n    \"ts\": \"2026-07-01T16:31:58.277Z\",\n    \"accuracy\": \"9\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 19,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 719814,\n        \"to\": 719795\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 19 Null damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-01T16:36:47.298Z\",\n    \"accuracy\": \"7\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"elementless\",\n      \"weaponType\": \"Bow\"\n    },\n    \"miss\": true,\n    \"summary\": \"Hina misses BD Dummy Enemy\"\n  },\n  {\n    \"ts\": \"2026-07-01T16:36:57.033Z\",\n    \"accuracy\": \"6\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"elementless\",\n      \"weaponType\": \"Bow\"\n    },\n    \"miss\": true,\n    \"summary\": \"Hina misses BD Dummy Enemy\"\n  },\n  {\n    \"ts\": \"2026-07-01T16:37:01.884Z\",\n    \"accuracy\": \"7\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"elementless\",\n      \"weaponType\": \"Bow\"\n    },\n    \"miss\": true,\n    \"summary\": \"Hina misses BD Dummy Enemy\"\n  },\n  {\n    \"ts\": \"2026-07-01T16:37:07.571Z\",\n    \"accuracy\": \"6\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"elementless\",\n      \"weaponType\": \"Bow\"\n    },\n    \"miss\": true,\n    \"summary\": \"Hina misses BD Dummy Enemy\"\n  },\n  {\n    \"ts\": \"2026-07-01T16:37:12.718Z\",\n    \"accuracy\": \"6\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"elementless\",\n      \"weaponType\": \"Bow\"\n    },\n    \"miss\": true,\n    \"summary\": \"Hina misses BD Dummy Enemy\"\n  },\n  {\n    \"ts\": \"2026-07-01T16:37:18.330Z\",\n    \"accuracy\": \"10\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 18,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 719795,\n        \"to\": 719777\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 18 Null damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-01T16:37:32.065Z\",\n    \"accuracy\": \"6\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"elementless\",\n      \"weaponType\": \"Bow\"\n    },\n    \"miss\": true,\n    \"summary\": \"Hina misses BD Dummy Enemy\"\n  },\n  {\n    \"ts\": \"2026-07-01T16:37:37.730Z\",\n    \"accuracy\": \"7\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"elementless\",\n      \"weaponType\": \"Bow\"\n    },\n    \"miss\": true,\n    \"summary\": \"Hina misses BD Dummy Enemy\"\n  },\n  {\n    \"ts\": \"2026-07-01T16:37:42.399Z\",\n    \"accuracy\": \"6\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"elementless\",\n      \"weaponType\": \"Bow\"\n    },\n    \"miss\": true,\n    \"summary\": \"Hina misses BD Dummy Enemy\"\n  },\n  {\n    \"ts\": \"2026-07-01T16:37:48.169Z\",\n    \"accuracy\": \"5\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"elementless\",\n      \"weaponType\": \"Bow\"\n    },\n    \"miss\": true,\n    \"summary\": \"Hina misses BD Dummy Enemy\"\n  },\n  {\n    \"ts\": \"2026-07-01T16:37:53.422Z\",\n    \"accuracy\": \"8\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 19,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 719777,\n        \"to\": 719758\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 19 Null damage to BD Dummy Enemy [Normal]\"\n  }\n]",
+      "battle_log": "[\n  {\n    \"ts\": \"2026-06-30T18:34:24.657Z\",\n    \"accuracy\": \"10\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Melee\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Flail\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 17,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999999,\n        \"to\": 999982\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 17 Null damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-06-30T18:53:23.731Z\",\n    \"accuracy\": \"11\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Melee\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Flail\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 17,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999982,\n        \"to\": 999965\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 17 Null damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-06-30T19:08:17.887Z\",\n    \"accuracy\": \"10\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Melee\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Flail\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 200010,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999965,\n        \"to\": 799955\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 200010 Null damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-06-30T19:15:48.523Z\",\n    \"accuracy\": \"5\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Melee\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"elementless\",\n      \"weaponType\": \"Flail\"\n    },\n    \"miss\": true,\n    \"summary\": \"Hina misses BD Dummy Enemy\"\n  },\n  {\n    \"ts\": \"2026-06-30T19:15:56.013Z\",\n    \"accuracy\": \"6\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Melee\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"elementless\",\n      \"weaponType\": \"Flail\"\n    },\n    \"miss\": true,\n    \"summary\": \"Hina misses BD Dummy Enemy\"\n  },\n  {\n    \"ts\": \"2026-06-30T19:19:22.878Z\",\n    \"accuracy\": \"9\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Melee\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Flail\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 80012,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 799955,\n        \"to\": 719943\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 80012 Null damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-01T14:33:11.580Z\",\n    \"accuracy\": \"13\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 0,\n      \"effectiveness\": \"Immune\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 719943,\n        \"to\": 719943\n      },\n      \"mp\": null,\n      \"shield\": null,\n      \"affected\": false,\n      \"noEffectReason\": \"Immune\"\n    },\n    \"summary\": \"Hina deals 0 Null damage to BD Dummy Enemy [Immune]\"\n  },\n  {\n    \"ts\": \"2026-07-01T14:33:17.535Z\",\n    \"accuracy\": \"7\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 0,\n      \"effectiveness\": \"Immune\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 719943,\n        \"to\": 719943\n      },\n      \"mp\": null,\n      \"shield\": null,\n      \"affected\": false,\n      \"noEffectReason\": \"Immune\"\n    },\n    \"summary\": \"Hina deals 0 Null damage to BD Dummy Enemy [Immune]\"\n  },\n  {\n    \"ts\": \"2026-07-01T14:33:42.102Z\",\n    \"accuracy\": \"15\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 20,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 719943,\n        \"to\": 719923\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 20 Null damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-01T14:33:48.956Z\",\n    \"accuracy\": \"13\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 36,\n      \"effectiveness\": \"Vulnerable\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 719923,\n        \"to\": 719887\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 36 Null damage to BD Dummy Enemy [Vulnerable]\"\n  },\n  {\n    \"ts\": \"2026-07-01T14:33:57.078Z\",\n    \"accuracy\": \"13\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 38,\n      \"effectiveness\": \"Vulnerable\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 719887,\n        \"to\": 719849\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 38 Null damage to BD Dummy Enemy [Vulnerable]\"\n  },\n  {\n    \"ts\": \"2026-07-01T14:34:02.248Z\",\n    \"accuracy\": \"13\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 20,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 719849,\n        \"to\": 719829\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 20 Null damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-01T15:00:17.745Z\",\n    \"accuracy\": \"8\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 15,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 719829,\n        \"to\": 719814\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 15 Null damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-01T16:31:35.688Z\",\n    \"accuracy\": \"6\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"elementless\",\n      \"weaponType\": \"Bow\"\n    },\n    \"miss\": true,\n    \"summary\": \"Hina misses BD Dummy Enemy\"\n  },\n  {\n    \"ts\": \"2026-07-01T16:31:41.304Z\",\n    \"accuracy\": \"2\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"elementless\",\n      \"weaponType\": \"Bow\"\n    },\n    \"miss\": true,\n    \"summary\": \"Hina misses BD Dummy Enemy\"\n  },\n  {\n    \"ts\": \"2026-07-01T16:31:46.873Z\",\n    \"accuracy\": \"7\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"elementless\",\n      \"weaponType\": \"Bow\"\n    },\n    \"miss\": true,\n    \"summary\": \"Hina misses BD Dummy Enemy\"\n  },\n  {\n    \"ts\": \"2026-07-01T16:31:52.378Z\",\n    \"accuracy\": \"3\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"elementless\",\n      \"weaponType\": \"Bow\"\n    },\n    \"miss\": true,\n    \"summary\": \"Hina misses BD Dummy Enemy\"\n  },\n  {\n    \"ts\": \"2026-07-01T16:31:58.277Z\",\n    \"accuracy\": \"9\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 19,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 719814,\n        \"to\": 719795\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 19 Null damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-01T16:36:47.298Z\",\n    \"accuracy\": \"7\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"elementless\",\n      \"weaponType\": \"Bow\"\n    },\n    \"miss\": true,\n    \"summary\": \"Hina misses BD Dummy Enemy\"\n  },\n  {\n    \"ts\": \"2026-07-01T16:36:57.033Z\",\n    \"accuracy\": \"6\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"elementless\",\n      \"weaponType\": \"Bow\"\n    },\n    \"miss\": true,\n    \"summary\": \"Hina misses BD Dummy Enemy\"\n  },\n  {\n    \"ts\": \"2026-07-01T16:37:01.884Z\",\n    \"accuracy\": \"7\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"elementless\",\n      \"weaponType\": \"Bow\"\n    },\n    \"miss\": true,\n    \"summary\": \"Hina misses BD Dummy Enemy\"\n  },\n  {\n    \"ts\": \"2026-07-01T16:37:07.571Z\",\n    \"accuracy\": \"6\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"elementless\",\n      \"weaponType\": \"Bow\"\n    },\n    \"miss\": true,\n    \"summary\": \"Hina misses BD Dummy Enemy\"\n  },\n  {\n    \"ts\": \"2026-07-01T16:37:12.718Z\",\n    \"accuracy\": \"6\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"elementless\",\n      \"weaponType\": \"Bow\"\n    },\n    \"miss\": true,\n    \"summary\": \"Hina misses BD Dummy Enemy\"\n  },\n  {\n    \"ts\": \"2026-07-01T16:37:18.330Z\",\n    \"accuracy\": \"10\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 18,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 719795,\n        \"to\": 719777\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 18 Null damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-01T16:37:32.065Z\",\n    \"accuracy\": \"6\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"elementless\",\n      \"weaponType\": \"Bow\"\n    },\n    \"miss\": true,\n    \"summary\": \"Hina misses BD Dummy Enemy\"\n  },\n  {\n    \"ts\": \"2026-07-01T16:37:37.730Z\",\n    \"accuracy\": \"7\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"elementless\",\n      \"weaponType\": \"Bow\"\n    },\n    \"miss\": true,\n    \"summary\": \"Hina misses BD Dummy Enemy\"\n  },\n  {\n    \"ts\": \"2026-07-01T16:37:42.399Z\",\n    \"accuracy\": \"6\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"elementless\",\n      \"weaponType\": \"Bow\"\n    },\n    \"miss\": true,\n    \"summary\": \"Hina misses BD Dummy Enemy\"\n  },\n  {\n    \"ts\": \"2026-07-01T16:37:48.169Z\",\n    \"accuracy\": \"5\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"elementless\",\n      \"weaponType\": \"Bow\"\n    },\n    \"miss\": true,\n    \"summary\": \"Hina misses BD Dummy Enemy\"\n  },\n  {\n    \"ts\": \"2026-07-01T16:37:53.422Z\",\n    \"accuracy\": \"8\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Ranged\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"Bow\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 19,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 719777,\n        \"to\": 719758\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 19 Null damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-02T19:15:37.584Z\",\n    \"accuracy\": \"11\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"Ice\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 60,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 719758,\n        \"to\": 719698\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 60 Ice damage to BD Dummy Enemy [Normal]\"\n  }\n]",
       "battle_log_table": [
-        {
-          "$deleted": false,
-          "accuracy": "4",
-          "affinity": "—",
-          "apply_mode": "Miss",
-          "attack_target": "BD Dummy Enemy",
-          "attacker": "Hina",
-          "damage_type": "Elementless",
-          "efficiency": "—",
-          "range": "Melee",
-          "source_type": "Attack",
-          "value": "—",
-          "value_type": "HP",
-          "weapon_type": "Flail"
-        },
         {
           "$deleted": false,
           "accuracy": "10",
@@ -6069,6 +6058,21 @@
           "value": "19",
           "value_type": "HP",
           "weapon_type": "Bow"
+        },
+        {
+          "$deleted": false,
+          "accuracy": "11",
+          "affinity": "Normal",
+          "apply_mode": "Damage",
+          "attack_target": "BD Dummy Enemy",
+          "attacker": "Hina",
+          "damage_type": "Ice",
+          "efficiency": "100%",
+          "range": "None",
+          "source_type": "Spell",
+          "value": "60",
+          "value_type": "HP",
+          "weapon_type": "—"
         }
       ],
       "battle_tile_percentage": "0",

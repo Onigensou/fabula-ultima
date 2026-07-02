@@ -24,12 +24,15 @@
   "system": {
     "props": {
       "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
       "check_bonus": "0",
       "class": "Tinkerer",
       "cost": "",
       "damage_bonus": "0",
       "defense_target_type": "def",
       "description": "<p>When you create a <strong>potion</strong> that restores a <strong>single</strong> creature's HP and/or MP, you may have it affect up to <strong>【SL】</strong> additional creatures. If you do, the potion only restores half the normal amount of HP and MP to each creature.</p>",
+      "details_roller": "Show",
       "duration": "",
       "effect_table": {
         "0": {
@@ -66,7 +69,9 @@
         }
       },
       "heroic_requirement": "",
+      "id": "4sTRuDSN47Q0T4Wj",
       "ignore_hr": false,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/SGE/prognosis.png",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,
@@ -80,23 +85,33 @@
       "reaction_config_table": {
         "0": {
           "reaction_action_kind": "Item",
-          "reaction_effect_ref": "pr_do",
+          "reaction_damage_amount": "",
+          "reaction_damage_type": "",
+          "reaction_debuff_count_min": "",
+          "reaction_debuff_count_target": "",
+          "reaction_effect_ref": "",
+          "reaction_isPassive": false,
           "reaction_passive_mode": "ask",
+          "reaction_passive_target": "",
           "reaction_source": "self",
           "reaction_trigger": "creature_performs_action"
         }
       },
+      "reaction_effect_table": {},
       "rolled_atr1": "-",
       "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
       "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p><strong>Level</strong></p></td><td data-colwidth=\"148\"><p><strong>Bonus Target</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p>+1</p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p>+2</p></td></tr></tbody></table>",
       "skill_range": "",
       "skill_target": "",
       "skill_type": "Passive",
       "type_damage": "",
-      "use_optional_params": false
+      "use_optional_params": false,
+      "uuid": "Item.4sTRuDSN47Q0T4Wj"
     },
     "template": "j0F5Msw5RZ8aIB3j",
-    "templateSystemUniqueVersion": 2666163373,
+    "templateSystemUniqueVersion": 425443881,
     "unique": false,
     "uniqueId": "4sTRuDSN47Q0T4Wj"
   },
