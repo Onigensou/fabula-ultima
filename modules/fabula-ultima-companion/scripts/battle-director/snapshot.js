@@ -761,6 +761,18 @@ function flyingStatusId() {
 // by the status id (core path) OR by the AE name "Flying" (the CSB path).
 export function targetIsFlying(actor) {
   if (!actor) return false;
+  // Forced landing (Dragontrap Bow; RAW: a flyer loses flight until the end of the
+  // round when forced down / after Vulnerable damage). A "Grounded" AE carries a
+  // `flying_grounded` change that temporarily SUPPRESSES Flying — the underlying
+  // Flying status is left intact and resumes automatically when the Grounded AE is
+  // swept at round_end (lifetimeMode "round_end"). Symmetric with the attacker-side
+  // can_target_flying_with exception. appliesEffects → sees applied/transfer AEs and
+  // skips disabled ones.
+  const effs = actor.appliedEffects ?? actor.effects?.contents ?? actor.effects ?? [];
+  for (const ae of effs) {
+    if (ae?.disabled) continue;
+    if ((ae.changes ?? []).some((ch) => ch?.key === "flying_grounded")) return false;
+  }
   const id = flyingStatusId();
   if (id && actor.statuses?.has?.(id)) return true;
   return !!actor.effects?.some?.((e) => !e.disabled && (
