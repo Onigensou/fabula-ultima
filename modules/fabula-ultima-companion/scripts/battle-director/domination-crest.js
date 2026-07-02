@@ -225,10 +225,17 @@ function syncActorCrest(actor) {
 function rescanCanvas() {
   for (const rec of _crests.values()) { try { rec.el.remove(); } catch {} }
   _crests.clear();
+  let bosses = 0;
   for (const token of canvas?.tokens?.placeables ?? []) {
-    if (token?.actor) syncActorCrest(token.actor);
+    if (!token?.actor) continue;
+    if (actorIsBoss(token.actor)) bosses++;
+    syncActorCrest(token.actor);
   }
+  log(`dominance-crest: rescan — ${bosses} boss token(s), ${_crests.size} crest(s) on ${canvas?.scene?.name ?? "?"}`);
 }
+
+// Exported for manual probing / recovery (FUCompanion console use).
+export function rescanDominanceCrests() { rescanCanvas(); }
 
 function isDominancePoolAe(effect) {
   const f = effect?.flags?.[FLAG_NS] ?? {};
@@ -255,7 +262,15 @@ export function initDominationCrest() {
     if (!tokenDoc?.actor || !actorIsBoss(tokenDoc.actor)) return;
     setTimeout(() => { try { syncActorCrest(tokenDoc.actor); } catch (e) { warn("dominance-crest: createToken sync threw", e); } }, 100);
   });
-  Hooks.on("canvasReady", rescanCanvas);
+  Hooks.on("canvasReady", () => {
+    // Defer one tick past the canvasReady storm so token placeables (and any
+    // reload-recovery scene switching) settle before the first bounds pass.
+    setTimeout(() => { try { rescanCanvas(); } catch (e) { warn("dominance-crest: canvasReady rescan threw", e); } }, 250);
+  });
+  // Boot-order belt and braces: whichever way this client ordered ready vs the
+  // initial canvasReady (plain load, reload-recovery scene hop, F5 mid-battle),
+  // a delayed sweep guarantees the always-on sockets appear shortly after load.
   if (canvas?.ready) rescanCanvas();
+  setTimeout(() => { try { rescanCanvas(); } catch (e) { warn("dominance-crest: deferred boot rescan threw", e); } }, 3000);
   log("dominance-crest: watcher installed");
 }
