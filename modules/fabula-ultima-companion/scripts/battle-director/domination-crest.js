@@ -187,6 +187,15 @@ function dropCrest(tokenId) {
   }
 }
 
+// Per-token manual offset (canvas pixels at 100% zoom, scaled with the
+// current zoom so the crest stays glued to the same spot on the sprite).
+// Tuned via the "Dominance Crest Offset" fields injected into Token
+// Configuration — set it on the PROTOTYPE token to cover future spawns.
+function crestOffset(token) {
+  const o = token?.document?.flags?.[FLAG_NS]?.dominanceCrestOffset;
+  return { x: Number(o?.x ?? 0) || 0, y: Number(o?.y ?? 0) || 0 };
+}
+
 function crestTick() {
   if (!_crests.size) return;
   for (const [tokenId, rec] of _crests) {
@@ -199,8 +208,10 @@ function crestTick() {
     }
     rec.missingFrames = 0;
     const b = spriteClientBounds(token);
-    rec.el.style.left = `${b.left + b.width / 2}px`;
-    rec.el.style.top = `${b.top - 6}px`;
+    const off = crestOffset(token);
+    const zoom = canvas.stage?.scale?.x ?? 1;
+    rec.el.style.left = `${b.left + b.width / 2 + off.x * zoom}px`;
+    rec.el.style.top = `${b.top - 6 + off.y * zoom}px`;
     // Follow the token's visibility (fog, Escape fade, hidden toggle).
     rec.el.style.opacity = token.visible === false ? "0" : String(token.alpha ?? 1);
   }
@@ -243,6 +254,42 @@ function isDominancePoolAe(effect) {
     || String(effect?.name ?? "").trim() === "Dominance Point";
 }
 
+// ── Token Configuration: "Dominance Crest Offset" tuner ─────────────────────
+// Injects an X/Y pixel-offset pair at the end of the Appearance tab, saved via
+// Foundry's own form serialization (named flag inputs — no custom submit
+// handler). Works on placed-token AND prototype-token configs; tune the
+// prototype so every future spawn of that monster inherits the offset.
+// Values are canvas pixels at 100% zoom; positive X → right, positive Y → down.
+function injectCrestOffsetConfig(app, html) {
+  try {
+    const tokenDoc = app.token ?? app.object ?? null;
+    const cur = tokenDoc?.flags?.[FLAG_NS]?.dominanceCrestOffset ?? {};
+    const x = Number(cur.x ?? 0) || 0;
+    const y = Number(cur.y ?? 0) || 0;
+    const $html = html instanceof jQuery ? html : $(html);
+    const tab = $html.find('div.tab[data-tab="appearance"]');
+    if (!tab.length || tab.find(".fud-crest-offset").length) return;
+    tab.append(`
+      <fieldset class="fud-crest-offset">
+        <legend>Dominance Crest Offset</legend>
+        <div class="form-group slim">
+          <label>Offset (Pixels) <span class="units">(+X right, +Y down)</span></label>
+          <div class="form-fields">
+            <label>X</label>
+            <input type="number" step="1" name="flags.${FLAG_NS}.dominanceCrestOffset.x" value="${x}">
+            <label>Y</label>
+            <input type="number" step="1" name="flags.${FLAG_NS}.dominanceCrestOffset.y" value="${y}">
+          </div>
+        </div>
+        <p class="notes">Nudges the boss Dominance Crest relative to its automatic spot above the sprite. Set on the prototype token to cover future spawns.</p>
+      </fieldset>
+    `);
+    app.setPosition({ height: "auto" });
+  } catch (e) {
+    warn("dominance-crest: TokenConfig injection failed", e);
+  }
+}
+
 // Idempotent — called on every client from director-boot's ready hook.
 export function initDominationCrest() {
   if (_hooksOn) return;
@@ -262,6 +309,7 @@ export function initDominationCrest() {
     if (!tokenDoc?.actor || !actorIsBoss(tokenDoc.actor)) return;
     setTimeout(() => { try { syncActorCrest(tokenDoc.actor); } catch (e) { warn("dominance-crest: createToken sync threw", e); } }, 100);
   });
+  Hooks.on("renderTokenConfig", injectCrestOffsetConfig);
   Hooks.on("canvasReady", () => {
     // Defer one tick past the canvasReady storm so token placeables (and any
     // reload-recovery scene switching) settle before the first bounds pass.
