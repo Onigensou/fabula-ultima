@@ -27,6 +27,8 @@ import { readPropNum, resolveAffinity } from "./snapshot.js";
 import { computeIncomingDamage } from "./damage-ruleset.js";
 import { appendBattleLog, buildDamageRow } from "./director-battle-log.js";
 import { isAutoFireReactionMode } from "./reaction-modes.js";
+import { getIntentChannel } from "./intent-channel.js";
+import { INTENTS } from "./intents.js";
 
 const FLAG_NS = "fabula-ultima-companion";
 
@@ -7668,10 +7670,11 @@ async function applyRollLootTableEffect(row, ctx) {
     results.push({ targetName: target.name, won, rolled: true });
   }
 
-  // Surface the summary dialog. Blocking — RESOLVE awaits the player's
-  // OK so the action card doesn't dismiss until they've read the result.
+  // Surface the summary panel. Blocking — RESOLVE awaits the close so the
+  // action card doesn't dismiss until it's been read. The panel is shown to
+  // EVERY client; only the GM or the action owner can close it.
   try {
-    await showLootTableDialog({ casterName: caster.name, results });
+    await showLootTableDialog({ caster, results, ctx });
   } catch (e) {
     warn(`roll_loot_table: dialog threw`, e);
   }
@@ -7772,14 +7775,9 @@ async function transferLootToCaster(caster, sourceItem) {
 // black-bordered icon, bold name, meta line. Hovering an item surfaces
 // the shared desc-tooltip with the item's description body + a stats
 // strip (acc/dmg/def + traits) for equipment.
-async function showLootTableDialog({ casterName, results }) {
+async function showLootTableDialog({ caster, results, ctx }) {
   if (!Array.isArray(results) || !results.length) return;
-
-  // Lazy-import desc-tooltip so this module can be tree-shaken cleanly
-  // in non-UI contexts (harness, tests).
-  const { ensureDescTooltipStyles, attachDescTooltip } = await import("./desc-tooltip.js");
-  ensureDescTooltipStyles();
-  ensureLootDialogStyles();
+  const casterName = caster?.name ?? "";
 
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
@@ -7839,144 +7837,66 @@ async function showLootTableDialog({ casterName, results }) {
     return bits.join("");
   }
 
-  function renderItemRow(targetName, won) {
-    const stats = buildStatsStrip(won.sourceItem);
-    const tipBody = won.desc ? esc(won.desc) : "";
-    const descAttr = tipBody ? ` data-fud-equip-desc="${tipBody}" data-fud-equip-desc-name="${esc(won.name)}"` : "";
-    const statsAttr = stats ? ` data-fud-equip-stats="${esc(stats)}"` : "";
-    const stackedTag = won.stacked
-      ? `<span class="fud-steal-stacked-pill" title="Added to existing stack">+1</span>`
-      : "";
-    const iconStyle = won.img ? `background-image:url('${esc(won.img)}')` : "";
-    return `
-      <div class="fud-steal-option"${descAttr}${statsAttr}>
-        <div class="fud-steal-icon" style="${iconStyle}"></div>
-        <div class="fud-steal-text">
-          <div class="fud-steal-line">
-            Obtain <b>${esc(won.name)}</b> from <b>${esc(targetName)}</b>${stackedTag}
-          </div>
-        </div>
-      </div>
-    `;
-  }
+  // Build the SERIALIZABLE view-model: precompute each won item's stats-strip
+  // HTML (buildStatsStrip needs the live source item, so it MUST run here on
+  // the GM) and drop every live doc ref, so the panel can be broadcast to
+  // player clients as plain data.
+  const viewResults = results.map((r) => ({
+    targetName: r.targetName,
+    missed: !!r.missed,
+    alreadyStolen: !!r.alreadyStolen,
+    noTable: !!r.noTable,
+    won: (r.won ?? []).map((w) => ({
+      name: w.name,
+      img: w.img ?? null,
+      desc: String(w.desc ?? ""),
+      stacked: !!w.stacked,
+      statsHtml: buildStatsStrip(w.sourceItem),
+    })),
+  }));
 
-  function renderTargetBlock(r) {
-    if (r.missed) {
-      return `<div class="fud-steal-empty"><b>Missed</b> — Check failed against <b>${esc(r.targetName)}</b>.</div>`;
-    }
-    if (r.alreadyStolen) {
-      return `<div class="fud-steal-empty"><b>Already stolen</b> from <b>${esc(r.targetName)}</b>.</div>`;
-    }
-    if (r.noTable) {
-      return `<div class="fud-steal-empty"><b>No stealable items</b> on <b>${esc(r.targetName)}</b>.</div>`;
-    }
-    if (!r.won.length) {
-      return `<div class="fud-steal-empty">Stole <b>nothing</b> from <b>${esc(r.targetName)}</b>.</div>`;
-    }
-    return r.won.map((w) => renderItemRow(r.targetName, w)).join("");
-  }
+  const { showSoulStealResultOverlay, SoulStealResult, ownerUserIdForActor } =
+    await import("./soul-steal-result.js");
+  const combatId = ctx?.dCombat?.combatId ?? ctx?.dCombat?.combat?.id ?? "default";
 
-  const content = `
-    <div class="fud-steal-dialog">
-      <div class="fud-steal-header"><b>${esc(casterName)}</b> performs Soul Steal:</div>
-      <div class="fud-steal-body">${results.map(renderTargetBlock).join("")}</div>
-    </div>
-  `;
-
-  // Bind the desc-tooltip on the rendered Dialog element so hovering
-  // an item surfaces the equipment-style tooltip.
-  let detachTooltip = null;
-  const dialog = new Dialog({
-    title: "Soul Steal — Results",
-    content,
-    buttons: { ok: { label: "OK", callback: () => {} } },
-    default: "ok",
-    close: () => { try { detachTooltip?.(); } catch (e) { /* noop */ } },
-    render: (html) => {
+  // Broadcast to EVERY active player so the whole table sees the result. Each
+  // client decides locally — from menuSpec.ownerUserId — whether it can close
+  // (the action owner) or is read-only (a spectator).
+  const channel = getIntentChannel();
+  const ownerUserId = game.user?.isGM ? ownerUserIdForActor(caster) : null;
+  const broadcastedIds = [];
+  if (game.user?.isGM && channel) {
+    for (const u of (game.users?.contents ?? [])) {
+      if (u.isGM || !u.active) continue;
       try {
-        const root = html?.[0] ?? html;
-        if (root instanceof HTMLElement) {
-          detachTooltip = attachDescTooltip(root, { isAlive: () => true });
-        }
-      } catch (e) {
-        warn("loot-dialog: attachDescTooltip threw", e);
-      }
-    },
-  }, { width: 460, classes: ["fud-steal-dialog-window"] });
-  await new Promise((resolve) => {
-    const origClose = dialog.close.bind(dialog);
-    dialog.close = (opts) => {
-      const p = origClose(opts);
-      resolve();
-      return p;
-    };
-    dialog.render(true);
-  });
-}
+        channel.broadcastMenuOpen({
+          targetUserId: u.id,
+          menuSpec: { kind: "soul-steal-result", combatId, casterName, viewResults, ownerUserId },
+        });
+        broadcastedIds.push(u.id);
+      } catch (e) { warn(`soul-steal: broadcast to ${u.name} threw`, e); }
+    }
+  }
 
-const LOOT_DIALOG_STYLE_ID = "fud-steal-dialog-style";
-function ensureLootDialogStyles() {
-  if (document.getElementById(LOOT_DIALOG_STYLE_ID)) return;
-  const css = document.createElement("style");
-  css.id = LOOT_DIALOG_STYLE_ID;
-  css.textContent = `
-    .fud-steal-dialog { font-family: "Signika", "Roboto", sans-serif; font-size: 13px; }
-    .fud-steal-header { margin: 4px 0 8px; font-size: 13px; }
-    .fud-steal-body { display: flex; flex-direction: column; gap: 6px; }
-    .fud-steal-option {
-      display: grid;
-      grid-template-columns: 56px 1fr;
-      align-items: center;
-      gap: 10px;
-      padding: 6px 8px;
-      border-radius: 6px;
-      background: rgba(122, 155, 182, 0.10);
-      transition: background 120ms ease;
+  // GM-local panel (blocking) raced against the owner's SOUL_STEAL_CLOSED.
+  // Whichever fires first — the GM's OK or the owner's close — unblocks
+  // RESOLVE; then tear the panel down on every client.
+  const localPromise = showSoulStealResultOverlay({ combatId, casterName, viewResults, canClose: true });
+  const ownerAwait = (game.user?.isGM && channel && ownerUserId)
+    ? channel.awaitIntent(INTENTS.SOUL_STEAL_CLOSED, { fromUserId: ownerUserId, timeoutMs: 30 * 60 * 1000 })
+    : null;
+  try {
+    await Promise.race([
+      localPromise,
+      ownerAwait ? ownerAwait.then(() => {}) : new Promise(() => {}),
+    ]);
+  } finally {
+    try { ownerAwait?.abort?.("closed"); } catch {}
+    try { SoulStealResult.despawn({ combatId }); } catch {}
+    for (const uid of broadcastedIds) {
+      try { channel?.broadcastMenuClose({ targetUserId: uid, kind: "soul-steal-result", reason: "closed" }); } catch {}
     }
-    .fud-steal-option:hover {
-      background: rgba(122, 155, 182, 0.22);
-    }
-    .fud-steal-icon {
-      width: 52px; height: 52px;
-      border-radius: 6px;
-      background-color: rgba(20, 20, 20, 0.08);
-      background-size: cover;
-      background-position: center;
-      border: 2px solid #000;
-      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.4) inset;
-    }
-    .fud-steal-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-    .fud-steal-line {
-      font-size: 13.5px;
-      line-height: 1.25;
-      color: #3a3228;
-    }
-    .fud-steal-line b { font-weight: 800; }
-    .fud-steal-roll {
-      font-size: 10.5px;
-      opacity: 0.7;
-      font-weight: 600;
-    }
-    .fud-steal-stacked-pill {
-      display: inline-block;
-      margin-left: 6px;
-      padding: 1px 6px;
-      border-radius: 4px;
-      font-size: 10px;
-      font-weight: 800;
-      background: rgba(42, 110, 61, 0.18);
-      color: #2a6e3d;
-      vertical-align: 1px;
-    }
-    .fud-steal-empty {
-      padding: 6px 8px;
-      border-radius: 6px;
-      background: rgba(90, 106, 133, 0.08);
-      font-size: 12.5px;
-    }
-    .fud-steal-empty b { font-weight: 800; }
-  `;
-  document.head.appendChild(css);
+  }
 }
 
 // ── chance ─────────────────────────────────────────────────────────────

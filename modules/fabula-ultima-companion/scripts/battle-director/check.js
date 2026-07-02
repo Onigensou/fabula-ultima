@@ -17,6 +17,7 @@
 //              fumble_threshold buff raises it — kept from the BD's prior rule).
 import { isCriticalHit } from "./skill-formulas.js";
 import { attrDieSize, readPropNum } from "./snapshot.js";
+import { warn } from "./logger.js";
 
 // Pure derivation: given the two die faces (+ the roller's props + bonus), decide
 // the outcome. The single source of truth for crit / fumble. Sync — no rolling.
@@ -115,9 +116,11 @@ async function resolveCheckDieSwap({ actor, A1, A2, director = null }) {
       { slot: "A2", attr: A2u, die: dB, options: all.filter((c) => c.slot === "A2").map((c) => ({ to: c.to, dTo: c.dTo, gain: c.gain, source: c.source })) },
     ];
     try {
-      const { pickDieSwap } = await import("./check-die-swap-picker.js");
-      const res = await pickDieSwap({ director, label, A1: A1u, A2: A2u, dA, dB, slots, budget });
-      return (res?.swaps ?? []).map((p) => ({ slot: p.slot, from: p.from, to: p.to, label: sourceFor(p.to) }));
+      // Routes to the acting actor's OWNER (online player) with a GM-local
+      // picker racing it; falls back to GM-local for NPCs / offline owners.
+      const { resolveDieSwapInteractive } = await import("./check-die-swap-picker.js");
+      const swaps = await resolveDieSwapInteractive({ director, actor, label, A1: A1u, A2: A2u, dA, dB, slots, budget });
+      return (swaps ?? []).map((p) => ({ slot: p.slot, from: p.from, to: p.to, label: sourceFor(p.to) }));
     } catch (e) {
       warn("check_die_swap: picker threw — keeping the original roll", e);
       return [];

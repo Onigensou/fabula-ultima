@@ -83,6 +83,19 @@ export const INTENTS = Object.freeze({
   // table. See [[director-player-driven-input]] + remote-pick.js.
   REMOTE_PICK_RESULT: "REMOTE_PICK_RESULT",
 
+  // External — sent by the acting actor's owner when they confirm/cancel the
+  // pre-roll Attribute-die swap picker (Psychokinesis et al.) the GM routed to
+  // them. GM-side rollCheck (check.js) races this against its own local picker.
+  // Body: { swaps: [{ slot:"A1"|"A2", from, to }] } (empty = kept the roll).
+  // awaitIntent-only — never reaches the FSM transition table.
+  DIE_SWAP_PICKED: "DIE_SWAP_PICKED",
+
+  // External — sent by the Soul Steal action owner when they close the shared
+  // loot-result overlay. The result is broadcast to EVERY client (read-only for
+  // non-owners); only the GM or the owner can close it, and either unblocks the
+  // GM-side RESOLVE await. awaitIntent-only — never reaches the FSM table.
+  SOUL_STEAL_CLOSED: "SOUL_STEAL_CLOSED",
+
   // External — sent by GM or API to skip the currently playing animation
   // and advance directly to RESOLVE. Also acts as the transition key when
   // the animation controller is already null (i.e. gate already resolved).

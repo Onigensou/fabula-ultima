@@ -35,6 +35,8 @@ import { registerPlayerComposeActionHandler } from "./compose-action.js";
 import { registerPlayerActionCardHandler } from "./action-card.js";
 import { TurnPicker, registerPlayerTurnPickerHandler } from "./turn-picker.js";
 import { registerPlayerReactionMenuHandler } from "./reaction-menu-player.js";
+import { registerPlayerDieSwapHandler } from "./check-die-swap-picker.js";
+import { registerPlayerSoulStealHandler } from "./soul-steal-result.js";
 import { registerRemotePickResponder } from "./remote-pick.js";
 import { WeaponModePicker } from "./weapon-mode-picker.js";
 import { AttributePairPicker } from "./attribute-pair-picker.js";
@@ -1287,6 +1289,12 @@ Hooks.once("ready", () => {
     // emit REACTION_CHOICE back to the GM on click.
     // See [[reaction-menu-on-token]] §5 + [[reaction-architecture]] Rule 1.
     registerPlayerReactionMenuHandler(getIntentChannel(), _isActiveDirector);
+    // Die-swap picker — spawn the pre-roll Attribute-die swap picker
+    // (Psychokinesis et al.) for the acting owner + emit DIE_SWAP_PICKED back.
+    registerPlayerDieSwapHandler(getIntentChannel(), _isActiveDirector);
+    // Soul Steal result — render the broadcast loot-result panel; the action
+    // owner gets a working close, spectators see it read-only.
+    registerPlayerSoulStealHandler(getIntentChannel(), _isActiveDirector);
     // Remote pick responder — render a reaction's secondary picker (Protect
     // target / add-target / option-menu) routed to THIS client + emit
     // REMOTE_PICK_RESULT back. See remote-pick.js + [[director-player-driven-input]].
@@ -1297,7 +1305,7 @@ Hooks.once("ready", () => {
     // own broadcasts.
     getIntentChannel().onMenuOpen((menuSpec) => {
       if (_isActiveDirector()) return;
-      const wired = new Set(["compose-action", "action-card", "action-card-pill-update", "action-card-body-update", "action-card-target-mutation", "turn-picker", "reaction-menu", "reaction-indicator", "turn-action-indicator"]);
+      const wired = new Set(["compose-action", "action-card", "action-card-pill-update", "action-card-body-update", "action-card-target-mutation", "turn-picker", "reaction-menu", "reaction-indicator", "turn-action-indicator", "die-swap", "soul-steal-result"]);
       if (!wired.has(menuSpec?.kind)) {
         log(`[non-primary] MENU_OPEN (unwired kind): ${menuSpec?.kind ?? "?"}`, menuSpec);
       }
