@@ -1,27 +1,45 @@
 // Dominance Crest — floating boss emblem showing banked Dominance Point(s).
 //
-// A small socket-and-gem crest hovering above a boss token whenever the
-// "Dominance Point" pool AE exists on its actor: one diamond socket per point
-// of cap, dark inset when empty, ignited red-orange gem (slow ember pulse)
-// when banked. JRPG boost-pip vibes (Octopath boost / FFXIII stagger gem) —
-// players read at a glance whether the boss is holding its Domination charge.
+// A small socket-and-gem crest hovering above a boss token's RENDERED sprite:
+// one diamond socket per point of cap, dark inset when empty, ignited
+// red-orange gem (slow ember pulse) when banked. JRPG boost-pip vibes
+// (Octopath boost / FFXIII stagger gem) — players read at a glance whether
+// the boss is holding its Domination charge.
+//
+// VISIBILITY CONTRACT: every BOSS token shows the crest at all times — an
+// empty socket advertises "this monster has the Domination mechanic" (it is
+// not supposed to be a surprise). The gem lights when the pool AE holds a
+// charge; gaining one plays a white GLEAM ignition + a decide-cursor cue.
+//
+// POSITIONING: token appearance data varies wildly (scale 2.56, off-center
+// anchors, Contain fit, mirroring — see Wandering Flame), so the crest
+// anchors off `token.mesh.getBounds()` — the actual rendered sprite's
+// screen-space rectangle — NOT the token's nominal grid bounds. Centered
+// horizontally on the sprite, floating just above its top edge, re-measured
+// every frame so pan/zoom/scale/anchor changes all track for free.
+//
+// Z-ORDER: z-index 60 — above the canvas (#board z0) and token HUD (#hud z1),
+// BELOW Foundry app windows (sheets/config start at z~100 and climb), so an
+// open character sheet always covers the crest. Probed live 2026-07-02.
 //
 // Fully AE-replication-driven, like the Domination outline shimmer: the pool
 // AE replicates to every client, so each client renders its own crest off
 // createActiveEffect / updateActiveEffect / deleteActiveEffect hooks — zero
-// socket traffic, F5-safe via the canvasReady rescan. Screen-space DOM
-// repositioned per frame (same anchoring approach as the Octopath menu).
-//
-// Lifecycle: appears at the first Dominance accrual (round 3), stays as a dim
-// socket after the point is spent (the pool AE is a persistent_counter that
-// rests at 0), ignition flash on gain, dims on spend (the Domination burst
-// covers the spend moment). Swept away with the pool AE at scene end.
+// socket traffic, F5-safe via the canvasReady rescan. The gain SFX also fires
+// per-client from the same replicated update (no broadcast needed).
 
 import { log, warn } from "./logger.js";
-import { findDominancePointAe, DOMINANCE_POINT_CAP } from "./domination.js";
+import { findDominancePointAe, actorIsBoss, DOMINANCE_POINT_CAP } from "./domination.js";
+import { playSfx } from "./director-sfx.js";
 
 const FLAG_NS = "fabula-ultima-companion";
 const STYLE_ID = "fud-dominance-crest-style";
+
+// Above canvas/#hud, below Foundry app windows (z >= 100). See header note.
+const CREST_Z_INDEX = 60;
+
+export const DOMINANCE_GAIN_SFX_URL =
+  "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Cursor_Decide1.wav";
 
 const _crests = new Map(); // tokenId -> { el, gems: HTMLElement[], lastCharges, missingFrames }
 let _tickerOn = false;
@@ -33,7 +51,7 @@ function ensureStyles() {
 .fud-dom-crest {
   position: fixed; display: flex; gap: 7px; align-items: center;
   transform: translate(-50%, -100%);
-  z-index: 99978; pointer-events: none;
+  z-index: ${CREST_Z_INDEX}; pointer-events: none;
   filter: drop-shadow(0 2px 3px rgba(0,0,0,.55));
 }
 .fud-dom-crest .gem {
@@ -49,17 +67,37 @@ function ensureStyles() {
   background: radial-gradient(circle at 38% 32%, #ffe9b0 0%, #ff9034 34%, #e0301a 72%, #7a0e08 100%);
   animation: fud-dom-gem-pulse 2.4s ease-in-out infinite;
 }
+/* Ignition — a real-gem GLEAM: blooms blinding white (over-brightened +
+   desaturated so the base gradient reads as white-hot), oversized with a wide
+   white halo, then settles into the ember base color + pulse. */
 .fud-dom-crest .gem.is-igniting {
-  animation: fud-dom-gem-ignite .7s cubic-bezier(.2,1.6,.3,1) 1,
-             fud-dom-gem-pulse 2.4s ease-in-out .7s infinite;
+  animation: fud-dom-gem-ignite 1.15s cubic-bezier(.16,1.2,.3,1) 1,
+             fud-dom-gem-pulse 2.4s ease-in-out 1.15s infinite;
 }
 @keyframes fud-dom-gem-pulse {
   0%, 100% { box-shadow: 0 0 5px 1px rgba(255,90,30,.55), 0 0 0 1px rgba(0,0,0,.6); }
   50%      { box-shadow: 0 0 11px 3px rgba(255,140,50,.9), 0 0 0 1px rgba(0,0,0,.6); }
 }
 @keyframes fud-dom-gem-ignite {
-  0%   { transform: rotate(45deg) scale(2.1); box-shadow: 0 0 26px 10px rgba(255,190,90,1); }
-  100% { transform: rotate(45deg) scale(1); }
+  0% {
+    transform: rotate(45deg) scale(3.1);
+    filter: brightness(6) saturate(0);
+    box-shadow: 0 0 34px 14px rgba(255,255,255,1), 0 0 8px 3px rgba(255,255,255,1);
+  }
+  45% {
+    transform: rotate(45deg) scale(1.7);
+    filter: brightness(3.2) saturate(.25);
+    box-shadow: 0 0 24px 9px rgba(255,246,224,.95);
+  }
+  75% {
+    filter: brightness(1.5) saturate(.8);
+    box-shadow: 0 0 14px 5px rgba(255,170,80,.9);
+  }
+  100% {
+    transform: rotate(45deg) scale(1);
+    filter: brightness(1) saturate(1);
+    box-shadow: 0 0 5px 1px rgba(255,90,30,.55), 0 0 0 1px rgba(0,0,0,.6);
+  }
 }
 `.trim();
   const style = document.createElement("style");
@@ -68,17 +106,30 @@ function ensureStyles() {
   document.head.appendChild(style);
 }
 
-function worldToClient(ax, ay) {
-  const wt = canvas.stage.worldTransform;
-  const out = new PIXI.Point();
-  wt.apply({ x: ax, y: ay }, out);
+// The token's RENDERED sprite rectangle in client (screen) coordinates.
+// mesh.getBounds() is renderer-space (post worldTransform), so offsetting by
+// the canvas element's own client rect maps it to the page. Accounts for
+// scale / anchor / fit-mode / mirroring — everything Token Config can change.
+// Falls back to the nominal grid bounds when the mesh isn't available.
+function spriteClientBounds(token) {
   const rect = canvas.app.view.getBoundingClientRect();
-  return { x: rect.left + out.x, y: rect.top + out.y };
+  try {
+    const b = token.mesh?.getBounds?.();
+    if (b && b.width > 0 && b.height > 0) {
+      return { left: rect.left + b.x, top: rect.top + b.y, width: b.width, height: b.height };
+    }
+  } catch { /* fall through to nominal bounds */ }
+  const wt = canvas.stage.worldTransform;
+  const tl = new PIXI.Point(); wt.apply({ x: token.x, y: token.y }, tl);
+  const br = new PIXI.Point(); wt.apply({ x: token.x + (token.w ?? 100), y: token.y + (token.h ?? 100) }, br);
+  return { left: rect.left + tl.x, top: rect.top + tl.y, width: br.x - tl.x, height: br.y - tl.y };
 }
 
+// Pool state. A boss WITHOUT the pool AE still shows an all-empty crest —
+// the mechanic is advertised, only the charge is hidden until banked.
 function readCharges(actor) {
   const ae = findDominancePointAe(actor);
-  if (!ae) return null; // no pool at all → no crest
+  if (!ae) return { charges: 0, max: DOMINANCE_POINT_CAP };
   const f = ae.flags?.[FLAG_NS] ?? {};
   return {
     charges: Math.max(0, Number(f.charges ?? 0) || 0),
@@ -100,25 +151,29 @@ function buildCrest(token, pool) {
   document.body.appendChild(el);
   const rec = { el, gems, lastCharges: -1, missingFrames: 0 };
   _crests.set(token.id, rec);
-  paintCrest(rec, pool.charges, { ignite: false });
+  paintCrest(rec, pool.charges);
   if (!_tickerOn) { PIXI.Ticker.shared.add(crestTick); _tickerOn = true; }
   return rec;
 }
 
-function paintCrest(rec, charges, { ignite } = {}) {
+function paintCrest(rec, charges) {
   if (rec.lastCharges === charges) return;
+  // Gained a point (not the initial paint) → gleam ignition + decide cue.
   const gained = charges > rec.lastCharges && rec.lastCharges >= 0;
   rec.lastCharges = charges;
   rec.gems.forEach((g, i) => {
     const lit = i < charges;
     g.classList.toggle("is-lit", lit);
     g.classList.remove("is-igniting");
-    if (lit && (ignite || gained)) {
-      // restart the one-shot ignite animation
-      void g.offsetWidth;
+    if (lit && gained) {
+      void g.offsetWidth; // restart the one-shot ignite animation
       g.classList.add("is-igniting");
     }
   });
+  if (gained) {
+    try { playSfx(DOMINANCE_GAIN_SFX_URL, 0.8); }
+    catch (e) { warn("dominance-crest: gain SFX failed", e); }
+  }
 }
 
 function dropCrest(tokenId) {
@@ -143,23 +198,25 @@ function crestTick() {
       continue;
     }
     rec.missingFrames = 0;
-    const c = token.center ?? { x: token.x + (token.w ?? 100) / 2, y: token.y + (token.h ?? 100) / 2 };
-    const pt = worldToClient(c.x, token.y);
-    rec.el.style.left = `${pt.x}px`;
-    rec.el.style.top = `${pt.y - 8}px`;
+    const b = spriteClientBounds(token);
+    rec.el.style.left = `${b.left + b.width / 2}px`;
+    rec.el.style.top = `${b.top - 6}px`;
     // Follow the token's visibility (fog, Escape fade, hidden toggle).
     rec.el.style.opacity = token.visible === false ? "0" : String(token.alpha ?? 1);
   }
 }
 
 // Re-derive this actor's crest state on every of its canvas tokens.
+// Crest presence = the actor IS a boss (always-visible socket); the pool AE
+// only drives how many gems are lit.
 function syncActorCrest(actor) {
   if (!actor) return;
+  const isBoss = actorIsBoss(actor);
   const pool = readCharges(actor);
   let tokens = [];
   try { tokens = actor.getActiveTokens?.(true) ?? []; } catch {}
   for (const token of tokens) {
-    if (!pool) { dropCrest(token.id); continue; }
+    if (!isBoss) { dropCrest(token.id); continue; }
     const rec = _crests.get(token.id) ?? buildCrest(token, pool);
     paintCrest(rec, pool.charges);
   }
@@ -191,6 +248,13 @@ export function initDominationCrest() {
   Hooks.on("createActiveEffect", onAeEvent);
   Hooks.on("updateActiveEffect", onAeEvent);
   Hooks.on("deleteActiveEffect", onAeEvent);
+  // Boss token spawned mid-scene (director PREP spawns, summons) → crest up
+  // as soon as its placeable exists. The 100ms defer lets the canvas finish
+  // drawing the new placeable before the first bounds measure.
+  Hooks.on("createToken", (tokenDoc) => {
+    if (!tokenDoc?.actor || !actorIsBoss(tokenDoc.actor)) return;
+    setTimeout(() => { try { syncActorCrest(tokenDoc.actor); } catch (e) { warn("dominance-crest: createToken sync threw", e); } }, 100);
+  });
   Hooks.on("canvasReady", rescanCanvas);
   if (canvas?.ready) rescanCanvas();
   log("dominance-crest: watcher installed");
