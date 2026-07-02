@@ -45,6 +45,7 @@ import { buildSkillResolver, evaluateFormula } from "./skill-formulas.js";
 import { resolveTargetPlan } from "./state-handlers.js";
 import { freeActions } from "./free-actions.js";
 import { getNpcAttackItems } from "./actor-shape.js";
+import { buildUltimaPageSpec, ULTIMA_COMMANDS } from "./domination.js";
 import { applyAttackRangeGate, applyStudyGuardExclusion, snapshotEligibleTargetsFromDCombat } from "./snapshot.js";
 
 // Race-cancellation token. Returns { promise, cancel }. The promise
@@ -131,13 +132,23 @@ export async function composeAction({
     const actorIdForGrant = snap?.actorId ?? (actorUuid ? String(actorUuid).split(".").pop() : null);
     const grant = freeActionGrant
       ?? (actorIdForGrant ? freeActions.get(actorIdForGrant) : null);
+    // Boss-only "Ultima" page (Domination / Escape / Recovery). Hidden inside
+    // a free-action window (the filtered one-page menu) — Ultima actions are
+    // declared on the boss's own turn proper. Unaffordable entries arrive
+    // pre-disabled; their shortfall reason red-stamps the blade exactly like
+    // an action-gating debuff.
+    const ultimaPage = grant ? null : buildUltimaPageSpec(snap);
+    const ultimaDisabled = (ultimaPage?.entries ?? [])
+      .filter((e) => e.disabledReason)
+      .map((e) => ({ label: e.label, reason: e.disabledReason }));
     const command = await waitForOctopathClick({
       director, token, combatId, actorUuid, cancelSentinel,
       enabledLabels: grant?.enabledLabels ?? null,
       budgetText: grant ? `${grant.sourceLabel ?? "Free"} Free Action` : null,
       // Action-gating debuffs (Frightened/Silence/…) — frozen Array<{label,
       // reason}> captured at snapshot time; the menu greys + red-stamps these.
-      disabledLabels: snap?.blockedActions ?? null,
+      disabledLabels: [...(snap?.blockedActions ?? []), ...ultimaDisabled],
+      ultimaPage,
     });
     if (externallyCancelled || command === null) break;
 
@@ -200,6 +211,14 @@ export async function composeAction({
         // (TARGET→COMPUTE→CONFIRM→resolveAction) with no Item-specific path.
         result = await composeItem({ director, snap, eligible, cancelSentinel });
         break;
+      case "Domination":
+      case "Escape":
+      case "Recovery":
+        // Ultima actions (boss-only page) — self-targeted, no pickers. The
+        // action card at CONFIRM is the confirm/cancel pass; the GM-side
+        // DECLARE backstop re-validates boss status + point affordability.
+        result = { cancelled: false, bundle: { command } };
+        break;
       default:
         return { cancelled: true, reason: `unknown command: ${command}` };
     }
@@ -222,7 +241,7 @@ export async function composeAction({
 
 // Spawn TurnUI, return a Promise that resolves with the command label
 // or null if cancelled. Cleans up the Octopath in either path.
-function waitForOctopathClick({ director, token, combatId, actorUuid, cancelSentinel, enabledLabels = null, budgetText = null, disabledLabels = null }) {
+function waitForOctopathClick({ director, token, combatId, actorUuid, cancelSentinel, enabledLabels = null, budgetText = null, disabledLabels = null, ultimaPage = null }) {
   return new Promise((resolve) => {
     let resolved = false;
     const finish = (value) => {
@@ -238,6 +257,7 @@ function waitForOctopathClick({ director, token, combatId, actorUuid, cancelSent
       enabledLabels,
       budgetText,
       disabledLabels,
+      ultimaPage,
       // Passive button intentionally uses TurnUI's default — opens
       // PassiveManager locally without entering the compose chain. The
       // Octopath stays open (TurnUI.spawn doesn't auto-close on Passive
