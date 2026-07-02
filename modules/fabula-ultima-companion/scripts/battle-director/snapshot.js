@@ -6,6 +6,7 @@
 import { warn } from "./logger.js";
 import { getActorKind, getNpcAttackItems } from "./actor-shape.js";
 import { buildSkillResolver, evaluateFormula, isFormulaString } from "./skill-formulas.js";
+import { hasIgnoreActionGating, snapshotUltimaBundle } from "./domination.js";
 
 const FLAG_NS = "fabula-ultima-companion";
 
@@ -643,6 +644,9 @@ export function snapshotDirectorCombatant(dc) {
       // Intent-filter set (`disable_action_intent`) — the compose-action pickers
       // re-apply it per-entry (hide aid/neutral spells/skills). See Charm/Domination.
       disabledActionIntents: snapshotDisabledActionIntents(actor),
+      // Boss Ultima economy — isBoss / ultimaPoints / dominancePoints /
+      // isDominating. Drives the boss-only "Ultima" Octopath page.
+      ...snapshotUltimaBundle(actor),
       ...buildWeaponBundle(actor),
     });
   } catch (e) {
@@ -691,6 +695,8 @@ export function snapshotCombatant(combat) {
       // Intent-filter set (`disable_action_intent`) — the compose-action pickers
       // re-apply it per-entry (hide aid/neutral spells/skills). See Charm/Domination.
       disabledActionIntents: snapshotDisabledActionIntents(actor),
+      // Boss Ultima economy — see snapshotDirectorCombatant.
+      ...snapshotUltimaBundle(actor),
       ...buildWeaponBundle(actor),
     });
   } catch (e) {
@@ -835,6 +841,9 @@ function canonActionLabel(raw) {
 // Infinity when no AE restricts targeting. Mirrors getBlockedActionLabels' per-AE
 // union — a pure change-row marker the BD reads itself, no CSB template field.
 export function getMaxActionTargets(actor) {
+  // Domination State ("Super Armor") — action-gating debuffs stay applied but
+  // stop working. See [[domination.js]].
+  if (hasIgnoreActionGating(actor)) return { cap: Infinity, reason: null };
   const effects = actor?.appliedEffects
     ? Array.from(actor.appliedEffects)
     : (actor?.effects?.contents ?? actor?.effects ?? []);
@@ -893,6 +902,11 @@ export function skillTargetIsMulti(skillTargetText) {
 // as the red rubber-stamp over the disabled menu blade).
 export function getBlockedActionLabels(actor) {
   const out = new Map();
+  // Domination State ("Super Armor") — every disable_action /
+  // enable_action_only / disable_action_intent gate is inert while the bearer
+  // carries the ignore_action_gating marker. The debuff AEs themselves stay
+  // on (icons, durations, non-gating rows keep working).
+  if (hasIgnoreActionGating(actor)) return out;
   const effects = actor?.appliedEffects
     ? Array.from(actor.appliedEffects)
     : (actor?.effects?.contents ?? actor?.effects ?? []);
@@ -937,6 +951,8 @@ export function getBlockedActionLabels(actor) {
 // Mirrors getBlockedActionLabels' per-AE union. See [[reference_disable_action_intent]].
 export function getDisabledActionIntents(actor) {
   const out = new Map();
+  // Domination State ("Super Armor") — intent filters (Charm-likes) are inert.
+  if (hasIgnoreActionGating(actor)) return out;
   const effects = actor?.appliedEffects
     ? Array.from(actor.appliedEffects)
     : (actor?.effects?.contents ?? actor?.effects ?? []);
@@ -1015,6 +1031,12 @@ export function getCannotTargetUuids(actor) {
 // surface all of them when relevant.
 export function getCannotTargetReasons(actor) {
   const out = new Map();
+  // Domination State ("Super Armor") — the ACTING side's target exclusions
+  // (Charmed's "cannot target your charmer") are inert. Note this reader is
+  // also used TARGET-side by other callers passing the candidate's actor —
+  // those pass a DIFFERENT actor, so a dominating attacker only bypasses its
+  // OWN restrictions, never a defender's protections.
+  if (hasIgnoreActionGating(actor)) return out;
   const effects = actor?.effects?.contents ?? actor?.effects ?? [];
   for (const ae of effects) {
     if (ae?.disabled) continue;
@@ -1049,6 +1071,8 @@ export function getCannotTargetReasons(actor) {
 // still act). Callers exclude every NON-member target, but ONLY when a required
 // provoker is actually present among candidates (see eligibility loops).
 export function getMustTargetReasons(actor) {
+  // Domination State ("Super Armor") — Provoked's forced-target constraint is inert.
+  if (hasIgnoreActionGating(actor)) return null;
   const uuids = new Set();
   const kinds = new Set();
   let reason = null;
@@ -1084,6 +1108,9 @@ export function getMustTargetReasons(actor) {
 // to it). See [[reference_allegiance_override]].
 export function getAllegianceOverrides(actor) {
   const out = [];
+  // Domination State ("Super Armor") — hostile side-reclassification (Fafnir
+  // Draconic Domination's charm) is inert on a dominating bearer.
+  if (hasIgnoreActionGating(actor)) return out;
   const effects = actor?.appliedEffects
     ? Array.from(actor.appliedEffects)
     : (actor?.effects?.contents ?? actor?.effects ?? []);

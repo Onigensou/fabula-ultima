@@ -65,6 +65,19 @@ import { STANDALONE_TRIGGERS } from "./director-triggers.js";
 import { pushFrame, popFrame, peekTop, topIsFreeAction, topIsSrwDetour, topIsResolveDetour, stackDepth, rewindPhaseLabel } from "./continuation-stack.js";
 // Grappled (Advanced Debuff) — turn-start break-free helpers.
 import { isGrappled, breakFree } from "./grappled.js";
+// Boss "Super Armor" — Domination State / Ultima actions (Domination /
+// Escape / Recovery). See [[domination.js]].
+import {
+  hasIgnoreActionGating,
+  grantDominancePointsAtRoundStart,
+  consumeDominancePoint,
+  readDominancePoints,
+  emitDominationBurst,
+  emitEscapeFade,
+  ULTIMA_COMMANDS,
+  DOMINATION_STATE_AE_NAME,
+} from "./domination.js";
+import { canPay as canPayUltima, payPoint as payUltimaPoint } from "./invoke/invoke-core.js";
 
 // findPassiveCandidates + firePreAcceptedCandidate are dynamically
 // imported (with one-shot cache-bust on first call) so this module
@@ -1492,6 +1505,11 @@ const RoundStart = {
     // blocking the FSM. Broadcasts to all clients.
     if (roundNo > 0) playRoundBanner({ round: roundNo });
 
+    // Boss Dominance accrual — every enemy boss banks 1 Dominance Point on
+    // rounds 3, 6, 9, ... (capped). Awaited so the AE exists before any
+    // round_start reactions / the next turn snapshot read the pool.
+    await grantDominancePointsAtRoundStart(director);
+
     // Hand off to STANDALONE_REACTION_WINDOW for round_start. The
     // transition rule branches on endOfCombat: if combat is over,
     // skip reactions and go straight to STOPPED. Otherwise, route
@@ -1526,6 +1544,12 @@ async function maybeRunBreakFree(director, snap) {
     if (!actor && snap.actorUuid) actor = await fromUuid(snap.actorUuid).catch(() => null);
     if (!actor || !isGrappled(actor)) return;
     if (director?.ctx?.endOfCombat) return; // battle ending, skip break-free picker
+    // Domination State ("Super Armor") — Grappled stays applied but is inert,
+    // so a dominating boss neither needs nor is offered the break-free check.
+    if (hasIgnoreActionGating(actor)) {
+      log(`Break Free: ${snap.name} is Dominating — Grappled inert, skipping break-free`);
+      return;
+    }
 
     const _bfPromise = pickAttributePair({
       director,
@@ -2351,6 +2375,27 @@ const Declare = {
       return;
     }
 
+    // Ultima-command backstop (Domination / Escape / Recovery) — boss-only and
+    // point-gated. The menu already greys unaffordable blades, but the GM is
+    // the source of truth: re-check against the LIVE actor (not the frozen
+    // snap) so a stale/tampered pick can't spend what isn't there.
+    if (ULTIMA_COMMANDS.includes(winnerBundle.command)) {
+      const uActor = await fromUuid(snap.tokenUuid).then((t) => t?.actor ?? null).catch(() => null)
+        ?? await fromUuid(snap.actorUuid).catch(() => null);
+      const pay = canPayUltima(uActor);
+      const refuse = (msg) => {
+        warn(`DECLARE: Ultima command "${winnerBundle.command}" refused — ${msg}`);
+        ui.notifications?.warn(`${winnerBundle.command}: ${msg}`);
+        director.enqueue({ type: INTENTS.TIMEOUT });
+      };
+      if (!snap.isBoss) { refuse("only Bosses may use Ultima actions."); return; }
+      if (!pay.ok) { refuse("no Ultima Point available."); return; }
+      if (winnerBundle.command === "Domination") {
+        if (hasIgnoreActionGating(uActor)) { refuse("already in Domination State."); return; }
+        if (readDominancePoints(uActor) < 1) { refuse("no Dominance Point available."); return; }
+      }
+    }
+
     log(`DECLARE: winner=${winnerSource}, command=${winnerBundle.command}`);
 
     // Apply bundle to ctx — sets up pre-populated picks so TARGET state
@@ -2728,6 +2773,28 @@ const Target = {
       director.enqueue({
         type: INTENTS.TARGET_PICKED,
         body: { targetTokenUuids: [director.ctx.turnSnapshot.tokenUuid] },
+      });
+      return;
+    }
+
+    // ─── Ultima actions (Boss/Villain — Domination / Escape / Recovery) ──
+    // Self-targeted, no roll, no pickers — the action card at CONFIRM is the
+    // player-facing confirm pass. Costs (1 Ultima Point; +1 Dominance Point
+    // for Domination) are stamped on the actionResult for the card's cost
+    // chips and debited at RESOLVE. Rulebook p.101 (+ homebrew Domination).
+    if (ULTIMA_COMMANDS.includes(command)) {
+      const snapU = director.ctx.turnSnapshot;
+      director.ctx.actionResult = freezeActionResult({
+        kind: command,
+        attacker: snapU,
+        attackerActorRef: snapU.actorUuid,
+        targets: [snapU],
+        ultimaCost: 1,
+        dominanceCost: command === "Domination" ? 1 : 0,
+      });
+      director.enqueue({
+        type: INTENTS.TARGET_PICKED,
+        body: { targetTokenUuids: [snapU.tokenUuid] },
       });
       return;
     }
@@ -3647,10 +3714,11 @@ const Compute = {
       ? triggerIntent.body.targetTokenUuids
       : director.ctx.pickedTargetUuids ?? []);
 
-    if (command === "Guard" || command === "Equipment") {
-      // Guard/Equipment actionResult was already shaped in TARGET — both are
-      // no-roll menu declarations. Pass through to CONFIRM where the card
-      // collects the player's pick (cover target / equipment slots).
+    if (command === "Guard" || command === "Equipment" || ULTIMA_COMMANDS.includes(command)) {
+      // Guard/Equipment/Ultima actionResult was already shaped in TARGET — all
+      // are no-roll menu declarations. Pass through to CONFIRM where the card
+      // collects the player's pick (cover target / equipment slots / the
+      // Ultima confirm pass).
       director.enqueue({ type: INTENTS.INTERNAL_DONE });
       return;
     }
@@ -5225,6 +5293,50 @@ const Resolve = {
           catch (e) { warn("RESOLVE Study (unified): socket emit failed", e); }
         }
       }
+    } else if (ULTIMA_COMMANDS.includes(ar.kind)) {
+      // ── Ultima actions (Boss/Villain — rulebook p.101 + homebrew Domination) ──
+      // Cost first: 1 Ultima Point always; Domination also consumes the banked
+      // Dominance Point. Token-actor-first resolution — unlinked NPC tokens
+      // carry their props/AEs on the token-synthetic actor.
+      const uToken = ar.attacker?.tokenUuid ? await fromUuid(ar.attacker.tokenUuid).catch(() => null) : null;
+      const uActor = uToken?.actor
+        ?? (ar.attackerActorRef ? await fromUuid(ar.attackerActorRef).catch(() => null) : null);
+      if (!uActor) {
+        warn(`RESOLVE ${ar.kind}: acting actor unresolvable — nothing applied`);
+      } else {
+        const paid = await payUltimaPoint(uActor);
+        if (!paid.ok) {
+          // DECLARE's backstop makes this near-impossible; refuse loudly rather
+          // than granting a free Ultima action.
+          warn(`RESOLVE ${ar.kind}: Ultima Point debit failed — effects skipped`);
+          ui.notifications?.warn(`${ar.kind}: no Ultima Point — nothing happens.`);
+        } else if (ar.kind === "Domination") {
+          const dpSpent = await consumeDominancePoint(uActor);
+          if (!dpSpent) warn("RESOLVE Domination: Dominance Point consume failed (proceeding — UP already paid)");
+          // Common/Domination's on_activate applies the "Domination State" AE
+          // (ignore_action_gating, lifetimeMode round_end) to self.
+          await resolveAction(director, ar, { actionSkill: getCoreActionSkill("domination") });
+          // Energy burst + super-armor SFX on every client.
+          emitDominationBurst({ tokenUuid: ar.attacker?.tokenUuid });
+          // Re-snapshot the acting combatant so the reopened Octopath (this is
+          // a free action — see the turn-economy gate below) sees the gating
+          // bypass: blockedActions/disabledActionIntents recompute to empty.
+          try {
+            const freshSnap = director.dCombat
+              ? snapshotDirectorCombatant(director.dCombat.current)
+              : snapshotCombatant(director.combat);
+            if (freshSnap) director.ctx.turnSnapshot = freshSnap;
+          } catch (e) { warn("RESOLVE Domination: turnSnapshot refresh threw", e); }
+        } else if (ar.kind === "Recovery") {
+          // Common/Recovery: remove every debuff-tagged AE + restore 50 MP.
+          await resolveAction(director, ar, { actionSkill: getCoreActionSkill("recovery") });
+        } else if (ar.kind === "Escape") {
+          // Slow fade-out on every client FIRST (awaited), then the Common
+          // item's leave_combat row despawns the combatant + token.
+          await emitEscapeFade({ tokenUuid: ar.attacker?.tokenUuid });
+          await resolveAction(director, ar, { actionSkill: getCoreActionSkill("escape") });
+        }
+      }
     }
 
     // Persistence checkpoint #4 — RESOLVE has applied the action's
@@ -5255,10 +5367,15 @@ const Resolve = {
     // as normal. (Carried on ctx, not actionResult — Cleanup.onEnter nulls
     // actionResult before the CLEANUP transition reads this.)
     const equipFreeReturn = !!ar?.equipmentFree && !topIsFreeAction(director.ctx);
-    if (director.dCombat && !topIsFreeAction(director.ctx) && !equipFreeReturn) {
+    // Domination is a FREE action by design: after entering Domination State
+    // the boss returns to the action menu with its turn action intact (same
+    // return path as the free Equipment transform).
+    const dominationFreeReturn = ar?.kind === "Domination" && !topIsFreeAction(director.ctx);
+    const freeReturn = equipFreeReturn || dominationFreeReturn;
+    if (director.dCombat && !topIsFreeAction(director.ctx) && !freeReturn) {
       director.dCombat.currentTurnResolved = true;
     }
-    director.ctx.returnToMenuAfterCleanup = equipFreeReturn;
+    director.ctx.returnToMenuAfterCleanup = freeReturn;
     // Label describes what the GM lands at on rewind: a checkpoint
     // AFTER this action's commit — resume routes via TURN_END → next
     // turn picker. For multi-pass attacks, distinguish the pass so
@@ -5609,7 +5726,14 @@ const RoundEnd = {
     // the standalone reaction window so round_end-triggered reactions
     // see a clean slate.
     try {
-      const swept = await SE().tickDirectorAEsAtRoundEnd();
+      // Pass the combatants' TOKEN actors — unlinked NPC bearers (e.g. a boss's
+      // Domination State) carry their AEs on the token-synthetic actor, which
+      // the sweep's world-actor walk can't see.
+      const swept = await SE().tickDirectorAEsAtRoundEnd({
+        extraActors: (director.dCombat?.combatants ?? [])
+          .map((c) => c.actorDoc ?? c.tokenDoc?.actor ?? null)
+          .filter(Boolean),
+      });
       if (swept?.swept) {
         log(`ROUND_END: swept ${swept.swept} round-end AE(s): ${swept.names.join(", ")}`);
       }

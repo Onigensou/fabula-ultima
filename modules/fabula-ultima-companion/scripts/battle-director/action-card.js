@@ -2840,6 +2840,73 @@ function buildGuardCard({ attacker, coverTarget }) {
   };
 }
 
+// ─── Ultima action cards (Boss/Villain — Domination / Escape / Recovery) ───
+// Simple no-roll declaration cards, one builder for all three. Cost chips
+// come from ar.ultimaCost / ar.dominanceCost (stamped in TARGET); the debit
+// happens at RESOLVE. Rulebook p.101 + the homebrew Domination action.
+const ULTIMA_CARD_DEFS = {
+  Domination: {
+    icon: `<i class="fa-solid fa-fire-flame-curved" style="font-size:20px; color:#c81010;"></i>`,
+    subtitle: "Ultima Action<span class=\"dot\">•</span>Free Action<span class=\"dot\">•</span>Until end of round",
+    effect: `Enters <strong style="color:#c81010">Domination State</strong> for the rest of the round:
+      debuffs that prevent or restrict actions <strong>stay applied but have no effect</strong>
+      (Frightened, Silence, Berserk, Fatigue, Charmed, Provoked, Grappled, ...).
+      <div style="margin-top:4px;">This is a <strong>free action</strong> — the turn action is not spent.</div>`,
+  },
+  Escape: {
+    icon: `<i class="fa-solid fa-person-running" style="font-size:20px; color:#7a6a55;"></i>`,
+    subtitle: "Ultima Action<span class=\"dot\">•</span>Leaves the battle",
+    effect: `Safely <strong>leaves the scene</strong> — the Game Master describes how.
+      Any remaining henchmen keep the heroes company.`,
+  },
+  Recovery: {
+    icon: `<i class="fa-solid fa-heart-pulse" style="font-size:20px; color:#48c774;"></i>`,
+    subtitle: "Ultima Action<span class=\"dot\">•</span>Costs the Action",
+    effect: `Recovers from <strong>all status effects</strong> and recovers <strong>50 Mind Points</strong>.`,
+  },
+};
+
+function buildUltimaCard(kind, { attacker, ultimaCost = 1, dominanceCost = 0 }) {
+  const def = ULTIMA_CARD_DEFS[kind];
+  if (!def) return null;
+  const costChips = [
+    `<span style="display:inline-block; padding:2px 8px; border:1px solid #7a2020; border-radius:8px; color:#c81010; font-weight:800;">${ultimaCost} Ultima Point</span>`,
+    ...(dominanceCost > 0
+      ? [`<span style="display:inline-block; padding:2px 8px; border:1px solid #7a5220; border-radius:8px; color:#b06a10; font-weight:800;">${dominanceCost} Dominance Point</span>`]
+      : []),
+  ].join(" ");
+  return {
+    titleIcon: def.icon,
+    titleText: kind,
+    subtitle: `<div class="fud-bf-subtitle">${def.subtitle}</div>`,
+    portraits: tryBuild("portraits", () => buildPortraitsHTML({ attacker, perTargetResults: [] })),
+    body: `
+      <fieldset class="fud-bf-section">
+        <legend>Villain</legend>
+        <div class="fud-bf-attacker-row">
+          <div class="left">${escapeHtml(attacker?.name ?? "?")}</div>
+          <div class="mid">${def.icon}</div>
+          <div class="right">${escapeHtml(kind)}</div>
+        </div>
+      </fieldset>
+      <fieldset class="fud-bf-section" style="font-size:12.5px; line-height:1.5;">
+        <legend>Effect</legend>
+        ${def.effect}
+      </fieldset>
+      <fieldset class="fud-bf-section" style="font-size:12.5px;">
+        <legend>Cost</legend>
+        ${costChips}
+      </fieldset>
+    `,
+    buttons: `
+      <div class="fud-bf-btn-row">
+        <div class="fud-btn fud-btn-confirm" data-fud-action="confirm" role="button" tabindex="0">Confirm</div>
+        <div class="fud-btn fud-btn-cancel" data-fud-action="cancel" role="button" tabindex="0">Cancel</div>
+      </div>
+    `,
+  };
+}
+
 // Tier color/label mapping for the Study card. Mirrors the thresholds
 // in `scripts/encyclopedia/encyclopedia-core.js` (Identity ≥7, Stats ≥8,
 // Details ≥13). The legend "None" covers totals < 7 (sub-Identity).
@@ -4015,6 +4082,9 @@ export function composeActionCardObject({ kind, payload }) {
     case "Equipment": return buildEquipmentCard(payload);
     case "Skill":
     case "Item":      return buildSkillCard(payload);
+    case "Domination":
+    case "Escape":
+    case "Recovery":  return buildUltimaCard(kind, payload);
     default:          return null;
   }
 }
@@ -4044,6 +4114,8 @@ const ACTION_CARD_RENDER_KEYS = [
   "skillName", "skillImg", "skillType", "defenseTargetType", "skillRange",
   "skillTarget", "damageType", "hasDamage", "hasHealing", "rawCost",
   "costSerialized", "descriptionHtml",
+  // Ultima actions (Domination / Escape / Recovery):
+  "ultimaCost", "dominanceCost",
 ];
 
 export function composeActionCardRenderPayload(ar) {
