@@ -1740,13 +1740,6 @@
               "effect_kind": "apply_ae",
               "effect_label": "ma_fright",
               "target_ref": "trigger_subject"
-            },
-            "2": {
-              "$deleted": false,
-              "check_buff_action": "intimidation",
-              "check_buff_amount": "1",
-              "effect_kind": "check_buff",
-              "effect_label": "ma_intimidation_buff"
             }
           },
           "isCheck": false,
@@ -5240,7 +5233,11 @@
           "statuses": [
             "fud-adoration-clock"
           ],
-          "system": {},
+          "system": {
+            "tags": [
+              "resource"
+            ]
+          },
           "tint": "#ffffff",
           "transfer": false,
           "type": "base"
@@ -6194,34 +6191,6 @@
             "style": "fraction",
             "subdivisions": null,
             "subdivisionsOwner": false
-          },
-          "bar4": {
-            "attribute": "attributeBar.clock_adoration",
-            "bgImage": "",
-            "fgImage": "",
-            "gmVisibility": -1,
-            "hideCombat": false,
-            "hideEmpty": false,
-            "hideFull": false,
-            "hideHud": false,
-            "hideNoCombat": false,
-            "id": "bar4",
-            "indentLeft": null,
-            "indentRight": null,
-            "invert": false,
-            "invertDirection": false,
-            "label": "🌹",
-            "maxcolor": "#f20d0d",
-            "mincolor": "#e13623",
-            "opacity": null,
-            "order": 3,
-            "otherVisibility": 50,
-            "ownerVisibility": 50,
-            "position": "bottom-outer",
-            "shareHeight": false,
-            "style": "percent",
-            "subdivisions": 5,
-            "subdivisionsOwner": true
           }
         }
       },

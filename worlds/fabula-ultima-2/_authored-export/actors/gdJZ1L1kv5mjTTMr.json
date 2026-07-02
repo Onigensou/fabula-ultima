@@ -2875,6 +2875,7 @@
               "chargeKey": "grave",
               "charges": 0,
               "chargesMax": 2,
+              "hudResourceColor": "#8fb53a",
               "lifetimeMode": "persistent_counter",
               "reactionConfig": {
                 "effect_table": {},
@@ -2897,7 +2898,11 @@
           "statuses": [
             "fud-grave-points"
           ],
-          "system": {},
+          "system": {
+            "tags": [
+              "resource"
+            ]
+          },
           "tint": "#ffffff",
           "transfer": false,
           "type": "base"
@@ -3256,6 +3261,7 @@
               "chargeKey": "grave",
               "charges": 0,
               "chargesMax": 2,
+              "hudResourceColor": "#8fb53a",
               "lifetimeMode": "persistent_counter",
               "reactionConfig": {
                 "effect_table": {},
@@ -3278,7 +3284,11 @@
           "statuses": [
             "fud-grave-points"
           ],
-          "system": {},
+          "system": {
+            "tags": [
+              "resource"
+            ]
+          },
           "tint": "#ffffff",
           "transfer": false,
           "type": "base"
@@ -3953,6 +3963,7 @@
               "chargeKey": "brainwave",
               "charges": 0,
               "chargesMax": 4,
+              "hudResourceColor": "#a06bff",
               "lifetimeMode": "persistent_counter",
               "reactionConfig": {
                 "effect_table": {},
@@ -3975,7 +3986,11 @@
           "statuses": [
             "fud-brainwave-clock"
           ],
-          "system": {},
+          "system": {
+            "tags": [
+              "resource"
+            ]
+          },
           "tint": "#ffffff",
           "transfer": false,
           "type": "base"
@@ -4217,6 +4232,7 @@
               "chargeKey": "brainwave",
               "charges": 0,
               "chargesMax": 4,
+              "hudResourceColor": "#a06bff",
               "lifetimeMode": "persistent_counter",
               "reactionConfig": {
                 "effect_table": {},
@@ -4239,7 +4255,11 @@
           "statuses": [
             "fud-brainwave-clock"
           ],
-          "system": {},
+          "system": {
+            "tags": [
+              "resource"
+            ]
+          },
           "tint": "#ffffff",
           "transfer": false,
           "type": "base"
@@ -5878,6 +5898,7 @@
               "chargeKey": "brainwave",
               "charges": 0,
               "chargesMax": 4,
+              "hudResourceColor": "#a06bff",
               "lifetimeMode": "persistent_counter",
               "reactionConfig": {
                 "effect_table": {},
@@ -5900,7 +5921,11 @@
           "statuses": [
             "fud-brainwave-clock"
           ],
-          "system": {},
+          "system": {
+            "tags": [
+              "resource"
+            ]
+          },
           "tint": "#ffffff",
           "transfer": false,
           "type": "base"
@@ -6199,12 +6224,12 @@
             "subdivisionsOwner": false
           },
           "bar3": {
-            "attribute": "attributeBar.clock_brainwave",
+            "attribute": "attributeBar.shield_value",
             "bgImage": "",
             "fgImage": "",
             "gmVisibility": -1,
             "hideCombat": false,
-            "hideEmpty": false,
+            "hideEmpty": true,
             "hideFull": false,
             "hideHud": false,
             "hideNoCombat": false,
@@ -6213,46 +6238,18 @@
             "indentRight": null,
             "invert": false,
             "invertDirection": false,
-            "label": "🌀",
-            "maxcolor": "#e811c1",
-            "mincolor": "#7a39db",
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
             "opacity": null,
             "order": 2,
             "otherVisibility": 50,
             "ownerVisibility": 50,
-            "position": "bottom-outer",
+            "position": "bottom-inner",
             "shareHeight": false,
-            "style": "percent",
+            "style": "user",
             "subdivisions": null,
             "subdivisionsOwner": false
-          },
-          "bar4": {
-            "attribute": "attributeBar.clock_grave",
-            "bgImage": "",
-            "fgImage": "",
-            "gmVisibility": -1,
-            "hideCombat": false,
-            "hideEmpty": false,
-            "hideFull": false,
-            "hideHud": false,
-            "hideNoCombat": false,
-            "id": "bar4",
-            "indentLeft": null,
-            "indentRight": null,
-            "invert": false,
-            "invertDirection": false,
-            "label": "👻",
-            "maxcolor": "#7d758a",
-            "mincolor": "#7d758a",
-            "opacity": null,
-            "order": 3,
-            "otherVisibility": 50,
-            "ownerVisibility": 50,
-            "position": "bottom-outer",
-            "shareHeight": false,
-            "style": "none",
-            "subdivisions": 6,
-            "subdivisionsOwner": true
           }
         }
       },

@@ -60,7 +60,11 @@
       "statuses": [
         "fud-adoration-clock"
       ],
-      "system": {},
+      "system": {
+        "tags": [
+          "resource"
+        ]
+      },
       "tint": "#ffffff",
       "transfer": false,
       "type": "base"

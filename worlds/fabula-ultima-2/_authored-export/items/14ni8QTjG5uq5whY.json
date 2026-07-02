@@ -141,6 +141,7 @@
           "chargeKey": "grave",
           "charges": 0,
           "chargesMax": 2,
+          "hudResourceColor": "#8fb53a",
           "lifetimeMode": "persistent_counter",
           "reactionConfig": {
             "effect_table": {},
@@ -163,7 +164,11 @@
       "statuses": [
         "fud-grave-points"
       ],
-      "system": {},
+      "system": {
+        "tags": [
+          "resource"
+        ]
+      },
       "tint": "#ffffff",
       "transfer": false,
       "type": "base"

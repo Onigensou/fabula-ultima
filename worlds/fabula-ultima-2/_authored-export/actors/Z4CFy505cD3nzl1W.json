@@ -27,7 +27,7 @@
         "rounds": null,
         "seconds": null,
         "startRound": null,
-        "startTime": 298800,
+        "startTime": null,
         "startTurn": null,
         "turns": null
       },
@@ -47,7 +47,7 @@
             "appliedAtRound": 0,
             "effectLabel": "em_refresh",
             "reactorActorUuid": "Actor.Z4CFy505cD3nzl1W",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.iiE7bLVslcXlVE6C",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.h6uOAQhQj4bVo2bS",
             "skillUuid": "Actor.Z4CFy505cD3nzl1W.Item.HiXFAkSm35bBGHfM",
             "turnsRemaining": null
           },
@@ -1679,6 +1679,28 @@
       "flags": {
         "custom-system-builder": {
           "version": "4.8.5"
+        },
+        "fabula-ultima-companion": {
+          "orbment": {
+            "baseProps": [
+              {
+                "key": "skill_target",
+                "value": "One creature"
+              }
+            ],
+            "linkGroup": [
+              "xEHcsYyJhPaTCGcJ",
+              "AQprVL9AoxIbsz3D"
+            ],
+            "slots": [
+              {
+                "id": "multi",
+                "param": null
+              },
+              null
+            ],
+            "version": 1
+          }
         }
       },
       "folder": "ft3358qUh5ZDldYQ",
@@ -1703,9 +1725,10 @@
           "check_bonus": "1",
           "construct_ef": "100",
           "damage_bonus": "19",
+          "defense_target_type": "mdef",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.EYcZ6QkAqiGBAxLB\" data-id=\"EYcZ6QkAqiGBAxLB\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Transform</span></strong></a></span></span>&nbsp;@UUID[Item.GYrsWYBQ6Hu7DnuA]{Zarg's Bow}</p><ul><li><p>Damage dealt by the weapon ignores <strong>Resistances</strong></p></li></ul>",
+          "description": "<p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.EYcZ6QkAqiGBAxLB\" data-id=\"EYcZ6QkAqiGBAxLB\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Transform</span></strong></a></span></span>&nbsp;@UUID[Item.GYrsWYBQ6Hu7DnuA]{Zarg's Bow}</p><ul><li><p>Damage dealt by the weapon ignores <strong>Resistances</strong></p></li></ul>\n<!-- ORBMENT:START -->\n<hr><p><strong>🔮 Orbment</strong></p><ul style=\"margin:.2em 0\"><li><b>Slot 1:</b> Multi (2) — <i>Attacks strike up to 2 different targets.</i></li><li><b>Slot 2:</b> <span style=\"opacity:.6\">(empty)</span></li></ul>",
           "dragon_ef": "100",
           "effect_table": {},
           "elemental_ef": "100",
@@ -5826,6 +5849,26 @@
         },
         "fabula-ultima-companion": {
           "activeForm": 1,
+          "orbment": {
+            "baseProps": [
+              {
+                "key": "skill_target",
+                "value": "One creature"
+              }
+            ],
+            "linkGroup": [
+              "xEHcsYyJhPaTCGcJ",
+              "AQprVL9AoxIbsz3D"
+            ],
+            "slots": [
+              {
+                "id": "multi",
+                "param": null
+              },
+              null
+            ],
+            "version": 1
+          },
           "transformFreeUsedRound": 5
         }
       },
@@ -5853,9 +5896,10 @@
           "custom_logic_action": "",
           "custom_logic_resolution": "",
           "damage_bonus": "19",
+          "defense_target_type": "mdef",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.EYcZ6QkAqiGBAxLB\" data-id=\"EYcZ6QkAqiGBAxLB\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Transform</span></strong></a></span></span>&nbsp;@UUID[Item.2mX266qZdTJYJXCy]{Zarg's Bow - Light}</p><ul><li><p>Damage dealt by the weapon ignores <strong>Resistances</strong></p></li></ul>",
+          "description": "<p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.EYcZ6QkAqiGBAxLB\" data-id=\"EYcZ6QkAqiGBAxLB\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Transform</span></strong></a></span></span>&nbsp;@UUID[Item.2mX266qZdTJYJXCy]{Zarg's Bow - Light}</p><ul><li><p>Damage dealt by the weapon ignores <strong>Resistances</strong></p></li></ul>\n<hr><p><strong>🔮 Orbment</strong></p><ul style=\"margin:.2em 0\"><li><b>Slot 1:</b> Multi (2) — <i>Attacks strike up to 2 different targets.</i></li><li><b>Slot 2:</b> <span style=\"opacity:.6\">(empty)</span></li></ul>",
           "dragon_ef": "100",
           "effect_table": {},
           "elemental_ef": "100",
@@ -5911,22 +5955,6 @@
           "undead_ef": "100",
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.xEHcsYyJhPaTCGcJ",
           "vehicle_ef": "100",
-          "weapon_forms": [
-            {
-              "check_bonus": 1,
-              "damage_bonus": 19,
-              "label": "Physical",
-              "type_damage": "Physical",
-              "weapon_type": "Bow"
-            },
-            {
-              "check_bonus": 1,
-              "damage_bonus": 19,
-              "label": "Light",
-              "type_damage": "Light",
-              "weapon_type": "Bow"
-            }
-          ],
           "weapon_range": "Ranged"
         },
         "template": "ZoiV53VaLzeRsEps",
@@ -7013,7 +7041,7 @@
       "entropism": false,
       "envenomed_status": 0,
       "exp_meter": "1.84",
-      "experience": "1.84",
+      "experience": 1.84,
       "experience_ui": "0",
       "extra_damage_mod_air": 0,
       "extra_damage_mod_all": 1,
@@ -7319,7 +7347,7 @@
       },
       "item_restore_mod": 20,
       "key_list": {},
-      "level": "34",
+      "level": 34,
       "lifesteal_percentage": 0,
       "lifesteal_value": 0,
       "magic_defense": 9,
@@ -8138,7 +8166,7 @@
           "roll": "",
           "type": "Bow",
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.AQprVL9AoxIbsz3D",
-          "weapon_description": "<p><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.EYcZ6QkAqiGBAxLB\" data-id=\"EYcZ6QkAqiGBAxLB\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Transform</span></strong></a></span></span>&nbsp;@UUID[Item.GYrsWYBQ6Hu7DnuA]{Zarg's Bow}</p><ul><li><p>Damage dealt by the weapon ignores <strong>Resistances</strong></p></li></ul></p>",
+          "weapon_description": "<p><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.EYcZ6QkAqiGBAxLB\" data-id=\"EYcZ6QkAqiGBAxLB\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Transform</span></strong></a></span></span>&nbsp;@UUID[Item.GYrsWYBQ6Hu7DnuA]{Zarg's Bow}</p><ul><li><p>Damage dealt by the weapon ignores <strong>Resistances</strong></p></li></ul>\n<!-- ORBMENT:START -->\n<hr><p><strong>🔮 Orbment</strong></p><ul style=\"margin:.2em 0\"><li><b>Slot 1:</b> Multi (2) — <i>Attacks strike up to 2 different targets.</i></li><li><b>Slot 2:</b> <span style=\"opacity:.6\">(empty)</span></li></ul></p>",
           "weapon_hand": "Two-handed",
           "weapon_martial": "♦️",
           "weapon_range": "Ranged"
@@ -8354,7 +8382,7 @@
           "roll": "",
           "type": "Bow",
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.xEHcsYyJhPaTCGcJ",
-          "weapon_description": "<p><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.EYcZ6QkAqiGBAxLB\" data-id=\"EYcZ6QkAqiGBAxLB\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Transform</span></strong></a></span></span>&nbsp;@UUID[Item.2mX266qZdTJYJXCy]{Zarg's Bow - Light}</p><ul><li><p>Damage dealt by the weapon ignores <strong>Resistances</strong></p></li></ul></p>",
+          "weapon_description": "<p><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.EYcZ6QkAqiGBAxLB\" data-id=\"EYcZ6QkAqiGBAxLB\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Transform</span></strong></a></span></span>&nbsp;@UUID[Item.2mX266qZdTJYJXCy]{Zarg's Bow - Light}</p><ul><li><p>Damage dealt by the weapon ignores <strong>Resistances</strong></p></li></ul>\n<hr><p><strong>🔮 Orbment</strong></p><ul style=\"margin:.2em 0\"><li><b>Slot 1:</b> Multi (2) — <i>Attacks strike up to 2 different targets.</i></li><li><b>Slot 2:</b> <span style=\"opacity:.6\">(empty)</span></li></ul></p>",
           "weapon_hand": "Two-handed",
           "weapon_martial": "♦️",
           "weapon_range": "Ranged"
@@ -8377,7 +8405,7 @@
       "wlp_base": "8",
       "wlp_current": 8,
       "your_class_name": "Hunter",
-      "zenit": "2899",
+      "zenit": 1699,
       "zero_label": "Zero Power",
       "zero_power_description": "<p><strong>Zero Scourge</strong></p><p>Special rule: when you select this effect for your Zero Power, choose a damage type</p><p>among air, bolt, dark, earth, fire, ice, light, and poison; then, choose two status effects</p><p>among dazed, shaken, slow, and weak.</p><p>Choose any number of creatures you can see: each of them suffers damage of then</p><p>chosen type equal to【30 + half your level】and suffers the chosen status effects.</p>",
       "zero_power_macro": "",

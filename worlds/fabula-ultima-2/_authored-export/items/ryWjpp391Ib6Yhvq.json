@@ -40,13 +40,6 @@
           "effect_kind": "apply_ae",
           "effect_label": "ma_fright",
           "target_ref": "trigger_subject"
-        },
-        "2": {
-          "$deleted": false,
-          "check_buff_action": "intimidation",
-          "check_buff_amount": "1",
-          "effect_kind": "check_buff",
-          "effect_label": "ma_intimidation_buff"
         }
       },
       "isCheck": false,

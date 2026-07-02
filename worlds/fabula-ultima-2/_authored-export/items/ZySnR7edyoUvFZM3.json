@@ -106,6 +106,7 @@
           "charges": 1,
           "chargesMax": 99,
           "directorPermanent": false,
+          "hudResourceColor": "#a06bff",
           "lifetimeMode": "persistent_counter"
         },
         "statuscounter": {
@@ -126,7 +127,9 @@
       ],
       "system": {
         "tags": [
-          "buff"
+          "buff",
+          "resource",
+          "points"
         ]
       },
       "tint": "#ffffff",

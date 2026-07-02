@@ -47,7 +47,6 @@
   "system": {
     "container": null,
     "props": {
-      "action_keywords": "pierce",
       "active_effect_config_table": {},
       "aquatic_ef": "100",
       "automaton_ef": "100",

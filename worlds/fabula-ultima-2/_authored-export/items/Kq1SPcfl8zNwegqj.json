@@ -43,6 +43,7 @@
           "chargeKey": "brainwave",
           "charges": 0,
           "chargesMax": 4,
+          "hudResourceColor": "#a06bff",
           "lifetimeMode": "persistent_counter",
           "reactionConfig": {
             "effect_table": {},
@@ -65,7 +66,11 @@
       "statuses": [
         "fud-brainwave-clock"
       ],
-      "system": {},
+      "system": {
+        "tags": [
+          "resource"
+        ]
+      },
       "tint": "#ffffff",
       "transfer": false,
       "type": "base"

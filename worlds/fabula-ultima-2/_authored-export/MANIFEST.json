@@ -4076,7 +4076,7 @@
         "id": "YNtiW1MEga31ENWa",
         "name": "Bunny Tail",
         "type": "equippableItem",
-        "effects": 1
+        "effects": 0
       },
       {
         "id": "c3UnjwSqKlkK9xKa",
@@ -14255,13 +14255,6 @@
         "effects": 1
       },
       {
-        "id": "OIfS1dWhZv3OpKVH",
-        "name": "BD Dummy Enemy",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
         "id": "N5k5aBtdGBakHLGO",
         "name": "Berserker",
         "type": "character",
@@ -17814,7 +17807,7 @@
             "name": "Zero Trigger: Foresight"
           }
         ],
-        "effects": 3
+        "effects": 2
       },
       {
         "id": "tzXbVfDYPgvu5wml",

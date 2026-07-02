@@ -47,7 +47,7 @@
             "appliedAtRound": 0,
             "effectLabel": "hod_refresh",
             "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.43doUXTWsLFbtefF",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.4vgLF7HBC9px5WFx",
             "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF",
             "turnsRemaining": null
           },
@@ -141,73 +141,6 @@
           "food"
         ]
       },
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "XvIyzmhj9vXaLgE3",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1782841628597,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [],
-      "description": "<p>A reserve of foresight Hina spends to take the place of all creatures threatened by a single danger.</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": 298800,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "propheticPoint01",
-          "originalParentId": "Lmzs6VllFRo44jZq",
-          "originalUuid": "Item.Lmzs6VllFRo44jZq.ActiveEffect.propheticPoint01"
-        },
-        "fabula-ultima-companion": {
-          "category": "buff",
-          "chargeKey": "prophecy",
-          "charges": 12,
-          "chargesMax": 99,
-          "directorAppliedBy": {
-            "appliedAtRound": 0,
-            "effectLabel": "pds_gain",
-            "lifetimeMode": "persistent_counter",
-            "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.43doUXTWsLFbtefF",
-            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.gm2w1NLdaEI7SzaQ",
-            "turnsRemaining": null
-          },
-          "directorPermanent": false,
-          "lifetimeMode": "persistent_counter"
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/nocturnal_sect.png",
-      "name": "Prophecy Point",
-      "origin": "Actor.dafTLBUscCDNgq8H.Item.gm2w1NLdaEI7SzaQ",
-      "sort": 0,
-      "statuses": [
-        "fud-prophecy-point"
-      ],
-      "system": {},
       "tint": "#ffffff",
       "transfer": false,
       "type": "base"
@@ -1209,7 +1142,6 @@
       "system": {
         "container": null,
         "props": {
-          "action_keywords": "pierce",
           "active_effect_config_table": {},
           "aquatic_ef": "100",
           "automaton_ef": "100",
@@ -1236,7 +1168,7 @@
           "humanoid_ef": "100",
           "insect_ef": "100",
           "ip_cost": "",
-          "isEquipped": true,
+          "isEquipped": false,
           "isKey": false,
           "isMartial": false,
           "isModule": false,
@@ -3290,6 +3222,7 @@
               "charges": 1,
               "chargesMax": 99,
               "directorPermanent": false,
+              "hudResourceColor": "#a06bff",
               "lifetimeMode": "persistent_counter"
             },
             "statuscounter": {
@@ -3308,7 +3241,12 @@
           "statuses": [
             "fud-prophecy-point"
           ],
-          "system": {},
+          "system": {
+            "tags": [
+              "resource",
+              "points"
+            ]
+          },
           "tint": "#ffffff",
           "transfer": false,
           "type": "base"
@@ -7106,63 +7044,6 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
-      "effects": [
-        {
-          "_id": "FSd72GcfPVKsQQyX",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": 1782917785248,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.8.5"
-          },
-          "changes": [
-            {
-              "key": "flags.fabula-ultima-companion.opp_lucky",
-              "mode": 5,
-              "priority": 20,
-              "value": "${isEquipped ? 1 : 0}$"
-            }
-          ],
-          "description": "",
-          "disabled": false,
-          "duration": {
-            "combat": null,
-            "rounds": null,
-            "seconds": null,
-            "startRound": null,
-            "startTime": null,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "originalId": "FSd72GcfPVKsQQyX",
-              "originalParentId": "t9BfF2mxmREPRFuf",
-              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.t9BfF2mxmREPRFuf.ActiveEffect.FSd72GcfPVKsQQyX"
-            },
-            "statuscounter": {
-              "config": {
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "icons/svg/coins.svg",
-          "name": "Lucky Opportunity",
-          "origin": null,
-          "sort": 0,
-          "statuses": [],
-          "system": {},
-          "tint": "#ffffff",
-          "transfer": true,
-          "type": "base"
-        }
-      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -8943,7 +8824,7 @@
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1969.gif",
           "insect_ef": "100",
           "ip_cost": "",
-          "isEquipped": false,
+          "isEquipped": true,
           "isKey": false,
           "isMartial": true,
           "isModule": false,
@@ -10027,7 +9908,7 @@
       "entropism": false,
       "envenomed_status": 0,
       "exp_meter": "1.84",
-      "experience": "1.84",
+      "experience": 1.84,
       "experience_ui": "0",
       "extra_damage_mod_air": 0,
       "extra_damage_mod_all": 1,
@@ -10759,15 +10640,15 @@
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.ERBLg9oQAHRlJ8wZ"
         }
       },
-      "level": "34",
+      "level": 34,
       "lifesteal_percentage": 0,
       "lifesteal_value": 0,
       "magic_defense": 12,
       "magic_defense_mod": "0",
       "main_attrib_1": "DEX",
-      "main_attrib_2": "INS",
-      "main_details": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.2hNU23YLpCcZCCmf\" data-id=\"2hNU23YLpCcZCCmf\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Pierce</span></strong></a></span></span></p></li><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.2JlZwoTU5Ql7sUyS\" data-id=\"2JlZwoTU5Ql7sUyS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Snipe</span></strong></a><strong><span style=\"text-decoration: underline;\"> 15:</span></strong></span></span> inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.vzkQ7MNkmqRDJIXV\" data-id=\"vzkQ7MNkmqRDJIXV\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Turbulence</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>to the target.</p></li></ul>",
-      "main_hand": "Windpiercer",
+      "main_attrib_2": "MIG",
+      "main_details": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.N1c190b6J1kKS6Vf\" data-id=\"N1c190b6J1kKS6Vf\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Benign</span></strong></a></span></span></p></li><li><p>This weapon deals bonus damage equal to 20% of the <strong>target current health</strong>, this bonus is reduce to 10% against Champion-rank creature</p></li></ul>",
+      "main_hand": "The Tormentor",
       "main_hand_attack": "",
       "manadrain_percentage": 0,
       "manadrain_value": 0,
@@ -12023,10 +11904,10 @@
       "turbulence_status": 0,
       "uuid": "Actor.dafTLBUscCDNgq8H",
       "weak_status": 0,
-      "weapon1_base_damage": "8",
+      "weapon1_base_damage": "10",
       "weapon1_base_mod": "0",
       "weapon1_damage": 10,
-      "weapon1_damagetype": "Air",
+      "weapon1_damagetype": "Physical",
       "weapon1_mod": 0,
       "weapon2_damagetype": "-",
       "weapon_list": {
