@@ -5069,6 +5069,12 @@
         "effects": 0
       },
       {
+        "id": "q3xzxwAR7OlMmaQJ",
+        "name": "Domination",
+        "type": "equippableItem",
+        "effects": 2
+      },
+      {
         "id": "V3R1cSiLgIfXVgRj",
         "name": "Dominatrix Leotard",
         "type": "equippableItem",
@@ -5635,6 +5641,12 @@
       {
         "id": "aUD8pniI0w86w1HA",
         "name": "Equipment",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "oHXEMgR0pYVB8K0h",
+        "name": "Escape",
         "type": "equippableItem",
         "effects": 0
       },
@@ -10015,6 +10027,12 @@
       {
         "id": "SXheC0Iz5v8exrA0",
         "name": "Reckless Fighting",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "SgSFeTMvgFwMsZP8",
+        "name": "Recovery",
         "type": "equippableItem",
         "effects": 0
       },
@@ -17821,7 +17839,7 @@
             "name": "Zero Trigger: Foresight"
           }
         ],
-        "effects": 3
+        "effects": 2
       },
       {
         "id": "tzXbVfDYPgvu5wml",

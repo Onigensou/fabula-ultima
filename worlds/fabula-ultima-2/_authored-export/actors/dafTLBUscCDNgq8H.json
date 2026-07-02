@@ -144,73 +144,6 @@
       "tint": "#ffffff",
       "transfer": false,
       "type": "base"
-    },
-    {
-      "_id": "XvIyzmhj9vXaLgE3",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1782988097834,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [],
-      "description": "<p>A reserve of foresight Hina spends to take the place of all creatures threatened by a single danger.</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": 298800,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "propheticPoint01",
-          "originalParentId": "Lmzs6VllFRo44jZq",
-          "originalUuid": "Item.Lmzs6VllFRo44jZq.ActiveEffect.propheticPoint01"
-        },
-        "fabula-ultima-companion": {
-          "category": "buff",
-          "chargeKey": "prophecy",
-          "charges": 21,
-          "chargesMax": 99,
-          "directorAppliedBy": {
-            "appliedAtRound": 0,
-            "effectLabel": "pds_gain",
-            "lifetimeMode": "persistent_counter",
-            "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.43doUXTWsLFbtefF",
-            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.gm2w1NLdaEI7SzaQ",
-            "turnsRemaining": null
-          },
-          "directorPermanent": false,
-          "lifetimeMode": "persistent_counter"
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/nocturnal_sect.png",
-      "name": "Prophecy Point",
-      "origin": "Actor.dafTLBUscCDNgq8H.Item.gm2w1NLdaEI7SzaQ",
-      "sort": 0,
-      "statuses": [
-        "fud-prophecy-point"
-      ],
-      "system": {},
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
     }
   ],
   "flags": {
@@ -3498,66 +3431,106 @@
           "damage_bonus": "",
           "defense_target_type": "def",
           "description": "<p>Your maximum Hit Points are permanently increased by an amount equal to your base <strong>Insight</strong> die size (update your maximum HP if this size changes).</p><p>When a conflict scene begins, if you have learned the <strong>Divination</strong> spell, you gain <strong>1 Prophecy Point</strong>. You also gain <strong>1 Prophecy Point</strong> at the start of each even-numbered round (regardless of whether you have learned Divination). You lose all Prophecy Points at the end of each scene.</p><p>When <strong>one or more allies</strong> are threatened by a single attack, spell, or other danger, you may spend <strong>1 Prophecy Point</strong> to take the place of all those allies (any Checks that are part of the danger will be performed against you; you may declare the use of this Skill before or after the Checks have been made). The danger will affect you once for each creature it was threatening (including yourself, if you were among those creatures). Resolve each of these instances separately.</p>",
+          "details_roller": "Show",
           "duration": "",
           "effect_table": {
             "0": {
+              "allow_empty": false,
               "auto_confirm_when_obvious": true,
-              "auto_target": "skip",
+              "auto_target": true,
               "candidate_source": "self",
+              "category": "",
+              "consume_self": false,
               "count": "1",
               "effect_kind": "targeting",
               "effect_label": "pds_self",
+              "exclude": "",
+              "exclude_action_targets": false,
               "exclude_self": false,
+              "from_resource": "",
               "iteration_mode": "together",
+              "menu_label": "",
               "mode": "exact",
-              "skip_when_passive": true
+              "skip_when_passive": true,
+              "target_filter": "",
+              "target_prompt": "",
+              "to_resource": ""
             },
             "1": {
+              "allow_empty": false,
               "auto_confirm_when_obvious": true,
-              "auto_target": "confirm",
+              "auto_target": true,
               "candidate_source": "action_targets",
+              "category": "",
+              "consume_self": false,
               "effect_kind": "targeting",
               "effect_label": "pds_threatened",
+              "exclude": "",
+              "exclude_action_targets": false,
               "exclude_self": false,
+              "from_resource": "",
               "iteration_mode": "together",
+              "menu_label": "",
               "mode": "all",
-              "skip_when_passive": true
+              "skip_when_passive": true,
+              "target_filter": "",
+              "target_prompt": "",
+              "to_resource": ""
             },
             "2": {
               "ae_duplicate_mode": "add_charges",
+              "ae_family": "",
               "ae_initial_charges": "1",
               "ae_initial_charges_max": "99",
               "ae_template_ref": "Prophecy Point",
+              "consume_self": false,
               "effect_kind": "apply_ae",
               "effect_label": "pds_gain",
-              "target_ref": "pds_self"
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "pds_self",
+              "to_resource": ""
             },
             "3": {
               "charge_key": "prophecy",
+              "consume_self": false,
               "count": "1",
               "effect_kind": "consume_charge",
               "effect_label": "pds_consume",
+              "from_resource": "",
+              "menu_label": "",
               "on_empty": "abort",
-              "target_ref": "pds_self"
+              "target_ref": "pds_self",
+              "to_resource": ""
             },
             "4": {
+              "consume_self": false,
               "destination_ref": "pds_self",
               "effect_kind": "redirect_target",
               "effect_label": "pds_redirect",
+              "from_resource": "",
+              "menu_label": "",
               "rebuild_card": true,
-              "target_ref": "pds_threatened"
+              "target_ref": "pds_threatened",
+              "to_resource": ""
             },
             "5": {
               "chain_steps": "pds_consume,pds_redirect",
+              "consume_self": false,
               "effect_kind": "chain",
-              "effect_label": "pds_reaction"
+              "effect_label": "pds_reaction",
+              "from_resource": "",
+              "menu_label": "",
+              "to_resource": ""
             }
           },
           "gadget_alchemy_tier": "",
           "gadget_infusion_tier": "",
           "gadget_magitech_tier": "",
           "heroic_requirement": "You must have mastered one or more Classes among Entropist and Guardian.",
+          "id": "gm2w1NLdaEI7SzaQ",
           "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/nocturnal_sect.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": true,
@@ -3573,25 +3546,62 @@
           "reaction_config_table": {
             "0": {
               "condition_formula": "HAS_SKILL_DIVINATION == 1",
+              "reaction_action_kind": "",
+              "reaction_cause_filter": "",
               "reaction_effect_ref": "pds_gain",
+              "reaction_max_per_round": "",
+              "reaction_origin_filter": "",
               "reaction_passive_mode": "force",
+              "reaction_requires_weapon_used": false,
+              "reaction_resource_filter": "",
+              "reaction_responder": "",
               "reaction_source": "",
-              "reaction_trigger": "conflict_start"
+              "reaction_source_skill": "",
+              "reaction_status_filter": "",
+              "reaction_trigger": "conflict_start",
+              "requires_skill": ""
             },
             "1": {
               "condition_formula": "ROUND % 2 == 0 && ROUND > 0",
+              "reaction_action_kind": "",
+              "reaction_cause_filter": "",
+              "reaction_debuff_count_min": "",
+              "reaction_debuff_count_target": "",
               "reaction_effect_ref": "pds_gain",
+              "reaction_max_per_round": "",
+              "reaction_origin_filter": "",
               "reaction_passive_mode": "force",
+              "reaction_requires_weapon_used": false,
+              "reaction_resource_filter": "",
+              "reaction_responder": "",
               "reaction_source": "",
-              "reaction_trigger": "round_start"
+              "reaction_source_skill": "",
+              "reaction_status_filter": "",
+              "reaction_trigger": "round_start",
+              "requires_skill": ""
             },
             "2": {
               "condition_formula": "",
               "reaction_action_intent": "harmful",
+              "reaction_action_kind": "",
+              "reaction_action_target": "",
+              "reaction_cause_filter": "",
+              "reaction_damage_source": "",
+              "reaction_damage_type": "",
               "reaction_effect_ref": "pds_reaction",
+              "reaction_max_per_round": "",
+              "reaction_origin_filter": "",
+              "reaction_ownership": "",
               "reaction_passive_mode": "ask",
+              "reaction_requires_weapon_used": false,
+              "reaction_resource_filter": "",
+              "reaction_responder": "",
               "reaction_source": "ally",
-              "reaction_trigger": "creature_targeted_by_action"
+              "reaction_source_skill": "",
+              "reaction_status_filter": "",
+              "reaction_subject_kind": "",
+              "reaction_trigger": "creature_targeted_by_action",
+              "requires_skill": ""
             }
           },
           "rolled_atr1": "-",
@@ -3604,7 +3614,8 @@
           "skill_type": "Passive",
           "target_eligibility": "",
           "type_damage": "",
-          "use_optional_params": false
+          "use_optional_params": false,
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.gm2w1NLdaEI7SzaQ"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -12240,7 +12251,7 @@
       "weak_status": 0,
       "weapon1_base_damage": "12",
       "weapon1_base_mod": "0",
-      "weapon1_damage": 10,
+      "weapon1_damage": 12,
       "weapon1_damagetype": "Earth",
       "weapon1_mod": 0,
       "weapon2_damagetype": "-",
@@ -13283,7 +13294,7 @@
       "wlp_base": "10",
       "wlp_current": 10,
       "your_class_name": "Night Guidance",
-      "zenit": 7780,
+      "zenit": "7780",
       "zero_label": "Zero Power",
       "zero_power_description": "<p style=\"text-align: center\"><strong>Choose and trigger 3 oppertunity choice.</strong></p>",
       "zero_power_macro": "",

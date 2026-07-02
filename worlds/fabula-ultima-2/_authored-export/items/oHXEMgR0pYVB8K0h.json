@@ -1,0 +1,91 @@
+{
+  "_id": "oHXEMgR0pYVB8K0h",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1782994731778,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "coreAction": "escape"
+    }
+  },
+  "folder": "Zrv5DRCx5PzFvLUj",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/09_NIN/shade_shift.png",
+  "name": "Escape",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "action_command": "escape",
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "check_bonus": "0",
+      "class": "",
+      "cost": "",
+      "damage_bonus": "",
+      "defense_target_type": "def",
+      "description": "<p><strong>Ultima Action.</strong> Spend 1 Ultima Point: the Villain safely leaves the scene.</p>",
+      "details_roller": "Show",
+      "duration": "-",
+      "effect_table": {
+        "0": {
+          "consume_self": false,
+          "effect_kind": "leave_combat",
+          "effect_label": "escape_activate",
+          "from_resource": "",
+          "menu_label": "",
+          "target_ref": "self",
+          "to_resource": ""
+        }
+      },
+      "gadget_alchemy_tier": "",
+      "gadget_infusion_tier": "",
+      "gadget_magitech_tier": "",
+      "heroic_requirement": "",
+      "id": "nNmdYuOvyNcBjpjb",
+      "ignore_hr": false,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/09_NIN/shade_shift.png",
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Escape",
+      "on_activate_effect_ref": "escape_activate",
+      "optional_params": {},
+      "pre_activate_effect_ref": "",
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "",
+      "skill_target": "Self",
+      "skill_type": "Active",
+      "target_eligibility": "",
+      "type_damage": "",
+      "use_optional_params": false,
+      "uuid": "Item.nNmdYuOvyNcBjpjb"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": true,
+    "uniqueId": "oHXEMgR0pYVB8K0h"
+  },
+  "type": "equippableItem"
+}
