@@ -250,7 +250,7 @@ function worldAnchor(token) {
 //                intent over socket. Must be supplied if no director.
 //   - onPassive: () => void. Called when the Passive button is clicked.
 //                Default opens PassiveManager for the actor.
-function spawnMenu({ director, token, combatId, onPick, onPassive, enabledLabels = null, budgetText = null, disabledLabels = null, ultimaPage = null }) {
+function spawnMenu({ director, token, combatId, onPick, onPassive, enabledLabels = null, budgetText = null, disabledLabels = null, showUltima = false }) {
   ensureBaseStyles();
 
   // Free-action mode (enabledLabels supplied): collapse the multi-page
@@ -274,18 +274,17 @@ function spawnMenu({ director, token, combatId, onPick, onPassive, enabledLabels
         ];
         return [{ name: "Free Action", items }];
       })()
-    : [
-        ...LEGACY_PAGES.map((p) => ({
-          name: p.name,
-          items: p.items.map((s) => ({ label: s })),
-        })),
-        // Boss-only "Ultima" page (Domination / Escape / Recovery) — supplied
-        // by composeAction from the acting snapshot's isBoss/point fields.
-        // Never present in filterMode (free-action windows hide Ultima).
-        ...(ultimaPage?.entries?.length
-          ? [{ name: ultimaPage.name ?? "Ultima", items: ultimaPage.entries.map((e) => ({ label: e.label })) }]
-          : []),
-      ];
+    : LEGACY_PAGES.map((p) => ({
+        name: p.name,
+        // Boss-only "Ultima" blade on the System tab (before Passive) — opens
+        // the Ultima action picker (Domination / Escape / Recovery), exactly
+        // like the Skill/Spell picker commands. composeAction sets showUltima
+        // from snap.isBoss; never present in filterMode (free-action windows).
+        items: (showUltima && p.name === "System"
+          ? [...p.items.slice(0, -1), "Ultima", p.items[p.items.length - 1]]
+          : p.items
+        ).map((s) => ({ label: s })),
+      }));
   let pageIndex = 0;
 
   const root = document.createElement("div");
@@ -665,7 +664,7 @@ function spawnMenu({ director, token, combatId, onPick, onPassive, enabledLabels
 //   - Player-on-PC:     pass { token, combatId, actorUuid, onPick }
 //     where onPick emits DECLARE_COMMAND over IntentChannel.
 export const TurnUI = {
-  spawn({ director, token, combatId, actorUuid, onPick, onPassive, enabledLabels = null, budgetText = null, disabledLabels = null, ultimaPage = null }) {
+  spawn({ director, token, combatId, actorUuid, onPick, onPassive, enabledLabels = null, budgetText = null, disabledLabels = null, showUltima = false }) {
     if (!token) {
       warn("Turn UI spawn: no token");
       return null;
@@ -703,7 +702,7 @@ export const TurnUI = {
       } catch (e) { warn("Turn UI: Passive button failed", e); }
     });
 
-    const rec = spawnMenu({ director, token, combatId: key, onPick: pickCb, onPassive: passiveCb, enabledLabels, budgetText, disabledLabels, ultimaPage });
+    const rec = spawnMenu({ director, token, combatId: key, onPick: pickCb, onPassive: passiveCb, enabledLabels, budgetText, disabledLabels, showUltima });
     _instances.set(key, rec);
     return rec;
   },

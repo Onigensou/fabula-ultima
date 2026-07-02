@@ -52,11 +52,19 @@ export const DOMINANCE_POINT_CAP = 1;
 export const DOMINATION_SFX_URL =
   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/super_armor.wav";
 
-// The three Ultima commands surfaced on the boss-only Octopath page. Kept OUT
-// of GATEABLE_ACTION_LABELS on purpose: no debuff may ever lock them (using
+// The three Ultima commands, reached through the boss-only "Ultima" blade on
+// the Octopath's System tab (opens a ListPicker). Kept OUT of
+// GATEABLE_ACTION_LABELS on purpose: no debuff may ever lock them (using
 // Domination while locked down is the whole point of the mechanic).
 export const ULTIMA_COMMANDS = Object.freeze(["Domination", "Escape", "Recovery"]);
-export const ULTIMA_PAGE_NAME = "Ultima";
+export const ULTIMA_BUTTON_LABEL = "Ultima";
+
+const SK_ICON = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/";
+export const ULTIMA_ACTION_ICONS = Object.freeze({
+  Domination: SK_ICON + "02_WAR/inner_release.png",
+  Escape:     SK_ICON + "09_NIN/shade_shift.png",
+  Recovery:   SK_ICON + "07_MNK/purification.png",
+});
 
 // ── Gating-bypass marker ────────────────────────────────────────────────────
 
@@ -208,26 +216,47 @@ export async function consumeDominancePoint(actor) {
   return true;
 }
 
-// ── Ultima Octopath page ────────────────────────────────────────────────────
+// ── Ultima action menu (behind the System tab's "Ultima" blade) ────────────
 
-// Build the boss-only "Ultima" page spec from the acting snapshot. Returns
-// null for non-bosses. `entries` feed the extra Octopath page; unaffordable
-// commands arrive pre-disabled with the shortfall as the blade stamp.
-export function buildUltimaPageSpec(snap) {
+// Build the boss-only Ultima menu spec from the acting snapshot. Returns null
+// for non-bosses (no blade rendered at all). `buttonDisabledReason` greys the
+// System-tab blade itself (no UP = nothing in the menu is usable); per-row
+// `disabledReason` dims individual picker rows (e.g. Domination without a
+// banked Dominance Point).
+export function buildUltimaMenuSpec(snap) {
   if (!snap?.isBoss) return null;
   const up = Number(snap.ultimaPoints ?? 0) || 0;
   const dp = Number(snap.dominancePoints ?? 0) || 0;
   const noUp = up < 1 ? "No Ultima Point" : null;
-  const entries = [
-    {
-      label: "Domination",
-      disabledReason: snap.isDominating ? "Already Dominating"
-        : (noUp ?? (dp < 1 ? "No Dominance Point" : null)),
-    },
-    { label: "Escape",   disabledReason: noUp },
-    { label: "Recovery", disabledReason: noUp },
-  ];
-  return { name: ULTIMA_PAGE_NAME, entries };
+  return {
+    buttonDisabledReason: noUp,
+    ultimaPoints: up,
+    dominancePoints: dp,
+    rows: [
+      {
+        command: "Domination",
+        cost: "1 UP + 1 DP",
+        icon: ULTIMA_ACTION_ICONS.Domination,
+        desc: "Free action. Action-preventing debuffs have no effect until the round ends.",
+        disabledReason: snap.isDominating ? "Already Dominating"
+          : (noUp ?? (dp < 1 ? "No Dominance Point" : null)),
+      },
+      {
+        command: "Escape",
+        cost: "1 UP",
+        icon: ULTIMA_ACTION_ICONS.Escape,
+        desc: "Safely leave the scene.",
+        disabledReason: noUp,
+      },
+      {
+        command: "Recovery",
+        cost: "1 UP",
+        icon: ULTIMA_ACTION_ICONS.Recovery,
+        desc: "Recover from all status effects and recover 50 Mind Points.",
+        disabledReason: noUp,
+      },
+    ],
+  };
 }
 
 // ── VFX: socket plumbing ────────────────────────────────────────────────────

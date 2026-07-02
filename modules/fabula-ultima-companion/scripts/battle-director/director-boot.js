@@ -53,6 +53,7 @@ import { initDamageNumbers, emitDamageNumber, renderDamageNumberLocal } from "./
 import { initImpactFx } from "./damage-numbers/director-impact-fx.js";
 import { initHurtReaction, emitHurtReaction, playHurtReactionLocal } from "./damage-numbers/director-hurt-reaction.js";
 import { initDominationFx } from "./domination.js";
+import { initDominationCrest } from "./domination-crest.js";
 import { initDamageNumberAudition } from "./damage-numbers/damage-number-audition.js";
 import { initDamageNumberLivetest } from "./damage-numbers/damage-number-livetest.js";
 import { initBattleStateTool } from "./battle-state-tool.js";
@@ -1403,6 +1404,11 @@ Hooks.once("ready", () => {
   // the AE-driven red outline watcher, on every client.
   try { initDominationFx(); }
   catch (e) { warn("initDominationFx on ready threw", e); }
+
+  // Dominance Crest — floating boss emblem showing banked Dominance Point(s),
+  // AE-replication-driven on every client.
+  try { initDominationCrest(); }
+  catch (e) { warn("initDominationCrest on ready threw", e); }
 
   // Damage-number audition tool — registers into the Developer Tools launcher.
   try { initDamageNumberAudition(); }

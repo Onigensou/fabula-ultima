@@ -2258,30 +2258,31 @@ export async function firePassiveTriggers({ director, casterActor, trigger, payl
 // `directorAppliedBy.lifetimeMode`.
 //
 // Returns `{ swept: <number>, names: [<aeName>] }` for logging.
-export async function tickDirectorAEsAtRoundEnd() {
-  const deleteByActor = new Map();   // actorUuid -> Set<aeId>
+//
+// SCOPE: `game.actors` alone misses UNLINKED-token bearers — their AEs live on
+// the token-synthetic actor, not the world actor (the Domination State
+// "outlives the round" bug). Callers with a live combat pass the combatants'
+// token actors via `extraActors`; both pools are swept, deduped by uuid.
+export async function tickDirectorAEsAtRoundEnd({ extraActors = [] } = {}) {
+  const pool = new Map();   // actorUuid -> actor doc (world + token-synthetic)
+  for (const a of game.actors ?? []) if (a?.uuid) pool.set(a.uuid, a);
+  for (const a of extraActors) if (a?.uuid && !pool.has(a.uuid)) pool.set(a.uuid, a);
   const names = [];
-  for (const actor of game.actors ?? []) {
+  let swept = 0;
+  await Promise.all(Array.from(pool.values()).map(async (actor) => {
+    const ids = [];
     for (const eff of actor.effects ?? []) {
       const stamp = eff.flags?.[FLAG_NS]?.directorAppliedBy;
       if (!stamp) continue;
       if (String(stamp.lifetimeMode ?? "").toLowerCase() !== "round_end") continue;
-      let set = deleteByActor.get(actor.uuid);
-      if (!set) { set = new Set(); deleteByActor.set(actor.uuid, set); }
-      set.add(eff.id);
+      ids.push(eff.id);
       names.push(eff.name);
     }
-  }
-  let swept = 0;
-  await Promise.all(Array.from(deleteByActor.entries()).map(async ([uuid, ids]) => {
+    if (!ids.length) return;
     try {
-      const actor = await fromUuid(uuid);
-      if (!actor) return;
-      const existing = Array.from(ids).filter((id) => !!actor.effects?.get?.(id));
-      if (!existing.length) return;
-      await actor.deleteEmbeddedDocuments("ActiveEffect", existing);
-      swept += existing.length;
-    } catch (e) { warn(`tickDirectorAEsAtRoundEnd: delete failed for ${uuid}`, e); }
+      await actor.deleteEmbeddedDocuments("ActiveEffect", ids);
+      swept += ids.length;
+    } catch (e) { warn(`tickDirectorAEsAtRoundEnd: delete failed for ${actor.uuid}`, e); }
   }));
   return { swept, names };
 }

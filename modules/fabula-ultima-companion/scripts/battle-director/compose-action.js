@@ -45,7 +45,8 @@ import { buildSkillResolver, evaluateFormula } from "./skill-formulas.js";
 import { resolveTargetPlan } from "./state-handlers.js";
 import { freeActions } from "./free-actions.js";
 import { getNpcAttackItems } from "./actor-shape.js";
-import { buildUltimaPageSpec, ULTIMA_COMMANDS } from "./domination.js";
+import { buildUltimaMenuSpec } from "./domination.js";
+import { pickFromList } from "./list-picker.js";
 import { applyAttackRangeGate, applyStudyGuardExclusion, snapshotEligibleTargetsFromDCombat } from "./snapshot.js";
 
 // Race-cancellation token. Returns { promise, cancel }. The promise
@@ -132,15 +133,16 @@ export async function composeAction({
     const actorIdForGrant = snap?.actorId ?? (actorUuid ? String(actorUuid).split(".").pop() : null);
     const grant = freeActionGrant
       ?? (actorIdForGrant ? freeActions.get(actorIdForGrant) : null);
-    // Boss-only "Ultima" page (Domination / Escape / Recovery). Hidden inside
-    // a free-action window (the filtered one-page menu) — Ultima actions are
-    // declared on the boss's own turn proper. Unaffordable entries arrive
-    // pre-disabled; their shortfall reason red-stamps the blade exactly like
-    // an action-gating debuff.
-    const ultimaPage = grant ? null : buildUltimaPageSpec(snap);
-    const ultimaDisabled = (ultimaPage?.entries ?? [])
-      .filter((e) => e.disabledReason)
-      .map((e) => ({ label: e.label, reason: e.disabledReason }));
+    // Boss-only "Ultima" blade on the System tab — opens the Ultima action
+    // picker (Domination / Escape / Recovery). Hidden inside a free-action
+    // window (the filtered one-page menu) — Ultima actions are declared on the
+    // boss's own turn proper. With no Ultima Point at all the blade itself is
+    // greyed + red-stamped like an action-gating debuff; per-action shortfalls
+    // (e.g. no Dominance Point) dim individual picker rows instead.
+    const ultimaSpec = grant ? null : buildUltimaMenuSpec(snap);
+    const ultimaDisabled = ultimaSpec?.buttonDisabledReason
+      ? [{ label: "Ultima", reason: ultimaSpec.buttonDisabledReason }]
+      : [];
     const command = await waitForOctopathClick({
       director, token, combatId, actorUuid, cancelSentinel,
       enabledLabels: grant?.enabledLabels ?? null,
@@ -148,7 +150,7 @@ export async function composeAction({
       // Action-gating debuffs (Frightened/Silence/…) — frozen Array<{label,
       // reason}> captured at snapshot time; the menu greys + red-stamps these.
       disabledLabels: [...(snap?.blockedActions ?? []), ...ultimaDisabled],
-      ultimaPage,
+      showUltima: !!ultimaSpec,
     });
     if (externallyCancelled || command === null) break;
 
@@ -211,13 +213,13 @@ export async function composeAction({
         // (TARGET→COMPUTE→CONFIRM→resolveAction) with no Item-specific path.
         result = await composeItem({ director, snap, eligible, cancelSentinel });
         break;
-      case "Domination":
-      case "Escape":
-      case "Recovery":
-        // Ultima actions (boss-only page) — self-targeted, no pickers. The
-        // action card at CONFIRM is the confirm/cancel pass; the GM-side
+      case "Ultima":
+        // Boss Ultima menu — ListPicker over the three Ultima actions. The
+        // picked command travels as the bundle's concrete command name
+        // (Domination/Escape/Recovery), so TARGET/RESOLVE/cards are shared.
+        // Cancel loops back to the Octopath like any sub-picker. The GM-side
         // DECLARE backstop re-validates boss status + point affordability.
-        result = { cancelled: false, bundle: { command } };
+        result = await composeUltima({ director, snap, ultimaSpec, cancelSentinel });
         break;
       default:
         return { cancelled: true, reason: `unknown command: ${command}` };
@@ -241,7 +243,7 @@ export async function composeAction({
 
 // Spawn TurnUI, return a Promise that resolves with the command label
 // or null if cancelled. Cleans up the Octopath in either path.
-function waitForOctopathClick({ director, token, combatId, actorUuid, cancelSentinel, enabledLabels = null, budgetText = null, disabledLabels = null, ultimaPage = null }) {
+function waitForOctopathClick({ director, token, combatId, actorUuid, cancelSentinel, enabledLabels = null, budgetText = null, disabledLabels = null, showUltima = false }) {
   return new Promise((resolve) => {
     let resolved = false;
     const finish = (value) => {
@@ -257,7 +259,7 @@ function waitForOctopathClick({ director, token, combatId, actorUuid, cancelSent
       enabledLabels,
       budgetText,
       disabledLabels,
-      ultimaPage,
+      showUltima,
       // Passive button intentionally uses TurnUI's default — opens
       // PassiveManager locally without entering the compose chain. The
       // Octopath stays open (TurnUI.spawn doesn't auto-close on Passive
@@ -1016,4 +1018,39 @@ async function composeGuard({ director, snap, eligible, cancelSentinel }) {
       coverTokenUuid,
     },
   };
+}
+
+// ─── Ultima (Boss/Villain) ───────────────────────────────────────────
+//
+// One picker over the three Ultima actions (Domination / Escape /
+// Recovery) — the boss-side twin of the Skill picker. Rows come pre-baked
+// from buildUltimaMenuSpec (costs + per-row shortfall reasons); a disabled
+// row stays visible with its reason appended so the GM can see WHY (mirrors
+// the dimmed-entry style of the intent-filtered skill picker).
+async function composeUltima({ director, snap, ultimaSpec, cancelSentinel }) {
+  const rows = ultimaSpec?.rows ?? [];
+  if (!rows.length) return { cancelled: true, reason: "no ultima spec" };
+  const picked = await raceCancel(
+    pickFromList({
+      director,
+      title: "Ultima Actions",
+      subtitle: `${snap.name} • Ultima Points: ${ultimaSpec.ultimaPoints} • Dominance: ${ultimaSpec.dominancePoints}`,
+      width: 420,
+      options: rows.map((r) => ({
+        value: r.command,
+        primary: r.command,
+        secondary: r.disabledReason
+          ? `${r.desc} <span style="color:#c81010; font-weight:800;">— ${r.disabledReason}</span>`
+          : r.desc,
+        imageUrl: r.icon,
+        badge: r.cost,
+        badgeTone: r.command === "Domination" ? "danger" : undefined,
+        disabled: !!r.disabledReason,
+      })),
+      externalCancel: cancelSentinel,
+    }),
+    cancelSentinel,
+  );
+  if (!picked) return { cancelled: true, reason: "ultima-cancelled" };
+  return { cancelled: false, bundle: { command: picked } };
 }

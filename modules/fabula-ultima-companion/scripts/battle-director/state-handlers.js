@@ -5726,7 +5726,14 @@ const RoundEnd = {
     // the standalone reaction window so round_end-triggered reactions
     // see a clean slate.
     try {
-      const swept = await SE().tickDirectorAEsAtRoundEnd();
+      // Pass the combatants' TOKEN actors — unlinked NPC bearers (e.g. a boss's
+      // Domination State) carry their AEs on the token-synthetic actor, which
+      // the sweep's world-actor walk can't see.
+      const swept = await SE().tickDirectorAEsAtRoundEnd({
+        extraActors: (director.dCombat?.combatants ?? [])
+          .map((c) => c.actorDoc ?? c.tokenDoc?.actor ?? null)
+          .filter(Boolean),
+      });
       if (swept?.swept) {
         log(`ROUND_END: swept ${swept.swept} round-end AE(s): ${swept.names.join(", ")}`);
       }
