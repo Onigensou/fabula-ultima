@@ -17,6 +17,8 @@
 // die; an empty array = the player kept the original roll).
 
 import { log, warn } from "./logger.js";
+import { getIntentChannel } from "./intent-channel.js";
+import { INTENTS } from "./intents.js";
 
 const CSS_ID  = "fud-die-swap-picker-style";
 const ROOT_ID = "fud-die-swap-picker-root";
@@ -85,9 +87,9 @@ function ensureStyles() {
 // (BOTH dice are passed; a die with no options still renders, dropdown = Default only.)
 // budget: { [target]: maxUses } — one charge per swap skill; a target can be picked
 // on at most `budget[target]` dice, so a single skill never swaps both dice.
-export async function pickDieSwap({ director, label = "Die Swap", A1, A2, dA, dB, slots = [], budget = {} } = {}) {
+export async function pickDieSwap({ director, combatId = null, label = "Die Swap", A1, A2, dA, dB, slots = [], budget = {} } = {}) {
   ensureStyles();
-  const combatId = director?.combatId ?? "default";
+  combatId = director?.combatId ?? combatId ?? "default";
   const prior = _overlays.get(combatId);
   if (prior) { try { prior.cleanup(); } catch {} _overlays.delete(combatId); }
 
@@ -210,6 +212,101 @@ export async function pickDieSwap({ director, label = "Die Swap", A1, A2, dA, dB
     };
     _overlays.set(combatId, { cleanup, root });
   });
+}
+
+// GM-side helper: the first ACTIVE non-GM user who OWNs `actor` (deterministic
+// on multi-owner actors). Returns null for NPCs / no online owner — the caller
+// then renders the picker GM-locally. Canonical shape shared with
+// action-card.js / soul-steal-result.js.
+function ownerUserIdForActor(actor) {
+  if (!actor) return null;
+  const candidates = (game.users?.contents ?? []).filter((u) => {
+    if (u.isGM) return false;
+    if (!u.active) return false;
+    try { return actor.testUserPermission?.(u, "OWNER"); } catch { return false; }
+  });
+  if (!candidates.length) return null;
+  candidates.sort((a, b) => a.id.localeCompare(b.id));
+  return candidates[0].id;
+}
+
+// GM-side entry used by rollCheck (check.js). Routes the pre-roll die-swap
+// choice to the acting actor's OWNER when they're an online player, while the
+// GM keeps a local copy racing it (owner picks → the swap applies; GM can pick
+// too if the player idles). Falls back to a GM-local picker for NPCs / offline
+// owners. Returns the chosen swaps: [{ slot, from, to }] (empty = kept roll).
+export async function resolveDieSwapInteractive({ director, actor, label, A1, A2, dA, dB, slots = [], budget = {} } = {}) {
+  const channel = getIntentChannel();
+  const ownerUserId = game.user?.isGM ? ownerUserIdForActor(actor) : null;
+
+  // No online player owner (NPC / GM-owned / offline) → GM-local picker only.
+  if (!game.user?.isGM || !ownerUserId || !channel) {
+    const res = await pickDieSwap({ director, label, A1, A2, dA, dB, slots, budget });
+    return res?.swaps ?? [];
+  }
+
+  const combatId = director?.combatId ?? "default";
+  channel.broadcastMenuOpen({
+    targetUserId: ownerUserId,
+    menuSpec: { kind: "die-swap", combatId, label, A1, A2, dA, dB, slots, budget },
+  });
+  const remoteAwait = channel.awaitIntent(INTENTS.DIE_SWAP_PICKED, {
+    fromUserId: ownerUserId,
+    timeoutMs: 30 * 60 * 1000,
+  });
+  const localPromise = pickDieSwap({ director, label, A1, A2, dA, dB, slots, budget });
+
+  try {
+    const result = await Promise.race([
+      localPromise.then((r) => ({ source: "local", swaps: r?.swaps ?? [] })),
+      remoteAwait.then((intent) => ({ source: "remote", swaps: intent?.body?.swaps ?? [] })),
+    ]);
+    if (result.source === "local") {
+      try { remoteAwait.abort?.("local-won"); } catch {}
+      try { channel.broadcastMenuClose({ targetUserId: ownerUserId, kind: "die-swap", reason: "local-won" }); } catch {}
+    } else {
+      // Owner picked — tear down the GM's local copy.
+      try { DieSwapPicker.despawn({ director }); } catch {}
+      try { channel.broadcastMenuClose({ targetUserId: ownerUserId, kind: "die-swap", reason: "remote-won" }); } catch {}
+    }
+    return result.swaps ?? [];
+  } catch (e) {
+    warn("check_die_swap: routing race threw — keeping the original roll", e);
+    try { remoteAwait.abort?.("error"); } catch {}
+    try { DieSwapPicker.despawn({ director }); } catch {}
+    try { channel.broadcastMenuClose({ targetUserId: ownerUserId, kind: "die-swap", reason: "error" }); } catch {}
+    return [];
+  }
+}
+
+// Player-side handler — spawns the die-swap picker on the owner's client when
+// the GM broadcasts a "die-swap" MENU_OPEN, and emits DIE_SWAP_PICKED back on
+// confirm/cancel. The GM's rollCheck races this against its own local picker.
+export function registerPlayerDieSwapHandler(channel, isActiveDirector = () => false) {
+  const offOpen = channel.onMenuOpen(async (menuSpec) => {
+    if (!menuSpec || menuSpec.kind !== "die-swap") return;
+    // Primary GM spawns the picker locally in resolveDieSwapInteractive; skip.
+    if (isActiveDirector()) return;
+    const res = await pickDieSwap({
+      director: null,
+      combatId: menuSpec.combatId,
+      label: menuSpec.label,
+      A1: menuSpec.A1, A2: menuSpec.A2, dA: menuSpec.dA, dB: menuSpec.dB,
+      slots: menuSpec.slots, budget: menuSpec.budget,
+    });
+    channel.emit({
+      type: INTENTS.DIE_SWAP_PICKED,
+      body: { swaps: res?.swaps ?? [] },
+      combatId: menuSpec.combatId,
+    });
+  });
+
+  const offClose = channel.onMenuClose((payload) => {
+    if (payload?.kind && payload.kind !== "die-swap") return;
+    try { DieSwapPicker.despawnAll(); } catch {}
+  });
+
+  return () => { try { offOpen?.(); } catch {} try { offClose?.(); } catch {} };
 }
 
 export const DieSwapPicker = {
