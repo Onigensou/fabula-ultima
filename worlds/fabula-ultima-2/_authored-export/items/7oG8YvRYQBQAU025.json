@@ -35,8 +35,9 @@
       "effect_table": {
         "0": {
           "$deleted": false,
-          "effect_kind": "open_action_menu",
-          "effect_label": "cat_menu",
+          "chain_steps": "cat_prompt, cat_mp, cat_dmg",
+          "effect_kind": "chain",
+          "effect_label": "cat_root",
           "menu_option_descriptions": "Spend 10 MP for +5 damage to each creature|Spend 20 MP for +10 damage to each creature|Spend 30 MP for +15 damage to each creature",
           "menu_option_labels": "+10 MP → +5 damage|+20 MP → +10 damage|+30 MP → +15 damage",
           "menu_option_refs": "cat_10, cat_20, cat_30",
@@ -49,74 +50,29 @@
           "condition_formula": "SL >= 1 && CUR_MP >= ACTION_MP_COST + 10",
           "disable_ui_type": "dim",
           "disabled_reason": "Not enough MP",
-          "effect_kind": "chain",
-          "effect_label": "cat_10"
+          "effect_kind": "prompt_number",
+          "effect_label": "cat_prompt",
+          "prompt_label": "Overcharge: increase MP cost (+5 damage per 10 MP)",
+          "prompt_max": "min( FLAG_CATACLYSM_MP_CAP + (FLAG_CATACLYSM_MP_CAP == 0) * (SL * 10), floor((CUR_MP - ACTION_MP_COST)/10)*10 )",
+          "prompt_min": "10",
+          "prompt_step": "10",
+          "prompt_var": "overcharge"
         },
         "2": {
           "$deleted": false,
-          "cost_amount": "10",
+          "cost_amount": "VAR_OVERCHARGE",
           "cost_operation": "add",
           "cost_resource": "mp",
           "effect_kind": "adjust_cost",
-          "effect_label": "cat_10_mp"
+          "effect_label": "cat_mp"
         },
         "3": {
           "$deleted": false,
-          "damage_amount": "5",
+          "damage_amount": "VAR_OVERCHARGE / 2",
           "damage_operation": "add",
           "damage_stage": "outgoing",
           "effect_kind": "adjust_damage",
-          "effect_label": "cat_10_dmg"
-        },
-        "4": {
-          "$deleted": false,
-          "chain_steps": "cat_20_mp, cat_20_dmg",
-          "condition_formula": "SL >= 2 && CUR_MP >= ACTION_MP_COST + 20",
-          "disable_ui_type": "dim",
-          "disabled_reason": "Not enough MP",
-          "effect_kind": "chain",
-          "effect_label": "cat_20"
-        },
-        "5": {
-          "$deleted": false,
-          "cost_amount": "20",
-          "cost_operation": "add",
-          "cost_resource": "mp",
-          "effect_kind": "adjust_cost",
-          "effect_label": "cat_20_mp"
-        },
-        "6": {
-          "$deleted": false,
-          "damage_amount": "10",
-          "damage_operation": "add",
-          "damage_stage": "outgoing",
-          "effect_kind": "adjust_damage",
-          "effect_label": "cat_20_dmg"
-        },
-        "7": {
-          "$deleted": false,
-          "chain_steps": "cat_30_mp, cat_30_dmg",
-          "condition_formula": "SL >= 3 && CUR_MP >= ACTION_MP_COST + 30",
-          "disable_ui_type": "dim",
-          "disabled_reason": "Not enough MP",
-          "effect_kind": "chain",
-          "effect_label": "cat_30"
-        },
-        "8": {
-          "$deleted": false,
-          "cost_amount": "30",
-          "cost_operation": "add",
-          "cost_resource": "mp",
-          "effect_kind": "adjust_cost",
-          "effect_label": "cat_30_mp"
-        },
-        "9": {
-          "$deleted": false,
-          "damage_amount": "15",
-          "damage_operation": "add",
-          "damage_stage": "outgoing",
-          "effect_kind": "adjust_damage",
-          "effect_label": "cat_30_dmg"
+          "effect_label": "cat_dmg"
         }
       },
       "heroic_requirement": "",
@@ -132,8 +88,8 @@
       "reaction_config_table": {
         "0": {
           "$deleted": false,
-          "condition_formula": "HAS_ARCANE_WEAPON == 1 && ACTION_IS_SPELL == 1 && ACTION_IS_FREE_CAST == 0",
-          "reaction_effect_ref": "cat_menu",
+          "condition_formula": "HAS_ARCANE_WEAPON == 1 && ACTION_IS_SPELL == 1 && ACTION_IS_FREE_CAST == 0 && CUR_MP >= ACTION_MP_COST + 10",
+          "reaction_effect_ref": "cat_root",
           "reaction_passive_mode": "ask",
           "reaction_source": "self",
           "reaction_trigger": "creature_will_deal_damage"
@@ -151,7 +107,7 @@
       "use_optional_params": false
     },
     "template": "j0F5Msw5RZ8aIB3j",
-    "templateSystemUniqueVersion": 2666163373,
+    "templateSystemUniqueVersion": 1293947472,
     "unique": false,
     "uniqueId": "7oG8YvRYQBQAU025"
   },
