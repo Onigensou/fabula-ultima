@@ -47,7 +47,7 @@
             "appliedAtRound": 0,
             "effectLabel": "hod_refresh",
             "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.4vgLF7HBC9px5WFx",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.43doUXTWsLFbtefF",
             "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF",
             "turnsRemaining": null
           },
@@ -141,6 +141,73 @@
           "food"
         ]
       },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "XvIyzmhj9vXaLgE3",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782988097834,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>A reserve of foresight Hina spends to take the place of all creatures threatened by a single danger.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "propheticPoint01",
+          "originalParentId": "Lmzs6VllFRo44jZq",
+          "originalUuid": "Item.Lmzs6VllFRo44jZq.ActiveEffect.propheticPoint01"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "chargeKey": "prophecy",
+          "charges": 21,
+          "chargesMax": 99,
+          "directorAppliedBy": {
+            "appliedAtRound": 0,
+            "effectLabel": "pds_gain",
+            "lifetimeMode": "persistent_counter",
+            "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.43doUXTWsLFbtefF",
+            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.gm2w1NLdaEI7SzaQ",
+            "turnsRemaining": null
+          },
+          "directorPermanent": false,
+          "lifetimeMode": "persistent_counter"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/nocturnal_sect.png",
+      "name": "Prophecy Point",
+      "origin": "Actor.dafTLBUscCDNgq8H.Item.gm2w1NLdaEI7SzaQ",
+      "sort": 0,
+      "statuses": [
+        "fud-prophecy-point"
+      ],
+      "system": {},
       "tint": "#ffffff",
       "transfer": false,
       "type": "base"
@@ -828,6 +895,69 @@
       "type": "equippableItem"
     },
     {
+      "_id": "52LOaEsbEpFYhbru",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782988023376,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
+      "name": "Dragontrap Bow (Passive)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "eSIh2SB8tc4Ux4vz",
+        "props": {
+          "cost": "",
+          "description": "<p>When you hit a Flying target with this weapon, you may force it to land until the end of the round.</p>",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "ae_template_ref": "Grounded",
+              "effect_kind": "apply_ae",
+              "effect_label": "dt_ground",
+              "target_ref": "trigger_subject"
+            }
+          },
+          "isCheck": false,
+          "name": "Dragontrap Bow (Passive)",
+          "on_activate_effect_ref": "",
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "TARGET_IS_FLYING == 1",
+              "reaction_action_intent": "",
+              "reaction_effect_ref": "dt_ground",
+              "reaction_passive_mode": "ask",
+              "reaction_requires_weapon_used": true,
+              "reaction_source": "self",
+              "reaction_trigger": "creature_deals_damage"
+            }
+          },
+          "skill_target": "Self",
+          "skill_type": "Passive",
+          "type_damage": ""
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "AQqb37jPpVi1h6j6"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "52nRuMN0X58BZCm9",
       "_stats": {
         "compendiumSource": "Item.UCGtDYsRkyH4IqBs",
@@ -1182,12 +1312,30 @@
           "item_mdef_bonus": "0",
           "item_quantity": "1",
           "item_rarity": "Rare",
+          "item_skill_passive": {
+            "jepGtMgwfkkCznXk": {
+              "id": "${item.id}",
+              "name": "Windpiercer (Passive)",
+              "skill_cost": "",
+              "skill_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.jepGtMgwfkkCznXk"
+            }
+          },
           "item_type": "weapon",
           "mimic_ef": "100",
           "monster_ef": "100",
           "name": "Windpiercer",
           "optional_params": {},
           "plant_ef": "100",
+          "related_item_list": {
+            "jepGtMgwfkkCznXk": {
+              "id": "${item.id}",
+              "name": "Windpiercer (Passive)",
+              "related_item_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.jepGtMgwfkkCznXk"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "INS",
@@ -1641,7 +1789,6 @@
           "beast_ef": "100",
           "category": "Bow",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "12",
@@ -1660,11 +1807,9 @@
           "hand_slots": "Two-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "D32pUz6M6e1smWrB",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bow.png",
           "insect_ef": "100",
           "ip_cost": "",
-          "isEquipped": false,
+          "isEquipped": true,
           "isKey": false,
           "isMartial": true,
           "isModule": false,
@@ -1695,7 +1840,6 @@
           "spirit_ef": "100",
           "type_damage": "Earth",
           "undead_ef": "100",
-          "uuid": "Item.D32pUz6M6e1smWrB",
           "vehicle_ef": "100",
           "weapon_range": "Ranged"
         },
@@ -2445,6 +2589,69 @@
       "type": "equippableItem"
     },
     {
+      "_id": "emTXtdbsz6owxFeI",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1782988035968,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
+      "name": "Dragontrap Bow (Passive)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "bsG2aZEMX2Glb3pI",
+        "props": {
+          "cost": "",
+          "description": "<p>When you hit a Flying target with this weapon, you may force it to land until the end of the round.</p>",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "ae_template_ref": "Grounded",
+              "effect_kind": "apply_ae",
+              "effect_label": "dt_ground",
+              "target_ref": "trigger_subject"
+            }
+          },
+          "isCheck": false,
+          "name": "Dragontrap Bow (Passive)",
+          "on_activate_effect_ref": "",
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "TARGET_IS_FLYING == 1",
+              "reaction_action_intent": "",
+              "reaction_effect_ref": "dt_ground",
+              "reaction_passive_mode": "ask",
+              "reaction_requires_weapon_used": true,
+              "reaction_source": "self",
+              "reaction_trigger": "creature_deals_damage"
+            }
+          },
+          "skill_target": "Self",
+          "skill_type": "Passive",
+          "type_damage": ""
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "AQqb37jPpVi1h6j6"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "eSIh2SB8tc4Ux4vz",
       "_stats": {
         "compendiumSource": "Item.Qex8FZz4dvDcBmlz",
@@ -2516,7 +2723,6 @@
           "beast_ef": "100",
           "category": "Bow",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "12",
@@ -2535,8 +2741,6 @@
           "hand_slots": "Two-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "D32pUz6M6e1smWrB",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bow.png",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -2553,6 +2757,16 @@
           "item_mdef_bonus": "0",
           "item_quantity": 1,
           "item_rarity": "Uncommon",
+          "item_skill_passive": {
+            "52LOaEsbEpFYhbru": {
+              "id": "${item.id}",
+              "name": "Dragontrap Bow (Passive)",
+              "skill_cost": "",
+              "skill_description": "<p>When you hit a Flying target with this weapon, you may force it to land until the end of the round.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.52LOaEsbEpFYhbru"
+            }
+          },
           "item_type": "weapon",
           "mimic_ef": "100",
           "monster_ef": "100",
@@ -2561,6 +2775,14 @@
           "plant_ef": "100",
           "refine_count": "0",
           "refine_level": "0",
+          "related_item_list": {
+            "52LOaEsbEpFYhbru": {
+              "id": "${item.id}",
+              "name": "Dragontrap Bow (Passive)",
+              "related_item_description": "<p>When you hit a Flying target with this weapon, you may force it to land until the end of the round.</p>",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.52LOaEsbEpFYhbru"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
@@ -2570,7 +2792,6 @@
           "spirit_ef": "100",
           "type_damage": "Earth",
           "undead_ef": "100",
-          "uuid": "Item.D32pUz6M6e1smWrB",
           "vehicle_ef": "100",
           "weapon_range": "Ranged"
         },
@@ -3448,7 +3669,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -3466,8 +3686,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "S71vgGdSVCmEGWN0",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Pokemon/poke-doll.png",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -3492,6 +3710,14 @@
               "skill_description": "<p><em>Decoy Doll:</em> summon a Decoy Doll companion until the end of the scene.</p>",
               "skill_maxLevel": "",
               "uuid": "Item.KnKIXdPq6wjaFnCK"
+            },
+            "vliuwtKw7PKGGKcU": {
+              "id": "${item.id}",
+              "name": "Decoy Doll",
+              "skill_cost": "-",
+              "skill_description": "<p><em>Decoy Doll:</em> summon a Decoy Doll companion until the end of the scene.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.vliuwtKw7PKGGKcU"
             }
           },
           "item_type": "consumable",
@@ -3508,6 +3734,12 @@
               "name": "Decoy Doll",
               "related_item_description": "<p><em>Decoy Doll:</em> summon a Decoy Doll companion until the end of the scene.</p>",
               "uuid": "Item.KnKIXdPq6wjaFnCK"
+            },
+            "vliuwtKw7PKGGKcU": {
+              "id": "${item.id}",
+              "name": "Decoy Doll",
+              "related_item_description": "<p><em>Decoy Doll:</em> summon a Decoy Doll companion until the end of the scene.</p>",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.vliuwtKw7PKGGKcU"
             }
           },
           "reptilian_ef": "100",
@@ -3518,7 +3750,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Item.S71vgGdSVCmEGWN0",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -4498,7 +4729,7 @@
             }
           },
           "isCheck": false,
-          "name": "Scouter (Passive)",
+          "name": "Windpiercer (Passive)",
           "on_activate_effect_ref": "",
           "reaction_config_table": {
             "0": {
@@ -4512,7 +4743,6 @@
               "reaction_trigger": "creature_deals_damage"
             }
           },
-          "skill_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
           "skill_target": "Self",
           "skill_type": "Passive",
           "type_damage": ""
@@ -4964,6 +5194,14 @@
               "skill_description": "<ul><li><p>Target creature <strong>recovers 100 HP</strong></p></li></ul>",
               "skill_maxLevel": 1,
               "uuid": "Item.0gi0e6XOfjVr2S0d"
+            },
+            "peoXVGo2UIvAnZfE": {
+              "id": "${item.id}",
+              "name": "Mega-Remedy",
+              "skill_cost": "-",
+              "skill_description": "<ul><li><p>Target creature <strong>recovers 100 HP</strong></p></li></ul>",
+              "skill_maxLevel": 1,
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.peoXVGo2UIvAnZfE"
             }
           },
           "item_type": "consumable",
@@ -4978,6 +5216,12 @@
               "name": "Mega-Remedy",
               "related_item_description": "<ul><li><p>Target creature <strong>recovers 100 HP</strong></p></li></ul>",
               "uuid": "Item.0gi0e6XOfjVr2S0d"
+            },
+            "peoXVGo2UIvAnZfE": {
+              "id": "${item.id}",
+              "name": "Mega-Remedy",
+              "related_item_description": "<ul><li><p>Target creature <strong>recovers 100 HP</strong></p></li></ul>",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.peoXVGo2UIvAnZfE"
             }
           },
           "reptilian_ef": "100",
@@ -5090,8 +5334,8 @@
               "name": "Scouter (Passive)",
               "skill_cost": "",
               "skill_description": "<ul><li>Once at the start of a<strong>&nbsp;Conflict</strong> scene, you may perform the <strong>【Study】</strong>action as a&nbsp;<strong>Free Action</strong></li></ul>",
-              "skill_maxLevel": 1,
-              "uuid": ""
+              "skill_maxLevel": "",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.wGMngSNcL0icOQiw"
             }
           },
           "item_type": "accessory",
@@ -5100,6 +5344,14 @@
           "name": "Scouter",
           "optional_params": {},
           "plant_ef": "100",
+          "related_item_list": {
+            "wGMngSNcL0icOQiw": {
+              "id": "${item.id}",
+              "name": "Scouter (Passive)",
+              "related_item_description": "<ul><li>Once at the start of a<strong>&nbsp;Conflict</strong> scene, you may perform the <strong>【Study】</strong>action as a&nbsp;<strong>Free Action</strong></li></ul>",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.wGMngSNcL0icOQiw"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
@@ -6053,13 +6305,10 @@
           "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<p>You draw sickness away from an ally and pass it onto your enemy. The target recovers from <strong>all status effects</strong>. Then choose one of the status effects the target recovered from and another creature you can see. The chosen creature suffers the chosen status effect.</p>\n",
-          "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {},
           "heroic_requirement": "",
-          "id": "p7WldKGSMumLxC4p",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/MagicalRangedRollAction/drain.png",
           "isCheck": false,
           "isFacet": true,
           "isHeroic": false,
@@ -6079,8 +6328,7 @@
           "skill_target": "One creature",
           "skill_type": "Spell",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.p7WldKGSMumLxC4p"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -6294,8 +6542,8 @@
               "name": "Morrigan (Passive)",
               "skill_cost": "",
               "skill_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
-              "skill_maxLevel": 1,
-              "uuid": ""
+              "skill_maxLevel": "",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.ziGuceXkDrtTMBp9"
             }
           },
           "item_type": "weapon",
@@ -6304,6 +6552,14 @@
           "name": "Morrigan",
           "optional_params": {},
           "plant_ef": "100",
+          "related_item_list": {
+            "ziGuceXkDrtTMBp9": {
+              "id": "${item.id}",
+              "name": "Morrigan (Passive)",
+              "related_item_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.ziGuceXkDrtTMBp9"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "MIG",
@@ -6631,13 +6887,10 @@
           "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<p>You strengthen and purify the soul energy coursing through your companions. Each target <strong>recovers</strong> from 1 status effects.</p>",
-          "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {},
           "heroic_requirement": "",
-          "id": "rOdq8hhYJpSutkre",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/SGE/pepsis.png",
           "isCheck": false,
           "isFacet": true,
           "isHeroic": false,
@@ -6657,8 +6910,7 @@
           "skill_target": "Up to three creatures",
           "skill_type": "Spell",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.rOdq8hhYJpSutkre"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -7001,11 +7253,8 @@
       "system": {
         "container": "wdkyWxt43rlxEtTO",
         "props": {
-          "action_command": "",
-          "check_mode": "",
           "cost": "",
           "description": "<p>Equipped passive: +2 to Study Checks.</p>",
-          "details_roller": "",
           "effect_table": {
             "0": {
               "check_buff_action": "study",
@@ -7014,8 +7263,6 @@
               "effect_label": "lens_study_buff"
             }
           },
-          "id": "QjuNoo0rGl9iUWiO",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
           "isCheck": false,
           "isReaction": false,
           "max_level": "1",
@@ -7024,8 +7271,7 @@
           "rolled_atr1": "INS",
           "rolled_atr2": "INS",
           "skill_target": "",
-          "skill_type": "Passive",
-          "uuid": "Item.QjuNoo0rGl9iUWiO"
+          "skill_type": "Passive"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -7044,6 +7290,63 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "FSd72GcfPVKsQQyX",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1782988075732,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "flags.fabula-ultima-companion.opp_lucky",
+              "mode": 5,
+              "priority": 20,
+              "value": "${isEquipped ? 1 : 0}$"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "FSd72GcfPVKsQQyX",
+              "originalParentId": "t9BfF2mxmREPRFuf",
+              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.t9BfF2mxmREPRFuf.ActiveEffect.FSd72GcfPVKsQQyX"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/svg/coins.svg",
+          "name": "Lucky Opportunity",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -8034,6 +8337,7 @@
             }
           },
           "isCheck": false,
+          "name": "Decoy Doll",
           "on_activate_effect_ref": "decoy_summon",
           "skill_target": "Self",
           "skill_type": "Item",
@@ -8154,12 +8458,30 @@
           "item_mdef_bonus": "0",
           "item_quantity": "1",
           "item_rarity": "Uncommon",
+          "item_skill_passive": {
+            "sNQBVLstuZSz5EZC": {
+              "id": "${item.id}",
+              "name": "Lens of Insight (Passive)",
+              "skill_cost": "",
+              "skill_description": "<p>Equipped passive: +2 to Study Checks.</p>",
+              "skill_maxLevel": 1,
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.sNQBVLstuZSz5EZC"
+            }
+          },
           "item_type": "accessory",
           "mimic_ef": "100",
           "monster_ef": "100",
           "name": "Lens of Insight",
           "optional_params": {},
           "plant_ef": "100",
+          "related_item_list": {
+            "sNQBVLstuZSz5EZC": {
+              "id": "${item.id}",
+              "name": "Lens of Insight (Passive)",
+              "related_item_description": "<p>Equipped passive: +2 to Study Checks.</p>",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.sNQBVLstuZSz5EZC"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
@@ -8720,7 +9042,7 @@
             }
           },
           "isCheck": false,
-          "name": "Scouter (Passive)",
+          "name": "The Tormentor (Passive)",
           "on_activate_effect_ref": "",
           "reaction_config_table": {
             "0": {
@@ -8734,7 +9056,6 @@
               "reaction_trigger": "creature_will_deal_damage"
             }
           },
-          "skill_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
           "skill_target": "Self",
           "skill_type": "Passive",
           "type_damage": ""
@@ -8801,7 +9122,6 @@
           "beast_ef": "100",
           "category": "Flail",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "10",
@@ -8820,11 +9140,9 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "xktj2JJX7QZ5z6jA",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1969.gif",
           "insect_ef": "100",
           "ip_cost": "",
-          "isEquipped": true,
+          "isEquipped": false,
           "isKey": false,
           "isMartial": true,
           "isModule": false,
@@ -8838,6 +9156,16 @@
           "item_mdef_bonus": "0",
           "item_quantity": 1,
           "item_rarity": "Uncommon",
+          "item_skill_passive": {
+            "YUYi5J6GgRHVbEtd": {
+              "id": "${item.id}",
+              "name": "The Tormentor (Passive)",
+              "skill_cost": "",
+              "skill_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.YUYi5J6GgRHVbEtd"
+            }
+          },
           "item_type": "weapon",
           "mimic_ef": "100",
           "monster_ef": "100",
@@ -8846,6 +9174,14 @@
           "plant_ef": "100",
           "refine_count": "0",
           "refine_level": "0",
+          "related_item_list": {
+            "YUYi5J6GgRHVbEtd": {
+              "id": "${item.id}",
+              "name": "The Tormentor (Passive)",
+              "related_item_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.YUYi5J6GgRHVbEtd"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "MIG",
@@ -8855,7 +9191,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Item.xktj2JJX7QZ5z6jA",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -9214,7 +9549,7 @@
             }
           },
           "isCheck": false,
-          "name": "Scouter (Passive)",
+          "name": "Morrigan (Passive)",
           "on_activate_effect_ref": "",
           "reaction_config_table": {
             "0": {
@@ -9227,7 +9562,6 @@
               "reaction_trigger": "creature_completes_attack"
             }
           },
-          "skill_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
           "skill_target": "Self",
           "skill_type": "Passive",
           "type_damage": ""
@@ -9908,7 +10242,7 @@
       "entropism": false,
       "envenomed_status": 0,
       "exp_meter": "1.84",
-      "experience": 1.84,
+      "experience": "1.84",
       "experience_ui": "0",
       "extra_damage_mod_air": 0,
       "extra_damage_mod_all": 1,
@@ -10640,15 +10974,15 @@
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.ERBLg9oQAHRlJ8wZ"
         }
       },
-      "level": 34,
+      "level": "34",
       "lifesteal_percentage": 0,
       "lifesteal_value": 0,
       "magic_defense": 12,
       "magic_defense_mod": "0",
       "main_attrib_1": "DEX",
-      "main_attrib_2": "MIG",
-      "main_details": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.N1c190b6J1kKS6Vf\" data-id=\"N1c190b6J1kKS6Vf\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Benign</span></strong></a></span></span></p></li><li><p>This weapon deals bonus damage equal to 20% of the <strong>target current health</strong>, this bonus is reduce to 10% against Champion-rank creature</p></li></ul>",
-      "main_hand": "The Tormentor",
+      "main_attrib_2": "DEX",
+      "main_details": "<ul><li><p>When you hit a <strong>@UUID[JournalEntry.q6keqwDWUsEgSWDw]{Flying}</strong>&nbsp;target with this weapon, you may force that target to land immediately</p></li></ul>",
+      "main_hand": "Dragontrap Bow",
       "main_hand_attack": "",
       "manadrain_percentage": 0,
       "manadrain_value": 0,
@@ -11904,10 +12238,10 @@
       "turbulence_status": 0,
       "uuid": "Actor.dafTLBUscCDNgq8H",
       "weak_status": 0,
-      "weapon1_base_damage": "10",
+      "weapon1_base_damage": "12",
       "weapon1_base_mod": "0",
       "weapon1_damage": 10,
-      "weapon1_damagetype": "Physical",
+      "weapon1_damagetype": "Earth",
       "weapon1_mod": 0,
       "weapon2_damagetype": "-",
       "weapon_list": {
