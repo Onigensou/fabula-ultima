@@ -20,7 +20,7 @@ import {
   resolveAccuracyParts, resolveOutgoingDamageParts, resolveRestoreParts, sumRestoreParts, applyGrantAdjust,
   applyCritDamage, resolveIncomingReduction, healReceivingMultiplier, normalizeDamageType, applyAdjustOp,
 } from "./skill-formulas.js";
-import { applyAffinityToDamage, readWeaponEfficiency, snapshotTargetForToken } from "./snapshot.js";
+import { applyAffinityToDamage, readWeaponEfficiency, snapshotTargetForToken, resolvesVsMagicDefense } from "./snapshot.js";
 import { applyClassAffinityAndMult } from "./damage-ruleset.js";
 import { resolveResourceDef } from "./resources.js";
 import { deriveCheck } from "./check.js";
@@ -306,7 +306,7 @@ function resolveTargetOutcome({ check, kind, primary, defStat, rolled, isPreRoll
 }
 
 // ── Per-target outcome + primary EffectPreview ───────────────────────────────
-async function buildPerTarget({ view, ar, attacker, primary, check, targets, liveAttacker, ctx, studiedGate, opsMap }) {
+async function buildPerTarget({ view, ar, attacker, primary, check, targets, liveAttacker, ctx, studiedGate, opsMap, weapon }) {
   const kind = view?.kind ?? ar?.kind ?? "Skill";
   const out = [];
   // Pre-roll = a Check is required but dice aren't known yet (ranges, not finals).
@@ -319,13 +319,15 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
     return v;
   };
 
-  // Defense stat selector — DEF vs MDEF.
+  // Defense stat selector — DEF vs MDEF. An explicit per-item `defense_target_type`
+  // wins (weapon Attack OR skill); else the kind default (Spell → MDEF, everything
+  // else → DEF). `ar` is null on the Attack path, so read the weapon's own tag.
   const isSpell = String(ar?.skillType ?? "").toLowerCase() === "spell";
-  const dtt = String(ar?.defenseTargetType ?? "").toLowerCase();
-  const vsMDef = kind !== "Attack" && (isSpell || dtt === "mdef");
-  const pickDef = (e) => (kind === "Attack")
-    ? (e.defense ?? 0)
-    : (vsMDef ? (e.magicDefense ?? 0) : (e.defense ?? 0));
+  const vsMDef = resolvesVsMagicDefense({
+    defenseTargetType: ar?.defenseTargetType ?? weapon?.defenseTargetType,
+    isSpell,
+  });
+  const pickDef = (e) => vsMDef ? (e.magicDefense ?? 0) : (e.defense ?? 0);
 
   const rolled = check.required && check.total != null;
   const effectiveHr = check.grantHrAsZero || String(ctx?.attackMode ?? "").startsWith("two-weapon")
@@ -784,7 +786,7 @@ export async function computeActionProfile(input) {
   let perTarget = [];
   let healingObj = null;
   if (primary.mode === "damage" || check.required) {
-    perTarget = await buildPerTarget({ view, ar, attacker, primary, check, targets, liveAttacker, ctx, studiedGate, opsMap });
+    perTarget = await buildPerTarget({ view, ar, attacker, primary, check, targets, liveAttacker, ctx, studiedGate, opsMap, weapon });
   }
   if (primary.mode !== "damage") {
     const heal = await attachHealEffects({ rows: perTarget, view, ar, targets, resolver, liveAttacker, check, kind, primary, chainVars: ctx?.chainVars ?? null });

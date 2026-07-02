@@ -326,6 +326,12 @@ async function resolveAction(director, ar, opts = {}) {
         costMap.set(res, Math.max(0, (Number(costMap.get(res)) || 0) + Number(delta)));
       }
     }
+    // Item CREATION always costs at least 1 IP — no discount (adjust_cost / Maid Cap /
+    // Deep Pockets) may drop a real IP cost below 1. Parity with buildReducedIpCost's
+    // own floor, applied here so the RESOLVE debit honors it too.
+    if (ar.itemSelection?.mode === "create" && costMap.has("ip") && (Number(ar.costSerialized?.ip) || 0) > 0) {
+      costMap.set("ip", Math.max(1, Number(costMap.get("ip")) || 0));
+    }
     if (costMap.size > 0) {
       try {
         const debitRes = await debitCost(casterActor, costMap);
@@ -3831,6 +3837,11 @@ const Compute = {
           attacker,
           attackerActorRef: attacker.actorUuid,
           weapon,
+          // Weapon-declared defense target ("mdef" for a magic-damage weapon like
+          // Arc Wand; blank → DEF by default). Read by the card labels + redirect
+          // recompute via resolvesVsMagicDefense; the per-target engine also reads
+          // it straight off the weapon snapshot.
+          defenseTargetType: weapon?.defenseTargetType ?? "",
           attackMode: director.ctx.attackMode ?? "main",
           passIndex: director.ctx.passIndex,
           totalPasses: director.ctx.totalPasses,
@@ -4000,6 +4011,14 @@ const Confirm = {
     if (ar.kind === "Item" && attackerActor) {
       try {
         const { findPassiveCandidates } = await getSkillEffectsExtras();
+        // The crafted/used item-skill's tags (e.g. "potion") so a reaction can gate
+        // on SKILL_HAS_TAG_<X> — Maid Cap's craft discount. ar.skillUuid is the
+        // activation skill for both create and use.
+        let usedSkillTags = "";
+        try {
+          const usedSkill = ar.skillUuid ? await fromUuid(ar.skillUuid).catch(() => null) : null;
+          usedSkillTags = String(usedSkill?.system?.props?.skill_tags ?? "");
+        } catch (_) { /* noop */ }
         const itemCands = await findPassiveCandidates({
           casterActor: attackerActor,
           trigger: "creature_uses_item",
@@ -4012,6 +4031,9 @@ const Confirm = {
             actionIntent: ar.actionIntent,
             actionKind: ar.kind,
             actionName: ar.skillName ?? ar.kind,
+            itemMode: ar.itemSelection?.mode ?? null,
+            skillUuid: ar.skillUuid ?? null,
+            skillTags: usedSkillTags,
           },
         });
         for (const cand of itemCands ?? []) prePassives.push(cand);

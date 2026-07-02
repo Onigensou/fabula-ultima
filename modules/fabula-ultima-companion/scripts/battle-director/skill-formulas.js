@@ -1036,6 +1036,32 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
             .trim();
           return hasEquippedWeaponOfType(actor, fam) ? 1 : 0;
         }
+        // Dynamic FLAG_<NAME> — reads the namespaced actor flag
+        // flags["fabula-ultima-companion"].<name> as a number (default 0). This is how
+        // GEAR exposes a tunable parameter to a SKILL's formula WITHOUT the skill ever
+        // enumerating gear: each item carries an equip-gated AE that SETS the flag, and
+        // the skill reads FLAG_<NAME> with its own default. The dependency inverts — the
+        // 11th weapon is pure data (author its AE); the skill/engine never change.
+        // (Cataclysm's overcharge cap: Arc Wand sets `cataclysm_mp_cap`; the skill falls
+        // back to its default when the flag is 0.) Same "scope lives in the flag NAME"
+        // idiom as check_mod_* / damage_dealt_mult_* / skill_level_bonus_*.
+        if (name.startsWith("FLAG_")) {
+          const key = name.slice("FLAG_".length).toLowerCase().trim();
+          const v = actor?.flags?.["fabula-ultima-companion"]?.[key];
+          return Number(v) || 0;
+        }
+        // Dynamic SKILL_HAS_TAG_<X> — 1 if the ACTION's skill (the one that fired the
+        // trigger) carries tag <X> in its `skill_tags`, else 0. The trigger payload
+        // forwards the acting skill's tags as `payload.skillTags` (a comma/space list);
+        // this reads them WITHOUT a doc lookup so it stays a sync formula. General
+        // tag-gated-reaction primitive — Maid Cap's craft discount gates on
+        // SKILL_HAS_TAG_POTION / SKILL_HAS_TAG_MAGISPHERE. Name grammar: underscores → spaces.
+        if (name.startsWith("SKILL_HAS_TAG_")) {
+          const needle = name.slice("SKILL_HAS_TAG_".length).replace(/_/g, " ").toLowerCase().trim();
+          const tags = String(payload?.skillTags ?? "")
+            .split(/[\s,]+/).map((s) => s.trim().toLowerCase()).filter(Boolean);
+          return tags.includes(needle) ? 1 : 0;
+        }
         // Dynamic ANY_TARGET_HAS_MY_<STATUS> — per-applier twin of
         // ANY_TARGET_HAS_<STATUS>: 1 if ANY of the action's targets carries the
         // named status/AE THAT THIS ACTOR APPLIED (the AE's directorAppliedBy

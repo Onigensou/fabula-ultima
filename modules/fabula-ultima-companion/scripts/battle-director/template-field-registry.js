@@ -312,6 +312,7 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   textCol("prompt_max", "Prompt Max", { tooltip: "prompt_number: maximum (number or formula, evaluated against Prompt Max Ref's actor). e.g. \"AE_CHARGES_BURN\". Blank = unbounded.", vis: PROMPT_NUMBER_VIS }),
   textCol("prompt_max_ref", "Prompt Max Ref", { tooltip: "prompt_number: target ref whose actor the min/max/default formulas read (e.g. \"tether_giver\" so max = the giver's Burn). Blank = the caster.", vis: PROMPT_NUMBER_VIS }),
   textCol("prompt_default", "Prompt Default", { tooltip: "prompt_number: the input's starting value (number or formula). Blank = max.", vis: PROMPT_NUMBER_VIS }),
+  textCol("prompt_step", "Prompt Step", { tooltip: "prompt_number: increment between selectable options (number or formula). Default 1. e.g. Min 10 + Step 10 → the picker offers 10, 20, 30 … up to Prompt Max.", vis: PROMPT_NUMBER_VIS }),
 
   // confirm — N-button decision dialog. GATE mode (no Button Refs) = OK/Cancel;
   // BRANCH mode (Button Refs set) = one button per ref + Cancel (branch buttons
