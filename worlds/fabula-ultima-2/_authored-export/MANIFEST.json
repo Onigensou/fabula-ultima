@@ -3086,7 +3086,7 @@
         "id": "kBVCZiHd3Y8Fd7VH",
         "name": "Arc Wand",
         "type": "equippableItem",
-        "effects": 1
+        "effects": 0
       },
       {
         "id": "36xO7InIbrbVP2Kx",
@@ -4076,7 +4076,7 @@
         "id": "YNtiW1MEga31ENWa",
         "name": "Bunny Tail",
         "type": "equippableItem",
-        "effects": 1
+        "effects": 0
       },
       {
         "id": "c3UnjwSqKlkK9xKa",
@@ -5069,6 +5069,12 @@
         "effects": 0
       },
       {
+        "id": "q3xzxwAR7OlMmaQJ",
+        "name": "Domination",
+        "type": "equippableItem",
+        "effects": 2
+      },
+      {
         "id": "V3R1cSiLgIfXVgRj",
         "name": "Dominatrix Leotard",
         "type": "equippableItem",
@@ -5635,6 +5641,12 @@
       {
         "id": "aUD8pniI0w86w1HA",
         "name": "Equipment",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "oHXEMgR0pYVB8K0h",
+        "name": "Escape",
         "type": "equippableItem",
         "effects": 0
       },
@@ -7658,7 +7670,7 @@
         "id": "yOJKXAQJq4R2mzCa",
         "name": "Jumping Boots",
         "type": "equippableItem",
-        "effects": 1
+        "effects": 0
       },
       {
         "id": "9mEeAoPKlrCCQjRN",
@@ -10015,6 +10027,12 @@
       {
         "id": "SXheC0Iz5v8exrA0",
         "name": "Reckless Fighting",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "SgSFeTMvgFwMsZP8",
+        "name": "Recovery",
         "type": "equippableItem",
         "effects": 0
       },
@@ -14256,13 +14274,6 @@
       {
         "id": "w2Ugj35nARiZpvV4",
         "name": "Battle Rank",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "SXAye7LuhV50w0ju",
-        "name": "BD Dummy Enemy",
         "type": "character",
         "items": [],
         "effects": 1
@@ -22583,10 +22594,6 @@
           {
             "id": "QfaU0E6iq829nPxO",
             "name": "Maid cap"
-          },
-          {
-            "id": "gVovemTOophkXbck",
-            "name": "Maid cap (Passive)"
           },
           {
             "id": "tImoyJ8c71GeEmSi",

@@ -358,13 +358,12 @@
           "isCheck": false,
           "name": "Apple Juice",
           "on_activate_effect_ref": "applejuice_heal",
-          "skill_tags": "potion",
           "skill_target": "One Ally",
           "skill_type": "Item",
           "type_damage": ""
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "FgLDNOvQyYbNqlV8"
       },
@@ -496,7 +495,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "22zoFt3zhXjelhsX"
       },
@@ -562,7 +561,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "tbtry6egID5MOcxv"
       },
@@ -609,7 +608,7 @@
           "type_damage": "Light"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "3jT2QfRSixKYGLMZ"
       },
@@ -674,7 +673,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "XSy7MGgInDpsTwG5"
       },
@@ -822,7 +821,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "wJBq8w0Xuh7suRqm"
       },
@@ -833,7 +832,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782921835022,
+        "createdTime": 1782988023376,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -866,7 +865,7 @@
             }
           },
           "isCheck": false,
-          "name": "Scouter (Passive)",
+          "name": "Dragontrap Bow (Passive)",
           "on_activate_effect_ref": "",
           "reaction_config_table": {
             "0": {
@@ -880,14 +879,12 @@
               "reaction_trigger": "creature_deals_damage"
             }
           },
-          "reaction_source_skill": "",
-          "skill_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
           "skill_target": "Self",
           "skill_type": "Passive",
           "type_damage": ""
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "AQqb37jPpVi1h6j6"
       },
@@ -930,9 +927,8 @@
           "effect_table": {
             "0": {
               "$deleted": false,
-              "chain_steps": "cat_prompt, cat_mp, cat_dmg",
-              "effect_kind": "chain",
-              "effect_label": "cat_root",
+              "effect_kind": "open_action_menu",
+              "effect_label": "cat_menu",
               "menu_option_descriptions": "Spend 10 MP for +5 damage to each creature|Spend 20 MP for +10 damage to each creature|Spend 30 MP for +15 damage to each creature",
               "menu_option_labels": "+10 MP → +5 damage|+20 MP → +10 damage|+30 MP → +15 damage",
               "menu_option_refs": "cat_10, cat_20, cat_30",
@@ -945,29 +941,74 @@
               "condition_formula": "SL >= 1 && CUR_MP >= ACTION_MP_COST + 10",
               "disable_ui_type": "dim",
               "disabled_reason": "Not enough MP",
-              "effect_kind": "prompt_number",
-              "effect_label": "cat_prompt",
-              "prompt_label": "Overcharge: increase MP cost (+5 damage per 10 MP)",
-              "prompt_max": "min( FLAG_CATACLYSM_MP_CAP + (FLAG_CATACLYSM_MP_CAP == 0) * (SL * 10), floor((CUR_MP - ACTION_MP_COST)/10)*10 )",
-              "prompt_min": "10",
-              "prompt_step": "10",
-              "prompt_var": "overcharge"
+              "effect_kind": "chain",
+              "effect_label": "cat_10"
             },
             "2": {
               "$deleted": false,
-              "cost_amount": "VAR_OVERCHARGE",
+              "cost_amount": "10",
               "cost_operation": "add",
               "cost_resource": "mp",
               "effect_kind": "adjust_cost",
-              "effect_label": "cat_mp"
+              "effect_label": "cat_10_mp"
             },
             "3": {
               "$deleted": false,
-              "damage_amount": "VAR_OVERCHARGE / 2",
+              "damage_amount": "5",
               "damage_operation": "add",
               "damage_stage": "outgoing",
               "effect_kind": "adjust_damage",
-              "effect_label": "cat_dmg"
+              "effect_label": "cat_10_dmg"
+            },
+            "4": {
+              "$deleted": false,
+              "chain_steps": "cat_20_mp, cat_20_dmg",
+              "condition_formula": "SL >= 2 && CUR_MP >= ACTION_MP_COST + 20",
+              "disable_ui_type": "dim",
+              "disabled_reason": "Not enough MP",
+              "effect_kind": "chain",
+              "effect_label": "cat_20"
+            },
+            "5": {
+              "$deleted": false,
+              "cost_amount": "20",
+              "cost_operation": "add",
+              "cost_resource": "mp",
+              "effect_kind": "adjust_cost",
+              "effect_label": "cat_20_mp"
+            },
+            "6": {
+              "$deleted": false,
+              "damage_amount": "10",
+              "damage_operation": "add",
+              "damage_stage": "outgoing",
+              "effect_kind": "adjust_damage",
+              "effect_label": "cat_20_dmg"
+            },
+            "7": {
+              "$deleted": false,
+              "chain_steps": "cat_30_mp, cat_30_dmg",
+              "condition_formula": "SL >= 3 && CUR_MP >= ACTION_MP_COST + 30",
+              "disable_ui_type": "dim",
+              "disabled_reason": "Not enough MP",
+              "effect_kind": "chain",
+              "effect_label": "cat_30"
+            },
+            "8": {
+              "$deleted": false,
+              "cost_amount": "30",
+              "cost_operation": "add",
+              "cost_resource": "mp",
+              "effect_kind": "adjust_cost",
+              "effect_label": "cat_30_mp"
+            },
+            "9": {
+              "$deleted": false,
+              "damage_amount": "15",
+              "damage_operation": "add",
+              "damage_stage": "outgoing",
+              "effect_kind": "adjust_damage",
+              "effect_label": "cat_30_dmg"
             }
           },
           "heroic_requirement": "",
@@ -983,8 +1024,8 @@
           "reaction_config_table": {
             "0": {
               "$deleted": false,
-              "condition_formula": "HAS_ARCANE_WEAPON == 1 && ACTION_IS_SPELL == 1 && ACTION_IS_FREE_CAST == 0 && CUR_MP >= ACTION_MP_COST + 10",
-              "reaction_effect_ref": "cat_root",
+              "condition_formula": "HAS_ARCANE_WEAPON == 1 && ACTION_IS_SPELL == 1 && ACTION_IS_FREE_CAST == 0",
+              "reaction_effect_ref": "cat_menu",
               "reaction_passive_mode": "ask",
               "reaction_source": "self",
               "reaction_trigger": "creature_will_deal_damage"
@@ -1002,7 +1043,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "7oG8YvRYQBQAU025"
       },
@@ -1058,7 +1099,7 @@
           "human_ef": "100",
           "humanoid_ef": "100",
           "insect_ef": "100",
-          "ip_cost": "1",
+          "ip_cost": "",
           "isEquipped": false,
           "isKey": false,
           "isMartial": false,
@@ -1109,7 +1150,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "BykEf2Th3dTmg02o"
       },
@@ -1164,7 +1205,6 @@
       "system": {
         "container": null,
         "props": {
-          "action_keywords": "pierce",
           "active_effect_config_table": {},
           "aquatic_ef": "100",
           "automaton_ef": "100",
@@ -1205,12 +1245,30 @@
           "item_mdef_bonus": "0",
           "item_quantity": "1",
           "item_rarity": "Rare",
+          "item_skill_passive": {
+            "jepGtMgwfkkCznXk": {
+              "id": "${item.id}",
+              "name": "Windpiercer (Passive)",
+              "skill_cost": "",
+              "skill_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.jepGtMgwfkkCznXk"
+            }
+          },
           "item_type": "weapon",
           "mimic_ef": "100",
           "monster_ef": "100",
           "name": "Windpiercer",
           "optional_params": {},
           "plant_ef": "100",
+          "related_item_list": {
+            "jepGtMgwfkkCznXk": {
+              "id": "${item.id}",
+              "name": "Windpiercer (Passive)",
+              "related_item_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.jepGtMgwfkkCznXk"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "INS",
@@ -1223,7 +1281,7 @@
           "weapon_range": "Ranged"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "quJxn5TAZFaY5i7C"
       },
@@ -1239,63 +1297,6 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
-      "effects": [
-        {
-          "_id": "0GJkQeMaBvlJnpT9",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": 1783019460346,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.8.5"
-          },
-          "changes": [
-            {
-              "key": "flags.fabula-ultima-companion.cataclysm_mp_cap",
-              "mode": 5,
-              "priority": 20,
-              "value": "${isEquipped ? 9990 : 0}$"
-            }
-          ],
-          "description": "<p>While equipped, Cataclysm may overcharge by ANY amount of MP (raises the overcharge cap).</p>",
-          "disabled": false,
-          "duration": {
-            "combat": null,
-            "rounds": null,
-            "seconds": null,
-            "startRound": null,
-            "startTime": null,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "originalId": "0GJkQeMaBvlJnpT9",
-              "originalParentId": "BGBKm7rItmmvzf31",
-              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.BGBKm7rItmmvzf31.ActiveEffect.0GJkQeMaBvlJnpT9"
-            },
-            "statuscounter": {
-              "config": {
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/2000.gif",
-          "name": "Arc Wand — Overcharge Cap",
-          "origin": null,
-          "sort": 0,
-          "statuses": [],
-          "system": {},
-          "tint": "#ffffff",
-          "transfer": true,
-          "type": "base"
-        }
-      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.4.2"
@@ -1355,16 +1356,13 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "10",
-          "defense_target_type": "mdef",
           "demiHuman_ef": "100",
           "demon_ef": "100",
           "description": "<ul><li><p>Attacks with this weapon deals <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-type=\"JournalEntry\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(61, 166, 255) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Magic Damage</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span></p></li><li><p>You may spend any amount of 【<strong>MP x10】 </strong>when you use the skill <strong>Cataclysm</strong></p></li></ul>",
           "dragon_ef": "100",
-          "effect_table": {},
           "elemental_ef": "100",
           "enforcer_ef": "100",
           "fey_ef": "100",
@@ -1375,14 +1373,9 @@
           "hand_slots": "Two-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "BGBKm7rItmmvzf31",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/2000.gif",
-          "ingredient_taste": "",
-          "ingredient_taste2": "",
           "insect_ef": "100",
           "ip_cost": "",
-          "isEquipped": true,
-          "isIngredient": false,
+          "isEquipped": false,
           "isKey": false,
           "isMartial": false,
           "isModule": false,
@@ -1412,11 +1405,6 @@
           "name": "Arc Wand",
           "optional_params": {},
           "plant_ef": "100",
-          "reaction_config_table": {},
-          "recipe_dish_uuid": "",
-          "recipe_kind": "",
-          "refine_count": "0",
-          "refine_level": "0",
           "related_item_list": {
             "5su5PxiW5lwGHx70": {
               "id": "${item.id}",
@@ -1429,17 +1417,15 @@
           "rolled_atr1": "WLP",
           "rolled_atr2": "WLP",
           "set_name": "",
-          "skill_target": "One Enemy",
           "soldier_ef": "100",
           "spirit_ef": "100",
           "type_damage": "Bolt",
           "undead_ef": "100",
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.BGBKm7rItmmvzf31",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "kBVCZiHd3Y8Fd7VH"
       },
@@ -1516,7 +1502,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "Ydbba6k0hFjWZvJv"
       },
@@ -1658,7 +1644,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "kOZ5DZYLKd3FxaAz"
       },
@@ -1736,7 +1722,6 @@
           "beast_ef": "100",
           "category": "Bow",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "12",
@@ -1755,11 +1740,9 @@
           "hand_slots": "Two-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "D32pUz6M6e1smWrB",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bow.png",
           "insect_ef": "100",
           "ip_cost": "",
-          "isEquipped": false,
+          "isEquipped": true,
           "isKey": false,
           "isMartial": true,
           "isModule": false,
@@ -1790,12 +1773,11 @@
           "spirit_ef": "100",
           "type_damage": "Earth",
           "undead_ef": "100",
-          "uuid": "Item.D32pUz6M6e1smWrB",
           "vehicle_ef": "100",
           "weapon_range": "Ranged"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "D32pUz6M6e1smWrB"
       },
@@ -2045,7 +2027,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "gNgDIXArTpdtUBpe"
       },
@@ -2533,7 +2515,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "U1WUGQw6hkUo1La7"
       },
@@ -2544,7 +2526,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782921834251,
+        "createdTime": 1782988035968,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2577,7 +2559,7 @@
             }
           },
           "isCheck": false,
-          "name": "Scouter (Passive)",
+          "name": "Dragontrap Bow (Passive)",
           "on_activate_effect_ref": "",
           "reaction_config_table": {
             "0": {
@@ -2591,14 +2573,12 @@
               "reaction_trigger": "creature_deals_damage"
             }
           },
-          "reaction_source_skill": "",
-          "skill_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
           "skill_target": "Self",
           "skill_type": "Passive",
           "type_damage": ""
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "AQqb37jPpVi1h6j6"
       },
@@ -2676,7 +2656,6 @@
           "beast_ef": "100",
           "category": "Bow",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "12",
@@ -2695,8 +2674,6 @@
           "hand_slots": "Two-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "D32pUz6M6e1smWrB",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bow.png",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -2713,6 +2690,16 @@
           "item_mdef_bonus": "0",
           "item_quantity": 1,
           "item_rarity": "Uncommon",
+          "item_skill_passive": {
+            "52LOaEsbEpFYhbru": {
+              "id": "${item.id}",
+              "name": "Dragontrap Bow (Passive)",
+              "skill_cost": "",
+              "skill_description": "<p>When you hit a Flying target with this weapon, you may force it to land until the end of the round.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.52LOaEsbEpFYhbru"
+            }
+          },
           "item_type": "weapon",
           "mimic_ef": "100",
           "monster_ef": "100",
@@ -2721,6 +2708,14 @@
           "plant_ef": "100",
           "refine_count": "0",
           "refine_level": "0",
+          "related_item_list": {
+            "52LOaEsbEpFYhbru": {
+              "id": "${item.id}",
+              "name": "Dragontrap Bow (Passive)",
+              "related_item_description": "<p>When you hit a Flying target with this weapon, you may force it to land until the end of the round.</p>",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.52LOaEsbEpFYhbru"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
@@ -2730,12 +2725,11 @@
           "spirit_ef": "100",
           "type_damage": "Earth",
           "undead_ef": "100",
-          "uuid": "Item.D32pUz6M6e1smWrB",
           "vehicle_ef": "100",
           "weapon_range": "Ranged"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "D32pUz6M6e1smWrB"
       },
@@ -2912,7 +2906,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "eTagzbuJWVfudChW"
       },
@@ -3027,7 +3021,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "eM7Q4WgXvjcLQaFc"
       },
@@ -3095,7 +3089,7 @@
           "type_damage": "Physical"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": true,
         "uniqueId": "TouMdewrn3xPmsMj"
       },
@@ -3271,7 +3265,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "ROQw6telXF9qyZC8"
       },
@@ -3382,6 +3376,7 @@
               "charges": 1,
               "chargesMax": 99,
               "directorPermanent": false,
+              "hudResourceColor": "#a06bff",
               "lifetimeMode": "persistent_counter"
             },
             "statuscounter": {
@@ -3400,7 +3395,12 @@
           "statuses": [
             "fud-prophecy-point"
           ],
-          "system": {},
+          "system": {
+            "tags": [
+              "resource",
+              "points"
+            ]
+          },
           "tint": "#ffffff",
           "transfer": false,
           "type": "base"
@@ -3431,66 +3431,106 @@
           "damage_bonus": "",
           "defense_target_type": "def",
           "description": "<p>Your maximum Hit Points are permanently increased by an amount equal to your base <strong>Insight</strong> die size (update your maximum HP if this size changes).</p><p>When a conflict scene begins, if you have learned the <strong>Divination</strong> spell, you gain <strong>1 Prophecy Point</strong>. You also gain <strong>1 Prophecy Point</strong> at the start of each even-numbered round (regardless of whether you have learned Divination). You lose all Prophecy Points at the end of each scene.</p><p>When <strong>one or more allies</strong> are threatened by a single attack, spell, or other danger, you may spend <strong>1 Prophecy Point</strong> to take the place of all those allies (any Checks that are part of the danger will be performed against you; you may declare the use of this Skill before or after the Checks have been made). The danger will affect you once for each creature it was threatening (including yourself, if you were among those creatures). Resolve each of these instances separately.</p>",
+          "details_roller": "Show",
           "duration": "",
           "effect_table": {
             "0": {
+              "allow_empty": false,
               "auto_confirm_when_obvious": true,
-              "auto_target": "skip",
+              "auto_target": true,
               "candidate_source": "self",
+              "category": "",
+              "consume_self": false,
               "count": "1",
               "effect_kind": "targeting",
               "effect_label": "pds_self",
+              "exclude": "",
+              "exclude_action_targets": false,
               "exclude_self": false,
+              "from_resource": "",
               "iteration_mode": "together",
+              "menu_label": "",
               "mode": "exact",
-              "skip_when_passive": true
+              "skip_when_passive": true,
+              "target_filter": "",
+              "target_prompt": "",
+              "to_resource": ""
             },
             "1": {
+              "allow_empty": false,
               "auto_confirm_when_obvious": true,
-              "auto_target": "confirm",
+              "auto_target": true,
               "candidate_source": "action_targets",
+              "category": "",
+              "consume_self": false,
               "effect_kind": "targeting",
               "effect_label": "pds_threatened",
+              "exclude": "",
+              "exclude_action_targets": false,
               "exclude_self": false,
+              "from_resource": "",
               "iteration_mode": "together",
+              "menu_label": "",
               "mode": "all",
-              "skip_when_passive": true
+              "skip_when_passive": true,
+              "target_filter": "",
+              "target_prompt": "",
+              "to_resource": ""
             },
             "2": {
               "ae_duplicate_mode": "add_charges",
+              "ae_family": "",
               "ae_initial_charges": "1",
               "ae_initial_charges_max": "99",
               "ae_template_ref": "Prophecy Point",
+              "consume_self": false,
               "effect_kind": "apply_ae",
               "effect_label": "pds_gain",
-              "target_ref": "pds_self"
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "pds_self",
+              "to_resource": ""
             },
             "3": {
               "charge_key": "prophecy",
+              "consume_self": false,
               "count": "1",
               "effect_kind": "consume_charge",
               "effect_label": "pds_consume",
+              "from_resource": "",
+              "menu_label": "",
               "on_empty": "abort",
-              "target_ref": "pds_self"
+              "target_ref": "pds_self",
+              "to_resource": ""
             },
             "4": {
+              "consume_self": false,
               "destination_ref": "pds_self",
               "effect_kind": "redirect_target",
               "effect_label": "pds_redirect",
+              "from_resource": "",
+              "menu_label": "",
               "rebuild_card": true,
-              "target_ref": "pds_threatened"
+              "target_ref": "pds_threatened",
+              "to_resource": ""
             },
             "5": {
               "chain_steps": "pds_consume,pds_redirect",
+              "consume_self": false,
               "effect_kind": "chain",
-              "effect_label": "pds_reaction"
+              "effect_label": "pds_reaction",
+              "from_resource": "",
+              "menu_label": "",
+              "to_resource": ""
             }
           },
           "gadget_alchemy_tier": "",
           "gadget_infusion_tier": "",
           "gadget_magitech_tier": "",
           "heroic_requirement": "You must have mastered one or more Classes among Entropist and Guardian.",
+          "id": "gm2w1NLdaEI7SzaQ",
           "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/nocturnal_sect.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": true,
@@ -3506,25 +3546,62 @@
           "reaction_config_table": {
             "0": {
               "condition_formula": "HAS_SKILL_DIVINATION == 1",
+              "reaction_action_kind": "",
+              "reaction_cause_filter": "",
               "reaction_effect_ref": "pds_gain",
+              "reaction_max_per_round": "",
+              "reaction_origin_filter": "",
               "reaction_passive_mode": "force",
+              "reaction_requires_weapon_used": false,
+              "reaction_resource_filter": "",
+              "reaction_responder": "",
               "reaction_source": "",
-              "reaction_trigger": "conflict_start"
+              "reaction_source_skill": "",
+              "reaction_status_filter": "",
+              "reaction_trigger": "conflict_start",
+              "requires_skill": ""
             },
             "1": {
               "condition_formula": "ROUND % 2 == 0 && ROUND > 0",
+              "reaction_action_kind": "",
+              "reaction_cause_filter": "",
+              "reaction_debuff_count_min": "",
+              "reaction_debuff_count_target": "",
               "reaction_effect_ref": "pds_gain",
+              "reaction_max_per_round": "",
+              "reaction_origin_filter": "",
               "reaction_passive_mode": "force",
+              "reaction_requires_weapon_used": false,
+              "reaction_resource_filter": "",
+              "reaction_responder": "",
               "reaction_source": "",
-              "reaction_trigger": "round_start"
+              "reaction_source_skill": "",
+              "reaction_status_filter": "",
+              "reaction_trigger": "round_start",
+              "requires_skill": ""
             },
             "2": {
               "condition_formula": "",
               "reaction_action_intent": "harmful",
+              "reaction_action_kind": "",
+              "reaction_action_target": "",
+              "reaction_cause_filter": "",
+              "reaction_damage_source": "",
+              "reaction_damage_type": "",
               "reaction_effect_ref": "pds_reaction",
+              "reaction_max_per_round": "",
+              "reaction_origin_filter": "",
+              "reaction_ownership": "",
               "reaction_passive_mode": "ask",
+              "reaction_requires_weapon_used": false,
+              "reaction_resource_filter": "",
+              "reaction_responder": "",
               "reaction_source": "ally",
-              "reaction_trigger": "creature_targeted_by_action"
+              "reaction_source_skill": "",
+              "reaction_status_filter": "",
+              "reaction_subject_kind": "",
+              "reaction_trigger": "creature_targeted_by_action",
+              "requires_skill": ""
             }
           },
           "rolled_atr1": "-",
@@ -3537,10 +3614,11 @@
           "skill_type": "Passive",
           "target_eligibility": "",
           "type_damage": "",
-          "use_optional_params": false
+          "use_optional_params": false,
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.gm2w1NLdaEI7SzaQ"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "ZySnR7edyoUvFZM3"
       },
@@ -3602,7 +3680,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -3620,8 +3697,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "S71vgGdSVCmEGWN0",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Pokemon/poke-doll.png",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -3646,6 +3721,14 @@
               "skill_description": "<p><em>Decoy Doll:</em> summon a Decoy Doll companion until the end of the scene.</p>",
               "skill_maxLevel": "",
               "uuid": "Item.KnKIXdPq6wjaFnCK"
+            },
+            "vliuwtKw7PKGGKcU": {
+              "id": "${item.id}",
+              "name": "Decoy Doll",
+              "skill_cost": "-",
+              "skill_description": "<p><em>Decoy Doll:</em> summon a Decoy Doll companion until the end of the scene.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.vliuwtKw7PKGGKcU"
             }
           },
           "item_type": "consumable",
@@ -3662,6 +3745,12 @@
               "name": "Decoy Doll",
               "related_item_description": "<p><em>Decoy Doll:</em> summon a Decoy Doll companion until the end of the scene.</p>",
               "uuid": "Item.KnKIXdPq6wjaFnCK"
+            },
+            "vliuwtKw7PKGGKcU": {
+              "id": "${item.id}",
+              "name": "Decoy Doll",
+              "related_item_description": "<p><em>Decoy Doll:</em> summon a Decoy Doll companion until the end of the scene.</p>",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.vliuwtKw7PKGGKcU"
             }
           },
           "reptilian_ef": "100",
@@ -3672,12 +3761,11 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Item.S71vgGdSVCmEGWN0",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "S71vgGdSVCmEGWN0"
       },
@@ -3765,7 +3853,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": true,
         "uniqueId": "HjNImvzXOvZw1mGF"
       },
@@ -3817,7 +3905,7 @@
           "type_damage": ""
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "089x5tFpzoHi2O6z"
       },
@@ -4156,7 +4244,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "YpRxmj2S5mNfkal2"
       },
@@ -4319,7 +4407,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "3UYXnhsSCTo0lV68"
       },
@@ -4493,7 +4581,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "WeoIipMyJ8Iq9jx4"
       },
@@ -4608,7 +4696,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "szPLoqRb8JELX4X7"
       },
@@ -4652,7 +4740,7 @@
             }
           },
           "isCheck": false,
-          "name": "Scouter (Passive)",
+          "name": "Windpiercer (Passive)",
           "on_activate_effect_ref": "",
           "reaction_config_table": {
             "0": {
@@ -4666,13 +4754,12 @@
               "reaction_trigger": "creature_deals_damage"
             }
           },
-          "skill_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
           "skill_target": "Self",
           "skill_type": "Passive",
           "type_damage": ""
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "AQqb37jPpVi1h6j6"
       },
@@ -4770,7 +4857,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "9jOBSPY17nxY6QCy"
       },
@@ -4899,7 +4986,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "loJVZKaVMt8VxzCI"
       },
@@ -4955,7 +5042,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "KaykXhgyX1J1mdPv"
       },
@@ -5015,7 +5102,7 @@
           "type_damage": ""
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "L1vZvNSNxlYlrQhu"
       },
@@ -5118,6 +5205,14 @@
               "skill_description": "<ul><li><p>Target creature <strong>recovers 100 HP</strong></p></li></ul>",
               "skill_maxLevel": 1,
               "uuid": "Item.0gi0e6XOfjVr2S0d"
+            },
+            "peoXVGo2UIvAnZfE": {
+              "id": "${item.id}",
+              "name": "Mega-Remedy",
+              "skill_cost": "-",
+              "skill_description": "<ul><li><p>Target creature <strong>recovers 100 HP</strong></p></li></ul>",
+              "skill_maxLevel": 1,
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.peoXVGo2UIvAnZfE"
             }
           },
           "item_type": "consumable",
@@ -5132,6 +5227,12 @@
               "name": "Mega-Remedy",
               "related_item_description": "<ul><li><p>Target creature <strong>recovers 100 HP</strong></p></li></ul>",
               "uuid": "Item.0gi0e6XOfjVr2S0d"
+            },
+            "peoXVGo2UIvAnZfE": {
+              "id": "${item.id}",
+              "name": "Mega-Remedy",
+              "related_item_description": "<ul><li><p>Target creature <strong>recovers 100 HP</strong></p></li></ul>",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.peoXVGo2UIvAnZfE"
             }
           },
           "reptilian_ef": "100",
@@ -5146,7 +5247,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "9vM7Xu5q3cj7EFQt"
       },
@@ -5244,8 +5345,8 @@
               "name": "Scouter (Passive)",
               "skill_cost": "",
               "skill_description": "<ul><li>Once at the start of a<strong>&nbsp;Conflict</strong> scene, you may perform the <strong>【Study】</strong>action as a&nbsp;<strong>Free Action</strong></li></ul>",
-              "skill_maxLevel": 1,
-              "uuid": ""
+              "skill_maxLevel": "",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.wGMngSNcL0icOQiw"
             }
           },
           "item_type": "accessory",
@@ -5254,6 +5355,14 @@
           "name": "Scouter",
           "optional_params": {},
           "plant_ef": "100",
+          "related_item_list": {
+            "wGMngSNcL0icOQiw": {
+              "id": "${item.id}",
+              "name": "Scouter (Passive)",
+              "related_item_description": "<ul><li>Once at the start of a<strong>&nbsp;Conflict</strong> scene, you may perform the <strong>【Study】</strong>action as a&nbsp;<strong>Free Action</strong></li></ul>",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.wGMngSNcL0icOQiw"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
@@ -5266,7 +5375,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "bUSzzJWSTpDdpf6S"
       },
@@ -5736,7 +5845,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "UF9js71VGFE9jB93"
       },
@@ -5798,7 +5907,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "PPbGO3BZOBtULyxy"
       },
@@ -5965,7 +6074,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "jlPwgwAQkOBCNg6K"
       },
@@ -6036,7 +6145,7 @@
           "type_damage": ""
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "O7KjXoyMd4zoGh5c"
       },
@@ -6115,7 +6224,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "WjrBIzz4zJvO4C4k"
       },
@@ -6168,7 +6277,7 @@
           "type_damage": ""
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "oHXhszjXVKD0opBr"
       },
@@ -6207,13 +6316,10 @@
           "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<p>You draw sickness away from an ally and pass it onto your enemy. The target recovers from <strong>all status effects</strong>. Then choose one of the status effects the target recovered from and another creature you can see. The chosen creature suffers the chosen status effect.</p>\n",
-          "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {},
           "heroic_requirement": "",
-          "id": "p7WldKGSMumLxC4p",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/MagicalRangedRollAction/drain.png",
           "isCheck": false,
           "isFacet": true,
           "isHeroic": false,
@@ -6233,11 +6339,10 @@
           "skill_target": "One creature",
           "skill_type": "Spell",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.p7WldKGSMumLxC4p"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "wfvBxZq0qkwMMn1G"
       },
@@ -6304,7 +6409,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "VMu0aaKdIoi6qRi2"
       },
@@ -6370,7 +6475,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "0gi0e6XOfjVr2S0d"
       },
@@ -6448,8 +6553,8 @@
               "name": "Morrigan (Passive)",
               "skill_cost": "",
               "skill_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
-              "skill_maxLevel": 1,
-              "uuid": ""
+              "skill_maxLevel": "",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.ziGuceXkDrtTMBp9"
             }
           },
           "item_type": "weapon",
@@ -6458,6 +6563,14 @@
           "name": "Morrigan",
           "optional_params": {},
           "plant_ef": "100",
+          "related_item_list": {
+            "ziGuceXkDrtTMBp9": {
+              "id": "${item.id}",
+              "name": "Morrigan (Passive)",
+              "related_item_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.ziGuceXkDrtTMBp9"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "MIG",
@@ -6470,7 +6583,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "jqykkhAB5m9durso"
       },
@@ -6526,7 +6639,7 @@
           "skill_type": "Passive"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": true,
         "uniqueId": "QjuNoo0rGl9iUWiO"
       },
@@ -6619,7 +6732,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "X9SaWakWp1Tl8xPA"
       },
@@ -6746,7 +6859,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "QBLyfikwHBnhhcGf"
       },
@@ -6785,13 +6898,10 @@
           "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<p>You strengthen and purify the soul energy coursing through your companions. Each target <strong>recovers</strong> from 1 status effects.</p>",
-          "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {},
           "heroic_requirement": "",
-          "id": "rOdq8hhYJpSutkre",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/SGE/pepsis.png",
           "isCheck": false,
           "isFacet": true,
           "isHeroic": false,
@@ -6811,11 +6921,10 @@
           "skill_target": "Up to three creatures",
           "skill_type": "Spell",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.rOdq8hhYJpSutkre"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "u2lw7vPFH9QikB7X"
       },
@@ -6878,7 +6987,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "oqJkRZfgQD6frXjZ"
       },
@@ -7120,7 +7229,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "YdYhFx1vrvod4P2Y"
       },
@@ -7155,11 +7264,8 @@
       "system": {
         "container": "wdkyWxt43rlxEtTO",
         "props": {
-          "action_command": "",
-          "check_mode": "",
           "cost": "",
           "description": "<p>Equipped passive: +2 to Study Checks.</p>",
-          "details_roller": "",
           "effect_table": {
             "0": {
               "check_buff_action": "study",
@@ -7168,8 +7274,6 @@
               "effect_label": "lens_study_buff"
             }
           },
-          "id": "QjuNoo0rGl9iUWiO",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
           "isCheck": false,
           "isReaction": false,
           "max_level": "1",
@@ -7178,11 +7282,10 @@
           "rolled_atr1": "INS",
           "rolled_atr2": "INS",
           "skill_target": "",
-          "skill_type": "Passive",
-          "uuid": "Item.QjuNoo0rGl9iUWiO"
+          "skill_type": "Passive"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": true,
         "uniqueId": "fABWj5MvuADYTbpR"
       },
@@ -7204,7 +7307,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1782917785248,
+            "createdTime": 1782988075732,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -7349,7 +7452,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "YNtiW1MEga31ENWa"
       },
@@ -7854,7 +7957,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "HhAK0qzO2jmsk0RX"
       },
@@ -7991,7 +8094,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "FQBpdrf04xuYhheF"
       },
@@ -8116,7 +8219,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "B0rR4DCijW1zC3SY"
       },
@@ -8200,7 +8303,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "Uo4iOf0EFG1z8AU2"
       },
@@ -8245,13 +8348,14 @@
             }
           },
           "isCheck": false,
+          "name": "Decoy Doll",
           "on_activate_effect_ref": "decoy_summon",
           "skill_target": "Self",
           "skill_type": "Item",
           "type_damage": ""
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "KnKIXdPq6wjaFnCK"
       },
@@ -8365,12 +8469,30 @@
           "item_mdef_bonus": "0",
           "item_quantity": "1",
           "item_rarity": "Uncommon",
+          "item_skill_passive": {
+            "sNQBVLstuZSz5EZC": {
+              "id": "${item.id}",
+              "name": "Lens of Insight (Passive)",
+              "skill_cost": "",
+              "skill_description": "<p>Equipped passive: +2 to Study Checks.</p>",
+              "skill_maxLevel": 1,
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.sNQBVLstuZSz5EZC"
+            }
+          },
           "item_type": "accessory",
           "mimic_ef": "100",
           "monster_ef": "100",
           "name": "Lens of Insight",
           "optional_params": {},
           "plant_ef": "100",
+          "related_item_list": {
+            "sNQBVLstuZSz5EZC": {
+              "id": "${item.id}",
+              "name": "Lens of Insight (Passive)",
+              "related_item_description": "<p>Equipped passive: +2 to Study Checks.</p>",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.sNQBVLstuZSz5EZC"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
@@ -8383,7 +8505,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "BXCY3beJ2HouEdSX"
       },
@@ -8446,7 +8568,7 @@
           "type_damage": ""
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "AQqb37jPpVi1h6j6"
       },
@@ -8524,7 +8646,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": true,
         "uniqueId": "7ApZzLcwZfDZz0nE"
       },
@@ -8576,7 +8698,7 @@
           "type_damage": ""
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "TveSIs4RtZLvTtY0"
       },
@@ -8641,7 +8763,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "CMeM0siw1nq7rr1G"
       },
@@ -8783,7 +8905,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "Y2ItFIBB8PtKttz8"
       },
@@ -8862,7 +8984,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "5FJroVCi4rjKmXQO"
       },
@@ -8931,7 +9053,7 @@
             }
           },
           "isCheck": false,
-          "name": "Scouter (Passive)",
+          "name": "The Tormentor (Passive)",
           "on_activate_effect_ref": "",
           "reaction_config_table": {
             "0": {
@@ -8945,13 +9067,12 @@
               "reaction_trigger": "creature_will_deal_damage"
             }
           },
-          "skill_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
           "skill_target": "Self",
           "skill_type": "Passive",
           "type_damage": ""
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "AQqb37jPpVi1h6j6"
       },
@@ -9012,7 +9133,6 @@
           "beast_ef": "100",
           "category": "Flail",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "10",
@@ -9031,8 +9151,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "xktj2JJX7QZ5z6jA",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1969.gif",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -9049,6 +9167,16 @@
           "item_mdef_bonus": "0",
           "item_quantity": 1,
           "item_rarity": "Uncommon",
+          "item_skill_passive": {
+            "YUYi5J6GgRHVbEtd": {
+              "id": "${item.id}",
+              "name": "The Tormentor (Passive)",
+              "skill_cost": "",
+              "skill_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.YUYi5J6GgRHVbEtd"
+            }
+          },
           "item_type": "weapon",
           "mimic_ef": "100",
           "monster_ef": "100",
@@ -9057,6 +9185,14 @@
           "plant_ef": "100",
           "refine_count": "0",
           "refine_level": "0",
+          "related_item_list": {
+            "YUYi5J6GgRHVbEtd": {
+              "id": "${item.id}",
+              "name": "The Tormentor (Passive)",
+              "related_item_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.YUYi5J6GgRHVbEtd"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "MIG",
@@ -9066,12 +9202,11 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Item.xktj2JJX7QZ5z6jA",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "xktj2JJX7QZ5z6jA"
       },
@@ -9163,7 +9298,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "Xf6q7cCeuczSTfXp"
       },
@@ -9380,7 +9515,7 @@
           "weapon_range": "Ranged"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "6pUwTZO1peHgSBya"
       },
@@ -9425,7 +9560,7 @@
             }
           },
           "isCheck": false,
-          "name": "Scouter (Passive)",
+          "name": "Morrigan (Passive)",
           "on_activate_effect_ref": "",
           "reaction_config_table": {
             "0": {
@@ -9438,13 +9573,12 @@
               "reaction_trigger": "creature_completes_attack"
             }
           },
-          "skill_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
           "skill_target": "Self",
           "skill_type": "Passive",
           "type_damage": ""
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "AQqb37jPpVi1h6j6"
       },
@@ -9712,7 +9846,7 @@
       "charm_status": 0,
       "check_mod_accuracy": 0,
       "check_mod_all": 0,
-      "check_mod_magic": 6,
+      "check_mod_magic": 0,
       "check_mod_melee": 0,
       "check_mod_ranged": 0,
       "check_roller": "Roll!",
@@ -10052,7 +10186,7 @@
       "critical_dice_range": 0,
       "current_hp": "86",
       "current_ip": "6",
-      "current_mp": 100,
+      "current_mp": "80",
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/hina_Cut-in002.png",
       "cut_in_fumble": "",
@@ -10856,10 +10990,10 @@
       "lifesteal_value": 0,
       "magic_defense": 12,
       "magic_defense_mod": "0",
-      "main_attrib_1": "WLP",
-      "main_attrib_2": "WLP",
-      "main_details": "<ul><li><p>Attacks with this weapon deals <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-type=\"JournalEntry\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(61, 166, 255) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Magic Damage</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span></p></li><li><p>You may spend any amount of 【<strong>MP x10】 </strong>when you use the skill <strong>Cataclysm</strong></p></li></ul>",
-      "main_hand": "Arc Wand",
+      "main_attrib_1": "DEX",
+      "main_attrib_2": "DEX",
+      "main_details": "<ul><li><p>When you hit a <strong>@UUID[JournalEntry.q6keqwDWUsEgSWDw]{Flying}</strong>&nbsp;target with this weapon, you may force that target to land immediately</p></li></ul>",
+      "main_hand": "Dragontrap Bow",
       "main_hand_attack": "",
       "manadrain_percentage": 0,
       "manadrain_value": 0,
@@ -12115,10 +12249,10 @@
       "turbulence_status": 0,
       "uuid": "Actor.dafTLBUscCDNgq8H",
       "weak_status": 0,
-      "weapon1_base_damage": "10",
+      "weapon1_base_damage": "12",
       "weapon1_base_mod": "0",
-      "weapon1_damage": 7,
-      "weapon1_damagetype": "Bolt",
+      "weapon1_damage": 12,
+      "weapon1_damagetype": "Earth",
       "weapon1_mod": 0,
       "weapon2_damagetype": "-",
       "weapon_list": {
@@ -13160,7 +13294,7 @@
       "wlp_base": "10",
       "wlp_current": 10,
       "your_class_name": "Night Guidance",
-      "zenit": 7780,
+      "zenit": "7780",
       "zero_label": "Zero Power",
       "zero_power_description": "<p style=\"text-align: center\"><strong>Choose and trigger 3 oppertunity choice.</strong></p>",
       "zero_power_macro": "",

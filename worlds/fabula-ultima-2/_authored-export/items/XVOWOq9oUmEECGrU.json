@@ -709,7 +709,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782921698164,
+        "createdTime": 1782988016373,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -742,7 +742,7 @@
           "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.a7f7PW8rGYZF8NOs"
         },
         "dfreds-convenient-effects": {
-          "ceEffectId": "ce-grounded",
+          "ceEffectId": "grounded",
           "isBackup": false,
           "isConvenient": true,
           "isDynamic": false,
@@ -1699,9 +1699,7 @@
         "turns": null
       },
       "flags": {
-        "core": {
-          "statusId": "fud-grappling"
-        },
+        "core": {},
         "custom-system-builder": {
           "isFromTemplate": false,
           "isPredefined": true,

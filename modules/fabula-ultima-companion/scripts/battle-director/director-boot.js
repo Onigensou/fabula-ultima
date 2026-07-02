@@ -54,6 +54,8 @@ import { initSfxAudition } from "./sfx-audition.js";
 import { initDamageNumbers, emitDamageNumber, renderDamageNumberLocal } from "./damage-numbers/director-damage-numbers.js";
 import { initImpactFx } from "./damage-numbers/director-impact-fx.js";
 import { initHurtReaction, emitHurtReaction, playHurtReactionLocal } from "./damage-numbers/director-hurt-reaction.js";
+import { initDominationFx } from "./domination.js";
+import { initDominationCrest } from "./domination-crest.js";
 import { initDamageNumberAudition } from "./damage-numbers/damage-number-audition.js";
 import { initDamageNumberLivetest } from "./damage-numbers/damage-number-livetest.js";
 import { initBattleStateTool } from "./battle-state-tool.js";
@@ -1405,6 +1407,16 @@ Hooks.once("ready", () => {
   // live loss path doesn't call it yet.
   try { initHurtReaction(); }
   catch (e) { warn("initHurtReaction on ready threw", e); }
+
+  // Boss Domination VFX — socketlib handlers (energy burst, Escape fade) +
+  // the AE-driven red outline watcher, on every client.
+  try { initDominationFx(); }
+  catch (e) { warn("initDominationFx on ready threw", e); }
+
+  // Dominance Crest — floating boss emblem showing banked Dominance Point(s),
+  // AE-replication-driven on every client.
+  try { initDominationCrest(); }
+  catch (e) { warn("initDominationCrest on ready threw", e); }
 
   // Damage-number audition tool — registers into the Developer Tools launcher.
   try { initDamageNumberAudition(); }

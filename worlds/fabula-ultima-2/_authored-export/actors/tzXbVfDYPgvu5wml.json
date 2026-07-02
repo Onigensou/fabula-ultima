@@ -436,7 +436,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "22zoFt3zhXjelhsX"
       },
@@ -502,7 +502,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "tbtry6egID5MOcxv"
       },
@@ -650,7 +650,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "wJBq8w0Xuh7suRqm"
       },
@@ -713,7 +713,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "7oG8YvRYQBQAU025"
       },
@@ -769,7 +769,7 @@
           "human_ef": "100",
           "humanoid_ef": "100",
           "insect_ef": "100",
-          "ip_cost": "1",
+          "ip_cost": "",
           "isEquipped": false,
           "isKey": false,
           "isMartial": false,
@@ -802,7 +802,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "BykEf2Th3dTmg02o"
       },
@@ -919,7 +919,7 @@
           "weapon_range": "Ranged"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "quJxn5TAZFaY5i7C"
       },
@@ -1067,7 +1067,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "kBVCZiHd3Y8Fd7VH"
       },
@@ -1144,7 +1144,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "Ydbba6k0hFjWZvJv"
       },
@@ -1250,7 +1250,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "kOZ5DZYLKd3FxaAz"
       },
@@ -1526,7 +1526,7 @@
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "gNgDIXArTpdtUBpe"
       },
@@ -1958,7 +1958,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "U1WUGQw6hkUo1La7"
       },
@@ -2128,7 +2128,7 @@
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.FBWC6v9hhDqMlIaZ"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "eTagzbuJWVfudChW"
       },
@@ -2243,7 +2243,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "eM7Q4WgXvjcLQaFc"
       },
@@ -2358,7 +2358,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "ROQw6telXF9qyZC8"
       },
@@ -2656,7 +2656,7 @@
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.gm2w1NLdaEI7SzaQ"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "ZySnR7edyoUvFZM3"
       },
@@ -2724,7 +2724,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": true,
         "uniqueId": "HjNImvzXOvZw1mGF"
       },
@@ -3053,7 +3053,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "YpRxmj2S5mNfkal2"
       },
@@ -3183,7 +3183,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "3UYXnhsSCTo0lV68"
       },
@@ -3347,7 +3347,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "WeoIipMyJ8Iq9jx4"
       },
@@ -3440,7 +3440,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "szPLoqRb8JELX4X7"
       },
@@ -3542,7 +3542,7 @@
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.Jfwp8uU0Ntyqhcjj"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "9jOBSPY17nxY6QCy"
       },
@@ -3671,7 +3671,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "loJVZKaVMt8VxzCI"
       },
@@ -4085,7 +4085,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "UF9js71VGFE9jB93"
       },
@@ -4252,7 +4252,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "jlPwgwAQkOBCNg6K"
       },
@@ -4336,7 +4336,7 @@
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.oe3OP8VmjHJpWJ41"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "WjrBIzz4zJvO4C4k"
       },
@@ -4404,7 +4404,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "VMu0aaKdIoi6qRi2"
       },
@@ -4498,7 +4498,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "jqykkhAB5m9durso"
       },
@@ -4596,7 +4596,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "X9SaWakWp1Tl8xPA"
       },
@@ -4723,7 +4723,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "QBLyfikwHBnhhcGf"
       },
@@ -4786,7 +4786,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "oqJkRZfgQD6frXjZ"
       },
@@ -5028,7 +5028,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "YdYhFx1vrvod4P2Y"
       },
@@ -5138,7 +5138,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "YNtiW1MEga31ENWa"
       },
@@ -5205,7 +5205,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "HhAK0qzO2jmsk0RX"
       },
@@ -5334,7 +5334,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "FQBpdrf04xuYhheF"
       },
@@ -5459,7 +5459,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "B0rR4DCijW1zC3SY"
       },
@@ -5547,7 +5547,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "Uo4iOf0EFG1z8AU2"
       },
@@ -5621,7 +5621,7 @@
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.Wtcdd42MQHwsOsSe"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": true,
         "uniqueId": "7ApZzLcwZfDZz0nE"
       },
@@ -5686,7 +5686,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "CMeM0siw1nq7rr1G"
       },
@@ -5816,7 +5816,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "Y2ItFIBB8PtKttz8"
       },
@@ -5895,7 +5895,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "5FJroVCi4rjKmXQO"
       },
@@ -6040,7 +6040,7 @@
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.z1GsqcJC8bh4TOAs"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "Xf6q7cCeuczSTfXp"
       },
@@ -6205,7 +6205,7 @@
           "weapon_range": "Ranged"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "6pUwTZO1peHgSBya"
       },

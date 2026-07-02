@@ -8,63 +8,6 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
-  "effects": [
-    {
-      "_id": "IH1E9dUwa8ZNKvP9",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1783009473510,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [
-        {
-          "key": "can_target_flying_with",
-          "mode": 5,
-          "priority": 20,
-          "value": ""
-        }
-      ],
-      "description": "<p><em>Jumping Boots:</em> while equipped, you may target Flying creatures as though they do not have Flying.</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": null,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "IH1E9dUwa8ZNKvP9",
-          "originalParentId": "yOJKXAQJq4R2mzCa",
-          "originalUuid": "Item.yOJKXAQJq4R2mzCa.ActiveEffect.IH1E9dUwa8ZNKvP9"
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/boot.png",
-      "name": "Jumping Boots",
-      "origin": null,
-      "sort": 0,
-      "statuses": [],
-      "system": {},
-      "tint": "#ffffff",
-      "transfer": true,
-      "type": "base"
-    }
-  ],
   "flags": {
     "custom-system-builder": {
       "version": "3.2.4"
@@ -162,7 +105,7 @@
       "weapon_range": "Melee"
     },
     "template": "ZoiV53VaLzeRsEps",
-    "templateSystemUniqueVersion": 790996852,
+    "templateSystemUniqueVersion": 987283856,
     "unique": false,
     "uniqueId": "yOJKXAQJq4R2mzCa"
   },

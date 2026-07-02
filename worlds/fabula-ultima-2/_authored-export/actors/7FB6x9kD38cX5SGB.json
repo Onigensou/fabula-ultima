@@ -128,7 +128,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "SUYqRKHBGXUhiOL1"
       },
@@ -246,7 +246,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "OfQc5hgDif7XsRH8"
       },
@@ -341,7 +341,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "wWrePzzYfpE3bEVV"
       },
@@ -455,7 +455,7 @@
           "uuid": "Actor.7FB6x9kD38cX5SGB.Item.fEKZxVfcGVqdH6OY"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "UKzHkmIJcjXZ4GFR"
       },
@@ -616,7 +616,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "UKzHkmIJcjXZ4GFR"
       },
@@ -847,7 +847,7 @@
           "uuid": "Actor.7FB6x9kD38cX5SGB.Item.Tci8Y899P4cbqM11"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "yWlkWZC2vLf4J5Pv"
       },
@@ -943,7 +943,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "TaKeQ2BBHD1wTSFi"
       },

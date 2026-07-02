@@ -106,6 +106,7 @@
           "charges": 1,
           "chargesMax": 99,
           "directorPermanent": false,
+          "hudResourceColor": "#a06bff",
           "lifetimeMode": "persistent_counter"
         },
         "statuscounter": {
@@ -126,7 +127,9 @@
       ],
       "system": {
         "tags": [
-          "buff"
+          "buff",
+          "resource",
+          "points"
         ]
       },
       "tint": "#ffffff",
@@ -242,7 +245,7 @@
       "skill_type": "Passive"
     },
     "template": "j0F5Msw5RZ8aIB3j",
-    "templateSystemUniqueVersion": 425443881,
+    "templateSystemUniqueVersion": 2666163373,
     "unique": false,
     "uniqueId": "ZySnR7edyoUvFZM3"
   },

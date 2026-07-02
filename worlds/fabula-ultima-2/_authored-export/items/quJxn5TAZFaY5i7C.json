@@ -47,7 +47,6 @@
   "system": {
     "container": null,
     "props": {
-      "action_keywords": "pierce",
       "active_effect_config_table": {},
       "aquatic_ef": "100",
       "automaton_ef": "100",
@@ -107,7 +106,7 @@
       "weapon_range": "Ranged"
     },
     "template": "ZoiV53VaLzeRsEps",
-    "templateSystemUniqueVersion": 790996852,
+    "templateSystemUniqueVersion": 987283856,
     "unique": false,
     "uniqueId": "quJxn5TAZFaY5i7C"
   },

@@ -43,6 +43,7 @@
           "chargeKey": "grave",
           "charges": 0,
           "chargesMax": 2,
+          "hudResourceColor": "#8fb53a",
           "lifetimeMode": "persistent_counter",
           "reactionConfig": {
             "effect_table": {},
@@ -65,7 +66,11 @@
       "statuses": [
         "fud-grave-points"
       ],
-      "system": {},
+      "system": {
+        "tags": [
+          "resource"
+        ]
+      },
       "tint": "#ffffff",
       "transfer": false,
       "type": "base"
@@ -178,7 +183,7 @@
       "use_optional_params": false
     },
     "template": "j0F5Msw5RZ8aIB3j",
-    "templateSystemUniqueVersion": 425443881,
+    "templateSystemUniqueVersion": 2666163373,
     "unique": false,
     "uniqueId": "4EFrj1IezXhe0zNT"
   },

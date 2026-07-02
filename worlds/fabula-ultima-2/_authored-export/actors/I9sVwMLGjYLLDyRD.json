@@ -111,7 +111,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "dhGCKitpetFxtw3o"
       },
@@ -167,7 +167,6 @@
           "human_ef": "100",
           "humanoid_ef": "100",
           "insect_ef": "100",
-          "ip_cost": "1",
           "isEquipped": false,
           "isKey": false,
           "isMartial": false,
@@ -199,7 +198,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "BykEf2Th3dTmg02o"
       },
@@ -287,7 +286,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "yde9MapWvfTh9qwb"
       },
@@ -375,7 +374,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "mgLKRtSDNp2zAkbC"
       },
@@ -463,7 +462,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "lBseodHWvi4UfGnw"
       },
@@ -561,7 +560,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "BuOjiNzcT4CY6iue"
       },
@@ -649,7 +648,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "wJBq8w0Xuh7suRqm"
       },
@@ -736,7 +735,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "KkAd9gCG2qtlOlra"
       },

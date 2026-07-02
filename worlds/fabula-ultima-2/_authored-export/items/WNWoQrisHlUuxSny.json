@@ -3,7 +3,7 @@
   "_stats": {
     "compendiumSource": null,
     "coreVersion": "12.343",
-    "createdTime": 1782921835865,
+    "createdTime": 1782988015149,
     "duplicateSource": null,
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
@@ -36,7 +36,7 @@
         }
       },
       "isCheck": false,
-      "name": "Scouter (Passive)",
+      "name": "Dragontrap Bow (Passive)",
       "on_activate_effect_ref": "",
       "reaction_config_table": {
         "0": {
@@ -50,14 +50,12 @@
           "reaction_trigger": "creature_deals_damage"
         }
       },
-      "reaction_source_skill": "",
-      "skill_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
       "skill_target": "Self",
       "skill_type": "Passive",
       "type_damage": ""
     },
     "template": "j0F5Msw5RZ8aIB3j",
-    "templateSystemUniqueVersion": 425443881,
+    "templateSystemUniqueVersion": 2666163373,
     "unique": false,
     "uniqueId": "WNWoQrisHlUuxSny"
   },

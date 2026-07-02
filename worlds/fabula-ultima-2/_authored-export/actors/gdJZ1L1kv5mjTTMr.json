@@ -408,7 +408,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "YNRwUI8yD6PLZo5U"
       },
@@ -532,7 +532,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "feHphjgfvJqxp7Qa"
       },
@@ -634,7 +634,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "o6JD10LZF7bXvU6B"
       },
@@ -826,7 +826,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "CnueY54QHD80cmph"
       },
@@ -1320,7 +1320,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "ofAKHqi3j6lAruI4"
       },
@@ -1382,7 +1382,7 @@
           "uuid": "Item.QjuNoo0rGl9iUWiO"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": true,
         "uniqueId": "tgcZ9aHO4LzlcxA2"
       },
@@ -1455,7 +1455,7 @@
           "skill_type": "Passive"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "JjSTIYwTgVE0FgmU"
       },
@@ -1727,7 +1727,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "uNsw1vWtAssZo4Bz"
       },
@@ -1815,7 +1815,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "vXhqoRfPO5RK6Mdd"
       },
@@ -1906,7 +1906,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "5xIXXUljf4JRv1uE"
       },
@@ -1995,7 +1995,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "FsAN2KEgFrmQnp0g"
       },
@@ -2376,7 +2376,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "lRk4pXxACoezIlOD"
       },
@@ -2464,7 +2464,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "x7RoCErd12Udc8RZ"
       },
@@ -2824,7 +2824,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "jyFW3rkXRbgD84RP"
       },
@@ -2875,6 +2875,7 @@
               "chargeKey": "grave",
               "charges": 0,
               "chargesMax": 2,
+              "hudResourceColor": "#8fb53a",
               "lifetimeMode": "persistent_counter",
               "reactionConfig": {
                 "effect_table": {},
@@ -2897,7 +2898,11 @@
           "statuses": [
             "fud-grave-points"
           ],
-          "system": {},
+          "system": {
+            "tags": [
+              "resource"
+            ]
+          },
           "tint": "#ffffff",
           "transfer": false,
           "type": "base"
@@ -3011,7 +3016,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "4EFrj1IezXhe0zNT"
       },
@@ -3078,7 +3083,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "Z2loq7j6GB6NbxPP"
       },
@@ -3256,6 +3261,7 @@
               "chargeKey": "grave",
               "charges": 0,
               "chargesMax": 2,
+              "hudResourceColor": "#8fb53a",
               "lifetimeMode": "persistent_counter",
               "reactionConfig": {
                 "effect_table": {},
@@ -3278,7 +3284,11 @@
           "statuses": [
             "fud-grave-points"
           ],
-          "system": {},
+          "system": {
+            "tags": [
+              "resource"
+            ]
+          },
           "tint": "#ffffff",
           "transfer": false,
           "type": "base"
@@ -3465,7 +3475,7 @@
           "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.fFHKCwDndsOmUg0q"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "qdGOPTKJQ2YI6LUl"
       },
@@ -3534,7 +3544,7 @@
           "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.fjThxMdxufSrumbB"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "43HnRNN8cWeAgSmr"
       },
@@ -3635,7 +3645,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "jp5JDPhrhjBsFbYf"
       },
@@ -3697,7 +3707,7 @@
           "uuid": "Item.QjuNoo0rGl9iUWiO"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": true,
         "uniqueId": "nWasi2AW6FFlUKCN"
       },
@@ -3902,7 +3912,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "8ta8kqa1PLv1b04D"
       },
@@ -3953,6 +3963,7 @@
               "chargeKey": "brainwave",
               "charges": 0,
               "chargesMax": 4,
+              "hudResourceColor": "#a06bff",
               "lifetimeMode": "persistent_counter",
               "reactionConfig": {
                 "effect_table": {},
@@ -3975,7 +3986,11 @@
           "statuses": [
             "fud-brainwave-clock"
           ],
-          "system": {},
+          "system": {
+            "tags": [
+              "resource"
+            ]
+          },
           "tint": "#ffffff",
           "transfer": false,
           "type": "base"
@@ -4061,7 +4076,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "HFjo7pO12BzyfODR"
       },
@@ -4166,7 +4181,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "9yYY5TBMMVlHo28q"
       },
@@ -4217,6 +4232,7 @@
               "chargeKey": "brainwave",
               "charges": 0,
               "chargesMax": 4,
+              "hudResourceColor": "#a06bff",
               "lifetimeMode": "persistent_counter",
               "reactionConfig": {
                 "effect_table": {},
@@ -4239,7 +4255,11 @@
           "statuses": [
             "fud-brainwave-clock"
           ],
-          "system": {},
+          "system": {
+            "tags": [
+              "resource"
+            ]
+          },
           "tint": "#ffffff",
           "transfer": false,
           "type": "base"
@@ -4498,7 +4518,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "017fLL4jHjuyiPO1"
       },
@@ -4597,7 +4617,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "3JvR2gG0NcT0IwhD"
       },
@@ -4746,7 +4766,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "NNTvabK5vy807Mvt"
       },
@@ -5008,7 +5028,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "xOIJH5IfGbZTH6Tu"
       },
@@ -5130,7 +5150,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "BErxmNwM0p3aWlIF"
       },
@@ -5233,7 +5253,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "dKbnZH1Vw1a9WPUf"
       },
@@ -5327,7 +5347,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "JWzdHF8l1m2ZcdQw"
       },
@@ -5466,7 +5486,7 @@
           "type_damage": ""
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "rs7BtA731yHZPcDn"
       },
@@ -5556,7 +5576,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 790996852,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "ZXaslUkB4sJRWJn3"
       },
@@ -5669,7 +5689,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "vYbUJ2PfG3lQDDcn"
       },
@@ -5827,7 +5847,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "PdMEWL0xZ4Hqg1D5"
       },
@@ -5878,6 +5898,7 @@
               "chargeKey": "brainwave",
               "charges": 0,
               "chargesMax": 4,
+              "hudResourceColor": "#a06bff",
               "lifetimeMode": "persistent_counter",
               "reactionConfig": {
                 "effect_table": {},
@@ -5900,7 +5921,11 @@
           "statuses": [
             "fud-brainwave-clock"
           ],
-          "system": {},
+          "system": {
+            "tags": [
+              "resource"
+            ]
+          },
           "tint": "#ffffff",
           "transfer": false,
           "type": "base"
@@ -5978,7 +6003,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "Kq1SPcfl8zNwegqj"
       },
@@ -6109,7 +6134,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 425443881,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "MfBexg3RMmrBmeyO"
       },
@@ -6199,12 +6224,12 @@
             "subdivisionsOwner": false
           },
           "bar3": {
-            "attribute": "attributeBar.clock_brainwave",
+            "attribute": "attributeBar.shield_value",
             "bgImage": "",
             "fgImage": "",
             "gmVisibility": -1,
             "hideCombat": false,
-            "hideEmpty": false,
+            "hideEmpty": true,
             "hideFull": false,
             "hideHud": false,
             "hideNoCombat": false,
@@ -6213,46 +6238,18 @@
             "indentRight": null,
             "invert": false,
             "invertDirection": false,
-            "label": "🌀",
-            "maxcolor": "#e811c1",
-            "mincolor": "#7a39db",
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
             "opacity": null,
             "order": 2,
             "otherVisibility": 50,
             "ownerVisibility": 50,
-            "position": "bottom-outer",
+            "position": "bottom-inner",
             "shareHeight": false,
-            "style": "percent",
+            "style": "user",
             "subdivisions": null,
             "subdivisionsOwner": false
-          },
-          "bar4": {
-            "attribute": "attributeBar.clock_grave",
-            "bgImage": "",
-            "fgImage": "",
-            "gmVisibility": -1,
-            "hideCombat": false,
-            "hideEmpty": false,
-            "hideFull": false,
-            "hideHud": false,
-            "hideNoCombat": false,
-            "id": "bar4",
-            "indentLeft": null,
-            "indentRight": null,
-            "invert": false,
-            "invertDirection": false,
-            "label": "👻",
-            "maxcolor": "#7d758a",
-            "mincolor": "#7d758a",
-            "opacity": null,
-            "order": 3,
-            "otherVisibility": 50,
-            "ownerVisibility": 50,
-            "position": "bottom-outer",
-            "shareHeight": false,
-            "style": "none",
-            "subdivisions": 6,
-            "subdivisionsOwner": true
           }
         }
       },

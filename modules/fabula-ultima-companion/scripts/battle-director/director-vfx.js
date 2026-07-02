@@ -632,6 +632,8 @@ export async function preloadDirectorSfx() {
     "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/DashA.wav",     // party run-in dash cue
     "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_4.wav", // UI hover cue
     "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/switch_mode.wav",    // UI click cue
+    "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/super_armor.wav",    // Domination burst cue
+    "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Cursor_Decide1.wav", // Dominance gain cue (crest gleam)
     ...INVOKE_SFX_URLS, // invoke-hud trait/bond/die/cancel/confirm cues
   ];
   try { await preloadSfx(urls); }
