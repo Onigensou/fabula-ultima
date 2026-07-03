@@ -1,0 +1,98 @@
+{
+  "_id": "sfB3APSyWP8Lf5LQ",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1783112119182,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "43nZ7emlJwEzKbKs",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/blackblood.png",
+  "name": "For Whom the Bell Tolls",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "effect_table": {
+        "0": {
+          "effect_kind": "open_action_menu",
+          "effect_label": "fwtbt_offer",
+          "menu_option_descriptions": "Extra damage = (SL × 2) + number of statuses on the target|Inflict Shaken — disabled if the target is already Shaken",
+          "menu_option_labels": "Deal extra damage|Apply Shaken",
+          "menu_option_refs": "fwtbt_dmg_opt,fwtbt_shaken_opt",
+          "menu_pick_count": "1",
+          "menu_subtitle": "Spend 1 Grave Point:",
+          "menu_title": "For Whom the Bell Tolls"
+        },
+        "1": {
+          "chain_steps": "fwtbt_cost, fwtbt_dmg",
+          "effect_kind": "chain",
+          "effect_label": "fwtbt_dmg_opt",
+          "menu_label": "Deal extra damage"
+        },
+        "2": {
+          "chain_steps": "fwtbt_cost, fwtbt_shaken",
+          "condition_formula": "TARGET_AE_COUNT_SHAKEN == 0",
+          "disable_ui_type": "disabled",
+          "disabled_reason": "Already Shaken",
+          "effect_kind": "chain",
+          "effect_label": "fwtbt_shaken_opt",
+          "menu_label": "Apply Shaken"
+        },
+        "3": {
+          "charge_ae_name": "Grave Points",
+          "charge_amount": "1",
+          "charge_operation": "subtract",
+          "effect_kind": "adjust_charges",
+          "effect_label": "fwtbt_cost",
+          "target_ref": "self"
+        },
+        "4": {
+          "damage_amount": "SL * 2 + TARGET_STATUS_COUNT",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "fwtbt_dmg",
+          "target_ref": "trigger_subject"
+        },
+        "5": {
+          "ae_duplicate_mode": "replace_same_status",
+          "ae_template_ref": "Shaken",
+          "effect_kind": "apply_ae",
+          "effect_label": "fwtbt_shaken",
+          "target_ref": "trigger_subject"
+        }
+      },
+      "isReaction": true,
+      "level": "1",
+      "max_level": "3",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "ACTION_IS_SPELL == 1 && SINGLE_TARGET_ATTACK && AE_CHARGES_GRAVE_POINTS >= 1",
+          "reaction_action_target": "enemy",
+          "reaction_effect_ref": "fwtbt_offer",
+          "reaction_passive_mode": "ask",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_will_deal_damage"
+        }
+      },
+      "skill_information": "<p>When you deal damage to a creature with a spell, if that spell only deals damage to that creature, you may spend 1 Grave Point. If you do, choose one option: if that creature is suffering from one or more status effects, the spell deals extra damage equal to (SL × 2) + the number of status effects on that creature; or if that creature is suffering from no status effects, they suffer <strong>shaken</strong>.</p>",
+      "skill_type": "Passive",
+      "uniqueId": "sfB3APSyWP8Lf5LQ"
+    },
+    "templateSystemUniqueVersion": null,
+    "unique": false,
+    "uniqueId": "sfB3APSyWP8Lf5LQ"
+  },
+  "type": "equippableItem"
+}

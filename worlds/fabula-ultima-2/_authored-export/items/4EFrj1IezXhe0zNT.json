@@ -42,7 +42,7 @@
           "category": "Other",
           "chargeKey": "grave",
           "charges": 0,
-          "chargesMax": 2,
+          "chargesMax": 3,
           "hudResourceColor": "#8fb53a",
           "lifetimeMode": "persistent_counter",
           "reactionConfig": {

@@ -1,0 +1,57 @@
+{
+  "_id": "hEOGl2wmtgjJX8jt",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1783112118204,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "uuZLsSJMEIBKmGxw",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/fountain.png",
+  "name": "Quick-change",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "cost": "",
+      "description": "<p>After you perform a <strong>dance</strong>, you may perform the Equipment action for free.</p>\n",
+      "duration": "",
+      "effect_table": {
+        "0": {
+          "action_ref": "Equipment",
+          "effect_kind": "free_action",
+          "effect_label": "qc_free"
+        }
+      },
+      "isReaction": true,
+      "level": "1",
+      "max_level": "1",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "SKILL_HAS_TAG_DANCE == 1",
+          "reaction_effect_ref": "qc_free",
+          "reaction_passive_mode": "ask",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_performs_action"
+        }
+      },
+      "skill_target": "",
+      "skill_type": "Passive",
+      "uniqueId": "hEOGl2wmtgjJX8jt"
+    },
+    "templateSystemUniqueVersion": null,
+    "unique": false,
+    "uniqueId": "hEOGl2wmtgjJX8jt"
+  },
+  "type": "equippableItem"
+}

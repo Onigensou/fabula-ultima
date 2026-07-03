@@ -390,12 +390,30 @@
           "item_mdef_bonus": "0",
           "item_quantity": 1,
           "item_rarity": "Common",
+          "item_skill_passive": {
+            "gTVVty4CEgxlH0J5": {
+              "id": "${item.id}",
+              "name": "Sneaker (Passive)",
+              "skill_cost": "",
+              "skill_description": "<p>Equipped passive: +2 to Study Checks.</p>",
+              "skill_maxLevel": 1,
+              "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.gTVVty4CEgxlH0J5"
+            }
+          },
           "item_type": "accessory",
           "mimic_ef": "100",
           "monster_ef": "100",
           "name": "Sneaker",
           "optional_params": {},
           "plant_ef": "100",
+          "related_item_list": {
+            "gTVVty4CEgxlH0J5": {
+              "id": "${item.id}",
+              "name": "Sneaker (Passive)",
+              "related_item_description": "<p>Equipped passive: +2 to Study Checks.</p>",
+              "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.gTVVty4CEgxlH0J5"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
@@ -1255,7 +1273,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -1274,8 +1291,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "6Pry1DbGlFej0tVP",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/shield.png",
           "ingredient_taste": "",
           "ingredient_taste2": "",
           "insect_ef": "100",
@@ -1315,7 +1330,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.6Pry1DbGlFej0tVP",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -1355,11 +1369,8 @@
       "system": {
         "container": "BMk7ey9etLgHOrnI",
         "props": {
-          "action_command": "",
-          "check_mode": "",
           "cost": "",
           "description": "<p>Equipped passive: +2 to Study Checks.</p>",
-          "details_roller": "",
           "effect_table": {
             "0": {
               "check_buff_action": "any",
@@ -1368,8 +1379,6 @@
               "effect_label": "catears_any_buff"
             }
           },
-          "id": "QjuNoo0rGl9iUWiO",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/cate.png",
           "isCheck": false,
           "isReaction": false,
           "max_level": "1",
@@ -1378,8 +1387,7 @@
           "rolled_atr1": "INS",
           "rolled_atr2": "INS",
           "skill_target": "",
-          "skill_type": "Passive",
-          "uuid": "Item.QjuNoo0rGl9iUWiO"
+          "skill_type": "Passive"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -1600,7 +1608,6 @@
           "beast_ef": "100",
           "category": "Dagger",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "5",
@@ -1619,8 +1626,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "8TY9aPKKOzBSFkvv",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1224.gif",
           "ingredient_taste": "",
           "ingredient_taste2": "",
           "insect_ef": "100",
@@ -1648,6 +1653,14 @@
               "skill_description": "<p>On <strong>hit, </strong>Inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.SNK1IJTKfxjAy2NS\" data-id=\"SNK1IJTKfxjAy2NS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bane</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>to the target</p>",
               "skill_maxLevel": 1,
               "uuid": "Item.1nYCUBF2hIDBDALx"
+            },
+            "vYbUJ2PfG3lQDDcn": {
+              "id": "${item.id}",
+              "name": "Weapon Break",
+              "skill_cost": "10 MP",
+              "skill_description": "<p>On <strong>hit, </strong>Inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.SNK1IJTKfxjAy2NS\" data-id=\"SNK1IJTKfxjAy2NS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bane</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>to the target</p>",
+              "skill_maxLevel": 1,
+              "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.vYbUJ2PfG3lQDDcn"
             },
             "yhtoE1Y6cbcY3n7A": {
               "id": "${item.id}",
@@ -1706,6 +1719,12 @@
               "related_item_description": "<ul><li><p>When a creature 【⚔️Attack】you and <strong>missed, </strong>there's a chance to inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.SNK1IJTKfxjAy2NS\" data-id=\"SNK1IJTKfxjAy2NS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bane</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>to the attacker</p></li></ul>",
               "uuid": "Item.OYuq20fwd3AjFy4H"
             },
+            "vYbUJ2PfG3lQDDcn": {
+              "id": "${item.id}",
+              "name": "Weapon Break",
+              "related_item_description": "<p>On <strong>hit, </strong>Inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.SNK1IJTKfxjAy2NS\" data-id=\"SNK1IJTKfxjAy2NS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bane</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>to the target</p>",
+              "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.vYbUJ2PfG3lQDDcn"
+            },
             "yhtoE1Y6cbcY3n7A": {
               "id": "${item.id}",
               "name": "Weapon Break",
@@ -1722,7 +1741,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.8TY9aPKKOzBSFkvv",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -1977,12 +1995,30 @@
           "item_mdef_bonus": "0",
           "item_quantity": "1",
           "item_rarity": "Common",
+          "item_skill_passive": {
+            "7WC6heFnxC7s3Zqr": {
+              "id": "${item.id}",
+              "name": "Cat Ears (Passive)",
+              "skill_cost": "",
+              "skill_description": "<p>Equipped passive: +2 to Study Checks.</p>",
+              "skill_maxLevel": 1,
+              "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.7WC6heFnxC7s3Zqr"
+            }
+          },
           "item_type": "accessory",
           "mimic_ef": "100",
           "monster_ef": "100",
           "name": "Cat Ears",
           "optional_params": {},
           "plant_ef": "100",
+          "related_item_list": {
+            "7WC6heFnxC7s3Zqr": {
+              "id": "${item.id}",
+              "name": "Cat Ears (Passive)",
+              "related_item_description": "<p>Equipped passive: +2 to Study Checks.</p>",
+              "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.7WC6heFnxC7s3Zqr"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
@@ -2310,7 +2346,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -2329,8 +2364,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "BRNmLkWm9FSqbXRK",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/Custom%20Icon/Swimsuit.png",
           "ingredient_taste": "",
           "ingredient_taste2": "",
           "insect_ef": "100",
@@ -2371,7 +2404,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.BRNmLkWm9FSqbXRK",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -2874,7 +2906,7 @@
               "category": "Other",
               "chargeKey": "grave",
               "charges": 0,
-              "chargesMax": 2,
+              "chargesMax": 3,
               "hudResourceColor": "#8fb53a",
               "lifetimeMode": "persistent_counter",
               "reactionConfig": {
@@ -3143,13 +3175,17 @@
                     "effect_label": "bortd_self"
                   },
                   "1": {
-                    "chain_steps": "bortd_b_heal, bortd_b_zero",
+                    "chain_steps": "bortd_cap, bortd_heal, bortd_zero",
                     "effect_kind": "chain",
                     "effect_label": "bortd_death"
                   },
                   "2": {
-                    "effect_kind": "grant",
-                    "effect_label": "bortd_b_heal",
+                    "consume_self": true,
+                    "damage_amount": "CUR_HP - 1",
+                    "damage_operation": "cap",
+                    "damage_stage": "incoming",
+                    "effect_kind": "adjust_damage",
+                    "effect_label": "bortd_cap",
                     "grant_amount": "SL * AE_CHARGES_GRAVE_POINTS",
                     "grant_resource": "hp",
                     "target_ref": "bortd_self"
@@ -3158,9 +3194,19 @@
                     "charge_ae_name": "Grave Points",
                     "charge_amount": "0",
                     "charge_operation": "set",
+                    "effect_kind": "grant",
+                    "effect_label": "bortd_heal",
+                    "grant_amount": "SL_BEYOND_THE_REALMS_OF_DEATH * AE_CHARGES_GRAVE_POINTS - 1",
+                    "grant_resource": "hp",
+                    "target_ref": "self"
+                  },
+                  "4": {
+                    "charge_ae_name": "Grave Points",
+                    "charge_amount": "0",
+                    "charge_operation": "set",
                     "effect_kind": "adjust_charges",
-                    "effect_label": "bortd_b_zero",
-                    "target_ref": "bortd_self"
+                    "effect_label": "bortd_zero",
+                    "target_ref": "self"
                   },
                   "bortd_cap": {
                     "consume_self": true,
@@ -3260,7 +3306,7 @@
               "category": "Other",
               "chargeKey": "grave",
               "charges": 0,
-              "chargesMax": 2,
+              "chargesMax": 3,
               "hudResourceColor": "#8fb53a",
               "lifetimeMode": "persistent_counter",
               "reactionConfig": {
@@ -3319,7 +3365,6 @@
           "damage_bonus": "",
           "defense_target_type": "def",
           "description": "<p>When another creature you can see loses Hit Points while in \n<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span>, if they are not <strong>undead</strong>, you gain <strong>1 Grave Point</strong>. You may never have more than <strong>[SL + 1]</strong> <strong>Grave Points</strong>.</p>\n\n<p>When you are reduced to <strong>0 Hit Points</strong>, you <strong>lose all Grave Points</strong>; then, if you lost at least <strong>1 Grave Point</strong> this way and this is the first time you are reduced to <strong>0 HP</strong> during this scene, you do not <strong>Surrender</strong> nor <strong>Sacrifice</strong> yourself; instead, you recover an amount of <strong>HP</strong> equal to <strong>[SL, multiplied by the amount of Grave Points you lost this way]</strong>.</p>\n",
-          "details_roller": "Show",
           "duration": "",
           "effect_table": {
             "0": {
@@ -3400,9 +3445,7 @@
           "gadget_infusion_tier": "",
           "gadget_magitech_tier": "",
           "heroic_requirement": "",
-          "id": "fFHKCwDndsOmUg0q",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/Shadowed_Vigil.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -3471,8 +3514,7 @@
           "skill_type": "Passive",
           "target_eligibility": "",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.fFHKCwDndsOmUg0q"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -3514,34 +3556,88 @@
           "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<p>When you deal damage to a creature with a 【📕Spell】, if that spell only deals damage to that creature, you may spend <strong>1 Grave Point</strong>. If you do, <strong>Choose one option:</strong></p>\n<ul>\n  <li>If that creature is suffering from one or more status effects, the spell deals extra damage equal to <strong>[(SL × 2) + the number of status effects on that creature]</strong>;</li>\n  <li>or, if that creature is suffering from no status effects, they suffer \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span></span>.\n  </li>\n</ul>\n",
-          "details_roller": "Show",
           "duration": "",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "effect_kind": "open_action_menu",
+              "effect_label": "fwtbt_offer",
+              "menu_option_descriptions": "Extra damage = (SL × 2) + number of statuses on the target|Inflict Shaken — disabled if the target is already Shaken",
+              "menu_option_labels": "Deal extra damage|Apply Shaken",
+              "menu_option_refs": "fwtbt_dmg_opt,fwtbt_shaken_opt",
+              "menu_pick_count": "1",
+              "menu_subtitle": "Spend 1 Grave Point:",
+              "menu_title": "For Whom the Bell Tolls"
+            },
+            "1": {
+              "chain_steps": "fwtbt_cost, fwtbt_dmg",
+              "effect_kind": "chain",
+              "effect_label": "fwtbt_dmg_opt",
+              "menu_label": "Deal extra damage"
+            },
+            "2": {
+              "chain_steps": "fwtbt_cost, fwtbt_shaken",
+              "condition_formula": "TARGET_AE_COUNT_SHAKEN == 0",
+              "disable_ui_type": "disabled",
+              "disabled_reason": "Already Shaken",
+              "effect_kind": "chain",
+              "effect_label": "fwtbt_shaken_opt",
+              "menu_label": "Apply Shaken"
+            },
+            "3": {
+              "charge_ae_name": "Grave Points",
+              "charge_amount": "1",
+              "charge_operation": "subtract",
+              "effect_kind": "adjust_charges",
+              "effect_label": "fwtbt_cost",
+              "target_ref": "self"
+            },
+            "4": {
+              "damage_amount": "SL * 2 + TARGET_STATUS_COUNT",
+              "damage_operation": "add",
+              "damage_stage": "outgoing",
+              "effect_kind": "adjust_damage",
+              "effect_label": "fwtbt_dmg",
+              "target_ref": "trigger_subject"
+            },
+            "5": {
+              "ae_duplicate_mode": "replace_same_status",
+              "ae_template_ref": "Shaken",
+              "effect_kind": "apply_ae",
+              "effect_label": "fwtbt_shaken",
+              "target_ref": "trigger_subject"
+            }
+          },
           "heroic_requirement": "",
-          "id": "fjThxMdxufSrumbB",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/blackblood.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
-          "isReaction": false,
+          "isReaction": true,
           "isZeroPower": false,
           "level": "3",
           "max_level": "3",
           "name": "For Whom the Bell Tolls",
           "on_activate_effect_ref": "",
           "optional_params": {},
-          "reaction_config_table": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "ACTION_IS_SPELL == 1 && SINGLE_TARGET_ATTACK && AE_CHARGES_GRAVE_POINTS >= 1",
+              "reaction_action_target": "enemy",
+              "reaction_effect_ref": "fwtbt_offer",
+              "reaction_passive_mode": "ask",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_will_deal_damage"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
-          "skill_information": "<table style=\"width:100%; text-align:center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Base Extra Damage</strong></p></td><td><p><strong>Total Extra Damage</strong></p></td></tr><tr><td><p>1</p></td><td><p>2</p></td><td><p>2 + number of statuses on target</p></td></tr><tr><td><p>2</p></td><td><p>4</p></td><td><p>4 + number of statuses on target</p></td></tr><tr><td><p>3</p></td><td><p>6</p></td><td><p>6 + number of statuses on target</p></td></tr></tbody></table>",
+          "skill_information": "<p>When you deal damage to a creature with a spell, if that spell only deals damage to that creature, you may spend 1 Grave Point. If you do, choose one option: if that creature is suffering from one or more status effects, the spell deals extra damage equal to (SL × 2) + the number of status effects on that creature; or if that creature is suffering from no status effects, they suffer <strong>shaken</strong>.</p>",
           "skill_range": "",
           "skill_target": "",
           "skill_type": "Passive",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.fjThxMdxufSrumbB"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -3680,11 +3776,8 @@
       "system": {
         "container": "05OeWaPbNYmWjD0T",
         "props": {
-          "action_command": "",
-          "check_mode": "",
           "cost": "",
           "description": "<p>Equipped passive: +2 to Study Checks.</p>",
-          "details_roller": "",
           "effect_table": {
             "0": {
               "check_buff_action": "stealth",
@@ -3693,8 +3786,6 @@
               "effect_label": "sneaker_stealth_buff"
             }
           },
-          "id": "QjuNoo0rGl9iUWiO",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/sneak.png",
           "isCheck": false,
           "isReaction": false,
           "max_level": "1",
@@ -3703,8 +3794,7 @@
           "rolled_atr1": "INS",
           "rolled_atr2": "INS",
           "skill_target": "",
-          "skill_type": "Passive",
-          "uuid": "Item.QjuNoo0rGl9iUWiO"
+          "skill_type": "Passive"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -4748,12 +4838,30 @@
           "item_mdef_bonus": "0",
           "item_quantity": "1",
           "item_rarity": "Common",
+          "item_skill_active": {
+            "rs7BtA731yHZPcDn": {
+              "id": "${item.id}",
+              "name": "Charm",
+              "skill_cost": "15 MP",
+              "skill_description": "<p>Cast 【✨ Charm】: 15 MP, One Creature. 50% chance to inflict Charmed for 1 Round.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.rs7BtA731yHZPcDn"
+            }
+          },
           "item_type": "accessory",
           "mimic_ef": "100",
           "monster_ef": "100",
           "name": "Fairy Ring",
           "optional_params": {},
           "plant_ef": "100",
+          "related_item_list": {
+            "rs7BtA731yHZPcDn": {
+              "id": "${item.id}",
+              "name": "Charm",
+              "related_item_description": "<p>Cast 【✨ Charm】: 15 MP, One Creature. 50% chance to inflict Charmed for 1 Round.</p>",
+              "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.rs7BtA731yHZPcDn"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
@@ -5480,7 +5588,6 @@
           "isOffensiveSpell": false,
           "name": "Charm",
           "on_activate_effect_ref": "charm_roll",
-          "skill_description": "",
           "skill_target": "One Creature",
           "skill_type": "Spell",
           "type_damage": ""
@@ -6528,7 +6635,7 @@
       "critical_dice_range": 0,
       "current_hp": "89",
       "current_ip": "8",
-      "current_mp": "84",
+      "current_mp": 86,
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/Keren_Cut-in002.png",
       "cut_in_fumble": "",
@@ -7555,7 +7662,7 @@
           "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.zBJhr4X59vKtQlsh"
         }
       },
-      "skill_class_filter": "",
+      "skill_class_filter": "Necromancer",
       "skill_hideEffect": false,
       "skill_type_filter": "All",
       "slow_status": 0,

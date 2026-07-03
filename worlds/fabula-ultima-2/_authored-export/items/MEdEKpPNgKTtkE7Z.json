@@ -1,0 +1,205 @@
+{
+  "_id": "MEdEKpPNgKTtkE7Z",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1783112116306,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "A5bqABLKrPtqXZz8",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 2,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "A5bqABLKrPtqXZz8",
+          "originalParentId": "MEdEKpPNgKTtkE7Z",
+          "originalUuid": "Item.MEdEKpPNgKTtkE7Z.ActiveEffect.A5bqABLKrPtqXZz8"
+        },
+        "fabula-ultima-companion": {
+          "category": "Other",
+          "lifetimeMode": "target_turn_end"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/svg/upgrade.svg",
+      "name": "Dancing Lion Dance",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "Th5PekSE1nFdUUhi",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 2,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "Th5PekSE1nFdUUhi",
+          "originalParentId": "MEdEKpPNgKTtkE7Z",
+          "originalUuid": "Item.MEdEKpPNgKTtkE7Z.ActiveEffect.Th5PekSE1nFdUUhi"
+        },
+        "fabula-ultima-companion": {
+          "category": "Other",
+          "lifetimeMode": "target_turn_end"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/svg/upgrade.svg",
+      "name": "Dancing",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "VcMxlJcB5QjESAu4",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/technical_finish.png",
+  "name": "Lion Dance",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "availability_formula": "HAS_MARTIAL_ARMOR == 0",
+      "availability_reason": "No martial armor allowed",
+      "cost": "",
+      "description": "<p>You immediately recover from a single status effect of your choice.</p>\n",
+      "duration": "instantaneous",
+      "effect_table": {
+        "0": {
+          "candidate_source": "self",
+          "effect_kind": "targeting",
+          "effect_label": "d_self"
+        },
+        "1": {
+          "chain_steps": "d_cost, d_untoken, d_mark_gen, d_mark_self, lion_cleanse",
+          "effect_kind": "chain",
+          "effect_label": "d_root"
+        },
+        "2": {
+          "consume_amount": "10 - 5 * (AE_COUNT_DANCING > 0) * (AE_COUNT_DANCING_LION_DANCE == 0)",
+          "consume_resource": "mp",
+          "effect_kind": "consume_resource",
+          "effect_label": "d_cost",
+          "on_empty": "abort",
+          "target_ref": "self"
+        },
+        "3": {
+          "count": "all",
+          "effect_kind": "remove_tagged_ae",
+          "effect_label": "d_untoken",
+          "filter_tag": "dance-token",
+          "target_ref": "self"
+        },
+        "4": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Dancing",
+          "effect_kind": "apply_ae",
+          "effect_label": "d_mark_gen",
+          "target_ref": "d_self"
+        },
+        "5": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Dancing Lion Dance",
+          "effect_kind": "apply_ae",
+          "effect_label": "d_mark_self",
+          "target_ref": "d_self"
+        },
+        "6": {
+          "count": 1,
+          "effect_kind": "remove_tagged_ae",
+          "effect_label": "lion_cleanse",
+          "filter_tag": "debuff",
+          "menu_subtitle": "Recover from one status effect.",
+          "menu_title": "Lion Dance",
+          "target_ref": "self"
+        }
+      },
+      "level": "1",
+      "max_level": "1",
+      "on_activate_effect_ref": "d_root",
+      "reaction_config_table": {},
+      "skill_tags": "dance",
+      "skill_target": "Self",
+      "skill_type": "Active",
+      "uniqueId": "MEdEKpPNgKTtkE7Z"
+    },
+    "templateSystemUniqueVersion": null,
+    "unique": false,
+    "uniqueId": "MEdEKpPNgKTtkE7Z"
+  },
+  "type": "equippableItem"
+}
