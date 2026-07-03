@@ -47,7 +47,7 @@
             "appliedAtRound": 0,
             "effectLabel": "em_refresh",
             "reactorActorUuid": "Actor.Z4CFy505cD3nzl1W",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.h6uOAQhQj4bVo2bS",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.t6j680TZZpqjteoF",
             "skillUuid": "Actor.Z4CFy505cD3nzl1W.Item.HiXFAkSm35bBGHfM",
             "turnsRemaining": null
           },
@@ -1926,6 +1926,64 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "4VyOsFdW2Zf5kUKL",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1783108023409,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "4VyOsFdW2Zf5kUKL",
+              "originalParentId": "B5EA1iq4j0wYzpo5",
+              "originalUuid": "Actor.Z4CFy505cD3nzl1W.Item.B5EA1iq4j0wYzpo5.ActiveEffect.4VyOsFdW2Zf5kUKL"
+            },
+            "fabula-ultima-companion": {
+              "category": "Other",
+              "directorPermanent": true
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/svg/upgrade.svg",
+          "name": "Dance",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "dance-token"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -1950,7 +2008,26 @@
           "defense_target_type": "def",
           "description": "<p>Each time you take this Skill, you learn a <strong>dance</strong> (see Facet).</p><p>On your turn during a conflict scene, if you have no martial armor equipped, you may spend 10 Mind Points to perform a <strong>dance</strong> you have learned. This doesn’t require an action, but it can only be done before or after an action, and only once per turn. If you already performed a different dance during your previous turn in this scene, the cost of the new dance is reduced to 5 Mind Points.</p><p>Some dances are instantaneous and resolve immediately, while others have effects that last until the start of your next turn.</p>",
           "duration": "",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "candidate_source": "self",
+              "effect_kind": "targeting",
+              "effect_label": "dance_self"
+            },
+            "1": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Dance",
+              "effect_kind": "apply_ae",
+              "effect_label": "dance_apply",
+              "target_ref": "dance_self"
+            },
+            "2": {
+              "action_ref": "Skill",
+              "allowed_skill_refs": "tag:dance",
+              "effect_kind": "free_action",
+              "effect_label": "dance_free"
+            }
+          },
           "heroic_requirement": "",
           "ignore_hr": false,
           "isCheck": false,
@@ -1964,7 +2041,28 @@
           "name": "Dance",
           "on_activate_effect_ref": "",
           "optional_params": {},
-          "reaction_config_table": {},
+          "reaction_config_table": {
+            "0": {
+              "reaction_effect_ref": "dance_apply",
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_trigger": "turn_start"
+            },
+            "1": {
+              "condition_formula": "AE_COUNT_DANCE > 0 && HAS_MARTIAL_ARMOR == 0",
+              "reaction_effect_ref": "dance_free",
+              "reaction_passive_mode": "ask",
+              "reaction_source": "self",
+              "reaction_trigger": "turn_start"
+            },
+            "2": {
+              "condition_formula": "AE_COUNT_DANCE > 0 && HAS_MARTIAL_ARMOR == 0",
+              "reaction_effect_ref": "dance_free",
+              "reaction_passive_mode": "ask",
+              "reaction_source": "self",
+              "reaction_trigger": "turn_end"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_mode": "default",
@@ -1973,6 +2071,7 @@
           "skill_target": "",
           "skill_type": "Other",
           "type_damage": "",
+          "uniqueId": "8lF3aCEt5wsYxleL",
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
@@ -1992,6 +2091,116 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "kgx5G7IykhyudCVA",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1783108178307,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 2,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "kgx5G7IykhyudCVA",
+              "originalParentId": "bik5TL6rLy0NerM9",
+              "originalUuid": "Actor.Z4CFy505cD3nzl1W.Item.bik5TL6rLy0NerM9.ActiveEffect.kgx5G7IykhyudCVA"
+            },
+            "fabula-ultima-companion": {
+              "category": "Other",
+              "lifetimeMode": "target_turn_end"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/svg/upgrade.svg",
+          "name": "Dancing Ouroboros Dance",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "xif0z8VQCI4RZaxi",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1783108178307,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 2,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "xif0z8VQCI4RZaxi",
+              "originalParentId": "bik5TL6rLy0NerM9",
+              "originalUuid": "Actor.Z4CFy505cD3nzl1W.Item.bik5TL6rLy0NerM9.ActiveEffect.xif0z8VQCI4RZaxi"
+            },
+            "fabula-ultima-companion": {
+              "category": "Other",
+              "lifetimeMode": "target_turn_end"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/svg/upgrade.svg",
+          "name": "Dancing",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -2009,14 +2218,61 @@
       "system": {
         "props": {
           "active_effect_config_table": {},
+          "availability_formula": "HAS_MARTIAL_ARMOR == 0",
+          "availability_reason": "No martial armor allowed",
           "check_bonus": "0",
           "class": "Dancer",
-          "cost": "10 MP",
+          "cost": "",
           "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<p>Choose one ally you can see who has yet to take a turn during this round. That ally may take their turn immediately after yours during this round.</p>\n",
           "duration": "Instantaneous",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "candidate_source": "self",
+              "effect_kind": "targeting",
+              "effect_label": "d_self"
+            },
+            "1": {
+              "chain_steps": "d_cost, d_untoken, d_mark_gen, d_mark_self, ouro_turn",
+              "effect_kind": "chain",
+              "effect_label": "d_root"
+            },
+            "2": {
+              "consume_amount": "10 - 5 * (AE_COUNT_DANCING > 0) * (AE_COUNT_DANCING_OUROBOROS_DANCE == 0)",
+              "consume_resource": "mp",
+              "effect_kind": "consume_resource",
+              "effect_label": "d_cost",
+              "on_empty": "abort",
+              "target_ref": "self"
+            },
+            "3": {
+              "count": "all",
+              "effect_kind": "remove_tagged_ae",
+              "effect_label": "d_untoken",
+              "filter_tag": "dance-token",
+              "target_ref": "self"
+            },
+            "4": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Dancing",
+              "effect_kind": "apply_ae",
+              "effect_label": "d_mark_gen",
+              "target_ref": "d_self"
+            },
+            "5": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Dancing Ouroboros Dance",
+              "effect_kind": "apply_ae",
+              "effect_label": "d_mark_self",
+              "target_ref": "d_self"
+            },
+            "7": {
+              "effect_kind": "take_turn_next",
+              "effect_label": "ouro_turn",
+              "target_ref": "action_targets"
+            }
+          },
           "heroic_requirement": "",
           "ignore_hr": false,
           "isCheck": false,
@@ -2028,7 +2284,7 @@
           "level": "1",
           "max_level": "1",
           "name": "Ouroboros Dance",
-          "on_activate_effect_ref": "",
+          "on_activate_effect_ref": "d_root",
           "optional_params": {},
           "reaction_config_table": {},
           "rolled_atr1": "-",
@@ -2036,9 +2292,11 @@
           "skill_animation_mode": "default",
           "skill_information": "",
           "skill_range": "Any",
+          "skill_tags": "dance",
           "skill_target": "One ally",
           "skill_type": "Active",
           "type_damage": "",
+          "uniqueId": "eAUaGhDdy3uogln7",
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
@@ -4466,15 +4724,32 @@
           "damage_bonus": "0",
           "description": "<p>After you perform a <strong>dance</strong>, you may perform the Equipment action for free.</p>\n",
           "duration": "",
+          "effect_table": {
+            "0": {
+              "action_ref": "Equipment",
+              "effect_kind": "free_action",
+              "effect_label": "qc_free"
+            }
+          },
           "heroic_requirement": "",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
+          "isReaction": true,
           "level": "1",
           "max_level": "1",
           "name": "Quick-change",
           "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "SKILL_HAS_TAG_DANCE == 1",
+              "reaction_effect_ref": "qc_free",
+              "reaction_passive_mode": "ask",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_performs_action"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_mode": "default",
@@ -4482,6 +4757,7 @@
           "skill_target": "",
           "skill_type": "Passive",
           "type_damage": "",
+          "uniqueId": "hEOGl2wmtgjJX8jt",
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
@@ -4981,6 +5257,116 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "bsEqYFeFNRkXDkAg",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1783108162876,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 2,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "bsEqYFeFNRkXDkAg",
+              "originalParentId": "RJUqK88OOv4WUmKH",
+              "originalUuid": "Actor.Z4CFy505cD3nzl1W.Item.RJUqK88OOv4WUmKH.ActiveEffect.bsEqYFeFNRkXDkAg"
+            },
+            "fabula-ultima-companion": {
+              "category": "Other",
+              "lifetimeMode": "target_turn_end"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/svg/upgrade.svg",
+          "name": "Dancing",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "CS79heoyrzS0vlFc",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1783108162876,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 2,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "CS79heoyrzS0vlFc",
+              "originalParentId": "RJUqK88OOv4WUmKH",
+              "originalUuid": "Actor.Z4CFy505cD3nzl1W.Item.RJUqK88OOv4WUmKH.ActiveEffect.CS79heoyrzS0vlFc"
+            },
+            "fabula-ultima-companion": {
+              "category": "Other",
+              "lifetimeMode": "target_turn_end"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/svg/upgrade.svg",
+          "name": "Dancing Lion Dance",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -4998,14 +5384,65 @@
       "system": {
         "props": {
           "active_effect_config_table": {},
+          "availability_formula": "HAS_MARTIAL_ARMOR == 0",
+          "availability_reason": "No martial armor allowed",
           "check_bonus": "0",
           "class": "Dancer",
-          "cost": "Instantaneous",
+          "cost": "",
           "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<p>You immediately recover from a single status effect of your choice.</p>\n",
           "duration": "instantaneous",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "candidate_source": "self",
+              "effect_kind": "targeting",
+              "effect_label": "d_self"
+            },
+            "1": {
+              "chain_steps": "d_cost, d_untoken, d_mark_gen, d_mark_self, lion_cleanse",
+              "effect_kind": "chain",
+              "effect_label": "d_root"
+            },
+            "2": {
+              "consume_amount": "10 - 5 * (AE_COUNT_DANCING > 0) * (AE_COUNT_DANCING_LION_DANCE == 0)",
+              "consume_resource": "mp",
+              "effect_kind": "consume_resource",
+              "effect_label": "d_cost",
+              "on_empty": "abort",
+              "target_ref": "self"
+            },
+            "3": {
+              "count": "all",
+              "effect_kind": "remove_tagged_ae",
+              "effect_label": "d_untoken",
+              "filter_tag": "dance-token",
+              "target_ref": "self"
+            },
+            "4": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Dancing",
+              "effect_kind": "apply_ae",
+              "effect_label": "d_mark_gen",
+              "target_ref": "d_self"
+            },
+            "5": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Dancing Lion Dance",
+              "effect_kind": "apply_ae",
+              "effect_label": "d_mark_self",
+              "target_ref": "d_self"
+            },
+            "6": {
+              "count": 1,
+              "effect_kind": "remove_tagged_ae",
+              "effect_label": "lion_cleanse",
+              "filter_tag": "debuff",
+              "menu_subtitle": "Recover from one status effect.",
+              "menu_title": "Lion Dance",
+              "target_ref": "self"
+            }
+          },
           "heroic_requirement": "",
           "ignore_hr": false,
           "isCheck": false,
@@ -5017,7 +5454,7 @@
           "level": "1",
           "max_level": "1",
           "name": "Lion Dance",
-          "on_activate_effect_ref": "",
+          "on_activate_effect_ref": "d_root",
           "optional_params": {},
           "reaction_config_table": {},
           "rolled_atr1": "-",
@@ -5025,9 +5462,11 @@
           "skill_animation_mode": "default",
           "skill_information": "",
           "skill_range": "Any",
+          "skill_tags": "dance",
           "skill_target": "Self",
           "skill_type": "Active",
           "type_damage": "",
+          "uniqueId": "MEdEKpPNgKTtkE7Z",
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
@@ -7161,7 +7600,7 @@
       "critical_dice_range": 0,
       "current_hp": "84",
       "current_ip": "10",
-      "current_mp": "74",
+      "current_mp": 39,
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/Zarg_Cut-in002.png",
       "cut_in_fumble": "",
@@ -7228,7 +7667,7 @@
       "entropism": false,
       "envenomed_status": 0,
       "exp_meter": "1.84",
-      "experience": 1.84,
+      "experience": "1.84",
       "experience_ui": "0",
       "extra_damage_mod_air": 0,
       "extra_damage_mod_all": 1,
@@ -7534,7 +7973,7 @@
       },
       "item_restore_mod": 20,
       "key_list": {},
-      "level": 34,
+      "level": "34",
       "lifesteal_percentage": 0,
       "lifesteal_value": 0,
       "magic_defense": 9,
@@ -7986,7 +8425,7 @@
         },
         "RJUqK88OOv4WUmKH": {
           "active_class": "Dancer",
-          "active_cost": "Instantaneous",
+          "active_cost": "",
           "active_description": "<p>You immediately recover from a single status effect of your choice.</p>\n",
           "active_duration": "instantaneous",
           "active_level": 1,
@@ -8058,7 +8497,7 @@
         },
         "bik5TL6rLy0NerM9": {
           "active_class": "Dancer",
-          "active_cost": "10 MP",
+          "active_cost": "",
           "active_description": "<p>Choose one ally you can see who has yet to take a turn during this round. That ally may take their turn immediately after yours during this round.</p>\n",
           "active_duration": "Instantaneous",
           "active_level": 1,
@@ -8592,7 +9031,7 @@
       "wlp_base": "8",
       "wlp_current": 8,
       "your_class_name": "Hunter",
-      "zenit": 1699,
+      "zenit": "1699",
       "zero_label": "Zero Power",
       "zero_power_description": "<p><strong>Zero Scourge</strong></p><p>Special rule: when you select this effect for your Zero Power, choose a damage type</p><p>among air, bolt, dark, earth, fire, ice, light, and poison; then, choose two status effects</p><p>among dazed, shaken, slow, and weak.</p><p>Choose any number of creatures you can see: each of them suffers damage of then</p><p>chosen type equal to【30 + half your level】and suffers the chosen status effects.</p>",
       "zero_power_macro": "",

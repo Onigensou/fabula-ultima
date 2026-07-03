@@ -543,10 +543,22 @@
         "parent": "VVjpCERIXMrOJna7"
       },
       {
+        "id": "Ontn7wV9ON5Z8gME",
+        "name": "Dancer",
+        "type": "Item",
+        "parent": "341jxGTHbioINnUl"
+      },
+      {
         "id": "Sib3z5oIZYXxnVQJ",
         "name": "Dances",
         "type": "Item",
         "parent": "IZgBc6z6Iyz2ccos"
+      },
+      {
+        "id": "VcMxlJcB5QjESAu4",
+        "name": "Dances",
+        "type": "Item",
+        "parent": "Ontn7wV9ON5Z8gME"
       },
       {
         "id": "ecsWCKqCXnSE0HO7",
@@ -2017,6 +2029,12 @@
         "name": "Skill",
         "type": "Item",
         "parent": "ElTyIhuIlanlMbpM"
+      },
+      {
+        "id": "uuZLsSJMEIBKmGxw",
+        "name": "Skill",
+        "type": "Item",
+        "parent": "Ontn7wV9ON5Z8gME"
       },
       {
         "id": "vE96q7FVLmhb7wDD",
@@ -4769,6 +4787,12 @@
         "effects": 0
       },
       {
+        "id": "8lF3aCEt5wsYxleL",
+        "name": "Dance",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
         "id": "txUds8BUb5KqMhvZ",
         "name": "Dance",
         "type": "equippableItem",
@@ -5994,6 +6018,12 @@
       },
       {
         "id": "43HnRNN8cWeAgSmr",
+        "name": "For Whom the Bell Tolls",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "sfB3APSyWP8Lf5LQ",
         "name": "For Whom the Bell Tolls",
         "type": "equippableItem",
         "effects": 0
@@ -7895,6 +7925,12 @@
         "effects": 0
       },
       {
+        "id": "MEdEKpPNgKTtkE7Z",
+        "name": "Lion Dance",
+        "type": "equippableItem",
+        "effects": 2
+      },
+      {
         "id": "gBgCB84iaNLxy59e",
         "name": "Lion Dance",
         "type": "equippableItem",
@@ -9215,6 +9251,12 @@
         "effects": 0
       },
       {
+        "id": "eAUaGhDdy3uogln7",
+        "name": "Ouroboros Dance",
+        "type": "equippableItem",
+        "effects": 2
+      },
+      {
         "id": "uMIItEHpqu7mII8g",
         "name": "Overload Burst",
         "type": "equippableItem",
@@ -9919,6 +9961,12 @@
       {
         "id": "qTPwunpyLYSM958Z",
         "name": "Quick Summoning",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "hEOGl2wmtgjJX8jt",
+        "name": "Quick-change",
         "type": "equippableItem",
         "effects": 0
       },
