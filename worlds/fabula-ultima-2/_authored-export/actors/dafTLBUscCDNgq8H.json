@@ -47,7 +47,7 @@
             "appliedAtRound": 0,
             "effectLabel": "hod_refresh",
             "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.43doUXTWsLFbtefF",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.dB4iwc5UtDeFOd6n",
             "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF",
             "turnsRemaining": null
           },
@@ -70,6 +70,79 @@
         "fud-heart-of-darkness-ready"
       ],
       "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "RSNu4njHMeQJMwRK",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783091047170,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>A reserve of foresight Hina spends to take the place of all creatures threatened by a single danger.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "propheticPoint01",
+          "originalParentId": "Lmzs6VllFRo44jZq",
+          "originalUuid": "Item.Lmzs6VllFRo44jZq.ActiveEffect.propheticPoint01"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "chargeKey": "prophecy",
+          "charges": 5,
+          "chargesMax": 99,
+          "directorAppliedBy": {
+            "appliedAtRound": 0,
+            "effectLabel": "pds_gain",
+            "lifetimeMode": "persistent_counter",
+            "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.dB4iwc5UtDeFOd6n",
+            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.gm2w1NLdaEI7SzaQ",
+            "turnsRemaining": null
+          },
+          "directorPermanent": false,
+          "hudResourceColor": "#a06bff",
+          "lifetimeMode": "persistent_counter"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/nocturnal_sect.png",
+      "name": "Prophecy Point",
+      "origin": "Actor.dafTLBUscCDNgq8H.Item.gm2w1NLdaEI7SzaQ",
+      "sort": 0,
+      "statuses": [
+        "fud-prophecy-point"
+      ],
+      "system": {
+        "tags": [
+          "resource",
+          "points"
+        ]
+      },
       "tint": "#ffffff",
       "transfer": false,
       "type": "base"
@@ -1702,7 +1775,7 @@
           "humanoid_ef": "100",
           "insect_ef": "100",
           "ip_cost": "",
-          "isEquipped": true,
+          "isEquipped": false,
           "isKey": false,
           "isMartial": true,
           "isModule": false,
@@ -10146,7 +10219,7 @@
       "critical_dice_range": 0,
       "current_hp": "86",
       "current_ip": "6",
-      "current_mp": "80",
+      "current_mp": "100",
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/hina_Cut-in002.png",
       "cut_in_fumble": "",
@@ -10950,10 +11023,10 @@
       "lifesteal_value": 0,
       "magic_defense": 12,
       "magic_defense_mod": "0",
-      "main_attrib_1": "DEX",
-      "main_attrib_2": "DEX",
-      "main_details": "<ul><li><p>When you hit a <strong>@UUID[JournalEntry.q6keqwDWUsEgSWDw]{Flying}</strong>&nbsp;target with this weapon, you may force that target to land immediately</p></li></ul>",
-      "main_hand": "Dragontrap Bow",
+      "main_attrib_1": "WLP",
+      "main_attrib_2": "WLP",
+      "main_details": "<ul><li><p>This weapon deals <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-type=\"JournalEntry\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(61, 166, 255) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Magic Damage</span></strong></a></span></span></p></li><li><p>You may cast the spell 【<strong>⚡ Glacies Finis </strong>】</p><hr class=\"\"></li></ul><details><summary><strong>⚡ Glacies Finis</strong></summary><p><strong>Cost:</strong> 30 x T MP</p><p><strong>Target:</strong> Up to three creatures</p><p><strong>Duration:</strong> Instantaneous</p><p><strong>Check:【WLP】</strong> + <strong>【WLP】</strong></p><p>You cause a glacial avalanche. Each target hit by this spell suffers 【HR + 30】ice damage. Opportunity: Each target hit by this spell suffers slow.</p></details>",
+      "main_hand": "Arch Ice Wand",
       "main_hand_attack": "",
       "manadrain_percentage": 0,
       "manadrain_value": 0,
@@ -12209,10 +12282,10 @@
       "turbulence_status": 0,
       "uuid": "Actor.dafTLBUscCDNgq8H",
       "weak_status": 0,
-      "weapon1_base_damage": "12",
+      "weapon1_base_damage": "5",
       "weapon1_base_mod": "0",
-      "weapon1_damage": 12,
-      "weapon1_damagetype": "Earth",
+      "weapon1_damage": 5,
+      "weapon1_damagetype": "Ice",
       "weapon1_mod": 0,
       "weapon2_damagetype": "-",
       "weapon_list": {
@@ -12645,6 +12718,18 @@
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.Ok3TYVE0Od3BWygV",
           "weapon_description": "<p><ul>\n<li>The first attack you perform with this weapon during each scene deals 5 extra damage.</li>\n</ul></p>",
           "weapon_hand": "One-handed",
+          "weapon_martial": "",
+          "weapon_range": "Ranged"
+        },
+        "PCC2d1FjqoZORiaN": {
+          "id": "${item.id}",
+          "name": "Arch Ice Wand",
+          "quantity": "",
+          "roll": "",
+          "type": "Arcane",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.PCC2d1FjqoZORiaN",
+          "weapon_description": "<p><ul><li><p>This weapon deals <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-type=\"JournalEntry\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(61, 166, 255) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Magic Damage</span></strong></a></span></span></p></li><li><p>You may cast the spell 【<strong>⚡ Glacies Finis </strong>】</p><hr class=\"\"></li></ul><details><summary><strong>⚡ Glacies Finis</strong></summary><p><strong>Cost:</strong> 30 x T MP</p><p><strong>Target:</strong> Up to three creatures</p><p><strong>Duration:</strong> Instantaneous</p><p><strong>Check:【WLP】</strong> + <strong>【WLP】</strong></p><p>You cause a glacial avalanche. Each target hit by this spell suffers 【HR + 30】ice damage. Opportunity: Each target hit by this spell suffers slow.</p></details></p>",
+          "weapon_hand": "Two-handed",
           "weapon_martial": "",
           "weapon_range": "Ranged"
         },
