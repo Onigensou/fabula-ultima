@@ -6365,6 +6365,12 @@
         "effects": 0
       },
       {
+        "id": "rbGbxQreSOzdidNQ",
+        "name": "Glacies Finis",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "FHSVeepym01zqx6T",
         "name": "Glitter Brooch",
         "type": "equippableItem",
@@ -16085,6 +16091,10 @@
           {
             "id": "4ASHq5KXQhpibVeO",
             "name": "Enchanted Delayed Blast Remote"
+          },
+          {
+            "id": "mOhAyd6CoAqe7YP5",
+            "name": "Glacies Finis"
           },
           {
             "id": "9NaO4mJKNZjA0Uo4",
