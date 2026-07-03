@@ -95,6 +95,7 @@ async function getSkillEffectsExtras() {
 import { getRuntimeSkillView, getRuntimeActionView } from "./skill-recipes.js";
 import { computeActionProfile, projectProfileToActionResult } from "./action-profile.js";
 import { classifyActionIntent } from "./skill-intent.js";
+import { isAutopilotEnabled, isEnemyNpcTurn, autopilotPickCombatant, autopilotDecideAction } from "./enemy-autopilot.js";
 import { resolveAnimationSpec, playDirectorAnimation } from "./director-animation.js";
 
 // Install a director-scoped watcher that releases Guard / Covered AEs
@@ -1650,7 +1651,22 @@ const TurnStart = {
           director.enqueue({ type: INTENTS.INTERNAL_DONE });
           return;
         }
-        if (eligible.length === 1) {
+        // Enemy Autopilot — when on, the enemy side auto-picks WHO acts by
+        // initiative (with a "thinking" pause), bypassing the manual picker.
+        // Null return → fall through to the normal single/multi picker paths.
+        if (isAutopilotEnabled() && dc.currentSide === "enemy") {
+          try {
+            const autoId = await autopilotPickCombatant(director, eligible);
+            if (autoId) {
+              dc.currentCombatantId = autoId;
+              log(`TURN_START: autopilot picked ${eligible.find((e) => e.id === autoId)?.name ?? autoId}`);
+            }
+          } catch (e) { warn("TURN_START: autopilot pick threw", e); }
+        }
+
+        if (dc.currentCombatantId) {
+          // Autopilot already resolved who acts — skip the pickers below.
+        } else if (eligible.length === 1) {
           dc.currentCombatantId = eligible[0].id;
           log(`TURN_START: auto-picked ${eligible[0].name} (only eligible on ${dc.currentSide})`);
         } else {
@@ -2123,6 +2139,26 @@ const Declare = {
         applyComposedBundleAndAdvance(director, presetGrant.preset);
         return;
       }
+    }
+
+    // Enemy Autopilot — for an enemy-side NPC turn, decide the action + targets
+    // from the actor's Action Pattern (ActionReader) and apply the resulting
+    // bundle exactly like a player's composed action. The FSM then auto-runs
+    // TARGET → COMPUTE, posts the action card, and BLOCKS at CONFIRM for a human:
+    // the autopilot never confirms. A null return (no Action Pattern, nothing
+    // feasible, unsupported command, or an action-gating debuff) falls through to
+    // the normal manual composeAction below — the failsafe. See
+    // [[project_action_pattern_ai]].
+    if (isAutopilotEnabled() && isEnemyNpcTurn(director)) {
+      try {
+        const autoBundle = await autopilotDecideAction(director, snap);
+        if (autoBundle) {
+          log(`DECLARE: autopilot → ${autoBundle.command} for ${snap.name}`);
+          applyComposedBundleAndAdvance(director, autoBundle);
+          return;
+        }
+        log(`DECLARE: autopilot declined for ${snap.name} — manual compose fallback`);
+      } catch (e) { warn("DECLARE: autopilot decide threw — manual compose fallback", e); }
     }
 
     // Resolve the owner IGNORING online status: we broadcast + arm the
