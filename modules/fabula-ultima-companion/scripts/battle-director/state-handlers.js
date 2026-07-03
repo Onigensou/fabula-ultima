@@ -4315,6 +4315,14 @@ const Confirm = {
       try {
         const { findPassiveCandidates } = await getSkillEffectsExtras();
         const allTargetUuids = (ar.targets ?? []).map((t) => t.tokenUuid);
+        // The acting skill's free-form `skill_tags` so a performer-side reaction
+        // can gate on SKILL_HAS_TAG_<X> (Quick-change: "after you perform a dance"
+        // → SKILL_HAS_TAG_DANCE). Mirrors the creature_uses_item skillTags forward.
+        let performSkillTags = "";
+        try {
+          const actingSkill = ar.skillUuid ? await fromUuid(ar.skillUuid).catch(() => null) : null;
+          performSkillTags = String(actingSkill?.system?.props?.skill_tags ?? "");
+        } catch (_) { /* noop */ }
         const cands = await findPassiveCandidates({
           casterActor: attackerActor,
           trigger: "creature_performs_action",
@@ -4331,6 +4339,8 @@ const Confirm = {
             // can't distinguish spell-vs-skill (both stamp ar.kind "Skill"), so
             // ACTION_IS_SPELL reads this for the precise gate (Hypercognition).
             actionSkillType: String(ar.skillType ?? "").toLowerCase(),
+            // Acting skill's tags (SKILL_HAS_TAG_<X> reads payload.skillTags).
+            skillTags: performSkillTags,
             // Did this action roll a Check (accuracy/magic check)? An "offensive
             // spell" in FU is precisely a Spell with a Check (⚡ icon); buff/heal
             // spells are isCheck:false. ACTION_IS_OFFENSIVE_SPELL gates on this

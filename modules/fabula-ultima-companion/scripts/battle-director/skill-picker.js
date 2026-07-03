@@ -318,6 +318,11 @@ function candidateFromSkill(skill, actor, { source, sourceItem }) {
     name: skill.name ?? "(unnamed)",
     img: skill.img ?? "icons/svg/sun.svg",
     skillType: String(p.skill_type ?? "").trim() || "—",
+    // Free-form skill tags (CSB `skill_tags` prop, comma/space list) — lets a
+    // free action's allow-list filter by TAG (`tag:dance`) instead of naming each
+    // skill, so newly-learned tagged skills auto-qualify. See the allowedRefs
+    // tag branch below.
+    skillTags: String(p.skill_tags ?? "").trim(),
     // Classified intent (harmful | aid | neutral) — drives the per-entry
     // `disable_action_intent` filter (e.g. Charm/Domination hides aid spells).
     intent: classifyActionIntent(skill),
@@ -466,9 +471,26 @@ export async function pickSkill({
   let candidates = filterBySkillTypes(all, allowedSkillTypes)
     .filter((c) => !c.isReactionOnly);
   if (Array.isArray(allowedRefs) && allowedRefs.length) {
-    const wanted = new Set(allowedRefs.map((r) => String(r).trim().toLowerCase()));
-    candidates = candidates.filter((c) =>
-      wanted.has(String(c.name ?? "").trim().toLowerCase()) || wanted.has(String(c.uuid ?? "").toLowerCase()));
+    // Entries are NAMES / UUIDs, plus an optional `tag:<t>` form matched against
+    // the candidate's `skill_tags` (Dancer's free dance action → `tag:dance`, so
+    // every dance-tagged skill qualifies without listing each by name).
+    const wanted = new Set();
+    const wantedTags = new Set();
+    for (const r of allowedRefs) {
+      const s = String(r ?? "").trim().toLowerCase();
+      if (!s) continue;
+      if (s.startsWith("tag:")) { const t = s.slice(4).trim(); if (t) wantedTags.add(t); }
+      else wanted.add(s);
+    }
+    candidates = candidates.filter((c) => {
+      if (wanted.has(String(c.name ?? "").trim().toLowerCase())) return true;
+      if (wanted.has(String(c.uuid ?? "").toLowerCase())) return true;
+      if (wantedTags.size) {
+        const tags = String(c.skillTags ?? "").split(/[\s,]+/).map((t) => t.trim().toLowerCase()).filter(Boolean);
+        if (tags.some((t) => wantedTags.has(t))) return true;
+      }
+      return false;
+    });
   }
   if (excludeIntents && excludeIntents.size) {
     for (const c of candidates) {

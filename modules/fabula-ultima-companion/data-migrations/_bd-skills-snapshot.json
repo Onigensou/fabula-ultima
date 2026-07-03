@@ -90,6 +90,167 @@
     "effects": []
   },
   {
+    "name": "Domination",
+    "type": "equippableItem",
+    "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/02_WAR/inner_release.png",
+    "folderPath": [
+      "Battle Director",
+      "Common"
+    ],
+    "system": {
+      "template": "j0F5Msw5RZ8aIB3j",
+      "templateSystemUniqueVersion": 2666163373,
+      "props": {
+        "name": "Domination",
+        "skill_type": "Active",
+        "isCheck": false,
+        "isReaction": false,
+        "skill_target": "Self",
+        "cost": "",
+        "max_level": "1",
+        "on_activate_effect_ref": "domination_activate",
+        "description": "<p><strong>Ultima Action (free action).</strong> Spend 1 Ultima Point and 1 Dominance Point: until the end of the round, debuffs that prevent or restrict this Villain&#39;s actions stay applied but have no effect.</p>",
+        "effect_table": {
+          "0": {
+            "effect_label": "domination_activate",
+            "effect_kind": "apply_ae",
+            "ae_template_ref": "Domination State",
+            "target_ref": "self",
+            "ae_duplicate_mode": "replace",
+            "ae_initial_charges": "",
+            "ae_initial_charges_max": "",
+            "ae_family": "",
+            "consume_self": false,
+            "from_resource": "",
+            "to_resource": "",
+            "menu_label": ""
+          }
+        },
+        "isOffensiveSpell": false,
+        "ignore_hr": false,
+        "use_optional_params": false,
+        "optional_params": {},
+        "active_effect_config_table": {},
+        "reaction_config_table": {},
+        "isFacet": false,
+        "isHeroic": false,
+        "isZeroPower": false,
+        "class": "",
+        "target_eligibility": "",
+        "duration": "-",
+        "skill_range": "",
+        "level": "1",
+        "heroic_requirement": "",
+        "rolled_atr1": "-",
+        "rolled_atr2": "-",
+        "check_bonus": "0",
+        "damage_bonus": "",
+        "type_damage": "",
+        "defense_target_type": "def",
+        "skill_information": "",
+        "pre_activate_effect_ref": "",
+        "gadget_infusion_tier": "",
+        "gadget_alchemy_tier": "",
+        "gadget_magitech_tier": "",
+        "skill_animation_mode": "default",
+        "skill_animation_default": "",
+        "animation_damage_timing_options": "default",
+        "animation_damage_timing_offset": "0",
+        "uuid": "Item.q3xzxwAR7OlMmaQJ",
+        "id": "q3xzxwAR7OlMmaQJ",
+        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/02_WAR/inner_release.png",
+        "details_roller": "Show",
+        "action_command": "domination"
+      },
+      "unique": true,
+      "uniqueId": "q3xzxwAR7OlMmaQJ"
+    },
+    "flags": {
+      "custom-system-builder": {
+        "version": "4.8.5"
+      },
+      "fabula-ultima-companion": {
+        "coreAction": "domination"
+      }
+    },
+    "effects": [
+      {
+        "name": "Domination State",
+        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/02_WAR/inner_release.png",
+        "changes": [
+          {
+            "key": "ignore_action_gating",
+            "value": "1",
+            "mode": 5,
+            "priority": 20
+          }
+        ],
+        "description": "<p>Debuffs that prevent or restrict actions stay applied but have no effect until the end of the round.</p>",
+        "transfer": false,
+        "disabled": false,
+        "system": {
+          "tags": [
+            "buff"
+          ]
+        },
+        "flags": {
+          "fabula-ultima-companion": {
+            "category": "buff",
+            "lifetimeMode": "round_end"
+          }
+        },
+        "type": "base",
+        "duration": {
+          "startTime": null,
+          "seconds": null,
+          "combat": null,
+          "rounds": null,
+          "turns": null,
+          "startRound": null,
+          "startTurn": null
+        },
+        "origin": null,
+        "tint": "#ffffff",
+        "statuses": []
+      },
+      {
+        "name": "Dominance Point",
+        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/02_WAR/infuriate.png",
+        "changes": [],
+        "description": "<p>Banked boss resource. Spend 1 (plus 1 Ultima Point) to enter Domination State.</p>",
+        "transfer": false,
+        "disabled": false,
+        "system": {
+          "tags": [
+            "resource",
+            "points"
+          ]
+        },
+        "flags": {
+          "fabula-ultima-companion": {
+            "chargeKey": "dominance",
+            "charges": 1,
+            "chargesMax": 1,
+            "lifetimeMode": "persistent_counter"
+          }
+        },
+        "type": "base",
+        "duration": {
+          "startTime": null,
+          "seconds": null,
+          "combat": null,
+          "rounds": null,
+          "turns": null,
+          "startRound": null,
+          "startTurn": null
+        },
+        "origin": null,
+        "tint": "#ffffff",
+        "statuses": []
+      }
+    ]
+  },
+  {
     "name": "Equipment",
     "type": "equippableItem",
     "img": "icons/svg/upgrade.svg",
@@ -127,6 +288,87 @@
       },
       "fabula-ultima-companion": {
         "coreAction": "equipment"
+      }
+    },
+    "effects": []
+  },
+  {
+    "name": "Escape",
+    "type": "equippableItem",
+    "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/09_NIN/shade_shift.png",
+    "folderPath": [
+      "Battle Director",
+      "Common"
+    ],
+    "system": {
+      "template": "j0F5Msw5RZ8aIB3j",
+      "templateSystemUniqueVersion": 2666163373,
+      "props": {
+        "name": "Escape",
+        "skill_type": "Active",
+        "isCheck": false,
+        "isReaction": false,
+        "skill_target": "Self",
+        "cost": "",
+        "max_level": "1",
+        "on_activate_effect_ref": "escape_activate",
+        "description": "<p><strong>Ultima Action.</strong> Spend 1 Ultima Point: the Villain safely leaves the scene.</p>",
+        "effect_table": {
+          "0": {
+            "effect_label": "escape_activate",
+            "effect_kind": "leave_combat",
+            "target_ref": "self",
+            "consume_self": false,
+            "from_resource": "",
+            "to_resource": "",
+            "menu_label": ""
+          }
+        },
+        "isOffensiveSpell": false,
+        "ignore_hr": false,
+        "use_optional_params": false,
+        "optional_params": {},
+        "active_effect_config_table": {},
+        "reaction_config_table": {},
+        "isFacet": false,
+        "isHeroic": false,
+        "isZeroPower": false,
+        "class": "",
+        "target_eligibility": "",
+        "duration": "-",
+        "skill_range": "",
+        "level": "1",
+        "heroic_requirement": "",
+        "rolled_atr1": "-",
+        "rolled_atr2": "-",
+        "check_bonus": "0",
+        "damage_bonus": "",
+        "type_damage": "",
+        "defense_target_type": "def",
+        "skill_information": "",
+        "pre_activate_effect_ref": "",
+        "gadget_infusion_tier": "",
+        "gadget_alchemy_tier": "",
+        "gadget_magitech_tier": "",
+        "skill_animation_mode": "default",
+        "skill_animation_default": "",
+        "animation_damage_timing_options": "default",
+        "animation_damage_timing_offset": "0",
+        "uuid": "Item.nNmdYuOvyNcBjpjb",
+        "id": "nNmdYuOvyNcBjpjb",
+        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/09_NIN/shade_shift.png",
+        "details_roller": "Show",
+        "action_command": "escape"
+      },
+      "unique": true,
+      "uniqueId": "oHXEMgR0pYVB8K0h"
+    },
+    "flags": {
+      "custom-system-builder": {
+        "version": "4.8.5"
+      },
+      "fabula-ultima-companion": {
+        "coreAction": "escape"
       }
     },
     "effects": []
@@ -173,7 +415,8 @@
             "ae_initial_charges_max": "",
             "from_resource": "",
             "to_resource": "",
-            "menu_label": ""
+            "menu_label": "",
+            "ae_family": ""
           },
           "2": {
             "effect_label": "guard_cover",
@@ -186,7 +429,8 @@
             "ae_initial_charges_max": "",
             "from_resource": "",
             "to_resource": "",
-            "menu_label": ""
+            "menu_label": "",
+            "ae_family": ""
           }
         },
         "isOffensiveSpell": false,
@@ -198,10 +442,6 @@
         "isFacet": false,
         "isHeroic": false,
         "isZeroPower": false,
-        "uuid": "Item.nNmdYuOvyNcBjpjb",
-        "id": "nNmdYuOvyNcBjpjb",
-        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/shield_oath.png",
-        "details_roller": "Show",
         "class": "",
         "target_eligibility": "",
         "duration": "-",
@@ -222,7 +462,11 @@
         "skill_animation_mode": "default",
         "skill_animation_default": "",
         "animation_damage_timing_options": "default",
-        "animation_damage_timing_offset": "0"
+        "animation_damage_timing_offset": "0",
+        "uuid": "Item.nNmdYuOvyNcBjpjb",
+        "id": "nNmdYuOvyNcBjpjb",
+        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/shield_oath.png",
+        "details_roller": "Show"
       },
       "unique": true,
       "uniqueId": "nNmdYuOvyNcBjpjb"
@@ -491,6 +735,109 @@
     "effects": []
   },
   {
+    "name": "Recovery",
+    "type": "equippableItem",
+    "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/purification.png",
+    "folderPath": [
+      "Battle Director",
+      "Common"
+    ],
+    "system": {
+      "template": "j0F5Msw5RZ8aIB3j",
+      "templateSystemUniqueVersion": 2666163373,
+      "props": {
+        "name": "Recovery",
+        "skill_type": "Active",
+        "isCheck": false,
+        "isReaction": false,
+        "skill_target": "Self",
+        "cost": "",
+        "max_level": "1",
+        "on_activate_effect_ref": "recovery_activate",
+        "description": "<p><strong>Ultima Action.</strong> Use an action and spend 1 Ultima Point: recover from all status effects and recover 50 Mind Points.</p>",
+        "effect_table": {
+          "0": {
+            "effect_label": "recovery_activate",
+            "effect_kind": "chain",
+            "chain_steps": "recovery_cleanse,recovery_mp",
+            "consume_self": false,
+            "from_resource": "",
+            "to_resource": "",
+            "menu_label": ""
+          },
+          "1": {
+            "effect_label": "recovery_cleanse",
+            "effect_kind": "remove_tagged_ae",
+            "filter_tag": "debuff",
+            "count": "",
+            "target_ref": "self",
+            "consume_self": false,
+            "from_resource": "",
+            "to_resource": "",
+            "menu_label": ""
+          },
+          "2": {
+            "effect_label": "recovery_mp",
+            "effect_kind": "grant",
+            "grant_resource": "mp",
+            "grant_amount": "50",
+            "target_ref": "self",
+            "consume_self": false,
+            "from_resource": "",
+            "to_resource": "",
+            "menu_label": ""
+          }
+        },
+        "isOffensiveSpell": false,
+        "ignore_hr": false,
+        "use_optional_params": false,
+        "optional_params": {},
+        "active_effect_config_table": {},
+        "reaction_config_table": {},
+        "isFacet": false,
+        "isHeroic": false,
+        "isZeroPower": false,
+        "class": "",
+        "target_eligibility": "",
+        "duration": "-",
+        "skill_range": "",
+        "level": "1",
+        "heroic_requirement": "",
+        "rolled_atr1": "-",
+        "rolled_atr2": "-",
+        "check_bonus": "0",
+        "damage_bonus": "",
+        "type_damage": "",
+        "defense_target_type": "def",
+        "skill_information": "",
+        "pre_activate_effect_ref": "",
+        "gadget_infusion_tier": "",
+        "gadget_alchemy_tier": "",
+        "gadget_magitech_tier": "",
+        "skill_animation_mode": "default",
+        "skill_animation_default": "",
+        "animation_damage_timing_options": "default",
+        "animation_damage_timing_offset": "0",
+        "uuid": "Item.nNmdYuOvyNcBjpjb",
+        "id": "nNmdYuOvyNcBjpjb",
+        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/purification.png",
+        "details_roller": "Show",
+        "action_command": "recovery"
+      },
+      "unique": true,
+      "uniqueId": "SgSFeTMvgFwMsZP8"
+    },
+    "flags": {
+      "custom-system-builder": {
+        "version": "4.8.5"
+      },
+      "fabula-ultima-companion": {
+        "coreAction": "recovery"
+      }
+    },
+    "effects": []
+  },
+  {
     "name": "Study",
     "type": "equippableItem",
     "img": "icons/svg/eye.svg",
@@ -516,7 +863,10 @@
         "effect_table": {
           "0": {
             "effect_label": "study_record",
-            "effect_kind": "encyclopedia_record"
+            "effect_kind": "encyclopedia_record",
+            "grant_resource": "",
+            "grant_amount": "",
+            "target_ref": ""
           }
         },
         "uuid": "Item.07LyIguZFDhEh3Wk",
@@ -524,7 +874,30 @@
         "img": "icons/svg/eye.svg",
         "details_roller": "Show",
         "action_command": "study",
-        "check_mode": "open"
+        "check_mode": "open",
+        "isOffensiveSpell": false,
+        "ignore_hr": false,
+        "use_optional_params": false,
+        "optional_params": {},
+        "active_effect_config_table": {},
+        "reaction_config_table": {},
+        "class": "",
+        "duration": "-",
+        "skill_range": "",
+        "level": "1",
+        "heroic_requirement": "",
+        "check_bonus": "0",
+        "damage_bonus": "",
+        "type_damage": "",
+        "defense_target_type": "def",
+        "skill_information": "",
+        "isFacet": false,
+        "isHeroic": false,
+        "isZeroPower": false,
+        "skill_animation_mode": "default",
+        "skill_animation_default": "",
+        "animation_damage_timing_options": "default",
+        "animation_damage_timing_offset": "0"
       },
       "unique": true,
       "uniqueId": "07LyIguZFDhEh3Wk"
@@ -535,6 +908,520 @@
       },
       "fabula-ultima-companion": {
         "coreAction": "study"
+      }
+    },
+    "effects": []
+  },
+  {
+    "name": "Lion Dance",
+    "type": "equippableItem",
+    "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/technical_finish.png",
+    "folderPath": [
+      "Battle Director",
+      "Dancer",
+      "Dances"
+    ],
+    "system": {
+      "templateSystemUniqueVersion": null,
+      "props": {
+        "skill_type": "Active",
+        "level": "1",
+        "max_level": "1",
+        "description": "<p>You immediately recover from a single status effect of your choice.</p>\n",
+        "cost": "",
+        "skill_target": "Self",
+        "duration": "instantaneous",
+        "skill_tags": "dance",
+        "uniqueId": "MEdEKpPNgKTtkE7Z",
+        "reaction_config_table": {},
+        "effect_table": {
+          "0": {
+            "effect_label": "d_self",
+            "effect_kind": "targeting",
+            "candidate_source": "self"
+          },
+          "1": {
+            "effect_label": "d_root",
+            "effect_kind": "chain",
+            "chain_steps": "d_cost, d_untoken, d_mark_gen, d_mark_self, lion_cleanse"
+          },
+          "2": {
+            "effect_label": "d_cost",
+            "effect_kind": "consume_resource",
+            "consume_resource": "mp",
+            "consume_amount": "10 - 5 * (AE_COUNT_DANCING > 0) * (AE_COUNT_DANCING_LION_DANCE == 0)",
+            "target_ref": "self",
+            "on_empty": "abort"
+          },
+          "3": {
+            "effect_label": "d_untoken",
+            "effect_kind": "remove_tagged_ae",
+            "filter_tag": "dance-token",
+            "count": "all",
+            "target_ref": "self"
+          },
+          "4": {
+            "effect_label": "d_mark_gen",
+            "effect_kind": "apply_ae",
+            "ae_template_ref": "Dancing",
+            "target_ref": "d_self",
+            "ae_duplicate_mode": "replace"
+          },
+          "5": {
+            "effect_label": "d_mark_self",
+            "effect_kind": "apply_ae",
+            "ae_template_ref": "Dancing Lion Dance",
+            "target_ref": "d_self",
+            "ae_duplicate_mode": "replace"
+          },
+          "6": {
+            "effect_label": "lion_cleanse",
+            "effect_kind": "remove_tagged_ae",
+            "filter_tag": "debuff",
+            "count": 1,
+            "target_ref": "self",
+            "menu_title": "Lion Dance",
+            "menu_subtitle": "Recover from one status effect."
+          }
+        },
+        "on_activate_effect_ref": "d_root",
+        "availability_formula": "HAS_MARTIAL_ARMOR == 0",
+        "availability_reason": "No martial armor allowed"
+      },
+      "unique": false,
+      "uniqueId": "MEdEKpPNgKTtkE7Z"
+    },
+    "flags": {
+      "custom-system-builder": {
+        "version": "4.8.5"
+      }
+    },
+    "effects": [
+      {
+        "name": "Dancing Lion Dance",
+        "transfer": false,
+        "statuses": [],
+        "system": {
+          "tags": []
+        },
+        "duration": {
+          "rounds": 2,
+          "startTime": null,
+          "seconds": null,
+          "combat": null,
+          "turns": null,
+          "startRound": null,
+          "startTurn": null
+        },
+        "flags": {
+          "fabula-ultima-companion": {
+            "lifetimeMode": "target_turn_end",
+            "category": "Other"
+          },
+          "statuscounter": {
+            "config": {
+              "multiplyEffect": true,
+              "type": "default"
+            },
+            "value": 1,
+            "visible": false
+          },
+          "custom-system-builder": {
+            "originalParentId": "MEdEKpPNgKTtkE7Z",
+            "originalId": "A5bqABLKrPtqXZz8",
+            "originalUuid": "Item.MEdEKpPNgKTtkE7Z.ActiveEffect.A5bqABLKrPtqXZz8",
+            "isFromTemplate": false
+          }
+        },
+        "img": "icons/svg/upgrade.svg",
+        "type": "base",
+        "changes": [],
+        "disabled": false,
+        "description": "",
+        "origin": null,
+        "tint": "#ffffff"
+      },
+      {
+        "name": "Dancing",
+        "transfer": false,
+        "statuses": [],
+        "system": {
+          "tags": []
+        },
+        "duration": {
+          "rounds": 2,
+          "startTime": null,
+          "seconds": null,
+          "combat": null,
+          "turns": null,
+          "startRound": null,
+          "startTurn": null
+        },
+        "flags": {
+          "fabula-ultima-companion": {
+            "lifetimeMode": "target_turn_end",
+            "category": "Other"
+          },
+          "statuscounter": {
+            "config": {
+              "multiplyEffect": true,
+              "type": "default"
+            },
+            "value": 1,
+            "visible": false
+          },
+          "custom-system-builder": {
+            "originalParentId": "MEdEKpPNgKTtkE7Z",
+            "originalId": "Th5PekSE1nFdUUhi",
+            "originalUuid": "Item.MEdEKpPNgKTtkE7Z.ActiveEffect.Th5PekSE1nFdUUhi",
+            "isFromTemplate": false
+          }
+        },
+        "img": "icons/svg/upgrade.svg",
+        "type": "base",
+        "changes": [],
+        "disabled": false,
+        "description": "",
+        "origin": null,
+        "tint": "#ffffff"
+      }
+    ]
+  },
+  {
+    "name": "Ouroboros Dance",
+    "type": "equippableItem",
+    "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/technical_finish.png",
+    "folderPath": [
+      "Battle Director",
+      "Dancer",
+      "Dances"
+    ],
+    "system": {
+      "templateSystemUniqueVersion": null,
+      "props": {
+        "skill_type": "Active",
+        "level": "1",
+        "max_level": "1",
+        "description": "<p>Choose one ally you can see who has yet to take a turn during this round. That ally may take their turn immediately after yours during this round.</p>\n",
+        "cost": "",
+        "skill_target": "One ally",
+        "duration": "Instantaneous",
+        "skill_tags": "dance",
+        "uniqueId": "eAUaGhDdy3uogln7",
+        "reaction_config_table": {},
+        "on_activate_effect_ref": "d_root",
+        "availability_formula": "HAS_MARTIAL_ARMOR == 0",
+        "availability_reason": "No martial armor allowed",
+        "effect_table": {
+          "0": {
+            "effect_label": "d_self",
+            "effect_kind": "targeting",
+            "candidate_source": "self"
+          },
+          "1": {
+            "effect_label": "d_root",
+            "effect_kind": "chain",
+            "chain_steps": "d_cost, d_untoken, d_mark_gen, d_mark_self, ouro_turn"
+          },
+          "2": {
+            "effect_label": "d_cost",
+            "effect_kind": "consume_resource",
+            "consume_resource": "mp",
+            "consume_amount": "10 - 5 * (AE_COUNT_DANCING > 0) * (AE_COUNT_DANCING_OUROBOROS_DANCE == 0)",
+            "target_ref": "self",
+            "on_empty": "abort"
+          },
+          "3": {
+            "effect_label": "d_untoken",
+            "effect_kind": "remove_tagged_ae",
+            "filter_tag": "dance-token",
+            "count": "all",
+            "target_ref": "self"
+          },
+          "4": {
+            "effect_label": "d_mark_gen",
+            "effect_kind": "apply_ae",
+            "ae_template_ref": "Dancing",
+            "target_ref": "d_self",
+            "ae_duplicate_mode": "replace"
+          },
+          "5": {
+            "effect_label": "d_mark_self",
+            "effect_kind": "apply_ae",
+            "ae_template_ref": "Dancing Ouroboros Dance",
+            "target_ref": "d_self",
+            "ae_duplicate_mode": "replace"
+          },
+          "7": {
+            "effect_label": "ouro_turn",
+            "effect_kind": "take_turn_next",
+            "target_ref": "action_targets"
+          }
+        }
+      },
+      "unique": false,
+      "uniqueId": "eAUaGhDdy3uogln7"
+    },
+    "flags": {
+      "custom-system-builder": {
+        "version": "4.8.5"
+      }
+    },
+    "effects": [
+      {
+        "name": "Dancing",
+        "transfer": false,
+        "statuses": [],
+        "system": {
+          "tags": []
+        },
+        "duration": {
+          "rounds": 2,
+          "startTime": null,
+          "seconds": null,
+          "combat": null,
+          "turns": null,
+          "startRound": null,
+          "startTurn": null
+        },
+        "flags": {
+          "fabula-ultima-companion": {
+            "lifetimeMode": "target_turn_end",
+            "category": "Other"
+          },
+          "statuscounter": {
+            "config": {
+              "multiplyEffect": true,
+              "type": "default"
+            },
+            "value": 1,
+            "visible": false
+          },
+          "custom-system-builder": {
+            "originalParentId": "eAUaGhDdy3uogln7",
+            "originalId": "X0JJtVvBjfSJ3Cjg",
+            "originalUuid": "Item.eAUaGhDdy3uogln7.ActiveEffect.X0JJtVvBjfSJ3Cjg",
+            "isFromTemplate": false
+          }
+        },
+        "img": "icons/svg/upgrade.svg",
+        "type": "base",
+        "changes": [],
+        "disabled": false,
+        "description": "",
+        "origin": null,
+        "tint": "#ffffff"
+      },
+      {
+        "name": "Dancing Ouroboros Dance",
+        "transfer": false,
+        "statuses": [],
+        "system": {
+          "tags": []
+        },
+        "duration": {
+          "rounds": 2,
+          "startTime": null,
+          "seconds": null,
+          "combat": null,
+          "turns": null,
+          "startRound": null,
+          "startTurn": null
+        },
+        "flags": {
+          "fabula-ultima-companion": {
+            "lifetimeMode": "target_turn_end",
+            "category": "Other"
+          },
+          "statuscounter": {
+            "config": {
+              "multiplyEffect": true,
+              "type": "default"
+            },
+            "value": 1,
+            "visible": false
+          },
+          "custom-system-builder": {
+            "originalParentId": "eAUaGhDdy3uogln7",
+            "originalId": "GwrycLOSNJ4EAog2",
+            "originalUuid": "Item.eAUaGhDdy3uogln7.ActiveEffect.GwrycLOSNJ4EAog2",
+            "isFromTemplate": false
+          }
+        },
+        "img": "icons/svg/upgrade.svg",
+        "type": "base",
+        "changes": [],
+        "disabled": false,
+        "description": "",
+        "origin": null,
+        "tint": "#ffffff"
+      }
+    ]
+  },
+  {
+    "name": "Dance",
+    "type": "equippableItem",
+    "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/technical_step.png",
+    "folderPath": [
+      "Battle Director",
+      "Dancer",
+      "Skill"
+    ],
+    "system": {
+      "templateSystemUniqueVersion": null,
+      "props": {
+        "skill_type": "Other",
+        "level": "1",
+        "max_level": "10",
+        "description": "<p>Each time you take this Skill, you learn a <strong>dance</strong> (see Facet).</p><p>On your turn during a conflict scene, if you have no martial armor equipped, you may spend 10 Mind Points to perform a <strong>dance</strong> you have learned. This doesn’t require an action, but it can only be done before or after an action, and only once per turn. If you already performed a different dance during your previous turn in this scene, the cost of the new dance is reduced to 5 Mind Points.</p><p>Some dances are instantaneous and resolve immediately, while others have effects that last until the start of your next turn.</p>",
+        "cost": "",
+        "skill_target": "",
+        "duration": "",
+        "uniqueId": "8lF3aCEt5wsYxleL",
+        "reaction_config_table": {
+          "0": {
+            "reaction_trigger": "turn_start",
+            "reaction_source": "self",
+            "reaction_passive_mode": "force",
+            "reaction_effect_ref": "dance_apply"
+          },
+          "1": {
+            "reaction_trigger": "turn_start",
+            "reaction_source": "self",
+            "reaction_passive_mode": "ask",
+            "reaction_effect_ref": "dance_free",
+            "condition_formula": "AE_COUNT_DANCE > 0 && HAS_MARTIAL_ARMOR == 0"
+          },
+          "2": {
+            "reaction_trigger": "turn_end",
+            "reaction_source": "self",
+            "reaction_passive_mode": "ask",
+            "reaction_effect_ref": "dance_free",
+            "condition_formula": "AE_COUNT_DANCE > 0 && HAS_MARTIAL_ARMOR == 0"
+          }
+        },
+        "effect_table": {
+          "0": {
+            "effect_label": "dance_self",
+            "effect_kind": "targeting",
+            "candidate_source": "self"
+          },
+          "1": {
+            "effect_label": "dance_apply",
+            "effect_kind": "apply_ae",
+            "ae_template_ref": "Dance",
+            "target_ref": "dance_self",
+            "ae_duplicate_mode": "replace"
+          },
+          "2": {
+            "effect_label": "dance_free",
+            "effect_kind": "free_action",
+            "action_ref": "Skill",
+            "allowed_skill_refs": "tag:dance"
+          }
+        }
+      },
+      "unique": false,
+      "uniqueId": "8lF3aCEt5wsYxleL"
+    },
+    "flags": {
+      "custom-system-builder": {
+        "version": "4.8.5"
+      }
+    },
+    "effects": [
+      {
+        "name": "Dance",
+        "transfer": false,
+        "statuses": [],
+        "duration": {
+          "startTime": null,
+          "seconds": null,
+          "combat": null,
+          "rounds": null,
+          "turns": null,
+          "startRound": null,
+          "startTurn": null
+        },
+        "system": {
+          "tags": [
+            "dance-token"
+          ]
+        },
+        "flags": {
+          "fabula-ultima-companion": {
+            "directorPermanent": true,
+            "category": "Other"
+          },
+          "statuscounter": {
+            "config": {
+              "multiplyEffect": true,
+              "type": "default"
+            },
+            "value": 1,
+            "visible": false
+          },
+          "custom-system-builder": {
+            "originalParentId": "8lF3aCEt5wsYxleL",
+            "originalId": "bvcEIFX8gLRDL1aq",
+            "originalUuid": "Item.8lF3aCEt5wsYxleL.ActiveEffect.bvcEIFX8gLRDL1aq",
+            "isFromTemplate": false
+          }
+        },
+        "img": "icons/svg/upgrade.svg",
+        "type": "base",
+        "changes": [],
+        "disabled": false,
+        "description": "",
+        "origin": null,
+        "tint": "#ffffff"
+      }
+    ]
+  },
+  {
+    "name": "Quick-change",
+    "type": "equippableItem",
+    "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/DNC/fountain.png",
+    "folderPath": [
+      "Battle Director",
+      "Dancer",
+      "Skill"
+    ],
+    "system": {
+      "templateSystemUniqueVersion": null,
+      "props": {
+        "skill_type": "Passive",
+        "level": "1",
+        "max_level": "1",
+        "description": "<p>After you perform a <strong>dance</strong>, you may perform the Equipment action for free.</p>\n",
+        "cost": "",
+        "skill_target": "",
+        "duration": "",
+        "isReaction": true,
+        "uniqueId": "hEOGl2wmtgjJX8jt",
+        "reaction_config_table": {
+          "0": {
+            "reaction_trigger": "creature_performs_action",
+            "reaction_source": "self",
+            "reaction_passive_mode": "ask",
+            "reaction_effect_ref": "qc_free",
+            "condition_formula": "SKILL_HAS_TAG_DANCE == 1"
+          }
+        },
+        "effect_table": {
+          "0": {
+            "effect_label": "qc_free",
+            "effect_kind": "free_action",
+            "action_ref": "Equipment"
+          }
+        }
+      },
+      "unique": false,
+      "uniqueId": "hEOGl2wmtgjJX8jt"
+    },
+    "flags": {
+      "custom-system-builder": {
+        "version": "4.8.5"
       }
     },
     "effects": []
@@ -575,59 +1462,15 @@
         "isOffensiveSpell": false,
         "ignore_hr": false,
         "active_effect_config_table": {},
-        "reaction_config_table": {
-          "0": {
-            "$deleted": false,
-            "reaction_trigger": "creature_performs_action",
-            "reaction_source": "self",
-            "reaction_passive_mode": "force",
-            "reaction_action_kind": "Attack,Spell,Skill",
-            "reaction_effect_ref": "adv_acc",
-            "reaction_damage_type": "",
-            "reaction_damage_amount": "",
-            "reaction_passive_target": "",
-            "condition_formula": "STATUS_COUNT > 0",
-            "reaction_source_skill": ""
-          },
-          "1": {
-            "$deleted": false,
-            "reaction_trigger": "creature_will_deal_damage",
-            "reaction_source": "self",
-            "reaction_passive_mode": "force",
-            "reaction_effect_ref": "adv_dmg",
-            "reaction_damage_type": "",
-            "reaction_damage_amount": "",
-            "reaction_passive_target": "",
-            "condition_formula": "STATUS_COUNT > 0",
-            "reaction_action_kind": "",
-            "reaction_source_skill": ""
-          }
-        },
+        "reaction_config_table": {},
         "skill_range": "",
         "defense_target_type": "def",
         "skill_information": "",
-        "isReaction": true,
+        "isReaction": false,
         "isZeroPower": false,
         "passive_check_bonus_formula": "",
         "passive_damage_bonus_formula": "",
-        "effect_table": {
-          "0": {
-            "$deleted": false,
-            "effect_label": "adv_acc",
-            "effect_kind": "adjust_accuracy",
-            "accuracy_operation": "add",
-            "accuracy_amount": "min(STATUS_COUNT, 3)"
-          },
-          "1": {
-            "$deleted": false,
-            "effect_label": "adv_dmg",
-            "effect_kind": "adjust_damage",
-            "damage_operation": "add",
-            "damage_amount": "min(STATUS_COUNT * 2, 6)",
-            "damage_stage": "outgoing",
-            "target_ref": ""
-          }
-        }
+        "effect_table": {}
       },
       "unique": false,
       "uniqueId": "FQBpdrf04xuYhheF"
@@ -637,7 +1480,59 @@
         "version": "4.6.4"
       }
     },
-    "effects": []
+    "effects": [
+      {
+        "name": "Adversity",
+        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/living_shadow.png",
+        "transfer": true,
+        "disabled": false,
+        "statuses": [],
+        "changes": [
+          {
+            "key": "check_mod_all",
+            "value": "${min(STATUS_COUNT, 3)}$",
+            "mode": 2,
+            "priority": 1
+          },
+          {
+            "key": "extra_damage_mod_all",
+            "value": "${min(STATUS_COUNT * 2, 6)}$",
+            "mode": 2,
+            "priority": 1
+          }
+        ],
+        "type": "base",
+        "system": {},
+        "duration": {
+          "startTime": null,
+          "seconds": null,
+          "combat": null,
+          "rounds": null,
+          "turns": null,
+          "startRound": null,
+          "startTurn": null
+        },
+        "description": "",
+        "origin": null,
+        "tint": "#ffffff",
+        "flags": {
+          "statuscounter": {
+            "config": {
+              "multiplyEffect": true,
+              "type": "default"
+            },
+            "value": 1,
+            "visible": false
+          },
+          "custom-system-builder": {
+            "originalParentId": "FQBpdrf04xuYhheF",
+            "originalId": "tYbLeTzJq59cNnqa",
+            "originalUuid": "Item.FQBpdrf04xuYhheF.ActiveEffect.tYbLeTzJq59cNnqa",
+            "isFromTemplate": false
+          }
+        }
+      }
+    ]
   },
   {
     "name": "Agony",
@@ -946,12 +1841,12 @@
             "candidate_source": "combat",
             "category": "",
             "exclude_self": true,
+            "target_filter": "SOURCE_HATRED_BOND_TO_ME == 0",
             "mode": "exact",
             "count": 1,
             "skip_when_passive": false,
             "auto_confirm_when_obvious": false,
-            "iteration_mode": "together",
-            "target_filter": "SOURCE_BONDED_TO_ME == 0"
+            "iteration_mode": "together"
           },
           "3": {
             "$deleted": false,
@@ -1008,8 +1903,8 @@
           },
           "custom-system-builder": {
             "originalParentId": "gNgDIXArTpdtUBpe",
-            "originalId": "rQ0NKVLp2KJzHjS7",
-            "originalUuid": "Item.gNgDIXArTpdtUBpe.ActiveEffect.rQ0NKVLp2KJzHjS7",
+            "originalId": "CWIvlaRBTU4xECMI",
+            "originalUuid": "Item.gNgDIXArTpdtUBpe.ActiveEffect.CWIvlaRBTU4xECMI",
             "isFromTemplate": false
           }
         },
@@ -1058,8 +1953,8 @@
           },
           "custom-system-builder": {
             "originalParentId": "gNgDIXArTpdtUBpe",
-            "originalId": "rYpfIYvmerJmCCZo",
-            "originalUuid": "Item.gNgDIXArTpdtUBpe.ActiveEffect.rYpfIYvmerJmCCZo",
+            "originalId": "thPrBOE031hb0t8a",
+            "originalUuid": "Item.gNgDIXArTpdtUBpe.ActiveEffect.thPrBOE031hb0t8a",
             "isFromTemplate": false
           }
         },
@@ -1121,38 +2016,26 @@
         "defense_target_type": "def",
         "isReaction": true,
         "isZeroPower": false,
+        "reaction_config_table": {
+          "0": {
+            "$deleted": false,
+            "reaction_trigger": "creature_lose_resource",
+            "reaction_source": "self",
+            "reaction_resource_filter": "hp",
+            "reaction_passive_mode": "ask",
+            "reaction_effect_ref": "pl_free_study",
+            "reaction_cause_filter": "damage",
+            "reaction_damage_source": "enemy"
+          }
+        },
         "effect_table": {
           "0": {
             "$deleted": false,
             "effect_label": "pl_free_study",
-            "effect_kind": "open_action_menu",
-            "allowed_types": "Study",
-            "free_mode": true,
-            "check_bonus_formula": "SL",
-            "target_ref": "pl_attacker"
-          },
-          "1": {
-            "$deleted": false,
-            "effect_kind": "targeting",
-            "category": "",
-            "auto_confirm_when_obvious": true,
-            "skip_when_passive": true,
-            "iteration_mode": "together",
-            "effect_label": "pl_attacker",
-            "candidate_source": "trigger_actor",
-            "mode": "exact",
-            "count": 1
-          }
-        },
-        "reaction_config_table": {
-          "0": {
-            "$deleted": false,
-            "reaction_trigger": "creature_takes_damage",
-            "reaction_source": "self",
-            "reaction_damage_source": "enemy",
-            "reaction_action_intent": "harmful",
-            "reaction_effect_ref": "pl_free_study",
-            "reaction_passive_mode": "ask"
+            "effect_kind": "free_action",
+            "action_ref": "Study",
+            "target_ref": "cause_actor",
+            "check_bonus_formula": "SL"
           }
         }
       },
@@ -1207,7 +2090,109 @@
         "defense_target_type": "def",
         "skill_information": "",
         "skill_animation_default": "",
-        "reaction_config_table": {}
+        "reaction_config_table": {
+          "0": {
+            "$deleted": false,
+            "reaction_trigger": "creature_will_deal_damage",
+            "reaction_source": "self",
+            "reaction_passive_mode": "ask",
+            "condition_formula": "HAS_ARCANE_WEAPON == 1 && ACTION_IS_SPELL == 1 && ACTION_IS_FREE_CAST == 0 && CUR_MP >= ACTION_MP_COST + 10",
+            "reaction_effect_ref": "cat_root"
+          }
+        },
+        "effect_table": {
+          "0": {
+            "$deleted": false,
+            "effect_label": "cat_root",
+            "effect_kind": "chain",
+            "menu_option_refs": "cat_10, cat_20, cat_30",
+            "menu_option_labels": "+10 MP → +5 damage|+20 MP → +10 damage|+30 MP → +15 damage",
+            "menu_option_descriptions": "Spend 10 MP for +5 damage to each creature|Spend 20 MP for +10 damage to each creature|Spend 30 MP for +15 damage to each creature",
+            "menu_title": "Cataclysm — Overcharge",
+            "menu_subtitle": "Increase the spell's MP cost for extra damage",
+            "chain_steps": "cat_prompt, cat_mp, cat_dmg"
+          },
+          "1": {
+            "$deleted": false,
+            "effect_label": "cat_prompt",
+            "effect_kind": "prompt_number",
+            "chain_steps": "cat_10_mp, cat_10_dmg",
+            "condition_formula": "SL >= 1 && CUR_MP >= ACTION_MP_COST + 10",
+            "disable_ui_type": "dim",
+            "disabled_reason": "Not enough MP",
+            "prompt_label": "Overcharge: increase MP cost (+5 damage per 10 MP)",
+            "prompt_max": "min( FLAG_CATACLYSM_MP_CAP + (FLAG_CATACLYSM_MP_CAP == 0) * (SL * 10), floor((CUR_MP - ACTION_MP_COST)/10)*10 )",
+            "prompt_min": "10",
+            "prompt_step": "10",
+            "prompt_var": "overcharge"
+          },
+          "2": {
+            "$deleted": false,
+            "effect_label": "cat_mp",
+            "effect_kind": "adjust_cost",
+            "cost_resource": "mp",
+            "cost_operation": "add",
+            "cost_amount": "VAR_OVERCHARGE"
+          },
+          "3": {
+            "$deleted": false,
+            "effect_label": "cat_dmg",
+            "effect_kind": "adjust_damage",
+            "damage_operation": "add",
+            "damage_amount": "VAR_OVERCHARGE / 2",
+            "damage_stage": "outgoing"
+          },
+          "4": {
+            "$deleted": false,
+            "effect_label": "cat_20",
+            "effect_kind": "chain",
+            "chain_steps": "cat_20_mp, cat_20_dmg",
+            "condition_formula": "SL >= 2 && CUR_MP >= ACTION_MP_COST + 20",
+            "disable_ui_type": "dim",
+            "disabled_reason": "Not enough MP"
+          },
+          "5": {
+            "$deleted": false,
+            "effect_label": "cat_20_mp",
+            "effect_kind": "adjust_cost",
+            "cost_resource": "mp",
+            "cost_operation": "add",
+            "cost_amount": "20"
+          },
+          "6": {
+            "$deleted": false,
+            "effect_label": "cat_20_dmg",
+            "effect_kind": "adjust_damage",
+            "damage_operation": "add",
+            "damage_amount": "10",
+            "damage_stage": "outgoing"
+          },
+          "7": {
+            "$deleted": false,
+            "effect_label": "cat_30",
+            "effect_kind": "chain",
+            "chain_steps": "cat_30_mp, cat_30_dmg",
+            "condition_formula": "SL >= 3 && CUR_MP >= ACTION_MP_COST + 30",
+            "disable_ui_type": "dim",
+            "disabled_reason": "Not enough MP"
+          },
+          "8": {
+            "$deleted": false,
+            "effect_label": "cat_30_mp",
+            "effect_kind": "adjust_cost",
+            "cost_resource": "mp",
+            "cost_operation": "add",
+            "cost_amount": "30"
+          },
+          "9": {
+            "$deleted": false,
+            "effect_label": "cat_30_dmg",
+            "effect_kind": "adjust_damage",
+            "damage_operation": "add",
+            "damage_amount": "15",
+            "damage_stage": "outgoing"
+          }
+        }
       },
       "unique": false,
       "uniqueId": "7oG8YvRYQBQAU025"
@@ -1308,7 +2293,7 @@
         "type_damage": "",
         "description": "<p>When you cast an <strong>【⚡Offensive Spell】</strong>, if you have an <strong>arcane</strong> weapon equipped, you gain a bonus to your Magic Check equal to <strong>【SL × 2】</strong></p>",
         "skill_animation_mode": "default",
-        "isReaction": true,
+        "isReaction": false,
         "active_effect_config_table": {},
         "defense_target_type": "def",
         "skill_information": "",
@@ -1319,30 +2304,9 @@
         "ignore_hr": false,
         "isZeroPower": false,
         "passive_logic_action": "",
-        "reaction_config_table": {
-          "0": {
-            "$deleted": false,
-            "reaction_trigger": "creature_performs_action",
-            "reaction_source": "self",
-            "reaction_damage_type": "",
-            "reaction_damage_amount": "",
-            "reaction_passive_target": "",
-            "reaction_passive_mode": "force",
-            "reaction_action_kind": "Attack,Spell,Skill",
-            "condition_formula": "HAS_ARCANE_WEAPON == 1 && ACTION_IS_SPELL == 1",
-            "reaction_effect_ref": "ma_acc"
-          }
-        },
+        "reaction_config_table": {},
         "passive_check_bonus_formula": "",
-        "effect_table": {
-          "0": {
-            "$deleted": false,
-            "effect_label": "ma_acc",
-            "effect_kind": "adjust_accuracy",
-            "accuracy_operation": "add",
-            "accuracy_amount": "SL * 2"
-          }
-        }
+        "effect_table": {}
       },
       "unique": false,
       "uniqueId": "QBLyfikwHBnhhcGf"
@@ -1352,7 +2316,53 @@
         "version": "4.6.4"
       }
     },
-    "effects": []
+    "effects": [
+      {
+        "name": "Magical Artillery",
+        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/enochian.png",
+        "transfer": true,
+        "disabled": false,
+        "statuses": [],
+        "changes": [
+          {
+            "key": "check_mod_magic",
+            "value": "${hasWeapon(\"arcane\") ? level * 2 : 0}$",
+            "mode": 2,
+            "priority": 1
+          }
+        ],
+        "type": "base",
+        "system": {},
+        "duration": {
+          "startTime": null,
+          "seconds": null,
+          "combat": null,
+          "rounds": null,
+          "turns": null,
+          "startRound": null,
+          "startTurn": null
+        },
+        "description": "",
+        "origin": null,
+        "tint": "#ffffff",
+        "flags": {
+          "statuscounter": {
+            "config": {
+              "multiplyEffect": true,
+              "type": "default"
+            },
+            "value": 1,
+            "visible": false
+          },
+          "custom-system-builder": {
+            "originalParentId": "QBLyfikwHBnhhcGf",
+            "originalId": "tkVZovM7vBPTmufF",
+            "originalUuid": "Item.QBLyfikwHBnhhcGf.ActiveEffect.tkVZovM7vBPTmufF",
+            "isFromTemplate": false
+          }
+        }
+      }
+    ]
   },
   {
     "name": "Elemental Shroud",
@@ -1514,7 +2524,8 @@
         "type": "base",
         "system": {
           "tags": [
-            "buff"
+            "buff",
+            "dispellable"
           ]
         },
         "description": "",
@@ -1572,7 +2583,8 @@
         "type": "base",
         "system": {
           "tags": [
-            "buff"
+            "buff",
+            "dispellable"
           ]
         },
         "description": "",
@@ -1630,7 +2642,8 @@
         "type": "base",
         "system": {
           "tags": [
-            "buff"
+            "buff",
+            "dispellable"
           ]
         },
         "description": "",
@@ -1688,7 +2701,8 @@
         "type": "base",
         "system": {
           "tags": [
-            "buff"
+            "buff",
+            "dispellable"
           ]
         },
         "description": "",
@@ -1746,7 +2760,8 @@
         "type": "base",
         "system": {
           "tags": [
-            "buff"
+            "buff",
+            "dispellable"
           ]
         },
         "description": "",
@@ -1951,7 +2966,11 @@
           }
         },
         "type": "base",
-        "system": {},
+        "system": {
+          "tags": [
+            "dispellable"
+          ]
+        },
         "duration": {
           "startTime": null,
           "seconds": null,
@@ -2005,7 +3024,11 @@
           }
         },
         "type": "base",
-        "system": {},
+        "system": {
+          "tags": [
+            "dispellable"
+          ]
+        },
         "duration": {
           "startTime": null,
           "seconds": null,
@@ -2059,7 +3082,11 @@
           }
         },
         "type": "base",
-        "system": {},
+        "system": {
+          "tags": [
+            "dispellable"
+          ]
+        },
         "duration": {
           "startTime": null,
           "seconds": null,
@@ -2113,7 +3140,11 @@
           }
         },
         "type": "base",
-        "system": {},
+        "system": {
+          "tags": [
+            "dispellable"
+          ]
+        },
         "duration": {
           "startTime": null,
           "seconds": null,
@@ -2167,7 +3198,11 @@
           }
         },
         "type": "base",
-        "system": {},
+        "system": {
+          "tags": [
+            "dispellable"
+          ]
+        },
         "duration": {
           "startTime": null,
           "seconds": null,
@@ -2518,7 +3553,53 @@
         "version": "4.6.4"
       }
     },
-    "effects": []
+    "effects": [
+      {
+        "name": "Lucky Seven Ready",
+        "img": "icons/magic/control/buff-flight-wings-runes-purple.webp",
+        "statuses": [
+          "fud-lucky-seven-ready"
+        ],
+        "transfer": false,
+        "disabled": false,
+        "description": "<p><em>Lucky Seven Ready:</em> Lucky Seven is available this scene. Spent when used; refreshes each conflict.</p>",
+        "changes": [],
+        "duration": {
+          "startTime": null,
+          "seconds": null,
+          "combat": null,
+          "rounds": null,
+          "turns": null,
+          "startRound": null,
+          "startTurn": null
+        },
+        "flags": {
+          "fabula-ultima-companion": {
+            "chargeKey": "lucky_seven",
+            "charges": 1,
+            "chargesMax": 1
+          },
+          "statuscounter": {
+            "config": {
+              "multiplyEffect": true,
+              "type": "default"
+            },
+            "value": 1,
+            "visible": false
+          },
+          "custom-system-builder": {
+            "originalParentId": "B0rR4DCijW1zC3SY",
+            "originalId": "c8hLZfBF5NC0Xnpe",
+            "originalUuid": "Item.B0rR4DCijW1zC3SY.ActiveEffect.c8hLZfBF5NC0Xnpe",
+            "isFromTemplate": false
+          }
+        },
+        "type": "base",
+        "system": {},
+        "origin": null,
+        "tint": "#ffffff"
+      }
+    ]
   },
   {
     "name": "Ritual Entropism",
@@ -2765,6 +3846,7 @@
         "skill_information": "",
         "isReaction": false,
         "isZeroPower": false,
+        "on_activate_effect_ref": "dispel_cleanse",
         "effect_table": {
           "0": {
             "$deleted": false,
@@ -2772,10 +3854,12 @@
             "effect_kind": "remove_tagged_ae",
             "filter_tag": "dispellable",
             "target_ref": "action_targets",
-            "count": "all"
+            "count": "1",
+            "menu_title": "Dispel — Remove an Effect",
+            "menu_subtitle": "Choose one dispellable effect to remove"
           }
         },
-        "on_activate_effect_ref": "dispel_cleanse"
+        "pre_activate_effect_ref": "dispel_cleanse"
       },
       "unique": false,
       "uniqueId": "Ydbba6k0hFjWZvJv"
@@ -2993,7 +4077,7 @@
             "effect_label": "drain_recover",
             "effect_kind": "grant",
             "grant_resource": "mp",
-            "grant_amount": "ceil(MP_DEALT / 2)",
+            "grant_amount": "MP_DEALT / 2",
             "target_ref": "ds_self"
           },
           "1": {
@@ -3011,7 +4095,7 @@
         },
         "recipe": "drain",
         "recipe_resource": "mp",
-        "recipe_amount": "ceil(MP_DEALT / 2)",
+        "recipe_amount": "MP_DEALT / 2",
         "recipe_target": "self"
       },
       "unique": false,
@@ -3221,7 +4305,11 @@
           "fud-brainwave-clock"
         ],
         "type": "base",
-        "system": {},
+        "system": {
+          "tags": [
+            "resource"
+          ]
+        },
         "description": "<p><em>Brainwave Clock:</em> Your accumulated psychic charge (0–4 sections), filled and spent by Esper gifts.</p>",
         "flags": {
           "fabula-ultima-companion": {
@@ -3233,7 +4321,8 @@
             "reactionConfig": {
               "reaction_config_table": {},
               "effect_table": {}
-            }
+            },
+            "hudResourceColor": "#a06bff"
           },
           "statuscounter": {
             "config": {
@@ -3628,7 +4717,8 @@
             "reactionConfig": {
               "reaction_config_table": {},
               "effect_table": {}
-            }
+            },
+            "hudResourceColor": "#a06bff"
           },
           "statuscounter": {
             "config": {
@@ -3640,7 +4730,11 @@
           }
         },
         "type": "base",
-        "system": {},
+        "system": {
+          "tags": [
+            "resource"
+          ]
+        },
         "duration": {
           "startTime": null,
           "seconds": null,
@@ -3921,7 +5015,11 @@
           "fud-brainwave-clock"
         ],
         "type": "base",
-        "system": {},
+        "system": {
+          "tags": [
+            "resource"
+          ]
+        },
         "description": "<p><em>Brainwave Clock:</em> Your accumulated psychic charge (0–4 sections), filled and spent by Esper gifts.</p>",
         "flags": {
           "fabula-ultima-companion": {
@@ -3933,7 +5031,8 @@
             "reactionConfig": {
               "reaction_config_table": {},
               "effect_table": {}
-            }
+            },
+            "hudResourceColor": "#a06bff"
           },
           "statuscounter": {
             "config": {
@@ -5546,7 +6645,8 @@
             "exclude_self": false,
             "auto_confirm_when_obvious": true,
             "skip_when_passive": true,
-            "iteration_mode": "together"
+            "iteration_mode": "together",
+            "auto_target": "skip"
           },
           "1": {
             "effect_label": "pds_threatened",
@@ -5556,14 +6656,17 @@
             "exclude_self": false,
             "auto_confirm_when_obvious": true,
             "skip_when_passive": true,
-            "iteration_mode": "together"
+            "iteration_mode": "together",
+            "auto_target": "confirm"
           },
           "2": {
             "effect_label": "pds_gain",
             "effect_kind": "apply_ae",
             "ae_template_ref": "Prophecy Point",
             "target_ref": "pds_self",
-            "ae_duplicate_mode": "stack"
+            "ae_duplicate_mode": "add_charges",
+            "ae_initial_charges": "1",
+            "ae_initial_charges_max": "99"
           },
           "3": {
             "effect_label": "pds_consume",
@@ -5644,8 +6747,10 @@
             "category": "buff",
             "chargeKey": "prophecy",
             "charges": 1,
-            "chargesMax": 1,
-            "directorPermanent": true
+            "chargesMax": 99,
+            "directorPermanent": false,
+            "lifetimeMode": "persistent_counter",
+            "hudResourceColor": "#a06bff"
           },
           "statuscounter": {
             "config": {
@@ -5664,7 +6769,9 @@
         },
         "system": {
           "tags": [
-            "buff"
+            "buff",
+            "resource",
+            "points"
           ]
         },
         "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/nocturnal_sect.png",
@@ -5689,7 +6796,7 @@
         "statuses": [],
         "changes": [
           {
-            "key": "bonus_hp",
+            "key": "max_hp",
             "value": "${fetchFromParent('ins_base')}$",
             "mode": 2,
             "priority": 20
@@ -7502,7 +8609,7 @@
             "reaction_passive_target": "self",
             "reaction_passive_mode": "ask",
             "reaction_effect_ref": "cp_do",
-            "condition_formula": "AE_CHARGES_COUNTER_PASS >= 1",
+            "condition_formula": "ACTION_IS_ATTACK == 1 && AE_CHARGES_COUNTER_PASS >= 1",
             "reaction_damage_source": "",
             "requires_skill": "",
             "reaction_resource_filter": "",
@@ -7742,7 +8849,7 @@
             "reaction_ownership": "",
             "reaction_action_target": "",
             "reaction_effect_ref": "ff_fatigue",
-            "condition_formula": "MISS_MARGIN >= 6 - SL",
+            "condition_formula": "ACTION_IS_ATTACK == 1 && MISS_MARGIN >= 6 - SL",
             "requires_skill": "",
             "reaction_resource_filter": "",
             "reaction_cause_filter": "",
@@ -7976,7 +9083,7 @@
             "reaction_subject_kind": "",
             "reaction_ownership": "",
             "reaction_action_target": "",
-            "condition_formula": "",
+            "condition_formula": "ACTION_IS_ATTACK == 1",
             "requires_skill": "",
             "reaction_resource_filter": "",
             "reaction_cause_filter": "",
@@ -8057,7 +9164,11 @@
           }
         },
         "type": "base",
-        "system": {},
+        "system": {
+          "tags": [
+            "resource"
+          ]
+        },
         "duration": {
           "startTime": null,
           "seconds": null,
@@ -8116,7 +9227,7 @@
             "reaction_passive_target": "self",
             "reaction_passive_mode": "ask",
             "reaction_effect_ref": "tth_do",
-            "condition_formula": "ATTACK_IS_MELEE == 1",
+            "condition_formula": "ACTION_IS_ATTACK == 1 && ATTACK_IS_MELEE == 1",
             "reaction_damage_source": "",
             "requires_skill": "",
             "reaction_resource_filter": "",
@@ -8401,13 +9512,14 @@
           "fabula-ultima-companion": {
             "category": "Other",
             "charges": 0,
-            "chargesMax": 2,
+            "chargesMax": 3,
             "chargeKey": "grave",
             "lifetimeMode": "persistent_counter",
             "reactionConfig": {
               "reaction_config_table": {},
               "effect_table": {}
-            }
+            },
+            "hudResourceColor": "#8fb53a"
           },
           "statuscounter": {
             "config": {
@@ -8425,7 +9537,11 @@
           }
         },
         "type": "base",
-        "system": {},
+        "system": {
+          "tags": [
+            "resource"
+          ]
+        },
         "description": "<p><em>Grave Points:</em> Necromantic energy gathered from creatures near death, spent by Necromancer skills.</p>",
         "origin": null,
         "tint": "#ffffff"
@@ -8458,14 +9574,15 @@
             "reactionConfig": {
               "reaction_config_table": {
                 "0": {
-                  "reaction_trigger": "creature_lose_resource",
+                  "reaction_trigger": "creature_takes_damage",
                   "reaction_source": "self",
                   "reaction_resource_filter": "hp",
-                  "condition_formula": "CUR_HP <= 0 && AE_CHARGES_GRAVE_POINTS > 0",
+                  "condition_formula": "AE_CHARGES_GRAVE_POINTS > 0",
                   "reaction_effect_ref": "bortd_death",
                   "reaction_passive_mode": "on",
                   "reaction_passive_target": "self",
-                  "consume_self": true
+                  "consume_self": true,
+                  "reaction_damage_outcome": "would_reduce_to_zero"
                 }
               },
               "effect_table": {
@@ -8477,22 +9594,30 @@
                 "1": {
                   "effect_label": "bortd_death",
                   "effect_kind": "chain",
-                  "chain_steps": "bortd_b_heal, bortd_b_zero"
+                  "chain_steps": "bortd_cap, bortd_heal, bortd_zero"
                 },
                 "2": {
-                  "effect_label": "bortd_b_heal",
-                  "effect_kind": "grant",
-                  "grant_resource": "hp",
-                  "grant_amount": "SL * AE_CHARGES_GRAVE_POINTS",
-                  "target_ref": "bortd_self"
+                  "effect_label": "bortd_cap",
+                  "effect_kind": "adjust_damage",
+                  "damage_stage": "incoming",
+                  "damage_operation": "cap",
+                  "damage_amount": "CUR_HP - 1",
+                  "consume_self": true
                 },
                 "3": {
-                  "effect_label": "bortd_b_zero",
+                  "effect_label": "bortd_heal",
+                  "effect_kind": "grant",
+                  "grant_resource": "hp",
+                  "grant_amount": "SL_BEYOND_THE_REALMS_OF_DEATH * AE_CHARGES_GRAVE_POINTS - 1",
+                  "target_ref": "self"
+                },
+                "4": {
+                  "effect_label": "bortd_zero",
                   "effect_kind": "adjust_charges",
                   "charge_ae_name": "Grave Points",
                   "charge_operation": "set",
                   "charge_amount": "0",
-                  "target_ref": "bortd_self"
+                  "target_ref": "self"
                 }
               }
             }
@@ -8654,13 +9779,14 @@
           "fabula-ultima-companion": {
             "category": "Other",
             "charges": 0,
-            "chargesMax": 2,
+            "chargesMax": 3,
             "chargeKey": "grave",
             "lifetimeMode": "persistent_counter",
             "reactionConfig": {
               "reaction_config_table": {},
               "effect_table": {}
-            }
+            },
+            "hudResourceColor": "#8fb53a"
           },
           "statuscounter": {
             "config": {
@@ -8678,12 +9804,105 @@
           }
         },
         "type": "base",
-        "system": {},
+        "system": {
+          "tags": [
+            "resource"
+          ]
+        },
         "description": "<p><em>Grave Points:</em> Necromantic energy gathered from creatures near death, spent by Necromancer skills.</p>",
         "origin": null,
         "tint": "#ffffff"
       }
     ]
+  },
+  {
+    "name": "For Whom the Bell Tolls",
+    "type": "equippableItem",
+    "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/blackblood.png",
+    "folderPath": [
+      "Battle Director",
+      "Necromancer",
+      "Skill"
+    ],
+    "system": {
+      "templateSystemUniqueVersion": null,
+      "props": {
+        "skill_type": "Passive",
+        "isReaction": true,
+        "level": "1",
+        "max_level": "3",
+        "skill_information": "<p>When you deal damage to a creature with a spell, if that spell only deals damage to that creature, you may spend 1 Grave Point. If you do, choose one option: if that creature is suffering from one or more status effects, the spell deals extra damage equal to (SL × 2) + the number of status effects on that creature; or if that creature is suffering from no status effects, they suffer <strong>shaken</strong>.</p>",
+        "uniqueId": "sfB3APSyWP8Lf5LQ",
+        "reaction_config_table": {
+          "0": {
+            "reaction_trigger": "creature_will_deal_damage",
+            "reaction_source": "self",
+            "reaction_action_target": "enemy",
+            "reaction_passive_mode": "ask",
+            "reaction_effect_ref": "fwtbt_offer",
+            "condition_formula": "ACTION_IS_SPELL == 1 && SINGLE_TARGET_ATTACK && AE_CHARGES_GRAVE_POINTS >= 1"
+          }
+        },
+        "effect_table": {
+          "0": {
+            "effect_label": "fwtbt_offer",
+            "effect_kind": "open_action_menu",
+            "menu_title": "For Whom the Bell Tolls",
+            "menu_subtitle": "Spend 1 Grave Point:",
+            "menu_pick_count": "1",
+            "menu_option_refs": "fwtbt_dmg_opt,fwtbt_shaken_opt",
+            "menu_option_labels": "Deal extra damage|Apply Shaken",
+            "menu_option_descriptions": "Extra damage = (SL × 2) + number of statuses on the target|Inflict Shaken — disabled if the target is already Shaken"
+          },
+          "1": {
+            "effect_label": "fwtbt_dmg_opt",
+            "effect_kind": "chain",
+            "chain_steps": "fwtbt_cost, fwtbt_dmg",
+            "menu_label": "Deal extra damage"
+          },
+          "2": {
+            "effect_label": "fwtbt_shaken_opt",
+            "effect_kind": "chain",
+            "chain_steps": "fwtbt_cost, fwtbt_shaken",
+            "menu_label": "Apply Shaken",
+            "condition_formula": "TARGET_AE_COUNT_SHAKEN == 0",
+            "disable_ui_type": "disabled",
+            "disabled_reason": "Already Shaken"
+          },
+          "3": {
+            "effect_label": "fwtbt_cost",
+            "effect_kind": "adjust_charges",
+            "charge_ae_name": "Grave Points",
+            "charge_operation": "subtract",
+            "charge_amount": "1",
+            "target_ref": "self"
+          },
+          "4": {
+            "effect_label": "fwtbt_dmg",
+            "effect_kind": "adjust_damage",
+            "target_ref": "trigger_subject",
+            "damage_amount": "SL * 2 + TARGET_STATUS_COUNT",
+            "damage_operation": "add",
+            "damage_stage": "outgoing"
+          },
+          "5": {
+            "effect_label": "fwtbt_shaken",
+            "effect_kind": "apply_ae",
+            "ae_template_ref": "Shaken",
+            "target_ref": "trigger_subject",
+            "ae_duplicate_mode": "replace_same_status"
+          }
+        }
+      },
+      "unique": false,
+      "uniqueId": "sfB3APSyWP8Lf5LQ"
+    },
+    "flags": {
+      "custom-system-builder": {
+        "version": "4.8.5"
+      }
+    },
+    "effects": []
   },
   {
     "name": "Pillage",
@@ -9392,7 +10611,7 @@
   {
     "name": "Bullet Break",
     "type": "equippableItem",
-    "img": "icons/skills/ranged/cannon-barrel-firing-yellow.webp",
+    "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/12_MCH/quick_reload.png",
     "folderPath": [
       "Battle Director",
       "Sharpshooter",
@@ -9450,7 +10669,7 @@
         "heroic_requirement": "You must have learned the Crossfire Skill, and have mastered one or more Classes among Commander and Sharpshooter.",
         "description": "<p>After you negate a <strong>ranged attack</strong> with the <strong>Crossfire</strong> Skill, if the Result of the Accuracy Check was an <strong>even number</strong>, you may perform a <strong>free attack</strong> against the attacker with a <strong>ranged firearm</strong> weapon you have equipped.</p><p>This attack must have that enemy as its <strong>only target</strong>; treat your <strong>High Roll (HR) as 0</strong> when calculating damage dealt by it.</p>",
         "name": "Bullet Break",
-        "img": "icons/skills/ranged/cannon-barrel-firing-yellow.webp"
+        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/12_MCH/quick_reload.png"
       },
       "unique": false,
       "uniqueId": "g1Sq9oZngBkRUW0f"
@@ -9465,7 +10684,7 @@
   {
     "name": "Powerful Shot",
     "type": "equippableItem",
-    "img": "icons/skills/ranged/arrow-strike-glowing-blue.webp",
+    "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/RenaSkill7.png",
     "folderPath": [
       "Battle Director",
       "Sharpshooter",
@@ -9488,7 +10707,8 @@
         "class": "Sharpshooter",
         "description": "<p>When you hit one or more creatures with a <strong>ranged attack</strong>, that attack deals <strong>5 extra damage</strong> to each creature.</p><p>The amount of extra damage increases to <strong>10</strong> if you are <strong>level 40</strong> or higher.</p>",
         "heroic_requirement": "You must have learned all the Skills offered by the Sharpshooter Class.",
-        "name": "Powerful Shot"
+        "name": "Powerful Shot",
+        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/RenaSkill7.png"
       },
       "unique": false,
       "uniqueId": "iOyodA5kN67TFUMk"
@@ -9546,7 +10766,7 @@
             "buff"
           ]
         },
-        "img": "icons/skills/ranged/arrow-strike-glowing-blue.webp",
+        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/RenaSkill7.png",
         "type": "base",
         "origin": null,
         "tint": "#ffffff"
@@ -9556,7 +10776,7 @@
   {
     "name": "Barrage",
     "type": "equippableItem",
-    "img": "icons/skills/ranged/arrow-strike-glowing-orange.webp",
+    "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/11_BRD/barrage.png",
     "folderPath": [
       "Battle Director",
       "Sharpshooter",
@@ -9585,7 +10805,6 @@
         "defense_target_type": "def",
         "duration": "-",
         "on_activate_effect_ref": "",
-        "post_damage_effect_ref": "",
         "reaction_config_table": {
           "0": {
             "reaction_trigger": "creature_performs_action",
@@ -9593,21 +10812,40 @@
             "reaction_passive_mode": "ask",
             "reaction_effect_ref": "barrage_do",
             "condition_formula": "ATTACK_IS_RANGED == 1",
-            "reaction_action_kind": "Attack"
+            "reaction_action_kind": "Attack",
+            "reaction_damage_source": "",
+            "reaction_subject_kind": "",
+            "reaction_ownership": "",
+            "reaction_action_intent": "",
+            "reaction_action_target": "",
+            "requires_skill": "",
+            "reaction_resource_filter": "",
+            "reaction_cause_filter": "",
+            "reaction_status_filter": "",
+            "reaction_source_skill": "",
+            "reaction_responder": "",
+            "reaction_origin_filter": ""
           }
         },
         "effect_table": {
           "0": {
             "effect_label": "barrage_do",
             "effect_kind": "chain",
-            "chain_steps": "barrage_add,barrage_cost"
+            "chain_steps": "barrage_add,barrage_cost",
+            "consume_self": false,
+            "from_resource": "",
+            "to_resource": "",
+            "menu_label": ""
           },
           "1": {
             "effect_label": "barrage_add",
             "effect_kind": "add_target",
             "target_ref": "barrage_pick",
             "menu_label": "Barrage",
-            "menu_description": "Spend 10 MP to target one additional creature."
+            "menu_description": "Spend 10 MP to target one additional creature.",
+            "consume_self": false,
+            "from_resource": "",
+            "to_resource": ""
           },
           "2": {
             "effect_label": "barrage_cost",
@@ -9615,7 +10853,13 @@
             "consume_resource": "mp",
             "consume_amount": "10",
             "target_ref": "self",
-            "on_empty": "abort"
+            "on_empty": "abort",
+            "consume_self": false,
+            "grant_resource": "",
+            "grant_amount": "",
+            "from_resource": "",
+            "to_resource": "",
+            "menu_label": ""
           },
           "3": {
             "effect_label": "barrage_pick",
@@ -9624,9 +10868,20 @@
             "category": "enemy",
             "exclude_action_targets": true,
             "mode": "exact",
-            "count": 1,
+            "count": "1",
             "skip_when_passive": false,
-            "auto_confirm_when_obvious": false
+            "auto_confirm_when_obvious": false,
+            "exclude_self": false,
+            "auto_target": true,
+            "allow_empty": false,
+            "consume_self": false,
+            "target_prompt": "",
+            "iteration_mode": "together",
+            "target_filter": "",
+            "exclude": "",
+            "from_resource": "",
+            "to_resource": "",
+            "menu_label": ""
           }
         },
         "active_effect_config_table": {},
@@ -9635,7 +10890,23 @@
         "max_level": "1",
         "description": "<p>When you perform a <strong>ranged attack</strong>, you may spend <strong>10 Mind Points</strong> to have the attack target one additional creature. Loose a hail of shots!</p>",
         "name": "Barrage",
-        "img": "icons/skills/ranged/arrow-strike-glowing-orange.webp"
+        "uuid": "Item.yh4vm3wru6nAkkaN",
+        "id": "yh4vm3wru6nAkkaN",
+        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/11_BRD/barrage.png",
+        "details_roller": "Show",
+        "use_optional_params": false,
+        "optional_params": {},
+        "target_eligibility": "",
+        "heroic_requirement": "",
+        "skill_information": "",
+        "pre_activate_effect_ref": "",
+        "gadget_infusion_tier": "",
+        "gadget_alchemy_tier": "",
+        "gadget_magitech_tier": "",
+        "skill_animation_mode": "default",
+        "skill_animation_default": "",
+        "animation_damage_timing_options": "default",
+        "animation_damage_timing_offset": "0"
       },
       "unique": false,
       "uniqueId": "yh4vm3wru6nAkkaN"
@@ -9650,7 +10921,7 @@
   {
     "name": "Crossfire",
     "type": "equippableItem",
-    "img": "icons/skills/ranged/arrow-strike-glowing-teal.webp",
+    "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/RenaSkill1.png",
     "folderPath": [
       "Battle Director",
       "Sharpshooter",
@@ -9679,7 +10950,6 @@
         "defense_target_type": "def",
         "duration": "-",
         "on_activate_effect_ref": "",
-        "post_damage_effect_ref": "",
         "reaction_config_table": {
           "0": {
             "reaction_trigger": "creature_targeted_by_action",
@@ -9688,14 +10958,30 @@
             "reaction_passive_mode": "ask",
             "reaction_effect_ref": "crossfire_do",
             "condition_formula": "ATTACK_IS_RANGED == 1 && HAS_RANGED_WEAPON && ATTACK_IS_CRIT == 0 && CUR_MP >= ATTACK_CHECK_RESULT",
-            "reaction_action_kind": "Attack"
+            "reaction_action_kind": "Attack",
+            "reaction_damage_source": "",
+            "reaction_damage_type": "",
+            "reaction_subject_kind": "",
+            "reaction_ownership": "",
+            "reaction_action_target": "",
+            "requires_skill": "",
+            "reaction_resource_filter": "",
+            "reaction_cause_filter": "",
+            "reaction_status_filter": "",
+            "reaction_source_skill": "",
+            "reaction_responder": "",
+            "reaction_origin_filter": ""
           }
         },
         "effect_table": {
           "0": {
             "effect_label": "crossfire_do",
             "effect_kind": "chain",
-            "chain_steps": "crossfire_block,crossfire_cost"
+            "chain_steps": "crossfire_block,crossfire_cost",
+            "consume_self": false,
+            "from_resource": "",
+            "to_resource": "",
+            "menu_label": ""
           },
           "1": {
             "effect_label": "crossfire_block",
@@ -9703,7 +10989,10 @@
             "accuracy_operation": "set",
             "accuracy_amount": "0",
             "menu_label": "Crossfire",
-            "menu_description": "Spend MP equal to the attacker's Accuracy Result to make the attack fail against all targets."
+            "menu_description": "Spend MP equal to the attacker's Accuracy Result to make the attack fail against all targets.",
+            "consume_self": false,
+            "from_resource": "",
+            "to_resource": ""
           },
           "2": {
             "effect_label": "crossfire_cost",
@@ -9711,7 +11000,13 @@
             "consume_resource": "mp",
             "consume_amount": "ATTACK_CHECK_RESULT",
             "target_ref": "self",
-            "on_empty": "abort"
+            "on_empty": "abort",
+            "consume_self": false,
+            "grant_resource": "",
+            "grant_amount": "",
+            "from_resource": "",
+            "to_resource": "",
+            "menu_label": ""
           }
         },
         "active_effect_config_table": {},
@@ -9720,7 +11015,23 @@
         "max_level": "1",
         "description": "<p>After a creature you can see performs a <strong>ranged attack</strong>, you may spend an amount of <strong>Mind Points</strong> equal to the total Result of their Accuracy Check in order to have the attack <strong>fail automatically</strong> against all targets.</p><p>You can only use this Skill if you have a ranged weapon equipped, and it has no effect if the Accuracy Check was a critical success.</p>",
         "name": "Crossfire",
-        "img": "icons/skills/ranged/arrow-strike-glowing-teal.webp"
+        "uuid": "Item.7ypQRfO8hlmuZQXT",
+        "id": "7ypQRfO8hlmuZQXT",
+        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/RenaSkill1.png",
+        "details_roller": "Show",
+        "use_optional_params": false,
+        "optional_params": {},
+        "target_eligibility": "",
+        "heroic_requirement": "",
+        "skill_information": "",
+        "pre_activate_effect_ref": "",
+        "gadget_infusion_tier": "",
+        "gadget_alchemy_tier": "",
+        "gadget_magitech_tier": "",
+        "skill_animation_mode": "default",
+        "skill_animation_default": "",
+        "animation_damage_timing_options": "default",
+        "animation_damage_timing_offset": "0"
       },
       "unique": false,
       "uniqueId": "7ypQRfO8hlmuZQXT"
@@ -9735,7 +11046,7 @@
   {
     "name": "Hawkeye",
     "type": "equippableItem",
-    "img": "icons/skills/ranged/target-eye-orange.webp",
+    "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/GrandArcherPassive1.png",
     "folderPath": [
       "Battle Director",
       "Sharpshooter",
@@ -9761,7 +11072,15 @@
             "reaction_source": "self",
             "condition_formula": "DID_COVER_ALLY == 0",
             "reaction_effect_ref": "hawkeye_choose",
-            "reaction_passive_mode": "ask"
+            "reaction_passive_mode": "ask",
+            "requires_skill": "",
+            "reaction_resource_filter": "",
+            "reaction_cause_filter": "",
+            "reaction_status_filter": "",
+            "reaction_action_kind": "",
+            "reaction_source_skill": "",
+            "reaction_responder": "",
+            "reaction_origin_filter": ""
           }
         },
         "effect_table": {
@@ -9770,7 +11089,24 @@
             "effect_kind": "open_action_menu",
             "menu_title": "Hawkeye",
             "menu_subtitle": "You guarded without providing cover — choose:",
-            "menu_option_refs": "hawkeye_opt_aim, hawkeye_opt_attack"
+            "menu_option_refs": "hawkeye_opt_aim, hawkeye_opt_attack",
+            "free_mode": false,
+            "free_hr_as_zero": false,
+            "consume_self": false,
+            "free_of_cost": false,
+            "allowed_types": "",
+            "max_mp_cost": "",
+            "check_bonus_formula": "",
+            "damage_bonus_formula": "",
+            "target_ref": "",
+            "menu_pick_count": "",
+            "menu_option_labels": "",
+            "menu_option_descriptions": "",
+            "menu_option_icons": "",
+            "menu_option_colors": "",
+            "from_resource": "",
+            "to_resource": "",
+            "menu_label": ""
           },
           "1": {
             "effect_label": "hawkeye_opt_aim",
@@ -9779,7 +11115,13 @@
             "target_ref": "hawkeye_self_skill",
             "ae_duplicate_mode": "replace",
             "menu_label": "Take aim — your next ranged attack deals +SL×2 extra damage",
-            "menu_description": "Lasts until you make a ranged attack, or the scene ends."
+            "menu_description": "Lasts until you make a ranged attack, or the scene ends.",
+            "consume_self": false,
+            "ae_initial_charges": "",
+            "ae_initial_charges_max": "",
+            "from_resource": "",
+            "to_resource": "",
+            "ae_family": ""
           },
           "2": {
             "effect_label": "hawkeye_opt_attack",
@@ -9788,14 +11130,79 @@
             "allowed_types": "Attack",
             "free_hr_as_zero": true,
             "menu_label": "Free attack — bow or firearm (High Roll treated as 0)",
-            "menu_description": "Immediately perform a free bow/firearm attack."
+            "menu_description": "Immediately perform a free bow/firearm attack.",
+            "consume_self": false,
+            "free_of_cost": false,
+            "max_mp_cost": "",
+            "check_bonus_formula": "",
+            "damage_bonus_formula": "",
+            "target_ref": "",
+            "menu_title": "",
+            "menu_subtitle": "",
+            "menu_pick_count": "",
+            "menu_option_refs": "",
+            "menu_option_labels": "",
+            "menu_option_descriptions": "",
+            "menu_option_icons": "",
+            "menu_option_colors": "",
+            "from_resource": "",
+            "to_resource": ""
           },
           "3": {
             "effect_label": "hawkeye_self_skill",
             "effect_kind": "targeting",
-            "candidate_source": "self"
+            "candidate_source": "self",
+            "auto_confirm_when_obvious": true,
+            "exclude_self": false,
+            "skip_when_passive": true,
+            "auto_target": true,
+            "allow_empty": false,
+            "consume_self": false,
+            "exclude_action_targets": false,
+            "target_prompt": "",
+            "category": "",
+            "mode": "exact",
+            "count": "1",
+            "iteration_mode": "together",
+            "target_filter": "",
+            "exclude": "",
+            "from_resource": "",
+            "to_resource": "",
+            "menu_label": ""
           }
-        }
+        },
+        "isOffensiveSpell": false,
+        "ignore_hr": false,
+        "use_optional_params": false,
+        "optional_params": {},
+        "active_effect_config_table": {},
+        "isFacet": false,
+        "isZeroPower": false,
+        "uuid": "Item.3A2B1LrKT09AwCiL",
+        "id": "3A2B1LrKT09AwCiL",
+        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/GrandArcherPassive1.png",
+        "details_roller": "Show",
+        "class": "",
+        "skill_target": "-",
+        "target_eligibility": "",
+        "duration": "-",
+        "skill_range": "",
+        "heroic_requirement": "",
+        "rolled_atr1": "-",
+        "rolled_atr2": "-",
+        "check_bonus": "0",
+        "damage_bonus": "",
+        "type_damage": "",
+        "defense_target_type": "def",
+        "skill_information": "",
+        "pre_activate_effect_ref": "",
+        "gadget_infusion_tier": "",
+        "gadget_alchemy_tier": "",
+        "gadget_magitech_tier": "",
+        "skill_animation_mode": "default",
+        "skill_animation_default": "",
+        "animation_damage_timing_options": "default",
+        "animation_damage_timing_offset": "0"
       },
       "unique": false,
       "uniqueId": "3A2B1LrKT09AwCiL"
@@ -9892,7 +11299,7 @@
             "buff"
           ]
         },
-        "img": "icons/skills/ranged/target-eye-orange.webp",
+        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/GrandArcherPassive1.png",
         "type": "base",
         "origin": null,
         "tint": "#ffffff"
@@ -10032,9 +11439,9 @@
         },
         "changes": [
           {
-            "key": "attack_accuracy_mod_ranged",
-            "mode": 2,
+            "key": "check_mod_ranged",
             "value": "${level}$",
+            "mode": 2,
             "priority": 1
           }
         ],
@@ -10077,7 +11484,7 @@
   {
     "name": "Warning Shot",
     "type": "equippableItem",
-    "img": "icons/skills/ranged/arrow-strike-glowing-orange.webp",
+    "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/11_BRD/bloodletter.png",
     "folderPath": [
       "Battle Director",
       "Sharpshooter",
@@ -10106,12 +11513,15 @@
         "defense_target_type": "def",
         "duration": "-",
         "on_activate_effect_ref": "",
-        "post_damage_effect_ref": "",
         "effect_table": {
           "0": {
             "effect_label": "warning_shot",
             "effect_kind": "chain",
-            "chain_steps": "ws_nullify,ws_menu"
+            "chain_steps": "ws_nullify,ws_menu",
+            "consume_self": false,
+            "from_resource": "",
+            "to_resource": "",
+            "menu_label": ""
           },
           "1": {
             "effect_label": "ws_nullify",
@@ -10119,7 +11529,11 @@
             "damage_operation": "multiply",
             "damage_amount": "0",
             "damage_stage": "outgoing",
-            "target_ref": "hit_action_targets"
+            "target_ref": "hit_action_targets",
+            "consume_self": false,
+            "from_resource": "",
+            "to_resource": "",
+            "menu_label": ""
           },
           "2": {
             "effect_label": "ws_menu",
@@ -10127,7 +11541,23 @@
             "menu_title": "Warning Shot",
             "menu_subtitle": "The attack deals no damage — choose an effect.",
             "menu_option_refs": "ws_shaken,ws_slow,ws_mp",
-            "menu_pick_count": "1 + HAS_SKILL_PERFECT_AIM"
+            "menu_pick_count": "1 + HAS_SKILL_PERFECT_AIM",
+            "free_mode": false,
+            "free_hr_as_zero": false,
+            "consume_self": false,
+            "free_of_cost": false,
+            "allowed_types": "",
+            "max_mp_cost": "",
+            "check_bonus_formula": "",
+            "damage_bonus_formula": "",
+            "target_ref": "",
+            "menu_option_labels": "",
+            "menu_option_descriptions": "",
+            "menu_option_icons": "",
+            "menu_option_colors": "",
+            "from_resource": "",
+            "to_resource": "",
+            "menu_label": ""
           },
           "3": {
             "effect_label": "ws_shaken",
@@ -10135,7 +11565,14 @@
             "ae_template_ref": "Shaken",
             "target_ref": "hit_action_targets",
             "menu_label": "Inflict Shaken",
-            "menu_description": "Each target hit by the attack becomes Shaken."
+            "menu_description": "Each target hit by the attack becomes Shaken.",
+            "consume_self": false,
+            "ae_duplicate_mode": "replace",
+            "ae_initial_charges": "",
+            "ae_initial_charges_max": "",
+            "from_resource": "",
+            "to_resource": "",
+            "ae_family": ""
           },
           "4": {
             "effect_label": "ws_slow",
@@ -10143,7 +11580,14 @@
             "ae_template_ref": "Slow",
             "target_ref": "hit_action_targets",
             "menu_label": "Inflict Slow",
-            "menu_description": "Each target hit by the attack becomes Slow."
+            "menu_description": "Each target hit by the attack becomes Slow.",
+            "consume_self": false,
+            "ae_duplicate_mode": "replace",
+            "ae_initial_charges": "",
+            "ae_initial_charges_max": "",
+            "from_resource": "",
+            "to_resource": "",
+            "ae_family": ""
           },
           "5": {
             "effect_label": "ws_mp",
@@ -10153,7 +11597,12 @@
             "target_ref": "hit_action_targets",
             "on_empty": "skip",
             "menu_label": "Drain Mind Points",
-            "menu_description": "Each target hit loses SL × 10 Mind Points."
+            "menu_description": "Each target hit loses SL × 10 Mind Points.",
+            "consume_self": false,
+            "grant_resource": "",
+            "grant_amount": "",
+            "from_resource": "",
+            "to_resource": ""
           }
         },
         "active_effect_config_table": {},
@@ -10162,16 +11611,40 @@
         "max_level": "4",
         "description": "<p>When you hit one or more targets with a <strong>ranged attack</strong> that would deal damage, you may have the attack deal no damage. If you do, choose one option: inflict <strong>shaken</strong> on each target hit by the attack; or inflict <strong>slow</strong> on each target hit by the attack; or each target hit by the attack loses <strong>【SL】× 10</strong> Mind Points. Describe your maneuver!</p>",
         "name": "Warning Shot",
-        "img": "icons/skills/ranged/arrow-strike-glowing-orange.webp",
         "reaction_config_table": {
           "0": {
             "reaction_trigger": "creature_will_deal_damage",
             "reaction_source": "self",
             "reaction_passive_mode": "ask",
             "reaction_effect_ref": "warning_shot",
-            "condition_formula": "ATTACK_IS_RANGED == 1"
+            "condition_formula": "ATTACK_IS_RANGED == 1",
+            "requires_skill": "",
+            "reaction_resource_filter": "",
+            "reaction_cause_filter": "",
+            "reaction_status_filter": "",
+            "reaction_action_kind": "",
+            "reaction_source_skill": "",
+            "reaction_responder": "",
+            "reaction_origin_filter": ""
           }
-        }
+        },
+        "uuid": "Item.7opUr817pDyJZsJt",
+        "id": "7opUr817pDyJZsJt",
+        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/11_BRD/bloodletter.png",
+        "details_roller": "Show",
+        "use_optional_params": false,
+        "optional_params": {},
+        "target_eligibility": "",
+        "heroic_requirement": "",
+        "skill_information": "",
+        "pre_activate_effect_ref": "",
+        "gadget_infusion_tier": "",
+        "gadget_alchemy_tier": "",
+        "gadget_magitech_tier": "",
+        "skill_animation_mode": "default",
+        "skill_animation_default": "",
+        "animation_damage_timing_options": "default",
+        "animation_damage_timing_offset": "0"
       },
       "unique": false,
       "uniqueId": "7opUr817pDyJZsJt"
@@ -10210,7 +11683,28 @@
         "max_level": 1,
         "isHeroic": true,
         "description": "<p>Once per turn during a conflict, if you have an <strong>arcane</strong> weapon equipped, you may use an action and spend <strong>20 to 50 Mind Points</strong> to perform the <strong>【📕Spell】</strong> action for free <strong>twice</strong>, casting two spells without needing to pay their MP costs. If you do, the two spells must have a combined total MP cost equal to or lower than <strong>【20 + the amount of MP you spent to use this Skill】</strong>, and the second spell must have a total MP cost that is equal to or lower than half the total MP cost of the first spell.</p>",
-        "class": "Spiritist"
+        "class": "Spiritist",
+        "reaction_config_table": {
+          "0": {
+            "$deleted": false,
+            "reaction_trigger": "turn_end",
+            "reaction_source": "self",
+            "reaction_passive_mode": "ask",
+            "reaction_passive_target": "self",
+            "condition_formula": "HAS_ARCANE_WEAPON == 1 && MP_SPENT_THIS_TURN > 0",
+            "reaction_effect_ref": "bim_free"
+          }
+        },
+        "effect_table": {
+          "0": {
+            "$deleted": false,
+            "effect_label": "bim_free",
+            "effect_kind": "free_action",
+            "action_ref": "Spell",
+            "free_of_cost": true,
+            "max_mp_cost": "min(70 - MP_SPENT_THIS_TURN, floor(MP_SPENT_THIS_TURN / 2))"
+          }
+        }
       },
       "unique": true,
       "uniqueId": "HjNImvzXOvZw1mGF"
@@ -11187,7 +12681,7 @@
         "check_bonus": "0",
         "defense_target_type": "def",
         "skill_information": "",
-        "on_activate_effect_ref": "",
+        "on_activate_effect_ref": "heal_hp",
         "isReaction": false,
         "isFacet": false,
         "isHeroic": false,
@@ -11205,8 +12699,17 @@
         "passive_logic_action": "",
         "passive_check_bonus_formula": "",
         "passive_damage_bonus_formula": "",
-        "effect_table": {},
-        "reaction_config_table": {}
+        "reaction_config_table": {},
+        "effect_table": {
+          "0": {
+            "$deleted": false,
+            "effect_label": "heal_hp",
+            "effect_kind": "grant",
+            "grant_resource": "hp",
+            "grant_amount": "40 + 10 * floor(min(CHAR_LEVEL, 40) / 20)",
+            "target_ref": "action_targets"
+          }
+        }
       },
       "unique": true,
       "uniqueId": "7ApZzLcwZfDZz0nE"
@@ -12199,7 +13702,7 @@
   {
     "name": "Gadgets",
     "type": "equippableItem",
-    "img": "icons/svg/item-bag.svg",
+    "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/12_MCH/hypercharge.png",
     "folderPath": [
       "Battle Director",
       "Tinkerer",
@@ -12229,7 +13732,13 @@
             "reaction_source": "self",
             "reaction_action_kind": "Attack",
             "reaction_passive_mode": "ask",
-            "reaction_effect_ref": "inf_offer"
+            "reaction_effect_ref": "inf_offer",
+            "condition_formula": "",
+            "requires_skill": "",
+            "reaction_resource_filter": "",
+            "reaction_cause_filter": "",
+            "reaction_status_filter": "",
+            "reaction_source_skill": ""
           }
         },
         "name": "Gadgets",
@@ -12242,7 +13751,16 @@
             "menu_pick_count": "1",
             "menu_option_refs": "inf_cryo,inf_pyro,inf_volt,inf_cyclone,inf_exorcism,inf_seismic,inf_shadow,inf_venom,inf_vampire",
             "menu_option_labels": "Cryo|Pyro|Volt|Cyclone|Exorcism|Seismic|Shadow|Venom|Vampire",
-            "menu_option_descriptions": "+5; becomes Ice|+5; becomes Fire|+5; becomes Bolt|+5; becomes Air|+5; becomes Light|+5; becomes Earth|+5; becomes Dark|+5; becomes Poison + Poisoned|Single-target: heal 50% of damage dealt"
+            "menu_option_descriptions": "+5; becomes Ice|+5; becomes Fire|+5; becomes Bolt|+5; becomes Air|+5; becomes Light|+5; becomes Earth|+5; becomes Dark|+5; becomes Poison + Poisoned|Single-target: heal 50% of damage dealt",
+            "free_mode": false,
+            "free_hr_as_zero": false,
+            "allowed_types": "",
+            "max_mp_cost": "",
+            "check_bonus_formula": "",
+            "damage_bonus_formula": "",
+            "target_ref": "",
+            "menu_option_icons": "",
+            "menu_option_colors": ""
           },
           "1": {
             "effect_label": "inf_cryo",
@@ -12306,7 +13824,9 @@
             "consume_resource": "ip",
             "consume_amount": "2",
             "target_ref": "self",
-            "on_empty": "abort"
+            "on_empty": "abort",
+            "grant_resource": "",
+            "grant_amount": ""
           },
           "10": {
             "effect_label": "inf_plus5",
@@ -12360,7 +13880,9 @@
             "effect_kind": "apply_ae",
             "ae_template_ref": "Poisoned",
             "target_ref": "hit_action_targets",
-            "ae_duplicate_mode": "replace"
+            "ae_duplicate_mode": "replace",
+            "ae_initial_charges": "",
+            "ae_initial_charges_max": ""
           },
           "20": {
             "effect_label": "gadget_active_root",
@@ -12370,7 +13892,16 @@
             "menu_pick_count": "1",
             "menu_option_refs": "stub_alchemy,stub_magitech",
             "menu_option_labels": "Alchemy|Magitech",
-            "menu_option_descriptions": "Mix a potion|Build a magitech device"
+            "menu_option_descriptions": "Mix a potion|Build a magitech device",
+            "free_mode": false,
+            "free_hr_as_zero": false,
+            "allowed_types": "",
+            "max_mp_cost": "",
+            "check_bonus_formula": "",
+            "damage_bonus_formula": "",
+            "target_ref": "",
+            "menu_option_icons": "",
+            "menu_option_colors": ""
           },
           "21": {
             "effect_label": "stub_alchemy",
@@ -12378,7 +13909,8 @@
             "notify_message": "Alchemy gadgets (potion-mixing) are not yet implemented.",
             "notify_type": "info",
             "condition_formula": "GADGET_ALCHEMY_TIER >= 1",
-            "menu_label": "Alchemy"
+            "menu_label": "Alchemy",
+            "notify_abort": true
           },
           "22": {
             "effect_label": "stub_magitech",
@@ -12386,7 +13918,8 @@
             "notify_message": "Magitech gadgets are not yet implemented.",
             "notify_type": "info",
             "condition_formula": "GADGET_MAGITECH_TIER >= 1",
-            "menu_label": "Magitech"
+            "menu_label": "Magitech",
+            "notify_abort": true
           },
           "23": {
             "effect_label": "inf_vampire",
@@ -12398,9 +13931,36 @@
           "24": {
             "effect_label": "inf_drain",
             "effect_kind": "apply_action_keyword",
-            "action_keyword": "drain"
+            "action_keyword": "pierce",
+            "condition_formula": ""
           }
-        }
+        },
+        "uuid": "Item.1w2LjUOVhlbLR8nn",
+        "id": "1w2LjUOVhlbLR8nn",
+        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/12_MCH/hypercharge.png",
+        "details_roller": "Show",
+        "isOffensiveSpell": false,
+        "ignore_hr": false,
+        "use_optional_params": false,
+        "optional_params": {},
+        "active_effect_config_table": {},
+        "heroic_requirement": "",
+        "rolled_atr1": "-",
+        "rolled_atr2": "-",
+        "check_bonus": "0",
+        "damage_bonus": "",
+        "type_damage": "",
+        "defense_target_type": "def",
+        "skill_information": "",
+        "pre_activate_effect_ref": "",
+        "gadget_infusion_tier": "",
+        "gadget_alchemy_tier": "",
+        "gadget_magitech_tier": "",
+        "isZeroPower": false,
+        "skill_animation_mode": "default",
+        "skill_animation_default": "",
+        "animation_damage_timing_options": "default",
+        "animation_damage_timing_offset": "0"
       },
       "unique": true,
       "uniqueId": "1w2LjUOVhlbLR8nn"
@@ -12937,8 +14497,8 @@
         "isZeroPower": true,
         "skill_animation_mode": "custom",
         "skill_animation_default": "",
-        "animation_damage_timing_options": "default",
-        "animation_damage_timing_offset": "0",
+        "animation_damage_timing_options": "offset",
+        "animation_damage_timing_offset": "20000",
         "description": "<p>Choose and trigger <strong>3 Opportunity choice. </strong><em>(The same Opportunity cannot be chosen twice)</em></p>",
         "animation_script": "<div><div><p>// ============================================================================</p></div><p><br><br><br></p><div><p>// [ONI][Anim][ZeroPower][Hina] A Million Possibility (Foundry VTT v12)</p></div><p><br><br><br></p><div><p>// STABLE BASE + FULL UPDATE PASS (FIXED SYNTAX)</p></div><p><br><br><br></p><div><p>//</p></div><p><br><br><br></p><div><p>// UPDATE in this pass (Intro timing):</p></div><p><br><br><br></p><div><p>// 1) Intro cut-in finishes FIRST.</p></div><p><br><br><br></p><div><p>// 2) After cut-in: start camera pan/zoom AND trigger full-screen blackout MID-pan</p></div><p><br><br><br></p><div><p>// (blackout does NOT wait for camera pan to finish).</p></div><p><br><br><br></p><div><p>//</p></div><p><br><br><br></p><div><p>// Everything else unchanged.</p></div><p><br><br><br></p><div><p>// ============================================================================</p></div><p><br><br><br></p><div><p>(async () =&gt; {</p></div><p><br><br><br></p><div><p>const TAG = \"[ONI][Anim][ZeroPower][Hina][MillionPossibility]\";</p></div><p><br><br><br></p><div><p>const DBG = true;</p></div><p><br><br><br></p><div><p>// -----------------------------</p></div><p><br><br><br></p><div><p>// Assets</p></div><p><br><br><br></p><div><p>// -----------------------------</p></div><p><br><br><br></p><div><p>const CUTIN_URL =</p></div><p><br><br><br></p><div><p>\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/hina_Cut-in002.png\";</p></div><p><br><br><br></p><div><p>// NEW (Parallel Future / Zoom portrait cut-in)</p></div><p><br><br><br></p><div><p>const FUTURE_CUTIN_URL =</p></div><p><br><br><br></p><div><p>&nbsp; \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/hina_Cut-in003.png\";</p></div><p><br><br><br></p><div><p>const OVERDRIVE_SFX =</p></div><p><br><br><br></p><div><p>\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Overdrive.wav\";</p></div><p><br><br><br></p><div><p>const BG_URL =</p></div><p><br><br><br></p><div><p>\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Map/Game%20Map/Hina_Map001.png\";</p></div><p><br><br><br></p><div><p>const POLLEN_SFX =</p></div><p><br><br><br></p><div><p>\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Pollen.ogg\";</p></div><p><br><br><br></p><div><p>const METAL_SHING_SFX =</p></div><p><br><br><br></p><div><p>\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Metal_Shing.mp3\";</p></div><p><br><br><br></p><div><p>const OUTRO_VFX_WEBM =</p></div><p><br><br><br></p><div><p>\"modules/JB2A_DnD5e/Library/Generic/Template/Circle/Aura/Aura003/Aura003Part02_Outward_Complete_003_Blue_1000x1000.webm\";</p></div><p><br><br><br></p><div><p>const OUTRO_SFX =</p></div><p><br><br><br></p><div><p>\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Teleport.ogg\";</p></div><p><br><br><br></p><div><p>// -----------------------------</p></div><p><br><br><br></p><div><p>// Tuning knobs (keep yours)</p></div><p><br><br><br></p><div><p>// -----------------------------</p></div><p><br><br><br></p><div><p>const T = {</p></div><p><br><br><br></p><div><p>// Intro</p></div><p><br><br><br></p><div><p>dimFadeInMs: 200,</p></div><p><br><br><br></p><div><p>dimAlpha: 0.55,</p></div><p><br><br><br></p><div><p>camPanMs: 1000,</p></div><p><br><br><br></p><div><p>camScale: 2.5,</p></div><p><br><br><br></p><div><p>// NEW: how long after pan starts before blackout begins (mid-zoom)</p></div><p><br><br><br></p><div><p>// (Default: 45% into the pan duration)</p></div><p><br><br><br></p><div><p>blackoutStartDelayMs: Math.floor(1000 * 0.45),</p></div><p><br><br><br></p><div><p>cutinSlideInMs: 650,</p></div><p><br><br><br></p><div><p>cutinHoldMs: 850,</p></div><p><br><br><br></p><div><p>cutinSlideOutMs: 650,</p></div><p><br><br><br></p><div><p>cutinZ: 99990,</p></div><p><br><br><br></p><div><p>// Blackout / reveal BG</p></div><p><br><br><br></p><div><p>blackoutFadeInMs: 650,</p></div><p><br><br><br></p><div><p>blackoutHoldMs: 250,</p></div><p><br><br><br></p><div><p>revealFadeOutMs: 650,</p></div><p><br><br><br></p><div><p>// Parallel Future</p></div><p><br><br><br></p><div><p>futureTotalMs: 4000,</p></div><p><br><br><br></p><div><p>futureSpawnEveryMs: 350,</p></div><p><br><br><br></p><div><p>futureLingerMs: 1500,</p></div><p><br><br><br></p><div><p>futureFadeOutMs: 250,</p></div><p><br><br><br></p><div><p>futureOpacity: 0.5,</p></div><p><br><br><br></p><div><p>// Zoom-out reveal (your tuning)</p></div><p><br><br><br></p><div><p>zoomStartScale: 10,</p></div><p><br><br><br></p><div><p>zoomEndScale: 1.0,</p></div><p><br><br><br></p><div><p>zoomDownMs: 150,</p></div><p><br><br><br></p><div><p>zoomHoldMs: 2500,</p></div><p><br><br><br></p><div><p>// NEW (zoom portrait tuning knobs)</p></div><p><br><br><br></p><div><p>zoomImgScaleMul: 1.0, &nbsp; // multiplier applied to BOTH start/end zoom scales</p></div><p><br><br><br></p><div><p>zoomOffsetX: 0, &nbsp; &nbsp; &nbsp; &nbsp; // px, +right / -left</p></div><p><br><br><br></p><div><p>zoomOffsetY: -250, &nbsp; &nbsp; &nbsp; &nbsp; // px, +down / -up</p></div><p><br><br><br><br></p><div><p>// NEW: outro cut-in START position offset (px) for the initial (big) scale</p></div><div><p>zoomStartOffsetX: 1500, &nbsp; &nbsp; &nbsp;// px, +right / -left</p></div><div><p>zoomStartOffsetY: -250, &nbsp; // px, +down / -up</p></div><div><p>// NEW: scale the overlay BG down alongside the zoom cut-in</p></div><p><br></p><div><p>overlayBgZoomStartScale: 1.0,</p></div><p><br></p><div><p>overlayBgZoomEndScale: 0.1,</p></div><p><br><br><br></p><div><p>&nbsp; &nbsp; // NEW: where the overlay BG shrinks into (px offset from screen center)</p></div><p><br></p><div><p>&nbsp; &nbsp; overlayBgShrinkOffsetX: -150,</p></div><p><br></p><div><p>&nbsp; &nbsp; overlayBgShrinkOffsetY: 300,</p></div><p><br></p><div><p>&nbsp; &nbsp; // NEW: duration for overlay BG shrink-out (ms). If null/0, uses zoomDownMs.</p></div><p><br></p><div><p>&nbsp; &nbsp; overlayBgShrinkMs: 400,</p></div><p><br></p><div><p>// Whiteout (DOM overlay)</p></div><p><br><br><br></p><div><p>whiteFadeInMs: 2500,</p></div><p><br><br><br></p><div><p>whiteFadeOutMs: 850,</p></div><p><br><br><br></p><div><p>whiteDomZ: 99999999,</p></div><p><br><br><br></p><div><p>// Outro VFX</p></div><p><br><br><br></p><div><p>outroHoldBeforeFadeMs: 4000,</p></div><p><br><br><br></p><div><p>outroFadeOutMs: 900,</p></div><p><br><br><br></p><div><p>outroX: 850,</p></div><p><br><br><br></p><div><p>outroY: 500,</p></div><p><br><br><br></p><div><p>outroWidthCss: \"140vw\",</p></div><p><br><br><br></p><div><p>outroHeightCss: \"140vh\",</p></div><p><br><br><br></p><div><p>outroVfxScaleMultiplier: 2.5,</p></div><p><br><br><br></p><div><p>// Outro VFX opacity</p></div><p><br><br><br></p><div><p>outroVfxOpacity: 0.3,</p></div><p><br><br><br></p><div><p>};</p></div><p><br><br><br></p><div><p>// -----------------------------</p></div><p><br><br><br></p><div><p>// Caster resolve</p></div><p><br><br><br></p><div><p>// -----------------------------</p></div><p><br><br><br></p><div><p>const parseTokenIdFromUuid = (uuid) =&gt; {</p></div><p><br><br><br></p><div><p>if (!uuid || typeof uuid !== \"string\") return null;</p></div><p><br><br><br></p><div><p>const m = uuid.match(/\\.Token\\.([A-Za-z0-9]+)$/);</p></div><p><br><br><br></p><div><p>if (m?.[1]) return m[1];</p></div><p><br><br><br></p><div><p>if (uuid.length &lt;= 32 &amp;&amp; !uuid.includes(\".\")) return uuid;</p></div><p><br><br><br></p><div><p>return null;</p></div><p><br><br><br></p><div><p>};</p></div><p><br><br><br></p><div><p>const resolveCasterToken = () =&gt; {</p></div><p><br><br><br></p><div><p>const p = globalThis.__PAYLOAD ?? {};</p></div><p><br><br><br></p><div><p>const idA = p?.casterTokenId;</p></div><p><br><br><br></p><div><p>const idB = parseTokenIdFromUuid(p?.casterTokenUuid);</p></div><p><br><br><br></p><div><p>const idC = parseTokenIdFromUuid(p?.attackerUuid);</p></div><p><br><br><br></p><div><p>const idD = parseTokenIdFromUuid(p?.attackerTokenUuid);</p></div><p><br><br><br></p><div><p>const idE = parseTokenIdFromUuid(p?.sourceTokenUuid);</p></div><p><br><br><br></p><div><p>const idF = p?.sourceTokenId;</p></div><p><br><br><br></p><div><p>const pickId = idA || idB || idC || idD || idE || idF || null;</p></div><p><br><br><br></p><div><p>const tok =</p></div><p><br><br><br></p><div><p>(pickId ? canvas.tokens?.get(pickId) : null) ??</p></div><p><br><br><br></p><div><p>canvas.tokens?.controlled?.[0] ??</p></div><p><br><br><br></p><div><p>null;</p></div><p><br><br><br></p><div><p>if (DBG) {</p></div><p><br><br><br></p><div><p>console.log(TAG, \"Payload caster resolve\", {</p></div><p><br><br><br></p><div><p>casterTokenId: idA,</p></div><p><br><br><br></p><div><p>casterTokenUuid: p?.casterTokenUuid,</p></div><p><br><br><br></p><div><p>attackerUuid: p?.attackerUuid,</p></div><p><br><br><br></p><div><p>attackerTokenUuid: p?.attackerTokenUuid,</p></div><p><br><br><br></p><div><p>sourceTokenUuid: p?.sourceTokenUuid,</p></div><p><br><br><br></p><div><p>pickId,</p></div><p><br><br><br></p><div><p>resolvedName: tok?.name ?? null,</p></div><p><br><br><br></p><div><p>resolvedId: tok?.id ?? null,</p></div><p><br><br><br></p><div><p>});</p></div><p><br><br><br></p><div><p>}</p></div><p><br><br><br></p><div><p>return tok;</p></div><p><br><br><br></p><div><p>};</p></div><p><br><br><br></p><div><p>const getStagePivotSnapshot = () =&gt; ({</p></div><p><br><br><br></p><div><p>x: canvas.stage.pivot.x,</p></div><p><br><br><br></p><div><p>y: canvas.stage.pivot.y,</p></div><p><br><br><br></p><div><p>scale: canvas.stage.scale.x,</p></div><p><br><br><br></p><div><p>});</p></div><p><br><br><br></p><div><p>try {</p></div><p><br><br><br></p><div><p>if (!game.modules.get(\"sequencer\")?.active) {</p></div><p><br><br><br></p><div><p>ui.notifications.error(\"Sequencer module is not active (needed for SFX).\");</p></div><p><br><br><br></p><div><p>return;</p></div><p><br><br><br></p><div><p>}</p></div><p><br><br><br></p><div><p>if (!canvas?.ready) {</p></div><p><br><br><br></p><div><p>ui.notifications.warn(\"Canvas not ready yet.\");</p></div><p><br><br><br></p><div><p>return;</p></div><p><br><br><br></p><div><p>}</p></div><p><br><br><br></p><div><p>globalThis.ONI = globalThis.ONI ?? {};</p></div><p><br><br><br></p><div><p>if (!ONI.emit) {</p></div><p><br><br><br></p><div><p>ONI.emit = (eventName, payload = {}, options = {}) =&gt; {</p></div><p><br><br><br></p><div><p>const { local = true, world = false } = options;</p></div><p><br><br><br></p><div><p>if (local) Hooks.callAll(eventName, payload);</p></div><p><br><br><br></p><div><p>if (world) game.socket.emit(\"world\", { action: eventName, payload });</p></div><p><br><br><br></p><div><p>};</p></div><p><br><br><br></p><div><p>}</p></div><p><br><br><br></p><div><p>const caster = resolveCasterToken();</p></div><p><br><br><br></p><div><p>if (!caster) {</p></div><p><br><br><br></p><div><p>ui.notifications.warn(</p></div><p><br><br><br></p><div><p>\"No caster token found (payload missing AND no token selected).\"</p></div><p><br><br><br></p><div><p>);</p></div><p><br><br><br></p><div><p>return;</p></div><p><br><br><br></p><div><p>}</p></div><p><br><br><br></p><div><p>const priorView = getStagePivotSnapshot();</p></div><p><br><br><br></p><div><p>if (DBG) console.log(TAG, \"Camera priorView:\", priorView);</p></div><p><br><br><br></p><div><p>ONI.emit(</p></div><p><br><br><br></p><div><p>\"oni:animationStart\",</p></div><p><br><br><br></p><div><p>{</p></div><p><br><br><br></p><div><p>type: \"zeroPower.hina.millionPossibility\",</p></div><p><br><br><br></p><div><p>sourceTokenId: caster.id,</p></div><p><br><br><br></p><div><p>targetTokenIds: [],</p></div><p><br><br><br></p><div><p>sceneId: canvas.scene?.id ?? null,</p></div><p><br><br><br></p><div><p>timestamp: Date.now(),</p></div><p><br><br><br></p><div><p>},</p></div><p><br><br><br></p><div><p>{ local: true, world: false }</p></div><p><br><br><br></p><div><p>);</p></div><p><br><br><br></p><div><p>// ======================================================================</p></div><p><br><br><br></p><div><p>// PSEUDO MASTER SCRIPT (runs on each client)</p></div><p><br><br><br></p><div><p>// ======================================================================</p></div><p><br><br><br></p><div><p>const pseudoMaster = `</p></div><p><br><br><br></p><div><p>const TAG = \"${TAG}[PSEUDO][MASTER]\";</p></div><p><br><br><br></p><div><p>const DBG = ${DBG ? \"true\" : \"false\"};</p></div><p><br><br><br></p><div><p>if (!canvas?.ready) throw new Error(\"Canvas not ready (MASTER).\");</p></div><p><br><br><br></p><div><p>const wait = (ms) =&gt; new Promise(r =&gt; setTimeout(r, Math.max(0, ms)));</p></div><p><br><br><br></p><div><p>const clamp = (v, a, b) =&gt; Math.max(a, Math.min(b, v));</p></div><p><br><br><br></p><div><p>const pick = (arr) =&gt; arr[Math.floor(Math.random() * arr.length)];</p></div><p><br><br><br></p><div><p>const rand = (a, b) =&gt; a + Math.random() * (b - a);</p></div><p><br><br><br></p><div><p>const randInt = (a, b) =&gt; Math.floor(rand(a, b + 1));</p></div><p><br><br><br></p><div><p>function log(...args){ if (DBG) console.log(TAG, ...args); }</p></div><p><br><br><br></p><div><p>function warn(...args){ if (DBG) console.warn(TAG, ...args); }</p></div><p><br><br><br></p><div><p>function easeInOutCubic(t){ return t &lt; 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3)/2; }</p></div><p><br><br><br></p><div><p>function fadeAlphaPIXI(obj, fromA, toA, durMs){</p></div><p><br><br><br></p><div><p>return new Promise(resolve =&gt; {</p></div><p><br><br><br></p><div><p>const start = performance.now();</p></div><p><br><br><br></p><div><p>const tick = () =&gt; {</p></div><p><br><br><br></p><div><p>const raw = (performance.now() - start) / Math.max(1, durMs);</p></div><p><br><br><br></p><div><p>const t = clamp(raw, 0, 1);</p></div><p><br><br><br></p><div><p>const e = easeInOutCubic(t);</p></div><p><br><br><br></p><div><p>obj.alpha = fromA + (toA - fromA) * e;</p></div><p><br><br><br></p><div><p>if (t &gt;= 1) { canvas.app.ticker.remove(tick); resolve(); }</p></div><p><br><br><br></p><div><p>};</p></div><p><br><br><br></p><div><p>canvas.app.ticker.add(tick);</p></div><p><br><br><br></p><div><p>});</p></div><p><br><br><br></p><div><p>}</p></div><p><br><br><br></p><div><p>function stagePivotToPanXY(pivotX, pivotY) {</p></div><p><br><br><br></p><div><p>const center = canvas.screenDimensions</p></div><p><br><br><br></p><div><p>? { x: canvas.screenDimensions.width / 2, y: canvas.screenDimensions.height / 2 }</p></div><p><br><br><br></p><div><p>: { x: canvas.app.renderer.width / 2, y: canvas.app.renderer.height / 2 };</p></div><p><br><br><br></p><div><p>return { x: pivotX + center.x, y: pivotY + center.y };</p></div><p><br><br><br></p><div><p>}</p></div><p><br><br><br></p><div><p>async function restoreCamera(prior, durationMs){</p></div><p><br><br><br></p><div><p>try{</p></div><p><br><br><br></p><div><p>const xy = stagePivotToPanXY(Number(prior?.x ?? 0), Number(prior?.y ?? 0));</p></div><p><br><br><br></p><div><p>const scale = Number(prior?.scale ?? 1);</p></div><p><br><br><br></p><div><p>await canvas.animatePan({ x: xy.x, y: xy.y, scale, duration: Math.max(0, Number(durationMs ?? 650)) });</p></div><p><br><br><br></p><div><p>canvas.stage.pivot.set(Number(prior?.x ?? 0), Number(prior?.y ?? 0));</p></div><p><br><br><br></p><div><p>canvas.stage.scale.set(scale, scale);</p></div><p><br><br><br></p><div><p>} catch(e){</p></div><p><br><br><br></p><div><p>warn(\"Camera restore failed\", e);</p></div><p><br><br><br></p><div><p>}</p></div><p><br><br><br></p><div><p>}</p></div><p><br><br><br></p><div><p>async function panToToken(token, durationMs, scale){</p></div><p><br><br><br></p><div><p>try{</p></div><p><br><br><br></p><div><p>await canvas.animatePan({ x: token.center.x, y: token.center.y, scale, duration: Math.max(1, durationMs) });</p></div><p><br><br><br></p><div><p>} catch(e){</p></div><p><br><br><br></p><div><p>warn(\"Camera pan failed\", e);</p></div><p><br><br><br></p><div><p>}</p></div><p><br><br><br></p><div><p>}</p></div><p><br><br><br></p><div><p>// ------------------------------------------------------------</p></div><p><br><br><br></p><div><p>// Shared state</p></div><p><br><br><br></p><div><p>// ------------------------------------------------------------</p></div><p><br><br><br></p><div><p>globalThis.__ONI_MILP__ = globalThis.__ONI_MILP__ ?? {};</p></div><p><br><br><br></p><div><p>const S = globalThis.__ONI_MILP__;</p></div><p><br><br><br></p><div><p>S.dom = S.dom ?? [];</p></div><p><br><br><br></p><div><p>S.pixi = S.pixi ?? [];</p></div><p><br><br><br></p><div><p>S.keep = S.keep ?? {};</p></div><p><br><br><br></p><div><p>function domRemove(id){ try{ document.getElementById(id)?.remove(); } catch(_){} }</p></div><p><br><br><br></p><div><p>function domTrack(id){ S.dom.push(id); }</p></div><p><br><br><br></p><div><p>function domCleanupAll(){</p></div><p><br><br><br></p><div><p>const ids = (S.dom ?? []).slice();</p></div><p><br><br><br></p><div><p>S.dom = [];</p></div><p><br><br><br></p><div><p>for (const id of ids) domRemove(id);</p></div><p><br><br><br></p><div><p>}</p></div><p><br><br><br></p><div><p>function createFullScreenDiv({ id, bg = \"black\", z = 99990, opacity = 0, transition = \"opacity 500ms ease\" }){</p></div><p><br><br><br></p><div><p>const d = document.createElement(\"div\");</p></div><p><br><br><br></p><div><p>d.id = id;</p></div><p><br><br><br></p><div><p>Object.assign(d.style, {</p></div><p><br><br><br></p><div><p>position: \"fixed\",</p></div><p><br><br><br></p><div><p>left: \"0px\",</p></div><p><br><br><br></p><div><p>top: \"0px\",</p></div><p><br><br><br></p><div><p>width: \"100vw\",</p></div><p><br><br><br></p><div><p>height: \"100vh\",</p></div><p><br><br><br></p><div><p>zIndex: String(z),</p></div><p><br><br><br></p><div><p>pointerEvents: \"none\",</p></div><p><br><br><br></p><div><p>background: bg,</p></div><p><br><br><br></p><div><p>opacity: String(opacity),</p></div><p><br><br><br></p><div><p>transition</p></div><p><br><br><br></p><div><p>});</p></div><p><br><br><br></p><div><p>document.body.appendChild(d);</p></div><p><br><br><br></p><div><p>domTrack(id);</p></div><p><br><br><br></p><div><p>return d;</p></div><p><br><br><br></p><div><p>}</p></div><p><br><br><br></p><div><p>async function fadeDomOpacity(el, fromA, toA, durMs){</p></div><p><br><br><br></p><div><p>el.style.transition = \"opacity \" + Math.max(1, durMs) + \"ms ease-in-out\";</p></div><p><br><br><br></p><div><p>el.style.opacity = String(fromA);</p></div><p><br><br><br></p><div><p>void el.offsetHeight;</p></div><p><br><br><br></p><div><p>el.style.opacity = String(toA);</p></div><p><br><br><br></p><div><p>await wait(Math.max(1, durMs) + 30);</p></div><p><br><br><br></p><div><p>}</p></div><p><br><br><br></p><div><p>function createCutin({ url, slideInMs, holdMs, slideOutMs, zIndex }){</p></div><p><br><br><br></p><div><p>const id = \"oni-milp-cutin-\" + Date.now() + \"-\" + Math.floor(Math.random()*100000);</p></div><p><br><br><br></p><div><p>const wrap = document.createElement(\"div\");</p></div><p><br><br><br></p><div><p>wrap.id = id;</p></div><p><br><br><br></p><div><p>Object.assign(wrap.style, {</p></div><p><br><br><br></p><div><p>position: \"fixed\",</p></div><p><br><br><br></p><div><p>left: \"0px\",</p></div><p><br><br><br></p><div><p>top: \"0px\",</p></div><p><br><br><br></p><div><p>width: \"100vw\",</p></div><p><br><br><br></p><div><p>height: \"100vh\",</p></div><p><br><br><br></p><div><p>zIndex: String(zIndex),</p></div><p><br><br><br></p><div><p>pointerEvents: \"none\",</p></div><p><br><br><br></p><div><p>overflow: \"hidden\",</p></div><p><br><br><br></p><div><p>});</p></div><p><br><br><br></p><div><p>const img = document.createElement(\"img\");</p></div><p><br><br><br></p><div><p>img.src = url;</p></div><p><br><br><br></p><div><p>Object.assign(img.style, {</p></div><p><br><br><br></p><div><p>position: \"absolute\",</p></div><p><br><br><br></p><div><p>left: \"-120%\",</p></div><p><br><br><br></p><div><p>bottom: \"0%\",</p></div><p><br><br><br></p><div><p>height: \"92vh\",</p></div><p><br><br><br></p><div><p>width: \"auto\",</p></div><p><br><br><br></p><div><p>objectFit: \"contain\",</p></div><p><br><br><br></p><div><p>border: \"none\",</p></div><p><br><br><br></p><div><p>outline: \"none\",</p></div><p><br><br><br></p><div><p>boxShadow: \"none\",</p></div><p><br><br><br></p><div><p>background: \"transparent\",</p></div><p><br><br><br></p><div><p>display: \"block\",</p></div><p><br><br><br></p><div><p>willChange: \"left, opacity, transform\",</p></div><p><br><br><br></p><div><p>});</p></div><p><br><br><br></p><div><p>wrap.appendChild(img);</p></div><p><br><br><br></p><div><p>document.body.appendChild(wrap);</p></div><p><br><br><br></p><div><p>domTrack(id);</p></div><p><br><br><br></p><div><p>return { id, wrap, img, slideInMs, holdMs, slideOutMs };</p></div><p><br><br><br></p><div><p>}</p></div><p><br><br><br></p><div><p>async function runCutin(cutin){</p></div><p><br><br><br></p><div><p>const { img, slideInMs, holdMs, slideOutMs, wrap, id } = cutin;</p></div><p><br><br><br></p><div><p>img.style.transition = \"left \" + slideInMs + \"ms ease-out\";</p></div><p><br><br><br></p><div><p>void img.offsetHeight;</p></div><p><br><br><br></p><div><p>img.style.left = \"0%\";</p></div><p><br><br><br></p><div><p>await wait(slideInMs);</p></div><p><br><br><br></p><div><p>await wait(holdMs);</p></div><p><br><br><br></p><div><p>img.style.transition = \"left \" + slideOutMs + \"ms ease-in\";</p></div><p><br><br><br></p><div><p>img.style.left = \"120%\";</p></div><p><br><br><br></p><div><p>await wait(slideOutMs + 30);</p></div><p><br><br><br></p><div><p>try{ wrap.remove(); } catch(_){}</p></div><p><br><br><br></p><div><p>log(\"Cut-in removed\", id);</p></div><p><br><br><br></p><div><p>}</p></div><p><br><br><br></p><div><p>function getViewport(){</p></div><p><br><br><br></p><div><p>return {</p></div><p><br><br><br></p><div><p>w: window.innerWidth || canvas.app.renderer.width,</p></div><p><br><br><br></p><div><p>h: window.innerHeight || canvas.app.renderer.height</p></div><p><br><br><br></p><div><p>};</p></div><p><br><br><br></p><div><p>}</p></div><p><br><br><br></p><div><p>function spawnFutureFrame(url, { opacity = 0.5, z = 99970 } = {}){</p></div><p><br><br><br></p><div><p>const id = \"oni-milp-future-\" + Date.now() + \"-\" + Math.floor(Math.random()*100000);</p></div><p><br><br><br></p><div><p>const { w, h } = getViewport();</p></div><p><br><br><br></p><div><p>const pad = 60;</p></div><p><br><br><br></p><div><p>const left = randInt(pad, Math.max(pad, w - pad));</p></div><p><br><br><br></p><div><p>const top = randInt(pad, Math.max(pad, h - pad));</p></div><p><br><br><br></p><div><p>const size = randInt(180, 420);</p></div><p><br><br><br></p><div><p>const rot = randInt(-18, 18);</p></div><p><br><br><br></p><div><p>const flipX = Math.random() &lt; 0.5 ? -1 : 1;</p></div><p><br><br><br></p><div><p>const wrap = document.createElement(\"div\");</p></div><p><br><br><br></p><div><p>wrap.id = id;</p></div><p><br><br><br></p><div><p>Object.assign(wrap.style, {</p></div><p><br><br><br></p><div><p>position: \"fixed\",</p></div><p><br><br><br></p><div><p>left: left + \"px\",</p></div><p><br><br><br></p><div><p>top: top + \"px\",</p></div><p><br><br><br></p><div><p>width: size + \"px\",</p></div><p><br><br><br></p><div><p>height: size + \"px\",</p></div><p><br><br><br></p><div><p>transform: \"translate(-50%, -50%) rotate(\" + rot + \"deg) scaleX(\" + flipX + \")\",</p></div><p><br><br><br></p><div><p>transformOrigin: \"center center\",</p></div><p><br><br><br></p><div><p>zIndex: String(z),</p></div><p><br><br><br></p><div><p>pointerEvents: \"none\",</p></div><p><br><br><br></p><div><p>opacity: \"0\",</p></div><p><br><br><br></p><div><p>transition: \"opacity 180ms ease-out\",</p></div><p><br><br><br></p><div><p>background: \"transparent\",</p></div><p><br><br><br></p><div><p>willChange: \"opacity, transform\",</p></div><p><br><br><br></p><div><p>});</p></div><p><br><br><br></p><div><p>const isWebm = (url || \"\").toLowerCase().endsWith(\".webm\");</p></div><p><br><br><br></p><div><p>let el;</p></div><p><br><br><br></p><div><p>if (isWebm) {</p></div><p><br><br><br></p><div><p>el = document.createElement(\"video\");</p></div><p><br><br><br></p><div><p>el.src = url;</p></div><p><br><br><br></p><div><p>el.autoplay = true;</p></div><p><br><br><br></p><div><p>el.loop = true;</p></div><p><br><br><br></p><div><p>el.muted = true;</p></div><p><br><br><br></p><div><p>el.playsInline = true;</p></div><p><br><br><br></p><div><p>} else {</p></div><p><br><br><br></p><div><p>el = document.createElement(\"img\");</p></div><p><br><br><br></p><div><p>el.src = url;</p></div><p><br><br><br></p><div><p>}</p></div><p><br><br><br></p><div><p>Object.assign(el.style, {</p></div><p><br><br><br></p><div><p>width: \"100%\",</p></div><p><br><br><br></p><div><p>height: \"100%\",</p></div><p><br><br><br></p><div><p>objectFit: \"contain\",</p></div><p><br><br><br></p><div><p>display: \"block\",</p></div><p><br><br><br></p><div><p>background: \"transparent\",</p></div><p><br><br><br></p><div><p>border: \"none\",</p></div><p><br><br><br></p><div><p>outline: \"none\",</p></div><p><br><br><br></p><div><p>boxShadow: \"none\",</p></div><p><br><br><br></p><div><p>});</p></div><p><br><br><br></p><div><p>wrap.appendChild(el);</p></div><p><br><br><br></p><div><p>document.body.appendChild(wrap);</p></div><p><br><br><br></p><div><p>domTrack(id);</p></div><p><br><br><br></p><div><p>void wrap.offsetHeight;</p></div><p><br><br><br></p><div><p>wrap.style.opacity = String(opacity);</p></div><p><br><br><br></p><div><p>return { id, wrap };</p></div><p><br><br><br></p><div><p>}</p></div><p><br><br><br></p><div><p>async function fadeOutAndRemoveFutureFrame(frame, fadeOutMs){</p></div><p><br><br><br></p><div><p>const { wrap, id } = frame;</p></div><p><br><br><br></p><div><p>wrap.style.transition = \"opacity \" + fadeOutMs + \"ms ease-in\";</p></div><p><br><br><br></p><div><p>wrap.style.opacity = \"0\";</p></div><p><br><br><br></p><div><p>await wait(fadeOutMs + 30);</p></div><p><br><br><br></p><div><p>domRemove(id);</p></div><p><br><br><br></p><div><p>}</p></div><p><br><br><br></p><div><p>// PIXI overlay helpers</p></div><p><br><br><br></p><div><p>async function createFullScreenPIXIOverlay({ color = 0x000000, z = 99990 } = {}){</p></div><p><br><br><br></p><div><p>const w = canvas.app.renderer.screen.width;</p></div><p><br><br><br></p><div><p>const h = canvas.app.renderer.screen.height;</p></div><p><br><br><br></p><div><p>const g = new PIXI.Graphics();</p></div><p><br><br><br></p><div><p>g.beginFill(color, 1);</p></div><p><br><br><br></p><div><p>g.drawRect(0, 0, w, h);</p></div><p><br><br><br></p><div><p>g.endFill();</p></div><p><br><br><br></p><div><p>g.x = 0; g.y = 0;</p></div><p><br><br><br></p><div><p>g.alpha = 0;</p></div><p><br><br><br></p><div><p>g.zIndex = Number(z);</p></div><p><br><br><br></p><div><p>canvas.stage.sortableChildren = true;</p></div><p><br><br><br></p><div><p>canvas.stage.addChild(g);</p></div><p><br><br><br></p><div><p>canvas.stage.sortChildren();</p></div><p><br><br><br></p><div><p>S.pixi.push(g);</p></div><p><br><br><br></p><div><p>return g;</p></div><p><br><br><br></p><div><p>}</p></div><p><br><br><br></p><div><p>async function createScreenBGSprite(bgUrl, z){</p></div><p><br></p><div><p>const tex = await loadTexture(bgUrl);</p></div><p><br></p><div><p>const w = canvas.app.renderer.screen.width;</p></div><p><br></p><div><p>const h = canvas.app.renderer.screen.height;</p></div><p><br><br><br></p><div><p>// Put the BG inside a centered container so scaling happens around the screen center</p></div><p><br></p><div><p>const c = new PIXI.Container();</p></div><p><br></p><div><p>c.x = w / 2;</p></div><p><br></p><div><p>c.y = h / 2;</p></div><p><br><br><br></p><div><p>const s = new PIXI.Sprite(tex);</p></div><p><br></p><div><p>s.anchor.set(0.5);</p></div><p><br></p><div><p>s.x = 0; s.y = 0;</p></div><p><br></p><div><p>s.width = w;</p></div><p><br></p><div><p>s.height = h;</p></div><p><br><br><br></p><div><p>c.addChild(s);</p></div><p><br></p><div><p>c.alpha = 1;</p></div><p><br></p><div><p>c.zIndex = Number(z);</p></div><p><br><br><br></p><div><p>canvas.stage.sortableChildren = true;</p></div><p><br></p><div><p>canvas.stage.addChild(c);</p></div><p><br></p><div><p>canvas.stage.sortChildren();</p></div><p><br><br><br></p><div><p>S.pixi.push(c);</p></div><p><br></p><div><p>return c;</p></div><p><br></p><div><p>}</p></div><p><br><br><br></p><div><p>function scalePIXI(obj, s){</p></div><p><br></p><div><p>try{ obj.scale.set(Number(s), Number(s)); } catch(_){}</p></div><p><br></p><div><p>}</p></div><p><br><br><br></p><div><p>function animateScalePIXI(obj, fromS, toS, durMs){</p></div><p><br></p><div><p>return new Promise(resolve =&gt; {</p></div><p><br></p><div><p>const start = performance.now();</p></div><p><br></p><div><p>const tick = () =&gt; {</p></div><p><br></p><div><p>const raw = (performance.now() - start) / Math.max(1, durMs);</p></div><p><br></p><div><p>const t = clamp(raw, 0, 1);</p></div><p><br></p><div><p>const e = easeInOutCubic(t);</p></div><p><br></p><div><p>const v = fromS + (toS - fromS) * e;</p></div><p><br></p><div><p>scalePIXI(obj, v);</p></div><p><br></p><div><p>if (t &gt;= 1) { canvas.app.ticker.remove(tick); resolve(); }</p></div><p><br></p><div><p>};</p></div><p><br></p><div><p>canvas.app.ticker.add(tick);</p></div><p><br></p><div><p>});</p></div><p><br></p><div><p>}</p></div><p><br></p><div><p>function cleanupPIXI(){</p></div><p><br><br><br></p><div><p>const items = (S.pixi ?? []).slice();</p></div><p><br><br><br></p><div><p>S.pixi = [];</p></div><p><br><br><br></p><div><p>for (const it of items){</p></div><p><br><br><br></p><div><p>try{ canvas.stage.removeChild(it); } catch(_){}</p></div><p><br><br><br></p><div><p>try{ it.destroy?.(); } catch(_){}</p></div><p><br><br><br></p><div><p>}</p></div><p><br><br><br></p><div><p>}</p></div><p><br><br><br></p><div><p>async function createDimmer(alphaTarget, fadeInMs){</p></div><p><br><br><br></p><div><p>const g = await createFullScreenPIXIOverlay({ color: 0x000000, z: 50 });</p></div><p><br><br><br></p><div><p>await fadeAlphaPIXI(g, 0, alphaTarget, fadeInMs);</p></div><p><br><br><br></p><div><p>return g;</p></div><p><br><br><br></p><div><p>}</p></div><p><br><br><br></p><div><p>function createZoomReveal(url, z){</p></div><p><br><br><br></p><div><p>const id = \"oni-milp-zoom-\" + Date.now() + \"-\" + Math.floor(Math.random()*100000);</p></div><p><br><br><br></p><div><p>const wrap = document.createElement(\"div\");</p></div><p><br><br><br></p><div><p>wrap.id = id;</p></div><p><br><br><br></p><div><p>Object.assign(wrap.style, {</p></div><p><br><br><br></p><div><p>position: \"fixed\",</p></div><p><br><br><br></p><div><p>left: \"50%\",</p></div><p><br><br><br></p><div><p>top: \"50%\",</p></div><p><br><br><br></p><div><p>width: \"160vw\",</p></div><p><br><br><br></p><div><p>height: \"160vh\",</p></div><p><br><br><br></p><div><p>transform: \"translate(-50%, -50%) scale(1)\",</p></div><p><br><br><br></p><div><p>transformOrigin: \"center center\",</p></div><p><br><br><br></p><div><p>zIndex: String(z),</p></div><p><br><br><br></p><div><p>pointerEvents: \"none\",</p></div><p><br><br><br></p><div><p>overflow: \"hidden\",</p></div><p><br><br><br></p><div><p>opacity: \"1\",</p></div><p><br><br><br></p><div><p>background: \"transparent\",</p></div><p><br><br><br></p><div><p>willChange: \"transform, opacity\",</p></div><p><br><br><br></p><div><p>});</p></div><p><br><br><br></p><div><p>const img = document.createElement(\"img\");</p></div><p><br><br><br></p><div><p>img.src = url;</p></div><p><br><br><br></p><div><p>Object.assign(img.style, {</p></div><p><br><br><br></p><div><p>width: \"100%\",</p></div><p><br><br><br></p><div><p>height: \"100%\",</p></div><p><br><br><br></p><div><p>objectFit: \"contain\",</p></div><p><br><br><br></p><div><p>display: \"block\",</p></div><p><br><br><br></p><div><p>border: \"none\",</p></div><p><br><br><br></p><div><p>outline: \"none\",</p></div><p><br><br><br></p><div><p>boxShadow: \"none\",</p></div><p><br><br><br></p><div><p>background: \"transparent\",</p></div><p><br><br><br></p><div><p>});</p></div><p><br><br><br></p><div><p>wrap.appendChild(img);</p></div><p><br><br><br></p><div><p>document.body.appendChild(wrap);</p></div><p><br><br><br></p><div><p>domTrack(id);</p></div><p><br><br><br></p><div><p>return { id, wrap };</p></div><p><br><br><br></p><div><p>}</p></div><p><br><br><br></p><div><p>function playOutroVfxHoldThenFade({</p></div><p><br><br><br></p><div><p>webmPath,</p></div><p><br><br><br></p><div><p>x,</p></div><p><br><br><br></p><div><p>y,</p></div><p><br><br><br></p><div><p>widthCss,</p></div><p><br><br><br></p><div><p>heightCss,</p></div><p><br><br><br></p><div><p>scaleMul,</p></div><p><br><br><br></p><div><p>opacity,</p></div><p><br><br><br></p><div><p>holdBeforeFadeMs,</p></div><p><br><br><br></p><div><p>fadeOutMs,</p></div><p><br><br><br></p><div><p>z</p></div><p><br><br><br></p><div><p>}){</p></div><p><br><br><br></p><div><p>const id = \"oni-milp-outroVfx-\" + Date.now() + \"-\" + Math.floor(Math.random()*100000);</p></div><p><br><br><br></p><div><p>const wrap = document.createElement(\"div\");</p></div><p><br><br><br></p><div><p>wrap.id = id;</p></div><p><br><br><br></p><div><p>Object.assign(wrap.style, {</p></div><p><br><br><br></p><div><p>position: \"fixed\",</p></div><p><br><br><br></p><div><p>left: x + \"px\",</p></div><p><br><br><br></p><div><p>top: y + \"px\",</p></div><p><br><br><br></p><div><p>width: widthCss,</p></div><p><br><br><br></p><div><p>height: heightCss,</p></div><p><br><br><br></p><div><p>transform: \"translate(-50%, -50%) scale(\" + Number(scaleMul || 1) + \")\",</p></div><p><br><br><br></p><div><p>transformOrigin: \"center center\",</p></div><p><br><br><br></p><div><p>zIndex: String(z),</p></div><p><br><br><br></p><div><p>pointerEvents: \"none\",</p></div><p><br><br><br></p><div><p>opacity: String(opacity ?? 1),</p></div><p><br><br><br></p><div><p>transition: \"opacity \" + fadeOutMs + \"ms ease-in\",</p></div><p><br><br><br></p><div><p>background: \"transparent\",</p></div><p><br><br><br></p><div><p>});</p></div><p><br><br><br></p><div><p>const vid = document.createElement(\"video\");</p></div><p><br><br><br></p><div><p>vid.src = webmPath;</p></div><p><br><br><br></p><div><p>vid.autoplay = true;</p></div><p><br><br><br></p><div><p>vid.loop = true;</p></div><p><br><br><br></p><div><p>vid.muted = true;</p></div><p><br><br><br></p><div><p>vid.playsInline = true;</p></div><p><br><br><br></p><div><p>Object.assign(vid.style, {</p></div><p><br><br><br></p><div><p>width: \"100%\",</p></div><p><br><br><br></p><div><p>height: \"100%\",</p></div><p><br><br><br></p><div><p>objectFit: \"contain\",</p></div><p><br><br><br></p><div><p>display: \"block\",</p></div><p><br><br><br></p><div><p>background: \"transparent\",</p></div><p><br><br><br></p><div><p>border: \"none\",</p></div><p><br><br><br></p><div><p>outline: \"none\",</p></div><p><br><br><br></p><div><p>boxShadow: \"none\",</p></div><p><br><br><br></p><div><p>});</p></div><p><br><br><br></p><div><p>wrap.appendChild(vid);</p></div><p><br><br><br></p><div><p>document.body.appendChild(wrap);</p></div><p><br><br><br></p><div><p>domTrack(id);</p></div><p><br><br><br></p><div><p>(async () =&gt; {</p></div><p><br><br><br></p><div><p>await wait(Math.max(0, holdBeforeFadeMs));</p></div><p><br><br><br></p><div><p>wrap.style.opacity = \"0\";</p></div><p><br><br><br></p><div><p>await wait(Math.max(0, fadeOutMs) + 40);</p></div><p><br><br><br></p><div><p>domRemove(id);</p></div><p><br><br><br></p><div><p>})();</p></div><p><br><br><br></p><div><p>return id;</p></div><p><br><br><br></p><div><p>}</p></div><p><br><br><br></p><div><p>function playSfx(url, vol=0.9){</p></div><p><br><br><br></p><div><p>try{</p></div><p><br><br><br></p><div><p>if (globalThis.Sequence &amp;&amp; url) new Sequence().sound().file(url).volume(vol).play();</p></div><p><br><br><br></p><div><p>}catch(e){ warn(\"SFX failed\", e); }</p></div><p><br><br><br></p><div><p>}</p></div><p><br><br><br></p><div><p>function buildDynamicFuturePool(){</p></div><p><br><br><br></p><div><p>const out = [];</p></div><p><br><br><br></p><div><p>const seen = new Set();</p></div><p><br><br><br></p><div><p>const add = (u) =&gt; {</p></div><p><br><br><br></p><div><p>if (!u || typeof u !== \"string\") return;</p></div><p><br><br><br></p><div><p>const url = u.trim();</p></div><p><br><br><br></p><div><p>if (!url) return;</p></div><p><br><br><br></p><div><p>if (seen.has(url)) return;</p></div><p><br><br><br></p><div><p>seen.add(url);</p></div><p><br><br><br></p><div><p>out.push(url);</p></div><p><br><br><br></p><div><p>};</p></div><p><br><br><br></p><div><p>const tokens = canvas?.tokens?.placeables ?? [];</p></div><p><br><br><br></p><div><p>for (const tok of tokens){</p></div><p><br><br><br></p><div><p>const doc = tok?.document;</p></div><p><br><br><br></p><div><p>if (!doc) continue;</p></div><p><br><br><br></p><div><p>if (doc.hidden) continue;</p></div><p><br><br><br></p><div><p>add(doc.texture?.src);</p></div><p><br><br><br></p><div><p>const a = tok.actor;</p></div><p><br><br><br></p><div><p>add(a?.system?.props?.sprite_standard);</p></div><p><br><br><br></p><div><p>add(a?.system?.props?.sprite_battle);</p></div><p><br><br><br></p><div><p>}</p></div><p><br><br><br></p><div><p>if (!out.length &amp;&amp; ctx?.casterToken?.document?.texture?.src) {</p></div><p><br><br><br></p><div><p>add(ctx.casterToken.document.texture.src);</p></div><p><br><br><br></p><div><p>}</p></div><p><br><br><br></p><div><p>log(\"Dynamic future pool built:\", { size: out.length, preview: out.slice(0, 8) });</p></div><p><br><br><br></p><div><p>return out;</p></div><p><br><br><br></p><div><p>}</p></div><p><br><br><br></p><div><p>// ------------------------------------------------------------</p></div><p><br><br><br></p><div><p>// Resolve caster token</p></div><p><br><br><br></p><div><p>// ------------------------------------------------------------</p></div><p><br><br><br></p><div><p>const casterToken = ctx.casterToken;</p></div><p><br><br><br></p><div><p>if (!casterToken) throw new Error(\"Missing ctx.casterToken\");</p></div><p><br><br><br></p><div><p>// ======================================================================</p></div><p><br><br><br></p><div><p>// Intro</p></div><p><br><br><br></p><div><p>// (UPDATED ORDER)</p></div><p><br><br><br></p><div><p>// - Dimmer</p></div><p><br><br><br></p><div><p>// - Overdrive SFX + Cut-in (finish fully)</p></div><p><br><br><br></p><div><p>// - Then: start camera pan/zoom AND trigger blackout MID-pan (no waiting)</p></div><p><br><br><br></p><div><p>// ======================================================================</p></div><p><br><br><br></p><div><p>log(\"=== Intro START ===\");</p></div><p><br><br><br></p><div><p>const dimmer = await createDimmer(Number(ctx.params.dimAlpha), Number(ctx.params.dimFadeInMs));</p></div><p><br><br><br></p><div><p>S.keep.dimmer = dimmer;</p></div><p><br><br><br></p><div><p>// Cut-in FIRST</p></div><p><br><br><br></p><div><p>playSfx(String(ctx.params.overdriveSfx), 0.9);</p></div><p><br><br><br></p><div><p>const cutin = createCutin({</p></div><p><br><br><br></p><div><p>url: String(ctx.params.cutinUrl),</p></div><p><br><br><br></p><div><p>slideInMs: Number(ctx.params.cutinSlideInMs),</p></div><p><br><br><br></p><div><p>holdMs: Number(ctx.params.cutinHoldMs),</p></div><p><br><br><br></p><div><p>slideOutMs: Number(ctx.params.cutinSlideOutMs),</p></div><p><br><br><br></p><div><p>zIndex: Number(ctx.params.cutinZ),</p></div><p><br><br><br></p><div><p>});</p></div><p><br><br><br></p><div><p>await runCutin(cutin);</p></div><p><br><br><br></p><div><p>// Now start pan/zoom (do NOT await)</p></div><p><br><br><br></p><div><p>const panPromise = panToToken(casterToken, Number(ctx.params.camPanMs), Number(ctx.params.camScale))</p></div><p><br><br><br></p><div><p>.catch(e =&gt; warn(\"Pan promise error\", e));</p></div><p><br><br><br></p><div><p>// Wait a bit so blackout happens mid-zoom</p></div><p><br><br><br></p><div><p>await wait(Number(ctx.params.blackoutStartDelayMs));</p></div><p><br><br><br></p><div><p>log(\"=== Intro END ===\");</p></div><p><br><br><br></p><div><p>// ======================================================================</p></div><p><br><br><br></p><div><p>// Blackout transition (UPDATED: starts while pan might still be running)</p></div><p><br><br><br></p><div><p>// ======================================================================</p></div><p><br><br><br></p><div><p>log(\"=== Blackout Transition START ===\");</p></div><p><br><br><br></p><div><p>const black = await createFullScreenPIXIOverlay({ color: 0x000000, z: 99990 });</p></div><p><br><br><br></p><div><p>S.keep.black = black;</p></div><p><br><br><br></p><div><p>// Fade to full black NOW (mid-pan)</p></div><p><br><br><br></p><div><p>await fadeAlphaPIXI(black, 0, 1, Number(ctx.params.blackoutFadeInMs));</p></div><p><br><br><br></p><div><p>// Once fully black, we can safely restore camera (this will override remaining pan)</p></div><p><br><br><br></p><div><p>await restoreCamera(ctx.params.priorView, 650);</p></div><p><br><br><br></p><div><p>// Fade out dimmer while black</p></div><p><br><br><br></p><div><p>if (S.keep.dimmer) await fadeAlphaPIXI(S.keep.dimmer, Number(S.keep.dimmer.alpha ?? 0), 0, 220);</p></div><p><br><br><br></p><div><p>await wait(Number(ctx.params.blackoutHoldMs));</p></div><p><br><br><br></p><div><p>// Background under black</p></div><p><br><br><br></p><div><p>const bg = await createScreenBGSprite(String(ctx.params.bgUrl), 100);</p></div><p><br><br><br></p><div><p>S.keep.bg = bg;</p></div><p><br><br><br></p><div><p>// Reveal scene by fading black away</p></div><p><br><br><br></p><div><p>await fadeAlphaPIXI(black, 1, 0, Number(ctx.params.revealFadeOutMs));</p></div><p><br><br><br></p><div><p>// (optional) ensure pan promise won't throw later</p></div><p><br><br><br></p><div><p>await panPromise;</p></div><p><br><br><br></p><div><p>log(\"=== Blackout Transition END ===\");</p></div><p><br><br><br></p><div><p>// ======================================================================</p></div><p><br><br><br></p><div><p>// Parallel Future</p></div><p><br><br><br></p><div><p>// ======================================================================</p></div><p><br><br><br></p><div><p>log(\"=== Parallel Future START ===\");</p></div><p><br><br><br></p><div><p>// pollen at start</p></div><p><br><br><br></p><div><p>playSfx(String(ctx.params.pollenSfx), 0.9);</p></div><p><br><br><br></p><div><p>const totalMs = Number(ctx.params.futureTotalMs);</p></div><p><br><br><br></p><div><p>const spawnEvery = Number(ctx.params.futureSpawnEveryMs);</p></div><p><br><br><br></p><div><p>const lingerMs = Number(ctx.params.futureLingerMs);</p></div><p><br><br><br></p><div><p>const fadeOutMs = Number(ctx.params.futureFadeOutMs);</p></div><p><br><br><br></p><div><p>const opacity = Number(ctx.params.futureOpacity);</p></div><p><br><br><br></p><div><p>const pool = buildDynamicFuturePool();</p></div><p><br><br><br></p><div><p>if (!pool.length) {</p></div><p><br><br><br></p><div><p>warn(\"Dynamic pool is empty; skipping Parallel Future frames.\");</p></div><p><br><br><br></p><div><p>} else {</p></div><p><br><br><br></p><div><p>const tStart = performance.now();</p></div><p><br><br><br></p><div><p>while ((performance.now() - tStart) &lt; totalMs) {</p></div><p><br><br><br></p><div><p>const url = pick(pool);</p></div><p><br><br><br></p><div><p>const f = spawnFutureFrame(url, { opacity, z: 99970 });</p></div><p><br><br><br></p><div><p>(async () =&gt; {</p></div><p><br><br><br></p><div><p>await wait(lingerMs);</p></div><p><br><br><br></p><div><p>await fadeOutAndRemoveFutureFrame(f, fadeOutMs);</p></div><p><br><br><br></p><div><p>})();</p></div><p><br><br><br></p><div><p>await wait(spawnEvery);</p></div><p><br><br><br></p><div><p>}</p></div><p><br><br><br></p><div><p>await wait(Math.max(0, lingerMs - spawnEvery));</p></div><p><br><br><br></p><div><p>}</p></div><p><br><br><br></p><div><p>log(\"=== Parallel Future END ===\");</p></div><p><br><br><br></p><div><p>// ======================================================================</p></div><p><br><br><br></p><div><p>// Outro</p></div><p><br><br><br></p><div><p>// ======================================================================</p></div><p><br><br><br></p><div><p>log(\"=== Outro START ===\");</p></div><p><br><br><br></p><div><p>// Zoom portrait</p></div><p><br><br><br></p><div><p>// NEW: \"Crystal Orb\" reveal — overlay_bg shrinks away to reveal the cut-in image underneath</p></div><p><br><br><br></p><div><p>// 1) Create a solid black background behind everything (so we never reveal the real scene)</p></div><p><br></p><div><p>const orbBlackId = \"oni-milp-orbBlack-\" + Date.now() + \"-\" + Math.floor(Math.random()*100000);</p></div><p><br></p><div><p>createFullScreenDiv({</p></div><p><br></p><div><p>&nbsp; id: orbBlackId,</p></div><p><br></p><div><p>&nbsp; bg: \"black\",</p></div><p><br></p><div><p>&nbsp; z: 99982,</p></div><p><br></p><div><p>&nbsp; opacity: 1,</p></div><p><br></p><div><p>&nbsp; transition: \"opacity 0ms linear\",</p></div><p><br></p><div><p>});</p></div><p><br></p><div><p>S.keep.orbBlackId = orbBlackId;</p></div><p><br><br><br></p><div><p>// 2) Create the cut-in image (scale-in animation returns)</p></div><div><p>// - Starts BIG and scales down into the current final size/position</p></div><div><p>// - Runs at the SAME TIME as the overlay_bg shrink reveal</p></div><p><br></p><div><p>const zoomZ = 99985;</p></div><div><p>const zoom = createZoomReveal(String(ctx.params.zoomUrl), zoomZ);</p></div><div><p>S.keep.zoomId = zoom.id;</p></div><p><br></p><div><p>const offXEnd = Number(ctx.params.zoomOffsetX ?? 0);</p></div><div><p>const offYEnd = Number(ctx.params.zoomOffsetY ?? 0);</p></div><div><p>const offXStart = Number(ctx.params.zoomStartOffsetX ?? offXEnd);</p></div><div><p>const offYStart = Number(ctx.params.zoomStartOffsetY ?? offYEnd);</p></div><div><p>const mul &nbsp;= Number(ctx.params.zoomImgScaleMul ?? 1);</p></div><p><br></p><div><p>const startS = Number(ctx.params.zoomStartScale) * mul;</p></div><div><p>const endS &nbsp; = Number(ctx.params.zoomEndScale) * mul;</p></div><p><br></p><div><p>const trStart = (s) =&gt;</p></div><div><p>&nbsp; \"translate(calc(-50% + \" + offXStart + \"px), calc(-50% + \" + offYStart + \"px)) scale(\" + s + \")\";</p></div><div><p>const trEnd = (s) =&gt;</p></div><div><p>&nbsp; \"translate(calc(-50% + \" + offXEnd + \"px), calc(-50% + \" + offYEnd + \"px)) scale(\" + s + \")\";</p></div><p><br></p><div><p>// Duration shared with overlay shrink</p></div><div><p>const shrinkX &nbsp;= Number(ctx.params.overlayBgShrinkOffsetX ?? 0);</p></div><div><p>const shrinkY &nbsp;= Number(ctx.params.overlayBgShrinkOffsetY ?? 0);</p></div><div><p>const shrinkMs = Number(ctx.params.overlayBgShrinkMs ?? 0) || Number(ctx.params.zoomDownMs);</p></div><p><br></p><div><p>// Set initial states (no animation), then trigger both animations together</p></div><div><p>zoom.wrap.style.transition = \"none\";</p></div><div><p>zoom.wrap.style.transform = trStart(startS);</p></div><p><br></p><div><p>// 3) Create overlay_bg ABOVE the cut-in, then shrink it down until it disappears</p></div><div><p>const overlayZ = 99986;</p></div><div><p>const overlay = createZoomReveal(String(ctx.params.bgUrl), overlayZ);</p></div><div><p>S.keep.overlayBgId = overlay.id;</p></div><p><br></p><div><p>// Overlay starts fullscreen (scale 1 around center)</p></div><div><p>overlay.wrap.style.transition = \"none\";</p></div><div><p>overlay.wrap.style.transform = \"translate(-50%, -50%) scale(1)\";</p></div><div><p>overlay.wrap.style.opacity = \"1\";</p></div><p><br></p><div><p>// Force layout so transitions apply properly on next write</p></div><div><p>void overlay.wrap.offsetHeight;</p></div><p><br></p><div><p>// Trigger BOTH animations at the same time</p></div><div><p>zoom.wrap.style.transition = \"transform \" + shrinkMs + \"ms ease-in-out\";</p></div><div><p>zoom.wrap.style.transform = trEnd(endS);</p></div><p><br></p><div><p>overlay.wrap.style.transition =</p></div><div><p>&nbsp; \"transform \" + shrinkMs + \"ms ease-in-out, opacity \" + Math.max(1, Math.floor(shrinkMs * 0.8)) + \"ms ease-in-out\";</p></div><div><p>overlay.wrap.style.transform =</p></div><div><p>&nbsp; \"translate(calc(-50% + \" + shrinkX + \"px), calc(-50% + \" + shrinkY + \"px)) scale(0)\";</p></div><div><p>overlay.wrap.style.opacity = \"0\";</p></div><p><br></p><div><p>// Wait for overlay to finish shrinking, then remove it (reveals the cut-in)</p></div><p><br></p><div><p>await wait(shrinkMs + 40);</p></div><p><br></p><div><p>domRemove(overlay.id);</p></div><p><br><br><br></p><div><p>// Metal shing right when the reveal happens</p></div><p><br></p><div><p>playSfx(String(ctx.params.metalShingSfx), 0.95);</p></div><p><br><br><br></p><div><p>await wait(Number(ctx.params.zoomHoldMs));</p></div><p><br><br><br></p><div><p>// WHITEOUT (DOM, absolute top)</p></div><p><br><br><br></p><div><p>const whiteId = \"oni-milp-whiteout-\" + Date.now() + \"-\" + Math.floor(Math.random()*100000);</p></div><p><br><br><br></p><div><p>const white = createFullScreenDiv({</p></div><p><br><br><br></p><div><p>id: whiteId,</p></div><p><br><br><br></p><div><p>bg: \"white\",</p></div><p><br><br><br></p><div><p>z: Number(ctx.params.whiteDomZ),</p></div><p><br><br><br></p><div><p>opacity: 0,</p></div><p><br><br><br></p><div><p>transition: \"opacity \" + Number(ctx.params.whiteFadeInMs) + \"ms ease-in-out\",</p></div><p><br><br><br></p><div><p>});</p></div><p><br><br><br></p><div><p>await fadeDomOpacity(white, 0, 1, Number(ctx.params.whiteFadeInMs));</p></div><p><br><br><br></p><div><p>// cleanup under full white</p></div><p><br><br><br></p><div><p>try{</p></div><p><br><br><br></p><div><p>domRemove(S.keep.zoomId);</p></div><p><br><br><br></p><div><p>domCleanupAll();</p></div><p><br><br><br></p><div><p>cleanupPIXI();</p></div><p><br><br><br></p><div><p>} catch(e){</p></div><p><br><br><br></p><div><p>warn(\"Cleanup during whiteout error\", e);</p></div><p><br><br><br></p><div><p>}</p></div><p><br><br><br></p><div><p>// fade out white</p></div><p><br><br><br></p><div><p>white.style.transition = \"opacity \" + Number(ctx.params.whiteFadeOutMs) + \"ms ease-in-out\";</p></div><p><br><br><br></p><div><p>white.style.opacity = \"0\";</p></div><p><br><br><br></p><div><p>await wait(Number(ctx.params.whiteFadeOutMs) + 30);</p></div><p><br><br><br></p><div><p>domRemove(whiteId);</p></div><p><br><br><br></p><div><p>// Outro VFX + sfx</p></div><p><br><br><br></p><div><p>playSfx(String(ctx.params.outroSfx), 0.9);</p></div><p><br><br><br></p><div><p>playOutroVfxHoldThenFade({</p></div><p><br><br><br></p><div><p>webmPath: String(ctx.params.outroVfx),</p></div><p><br><br><br></p><div><p>x: Number(ctx.params.outroX),</p></div><p><br><br><br></p><div><p>y: Number(ctx.params.outroY),</p></div><p><br><br><br></p><div><p>widthCss: String(ctx.params.outroWidthCss),</p></div><p><br><br><br></p><div><p>heightCss: String(ctx.params.outroHeightCss),</p></div><p><br><br><br></p><div><p>scaleMul: Number(ctx.params.outroVfxScaleMultiplier),</p></div><p><br><br><br></p><div><p>opacity: Number(ctx.params.outroVfxOpacity),</p></div><p><br><br><br></p><div><p>holdBeforeFadeMs: Number(ctx.params.outroHoldBeforeFadeMs),</p></div><p><br><br><br></p><div><p>fadeOutMs: Number(ctx.params.outroFadeOutMs),</p></div><p><br><br><br></p><div><p>z: 99980</p></div><p><br><br><br></p><div><p>});</p></div><p><br><br><br></p><div><p>await wait(Number(ctx.params.outroHoldBeforeFadeMs) + Number(ctx.params.outroFadeOutMs) + 120);</p></div><p><br><br><br></p><div><p>log(\"=== Outro END ===\");</p></div><p><br><br><br></p><div><p>log(\"MASTER DONE\");</p></div><p><br><br><br></p><div><p>return true;</p></div><p><br><br><br></p><div><p>`;</p></div><p><br><br><br></p><div><p>await (</p></div><p><br><br><br></p><div><p>game.ONI?.pseudo?.play?.({</p></div><p><br><br><br></p><div><p>scriptId: \"oni.hina.millionPossibility.master\",</p></div><p><br><br><br></p><div><p>scriptSource: pseudoMaster,</p></div><p><br><br><br></p><div><p>casterTokenUuid: caster.document.uuid,</p></div><p><br><br><br></p><div><p>params: {</p></div><p><br><br><br></p><div><p>// Intro</p></div><p><br><br><br></p><div><p>dimFadeInMs: T.dimFadeInMs,</p></div><p><br><br><br></p><div><p>dimAlpha: T.dimAlpha,</p></div><p><br><br><br></p><div><p>camPanMs: T.camPanMs,</p></div><p><br><br><br></p><div><p>camScale: T.camScale,</p></div><p><br><br><br></p><div><p>// NEW</p></div><p><br><br><br></p><div><p>blackoutStartDelayMs: T.blackoutStartDelayMs,</p></div><p><br><br><br></p><div><p>cutinUrl: CUTIN_URL,</p></div><p><br><br><br></p><div><p>overdriveSfx: OVERDRIVE_SFX,</p></div><p><br><br><br></p><div><p>cutinSlideInMs: T.cutinSlideInMs,</p></div><p><br><br><br></p><div><p>cutinHoldMs: T.cutinHoldMs,</p></div><p><br><br><br></p><div><p>cutinSlideOutMs: T.cutinSlideOutMs,</p></div><p><br><br><br></p><div><p>cutinZ: T.cutinZ,</p></div><p><br><br><br></p><div><p>// Blackout / BG</p></div><p><br><br><br></p><div><p>blackoutFadeInMs: T.blackoutFadeInMs,</p></div><p><br><br><br></p><div><p>blackoutHoldMs: T.blackoutHoldMs,</p></div><p><br><br><br></p><div><p>revealFadeOutMs: T.revealFadeOutMs,</p></div><p><br><br><br></p><div><p>bgUrl: BG_URL,</p></div><p><br><br><br></p><div><p>// Camera snapshot</p></div><p><br><br><br></p><div><p>priorView,</p></div><p><br><br><br></p><div><p>// Parallel Future</p></div><p><br><br><br></p><div><p>futureTotalMs: T.futureTotalMs,</p></div><p><br><br><br></p><div><p>futureSpawnEveryMs: T.futureSpawnEveryMs,</p></div><p><br><br><br></p><div><p>futureLingerMs: T.futureLingerMs,</p></div><p><br><br><br></p><div><p>futureFadeOutMs: T.futureFadeOutMs,</p></div><p><br><br><br></p><div><p>futureOpacity: T.futureOpacity,</p></div><p><br><br><br></p><div><p>pollenSfx: POLLEN_SFX,</p></div><p><br><br><br></p><div><p>// Zoom-out</p></div><p><br><br><br></p><div><p>zoomUrl: FUTURE_CUTIN_URL,</p></div><p><br><br><br></p><div><p>zoomStartScale: T.zoomStartScale,</p></div><p><br><br><br></p><div><p>zoomEndScale: T.zoomEndScale,</p></div><p><br><br><br></p><div><p>zoomDownMs: T.zoomDownMs,</p></div><p><br><br><br></p><div><p>zoomHoldMs: T.zoomHoldMs,</p></div><p><br><br><br></p><div><p>zoomImgScaleMul: T.zoomImgScaleMul,</p></div><p><br><br><br></p><div><p>zoomOffsetX: T.zoomOffsetX,</p></div><p><br><br><br></p><div><p>zoomOffsetY: T.zoomOffsetY,</p></div><p><br></p><div><p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; // NEW: outro cut-in START position offset</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; zoomStartOffsetX: T.zoomStartOffsetX,</p></div><div><p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; zoomStartOffsetY: T.zoomStartOffsetY,</p></div><p><br><br><br></p><div><p>// NEW: overlay BG scale sync with zoom cut-in</p></div><p><br></p><div><p>overlayBgZoomStartScale: T.overlayBgZoomStartScale,</p></div><p><br></p><div><p>overlayBgZoomEndScale: T.overlayBgZoomEndScale,</p></div><p><br><br><br></p><div><p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; // NEW: overlay BG shrink-to-point reveal</p></div><p><br></p><div><p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; overlayBgShrinkOffsetX: T.overlayBgShrinkOffsetX,</p></div><p><br></p><div><p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; overlayBgShrinkOffsetY: T.overlayBgShrinkOffsetY,</p></div><p><br></p><div><p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; overlayBgShrinkMs: T.overlayBgShrinkMs,</p></div><p><br><br><br></p><div><p>metalShingSfx: METAL_SHING_SFX,</p></div><p><br><br><br></p><div><p>// Whiteout</p></div><p><br><br><br></p><div><p>whiteFadeInMs: T.whiteFadeInMs,</p></div><p><br><br><br></p><div><p>whiteFadeOutMs: T.whiteFadeOutMs,</p></div><p><br><br><br></p><div><p>whiteDomZ: T.whiteDomZ,</p></div><p><br><br><br></p><div><p>// Outro</p></div><p><br><br><br></p><div><p>outroVfx: OUTRO_VFX_WEBM,</p></div><p><br><br><br></p><div><p>outroSfx: OUTRO_SFX,</p></div><p><br><br><br></p><div><p>outroX: T.outroX,</p></div><p><br><br><br></p><div><p>outroY: T.outroY,</p></div><p><br><br><br></p><div><p>outroWidthCss: T.outroWidthCss,</p></div><p><br><br><br></p><div><p>outroHeightCss: T.outroHeightCss,</p></div><p><br><br><br></p><div><p>outroVfxScaleMultiplier: T.outroVfxScaleMultiplier,</p></div><p><br><br><br></p><div><p>outroVfxOpacity: T.outroVfxOpacity,</p></div><p><br><br><br></p><div><p>outroHoldBeforeFadeMs: T.outroHoldBeforeFadeMs,</p></div><p><br><br><br></p><div><p>outroFadeOutMs: T.outroFadeOutMs,</p></div><p><br><br><br></p><div><p>},</p></div><p><br><br><br></p><div><p>meta: { source: \"HinaMillionPossibility\" },</p></div><p><br><br><br></p><div><p>}) ?? Promise.resolve()</p></div><p><br><br><br></p><div><p>);</p></div><p><br><br><br></p><div><p>ONI.emit(</p></div><p><br><br><br></p><div><p>\"oni:animationEnd\",</p></div><p><br><br><br></p><div><p>{</p></div><p><br><br><br></p><div><p>type: \"zeroPower.hina.millionPossibility\",</p></div><p><br><br><br></p><div><p>sourceTokenId: caster.id,</p></div><p><br><br><br></p><div><p>targetTokenIds: [],</p></div><p><br><br><br></p><div><p>sceneId: canvas.scene?.id ?? null,</p></div><p><br><br><br></p><div><p>timestamp: Date.now(),</p></div><p><br><br><br></p><div><p>},</p></div><p><br><br><br></p><div><p>{ local: true, world: false }</p></div><p><br><br><br></p><div><p>);</p></div><p><br><br><br></p><div><p>if (DBG) console.log(TAG, \"END (success)\");</p></div><p><br><br><br></p><div><p>} catch (err) {</p></div><p><br><br><br></p><div><p>console.error(TAG, \"Animation crashed:\", err);</p></div><p><br><br><br></p><div><p>try {</p></div><p><br><br><br></p><div><p>globalThis.ONI?.emit?.(</p></div><p><br><br><br></p><div><p>\"oni:animationEnd\",</p></div><p><br><br><br></p><div><p>{ type: \"zeroPower.hina.millionPossibility\", error: true, timestamp: Date.now() },</p></div><p><br><br><br></p><div><p>{ local: true, world: false }</p></div><p><br><br><br></p><div><p>);</p></div><p><br><br><br></p><div><p>} catch (_) {}</p></div><p><br><br><br></p><div><p>ui.notifications.error(\"Hina: A Million Possibility animation crashed. Check console for details.\");</p></div><p><br><br><br></p><div><p>}</p></div><p><br><br><br></p><div><p>})();</p></div><p></p></div>",
         "ignore_hr": false,
@@ -12946,7 +14506,18 @@
         "id": "oe3OP8VmjHJpWJ41",
         "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Add/DissemblerSkill9.png",
         "details_roller": "Show",
-        "reaction_effect_table": {}
+        "reaction_effect_table": {},
+        "on_activate_effect_ref": "million_opp",
+        "effect_table": {
+          "0": {
+            "$deleted": false,
+            "effect_kind": "trigger_opportunity",
+            "effect_label": "million_opp",
+            "count": "3",
+            "distinct": true,
+            "opportunity_title": "A Million Possibility"
+          }
+        }
       },
       "unique": false,
       "uniqueId": "WjrBIzz4zJvO4C4k"
@@ -13007,13 +14578,23 @@
         "animation_damage_timing_options": "default",
         "animation_damage_timing_offset": "0",
         "description": "<p>When Hina change the outcome of check (fail&gt; success or success&gt;fail), she gain 1 zero trigger.</p>",
+        "reaction_config_table": {
+          "0": {
+            "$deleted": false,
+            "reaction_trigger": "creature_check_adjusted",
+            "reaction_source": "all",
+            "reaction_passive_mode": "on",
+            "reaction_effect_ref": "ZP on Flip",
+            "condition_formula": "CHECK_ADJUSTED_BY_ME == 1 && CHECK_RESULT_CHANGED == 1"
+          }
+        },
         "effect_table": {
           "0": {
             "$deleted": false,
             "effect_kind": "grant",
             "effect_label": "ZP on Flip",
-            "grant_resource": "zero_power",
             "grant_amount": "1",
+            "grant_resource": "zero_power",
             "target_ref": "ztf_self"
           },
           "1": {
@@ -13022,26 +14603,12 @@
             "effect_label": "ztf_self",
             "candidate_source": "self",
             "category": "",
-            "mode": "exact",
             "count": 1,
             "exclude_self": false,
-            "auto_confirm_when_obvious": true,
+            "iteration_mode": "together",
+            "mode": "exact",
             "skip_when_passive": true,
-            "iteration_mode": "together"
-          }
-        },
-        "reaction_config_table": {
-          "0": {
-            "$deleted": false,
-            "reaction_trigger": "creature_check_outcome_flipped",
-            "reaction_source": "self",
-            "reaction_damage_type": "",
-            "reaction_damage_amount": "",
-            "reaction_debuff_count_target": "",
-            "reaction_debuff_count_min": "",
-            "reaction_effect_ref": "ZP on Flip",
-            "reaction_passive_target": "self",
-            "reaction_passive_mode": "ask"
+            "auto_confirm_when_obvious": true
           }
         }
       },
