@@ -1204,12 +1204,12 @@
       "action_pattern_table": {
         "0": {
           "$deleted": false,
-          "action_pattern_condition": "always",
+          "action_pattern_condition": "creature_has_status",
           "action_pattern_cooldown": "0",
           "action_pattern_name": "Enkindle",
           "action_pattern_priority": "6",
           "action_pattern_string": "Burn",
-          "action_pattern_target_focus": "auto",
+          "action_pattern_target_focus": "burn_spread",
           "action_pattern_value_1": "0",
           "action_pattern_value_2": "0"
         },

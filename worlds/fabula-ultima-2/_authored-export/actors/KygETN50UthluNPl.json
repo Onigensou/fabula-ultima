@@ -1309,7 +1309,74 @@
   "system": {
     "activeConditionalModifierGroups": [],
     "props": {
-      "action_pattern_table": {},
+      "action_pattern_table": {
+        "0": {
+          "$deleted": false,
+          "action_pattern_condition": "zero_power",
+          "action_pattern_cooldown": "0",
+          "action_pattern_name": "Zero Power: Meteor Impact",
+          "action_pattern_priority": "20",
+          "action_pattern_string": "",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "100",
+          "action_pattern_value_2": "100"
+        },
+        "1": {
+          "$deleted": false,
+          "action_pattern_condition": "round",
+          "action_pattern_cooldown": "1",
+          "action_pattern_name": "Flamethrower",
+          "action_pattern_priority": "8",
+          "action_pattern_string": "",
+          "action_pattern_target_focus": "by_affinity",
+          "action_pattern_value_1": "2",
+          "action_pattern_value_2": "1"
+        },
+        "2": {
+          "$deleted": false,
+          "action_pattern_condition": "round",
+          "action_pattern_cooldown": "0",
+          "action_pattern_name": "Diving Blaze Kick",
+          "action_pattern_priority": "7",
+          "action_pattern_string": "",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "2",
+          "action_pattern_value_2": "1"
+        },
+        "3": {
+          "$deleted": false,
+          "action_pattern_condition": "always",
+          "action_pattern_cooldown": "0",
+          "action_pattern_name": "Spitblaze",
+          "action_pattern_priority": "6",
+          "action_pattern_string": "",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "0"
+        },
+        "4": {
+          "$deleted": false,
+          "action_pattern_condition": "always",
+          "action_pattern_cooldown": "0",
+          "action_pattern_name": "Flame Claw",
+          "action_pattern_priority": "5",
+          "action_pattern_string": "",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "0"
+        },
+        "5": {
+          "$deleted": false,
+          "action_pattern_condition": "hp",
+          "action_pattern_cooldown": "2",
+          "action_pattern_name": "Overblaze",
+          "action_pattern_priority": "9",
+          "action_pattern_string": "",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "40"
+        }
+      },
       "activation": "2",
       "affinity_1": "NA",
       "affinity_2": "NA",

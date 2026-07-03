@@ -3086,7 +3086,7 @@
         "id": "kBVCZiHd3Y8Fd7VH",
         "name": "Arc Wand",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "36xO7InIbrbVP2Kx",
@@ -6355,6 +6355,12 @@
       {
         "id": "IYIFDBNpDiCiPeMl",
         "name": "Glacies Alta",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "YDxWAJAtZKlH5Xo7",
+        "name": "Glacies Finis",
         "type": "equippableItem",
         "effects": 0
       },
@@ -16087,6 +16093,10 @@
             "name": "Enchanted Delayed Blast Remote"
           },
           {
+            "id": "mOhAyd6CoAqe7YP5",
+            "name": "Glacies Finis"
+          },
+          {
             "id": "9NaO4mJKNZjA0Uo4",
             "name": "Glowstick"
           },
@@ -17641,14 +17651,6 @@
           {
             "id": "bsG2aZEMX2Glb3pI",
             "name": "Dragontrap Bow"
-          },
-          {
-            "id": "eSIh2SB8tc4Ux4vz",
-            "name": "Dragontrap Bow"
-          },
-          {
-            "id": "52LOaEsbEpFYhbru",
-            "name": "Dragontrap Bow (Passive)"
           },
           {
             "id": "emTXtdbsz6owxFeI",
