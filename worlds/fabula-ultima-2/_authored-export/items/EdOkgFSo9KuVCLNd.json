@@ -36,7 +36,6 @@
       "description": "<ul><li><p>Target creature <strong>recovers 30 HP</strong></p></li></ul>",
       "duration": "-",
       "heroic_requirement": "",
-      "ip_cost": "1",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,
@@ -60,7 +59,7 @@
       "use_optional_params": false
     },
     "template": "j0F5Msw5RZ8aIB3j",
-    "templateSystemUniqueVersion": 1293947472,
+    "templateSystemUniqueVersion": 2666163373,
     "unique": false,
     "uniqueId": "EdOkgFSo9KuVCLNd"
   },

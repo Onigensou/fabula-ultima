@@ -44,6 +44,30 @@ export const DOMINANCE_GAIN_SFX_URL =
 const _crests = new Map(); // tokenId -> { el, gems: HTMLElement[], lastCharges, missingFrames }
 let _tickerOn = false;
 let _hooksOn = false;
+let _socket = null;
+// Cinematic hide (ANIMATION state). Defaults visible on every fresh module
+// load, so a mid-animation F5 can never strand hidden crests.
+let _hiddenByAnimation = false;
+
+const ACTION_CREST_VIS = "FU_DOMINANCE_CREST_VIS";
+
+// Local apply — runs on every client (socket handler + GM local call).
+export function setCrestsHiddenLocal(hidden) {
+  _hiddenByAnimation = !!hidden;
+  for (const rec of _crests.values()) {
+    try { rec.el.classList.toggle("is-anim-hidden", _hiddenByAnimation); } catch {}
+  }
+}
+
+// GM-side emit — hide/show the crests on ALL clients while an action
+// animation plays. Called from the FSM's ANIMATION state (director-owning GM
+// only, so dual-GM setups never double-fire).
+export function emitCrestsHidden(hidden) {
+  try { setCrestsHiddenLocal(hidden); }
+  catch (e) { warn("emitCrestsHidden: local apply threw", e); }
+  try { _socket?.executeForOthers?.(ACTION_CREST_VIS, !!hidden); }
+  catch (e) { warn("emitCrestsHidden: broadcast failed", e); }
+}
 
 function ensureStyles() {
   if (document.getElementById(STYLE_ID)) return;
@@ -53,7 +77,13 @@ function ensureStyles() {
   transform: translate(-50%, -100%);
   z-index: ${CREST_Z_INDEX}; pointer-events: none;
   filter: drop-shadow(0 2px 3px rgba(0,0,0,.55));
+  transition: opacity .3s ease;
 }
+/* JRPG cinematic etiquette — crests fade out while an action animation plays
+   (FSM ANIMATION state, broadcast to every client) so they never obstruct the
+   cinematic. !important beats the per-frame inline opacity the tracker writes;
+   position tracking keeps running so the crest fades back in exactly in place. */
+.fud-dom-crest.is-anim-hidden { opacity: 0 !important; }
 .fud-dom-crest .gem {
   width: 13px; height: 13px; transform: rotate(45deg);
   border: 2px solid #4a3826;
@@ -148,6 +178,7 @@ function buildCrest(token, pool) {
     el.appendChild(g);
     gems.push(g);
   }
+  if (_hiddenByAnimation) el.classList.add("is-anim-hidden");
   document.body.appendChild(el);
   const rec = { el, gems, lastCharges: -1, missingFrames: 0 };
   _crests.set(token.id, rec);
@@ -294,6 +325,16 @@ function injectCrestOffsetConfig(app, html) {
 export function initDominationCrest() {
   if (_hooksOn) return;
   _hooksOn = true;
+  // Cinematic-hide socket — the FSM's ANIMATION state broadcasts hide/show so
+  // crests fade out during action animations on every client.
+  try {
+    if (typeof socketlib !== "undefined" && game.modules.get("socketlib")?.active) {
+      _socket = socketlib.registerModule(FLAG_NS);
+      _socket.register(ACTION_CREST_VIS, setCrestsHiddenLocal);
+    }
+  } catch (e) {
+    warn("dominance-crest: socket init failed — cinematic hide stays GM-local", e);
+  }
   const onAeEvent = (effect) => {
     if (isDominancePoolAe(effect) && effect.parent?.documentName === "Actor") {
       syncActorCrest(effect.parent);

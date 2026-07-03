@@ -6365,12 +6365,6 @@
         "effects": 0
       },
       {
-        "id": "rbGbxQreSOzdidNQ",
-        "name": "Glacies Finis",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "FHSVeepym01zqx6T",
         "name": "Glitter Brooch",
         "type": "equippableItem",
@@ -8264,7 +8258,7 @@
         "id": "ZZG5sHvIc3GH26w7",
         "name": "Maid cap",
         "type": "equippableItem",
-        "effects": 1
+        "effects": 0
       },
       {
         "id": "I8wXcpGE6TGCM87B",
@@ -14285,13 +14279,6 @@
         "effects": 1
       },
       {
-        "id": "Af3FWKlGa6zpQ7YZ",
-        "name": "BD Dummy Enemy",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
         "id": "N5k5aBtdGBakHLGO",
         "name": "Berserker",
         "type": "character",
@@ -16100,10 +16087,6 @@
             "name": "Enchanted Delayed Blast Remote"
           },
           {
-            "id": "mOhAyd6CoAqe7YP5",
-            "name": "Glacies Finis"
-          },
-          {
             "id": "9NaO4mJKNZjA0Uo4",
             "name": "Glowstick"
           },
@@ -17856,7 +17839,7 @@
             "name": "Zero Trigger: Foresight"
           }
         ],
-        "effects": 3
+        "effects": 2
       },
       {
         "id": "tzXbVfDYPgvu5wml",

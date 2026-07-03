@@ -209,7 +209,7 @@
           "uuid": "Actor.RJECgM6oVt4UI4ds.Item.5GOsf7rPolHWnDsX"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 1293947472,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "mJuSEmMc3A0HrqNO"
       },
@@ -254,7 +254,7 @@
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
-              "chain_steps": "enkindle_double_burn,enkindle_fire_damage",
+              "chain_steps": "enkindle_double_burn",
               "effect_kind": "chain",
               "effect_label": "enkindle_chain"
             },
@@ -262,18 +262,20 @@
               "charge_ae_name": "Burn",
               "charge_amount": "2",
               "charge_operation": "multiply",
-              "effect_kind": "grant",
+              "effect_kind": "adjust_charges",
               "effect_label": "enkindle_double_burn",
+              "grant_amount": "",
+              "grant_resource": "",
               "target_ref": "action_targets"
             },
             "2": {
-              "attacker_name": "Enkindle",
-              "damage_amount": "AE_CHARGES_BURN * 5",
-              "damage_cause": "damage",
-              "damage_element": "fire",
-              "effect_kind": "grant",
-              "effect_label": "enkindle_fire_damage",
-              "target_ref": "action_targets"
+              "damage_amount": "TARGET_AE_CHARGES_BURN * 10",
+              "damage_operation": "add",
+              "damage_stage": "outgoing",
+              "effect_kind": "adjust_damage",
+              "effect_label": "enkindle_fire_bonus",
+              "grant_amount": "",
+              "grant_resource": ""
             }
           },
           "heroic_requirement": "",
@@ -291,7 +293,15 @@
           "name": "Enkindle",
           "on_activate_effect_ref": "enkindle_chain",
           "optional_params": {},
-          "reaction_config_table": {},
+          "reaction_config_table": {
+            "0": {
+              "reaction_effect_ref": "enkindle_fire_bonus",
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_source_skill": "Enkindle",
+              "reaction_trigger": "creature_will_deal_damage"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
@@ -305,7 +315,7 @@
           "uuid": "Actor.RJECgM6oVt4UI4ds.Item.O3Lmde4h5SIS34cr"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 1293947472,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "mJuSEmMc3A0HrqNO"
       },
@@ -384,7 +394,7 @@
           "uuid": "Actor.RJECgM6oVt4UI4ds.Item.OB9H6LpJArQP8e5N"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 1293947472,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "OoVNUOIssIfwPo7H"
       },
@@ -503,7 +513,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 2404876279,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "NNTvabK5vy807Mvt"
       },
@@ -606,7 +616,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 2404876279,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "zF6faTFO5nlTBVt8"
       },
@@ -724,7 +734,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 2404876279,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "SUYqRKHBGXUhiOL1"
       },
@@ -865,7 +875,7 @@
           "uuid": "Actor.RJECgM6oVt4UI4ds.Item.YClTOeSsVFm0ngyO"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 1293947472,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "A4QuSPMCVx1Zwhr9"
       },
@@ -984,7 +994,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 2404876279,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "1cajyF04dx07aGEU"
       },
@@ -1255,6 +1265,10 @@
       "bonus_mp": 0,
       "bow_ef": "100",
       "brawling_ef": "75",
+      "check_mod_all": 0,
+      "check_mod_magic": 0,
+      "check_mod_melee": 0,
+      "check_mod_ranged": 0,
       "condition_anomaly": "NA",
       "condition_bane": "NA",
       "condition_berserk": "NA",
@@ -1292,6 +1306,9 @@
       "condition_wet": "NA",
       "condition_wither": "NA",
       "condition_zombie": "NA",
+      "critical_damage_bonus": 0,
+      "critical_damage_multiplier": 1,
+      "critical_dice_range": 0,
       "current_hp": "65",
       "current_ip": "0",
       "current_mp": "90",
@@ -1300,10 +1317,48 @@
       "cut_in_offset_y": "",
       "cut_in_zero_power": "",
       "dagger_ef": "100",
+      "damage_receiving_mod_air": 0,
+      "damage_receiving_mod_all": 0,
+      "damage_receiving_mod_bolt": 0,
+      "damage_receiving_mod_dark": 0,
+      "damage_receiving_mod_earth": 0,
+      "damage_receiving_mod_fire": 0,
+      "damage_receiving_mod_ice": 0,
+      "damage_receiving_mod_light": 0,
+      "damage_receiving_mod_melee": 0,
+      "damage_receiving_mod_physical": 0,
+      "damage_receiving_mod_poison": 0,
+      "damage_receiving_mod_range": 0,
       "def_mod": "+3",
       "default_facing_direction": "right",
+      "defense": 11,
       "dex_base": "8",
+      "dex_current": 8,
+      "enmity": 100,
       "event_timeline_table": {},
+      "extra_damage_mod_air": 0,
+      "extra_damage_mod_all": 0,
+      "extra_damage_mod_arcane": 0,
+      "extra_damage_mod_bolt": 0,
+      "extra_damage_mod_bow": 0,
+      "extra_damage_mod_brawling": 0,
+      "extra_damage_mod_dagger": 0,
+      "extra_damage_mod_dark": 0,
+      "extra_damage_mod_earth": 0,
+      "extra_damage_mod_fire": 0,
+      "extra_damage_mod_firearm": 0,
+      "extra_damage_mod_flail": 0,
+      "extra_damage_mod_heavy": 0,
+      "extra_damage_mod_ice": 0,
+      "extra_damage_mod_light": 0,
+      "extra_damage_mod_melee": 0,
+      "extra_damage_mod_physical": 0,
+      "extra_damage_mod_poison": 0,
+      "extra_damage_mod_ranged": 0,
+      "extra_damage_mod_spear": 0,
+      "extra_damage_mod_spell": 0,
+      "extra_damage_mod_sword": 0,
+      "extra_damage_mod_thrown": 0,
       "firearm_ef": "100",
       "flail_ef": "100",
       "gorger": false,
@@ -1311,8 +1366,11 @@
       "icon_offset_x": "",
       "icon_offset_y": "",
       "icon_scale": "",
+      "id": "RJECgM6oVt4UI4ds",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Dryad_Standard.png",
       "init": "6",
       "ins_base": "10",
+      "ins_current": 10,
       "isAlmighty": false,
       "isAwake": false,
       "isBlacksmith": false,
@@ -1338,13 +1396,20 @@
       "isVillain": false,
       "isWeak": false,
       "level": "34",
+      "lifesteal_percentage": 0,
+      "lifesteal_value": 0,
+      "magic_defense": 12,
+      "manadrain_percentage": 0,
+      "manadrain_value": 0,
       "max_hp": "65",
       "max_ip": "0",
       "max_mp": "90",
       "max_zero": "6",
       "mdef_mod": "+2",
       "mig_base": "6",
+      "mig_current": 6,
       "mimic": false,
+      "minimum_critical_dice": 6,
       "name": "Dryad",
       "normal_spell_list": {
         "5GOsf7rPolHWnDsX": {
@@ -1391,6 +1456,7 @@
       "npc_rank": "soldier",
       "override_all_damage_type": "None",
       "override_attack_damage_type": "None",
+      "override_damage_type": "None",
       "override_spell_damage_type": "None",
       "rare": false,
       "resource_maxValue_1": "0",
@@ -1486,6 +1552,7 @@
         }
       },
       "study_text": "<p>A forest spirit twisted into something that loves only fire, nursing a single ember until it <strong>spreads</strong>.</p>",
+      "subtype": "Sub-Type",
       "subtype_list": "FEY",
       "sword_ef": "100",
       "tactic_notes": "",
@@ -1494,7 +1561,9 @@
       "traits": "Corrupted Forest Spirit",
       "ultima_point": "0",
       "unique": false,
+      "uuid": "Actor.RJECgM6oVt4UI4ds",
       "wlp_base": "10",
+      "wlp_current": 10,
       "zenit_reward_max": "35",
       "zenit_reward_min": "15",
       "zero_power_value": ""

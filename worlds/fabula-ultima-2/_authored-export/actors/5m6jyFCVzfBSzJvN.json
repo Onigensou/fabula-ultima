@@ -134,7 +134,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 2404876279,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "SUYqRKHBGXUhiOL1"
       },
@@ -260,7 +260,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 2404876279,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "D1UEXDIcjCsAs85o"
       },
@@ -333,7 +333,7 @@
           "uuid": "Actor.5m6jyFCVzfBSzJvN.Item.CNFSNELfdnVUVim1"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 1293947472,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "yWlkWZC2vLf4J5Pv"
       },
@@ -452,7 +452,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 2404876279,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "1cajyF04dx07aGEU"
       },
@@ -838,7 +838,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 2404876279,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "jyFW3rkXRbgD84RP"
       },
@@ -1106,7 +1106,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 1293947472,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "UKzHkmIJcjXZ4GFR"
       },
@@ -1195,7 +1195,7 @@
           "uuid": "Actor.5m6jyFCVzfBSzJvN.Item.WElsRrkCJQeqfxWt"
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 1293947472,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "aGZAOUdRyopqoDyc"
       },

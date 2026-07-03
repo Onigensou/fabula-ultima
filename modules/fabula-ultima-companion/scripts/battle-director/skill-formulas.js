@@ -652,6 +652,19 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         const subject = _resolveActorByUuidSync(subjectUuid);
         return subject ? (Number(subject?.system?.props?.current_hp ?? 0) || 0) : 0;
       }
+      // Max HP of the trigger's subject (the target). Twin of TARGET_CURRENT_HP
+      // (same subjectActorUuid resolve), reading max_hp instead of current_hp.
+      // Powers per-victim "% of the target's max HP" damage riders evaluated in
+      // the outgoing-damage pass (computeSenderDamageBonuses), where the resolver's
+      // `actor` is the CASTER — so plain MAX_HP would read the caster's HP, not the
+      // victim's. Meteor Impact's Burn-detonation: 10% of the target's max HP per
+      // Burn stack (`TARGET_AE_CHARGES_BURN * TARGET_MAX_HP * 0.1`).
+      case "TARGET_MAX_HP": {
+        const subjectUuid = String(payload?.subjectActorUuid ?? "").trim();
+        if (!subjectUuid) return 0;
+        const subject = _resolveActorByUuidSync(subjectUuid);
+        return subject ? (Number(subject?.system?.props?.max_hp ?? 0) || 0) : 0;
+      }
       // 1 iff the trigger's SUBJECT creature is Champion-rank (NPC rank lives at
       // system.props.npc_rank — soldier/elite/champion/companion). Twin of
       // TARGET_CURRENT_HP (same subjectActorUuid resolve). Used by The Tormentor's

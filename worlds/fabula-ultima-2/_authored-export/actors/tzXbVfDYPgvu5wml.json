@@ -436,7 +436,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 2404876279,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "22zoFt3zhXjelhsX"
       },
@@ -502,7 +502,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 1293947472,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "tbtry6egID5MOcxv"
       },
@@ -650,7 +650,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 2404876279,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "wJBq8w0Xuh7suRqm"
       },
@@ -713,7 +713,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 1293947472,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "7oG8YvRYQBQAU025"
       },
@@ -803,7 +803,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 2404876279,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "BykEf2Th3dTmg02o"
       },
@@ -865,7 +865,6 @@
           "beast_ef": "100",
           "category": "Bow",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "8",
@@ -883,8 +882,6 @@
           "hand_slots": "Two-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "720wa4E0ldJEqXG4",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bow.png",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -915,12 +912,11 @@
           "spirit_ef": "100",
           "type_damage": "Air",
           "undead_ef": "100",
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.720wa4E0ldJEqXG4",
           "vehicle_ef": "100",
           "weapon_range": "Ranged"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 2404876279,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "quJxn5TAZFaY5i7C"
       },
@@ -995,7 +991,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "10",
@@ -1013,8 +1008,6 @@
           "hand_slots": "Two-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "BGBKm7rItmmvzf31",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/2000.gif",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -1063,12 +1056,11 @@
           "spirit_ef": "100",
           "type_damage": "Bolt",
           "undead_ef": "100",
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.BGBKm7rItmmvzf31",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 2404876279,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "kBVCZiHd3Y8Fd7VH"
       },
@@ -1145,7 +1137,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 1293947472,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "Ydbba6k0hFjWZvJv"
       },
@@ -1251,7 +1243,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 1293947472,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "kOZ5DZYLKd3FxaAz"
       },
@@ -1464,7 +1456,6 @@
           "damage_bonus": "",
           "defense_target_type": "def",
           "description": "<p>Once per scene upon entering <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span>, you may choose a specific creature you can see that you don't have a <strong>Bond</strong> towards. If you do, create a <strong>Bond of hatred</strong> towards that creature.</p>",
-          "details_roller": "Show",
           "duration": "",
           "effect_table": {
             "0": {
@@ -1489,9 +1480,7 @@
             }
           },
           "heroic_requirement": "",
-          "id": "EGYilCNAGvl2BldF",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/grit.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -1503,9 +1492,6 @@
           "name": "Heart of Darkness",
           "on_activate_effect_ref": "",
           "optional_params": {},
-          "passive_check_bonus_formula": "",
-          "passive_damage_bonus_formula": "",
-          "post_damage_effect_ref": "",
           "reaction_config_table": {
             "0": {
               "$deleted": false,
@@ -1523,11 +1509,10 @@
           "skill_target": "",
           "skill_type": "Passive",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 1293947472,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "gNgDIXArTpdtUBpe"
       },
@@ -1904,7 +1889,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -1922,8 +1906,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "EhrhSD2uc4XZ3uGD",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/2316.gif",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": true,
@@ -1954,12 +1936,11 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.EhrhSD2uc4XZ3uGD",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 2404876279,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "U1WUGQw6hkUo1La7"
       },
@@ -2087,7 +2068,6 @@
           "damage_bonus": "",
           "defense_target_type": "def",
           "description": "<p>You glimpse briefly into the future. Until this spell ends, after a creature you can see performs a Check, if it was not a <strong>fumble</strong> nor a <strong>critical success</strong>, you may force that creature to reroll both dice. Once you have forced <strong>two</strong> rerolls this way, this spell ends.</p>",
-          "details_roller": "Show",
           "duration": "Scene",
           "effect_table": {
             "0": {
@@ -2100,9 +2080,7 @@
             }
           },
           "heroic_requirement": "",
-          "id": "FBWC6v9hhDqMlIaZ",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/divination.png",
           "isCheck": false,
           "isFacet": true,
           "isHeroic": false,
@@ -2115,7 +2093,6 @@
           "on_activate_effect_ref": "div_apply",
           "optional_params": {},
           "reaction_config_table": {},
-          "reaction_effect_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
@@ -2125,11 +2102,10 @@
           "skill_target": "Self",
           "skill_type": "Spell",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.FBWC6v9hhDqMlIaZ"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 1293947472,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "eTagzbuJWVfudChW"
       },
@@ -2244,7 +2220,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 1293947472,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "eM7Q4WgXvjcLQaFc"
       },
@@ -2303,7 +2279,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -2322,8 +2297,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "mSqhjefLPKGzHt9s",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Image/Ghastly%20Sheet.webp",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -2354,12 +2327,11 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.srAH3OHOoK0tvFih.Item.mSqhjefLPKGzHt9s",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 2404876279,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "ROQw6telXF9qyZC8"
       },
@@ -2513,7 +2485,6 @@
           "damage_bonus": "",
           "defense_target_type": "def",
           "description": "<p>Your maximum Hit Points are permanently increased by an amount equal to your base <strong>Insight</strong> die size (update your maximum HP if this size changes).</p><p>When a conflict scene begins, if you have learned the <strong>Divination</strong> spell, you gain <strong>1 Prophecy Point</strong>. You also gain <strong>1 Prophecy Point</strong> at the start of each even-numbered round (regardless of whether you have learned Divination). You lose all Prophecy Points at the end of each scene.</p><p>When <strong>one or more allies</strong> are threatened by a single attack, spell, or other danger, you may spend <strong>1 Prophecy Point</strong> to take the place of all those allies (any Checks that are part of the danger will be performed against you; you may declare the use of this Skill before or after the Checks have been made). The danger will affect you once for each creature it was threatening (including yourself, if you were among those creatures). Resolve each of these instances separately.</p>",
-          "details_roller": "Show",
           "duration": "",
           "effect_table": {
             "0": {
@@ -2573,9 +2544,7 @@
             }
           },
           "heroic_requirement": "You must have mastered one or more Classes among Entropist and Guardian.",
-          "id": "gm2w1NLdaEI7SzaQ",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/nocturnal_sect.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": true,
@@ -2584,7 +2553,7 @@
           "isZeroPower": false,
           "level": "1",
           "max_level": "1",
-          "name": "Prophetic Defender",
+          "name": "PROPHETIC DEFENDER STYLE",
           "on_activate_effect_ref": "",
           "optional_params": {},
           "reaction_config_table": {
@@ -2643,7 +2612,6 @@
               "requires_skill": ""
             }
           },
-          "reaction_effect_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
@@ -2653,11 +2621,10 @@
           "skill_target": "-",
           "skill_type": "Passive",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.gm2w1NLdaEI7SzaQ"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 1293947472,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "ZySnR7edyoUvFZM3"
       },
@@ -2725,7 +2692,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 1293947472,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": true,
         "uniqueId": "HjNImvzXOvZw1mGF"
       },
@@ -2966,7 +2933,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -2985,8 +2951,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "hxPlRSwOxHShzdRK",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/beast.png",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -3049,12 +3013,11 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.hxPlRSwOxHShzdRK",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 2404876279,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "YpRxmj2S5mNfkal2"
       },
@@ -3128,7 +3091,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "7",
@@ -3147,8 +3109,6 @@
           "hand_slots": "Two-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "IJPsdKmEyzpLjJu6",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/book.png",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -3179,12 +3139,11 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.IJPsdKmEyzpLjJu6",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 2404876279,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "3UYXnhsSCTo0lV68"
       },
@@ -3260,7 +3219,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -3279,8 +3237,6 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "irzhS1BV9TsO7xlb",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/533.png",
           "insect_ef": "100",
           "ip_cost": "1",
           "isEquipped": false,
@@ -3343,12 +3299,11 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.irzhS1BV9TsO7xlb",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 2404876279,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "WeoIipMyJ8Iq9jx4"
       },
@@ -3427,7 +3382,6 @@
           "max_level": "1",
           "name": "Drain Spirit",
           "optional_params": {},
-          "post_damage_effect_ref": "drain_recover",
           "reaction_config_table": {},
           "rolled_atr1": "INS",
           "rolled_atr2": "WLP",
@@ -3441,7 +3395,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 1293947472,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "szPLoqRb8JELX4X7"
       },
@@ -3481,7 +3435,6 @@
           "damage_bonus": "",
           "defense_target_type": "def",
           "description": "<p>When Hina change the outcome of check (fail&gt; success or success&gt;fail), she gain 1 zero trigger.</p>",
-          "details_roller": "Show",
           "duration": "-",
           "effect_table": {
             "0": {
@@ -3507,9 +3460,7 @@
             }
           },
           "heroic_requirement": "",
-          "id": "Jfwp8uU0Ntyqhcjj",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Ain/APHA.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -3539,11 +3490,10 @@
           "skill_target": "-",
           "skill_type": "Passive",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.Jfwp8uU0Ntyqhcjj"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 1293947472,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "9jOBSPY17nxY6QCy"
       },
@@ -3672,7 +3622,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 1293947472,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "loJVZKaVMt8VxzCI"
       },
@@ -4086,7 +4036,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 1293947472,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "UF9js71VGFE9jB93"
       },
@@ -4253,7 +4203,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 1293947472,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "jlPwgwAQkOBCNg6K"
       },
@@ -4295,7 +4245,6 @@
           "damage_bonus": "",
           "defense_target_type": "def",
           "description": "<p>Choose and trigger <strong>3 Opportunity choice. </strong><em>(The same Opportunity cannot be chosen twice)</em></p>",
-          "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
@@ -4308,9 +4257,7 @@
             }
           },
           "heroic_requirement": "",
-          "id": "oe3OP8VmjHJpWJ41",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Add/DissemblerSkill9.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -4323,7 +4270,6 @@
           "on_activate_effect_ref": "million_opp",
           "optional_params": {},
           "reaction_config_table": {},
-          "reaction_effect_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
@@ -4333,11 +4279,10 @@
           "skill_target": "Self",
           "skill_type": "Active",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.oe3OP8VmjHJpWJ41"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 1293947472,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "WjrBIzz4zJvO4C4k"
       },
@@ -4369,7 +4314,6 @@
       "sort": 0,
       "system": {
         "props": {
-          "action_keywords": "pierce",
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
@@ -4405,7 +4349,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 1293947472,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "VMu0aaKdIoi6qRi2"
       },
@@ -4444,7 +4388,6 @@
           "beast_ef": "100",
           "category": "Spear",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "1",
           "construct_ef": "100",
           "damage_bonus": "12",
@@ -4462,8 +4405,6 @@
           "hand_slots": "Two-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "Pf1vhSjtOOTBXFkB",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -4494,12 +4435,11 @@
           "spirit_ef": "100",
           "type_damage": "Dark",
           "undead_ef": "100",
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.Pf1vhSjtOOTBXFkB",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 2404876279,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "jqykkhAB5m9durso"
       },
@@ -4540,7 +4480,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "6",
@@ -4550,7 +4489,6 @@
           "dragon_ef": "100",
           "elemental_ef": "100",
           "enforcer_ef": "100",
-          "equipped": true,
           "fey_ef": "100",
           "flora_ef": "100",
           "fungus_ef": "100",
@@ -4559,8 +4497,6 @@
           "hand_slots": "Two-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "qXvY2q2G2bjHFdu1",
-          "img": "icons/sundries/books/book-embossed-gold-green.webp",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -4592,12 +4528,11 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.qXvY2q2G2bjHFdu1",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 2404876279,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "X9SaWakWp1Tl8xPA"
       },
@@ -4709,7 +4644,6 @@
           "max_level": "3",
           "name": "Magical Artillery",
           "optional_params": {},
-          "passive_check_bonus_formula": "HAS_ARCANE_WEAPON * ACTION_IS_SPELL * SL * 2",
           "passive_logic_action": "<p>const TAG = \"[PASSIVE][MagicalArtillery][Action]\";</p><p>const norm = (v) =&gt; String(v ?? \"\").trim().toLowerCase();</p><p>const isAutoPassiveExecution =</p><p>__PAYLOAD?.meta?.isPassiveExecution === true ||</p><p>__PAYLOAD?.isPassiveExecution === true ||</p><p>norm(__PAYLOAD?.meta?.executionMode) === \"autopassive\" ||</p><p>norm(__PAYLOAD?.executionMode) === \"autopassive\";</p><p>const skipHidden = (reason = \"\") =&gt; {</p><p>__PAYLOAD.meta = __PAYLOAD.meta || {};</p><p>__PAYLOAD.meta.hidePassiveCard = true;</p><p>return context.skipPassive(reason, { notify: false });</p><p>};</p><p>// Important:</p><p>// This passive should modify the ORIGINAL spell action payload,</p><p>// not the later standalone auto-passive self execution.</p><p>if (isAutoPassiveExecution) {</p><p>return skipHidden(\"\");</p><p>}</p><p>const passiveOwner =</p><p>__PASSIVE_ACTOR ??</p><p>context.passiveOwner ??</p><p>null;</p><p>const passiveItem =</p><p>__PASSIVE_ITEM ??</p><p>context.passiveItem ??</p><p>null;</p><p>if (!passiveOwner || !passiveItem) {</p><p>return skipHidden(\"\");</p><p>}</p><p>// --------------------------------------------------</p><p>// 1) Check action type = Offensive Spell</p><p>// --------------------------------------------------</p><p>const listType = norm(</p><p>__PAYLOAD?.meta?.listType ??</p><p>__PAYLOAD?.listType ??</p><p>\"\"</p><p>);</p><p>const detectedActionType = norm(</p><p>context.helpers?.getDetectedActionType?.() ?? \"\"</p><p>);</p><p>const actionTypeDebug =</p><p>context.helpers?.getActionTypeDebug?.() ?? {};</p><p>const isSpellish =</p><p>detectedActionType === \"spell\" ||</p><p>actionTypeDebug?.isSpell === true ||</p><p>__PAYLOAD?.meta?.isSpellish === true ||</p><p>__PAYLOAD?.dataCore?.isSpell === true;</p><p>const isOffensiveSpell = listType === \"offensive spell\";</p><p>if (!isSpellish || !isOffensiveSpell) {</p><p>return skipHidden(\"\");</p><p>}</p><p>// --------------------------------------------------</p><p>// 2) Manual equipped Arcane weapon check</p><p>// Avoid the missing helper on your current runtime build.</p><p>// --------------------------------------------------</p><p>const toBool = (v) =&gt;</p><p>v === true || v === \"true\" || v === 1 || v === \"1\";</p><p>const getProps = (item) =&gt;</p><p>item?.system?.props ?? item?.system ?? {};</p><p>const normCategory = (v) =&gt; {</p><p>const s = norm(v);</p><p>const aliases = {</p><p>arcana: \"arcane\",</p><p>arcane: \"arcane\",</p><p>wand: \"arcane\",</p><p>staff: \"arcane\",</p><p>tome: \"arcane\"</p><p>};</p><p>return aliases[s] ?? s;</p><p>};</p><p>const equippedWeapons = Array.from(passiveOwner?.items ?? []).filter((item) =&gt; {</p><p>const p = getProps(item);</p><p>const isEquipped = [</p><p>p?.isEquipped,</p><p>p?.equipped,</p><p>item?.system?.equipped,</p><p>item?.equipped,</p><p>item?.isEquipped</p><p>].some(toBool);</p><p>const itemType = norm(</p><p>p?.item_type ??</p><p>item?.system?.item_type ??</p><p>item?.type ??</p><p>\"\"</p><p>);</p><p>return isEquipped &amp;&amp; itemType === \"weapon\";</p><p>});</p><p>const hasArcaneWeapon = equippedWeapons.some((item) =&gt; {</p><p>const p = getProps(item);</p><p>const cat = normCategory(</p><p>p?.category ??</p><p>item?.system?.category ??</p><p>item?.category ??</p><p>\"\"</p><p>);</p><p>return cat === \"arcane\";</p><p>});</p><p>if (!hasArcaneWeapon) {</p><p>return skipHidden(\"\");</p><p>}</p><p>// --------------------------------------------------</p><p>// 3) Skill level</p><p>// --------------------------------------------------</p><p>const skillLevel = Math.max(</p><p>0,</p><p>Number(</p><p>passiveItem?.level ??</p><p>passiveItem?.system?.props?.level ??</p><p>passiveItem?.system?.level ??</p><p>passiveItem?.system?.props?.active_level ??</p><p>passiveItem?.system?.props?.passive_level ??</p><p>0</p><p>) || 0</p><p>);</p><p>const bonusToAdd = skillLevel * 2;</p><p>if (bonusToAdd &lt;= 0) {</p><p>return skipHidden(\"\");</p><p>}</p><p>// --------------------------------------------------</p><p>// 4) Apply bonus to Magic Check</p><p>// Update BOTH checkBonus and total.</p><p>// --------------------------------------------------</p><p>__PAYLOAD.accuracy = __PAYLOAD.accuracy || {};</p><p>const beforeCheckBonus = Number(__PAYLOAD?.accuracy?.checkBonus ?? 0) || 0;</p><p>const beforeBonusField = Number(__PAYLOAD?.accuracy?.bonus ?? 0) || 0;</p><p>const beforeTotalRaw = Number(__PAYLOAD?.accuracy?.total ?? NaN);</p><p>const beforeTotal = Number.isFinite(beforeTotalRaw) ? beforeTotalRaw : null;</p><p>// If this spell somehow has no accuracy object, quietly do nothing.</p><p>if (beforeTotal === null) {</p><p>return skipHidden(\"\");</p><p>}</p><p>__PAYLOAD.accuracy.checkBonus = beforeCheckBonus + bonusToAdd;</p><p>__PAYLOAD.accuracy.bonus = beforeBonusField + bonusToAdd;</p><p>__PAYLOAD.accuracy.total = beforeTotal + bonusToAdd;</p><p>// --------------------------------------------------</p><p>// 5) Debug</p><p>// --------------------------------------------------</p><p>__PAYLOAD.meta = __PAYLOAD.meta || {};</p><p>__PAYLOAD.meta.magicalArtilleryDebug = {</p><p>passiveOwner: passiveOwner?.name ?? null,</p><p>passiveItem: passiveItem?.name ?? null,</p><p>listType,</p><p>detectedActionType,</p><p>isSpellish,</p><p>isOffensiveSpell,</p><p>hasArcaneWeapon,</p><p>equippedWeapons: equippedWeapons.map((w) =&gt; ({</p><p>name: w?.name ?? null,</p><p>category: normCategory(</p><p>getProps(w)?.category ??</p><p>w?.system?.category ??</p><p>w?.category ??</p><p>\"\"</p><p>)</p><p>})),</p><p>skillLevel,</p><p>bonusAdded: bonusToAdd,</p><p>checkBonusBefore: beforeCheckBonus,</p><p>checkBonusAfter: __PAYLOAD.accuracy.checkBonus,</p><p>totalBefore: beforeTotal,</p><p>totalAfter: __PAYLOAD.accuracy.total</p><p>};</p><p>console.log(TAG, \"APPLIED\", __PAYLOAD.meta.magicalArtilleryDebug);</p><p>context.log(\"Magical Artillery applied\", __PAYLOAD.meta.magicalArtilleryDebug);</p>",
           "reaction_config_table": {},
           "rolled_atr1": "-",
@@ -4724,7 +4658,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 1293947472,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "QBLyfikwHBnhhcGf"
       },
@@ -4787,7 +4721,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 1293947472,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "oqJkRZfgQD6frXjZ"
       },
@@ -5029,7 +4963,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 2404876279,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "YdYhFx1vrvod4P2Y"
       },
@@ -5139,7 +5073,7 @@
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 2404876279,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "YNtiW1MEga31ENWa"
       },
@@ -5206,7 +5140,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 1293947472,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "HhAK0qzO2jmsk0RX"
       },
@@ -5322,8 +5256,6 @@
           "max_level": "1",
           "name": "Adversity",
           "optional_params": {},
-          "passive_check_bonus_formula": "",
-          "passive_damage_bonus_formula": "",
           "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
@@ -5335,7 +5267,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 1293947472,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "FQBpdrf04xuYhheF"
       },
@@ -5460,7 +5392,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 1293947472,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "B0rR4DCijW1zC3SY"
       },
@@ -5548,7 +5480,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 1293947472,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "Uo4iOf0EFG1z8AU2"
       },
@@ -5589,13 +5521,10 @@
           "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points</strong>.</p><hr><p><strong>Skill Enhancement Lv. 20</strong> — The amount of Hit Points recovered increases to <strong>50</strong>.</p><p><strong>Skill Enhancement Lv. 40</strong> — The amount of Hit Points recovered increases to <strong>60</strong>.</p>",
-          "details_roller": "Show",
           "duration": "-",
           "effect_table": {},
           "heroic_requirement": "",
-          "id": "Wtcdd42MQHwsOsSe",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/assize.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -5608,7 +5537,6 @@
           "on_activate_effect_ref": "",
           "optional_params": {},
           "reaction_config_table": {},
-          "reaction_effect_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
@@ -5618,11 +5546,10 @@
           "skill_target": "Up to three creatures",
           "skill_type": "Spell",
           "type_damage": "healing",
-          "use_optional_params": false,
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.Wtcdd42MQHwsOsSe"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 1293947472,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": true,
         "uniqueId": "7ApZzLcwZfDZz0nE"
       },
@@ -5687,7 +5614,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 1293947472,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "CMeM0siw1nq7rr1G"
       },
@@ -5748,7 +5675,6 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "3",
@@ -5766,8 +5692,6 @@
           "hand_slots": "Two-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "XVCbb7lj05eYPQ3f",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Stave/Icon-Budding_Maple_Wand.webp",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": true,
@@ -5812,12 +5736,11 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.XVCbb7lj05eYPQ3f",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 2404876279,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "Y2ItFIBB8PtKttz8"
       },
@@ -5896,7 +5819,7 @@
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 1293947472,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "5FJroVCi4rjKmXQO"
       },
@@ -6010,12 +5933,9 @@
           "damage_bonus": "",
           "defense_target_type": "mdef",
           "description": "<p>You trap a foe inside a circle of altered time and space. The target will perform one fewer action on their next turn <em>(to a minimum of 0 actions).</em></p>",
-          "details_roller": "Show",
           "duration": "Instantaneous",
           "heroic_requirement": "",
-          "id": "z1GsqcJC8bh4TOAs",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/DWTrans5.png",
           "isCheck": true,
           "isFacet": true,
           "isHeroic": false,
@@ -6027,7 +5947,6 @@
           "name": "Stop",
           "optional_params": {},
           "reaction_config_table": {},
-          "reaction_effect_table": {},
           "rolled_atr1": "INS",
           "rolled_atr2": "WLP",
           "skill_animation_default": "",
@@ -6037,11 +5956,10 @@
           "skill_target": "One creature",
           "skill_type": "Spell",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.z1GsqcJC8bh4TOAs"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 1293947472,
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "Xf6q7cCeuczSTfXp"
       },
@@ -6206,7 +6124,7 @@
           "weapon_range": "Ranged"
         },
         "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 2404876279,
+        "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "6pUwTZO1peHgSBya"
       },
