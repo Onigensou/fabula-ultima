@@ -40,6 +40,7 @@
 import { log, warn } from "./logger.js";
 import { resolveTargetRef as resolveBdTargetRef, makeChainContext as makeBdChainContext } from "./skill-targeting.js";
 import { deriveCheck } from "./check.js";
+import { resolvesVsMagicDefense } from "./snapshot.js";
 
 const FLAG_NS = "fabula-ultima-companion";
 
@@ -171,10 +172,11 @@ function recomputePerTargetForRedirect({ ar, reactor, reactorTok, applyAffinityT
   // `magic_defense`). Spells + MDEF-tagged Skills target MDEF; others
   // target DEF.
   const props = reactor.system?.props ?? {};
-  const isMagicCheck =
-    String(ar.kind ?? "").toLowerCase() === "spell" ||
-    String(ar.skillType ?? "").toLowerCase() === "spell" ||
-    String(ar.defenseTargetType ?? "").toLowerCase() === "mdef";
+  const isMagicCheck = resolvesVsMagicDefense({
+    defenseTargetType: ar.defenseTargetType,
+    isSpell: String(ar.kind ?? "").toLowerCase() === "spell"
+          || String(ar.skillType ?? "").toLowerCase() === "spell",
+  });
   const newDef = Number(
     isMagicCheck
       ? (props.magic_defense ?? props.base_magic_defense ?? 10)

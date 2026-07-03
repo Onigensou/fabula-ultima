@@ -175,6 +175,19 @@ export function attrDieSize(actor, key) {
 //
 // `which`: "main" | "off" — which equipped hand to read. Defaults to "main".
 //
+// Unified DEF-vs-MDEF resolution. An explicit per-item `defense_target_type`
+// ("def" | "mdef") — declared on a weapon (Arc Wand's "deals Magic Damage") or a
+// skill (Soul Steal / Pillage) — WINS. Absent that, the default falls back to the
+// action kind: Spells resolve vs Magic Defense, everything else (Attacks,
+// non-Spell Skills) vs Defense. Single source of truth for the per-target engine,
+// the card labels, and the redirect recompute so they can never drift apart.
+export function resolvesVsMagicDefense({ defenseTargetType, isSpell } = {}) {
+  const dtt = String(defenseTargetType ?? "").trim().toLowerCase();
+  if (dtt === "mdef") return true;
+  if (dtt === "def") return false;
+  return !!isSpell;
+}
+
 // Returns null if the requested hand isn't equipped or resolves to a shield
 // (attribute "SHI"). Caller decides whether to fall back to the other hand
 // or refuse the action.
@@ -301,6 +314,11 @@ export function resolveAttackerWeapon(actor, { which = "main" } = {}) {
     // mechanical action keyword like Pierce (Windpiercer) — no bespoke per-quality
     // boolean; a future benign weapon is just action_keywords:"benign".
     actionKeywords: String(weaponItem?.system?.props?.action_keywords ?? ""),
+    // Explicit defense target for this weapon's Attacks ("def" | "mdef"). A weapon
+    // that "deals Magic Damage" (Arc Wand) sets `defense_target_type: "mdef"` so its
+    // Attack resolves vs Magic Defense; blank falls back to the kind default
+    // (Attack → DEF) via resolvesVsMagicDefense. No bespoke per-weapon boolean.
+    defenseTargetType: String(weaponItem?.system?.props?.defense_target_type ?? "").trim().toLowerCase(),
   });
 }
 
@@ -787,18 +805,36 @@ export function targetIsFlying(actor) {
   ));
 }
 
+// True if the AE change's owning item is GEAR that isn't currently equipped —
+// in which case the exception it carries is dormant. A `can_target_flying_with`
+// change read straight off the raw AE change can't self-gate via a
+// `${isEquipped ? ...}$` value (this key isn't a CSB label prop, so that formula
+// is never evaluated), so equip-gating for GEAR carriers lives here instead.
+// Fail-open for non-gear carriers (a skill item like Psychokinesis has no
+// item_type) so always-on passives are unaffected. Mirrors containerReactionInPlay.
+const _FLYING_EXCEPTION_GEAR_TYPES = new Set(["accessory", "armor", "weapon", "shield"]);
+function meleeFlyingCarrierDormant(ae) {
+  const item = ae?.parent?.documentName === "Item" ? ae.parent : null;
+  const itemType = String(item?.system?.props?.item_type ?? "").toLowerCase();
+  if (!_FLYING_EXCEPTION_GEAR_TYPES.has(itemType)) return false; // non-gear → always live
+  return item?.system?.props?.isEquipped !== true;               // gear → dormant unless equipped
+}
+
 // True if `actor` carries a melee-vs-Flying EXCEPTION covering a weapon of
-// `weaponType` — Psychokinesis: melee arcane/sword may target Flying. Reads
+// `weaponType` — Psychokinesis (skill): melee arcane/sword may target Flying;
+// Jumping Boots (accessory): any weapon, while equipped. Reads
 // `can_target_flying_with` AE changes — the SYMMETRIC counterpart of the
 // `cannot_be_targeted_by` block (getTargetSideBlocks) — so blocks AND exceptions
 // are both AE-change-driven and compose with AE suppression. The value is a
 // comma-list of weapon categories (empty = any melee weapon). Reads
-// `appliedEffects` so an always-on (transfer:true) passive AE is seen.
+// `appliedEffects` so an always-on (transfer:true) passive AE is seen; a GEAR
+// carrier is additionally equip-gated (meleeFlyingCarrierDormant).
 export function attackerCanMeleeFlying(actor, weaponType) {
   const cat = String(weaponType ?? "").trim().toLowerCase();
   const effs = actor?.appliedEffects ?? actor?.effects?.contents ?? actor?.effects ?? [];
   for (const ae of effs) {
     if (ae?.disabled) continue;
+    if (meleeFlyingCarrierDormant(ae)) continue;
     for (const ch of (ae.changes ?? [])) {
       if (ch?.key !== "can_target_flying_with") continue;
       const cats = String(ch.value ?? "").split(/[\s,]+/).map((s) => s.trim().toLowerCase()).filter(Boolean);

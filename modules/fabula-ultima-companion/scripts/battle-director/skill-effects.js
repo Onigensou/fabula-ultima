@@ -2625,6 +2625,10 @@ async function applyAdjustChargesEffect(row, ctx) {
 // identifier (e.g. Blazing Tether's two adjust_charges move VAR_MOVE_AMOUNT Burn
 // stacks from giver to receiver). Generic: any "choose how much" skill.
 //
+// Presents a horizontal, scrollable strip of stepped options (min, min+step, …,
+// up to max) — the player clicks one (double-click = pick + confirm). Cataclysm:
+// min 10 / step 10 → 10, 20, 30 …
+//
 // Fields:
 //   prompt_var      — variable name to store under (e.g. "move_amount").
 //   prompt_label    — dialog prompt text.
@@ -2633,7 +2637,8 @@ async function applyAdjustChargesEffect(row, ctx) {
 //                     prompt_max_ref's first token's actor if set, else caster.
 //   prompt_max_ref  — optional target ref whose actor the formulas read (so
 //                     prompt_max "AE_CHARGES_BURN" reads the GIVER's Burn).
-//   prompt_default  — formula/number for the input's starting value (default max).
+//   prompt_default  — formula/number for the starting selection (default max).
+//   prompt_step     — formula/number, the increment between options (default 1).
 //
 // Harness: inject via ctx.harnessNumbers[prompt_var] to skip the dialog so the
 // deterministic downstream rows are sim-verifiable. Passive auto-fire / no DOM
@@ -2643,6 +2648,15 @@ async function applyPromptNumberEffect(row, ctx) {
   if (!varName) {
     warn(`skill-effects.prompt_number: missing prompt_var on "${row.effect_label}"`);
     return { ok: false, kind: "prompt_number", reason: "no-var" };
+  }
+  // Idempotent: if this amount was already captured in the SAME payload (a
+  // reaction's apply-click preview via previewReactionMenu, then replayed at
+  // RESOLVE), reuse it instead of popping the dialog a second time. Mirrors
+  // prompt_element's pre-captured short-circuit.
+  const already = ctx?.payload?._chainVars?.[varName];
+  if (already != null && Number.isFinite(Number(already))) {
+    log(`skill-effects.prompt_number: ${varName} already captured = ${already}; skipping prompt`);
+    return { ok: true, kind: "prompt_number", value: Number(already) };
   }
   const { buildSkillResolver, evaluateFormula } = await getSkillFormulas();
 
@@ -2658,29 +2672,46 @@ async function applyPromptNumberEffect(row, ctx) {
   const maxRaw = String(row.prompt_max ?? "").trim();
   let maxV = maxRaw ? Math.floor(Number(evaluateFormula(maxRaw, resolver, 0)) || 0) : 1e9;
   if (maxV < minV) maxV = minV;
+  // Increment between selectable options (Cataclysm: 10 → 10,20,30,…). Default 1.
+  const stepV = Math.max(1, Math.floor(Number(evaluateFormula(String(row.prompt_step ?? "1"), resolver, 1)) || 1));
+  // Largest value on the min+step grid that doesn't exceed maxV — the options run
+  // minV, minV+step, …, maxOption. `snap` rounds any value onto that grid.
+  const maxOption = minV + Math.floor((maxV - minV) / stepV) * stepV;
+  const snap = (n) => {
+    const c = Math.floor(Number(n) || 0);
+    if (c <= minV) return minV;
+    if (c >= maxOption) return maxOption;
+    return minV + Math.round((c - minV) / stepV) * stepV;
+  };
   const defRaw = String(row.prompt_default ?? "").trim();
-  let defV = defRaw ? Math.floor(Number(evaluateFormula(defRaw, resolver, maxV)) || 0) : maxV;
-  const clamp = (n) => Math.max(minV, Math.min(maxV, Math.floor(Number(n) || 0)));
-  defV = clamp(defV);
+  let defV = snap(defRaw ? (Number(evaluateFormula(defRaw, resolver, maxOption)) || 0) : maxOption);
 
   let value = defV;
   const injected = ctx?.harnessNumbers?.[varName];
   if (injected != null && Number.isFinite(Number(injected))) {
-    value = clamp(injected);
+    value = snap(injected);
   } else if (ctx.isPassive || typeof Dialog === "undefined" || typeof document === "undefined") {
     value = defV; // auto-fire / headless — take the default, no UI
   } else {
     const entered = await promptNumberDialog({
       label: String(row.prompt_label ?? "Enter a number"),
-      min: minV, max: maxV, def: defV, title: ctx.skill?.name ?? "Choose Amount",
+      min: minV, max: maxOption, step: stepV, def: defV, title: ctx.skill?.name ?? "Choose Amount",
     });
-    value = entered == null ? minV : clamp(entered); // closed without confirm → min
+    // Cancel / close / Escape (null) is an ABORT, NOT a min pick — don't capture a
+    // value, and clear any stale one so a re-open re-prompts. The caller
+    // (previewReactionMenu) turns abort into a reverted reaction pill.
+    if (entered == null) {
+      if (ctx.payload?._chainVars) delete ctx.payload._chainVars[varName];
+      log(`skill-effects.prompt_number: "${row.effect_label}" cancelled by user`);
+      return { ok: true, kind: "prompt_number", applied: [], reason: "cancelled", abort: true };
+    }
+    value = snap(entered);
   }
 
   if (!ctx.payload) ctx.payload = {};
   if (!ctx.payload._chainVars) ctx.payload._chainVars = {};
   ctx.payload._chainVars[varName] = value;
-  log(`skill-effects.prompt_number: ${varName} = ${value} (range ${minV}..${maxV})`);
+  log(`skill-effects.prompt_number: ${varName} = ${value} (range ${minV}..${maxOption} step ${stepV})`);
   return { ok: true, kind: "prompt_number", value };
 }
 
@@ -2746,42 +2777,183 @@ async function applyPromptElementEffect(row, ctx) {
   return { ok: true, kind: "prompt_element", value: chosen };
 }
 
-// Number-input dialog (mirrors the attribute-pair-picker DL input). Resolves to
-// the clamped integer on Confirm, or null if closed without confirming.
-async function promptNumberDialog({ label, min, max, def, title }) {
+// Horizontal picker-wheel (carousel) amount selector. The value in the CENTER
+// slot is the selection; the player drags the strip so the number they want lands
+// in the middle, and numbers fade + shrink as they approach the left/right edges.
+// Wheel-scroll and clicking a number also center it; snap-scroll settles on the
+// nearest. Returns the chosen integer, or null if dismissed. Options are the
+// stepped grid min, min+step, …, max.
+export async function promptNumberDialog({ label, min, max, step = 1, def, title }) {
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const stp = Math.max(1, Math.floor(Number(step) || 1));
+  const opts = [];
+  for (let v = min; v <= max; v += stp) opts.push(v);
+  if (!opts.length) opts.push(min);
+  const initial = opts.includes(def) ? def : opts[opts.length - 1];
   return new Promise((resolve) => {
     let resolved = false;
-    const done = (v) => { if (!resolved) { resolved = true; resolve(v); } };
+    let selected = initial;
+    let cleanup = null;
+    const done = (v) => { if (!resolved) { resolved = true; try { cleanup?.(); } catch { /* noop */ } resolve(v); } };
     const content = `
-      <div class="fud-num-prompt" style="display:flex;flex-direction:column;gap:8px;padding:4px 2px;">
+      <style>
+        .fud-numc-wrap{display:flex;flex-direction:column;gap:8px;padding:4px 2px;}
+        .fud-numc-view{position:relative;overflow:hidden;padding:12px 0;width:288px;max-width:82vw;margin:0 auto;
+          -webkit-mask-image:linear-gradient(90deg,transparent,#000 22%,#000 78%,transparent);
+          mask-image:linear-gradient(90deg,transparent,#000 22%,#000 78%,transparent);}
+        .fud-numc-slot{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+          width:60px;height:46px;border-radius:10px;border:1px solid #5ab3d4;
+          background:rgba(90,179,212,0.16);z-index:0;pointer-events:none;}
+        .fud-numc-scroll{overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;user-select:none;touch-action:pan-x;}
+        .fud-numc-scroll::-webkit-scrollbar{display:none;}
+        .fud-numc-track{display:flex;gap:6px;position:relative;width:max-content;min-width:max-content;}
+        .fud-numc-item{flex:0 0 auto;scroll-snap-align:center;min-width:54px;padding:10px 4px;
+          text-align:center;font-size:19px;font-weight:700;line-height:1;color:inherit;
+          cursor:grab;user-select:none;z-index:1;transition:opacity .06s linear,transform .06s linear;}
+        .fud-numc-grab{cursor:grabbing !important;}
+      </style>
+      <div class="fud-numc-wrap">
         <label style="font-size:13px;">${esc(label)}</label>
-        <input type="number" min="${min}" max="${max}" step="1" value="${def}"
-               class="fud-num-prompt-input" style="width:100%;text-align:center;font-size:16px;"
-               aria-label="${esc(label)}">
-        <div style="font-size:11px;opacity:0.7;">Range ${min}–${max}</div>
+        <div class="fud-numc-view">
+          <div class="fud-numc-slot"></div>
+          <div class="fud-numc-scroll" role="slider" aria-label="${esc(label)}" aria-valuemin="${min}" aria-valuemax="${max}" aria-valuenow="${initial}" tabindex="0">
+            <div class="fud-numc-track">
+              ${opts.map((v) => `<div class="fud-numc-item" data-val="${v}">${v}</div>`).join("")}
+            </div>
+          </div>
+        </div>
+        <div style="font-size:11px;opacity:0.75;text-align:center;">Drag to spin · <b class="fud-numc-sel">${initial}</b> · step ${stp} · ${min}–${max}</div>
       </div>`;
     const dlg = new Dialog({
       title,
       content,
       buttons: {
-        ok: {
-          icon: '<i class="fas fa-check"></i>', label: "Confirm",
-          callback: (html) => {
-            const rootEl = html?.[0] ?? html;
-            const input = rootEl?.querySelector?.(".fud-num-prompt-input");
-            const raw = input ? Number(input.value) : def;
-            done(Math.max(min, Math.min(max, Math.floor(Number.isFinite(raw) ? raw : def))));
-          },
-        },
+        cancel: { icon: '<i class="fas fa-times"></i>', label: "Cancel", callback: () => done(null) },
+        ok: { icon: '<i class="fas fa-check"></i>', label: "Confirm", callback: () => done(selected) },
       },
       default: "ok",
+      // Cancel button / header-X / Escape all resolve null → the caller treats it as
+      // an abort (no selection confirmed), NOT as picking the minimum.
       close: () => done(null),
       render: (html) => {
-        const rootEl = html?.[0] ?? html;
-        const input = rootEl?.querySelector?.(".fud-num-prompt-input");
-        if (input) { try { input.focus(); input.select(); } catch { /* noop */ } }
+        const root = html?.[0] ?? html;
+        const scroll = root?.querySelector?.(".fud-numc-scroll");
+        const track = root?.querySelector?.(".fud-numc-track");
+        const items = Array.from(root?.querySelectorAll?.(".fud-numc-item") ?? []);
+        const selEl = root?.querySelector?.(".fud-numc-sel");
+        if (!scroll || !track || !items.length) return;
+
+        // Pad the track so the FIRST and LAST numbers can still reach the center.
+        // Floor the width at the FIXED viewport width (288) so the padding is correct
+        // even when this runs mid-animate-in while scroll.clientWidth still reads 0 —
+        // that produced 0 padding → no overflow → nothing to drag.
+        const VIEW_W = 288;
+        const setPad = () => {
+          const cw = Math.max(VIEW_W, scroll.clientWidth || 0);
+          const iw = items[0].offsetWidth || 54;
+          const p = Math.max(0, (cw - iw) / 2);
+          track.style.paddingLeft = track.style.paddingRight = `${p}px`;
+        };
+        setPad();
+
+        // Fade + shrink each number by its distance from center; the nearest number
+        // is the live selection. Called SYNCHRONOUSLY (no requestAnimationFrame —
+        // rAF is paused when the tab is backgrounded, which stalled the selection
+        // update) on every scroll and directly during a drag.
+        const update = () => {
+          const cRect = scroll.getBoundingClientRect();
+          const cx = cRect.left + cRect.width / 2;
+          const half = (cRect.width / 2) || 1;
+          let best = null, bestDist = Infinity;
+          for (const it of items) {
+            const r = it.getBoundingClientRect();
+            const dist = Math.abs((r.left + r.width / 2) - cx);
+            const ratio = Math.min(1, dist / half);
+            it.style.opacity = String(Math.max(0.12, 1 - 0.9 * ratio));
+            it.style.transform = `scale(${(1 - 0.34 * ratio).toFixed(3)})`;
+            if (dist < bestDist) { bestDist = dist; best = it; }
+          }
+          if (best) {
+            selected = Number(best.dataset.val);
+            if (selEl) selEl.textContent = String(selected);
+            scroll.setAttribute("aria-valuenow", String(selected));
+          }
+        };
+        scroll.addEventListener("scroll", update, { passive: true });
+
+        const centerOn = (el, smooth = true) => {
+          const cRect = scroll.getBoundingClientRect();
+          const r = el.getBoundingClientRect();
+          scroll.scrollBy({ left: (r.left + r.width / 2) - (cRect.left + cRect.width / 2), behavior: smooth ? "smooth" : "auto" });
+          update();
+        };
+
+        // Vertical wheel → horizontal spin.
+        scroll.addEventListener("wheel", (e) => { if (e.deltaY) { scroll.scrollLeft += e.deltaY; e.preventDefault(); } }, { passive: false });
+
+        // Mouse drag-to-spin. `mousedown` on the strip, but `mousemove`/`mouseup`
+        // on `document` so a fast drag that leaves the strip keeps tracking. Snap is
+        // disabled WHILE dragging — `scroll-snap-type: mandatory` otherwise keeps
+        // yanking scrollLeft back to a snap point, which is exactly what made the
+        // drag look frozen — then re-enabled + centered on release. Touch uses the
+        // native snap-scroll (touch-action: pan-x), so it needs no JS drag.
+        let isDown = false, startX = 0, startScroll = 0, moved = false;
+        const moveDrag = (e) => {
+          if (!isDown) return;
+          const dx = e.clientX - startX;
+          if (Math.abs(dx) > 3) moved = true;
+          scroll.scrollLeft = startScroll - dx;
+          update();
+          e.preventDefault();
+        };
+        const endDrag = () => {
+          if (!isDown) return;
+          isDown = false; scroll.classList.remove("fud-numc-grab");
+          scroll.style.scrollSnapType = "x mandatory";
+          const cRect = scroll.getBoundingClientRect();
+          const cx = cRect.left + cRect.width / 2;
+          let best = null, bd = Infinity;
+          for (const it of items) { const r = it.getBoundingClientRect(); const d = Math.abs((r.left + r.width / 2) - cx); if (d < bd) { bd = d; best = it; } }
+          if (best) centerOn(best);
+        };
+        scroll.addEventListener("mousedown", (e) => {
+          isDown = true; moved = false; startX = e.clientX; startScroll = scroll.scrollLeft;
+          scroll.style.scrollSnapType = "none"; scroll.classList.add("fud-numc-grab");
+          e.preventDefault();
+        });
+        document.addEventListener("mousemove", moveDrag);
+        document.addEventListener("mouseup", endDrag);
+        cleanup = () => {
+          document.removeEventListener("mousemove", moveDrag);
+          document.removeEventListener("mouseup", endDrag);
+        };
+
+        // Click a number to bring it to the center (unless it was a drag).
+        for (const it of items) it.addEventListener("click", () => { if (!moved) centerOn(it); });
+        // Arrow keys nudge the selection.
+        scroll.addEventListener("keydown", (e) => {
+          const i = items.findIndex((x) => Number(x.dataset.val) === selected);
+          if (e.key === "ArrowRight" && i < items.length - 1) { centerOn(items[i + 1]); e.preventDefault(); }
+          else if (e.key === "ArrowLeft" && i > 0) { centerOn(items[i - 1]); e.preventDefault(); }
+        });
+
+        // Center the default value on open, and RE-center whenever the strip's size
+        // changes. Foundry animates the dialog in, so the scroll box often has width
+        // 0 on the first render pass — a single early setPad() then leaves the track
+        // with no padding and (with only a few options) NO scrollable overflow, which
+        // is exactly why the drag moved nothing (scrollLeft pinned at 0). A
+        // ResizeObserver recomputes padding + centering once the real width lands; the
+        // fixed viewport width also guarantees overflow regardless of option count.
+        const initEl = items.find((it) => Number(it.dataset.val) === initial) ?? items[items.length - 1];
+        const recenter = () => { setPad(); const cur = items.find((it) => Number(it.dataset.val) === selected) ?? initEl; centerOn(cur, false); update(); };
+        recenter();
+        setTimeout(recenter, 30);
+        setTimeout(recenter, 200);
+        let ro = null;
+        try { ro = new ResizeObserver(() => recenter()); ro.observe(scroll); } catch (e) { /* noop */ }
+        const dragCleanup = cleanup;
+        cleanup = () => { try { ro?.disconnect(); } catch (e) { /* noop */ } dragCleanup?.(); };
       },
     });
     dlg.render(true);
@@ -6326,6 +6498,7 @@ export async function previewReactionMenu({ casterActor, candidate, payload, dCo
     if (lbl) byLabel.set(lbl, r);
   }
   const menuRows = [];
+  const numberRows = [];   // prompt_number amount pickers reachable from candidate.ref
   let damageNullified = false;   // chain zeroes outgoing damage (Warning Shot)
   const seen = new Set();
   (function walk(label) {
@@ -6338,6 +6511,8 @@ export async function previewReactionMenu({ casterActor, candidate, payload, dCo
       for (const s of String(r.chain_steps ?? "").split(/[,\n]+/g).map((x) => x.trim()).filter(Boolean)) walk(s);
     } else if (kind === "open_action_menu" && r.free_mode !== true) {
       menuRows.push(r);
+    } else if (kind === "prompt_number") {
+      numberRows.push(r);
     } else if (kind === "adjust_damage") {
       const op = String(r.damage_operation ?? "").trim().toLowerCase();
       const stage = String(r.damage_stage ?? "outgoing").trim().toLowerCase();
@@ -6348,12 +6523,37 @@ export async function previewReactionMenu({ casterActor, candidate, payload, dCo
     }
   })(candidate.ref);
 
-  // No menu to resolve — still report damageNullified so the card can strike
-  // the damage panel for a no-menu "deal no damage" reaction.
-  if (!menuRows.length) return { ok: true, cancelled: false, hasMenu: false, picks: [], effects: [], damageNullified };
+  // Run any prompt_number amount pickers at apply-click — the SAME window the
+  // option-menu prompts in. Each opens the scrollable number dialog and stashes
+  // VAR_<NAME> onto ctx.payload._chainVars, the bag the reaction's adjust_cost /
+  // adjust_damage read back at RESOLVE (Cataclysm's overcharge → MP cost + damage).
+  // A dismissed number dialog picks the min (not a cancel, unlike a menu).
+  const numberChips = [];
+  for (const numRow of numberRows) {
+    const res = await applyPromptNumberEffect(numRow, ctx);
+    // Cancelling the amount picker aborts the whole reaction — report cancelled so
+    // recordPillDecision reverts the pill (identical to cancelling an option menu).
+    if (res?.abort) return { ok: true, cancelled: true, hasMenu: true, picks: [], effects: [], damageNullified };
+    const vk = String(numRow.prompt_var ?? "").trim().toLowerCase();
+    const picked = ctx.payload?._chainVars?.[vk];
+    if (picked != null) numberChips.push({ kind: "keyword", keyword: "overcharge", label: `+${picked} MP → +${Math.floor(Number(picked) / 2)} damage` });
+  }
+  // Persist captured chain-vars onto the candidate's payloadAtFire so the
+  // RESOLVE-time cost/damage fold reads them (makeChainContext may hand us a
+  // distinct payload object; payloadAtFire may also have been null).
+  if (ctx.payload?._chainVars) {
+    if (!candidate.payloadAtFire) candidate.payloadAtFire = ctx.payload;
+    else if (ctx.payload !== candidate.payloadAtFire) {
+      candidate.payloadAtFire._chainVars = { ...(candidate.payloadAtFire._chainVars ?? {}), ...ctx.payload._chainVars };
+    }
+  }
+
+  // Nothing interactive to resolve — still report damageNullified so the card can
+  // strike the damage panel for a no-menu "deal no damage" reaction.
+  if (!menuRows.length && !numberRows.length) return { ok: true, cancelled: false, hasMenu: false, picks: [], effects: [], damageNullified };
 
   const chosenLabels = [];
-  const effects = [];
+  const effects = [...numberChips];
   for (const menuRow of menuRows) {
     const { options, optionRows } = buildMenuOptions(menuRow, ctx);
     if (!options.length) continue;

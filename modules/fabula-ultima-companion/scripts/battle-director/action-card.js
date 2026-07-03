@@ -34,6 +34,7 @@ import { displayElement } from "./skill-formulas.js";
 import { lookupTerm } from "./keyword-registry.js";
 import { toggleKeywordTooltip, dismissKeywordTooltip } from "./keyword-tooltip.js";
 import { isAutoFireReactionMode } from "./reaction-modes.js";
+import { resolvesVsMagicDefense } from "./snapshot.js";
 
 // Resolve which active non-GM user owns the given actor doc. Returns
 // userId or null. Deterministic on multi-owner actors (sort by id).
@@ -2769,6 +2770,12 @@ function buildAttackCard({ attacker, weapon, targets, roll, damage, perTargetRes
     totalPasses: totalPasses ?? 0,
   }));
 
+  // A magic-damage weapon (Arc Wand: `defense_target_type: "mdef"`) resolves its
+  // Attack vs Magic Defense — surface that on the card (Magic accuracy icon + MDEF
+  // labels) so the display matches what COMPUTE actually compared against. `isSpell`
+  // is false for an Attack, so the weapon tag is the only thing that flips it.
+  const vsMDef = resolvesVsMagicDefense({ defenseTargetType: weapon?.defenseTargetType, isSpell: false });
+
   return {
     titleIcon,
     titleText,
@@ -2776,9 +2783,9 @@ function buildAttackCard({ attacker, weapon, targets, roll, damage, perTargetRes
     portraits: tryBuild("portraits", () => buildPortraitsHTML({ attacker, perTargetResults })),
     body: `
       ${tryBuild("attacker", () => buildAttackerHTML({ attacker, targets }))}
-      ${tryBuild("accuracy", () => buildAccuracyHTML({ roll, isSpellish: false }))}
+      ${tryBuild("accuracy", () => buildAccuracyHTML({ roll, isSpellish: vsMDef }))}
       ${tryBuild("damage", () => buildDamagePreviewHTML({ damage, roll }))}
-      ${tryBuild("perTarget", () => buildPerTargetHTML({ perTargetResults, weapon, element: damage?.element, roll }))}
+      ${tryBuild("perTarget", () => buildPerTargetHTML({ perTargetResults, weapon, element: damage?.element, roll, isSpellish: vsMDef }))}
       ${tryBuild("attackEffect", () => buildEffectSectionHTML({ descriptionHtml: weapon?.descriptionHtml }))}
     `,
     buttons: buildButtonsHTML({ isFumble: !!roll?.isFumble, invokeCapability: attacker?.invokeCapability ?? "full", invokePointCount: attacker?.invokePointCount ?? null }),
@@ -3943,8 +3950,7 @@ function buildSkillCard(payload) {
   // route vs MDEF without pretending to be a Spell for naming purposes).
   // Mirror of the COMPUTE-side derivation in state-handlers.js.
   const isSpellish = String(skillType ?? "").toLowerCase() === "spell";
-  const dtt = String(defenseTargetType ?? "").toLowerCase();
-  const vsMDef = isSpellish || dtt === "mdef";
+  const vsMDef = resolvesVsMagicDefense({ defenseTargetType, isSpell: isSpellish });
 
   // Title icon — skill image if provided, else a themed fallback icon.
   // Uses the same `fud-bf-title-icon` class as buildAttackCard so the
