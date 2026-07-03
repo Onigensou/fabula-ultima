@@ -37,7 +37,9 @@
         }
       },
       "isCheck": false,
+      "name": "Apple Juice",
       "on_activate_effect_ref": "applejuice_heal",
+      "skill_tags": "potion",
       "skill_target": "One Ally",
       "skill_type": "Item",
       "type_damage": ""

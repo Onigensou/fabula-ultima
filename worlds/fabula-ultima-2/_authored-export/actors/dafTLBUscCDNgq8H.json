@@ -47,7 +47,7 @@
             "appliedAtRound": 0,
             "effectLabel": "hod_refresh",
             "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.wXsDBn7u2gXK9Hbd",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.43doUXTWsLFbtefF",
             "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF",
             "turnsRemaining": null
           },
@@ -358,6 +358,7 @@
           "isCheck": false,
           "name": "Apple Juice",
           "on_activate_effect_ref": "applejuice_heal",
+          "skill_tags": "potion",
           "skill_target": "One Ally",
           "skill_type": "Item",
           "type_damage": ""
@@ -927,8 +928,9 @@
           "effect_table": {
             "0": {
               "$deleted": false,
-              "effect_kind": "open_action_menu",
-              "effect_label": "cat_menu",
+              "chain_steps": "cat_prompt, cat_mp, cat_dmg",
+              "effect_kind": "chain",
+              "effect_label": "cat_root",
               "menu_option_descriptions": "Spend 10 MP for +5 damage to each creature|Spend 20 MP for +10 damage to each creature|Spend 30 MP for +15 damage to each creature",
               "menu_option_labels": "+10 MP → +5 damage|+20 MP → +10 damage|+30 MP → +15 damage",
               "menu_option_refs": "cat_10, cat_20, cat_30",
@@ -941,24 +943,29 @@
               "condition_formula": "SL >= 1 && CUR_MP >= ACTION_MP_COST + 10",
               "disable_ui_type": "dim",
               "disabled_reason": "Not enough MP",
-              "effect_kind": "chain",
-              "effect_label": "cat_10"
+              "effect_kind": "prompt_number",
+              "effect_label": "cat_prompt",
+              "prompt_label": "Overcharge: increase MP cost (+5 damage per 10 MP)",
+              "prompt_max": "min( FLAG_CATACLYSM_MP_CAP + (FLAG_CATACLYSM_MP_CAP == 0) * (SL * 10), floor((CUR_MP - ACTION_MP_COST)/10)*10 )",
+              "prompt_min": "10",
+              "prompt_step": "10",
+              "prompt_var": "overcharge"
             },
             "2": {
               "$deleted": false,
-              "cost_amount": "10",
+              "cost_amount": "VAR_OVERCHARGE",
               "cost_operation": "add",
               "cost_resource": "mp",
               "effect_kind": "adjust_cost",
-              "effect_label": "cat_10_mp"
+              "effect_label": "cat_mp"
             },
             "3": {
               "$deleted": false,
-              "damage_amount": "5",
+              "damage_amount": "VAR_OVERCHARGE / 2",
               "damage_operation": "add",
               "damage_stage": "outgoing",
               "effect_kind": "adjust_damage",
-              "effect_label": "cat_10_dmg"
+              "effect_label": "cat_dmg"
             },
             "4": {
               "$deleted": false,
@@ -1024,8 +1031,8 @@
           "reaction_config_table": {
             "0": {
               "$deleted": false,
-              "condition_formula": "HAS_ARCANE_WEAPON == 1 && ACTION_IS_SPELL == 1 && ACTION_IS_FREE_CAST == 0",
-              "reaction_effect_ref": "cat_menu",
+              "condition_formula": "HAS_ARCANE_WEAPON == 1 && ACTION_IS_SPELL == 1 && ACTION_IS_FREE_CAST == 0 && CUR_MP >= ACTION_MP_COST + 10",
+              "reaction_effect_ref": "cat_root",
               "reaction_passive_mode": "ask",
               "reaction_source": "self",
               "reaction_trigger": "creature_will_deal_damage"
@@ -1099,7 +1106,7 @@
           "human_ef": "100",
           "humanoid_ef": "100",
           "insect_ef": "100",
-          "ip_cost": "",
+          "ip_cost": "1",
           "isEquipped": false,
           "isKey": false,
           "isMartial": false,
@@ -1756,6 +1763,16 @@
           "item_mdef_bonus": "0",
           "item_quantity": 1,
           "item_rarity": "Uncommon",
+          "item_skill_passive": {
+            "emTXtdbsz6owxFeI": {
+              "id": "${item.id}",
+              "name": "Dragontrap Bow (Passive)",
+              "skill_cost": "",
+              "skill_description": "<p>When you hit a Flying target with this weapon, you may force it to land until the end of the round.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.emTXtdbsz6owxFeI"
+            }
+          },
           "item_type": "weapon",
           "mimic_ef": "100",
           "monster_ef": "100",
@@ -1764,6 +1781,14 @@
           "plant_ef": "100",
           "refine_count": "0",
           "refine_level": "0",
+          "related_item_list": {
+            "emTXtdbsz6owxFeI": {
+              "id": "${item.id}",
+              "name": "Dragontrap Bow (Passive)",
+              "related_item_description": "<p>When you hit a Flying target with this weapon, you may force it to land until the end of the round.</p>",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.emTXtdbsz6owxFeI"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
@@ -3431,7 +3456,6 @@
           "damage_bonus": "",
           "defense_target_type": "def",
           "description": "<p>Your maximum Hit Points are permanently increased by an amount equal to your base <strong>Insight</strong> die size (update your maximum HP if this size changes).</p><p>When a conflict scene begins, if you have learned the <strong>Divination</strong> spell, you gain <strong>1 Prophecy Point</strong>. You also gain <strong>1 Prophecy Point</strong> at the start of each even-numbered round (regardless of whether you have learned Divination). You lose all Prophecy Points at the end of each scene.</p><p>When <strong>one or more allies</strong> are threatened by a single attack, spell, or other danger, you may spend <strong>1 Prophecy Point</strong> to take the place of all those allies (any Checks that are part of the danger will be performed against you; you may declare the use of this Skill before or after the Checks have been made). The danger will affect you once for each creature it was threatening (including yourself, if you were among those creatures). Resolve each of these instances separately.</p>",
-          "details_roller": "Show",
           "duration": "",
           "effect_table": {
             "0": {
@@ -3528,9 +3552,7 @@
           "gadget_infusion_tier": "",
           "gadget_magitech_tier": "",
           "heroic_requirement": "You must have mastered one or more Classes among Entropist and Guardian.",
-          "id": "gm2w1NLdaEI7SzaQ",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/nocturnal_sect.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": true,
@@ -3614,8 +3636,7 @@
           "skill_type": "Passive",
           "target_eligibility": "",
           "type_damage": "",
-          "use_optional_params": false,
-          "uuid": "Actor.dafTLBUscCDNgq8H.Item.gm2w1NLdaEI7SzaQ"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -10186,7 +10207,7 @@
       "critical_dice_range": 0,
       "current_hp": "86",
       "current_ip": "6",
-      "current_mp": "109",
+      "current_mp": "80",
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/hina_Cut-in002.png",
       "cut_in_fumble": "",
