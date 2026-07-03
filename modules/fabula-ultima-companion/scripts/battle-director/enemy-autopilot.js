@@ -11,7 +11,8 @@
 // human. The autopilot NEVER emits CONFIRM_ACTION — reactions + confirm stay
 // manual, exactly as a player-declared action.
 //
-// Scope (v1): enemy side only. If a turn can't be automated (no Action Pattern
+// Scope (v2): every non-player combatant — enemies AND GM-owned guest allies
+// (player-owned PCs stay manual). If a turn can't be automated (no Action Pattern
 // configured, nothing feasible, an unsupported command, or an action-gating
 // debuff), the driver returns null and the caller falls back to today's manual
 // composeAction (the GM's Octopath menu). See [[project_action_pattern_ai]] +
@@ -59,8 +60,8 @@ function jitterDelay([min, max]) {
 export function registerAutopilotSetting() {
   try {
     game.settings.register(MODULE_ID, SETTING_KEY, {
-      name: "Enemy Autopilot (Battle Director)",
-      hint: "When on, the Director auto-picks enemy turn order + actions from each monster's Action Pattern, stopping at the action card for you to confirm. Enemies with no Action Pattern fall back to the manual menu.",
+      name: "AI Autopilot (Battle Director)",
+      hint: "When on, the Director auto-drives every non-player combatant (enemies AND GM-owned guest allies) from its Action Pattern — picking turn order + action + targets, stopping at the action card for you to confirm. Player-owned PCs stay manual; any combatant with no Action Pattern falls back to the manual menu.",
       scope: "world",
       config: false,   // toggled via the dev-tools button, not the settings sheet
       type: Boolean,
@@ -87,7 +88,7 @@ export function setAutopilotEnabled(on) {
 // the switch so the GM can flip to/from manual mid-combat with one click.
 function autopilotToolIcon() { return isAutopilotEnabled() ? "🤖" : "🕹️"; }
 function autopilotToolLabel() {
-  return isAutopilotEnabled() ? "Enemy Autopilot: ON (click for manual)" : "Enemy Autopilot: OFF (click to automate)";
+  return isAutopilotEnabled() ? "AI Autopilot: ON (click for manual)" : "AI Autopilot: OFF (click to automate)";
 }
 
 export function registerAutopilotDevTool() {
@@ -98,7 +99,7 @@ export function registerAutopilotDevTool() {
     onClick: async () => {
       await setAutopilotEnabled(!isAutopilotEnabled());
       const on = isAutopilotEnabled();
-      ui.notifications?.info(`Enemy Autopilot ${on ? "ON — Director drives enemy turns up to the action card." : "OFF — enemy turns are manual."}`);
+      ui.notifications?.info(`AI Autopilot ${on ? "ON — Director drives non-player combatants (enemies + guests) up to the action card." : "OFF — all turns are manual."}`);
       register(); // re-register to refresh icon/label (rebuilds the stack if open)
     },
   });
@@ -297,23 +298,29 @@ function toBundle(chosenAction, chosenTargets) {
   return { unsupported: true, reason: `unsupported skill_type "${st}"` };
 }
 
-// ── Gate: is the CURRENT Director turn an autopilot-eligible enemy NPC? ───────
-// v1 scope: enemy side only. Also declines when a player owns the actor AND is
-// online — they puppet that enemy manually. Reads dCombat's current combatant.
-export function isEnemyNpcTurn(director) {
+// ── Gate: is a combatant AI-controlled? ───────────────────────────────────────
+// v2: the signal is player-OWNERSHIP, not side/disposition. BD normalizes every
+// combatant to disposition ±1 at spawn (director-init forces party→1, enemy→-1),
+// so a Guest ally and a PC both read as disposition 1 on the party side —
+// ownership is the only reliable "AI vs player" signal inside a Director battle.
+// A GM-owned combatant (enemy OR guest ally) is AI-controlled; a player-owned
+// actor (a PC) stays manual. Combined with the no-Action-Pattern → manual
+// failsafe, this lets the dev opt any specific GM actor out of AI by leaving its
+// pattern blank. A party-side guest keeps disposition 1, so ActionReader targets
+// the hostiles correctly with no override. See [[project_enemy_autopilot]].
+export function isAiControlledCombatant(dc) {
+  const actor = dc?.actorDoc ?? null;
+  if (!actor) return false;
+  return !actor.hasPlayerOwner;
+}
+
+// Is the CURRENT Director turn an AI-controlled combatant?
+export function isAiControlledTurn(director) {
   try {
     const dc = director?.dCombat;
     if (!dc) return false;
     const cur = dc.combatants?.find?.((c) => c.id === dc.currentCombatantId) ?? null;
-    if (!cur || cur.side !== "enemy") return false;
-    const actor = cur.actorDoc ?? null;
-    if (actor?.hasPlayerOwner) {
-      const ownedOnline = (game.users?.contents ?? []).some(
-        (u) => !u.isGM && u.active && actor.testUserPermission?.(u, "OWNER"),
-      );
-      if (ownedOnline) return false;
-    }
-    return true;
+    return isAiControlledCombatant(cur);
   } catch { return false; }
 }
 
