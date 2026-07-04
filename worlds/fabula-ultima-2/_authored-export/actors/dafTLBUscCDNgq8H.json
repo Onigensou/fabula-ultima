@@ -137,7 +137,7 @@
         "fabula-ultima-companion": {
           "category": "buff",
           "chargeKey": "prophecy",
-          "charges": 2,
+          "charges": 3,
           "chargesMax": 99,
           "directorAppliedBy": {
             "appliedAtRound": 0,

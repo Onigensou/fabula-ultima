@@ -1191,6 +1191,12 @@
         "parent": "VVjpCERIXMrOJna7"
       },
       {
+        "id": "yHtzZ6G9pzixlkhO",
+        "name": "Invoker",
+        "type": "Item",
+        "parent": "341jxGTHbioINnUl"
+      },
+      {
         "id": "NZzmXPcBYP9HDPXd",
         "name": "Item",
         "type": "JournalEntry",
@@ -1987,6 +1993,12 @@
         "name": "Skill",
         "type": "Item",
         "parent": "iyYArFWUv3WCIRcT"
+      },
+      {
+        "id": "OPmGhH0AVmmzKmnE",
+        "name": "Skill",
+        "type": "Item",
+        "parent": "yHtzZ6G9pzixlkhO"
       },
       {
         "id": "QKYuqIfT1r6tKBX0",
@@ -5369,6 +5381,12 @@
         "effects": 0
       },
       {
+        "id": "YEjcdTSeCrkWI9jl",
+        "name": "Elemental Harmony",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "i7XP3i8a8GM70yCF",
         "name": "Elemental Magic",
         "type": "equippableItem",
@@ -7533,6 +7551,12 @@
         "name": "Invocation",
         "type": "equippableItem",
         "effects": 0
+      },
+      {
+        "id": "FXRrLrmoHtcMN5s6",
+        "name": "Invocation",
+        "type": "equippableItem",
+        "effects": 5
       },
       {
         "id": "GQlYVXMoRdjE59jz",
