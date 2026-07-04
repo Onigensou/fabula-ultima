@@ -1,9 +1,9 @@
 {
-  "_id": "wfvBxZq0qkwMMn1G",
+  "_id": "LsQkDSEbvQ7S0b3L",
   "_stats": {
     "compendiumSource": null,
     "coreVersion": "12.343",
-    "createdTime": 1757758821651,
+    "createdTime": 1783158089388,
     "duplicateSource": "Item.88RMlBlB3uXxvzOn",
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
@@ -13,7 +13,7 @@
       "version": "4.6.4"
     }
   },
-  "folder": "QSU5T1V4cEJ856gJ",
+  "folder": "gqx98ag10NwXWzfG",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/MagicalRangedRollAction/drain.png",
   "name": "Symptom Shift",
   "ownership": {
@@ -81,7 +81,7 @@
     "template": "j0F5Msw5RZ8aIB3j",
     "templateSystemUniqueVersion": 2666163373,
     "unique": false,
-    "uniqueId": "wfvBxZq0qkwMMn1G"
+    "uniqueId": "LsQkDSEbvQ7S0b3L"
   },
   "type": "equippableItem"
 }

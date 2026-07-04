@@ -1,0 +1,94 @@
+{
+  "_id": "YEjcdTSeCrkWI9jl",
+  "_stats": {
+    "compendiumSource": "Item.XsODbvZry66Fs6xS",
+    "coreVersion": "12.343",
+    "createdTime": 1783158090003,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "OPmGhH0AVmmzKmnE",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/EMTrans1.png",
+  "name": "Elemental Harmony",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3,
+    "nSGZ1sz1rdKao0kz": 3
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "active_effect_config_table": {},
+      "check_bonus": "0",
+      "class": "Invoker",
+      "cost": "",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>You may verbally communicate with creatures of the <strong>elemental</strong> Species.</p>\n<p>When you restore a creature’s Hit Points with an <strong>invocation</strong> or spell, if an <strong>elemental</strong> is present on the scene, the restored amount is increased by <strong>[SL × 5]</strong>.</p>\n",
+      "duration": "",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "effect_kind": "adjust_grant",
+          "effect_label": "eh_boost",
+          "grant_amount": "SL * 5",
+          "grant_operation": "add",
+          "grant_resource": "hp",
+          "grant_scope": "per_action"
+        }
+      },
+      "heroic_requirement": "",
+      "ignore_hr": false,
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Elemental Harmony",
+      "on_activate_effect_ref": "",
+      "optional_params": {},
+      "reaction_config_table": {
+        "0": {
+          "$deleted": false,
+          "condition_formula": "CREATURE_ELEMENTAL_PRESENT == 1",
+          "reaction_action_kind": "Spell",
+          "reaction_effect_ref": "eh_boost",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_performs_action"
+        },
+        "1": {
+          "$deleted": false,
+          "condition_formula": "SKILL_HAS_TAG_INVOCATION == 1 && CREATURE_ELEMENTAL_PRESENT == 1",
+          "reaction_effect_ref": "eh_boost",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_performs_action"
+        }
+      },
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>Bonus HP Restored</strong></p></td></tr><tr><td><p>1</p></td><td><p>5</p></td></tr><tr><td><p>2</p></td><td><p>10</p></td></tr></tbody></table>",
+      "skill_range": "",
+      "skill_target": "",
+      "skill_type": "Passive",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "YEjcdTSeCrkWI9jl"
+  },
+  "type": "equippableItem"
+}
