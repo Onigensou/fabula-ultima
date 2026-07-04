@@ -3,7 +3,7 @@
   "_stats": {
     "compendiumSource": null,
     "coreVersion": "12.343",
-    "createdTime": 1783107628357,
+    "createdTime": 1783112115372,
     "duplicateSource": null,
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
@@ -14,7 +14,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783108020081,
+        "createdTime": null,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"

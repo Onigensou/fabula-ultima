@@ -1101,12 +1101,6 @@
         "parent": "o9GnW8SK6lk2qkIs"
       },
       {
-        "id": "F7DacseQNZwn9FkF",
-        "name": "Hexer",
-        "type": "Item",
-        "parent": "341jxGTHbioINnUl"
-      },
-      {
         "id": "QfTUK4kRvO3ww1hK",
         "name": "Hexer",
         "type": "Item",
@@ -1189,12 +1183,6 @@
         "name": "Invoker",
         "type": "Item",
         "parent": "VVjpCERIXMrOJna7"
-      },
-      {
-        "id": "yHtzZ6G9pzixlkhO",
-        "name": "Invoker",
-        "type": "Item",
-        "parent": "341jxGTHbioINnUl"
       },
       {
         "id": "NZzmXPcBYP9HDPXd",
@@ -1995,12 +1983,6 @@
         "parent": "iyYArFWUv3WCIRcT"
       },
       {
-        "id": "OPmGhH0AVmmzKmnE",
-        "name": "Skill",
-        "type": "Item",
-        "parent": "yHtzZ6G9pzixlkhO"
-      },
-      {
         "id": "QKYuqIfT1r6tKBX0",
         "name": "Skill",
         "type": "Item",
@@ -2125,12 +2107,6 @@
         "name": "Spell",
         "type": "Item",
         "parent": "dDUDRyua0YhbSGGC"
-      },
-      {
-        "id": "gqx98ag10NwXWzfG",
-        "name": "Spell",
-        "type": "Item",
-        "parent": "F7DacseQNZwn9FkF"
       },
       {
         "id": "w7ey5G3zPC78EXos",
@@ -3128,7 +3104,7 @@
         "id": "kBVCZiHd3Y8Fd7VH",
         "name": "Arc Wand",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "36xO7InIbrbVP2Kx",
@@ -5381,12 +5357,6 @@
         "effects": 0
       },
       {
-        "id": "YEjcdTSeCrkWI9jl",
-        "name": "Elemental Harmony",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "i7XP3i8a8GM70yCF",
         "name": "Elemental Magic",
         "type": "equippableItem",
@@ -6419,13 +6389,13 @@
         "effects": 0
       },
       {
-        "id": "g74cJxJ4guXSyVlJ",
+        "id": "YDxWAJAtZKlH5Xo7",
         "name": "Glacies Finis",
         "type": "equippableItem",
         "effects": 0
       },
       {
-        "id": "rbGbxQreSOzdidNQ",
+        "id": "g74cJxJ4guXSyVlJ",
         "name": "Glacies Finis",
         "type": "equippableItem",
         "effects": 0
@@ -7551,12 +7521,6 @@
         "name": "Invocation",
         "type": "equippableItem",
         "effects": 0
-      },
-      {
-        "id": "FXRrLrmoHtcMN5s6",
-        "name": "Invocation",
-        "type": "equippableItem",
-        "effects": 5
       },
       {
         "id": "GQlYVXMoRdjE59jz",
@@ -11819,12 +11783,6 @@
         "effects": 0
       },
       {
-        "id": "LsQkDSEbvQ7S0b3L",
-        "name": "Symptom Shift",
-        "type": "equippableItem",
-        "effects": 0
-      },
-      {
         "id": "wfvBxZq0qkwMMn1G",
         "name": "Symptom Shift",
         "type": "equippableItem",
@@ -14370,13 +14328,6 @@
       {
         "id": "w2Ugj35nARiZpvV4",
         "name": "Battle Rank",
-        "type": "character",
-        "items": [],
-        "effects": 1
-      },
-      {
-        "id": "UjhCpvsMnREAifEx",
-        "name": "BD Dummy Enemy",
         "type": "character",
         "items": [],
         "effects": 1
@@ -17750,14 +17701,6 @@
             "name": "Dragontrap Bow"
           },
           {
-            "id": "eSIh2SB8tc4Ux4vz",
-            "name": "Dragontrap Bow"
-          },
-          {
-            "id": "52LOaEsbEpFYhbru",
-            "name": "Dragontrap Bow (Passive)"
-          },
-          {
             "id": "emTXtdbsz6owxFeI",
             "name": "Dragontrap Bow (Passive)"
           },
@@ -17946,7 +17889,7 @@
             "name": "Zero Trigger: Foresight"
           }
         ],
-        "effects": 4
+        "effects": 2
       },
       {
         "id": "tzXbVfDYPgvu5wml",
@@ -22803,7 +22746,7 @@
             "name": "Zero Trigger: Strategy"
           }
         ],
-        "effects": 3
+        "effects": 2
       },
       {
         "id": "eovuAdwJdbtn8rOr",

@@ -67,7 +67,7 @@
             "reaction_config_table": {
               "0": {
                 "$deleted": false,
-                "condition_formula": "HAS_STATUS_NINJA_LOG_SPENT == 0 && INCOMING_DAMAGE > 0",
+                "condition_formula": "HAS_STATUS_NINJA_LOG_SPENT == 0",
                 "reaction_effect_ref": "ninjalog_nullify",
                 "reaction_passive_mode": "force",
                 "reaction_source": "self",

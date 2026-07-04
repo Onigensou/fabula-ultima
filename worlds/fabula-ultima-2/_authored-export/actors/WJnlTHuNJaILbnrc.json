@@ -404,7 +404,7 @@
           "uuid": "Actor.9yadoDh5EhIWpevl.Item.xvg5HXcwBOWPWpyr"
         }
       },
-      "npc_rank": "",
+      "npc_rank": "soldier",
       "rare": false,
       "resource_maxValue_1": "0",
       "resource_maxValue_2": "0",
@@ -446,7 +446,7 @@
         }
       },
       "spear_ef": "100",
-      "species": "",
+      "species": "ELEMENTAL",
       "sprite_battle": "",
       "sprite_standard": "",
       "steal_percentage_table": {},

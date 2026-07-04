@@ -32,29 +32,6 @@
       "defense_target_type": "def",
       "description": "<p>You draw sickness away from an ally and pass it onto your enemy. The target recovers from <strong>all status effects</strong>. Then choose one of the status effects the target recovered from and another creature you can see. The chosen creature suffers the chosen status effect.</p>\n",
       "duration": "Instantaneous",
-      "effect_table": {
-        "0": {
-          "$deleted": false,
-          "candidate_source": "combat",
-          "count": 1,
-          "effect_kind": "targeting",
-          "effect_label": "ss_dest",
-          "menu_subtitle": "Choose another creature you can see",
-          "menu_title": "Symptom Shift — pass the sickness to?",
-          "mode": "exact"
-        },
-        "1": {
-          "$deleted": false,
-          "count": "all",
-          "effect_kind": "transfer_ae",
-          "effect_label": "ss_move",
-          "filter_tag": "debuff",
-          "from_ref": "action_targets",
-          "menu_subtitle": "These status effects move to the chosen creature",
-          "menu_title": "Symptom Shift — passing these on",
-          "target_ref": "ss_dest"
-        }
-      },
       "heroic_requirement": "",
       "isCheck": false,
       "isFacet": true,
@@ -64,9 +41,7 @@
       "level": "1",
       "max_level": "1",
       "name": "Symptom Shift",
-      "on_activate_effect_ref": "ss_move",
       "optional_params": {},
-      "pre_activate_effect_ref": "ss_dest",
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_default": "",

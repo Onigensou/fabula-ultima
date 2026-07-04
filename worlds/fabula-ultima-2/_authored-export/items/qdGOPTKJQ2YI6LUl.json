@@ -62,9 +62,15 @@
                 "damage_operation": "cap",
                 "damage_stage": "incoming",
                 "effect_kind": "adjust_damage",
-                "effect_label": "bortd_cap"
+                "effect_label": "bortd_cap",
+                "grant_amount": "SL * AE_CHARGES_GRAVE_POINTS",
+                "grant_resource": "hp",
+                "target_ref": "bortd_self"
               },
               "3": {
+                "charge_ae_name": "Grave Points",
+                "charge_amount": "0",
+                "charge_operation": "set",
                 "effect_kind": "grant",
                 "effect_label": "bortd_heal",
                 "grant_amount": "SL_BEYOND_THE_REALMS_OF_DEATH * AE_CHARGES_GRAVE_POINTS - 1",
@@ -72,6 +78,34 @@
                 "target_ref": "self"
               },
               "4": {
+                "charge_ae_name": "Grave Points",
+                "charge_amount": "0",
+                "charge_operation": "set",
+                "effect_kind": "adjust_charges",
+                "effect_label": "bortd_zero",
+                "target_ref": "self"
+              },
+              "bortd_cap": {
+                "consume_self": true,
+                "damage_amount": "CUR_HP - 1",
+                "damage_operation": "cap",
+                "damage_stage": "incoming",
+                "effect_kind": "adjust_damage",
+                "effect_label": "bortd_cap"
+              },
+              "bortd_death": {
+                "chain_steps": "bortd_cap, bortd_heal, bortd_zero",
+                "effect_kind": "chain",
+                "effect_label": "bortd_death"
+              },
+              "bortd_heal": {
+                "effect_kind": "grant",
+                "effect_label": "bortd_heal",
+                "grant_amount": "SL_BEYOND_THE_REALMS_OF_DEATH * AE_CHARGES_GRAVE_POINTS - 1",
+                "grant_resource": "hp",
+                "target_ref": "self"
+              },
+              "bortd_zero": {
                 "charge_ae_name": "Grave Points",
                 "charge_amount": "0",
                 "charge_operation": "set",
