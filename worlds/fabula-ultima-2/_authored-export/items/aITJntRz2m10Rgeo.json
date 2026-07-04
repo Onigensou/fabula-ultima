@@ -54,6 +54,7 @@
       "beast_ef": "100",
       "category": "Arcane",
       "celestial_ef": "100",
+      "check": "Check",
       "check_bonus": "0",
       "construct_ef": "100",
       "damage_bonus": "0",
@@ -79,6 +80,8 @@
       "hand_slots": "One-handed",
       "human_ef": "100",
       "humanoid_ef": "100",
+      "id": "aITJntRz2m10Rgeo",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
       "insect_ef": "100",
       "ip_cost": "2",
       "isEquipped": false,
@@ -95,12 +98,30 @@
       "item_mdef_bonus": "0",
       "item_quantity": "1",
       "item_rarity": "Common",
+      "item_skill_active": {
+        "VNg8JKR5sUjqgdNb": {
+          "id": "${item.id}",
+          "name": "Café au Lait",
+          "skill_cost": "-",
+          "skill_description": "<p><em>Café au Lait:</em> you gain Swift.</p>",
+          "skill_maxLevel": "",
+          "uuid": "Item.VNg8JKR5sUjqgdNb"
+        }
+      },
       "item_type": "consumable",
       "mimic_ef": "100",
       "monster_ef": "100",
       "name": "Café au Lait",
       "optional_params": {},
       "plant_ef": "100",
+      "related_item_list": {
+        "VNg8JKR5sUjqgdNb": {
+          "id": "${item.id}",
+          "name": "Café au Lait",
+          "related_item_description": "<p><em>Café au Lait:</em> you gain Swift.</p>",
+          "uuid": "Item.VNg8JKR5sUjqgdNb"
+        }
+      },
       "reptilian_ef": "100",
       "rolled_atr1": "DEX",
       "rolled_atr2": "DEX",
@@ -108,8 +129,9 @@
       "skill_target": "Self",
       "soldier_ef": "100",
       "spirit_ef": "100",
-      "type_damage": "",
+      "type_damage": "Physical",
       "undead_ef": "100",
+      "uuid": "Item.aITJntRz2m10Rgeo",
       "vehicle_ef": "100",
       "weapon_range": "Melee"
     },

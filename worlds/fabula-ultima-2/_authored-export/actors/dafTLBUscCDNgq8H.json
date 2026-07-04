@@ -10,89 +10,17 @@
   },
   "effects": [
     {
-      "_id": "rdxrgvS1o4iqn9ej",
+      "_id": "WPEoRZOK1x4yTM3Q",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783148619374,
+        "createdTime": 1783191253206,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
       "changes": [],
-      "description": "<p><em>Heart of Darkness:</em> armed for this scene.</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": null,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "TQINaXFTRwWZBJvx",
-          "originalParentId": "EGYilCNAGvl2BldF",
-          "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF.ActiveEffect.TQINaXFTRwWZBJvx"
-        },
-        "fabula-ultima-companion": {
-          "category": "buff",
-          "chargeKey": "hod_ready",
-          "charges": 1,
-          "chargesMax": 1,
-          "directorAppliedBy": {
-            "appliedAtRound": 0,
-            "effectLabel": "hod_refresh",
-            "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.ONYiZOx2xlE9JlHg",
-            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF",
-            "turnsRemaining": null
-          },
-          "directorPermanent": true
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "icons/magic/unholy/silhouette-evil-horned-giant.webp",
-      "name": "Heart of Darkness Ready",
-      "origin": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF",
-      "sort": 0,
-      "statuses": [
-        "fud-heart-of-darkness-ready"
-      ],
-      "system": {},
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "vgm6FKWWbEAlRq3B",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1783148619374,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [
-        {
-          "key": "extra_damage_mod_all",
-          "mode": 2,
-          "priority": null,
-          "value": "1"
-        }
-      ],
-      "description": "<p>Campfire skewers marinated with wild berry vinegar. Everyone who eats gains <strong>+1 bonus damage</strong> until the next rest.</p>",
+      "description": "",
       "disabled": false,
       "duration": {
         "combat": null,
@@ -106,19 +34,14 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "vgm6FKWWbEAlRq3B",
+          "originalId": "WPEoRZOK1x4yTM3Q",
           "originalParentId": "dafTLBUscCDNgq8H",
-          "originalUuid": "Actor.dafTLBUscCDNgq8H.ActiveEffect.vgm6FKWWbEAlRq3B"
+          "originalUuid": "Actor.dafTLBUscCDNgq8H.ActiveEffect.WPEoRZOK1x4yTM3Q"
         },
         "fabula-ultima-companion": {
           "campRestCharges": 0,
-          "cookingDish": {
-            "dishId": "G0tvPWqwJHkdwoFQ",
-            "family": "sour",
-            "instant": {},
-            "tier": 1
-          },
-          "foodBuff": true
+          "curseCasterId": "dafTLBUscCDNgq8H",
+          "curseTier": "good"
         },
         "statuscounter": {
           "config": {
@@ -129,18 +52,14 @@
           "visible": false
         }
       },
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Genshin/Item_Chicken-Mushroom_Skewer.webp",
-      "name": "Tangy Trailside Skewer",
-      "origin": "Item.G0tvPWqwJHkdwoFQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/VoidPrincessPassive2.png",
+      "name": "Curse (Bad)",
+      "origin": "Actor.dafTLBUscCDNgq8H",
       "sort": 0,
       "statuses": [
         "permanent"
       ],
-      "system": {
-        "tags": [
-          "food"
-        ]
-      },
+      "system": {},
       "tint": "#ffffff",
       "transfer": false,
       "type": "base"
@@ -999,6 +918,138 @@
       "type": "equippableItem"
     },
     {
+      "_id": "5S2EaoKlYMGW2WMw",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783189284691,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "weapon",
+            "fromTemplate": "gIRU9XGqYeMBwBN9",
+            "itemId": "ul6xqem2wH1VnYQK",
+            "itemName": "Glowstick",
+            "pickedOldProps": {
+              "cost": "2300",
+              "martial": false
+            },
+            "ts": 1769646981420
+          }
+        }
+      },
+      "folder": "QGuy8DVLgrvQqs1c",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wand.png",
+      "name": "Glowstick",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 1100000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "5",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul>\n<li>Once per round, when you&nbsp;<strong>hit&nbsp;</strong>one or more creature with this weapon, you may have it deal <strong>0</strong> damage, if you do, choose an ally other than yourself who have the <strong>Chanter </strong>or <strong>Dancer</strong>&nbsp;class, that ally perform a&nbsp;<strong>Free Action,&nbsp;</strong>that action must be used to perform a&nbsp;<strong>Magichant </strong>or<strong> Dance.</strong></li>\n</ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flavor_text": "<p><em>\"Show you greatest support\"</em></p>",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "5S2EaoKlYMGW2WMw",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wand.png",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": true,
+          "isIngredient": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "2300",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Uncommon",
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Glowstick",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "WLP",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.5S2EaoKlYMGW2WMw",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "ul6xqem2wH1VnYQK"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "6XI1fEBsEfNZdl2y",
       "_stats": {
         "compendiumSource": "Item.BykEf2Th3dTmg02o",
@@ -1233,6 +1284,262 @@
         "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "quJxn5TAZFaY5i7C"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "7vAXk1MSNgYfTjQx",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783185264238,
+        "duplicateSource": "Item.MWH6Za46Bjii884i",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "category": "skill",
+            "detectedType": "action_v1",
+            "fromTemplate": "FZmpKcQRP7hZQqbV",
+            "itemId": "g74cJxJ4guXSyVlJ",
+            "itemName": "Glacies Finis",
+            "pickedOldProps": {
+              "check_bonus": "0",
+              "class": "Elementalist",
+              "cost": "30 x T MP",
+              "damage_bonus": "30",
+              "description": "<p>You cause a glacial avalanche. Each target hit by this spell suffers <strong>【HR + 30】</strong>ice damage.</p><p><strong>Opportunity:</strong> Each target hit by this spell suffers <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.J4fv0XKFy678UIn8\" data-id=\"J4fv0XKFy678UIn8\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fatigue</span></strong></a></span></p>",
+              "discipline": "elementalism",
+              "duration": "Instantaneous",
+              "id": "g74cJxJ4guXSyVlJ",
+              "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/blizzard_II.png",
+              "name": "Glacies Finis",
+              "rolled_atr1": "INS",
+              "rolled_atr2": "WLP",
+              "target": "Up to three creatures",
+              "type_damage": "ice",
+              "uuid": "Item.g74cJxJ4guXSyVlJ"
+            },
+            "ts": 1770020388745
+          }
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/blizzard_II.png",
+      "name": "Glacies Finis",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 500000,
+      "system": {
+        "container": "uDik6IiSPpoJiNwF",
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "Elementalist",
+          "cost": "30 x T MP",
+          "damage_bonus": "35",
+          "defense_target_type": "def",
+          "description": "<p>You cause a glacial avalanche. Each target hit by this spell suffers <strong>【HR + 35】</strong>ice damage.</p><p><strong>Opportunity:</strong> Each target hit by this spell suffers <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.J4fv0XKFy678UIn8\" data-id=\"J4fv0XKFy678UIn8\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fatigue</span></strong></a></span></span></p>",
+          "details_roller": "Show",
+          "duration": "Instantaneous",
+          "effect_table": {},
+          "gadget_alchemy_tier": "",
+          "gadget_infusion_tier": "",
+          "gadget_magitech_tier": "",
+          "heroic_requirement": "",
+          "id": "g74cJxJ4guXSyVlJ",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/blizzard_II.png",
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": true,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Glacies Finis",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "pre_activate_effect_ref": "",
+          "reaction_config_table": {},
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_tags": "",
+          "skill_target": "Up to three creatures",
+          "skill_type": "Spell",
+          "target_eligibility": "",
+          "type_damage": "ice",
+          "use_optional_params": false,
+          "uuid": "Item.g74cJxJ4guXSyVlJ"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "YDxWAJAtZKlH5Xo7"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "9GquE1k7ZaVvMLfS",
+      "_stats": {
+        "compendiumSource": "Item.sHMfimeSyKQcj8bM",
+        "coreVersion": "12.343",
+        "createdTime": 1783189086411,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/2126.gif",
+      "name": "Shield of Rejuvenation",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>At the start of your turn, you recovers <strong>10%</strong> of your <strong>Max HP</strong></p></li></ul>",
+          "dragon_ef": "100",
+          "effect_table": {},
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "sHMfimeSyKQcj8bM",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/2126.gif",
+          "ingredient_taste": "",
+          "ingredient_taste2": "",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": true,
+          "isIngredient": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "1700",
+          "item_def_bonus": "1",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Uncommon",
+          "item_type": "shield",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Shield of Rejuvenation",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reaction_config_table": {},
+          "recipe_dish_uuid": "",
+          "recipe_kind": "",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "<Set Name>",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.sHMfimeSyKQcj8bM",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "sHMfimeSyKQcj8bM"
       },
       "type": "equippableItem"
     },
@@ -1667,39 +1974,50 @@
       "type": "equippableItem"
     },
     {
-      "_id": "bsG2aZEMX2Glb3pI",
+      "_id": "C3K6l9Rih0rhVrrE",
       "_stats": {
-        "compendiumSource": "Item.Qex8FZz4dvDcBmlz",
+        "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783148616011,
-        "duplicateSource": null,
+        "createdTime": 1783172932431,
+        "duplicateSource": "Item.MWH6Za46Bjii884i",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
       "flags": {
-        "core": {
-          "sourceId": "Item.Qex8FZz4dvDcBmlz"
-        },
         "custom-system-builder": {
-          "version": "3.2.4"
+          "version": "4.6.4"
         },
         "fucompanion": {
           "itemMigratorBackup": {
-            "detectedType": "weapon",
-            "fromTemplate": "gIRU9XGqYeMBwBN9",
-            "itemId": "D32pUz6M6e1smWrB",
-            "itemName": "Dragontrap Bow",
+            "category": "skill",
+            "detectedType": "action_v1",
+            "fromTemplate": "FZmpKcQRP7hZQqbV",
+            "itemId": "g74cJxJ4guXSyVlJ",
+            "itemName": "Glacies Finis",
             "pickedOldProps": {
-              "cost": "1500",
-              "martial": true
+              "check_bonus": "0",
+              "class": "Elementalist",
+              "cost": "30 x T MP",
+              "damage_bonus": "30",
+              "description": "<p>You cause a glacial avalanche. Each target hit by this spell suffers <strong>【HR + 30】</strong>ice damage.</p><p><strong>Opportunity:</strong> Each target hit by this spell suffers <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.J4fv0XKFy678UIn8\" data-id=\"J4fv0XKFy678UIn8\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fatigue</span></strong></a></span></p>",
+              "discipline": "elementalism",
+              "duration": "Instantaneous",
+              "id": "g74cJxJ4guXSyVlJ",
+              "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/blizzard_II.png",
+              "name": "Glacies Finis",
+              "rolled_atr1": "INS",
+              "rolled_atr2": "WLP",
+              "target": "Up to three creatures",
+              "type_damage": "ice",
+              "uuid": "Item.g74cJxJ4guXSyVlJ"
             },
-            "ts": 1769647000242
+            "ts": 1770020388745
           }
         }
       },
-      "folder": "gkxeb18rMnUvyuqk",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bow.png",
-      "name": "Dragontrap Bow",
+      "folder": "S67qnepouidEkCm0",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/blizzard_II.png",
+      "name": "Glacies Finis",
       "ownership": {
         "2vy7wrEUqBy0kzsU": 3,
         "6DmgigM5jq76r0Gd": 3,
@@ -1727,93 +2045,61 @@
         "yL2PQxh3R9ddt0te": 3,
         "yUfwoVmEPVdFG3AY": 3
       },
-      "sort": 900000,
+      "sort": 500000,
       "system": {
-        "container": null,
+        "container": "GjHWixk5ZMiE4jk8",
         "props": {
           "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "Bow",
-          "celestial_ef": "100",
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
           "check_bonus": "0",
-          "construct_ef": "100",
-          "damage_bonus": "12",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
-          "description": "<ul><li><p>When you hit a <strong>@UUID[JournalEntry.q6keqwDWUsEgSWDw]{Flying}</strong>&nbsp;target with this weapon, you may force that target to land immediately</p></li></ul>",
-          "dragon_ef": "100",
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flavor_text": "",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "Two-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "insect_ef": "100",
-          "ip_cost": "",
-          "isEquipped": false,
-          "isKey": false,
-          "isMartial": true,
-          "isModule": false,
-          "isRelatedItem": false,
-          "isSet": false,
-          "isUnique": false,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "1500",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": 1,
-          "item_rarity": "Uncommon",
-          "item_skill_passive": {
-            "emTXtdbsz6owxFeI": {
-              "id": "${item.id}",
-              "name": "Dragontrap Bow (Passive)",
-              "skill_cost": "",
-              "skill_description": "<p>When you hit a Flying target with this weapon, you may force it to land until the end of the round.</p>",
-              "skill_maxLevel": "",
-              "uuid": "Actor.dafTLBUscCDNgq8H.Item.emTXtdbsz6owxFeI"
-            }
-          },
-          "item_type": "weapon",
-          "mimic_ef": "100",
-          "monster_ef": "100",
-          "name": "Dragontrap Bow",
+          "class": "Elementalist",
+          "cost": "30 x T MP",
+          "damage_bonus": "35",
+          "defense_target_type": "def",
+          "description": "<p>You cause a glacial avalanche. Each target hit by this spell suffers <strong>【HR + 35】</strong>ice damage.</p><p><strong>Opportunity:</strong> Each target hit by this spell suffers <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.J4fv0XKFy678UIn8\" data-id=\"J4fv0XKFy678UIn8\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fatigue</span></strong></a></span></span></p>",
+          "details_roller": "Show",
+          "duration": "Instantaneous",
+          "effect_table": {},
+          "gadget_alchemy_tier": "",
+          "gadget_infusion_tier": "",
+          "gadget_magitech_tier": "",
+          "heroic_requirement": "",
+          "id": "mOhAyd6CoAqe7YP5",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/13_BLM/blizzard_II.png",
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": true,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Glacies Finis",
+          "on_activate_effect_ref": "",
           "optional_params": {},
-          "plant_ef": "100",
-          "refine_count": "0",
-          "refine_level": "0",
-          "related_item_list": {
-            "emTXtdbsz6owxFeI": {
-              "id": "${item.id}",
-              "name": "Dragontrap Bow (Passive)",
-              "related_item_description": "<p>When you hit a Flying target with this weapon, you may force it to land until the end of the round.</p>",
-              "uuid": "Actor.dafTLBUscCDNgq8H.Item.emTXtdbsz6owxFeI"
-            }
-          },
-          "reptilian_ef": "100",
-          "rolled_atr1": "DEX",
-          "rolled_atr2": "DEX",
-          "set_name": "",
-          "skill_target": "One Enemy",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "Earth",
-          "undead_ef": "100",
-          "vehicle_ef": "100",
-          "weapon_range": "Ranged"
+          "pre_activate_effect_ref": "",
+          "reaction_config_table": {},
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_tags": "",
+          "skill_target": "Up to three creatures",
+          "skill_type": "Spell",
+          "target_eligibility": "",
+          "type_damage": "ice",
+          "use_optional_params": false,
+          "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.mOhAyd6CoAqe7YP5"
         },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
-        "uniqueId": "D32pUz6M6e1smWrB"
+        "uniqueId": "g74cJxJ4guXSyVlJ"
       },
       "type": "equippableItem"
     },
@@ -2097,7 +2383,7 @@
             }
           ],
           "description": "",
-          "disabled": false,
+          "disabled": true,
           "duration": {
             "combat": null,
             "rounds": null,
@@ -2172,7 +2458,7 @@
             }
           ],
           "description": "",
-          "disabled": false,
+          "disabled": true,
           "duration": {
             "combat": null,
             "rounds": null,
@@ -2240,7 +2526,7 @@
             }
           ],
           "description": "Increase Max HP",
-          "disabled": false,
+          "disabled": true,
           "duration": {
             "combat": null,
             "rounds": null,
@@ -2304,7 +2590,7 @@
             }
           ],
           "description": "",
-          "disabled": false,
+          "disabled": true,
           "duration": {
             "combat": null,
             "rounds": null,
@@ -2515,7 +2801,7 @@
           "humanoid_ef": "100",
           "insect_ef": "100",
           "ip_cost": "",
-          "isEquipped": true,
+          "isEquipped": false,
           "isKey": false,
           "isMartial": true,
           "isModule": false,
@@ -2552,69 +2838,6 @@
         "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "U1WUGQw6hkUo1La7"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "emTXtdbsz6owxFeI",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1783148616011,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.8.5"
-        }
-      },
-      "folder": null,
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
-      "name": "Dragontrap Bow (Passive)",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 0
-      },
-      "sort": 0,
-      "system": {
-        "container": "bsG2aZEMX2Glb3pI",
-        "props": {
-          "cost": "",
-          "description": "<p>When you hit a Flying target with this weapon, you may force it to land until the end of the round.</p>",
-          "effect_table": {
-            "0": {
-              "$deleted": false,
-              "ae_template_ref": "Grounded",
-              "effect_kind": "apply_ae",
-              "effect_label": "dt_ground",
-              "target_ref": "trigger_subject"
-            }
-          },
-          "isCheck": false,
-          "name": "Dragontrap Bow (Passive)",
-          "on_activate_effect_ref": "",
-          "reaction_config_table": {
-            "0": {
-              "$deleted": false,
-              "condition_formula": "TARGET_IS_FLYING == 1",
-              "reaction_action_intent": "",
-              "reaction_effect_ref": "dt_ground",
-              "reaction_passive_mode": "ask",
-              "reaction_requires_weapon_used": true,
-              "reaction_source": "self",
-              "reaction_trigger": "creature_deals_damage"
-            }
-          },
-          "skill_target": "Self",
-          "skill_type": "Passive",
-          "type_damage": ""
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "AQqb37jPpVi1h6j6"
       },
       "type": "equippableItem"
     },
@@ -2979,6 +3202,165 @@
       "type": "equippableItem"
     },
     {
+      "_id": "GjHWixk5ZMiE4jk8",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783172931586,
+        "duplicateSource": "Item.a7ZGvZGyPR5NZXOK",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.4.2"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "weapon",
+            "fromTemplate": "gIRU9XGqYeMBwBN9",
+            "itemId": "8mXI5OJRvKbBpmsm",
+            "itemName": "Arch Ice Wand",
+            "pickedOldProps": {
+              "cost": "3000",
+              "martial": false
+            },
+            "ts": 1769646981364
+          }
+        }
+      },
+      "folder": "QGuy8DVLgrvQqs1c",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1626.gif",
+      "name": "Arch Ice Wand",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 700000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "5",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul>\n    <li>\n        <p>This weapon deals <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-type=\"JournalEntry\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(61, 166, 255) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Magic Damage</span></strong></a></span></span></p>\n    </li>\n    <li>\n        <p>You may cast the spell 【<strong>⚡ Glacies Finis </strong>】</p>\n        <hr class=\"\">\n    </li>\n</ul>\n<details>\n    <summary><strong>⚡ Glacies Finis</strong></summary>\n    <p><strong>Cost:</strong> 30 x T MP</p>\n    <p><strong>Target:</strong> Up to three creatures</p>\n    <p><strong>Duration:</strong> Instantaneous</p>\n    <p><strong>Check:【INS】</strong> + <strong>【WLP】</strong></p>\n    <p>You cause a glacial avalanche. Each target hit by this spell suffers 【HR + 35】ice damage. Opportunity: Each target hit by this spell suffers Fatigue.</p>\n</details>",
+          "dragon_ef": "100",
+          "effect_table": {},
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "Two-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "k8ZtjB1OJJ1AFYkU",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1626.gif",
+          "ingredient_taste": "",
+          "ingredient_taste2": "",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isIngredient": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": true,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "3000",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Rare",
+          "item_skill_active": {
+            "mOhAyd6CoAqe7YP5": {
+              "id": "${item.id}",
+              "name": "Glacies Finis",
+              "skill_cost": "30 x T MP",
+              "skill_description": "<p>You cause a glacial avalanche. Each target hit by this spell suffers <strong>【HR + 35】</strong>ice damage.</p><p><strong>Opportunity:</strong> Each target hit by this spell suffers <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.J4fv0XKFy678UIn8\" data-id=\"J4fv0XKFy678UIn8\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fatigue</span></strong></a></span></span></p>",
+              "skill_maxLevel": 1,
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.mOhAyd6CoAqe7YP5"
+            }
+          },
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Arch Ice Wand",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reaction_config_table": {},
+          "recipe_dish_uuid": "",
+          "recipe_kind": "",
+          "refine_count": "0",
+          "refine_level": "0",
+          "related_item_list": {
+            "mOhAyd6CoAqe7YP5": {
+              "id": "${item.id}",
+              "name": "Glacies Finis",
+              "related_item_description": "<p>You cause a glacial avalanche. Each target hit by this spell suffers <strong>【HR + 35】</strong>ice damage.</p><p><strong>Opportunity:</strong> Each target hit by this spell suffers <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.J4fv0XKFy678UIn8\" data-id=\"J4fv0XKFy678UIn8\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fatigue</span></strong></a></span></span></p>",
+              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.mOhAyd6CoAqe7YP5"
+            }
+          },
+          "reptilian_ef": "100",
+          "rolled_atr1": "WLP",
+          "rolled_atr2": "WLP",
+          "set_name": "",
+          "skill_tags": "",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Ice",
+          "undead_ef": "100",
+          "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.k8ZtjB1OJJ1AFYkU",
+          "vehicle_ef": "100",
+          "weapon_range": "Ranged"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "8mXI5OJRvKbBpmsm"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "GLE6h2EmyLBSYgRX",
       "_stats": {
         "compendiumSource": "Item.ROQw6telXF9qyZC8",
@@ -3014,7 +3396,7 @@
             }
           ],
           "description": "<p>Gain resistance to <span style=\"text-decoration:underline\"><span style=\"font-family:Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;scrollbar-color:var(--color-scrollbar) var(--color-scrollbar-track);cursor:pointer;--content-link-background:rgba(0, 0, 0, 0.1);background-image:none !important;background-position:initial !important;background-size:initial !important;background-repeat:initial !important;background-attachment:initial !important;background-origin:initial !important;background-clip:initial !important;background-color:rgb(102, 102, 102);padding:0px !important;border:none !important;border-radius:2px;white-space:nowrap;word-break:break-all;color:rgb(72, 199, 116) !important;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:rgb(168, 255, 187) 0px 0px 4px;font-family:Signika, sans-serif;font-size:14px;font-style:normal;font-variant-ligatures:normal;font-variant-caps:normal;letter-spacing:normal;orphans:2;text-align:start;text-indent:0px;text-transform:none;widows:2;word-spacing:0px;-webkit-text-stroke-width:0px\"><strong><span style=\"text-decoration:underline\">Air</span></strong></a><strong><span style=\"text-decoration:underline\"> </span></strong><span style=\"text-decoration:underline\">damage</span></span></span></p>",
-          "disabled": true,
+          "disabled": false,
           "duration": {
             "combat": null,
             "rounds": null,
@@ -3116,7 +3498,7 @@
           "humanoid_ef": "100",
           "insect_ef": "100",
           "ip_cost": "",
-          "isEquipped": false,
+          "isEquipped": true,
           "isKey": false,
           "isMartial": false,
           "isModule": false,
@@ -3504,9 +3886,148 @@
       "type": "equippableItem"
     },
     {
-      "_id": "gUqhsZUi9Adk4Ly6",
+      "_id": "gMHVtSecAgiriC6S",
       "_stats": {
         "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783188968355,
+        "duplicateSource": "Item.QvUsAoeaebjrKAHi",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "accessory",
+            "fromTemplate": "r0yZpLPAK9VXhM2p",
+            "itemId": "QvUsAoeaebjrKAHi",
+            "itemName": "Amethyst Pendant",
+            "pickedOldProps": {
+              "cost": "350",
+              "def_bonus": "",
+              "defense": "0",
+              "defense_include_dex": false,
+              "initiative": "0",
+              "magic_defense": "0",
+              "magic_defense_include_ins": false,
+              "mdef_bonus": ""
+            },
+            "ts": 1769647435106
+          }
+        }
+      },
+      "folder": "5uQIy5BCy7UEVfcT",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/2640.gif",
+      "name": "Ring of Magma",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 11450000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li>You <strong>Absorb</strong> fire damage but have <strong>Vulnerability</strong> to ice damage.</li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flavor_text": "<p><em>A warm ember glows within the band, feeding on flame while cracking under killing frost.</em></p>",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "PsBBWgj9RkzEIKtF",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/2640.gif",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": true,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "2500",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Uncommon",
+          "item_type": "accessory",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Ring of Magma",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.PsBBWgj9RkzEIKtF",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "KoC4PHdQrp7r4rM9"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "gUqhsZUi9Adk4Ly6",
+      "_stats": {
+        "compendiumSource": "Item.KnKIXdPq6wjaFnCK",
         "coreVersion": "12.343",
         "createdTime": 1783148616011,
         "duplicateSource": null,
@@ -3514,6 +4035,9 @@
         "systemVersion": "4.8.5"
       },
       "flags": {
+        "core": {
+          "sourceId": "Item.KnKIXdPq6wjaFnCK"
+        },
         "custom-system-builder": {
           "version": "4.6.4"
         }
@@ -3550,7 +4074,7 @@
       },
       "sort": 700000,
       "system": {
-        "container": null,
+        "container": "S71vgGdSVCmEGWN0",
         "props": {
           "active_effect_config_table": {},
           "aquatic_ef": "100",
@@ -3561,11 +4085,22 @@
           "celestial_ef": "100",
           "check_bonus": "0",
           "construct_ef": "100",
+          "cost": "-",
           "damage_bonus": "0",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<ul><li><p>Summon the <strong>Companion </strong>@UUID[Actor.DMHfh4ChYzXNkMGe]{Decoy Doll}, this <strong>companion</strong> disappear at the end of this scene</p></li></ul>",
+          "description": "<p><em>Decoy Doll:</em> summon a Decoy Doll companion until the end of the scene.</p>",
           "dragon_ef": "100",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "effect_kind": "summon",
+              "effect_label": "decoy_summon",
+              "summon_act_this_round": false,
+              "summon_actor": "Actor.DMHfh4ChYzXNkMGe",
+              "summon_count": "1"
+            }
+          },
           "elemental_ef": "100",
           "enforcer_ef": "100",
           "fey_ef": "100",
@@ -3578,6 +4113,7 @@
           "humanoid_ef": "100",
           "insect_ef": "100",
           "ip_cost": "",
+          "isCheck": false,
           "isEquipped": false,
           "isKey": false,
           "isMartial": false,
@@ -3614,6 +4150,7 @@
           "mimic_ef": "100",
           "monster_ef": "100",
           "name": "Decoy Doll",
+          "on_activate_effect_ref": "decoy_summon",
           "optional_params": {},
           "plant_ef": "100",
           "refine_count": "0",
@@ -3636,17 +4173,19 @@
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
           "set_name": "",
+          "skill_target": "Self",
+          "skill_type": "Item",
           "soldier_ef": "100",
           "spirit_ef": "100",
-          "type_damage": "Physical",
+          "type_damage": "",
           "undead_ef": "100",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
-        "uniqueId": "S71vgGdSVCmEGWN0"
+        "uniqueId": "KnKIXdPq6wjaFnCK"
       },
       "type": "equippableItem"
     },
@@ -3714,7 +4253,7 @@
               "$deleted": false,
               "condition_formula": "HAS_ARCANE_WEAPON == 1 && MP_SPENT_THIS_TURN > 0",
               "reaction_effect_ref": "bim_free",
-              "reaction_passive_mode": "off",
+              "reaction_passive_mode": "ask",
               "reaction_passive_target": "self",
               "reaction_source": "self",
               "reaction_trigger": "turn_end"
@@ -4303,6 +4842,9 @@
         "systemVersion": "4.8.5"
       },
       "flags": {
+        "core": {
+          "sourceId": "Item.WeoIipMyJ8Iq9jx4"
+        },
         "custom-system-builder": {
           "version": "4.6.4"
         },
@@ -4354,6 +4896,7 @@
       },
       "sort": 5550000,
       "system": {
+        "container": null,
         "props": {
           "active_effect_config_table": {},
           "aquatic_ef": "100",
@@ -4362,6 +4905,7 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
+          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
@@ -4369,6 +4913,15 @@
           "demon_ef": "100",
           "description": "<ul><li><p>Target creature recovers <strong>20</strong> MP</p></li></ul>",
           "dragon_ef": "100",
+          "effect_table": {
+            "0": {
+              "effect_kind": "grant",
+              "effect_label": "grapejuice_restore",
+              "grant_amount": "20",
+              "grant_resource": "mp",
+              "target_ref": "action_targets"
+            }
+          },
           "elemental_ef": "100",
           "enforcer_ef": "100",
           "fey_ef": "100",
@@ -4380,6 +4933,8 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
+          "id": "irzhS1BV9TsO7xlb",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/533.png",
           "insect_ef": "100",
           "ip_cost": "1",
           "isEquipped": false,
@@ -4394,7 +4949,7 @@
           "item_cost": "15",
           "item_def_bonus": "0",
           "item_mdef_bonus": "0",
-          "item_quantity": "50",
+          "item_quantity": "63",
           "item_rarity": "Common",
           "item_skill_active": {
             "9FXaNplA7UfZ5y98": {
@@ -4452,10 +5007,12 @@
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
           "set_name": "<Set Name>",
+          "skill_target": "One Ally",
           "soldier_ef": "100",
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.irzhS1BV9TsO7xlb",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -4739,6 +5296,96 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "9jOBSPY17nxY6QCy"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "JKHCj8St8J207DMS",
+      "_stats": {
+        "compendiumSource": "Item.I8Nn2LBram2GzpJ5",
+        "coreVersion": "12.343",
+        "createdTime": 1783178150679,
+        "duplicateSource": "Item.I8Nn2LBram2GzpJ5",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "2AeMdFaayOxsueAv",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Grade_2_Tincture_of_Dexterity_from_Final_Fantasy_XIV_icon%20(1).webp",
+      "name": "Polymorph Potion: Scaldra",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 100000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>Transform into the <strong>Scaldra </strong>until the end of the scene</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "500",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Uncommon",
+          "item_type": "consumable",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Polymorph Potion: Scaldra",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "wRMiCt8CBlaBSpjE"
       },
       "type": "equippableItem"
     },
@@ -6110,59 +6757,6 @@
       "type": "equippableItem"
     },
     {
-      "_id": "oHXhszjXVKD0opBr",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1783148616011,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.8.5"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/assize.png",
-      "name": "Heal",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 0
-      },
-      "sort": 0,
-      "system": {
-        "container": "XVCbb7lj05eYPQ3f",
-        "props": {
-          "cost": "10 x T MP",
-          "description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points</strong>.</p><hr><p><strong>Skill Enhancement Lv. 20</strong> — The amount of Hit Points recovered increases to <strong>50</strong>.</p><p><strong>Skill Enhancement Lv. 40</strong> — The amount of Hit Points recovered increases to <strong>60</strong>.</p>",
-          "effect_table": {
-            "0": {
-              "$deleted": false,
-              "effect_kind": "grant",
-              "effect_label": "heal_hp",
-              "grant_amount": "40 + 10 * floor(min(CHAR_LEVEL, 40) / 20)",
-              "grant_resource": "hp",
-              "target_ref": "action_targets"
-            }
-          },
-          "isCheck": false,
-          "isOffensiveSpell": false,
-          "name": "Heal",
-          "on_activate_effect_ref": "heal_hp",
-          "skill_target": "Up to three creatures",
-          "skill_type": "Spell",
-          "type_damage": ""
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "oHXhszjXVKD0opBr"
-      },
-      "type": "equippableItem"
-    },
-    {
       "_id": "p7WldKGSMumLxC4p",
       "_stats": {
         "compendiumSource": "Item.wfvBxZq0qkwMMn1G",
@@ -6384,114 +6978,6 @@
       "type": "equippableItem"
     },
     {
-      "_id": "Pf1vhSjtOOTBXFkB",
-      "_stats": {
-        "compendiumSource": "Item.jqykkhAB5m9durso",
-        "coreVersion": "12.343",
-        "createdTime": 1783148616011,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "3.2.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
-      "name": "Morrigan",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 2,
-        "yL2PQxh3R9ddt0te": 3
-      },
-      "sort": 0,
-      "system": {
-        "props": {
-          "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "Spear",
-          "celestial_ef": "100",
-          "check_bonus": "1",
-          "construct_ef": "100",
-          "damage_bonus": "12",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
-          "description": "<ul>\n<li>When you hit one or more creatures with this weapon, you may recover <strong>10</strong> Mind Points.</li>\n</ul>",
-          "dragon_ef": "100",
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "Two-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "insect_ef": "100",
-          "ip_cost": "",
-          "isEquipped": false,
-          "isKey": false,
-          "isMartial": false,
-          "isModule": false,
-          "isRelatedItem": false,
-          "isSet": false,
-          "isUnique": false,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "1500",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": "1",
-          "item_rarity": "Common",
-          "item_skill_passive": {
-            "ziGuceXkDrtTMBp9": {
-              "id": "${item.id}",
-              "name": "Morrigan (Passive)",
-              "skill_cost": "",
-              "skill_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
-              "skill_maxLevel": "",
-              "uuid": "Actor.dafTLBUscCDNgq8H.Item.ziGuceXkDrtTMBp9"
-            }
-          },
-          "item_type": "weapon",
-          "mimic_ef": "100",
-          "monster_ef": "100",
-          "name": "Morrigan",
-          "optional_params": {},
-          "plant_ef": "100",
-          "related_item_list": {
-            "ziGuceXkDrtTMBp9": {
-              "id": "${item.id}",
-              "name": "Morrigan (Passive)",
-              "related_item_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
-              "uuid": "Actor.dafTLBUscCDNgq8H.Item.ziGuceXkDrtTMBp9"
-            }
-          },
-          "reptilian_ef": "100",
-          "rolled_atr1": "DEX",
-          "rolled_atr2": "MIG",
-          "set_name": "",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "Dark",
-          "undead_ef": "100",
-          "vehicle_ef": "100",
-          "weapon_range": "Melee"
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
-        "unique": false,
-        "uniqueId": "jqykkhAB5m9durso"
-      },
-      "type": "equippableItem"
-    },
-    {
       "_id": "pJES3zgWibJ7kiaq",
       "_stats": {
         "compendiumSource": null,
@@ -6544,99 +7030,6 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": true,
         "uniqueId": "QjuNoo0rGl9iUWiO"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "qXvY2q2G2bjHFdu1",
-      "_stats": {
-        "compendiumSource": "Item.23dQXPmLWKFjpwNt",
-        "coreVersion": "12.343",
-        "createdTime": 1783148616011,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "core": {
-          "sourceId": "Item.23dQXPmLWKFjpwNt"
-        },
-        "custom-system-builder": {
-          "version": "3.2.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "icons/sundries/books/book-embossed-gold-green.webp",
-      "name": "Orb",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
-      },
-      "sort": 0,
-      "system": {
-        "props": {
-          "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "Arcane",
-          "celestial_ef": "100",
-          "check_bonus": "0",
-          "construct_ef": "100",
-          "damage_bonus": "6",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
-          "description": "<ul><li><p>&nbsp;No Quality.</p></li></ul>",
-          "dragon_ef": "100",
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "Two-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "insect_ef": "100",
-          "ip_cost": "",
-          "isEquipped": false,
-          "isKey": false,
-          "isMartial": false,
-          "isModule": false,
-          "isRelatedItem": false,
-          "isSet": false,
-          "isUnique": false,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "150",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": "1",
-          "item_rarity": "Common",
-          "item_type": "weapon",
-          "mimic_ef": "100",
-          "monster_ef": "100",
-          "name": "Orb",
-          "optional_params": {},
-          "plant_ef": "100",
-          "reptilian_ef": "100",
-          "rolled_atr1": "INS",
-          "rolled_atr2": "INS",
-          "set_description": "<p><strong>【Set Bonus】</strong></p>",
-          "set_name": "",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "Physical",
-          "undead_ef": "100",
-          "vehicle_ef": "100",
-          "weapon_range": "Melee"
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
-        "unique": false,
-        "uniqueId": "X9SaWakWp1Tl8xPA"
       },
       "type": "equippableItem"
     },
@@ -7235,7 +7628,7 @@
             }
           ],
           "description": "",
-          "disabled": false,
+          "disabled": true,
           "duration": {
             "combat": null,
             "rounds": null,
@@ -7333,7 +7726,7 @@
           "humanoid_ef": "100",
           "insect_ef": "100",
           "ip_cost": "",
-          "isEquipped": true,
+          "isEquipped": false,
           "isKey": false,
           "isMartial": false,
           "isModule": false,
@@ -8015,6 +8408,158 @@
       "type": "equippableItem"
     },
     {
+      "_id": "uDik6IiSPpoJiNwF",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783185262746,
+        "duplicateSource": "Item.a7ZGvZGyPR5NZXOK",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.4.2"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "weapon",
+            "fromTemplate": "gIRU9XGqYeMBwBN9",
+            "itemId": "8mXI5OJRvKbBpmsm",
+            "itemName": "Arch Ice Wand",
+            "pickedOldProps": {
+              "cost": "3000",
+              "martial": false
+            },
+            "ts": 1769646981364
+          }
+        }
+      },
+      "folder": "QGuy8DVLgrvQqs1c",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1626.gif",
+      "name": "Arch Ice Wand",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 700000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "5",
+          "defense_target_type": "mdef",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul>\n    <li>\n        <p>This weapon deals <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-type=\"JournalEntry\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(61, 166, 255) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Magic Damage</span></strong></a></span></span></p>\n    </li>\n    <li>\n        <p>You may cast the spell 【<strong>⚡ Glacies Finis </strong>】</p>\n        <hr class=\"\">\n    </li>\n</ul>\n<details>\n    <summary><strong>⚡ Glacies Finis</strong></summary>\n    <p><strong>Cost:</strong> 30 x T MP</p>\n    <p><strong>Target:</strong> Up to three creatures</p>\n    <p><strong>Duration:</strong> Instantaneous</p>\n    <p><strong>Check:【INS】</strong> + <strong>【WLP】</strong></p>\n    <p>You cause a glacial avalanche. Each target hit by this spell suffers 【HR + 35】ice damage. Opportunity: Each target hit by this spell suffers Fatigue.</p>\n</details>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "Two-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "8mXI5OJRvKbBpmsm",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1626.gif",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "3000",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Rare",
+          "item_skill_active": {
+            "g74cJxJ4guXSyVlJ": {
+              "id": "${item.id}",
+              "name": "Glacies Finis",
+              "skill_cost": "30 x T MP",
+              "skill_description": "<p>You cause a glacial avalanche. Each target hit by this spell suffers <strong>【HR + 35】</strong>ice damage.</p><p><strong>Opportunity:</strong> Each target hit by this spell suffers <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.J4fv0XKFy678UIn8\" data-id=\"J4fv0XKFy678UIn8\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fatigue</span></strong></a></span></span></p>",
+              "skill_maxLevel": "1",
+              "uuid": "Item.g74cJxJ4guXSyVlJ"
+            }
+          },
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Arch Ice Wand",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "related_item_list": {
+            "g74cJxJ4guXSyVlJ": {
+              "id": "${item.id}",
+              "name": "Glacies Finis",
+              "related_item_description": "<p>You cause a glacial avalanche. Each target hit by this spell suffers <strong>【HR + 35】</strong>ice damage.</p><p><strong>Opportunity:</strong> Each target hit by this spell suffers <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.J4fv0XKFy678UIn8\" data-id=\"J4fv0XKFy678UIn8\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fatigue</span></strong></a></span></span></p>",
+              "uuid": "Item.g74cJxJ4guXSyVlJ"
+            }
+          },
+          "reptilian_ef": "100",
+          "rolled_atr1": "WLP",
+          "rolled_atr2": "WLP",
+          "set_name": "",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Ice",
+          "undead_ef": "100",
+          "uuid": "Item.8mXI5OJRvKbBpmsm",
+          "vehicle_ef": "100",
+          "weapon_range": "Ranged"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "8mXI5OJRvKbBpmsm"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "v56GvN63nvIYV4iJ",
       "_stats": {
         "compendiumSource": "Item.nf32D5apuWGo1rVV",
@@ -8107,9 +8652,16 @@
           "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<p>You have a <strong>lucky number</strong>; at the beginning of each session, that number is <strong>7</strong>. </p><p>Once per scene after you perform a Check, you may replace the value shown on one of the dice you rolled with your lucky number <em>(even if this would give an impossible Result, such as a value of 7 on a d6)</em>. </p><p>If you do, the replaced value becomes your <strong>new</strong> lucky number</p>",
+          "details_roller": "Show",
           "duration": "",
+          "effect_table": {},
+          "gadget_alchemy_tier": "",
+          "gadget_infusion_tier": "",
+          "gadget_magitech_tier": "",
           "heroic_requirement": "",
+          "id": "v56GvN63nvIYV4iJ",
           "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/CLOSERS/Harpy/Draw.webp",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -8119,7 +8671,9 @@
           "level": "1",
           "max_level": "1",
           "name": "Lucky Seven",
+          "on_activate_effect_ref": "",
           "optional_params": {},
+          "pre_activate_effect_ref": "",
           "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
@@ -8127,10 +8681,13 @@
           "skill_animation_mode": "default",
           "skill_information": "",
           "skill_range": "",
+          "skill_tags": "",
           "skill_target": "",
           "skill_type": "Passive",
+          "target_eligibility": "",
           "type_damage": "",
-          "use_optional_params": false
+          "use_optional_params": false,
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.v56GvN63nvIYV4iJ"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -8489,6 +9046,62 @@
       "type": "equippableItem"
     },
     {
+      "_id": "wQPUQTJDFJK8Jsm3",
+      "_stats": {
+        "compendiumSource": "Item.VwJHtWmjBjF0Pj31",
+        "coreVersion": "12.343",
+        "createdTime": 1783191947536,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/enhanced_asylum.png",
+      "name": "Healing Power",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3,
+        "yL2PQxh3R9ddt0te": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "check_bonus": "0",
+          "class": "Spiritist",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you cast a spell that targets one or more allies, if you have an <strong>arcane</strong> weapon equipped, you may have each of those allies recover an amount of Hit Points equal to <strong>【SL, multiplied by the number of Bonds you have】.</strong></p><p> This healing is separate from any healing caused by the effects of the spell.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "2",
+          "name": "Healing Power",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "VwJHtWmjBjF0Pj31"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "Wtcdd42MQHwsOsSe",
       "_stats": {
         "compendiumSource": "Item.wPC22EqyPCSc20i0",
@@ -8684,144 +9297,58 @@
       "type": "equippableItem"
     },
     {
-      "_id": "XVCbb7lj05eYPQ3f",
+      "_id": "xt1W4okhrJZPPUlB",
       "_stats": {
-        "compendiumSource": "Item.Y2ItFIBB8PtKttz8",
+        "compendiumSource": "Item.HSiWYkTSItEIbXig",
         "coreVersion": "12.343",
-        "createdTime": 1783148616011,
+        "createdTime": 1783191937322,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
       "flags": {
         "custom-system-builder": {
-          "version": "4.8.5"
+          "version": "4.6.4"
         }
       },
       "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Stave/Icon-Budding_Maple_Wand.webp",
-      "name": "Budding Maple Wand",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/presence_of_mind.png",
+      "name": "Ritual Spiritism",
       "ownership": {
-        "2vy7wrEUqBy0kzsU": 3,
-        "6DmgigM5jq76r0Gd": 3,
-        "7hKw8KGsimboeDif": 3,
-        "9sFgrDy4MvAgoCmQ": 3,
-        "Am7qxPOavfKeDGPd": 3,
         "JQGNzKpDPHJmcUIW": 3,
-        "JvF9tXvr7aaiS06m": 3,
-        "KD5d0efqHETPpIux": 3,
-        "LT3Z8EnRdMVk5ncQ": 3,
-        "MwTL6zXFCEpVBTpI": 3,
-        "NozW36XIGEGx7oVH": 3,
-        "NpGkA7uxaarkPiwS": 3,
-        "ULBTZPjtza939Mvy": 3,
-        "WQGFvLStTZeWGpak": 3,
         "default": 3,
-        "eGu3tuw7HwJd2bpx": 3,
-        "iLeUVmwqnze8ulOI": 3,
-        "mE5aEkDlrQJIYyhG": 3,
-        "nSGZ1sz1rdKao0kz": 3,
-        "nXC7OD7u5Zw5UDDU": 3,
-        "t41knaXNbgCEygM5": 3,
-        "tz9BP9MKfNGf2P3n": 3,
-        "wNzPmItLYCKE1I8t": 3,
-        "yL2PQxh3R9ddt0te": 3,
-        "yUfwoVmEPVdFG3AY": 3
+        "yL2PQxh3R9ddt0te": 3
       },
       "sort": 0,
       "system": {
         "props": {
-          "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "Arcane",
-          "celestial_ef": "100",
           "check_bonus": "0",
-          "construct_ef": "100",
-          "damage_bonus": "3",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
-          "description": "<ul><li><p>You may cast the spell 【📕Heal】</p></li></ul>",
-          "dragon_ef": "100",
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "Two-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "insect_ef": "100",
-          "ip_cost": "",
-          "isEquipped": false,
-          "isKey": false,
-          "isMartial": false,
-          "isModule": false,
-          "isRelatedItem": true,
-          "isSet": false,
-          "isUnique": false,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "1500",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": "1",
-          "item_rarity": "Uncommon",
-          "item_skill_active": {
-            "oHXhszjXVKD0opBr": {
-              "id": "${item.id}",
-              "name": "Heal",
-              "skill_cost": "10 x T MP",
-              "skill_description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points</strong>.</p><hr><p><strong>Skill Enhancement Lv. 20</strong> — The amount of Hit Points recovered increases to <strong>50</strong>.</p><p><strong>Skill Enhancement Lv. 40</strong> — The amount of Hit Points recovered increases to <strong>60</strong>.</p>",
-              "skill_maxLevel": "",
-              "uuid": "Actor.dafTLBUscCDNgq8H.Item.oHXhszjXVKD0opBr"
-            }
-          },
-          "item_type": "weapon",
-          "mimic_ef": "100",
-          "monster_ef": "100",
-          "name": "Budding Maple Wand",
+          "class": "Spiritist",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>You may perform Rituals whose effects fall within the <strong>Spiritism</strong> discipline. Spiritism Rituals use <strong>【INS + WLP】</strong> for the Magic Check.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Ritual Spiritism",
           "optional_params": {},
-          "plant_ef": "100",
-          "related_item_list": {
-            "4Mt1v3OPCmwHrhuB": {
-              "id": "${item.id}",
-              "name": "Heal",
-              "related_item_description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points.</strong></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>The amount of Hit Points recovers increase to <strong>50</strong></p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>The amount of Hit Points recovers increase to <strong>60</strong></p>",
-              "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.4Mt1v3OPCmwHrhuB"
-            },
-            "iJXsSCRucVWJNRed": {
-              "id": "${item.id}",
-              "name": "Heal",
-              "related_item_description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points.</strong></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>The amount of Hit Points recovers increase to <strong>50</strong></p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>The amount of Hit Points recovers increase to <strong>60</strong></p>",
-              "uuid": "Item.iJXsSCRucVWJNRed"
-            },
-            "oHXhszjXVKD0opBr": {
-              "id": "${item.id}",
-              "name": "Heal",
-              "related_item_description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points</strong>.</p><hr><p><strong>Skill Enhancement Lv. 20</strong> — The amount of Hit Points recovered increases to <strong>50</strong>.</p><p><strong>Skill Enhancement Lv. 40</strong> — The amount of Hit Points recovered increases to <strong>60</strong>.</p>",
-              "uuid": "Actor.dafTLBUscCDNgq8H.Item.oHXhszjXVKD0opBr"
-            }
-          },
-          "reptilian_ef": "100",
-          "rolled_atr1": "INS",
-          "rolled_atr2": "WLP",
-          "set_name": "<Set Name>",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "Physical",
-          "undead_ef": "100",
-          "vehicle_ef": "100",
-          "weapon_range": "Melee"
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
         },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
         "unique": false,
-        "uniqueId": "Y2ItFIBB8PtKttz8"
+        "uniqueId": "HSiWYkTSItEIbXig"
       },
       "type": "equippableItem"
     },
@@ -8901,236 +9428,6 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "5FJroVCi4rjKmXQO"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "YUYi5J6GgRHVbEtd",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1783148616011,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.8.5"
-        }
-      },
-      "folder": null,
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
-      "name": "The Tormentor (Passive)",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 0
-      },
-      "sort": 0,
-      "system": {
-        "container": "YZIW3yUn3JoEyjZA",
-        "props": {
-          "cost": "",
-          "description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
-          "effect_table": {
-            "0": {
-              "$deleted": false,
-              "chain_steps": "tm_bonus, tm_benign",
-              "damage_amount": "floor(TARGET_CURRENT_HP * (0.2 - 0.1 * TARGET_IS_CHAMPION))",
-              "damage_cause": "damage",
-              "damage_element": "physical",
-              "damage_ignore_affinity": true,
-              "damage_operation": "add",
-              "damage_stage": "outgoing",
-              "effect_kind": "chain",
-              "effect_label": "tm_root",
-              "target_ref": ""
-            },
-            "1": {
-              "$deleted": false,
-              "damage_amount": "floor(TARGET_CURRENT_HP * (0.2 - 0.1 * TARGET_IS_CHAMPION))",
-              "damage_operation": "add",
-              "damage_stage": "outgoing",
-              "effect_kind": "adjust_damage",
-              "effect_label": "tm_bonus",
-              "target_ref": ""
-            },
-            "2": {
-              "$deleted": false,
-              "action_keyword": "benign",
-              "damage_amount": "TARGET_CURRENT_HP - 1",
-              "damage_operation": "cap",
-              "damage_stage": "outgoing",
-              "effect_kind": "apply_action_keyword",
-              "effect_label": "tm_benign",
-              "target_ref": ""
-            }
-          },
-          "isCheck": false,
-          "name": "The Tormentor (Passive)",
-          "on_activate_effect_ref": "",
-          "reaction_config_table": {
-            "0": {
-              "$deleted": false,
-              "condition_formula": "",
-              "reaction_action_intent": "",
-              "reaction_effect_ref": "tm_root",
-              "reaction_passive_mode": "force",
-              "reaction_requires_weapon_used": true,
-              "reaction_source": "self",
-              "reaction_trigger": "creature_will_deal_damage"
-            }
-          },
-          "skill_target": "Self",
-          "skill_type": "Passive",
-          "type_damage": ""
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "AQqb37jPpVi1h6j6"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "YZIW3yUn3JoEyjZA",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1783148616011,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.8.5"
-        }
-      },
-      "folder": "SytaFVloXb4Fnryp",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1969.gif",
-      "name": "The Tormentor",
-      "ownership": {
-        "2vy7wrEUqBy0kzsU": 3,
-        "6DmgigM5jq76r0Gd": 3,
-        "7hKw8KGsimboeDif": 3,
-        "9sFgrDy4MvAgoCmQ": 3,
-        "Am7qxPOavfKeDGPd": 3,
-        "JQGNzKpDPHJmcUIW": 3,
-        "JvF9tXvr7aaiS06m": 3,
-        "KD5d0efqHETPpIux": 3,
-        "LT3Z8EnRdMVk5ncQ": 3,
-        "MwTL6zXFCEpVBTpI": 3,
-        "NozW36XIGEGx7oVH": 3,
-        "NpGkA7uxaarkPiwS": 3,
-        "ULBTZPjtza939Mvy": 3,
-        "WQGFvLStTZeWGpak": 3,
-        "default": 3,
-        "eGu3tuw7HwJd2bpx": 3,
-        "iLeUVmwqnze8ulOI": 3,
-        "mE5aEkDlrQJIYyhG": 3,
-        "nSGZ1sz1rdKao0kz": 3,
-        "nXC7OD7u5Zw5UDDU": 3,
-        "t41knaXNbgCEygM5": 3,
-        "tz9BP9MKfNGf2P3n": 3,
-        "wNzPmItLYCKE1I8t": 3,
-        "yL2PQxh3R9ddt0te": 3,
-        "yUfwoVmEPVdFG3AY": 3
-      },
-      "sort": 0,
-      "system": {
-        "props": {
-          "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "Flail",
-          "celestial_ef": "100",
-          "check_bonus": "0",
-          "construct_ef": "100",
-          "damage_bonus": "10",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
-          "description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.N1c190b6J1kKS6Vf\" data-id=\"N1c190b6J1kKS6Vf\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Benign</span></strong></a></span></span></p></li><li><p>This weapon deals bonus damage equal to 20% of the <strong>target current health</strong>, this bonus is reduce to 10% against Champion-rank creature</p></li></ul>",
-          "dragon_ef": "100",
-          "effect_table": {},
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flavor_text": "<p><em>A chained whip designed to inflicts pained to its target while avoid killing them</em></p>",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "One-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "ingredient_taste": "",
-          "ingredient_taste2": "",
-          "insect_ef": "100",
-          "ip_cost": "",
-          "isEquipped": false,
-          "isIngredient": false,
-          "isKey": false,
-          "isMartial": true,
-          "isModule": false,
-          "isRelatedItem": false,
-          "isSet": false,
-          "isUnique": false,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "2500",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": "1",
-          "item_rarity": "Uncommon",
-          "item_skill_passive": {
-            "YUYi5J6GgRHVbEtd": {
-              "id": "${item.id}",
-              "name": "The Tormentor (Passive)",
-              "skill_cost": "",
-              "skill_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
-              "skill_maxLevel": "",
-              "uuid": "Actor.dafTLBUscCDNgq8H.Item.YUYi5J6GgRHVbEtd"
-            }
-          },
-          "item_type": "weapon",
-          "mimic_ef": "100",
-          "monster_ef": "100",
-          "name": "The Tormentor",
-          "optional_params": {},
-          "plant_ef": "100",
-          "reaction_config_table": {},
-          "recipe_dish_uuid": "",
-          "recipe_kind": "",
-          "refine_count": "0",
-          "refine_level": "0",
-          "related_item_list": {
-            "YUYi5J6GgRHVbEtd": {
-              "id": "${item.id}",
-              "name": "The Tormentor (Passive)",
-              "related_item_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
-              "uuid": "Actor.dafTLBUscCDNgq8H.Item.YUYi5J6GgRHVbEtd"
-            }
-          },
-          "reptilian_ef": "100",
-          "rolled_atr1": "DEX",
-          "rolled_atr2": "MIG",
-          "set_name": "<Set Name>",
-          "skill_tags": "",
-          "skill_target": "One Enemy",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "Physical",
-          "undead_ef": "100",
-          "vehicle_ef": "100",
-          "weapon_range": "Melee"
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
-        "unique": false,
-        "uniqueId": "xktj2JJX7QZ5z6jA"
       },
       "type": "equippableItem"
     },
@@ -9442,69 +9739,6 @@
         "uniqueId": "6pUwTZO1peHgSBya"
       },
       "type": "equippableItem"
-    },
-    {
-      "_id": "ziGuceXkDrtTMBp9",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1783148616011,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.8.5"
-        }
-      },
-      "folder": null,
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
-      "name": "Morrigan (Passive)",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 0
-      },
-      "sort": 0,
-      "system": {
-        "container": "Pf1vhSjtOOTBXFkB",
-        "props": {
-          "cost": "",
-          "description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
-          "effect_table": {
-            "0": {
-              "$deleted": false,
-              "effect_kind": "grant",
-              "effect_label": "mor_recover",
-              "grant_amount": "10",
-              "grant_resource": "mp",
-              "target_ref": "self"
-            }
-          },
-          "isCheck": false,
-          "name": "Morrigan (Passive)",
-          "on_activate_effect_ref": "",
-          "reaction_config_table": {
-            "0": {
-              "$deleted": false,
-              "reaction_action_intent": "",
-              "reaction_effect_ref": "mor_recover",
-              "reaction_passive_mode": "force",
-              "reaction_requires_weapon_used": true,
-              "reaction_source": "self",
-              "reaction_trigger": "creature_completes_attack"
-            }
-          },
-          "skill_target": "Self",
-          "skill_type": "Passive",
-          "type_damage": ""
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "AQqb37jPpVi1h6j6"
-      },
-      "type": "equippableItem"
     }
   ],
   "name": "Hina",
@@ -9713,8 +9947,8 @@
     "props": {
       "accessory2_details": "<ul><li><p><strong>+50% Zenit Gain </strong>after conflict</p></li></ul>",
       "accessory2_name": "Golden Apple",
-      "accessory_details": "<ul><li><p>You gain a new <strong>Opportunity,</strong> 【⏳<strong>Lucky】</strong></p></li></ul><blockquote><p>Roll <strong>5d100,</strong> you gain <strong>Zenit</strong> equal to the result rolled.</p></blockquote>",
-      "accessory_name": "Bunny Tail",
+      "accessory_details": "<ul><li>You <strong>Absorb</strong> fire damage but have <strong>Vulnerability</strong> to ice damage.</li></ul>",
+      "accessory_name": "Ring of Magma",
       "activation": 1,
       "affinity_1": "NA",
       "affinity_2": "NA",
@@ -9729,12 +9963,12 @@
       "anomaly_status": 0,
       "arcane_ef": "100",
       "arcanism": false,
-      "armor_details": "<ul><li><p><strong>+3 Damage Reduction</strong></p></li></ul>",
-      "armor_mod": "13",
-      "armor_name": "Full Plate",
+      "armor_details": "<ul><li>You are immune to <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-type=\"JournalEntry\" data-uuid=\"JournalEntry.ZunRGiMDSgAapm5G\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(235, 75, 7) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Strike Damage</span></strong></a></span></li><li>You takes <strong>200%</strong> damage from all source</li></ul>",
+      "armor_mod": "0",
+      "armor_name": "Ghostly Sheet",
       "backstory": "<p>เด็กสาวธรรมดาที่ถูกลักพาตัวไปโดยองค์กรชั่วร้ายซึ่งได้ทำการทดลองหวังว่าจะให้เธอได้กลายเป็นร่างทรงของเทพีแห่งราตรี แต่การทดลองถูกขัดขวางลงในขั้นตอนสุดท้ายโดยกลุ่มคนที่บุกมาช่วยทำให้การเป็นภาชนะไม่สมบูรณ์ ชิ้นส่วนของเทพีแห่งราตรี Frenio ติดอยู่ในร่าง Hina กลายเป็นคนสองบุคลิก หลังจากเหตุการณ์นั้นมาก็เริ่มมีอาการมองเห็นทางแยกของอนาคตเป็นพักๆ จึงใช้มันออกเดินทางช่วยเหลือผู้คน รวมไปถึงหาวิธีการแยกเทพีแห่งราตรีออกจากตัวเองด้วย</p>",
       "bane_status": 0,
-      "base_defense": 13,
+      "base_defense": 6,
       "base_magic_defense": 12,
       "battle_facing_direction": "left",
       "berserk_status": 0,
@@ -9768,7 +10002,7 @@
       "charm_status": 0,
       "check_mod_accuracy": 0,
       "check_mod_all": 0,
-      "check_mod_magic": 0,
+      "check_mod_magic": 6,
       "check_mod_melee": 0,
       "check_mod_ranged": 0,
       "check_roller": "Roll!",
@@ -9796,7 +10030,7 @@
           "$deleted": false,
           "benefit": "mp",
           "class_name": "Spiritist",
-          "level": "2"
+          "level": "4"
         },
         "5": {
           "$deleted": false,
@@ -9885,6 +10119,14 @@
           "quantity": 1,
           "roll": "",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.CSzfxaSU6jSL0qRI"
+        },
+        "JKHCj8St8J207DMS": {
+          "consume_description": "<ul><li><p>Transform into the <strong>Scaldra </strong>until the end of the scene</p></li></ul>",
+          "id": "${item.id}",
+          "name": "Polymorph Potion: Scaldra",
+          "quantity": 1,
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.JKHCj8St8J207DMS"
         },
         "L44xOMOdhR17JhbV": {
           "consume_description": "<ul><li><p>Target creature recovers <strong>20</strong> MP</p></li></ul>",
@@ -10018,7 +10260,7 @@
           "consume_description": "<ul><li><p>Target creature recovers <strong>20</strong> MP</p></li></ul>",
           "id": "${item.id}",
           "name": "Grape Juice",
-          "quantity": 50,
+          "quantity": 63,
           "roll": "",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.irzhS1BV9TsO7xlb"
         },
@@ -10106,9 +10348,9 @@
       "critical_damage_bonus": 0,
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
-      "current_hp": "86",
-      "current_ip": "6",
-      "current_mp": "69",
+      "current_hp": "83",
+      "current_ip": "3",
+      "current_mp": "111",
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/hina_Cut-in002.png",
       "cut_in_fumble": "",
@@ -10116,7 +10358,7 @@
       "cut_in_zero_power": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/cutin%20placeholder/hina_Cut-in001.png",
       "dagger_ef": "100",
       "damage_receiving_mod_air": 0,
-      "damage_receiving_mod_all": 3,
+      "damage_receiving_mod_all": 0,
       "damage_receiving_mod_bolt": 0,
       "damage_receiving_mod_dark": 0,
       "damage_receiving_mod_earth": 0,
@@ -10141,7 +10383,7 @@
       "damage_receiving_percentage_range": 0,
       "dazed_status": 0,
       "default_facing_direction": "left",
-      "defense": 13,
+      "defense": 6,
       "delayed_status": 0,
       "despair_status": 0,
       "dex_base": "6",
@@ -10160,7 +10402,7 @@
       "emotion_3_3": "",
       "emotion_4_1": "inferiority",
       "emotion_4_2": "mistrust",
-      "emotion_4_3": "",
+      "emotion_4_3": "affection",
       "emotion_5_1": "",
       "emotion_5_2": "",
       "emotion_5_3": "",
@@ -10174,11 +10416,11 @@
       "enraged_status": 0,
       "entropism": false,
       "envenomed_status": 0,
-      "exp_meter": "1.84",
-      "experience": "1.84",
+      "exp_meter": "6.12",
+      "experience": "6.12",
       "experience_ui": "0",
       "extra_damage_mod_air": 0,
-      "extra_damage_mod_all": 1,
+      "extra_damage_mod_all": 0,
       "extra_damage_mod_arcane": 0,
       "extra_damage_mod_bolt": 0,
       "extra_damage_mod_bow": 0,
@@ -10201,7 +10443,7 @@
       "extra_damage_mod_spell": 0,
       "extra_damage_mod_sword": 0,
       "extra_damage_mod_thrown": 0,
-      "fabula_point": "6",
+      "fabula_point": "5",
       "fatigue_status": 0,
       "firearm_ef": "100",
       "flail_ef": "100",
@@ -10245,7 +10487,7 @@
       "isStrong": false,
       "isSwift": false,
       "isWeak": false,
-      "is_martialarmor": true,
+      "is_martialarmor": false,
       "isolate_status": 0,
       "itemContainer2": {
         "0Wh54HqwHXp8fU3L": {
@@ -10506,6 +10748,14 @@
         }
       },
       "itemContainer3": {
+        "9GquE1k7ZaVvMLfS": {
+          "id": "${item.id}",
+          "name": "Shield of Rejuvenation",
+          "roll": "",
+          "shield_description": "<ul><li><p>At the start of your turn, you recovers <strong>10%</strong> of your <strong>Max HP</strong></p></li></ul>",
+          "shield_martial": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.9GquE1k7ZaVvMLfS"
+        },
         "Cp2K9RJnw6GBs2nb": {
           "id": "${item.id}",
           "name": "Bronze Shield",
@@ -10749,6 +10999,13 @@
           "roll": "",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.dMxhaNyxUqun78kN"
         },
+        "gMHVtSecAgiriC6S": {
+          "acess_description": "<ul><li>You <strong>Absorb</strong> fire damage but have <strong>Vulnerability</strong> to ice damage.</li></ul>",
+          "id": "${item.id}",
+          "name": "Ring of Magma",
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.gMHVtSecAgiriC6S"
+        },
         "gj1Ewj79KG9em5Yd": {
           "acess_description": "<ul><li><p><strong>+1 DEF / +1 MDEF</strong></p></li><li><p>You may perform the skill 【💥Draconic Roar】</p></li></ul>",
           "id": "${item.id}",
@@ -10907,21 +11164,21 @@
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.ERBLg9oQAHRlJ8wZ"
         }
       },
-      "level": "34",
+      "level": "36",
       "lifesteal_percentage": 0,
       "lifesteal_value": 0,
       "magic_defense": 12,
       "magic_defense_mod": "0",
-      "main_attrib_1": "WLP",
+      "main_attrib_1": "DEX",
       "main_attrib_2": "WLP",
-      "main_details": "<ul>\n    <li>\n        <p>This weapon deals <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-type=\"JournalEntry\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(61, 166, 255) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Magic Damage</span></strong></a></span></span></p>\n    </li>\n    <li>\n        <p>You may cast the spell 【<strong>⚡ Glacies Finis </strong>】</p>\n        <hr class=\"\">\n    </li>\n</ul>\n<details>\n    <summary><strong>⚡ Glacies Finis</strong></summary>\n    <p><strong>Cost:</strong> 30 x T MP</p>\n    <p><strong>Target:</strong> Up to three creatures</p>\n    <p><strong>Duration:</strong> Instantaneous</p>\n    <p><strong>Check:【INS】</strong> + <strong>【WLP】</strong></p>\n    <p>You cause a glacial avalanche. Each target hit by this spell suffers 【HR + 35】ice damage. Opportunity: Each target hit by this spell suffers Fatigue.</p>\n</details>",
-      "main_hand": "Arch Ice Wand",
+      "main_details": "<ul>\n<li>Once per round, when you&nbsp;<strong>hit&nbsp;</strong>one or more creature with this weapon, you may have it deal <strong>0</strong> damage, if you do, choose an ally other than yourself who have the <strong>Chanter </strong>or <strong>Dancer</strong>&nbsp;class, that ally perform a&nbsp;<strong>Free Action,&nbsp;</strong>that action must be used to perform a&nbsp;<strong>Magichant </strong>or<strong> Dance.</strong></li>\n</ul>",
+      "main_hand": "Glowstick",
       "main_hand_attack": "",
       "manadrain_percentage": 0,
       "manadrain_value": 0,
-      "max_hp": 86,
+      "max_hp": 83,
       "max_ip": 6,
-      "max_mp": 109,
+      "max_mp": 111,
       "memories_list": {
         "0": {
           "$deleted": false,
@@ -11358,11 +11615,12 @@
       "obscure_status": 0,
       "off_attrib_1": "SHI",
       "off_attrib_2": "SHI",
-      "off_base_mod_1": "0",
+      "off_base_mod_1": "1",
       "off_base_mod_2": "0",
-      "off_hand": "",
+      "off_details": "<ul><li><p>At the start of your turn, you recovers <strong>10%</strong> of your <strong>Max HP</strong></p></li></ul>",
+      "off_hand": "Shield of Rejuvenation",
       "off_hand_attack": "",
-      "off_mod_1": 0,
+      "off_mod_1": 1,
       "off_mod_2": 0,
       "offensive_spell_list": {
         "1Gk1uR5PcOn9xgPA": {
@@ -11569,7 +11827,7 @@
       "paralyze_status": 0,
       "petrify_status": 0,
       "poisoned_status": 0,
-      "quirk_description": "<p><span class=\"fontstyle0\">When a rule or ability requires you to spend </span><span class=\"fontstyle2\">100 or fewer </span><span class=\"fontstyle0\">Hit Points, Mind Points, or<br>Inventory Points, you may suffer </span><span class=\"fontstyle2\">1d8 Instability Points </span><span class=\"fontstyle0\">to ignore that cost.</span></p><p><span class=\"fontstyle0\">At the end of each session, you lose </span><span class=\"fontstyle2\">1d6 Instability Points </span><span class=\"fontstyle0\">(to a minimum of zero).</span></p><p><span class=\"fontstyle0\">If your </span><span class=\"fontstyle2\">Instability Points </span><span class=\"fontstyle0\">ever reach </span><span class=\"fontstyle2\">10 or more</span><span class=\"fontstyle0\">, you are immediately reduced to 0 Hit<br>Points and must </span><span class=\"fontstyle2\">Surrender</span><span class=\"fontstyle0\">.</span></p><p><span class=\"fontstyle0\">The consequences of this Surrender should be closely tied<br>to you losing control of your abilities. Then, you lose all </span><span class=\"fontstyle2\">Instability Points</span> <br style=\" font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-align: -webkit-auto; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; -webkit-text-size-adjust: auto; -webkit-text-stroke-width: 0px; \">2</p>",
+      "quirk_description": "<p><span class=\"fontstyle0\">When a rule or ability requires you to spend </span><span class=\"fontstyle2\">100 or fewer </span><span class=\"fontstyle0\">Hit Points, Mind Points, or<br>Inventory Points, you may suffer </span><span class=\"fontstyle2\">1d8 Instability Points </span><span class=\"fontstyle0\">to ignore that cost.</span></p><p><span class=\"fontstyle0\">At the end of each session, you lose </span><span class=\"fontstyle2\">1d6 Instability Points </span><span class=\"fontstyle0\">(to a minimum of zero).</span></p><p><span class=\"fontstyle0\">If your </span><span class=\"fontstyle2\">Instability Points </span><span class=\"fontstyle0\">ever reach </span><span class=\"fontstyle2\">10 or more</span><span class=\"fontstyle0\">, you are immediately reduced to 0 Hit<br>Points and must </span><span class=\"fontstyle2\">Surrender</span><span class=\"fontstyle0\">.</span></p><p><span class=\"fontstyle0\">The consequences of this Surrender should be closely tied<br>to you losing control of your abilities. Then, you lose all </span><span class=\"fontstyle2\">Instability Points</span> </p>",
       "quirk_name": "FUGITIVE EXPERIMENT",
       "relationship_1": "You cheater!!",
       "relationship_2": "Best Supplier",
@@ -11588,6 +11846,18 @@
       "shield_value": "0",
       "silence_status": 0,
       "skill_active_list": {
+        "0OCE2n8Axtv463yq": {
+          "active_class": "Entropist",
+          "active_cost": "",
+          "active_description": "<p>You have a <strong>lucky number</strong>; at the beginning of each session, that number is <strong>7</strong>. </p><p>Once per scene after you perform a Check, you may replace the value shown on one of the dice you rolled with your lucky number <em>(even if this would give an impossible Result, such as a value of 7 on a d6)</em>. </p><p>If you do, the replaced value becomes your <strong>new</strong> lucky number</p>",
+          "active_duration": "",
+          "active_level": 1,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Lucky Seven",
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.0OCE2n8Axtv463yq"
+        },
         "0Y4TgCZZz1vv1pn6": {
           "active_class": "",
           "active_cost": "5 MP",
@@ -12128,6 +12398,18 @@
           "roll": "",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.v56GvN63nvIYV4iJ"
         },
+        "wQPUQTJDFJK8Jsm3": {
+          "active_class": "Spiritist",
+          "active_cost": "",
+          "active_description": "<p>When you cast a spell that targets one or more allies, if you have an <strong>arcane</strong> weapon equipped, you may have each of those allies recover an amount of Hit Points equal to <strong>【SL, multiplied by the number of Bonds you have】.</strong></p><p> This healing is separate from any healing caused by the effects of the spell.</p>",
+          "active_duration": "",
+          "active_level": 1,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Healing Power",
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.wQPUQTJDFJK8Jsm3"
+        },
         "xmLeuCQNdswv14Zi": {
           "active_class": "Entropist",
           "active_cost": "",
@@ -12139,6 +12421,18 @@
           "name": "Entropic Magic",
           "roll": "",
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.xmLeuCQNdswv14Zi"
+        },
+        "xt1W4okhrJZPPUlB": {
+          "active_class": "Spiritist",
+          "active_cost": "",
+          "active_description": "<p>You may perform Rituals whose effects fall within the <strong>Spiritism</strong> discipline. Spiritism Rituals use <strong>【INS + WLP】</strong> for the Magic Check.</p>",
+          "active_duration": "",
+          "active_level": 1,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Ritual Spiritism",
+          "roll": "",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.xt1W4okhrJZPPUlB"
         },
         "zNksei4bzJFBxj52": {
           "active_class": "Darkblade",
@@ -12174,7 +12468,7 @@
       "weapon1_base_damage": "5",
       "weapon1_base_mod": "0",
       "weapon1_damage": 5,
-      "weapon1_damagetype": "Ice",
+      "weapon1_damagetype": "Physical",
       "weapon1_mod": 0,
       "weapon2_damagetype": "-",
       "weapon_list": {
@@ -12319,6 +12613,18 @@
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.5POFjQFNrlB9yOah",
           "weapon_description": "<p><ul>\n<li>When you hit one or more creatures with this weapon, you may recover <strong>10</strong> Mind Points.</li>\n</ul></p>",
           "weapon_hand": "Two-handed",
+          "weapon_martial": "",
+          "weapon_range": "Melee"
+        },
+        "5S2EaoKlYMGW2WMw": {
+          "id": "${item.id}",
+          "name": "Glowstick",
+          "quantity": "",
+          "roll": "",
+          "type": "Arcane",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.5S2EaoKlYMGW2WMw",
+          "weapon_description": "<p><ul>\n<li>Once per round, when you&nbsp;<strong>hit&nbsp;</strong>one or more creature with this weapon, you may have it deal <strong>0</strong> damage, if you do, choose an ally other than yourself who have the <strong>Chanter </strong>or <strong>Dancer</strong>&nbsp;class, that ally perform a&nbsp;<strong>Free Action,&nbsp;</strong>that action must be used to perform a&nbsp;<strong>Magichant </strong>or<strong> Dance.</strong></li>\n</ul></p>",
+          "weapon_hand": "One-handed",
           "weapon_martial": "",
           "weapon_range": "Melee"
         },
@@ -12477,6 +12783,18 @@
           "weapon_hand": "Two-handed",
           "weapon_martial": "",
           "weapon_range": "Melee"
+        },
+        "GjHWixk5ZMiE4jk8": {
+          "id": "${item.id}",
+          "name": "Arch Ice Wand",
+          "quantity": "",
+          "roll": "",
+          "type": "Arcane",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.GjHWixk5ZMiE4jk8",
+          "weapon_description": "<p><ul>\n    <li>\n        <p>This weapon deals <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-type=\"JournalEntry\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(61, 166, 255) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Magic Damage</span></strong></a></span></span></p>\n    </li>\n    <li>\n        <p>You may cast the spell 【<strong>⚡ Glacies Finis </strong>】</p>\n        <hr class=\"\">\n    </li>\n</ul>\n<details>\n    <summary><strong>⚡ Glacies Finis</strong></summary>\n    <p><strong>Cost:</strong> 30 x T MP</p>\n    <p><strong>Target:</strong> Up to three creatures</p>\n    <p><strong>Duration:</strong> Instantaneous</p>\n    <p><strong>Check:【INS】</strong> + <strong>【WLP】</strong></p>\n    <p>You cause a glacial avalanche. Each target hit by this spell suffers 【HR + 35】ice damage. Opportunity: Each target hit by this spell suffers Fatigue.</p>\n</details></p>",
+          "weapon_hand": "Two-handed",
+          "weapon_martial": "",
+          "weapon_range": "Ranged"
         },
         "IJPsdKmEyzpLjJu6": {
           "id": "${item.id}",
@@ -12850,6 +13168,18 @@
           "weapon_martial": "♦️",
           "weapon_range": "Ranged"
         },
+        "hnl7iZzq8thf2PtW": {
+          "id": "${item.id}",
+          "name": "Hornet",
+          "quantity": "",
+          "roll": "",
+          "type": "Dagger",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.hnl7iZzq8thf2PtW",
+          "weapon_description": "<p><ul><li><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Multi</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;3</span></strong></span></li></ul></p>",
+          "weapon_hand": "One-handed",
+          "weapon_martial": "",
+          "weapon_range": "Melee"
+        },
         "inf0j4yO2JC20DsC": {
           "id": "${item.id}",
           "name": "Blazing Sword",
@@ -13027,6 +13357,18 @@
           "uuid": "Actor.dafTLBUscCDNgq8H.Item.tpjrK35YbpSbU2RD",
           "weapon_description": "<p><ul>\n<li>The first attack you perform with this weapon during each scene deals 5 extra damage.</li>\n</ul></p>",
           "weapon_hand": "One-handed",
+          "weapon_martial": "",
+          "weapon_range": "Ranged"
+        },
+        "uDik6IiSPpoJiNwF": {
+          "id": "${item.id}",
+          "name": "Arch Ice Wand",
+          "quantity": "",
+          "roll": "",
+          "type": "Arcane",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.uDik6IiSPpoJiNwF",
+          "weapon_description": "<p><ul>\n    <li>\n        <p>This weapon deals <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-type=\"JournalEntry\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(61, 166, 255) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Magic Damage</span></strong></a></span></span></p>\n    </li>\n    <li>\n        <p>You may cast the spell 【<strong>⚡ Glacies Finis </strong>】</p>\n        <hr class=\"\">\n    </li>\n</ul>\n<details>\n    <summary><strong>⚡ Glacies Finis</strong></summary>\n    <p><strong>Cost:</strong> 30 x T MP</p>\n    <p><strong>Target:</strong> Up to three creatures</p>\n    <p><strong>Duration:</strong> Instantaneous</p>\n    <p><strong>Check:【INS】</strong> + <strong>【WLP】</strong></p>\n    <p>You cause a glacial avalanche. Each target hit by this spell suffers 【HR + 35】ice damage. Opportunity: Each target hit by this spell suffers Fatigue.</p>\n</details></p>",
+          "weapon_hand": "Two-handed",
           "weapon_martial": "",
           "weapon_range": "Ranged"
         },
@@ -13228,7 +13570,7 @@
       "wlp_base": "10",
       "wlp_current": 10,
       "your_class_name": "Night Guidance",
-      "zenit": "7780",
+      "zenit": "5519",
       "zero_label": "Zero Power",
       "zero_power_description": "<p style=\"text-align: center\"><strong>Choose and trigger 3 oppertunity choice.</strong></p>",
       "zero_power_macro": "",

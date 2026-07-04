@@ -10,179 +10,11 @@
   },
   "effects": [
     {
-      "_id": "2qOJbI2f3FNI3gkq",
+      "_id": "TjTJmgFLiQLqoVRs",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783148630844,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [
-        {
-          "key": "affinity_3",
-          "mode": 0,
-          "priority": 1,
-          "value": "VU"
-        },
-        {
-          "key": "wet_status",
-          "mode": 5,
-          "priority": 1,
-          "value": "true"
-        }
-      ],
-      "description": "<p>Gain <strong>Bolt </strong>vulnerability</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": 298800,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "isPredefined": true,
-          "originalId": "sKaI09DfDAMkJkyy",
-          "originalParentId": "XVOWOq9oUmEECGrU",
-          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.sKaI09DfDAMkJkyy"
-        },
-        "dfreds-convenient-effects": {
-          "ceEffectId": "ce-wet",
-          "isBackup": false,
-          "isConvenient": true,
-          "isDynamic": false,
-          "isTemporary": false,
-          "isViewable": true
-        },
-        "fabula-ultima-companion": {
-          "crossScene": true,
-          "directorPermanent": true,
-          "setBonus": "Swift Swimmers:2:ae",
-          "setBonusSig": "{\"n\":\"Wet\",\"s\":[\"5FFBDg2y54bpqgat\"],\"c\":[{\"k\":\"affinity_3\",\"m\":0,\"v\":\"VU\"},{\"k\":\"wet_status\",\"m\":5,\"v\":\"true\"}],\"di\":false,\"du\":{},\"dp\":true,\"cs\":true}",
-          "wetStatusBooleanPatchBackup_v1": {
-            "changes": [
-              {
-                "key": "affinity_3",
-                "mode": 0,
-                "priority": 1,
-                "value": "VU"
-              }
-            ],
-            "createdAt": 1777713393201,
-            "effectName": "Wet",
-            "effectUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.sKaI09DfDAMkJkyy",
-            "parentName": "Debuff",
-            "parentType": "Item"
-          }
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/flying_sardine.png",
-      "name": "Wet",
-      "origin": null,
-      "sort": 0,
-      "statuses": [
-        "5FFBDg2y54bpqgat"
-      ],
-      "system": {
-        "tags": [
-          "debuff"
-        ]
-      },
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "6L2aafqjK0JG5eOJ",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1783148630844,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [
-        {
-          "key": "extra_damage_mod_all",
-          "mode": 2,
-          "priority": null,
-          "value": "1"
-        }
-      ],
-      "description": "<p>Campfire skewers marinated with wild berry vinegar. Everyone who eats gains <strong>+1 bonus damage</strong> until the next rest.</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": 298800,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "6L2aafqjK0JG5eOJ",
-          "originalParentId": "gdJZ1L1kv5mjTTMr",
-          "originalUuid": "Actor.gdJZ1L1kv5mjTTMr.ActiveEffect.6L2aafqjK0JG5eOJ"
-        },
-        "fabula-ultima-companion": {
-          "campRestCharges": 0,
-          "cookingDish": {
-            "dishId": "G0tvPWqwJHkdwoFQ",
-            "family": "sour",
-            "instant": {},
-            "tier": 1
-          },
-          "foodBuff": true
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Genshin/Item_Chicken-Mushroom_Skewer.webp",
-      "name": "Tangy Trailside Skewer",
-      "origin": "Item.G0tvPWqwJHkdwoFQ",
-      "sort": 0,
-      "statuses": [
-        "permanent"
-      ],
-      "system": {
-        "tags": [
-          "food"
-        ]
-      },
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "PKrtetot3TbnSvZG",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1783148630327,
+        "createdTime": 1783188216193,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1567,288 +1399,6 @@
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
         "uniqueId": "JjSTIYwTgVE0FgmU"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "8TY9aPKKOzBSFkvv",
-      "_stats": {
-        "compendiumSource": "Item.uNsw1vWtAssZo4Bz",
-        "coreVersion": "12.343",
-        "createdTime": 1783148628740,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "effects": [
-        {
-          "_id": "MaPjOGqYKo934I2a",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": null,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.8.5"
-          },
-          "changes": [],
-          "description": "<p>When a creature Attacks you and misses, 50% chance to inflict Bane on the attacker.</p>",
-          "disabled": false,
-          "duration": {
-            "combat": null,
-            "rounds": null,
-            "seconds": null,
-            "startRound": null,
-            "startTime": 298800,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "originalId": "MaPjOGqYKo934I2a",
-              "originalParentId": "8TY9aPKKOzBSFkvv",
-              "originalUuid": "Actor.gdJZ1L1kv5mjTTMr.Item.8TY9aPKKOzBSFkvv.ActiveEffect.MaPjOGqYKo934I2a"
-            },
-            "fabula-ultima-companion": {
-              "reactionConfig": {
-                "effect_table": {
-                  "0": {
-                    "$deleted": false,
-                    "chance_percent": "50",
-                    "chance_then_ref": "sb_bane",
-                    "effect_kind": "chance",
-                    "effect_label": "sb_roll"
-                  },
-                  "1": {
-                    "$deleted": false,
-                    "ae_template_ref": "Bane",
-                    "effect_kind": "apply_ae",
-                    "effect_label": "sb_bane",
-                    "target_ref": "trigger_subject"
-                  }
-                },
-                "name": "Swordbreaker",
-                "reaction_config_table": {
-                  "0": {
-                    "$deleted": false,
-                    "condition_formula": "ACTION_IS_ATTACK == 1",
-                    "reaction_action_intent": "harmful",
-                    "reaction_effect_ref": "sb_roll",
-                    "reaction_passive_mode": "force",
-                    "reaction_source": "enemy",
-                    "reaction_trigger": "creature_miss_action"
-                  }
-                }
-              }
-            },
-            "statuscounter": {
-              "config": {
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1224.gif",
-          "name": "Swordbreaker",
-          "origin": null,
-          "sort": 0,
-          "statuses": [],
-          "system": {
-            "tags": []
-          },
-          "tint": "#ffffff",
-          "transfer": true,
-          "type": "base"
-        }
-      ],
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.8.5"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1224.gif",
-      "name": "Swordbreaker",
-      "ownership": {
-        "2vy7wrEUqBy0kzsU": 3,
-        "6DmgigM5jq76r0Gd": 3,
-        "7hKw8KGsimboeDif": 3,
-        "9sFgrDy4MvAgoCmQ": 3,
-        "Am7qxPOavfKeDGPd": 3,
-        "JQGNzKpDPHJmcUIW": 3,
-        "JvF9tXvr7aaiS06m": 3,
-        "KD5d0efqHETPpIux": 3,
-        "LT3Z8EnRdMVk5ncQ": 3,
-        "MwTL6zXFCEpVBTpI": 3,
-        "NozW36XIGEGx7oVH": 3,
-        "NpGkA7uxaarkPiwS": 3,
-        "ULBTZPjtza939Mvy": 3,
-        "WQGFvLStTZeWGpak": 3,
-        "default": 3,
-        "eGu3tuw7HwJd2bpx": 3,
-        "iLeUVmwqnze8ulOI": 3,
-        "mE5aEkDlrQJIYyhG": 3,
-        "nSGZ1sz1rdKao0kz": 3,
-        "nXC7OD7u5Zw5UDDU": 3,
-        "t41knaXNbgCEygM5": 3,
-        "tz9BP9MKfNGf2P3n": 3,
-        "wNzPmItLYCKE1I8t": 3,
-        "yL2PQxh3R9ddt0te": 3,
-        "yUfwoVmEPVdFG3AY": 3
-      },
-      "sort": 0,
-      "system": {
-        "props": {
-          "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "Dagger",
-          "celestial_ef": "100",
-          "check_bonus": "0",
-          "construct_ef": "100",
-          "damage_bonus": "5",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
-          "description": "<ul><li><p>When a creature 【⚔️Attack】you and <strong>missed, </strong>there's a chance to inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.SNK1IJTKfxjAy2NS\" data-id=\"SNK1IJTKfxjAy2NS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bane</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>to the attacker</p></li><li><p>You may perform the skill 【💥Weapon Break】</p></li></ul>",
-          "dragon_ef": "100",
-          "effect_table": {},
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "One-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "ingredient_taste": "",
-          "ingredient_taste2": "",
-          "insect_ef": "100",
-          "ip_cost": "",
-          "isEquipped": true,
-          "isIngredient": false,
-          "isKey": false,
-          "isMartial": false,
-          "isModule": false,
-          "isRelatedItem": true,
-          "isSet": false,
-          "isUnique": false,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "1500",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": "1",
-          "item_rarity": "Uncommon",
-          "item_skill_active": {
-            "1nYCUBF2hIDBDALx": {
-              "id": "${item.id}",
-              "name": "Weapon Break",
-              "skill_cost": "10 MP",
-              "skill_description": "<p>On <strong>hit, </strong>Inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.SNK1IJTKfxjAy2NS\" data-id=\"SNK1IJTKfxjAy2NS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bane</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>to the target</p>",
-              "skill_maxLevel": 1,
-              "uuid": "Item.1nYCUBF2hIDBDALx"
-            },
-            "vYbUJ2PfG3lQDDcn": {
-              "id": "${item.id}",
-              "name": "Weapon Break",
-              "skill_cost": "10 MP",
-              "skill_description": "<p>On <strong>hit, </strong>Inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.SNK1IJTKfxjAy2NS\" data-id=\"SNK1IJTKfxjAy2NS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bane</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>to the target</p>",
-              "skill_maxLevel": 1,
-              "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.vYbUJ2PfG3lQDDcn"
-            },
-            "yhtoE1Y6cbcY3n7A": {
-              "id": "${item.id}",
-              "name": "Weapon Break",
-              "skill_cost": "10 MP",
-              "skill_description": "<p>On <strong>hit, </strong>Inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.SNK1IJTKfxjAy2NS\" data-id=\"SNK1IJTKfxjAy2NS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bane</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>to the target</p>",
-              "skill_maxLevel": 1,
-              "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.yhtoE1Y6cbcY3n7A"
-            }
-          },
-          "item_skill_passive": {
-            "AIK0gCDeWK8T5WXO": {
-              "id": "${item.id}",
-              "name": "Swordbreak",
-              "skill_cost": "-",
-              "skill_description": "<ul><li><p>When a creature 【⚔️Attack】you and <strong>missed, </strong>there's a chance to inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.SNK1IJTKfxjAy2NS\" data-id=\"SNK1IJTKfxjAy2NS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bane</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>to the attacker</p></li></ul>",
-              "skill_maxLevel": 1,
-              "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.AIK0gCDeWK8T5WXO"
-            },
-            "OYuq20fwd3AjFy4H": {
-              "id": "${item.id}",
-              "name": "Swordbreak",
-              "skill_cost": "-",
-              "skill_description": "<ul><li><p>When a creature 【⚔️Attack】you and <strong>missed, </strong>there's a chance to inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.SNK1IJTKfxjAy2NS\" data-id=\"SNK1IJTKfxjAy2NS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bane</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>to the attacker</p></li></ul>",
-              "skill_maxLevel": 1,
-              "uuid": "Item.OYuq20fwd3AjFy4H"
-            }
-          },
-          "item_type": "weapon",
-          "mimic_ef": "100",
-          "monster_ef": "100",
-          "name": "Swordbreaker",
-          "optional_params": {},
-          "plant_ef": "100",
-          "reaction_config_table": {},
-          "recipe_dish_uuid": "",
-          "recipe_kind": "",
-          "refine_count": "0",
-          "refine_level": "0",
-          "related_item_list": {
-            "1nYCUBF2hIDBDALx": {
-              "id": "${item.id}",
-              "name": "Weapon Break",
-              "related_item_description": "<p>On <strong>hit, </strong>Inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.SNK1IJTKfxjAy2NS\" data-id=\"SNK1IJTKfxjAy2NS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bane</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>to the target</p>",
-              "uuid": "Item.1nYCUBF2hIDBDALx"
-            },
-            "AIK0gCDeWK8T5WXO": {
-              "id": "${item.id}",
-              "name": "Swordbreak",
-              "related_item_description": "<ul><li><p>When a creature 【⚔️Attack】you and <strong>missed, </strong>there's a chance to inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.SNK1IJTKfxjAy2NS\" data-id=\"SNK1IJTKfxjAy2NS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bane</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>to the attacker</p></li></ul>",
-              "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.AIK0gCDeWK8T5WXO"
-            },
-            "OYuq20fwd3AjFy4H": {
-              "id": "${item.id}",
-              "name": "Swordbreak",
-              "related_item_description": "<ul><li><p>When a creature 【⚔️Attack】you and <strong>missed, </strong>there's a chance to inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.SNK1IJTKfxjAy2NS\" data-id=\"SNK1IJTKfxjAy2NS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bane</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>to the attacker</p></li></ul>",
-              "uuid": "Item.OYuq20fwd3AjFy4H"
-            },
-            "vYbUJ2PfG3lQDDcn": {
-              "id": "${item.id}",
-              "name": "Weapon Break",
-              "related_item_description": "<p>On <strong>hit, </strong>Inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.SNK1IJTKfxjAy2NS\" data-id=\"SNK1IJTKfxjAy2NS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bane</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>to the target</p>",
-              "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.vYbUJ2PfG3lQDDcn"
-            },
-            "yhtoE1Y6cbcY3n7A": {
-              "id": "${item.id}",
-              "name": "Weapon Break",
-              "related_item_description": "<p>On <strong>hit, </strong>Inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.SNK1IJTKfxjAy2NS\" data-id=\"SNK1IJTKfxjAy2NS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bane</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>to the target</p>",
-              "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.yhtoE1Y6cbcY3n7A"
-            }
-          },
-          "reptilian_ef": "100",
-          "rolled_atr1": "DEX",
-          "rolled_atr2": "INS",
-          "set_name": "<Set Name>",
-          "skill_target": "One Enemy",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "Physical",
-          "undead_ef": "100",
-          "vehicle_ef": "100",
-          "weapon_range": "Melee"
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
-        "unique": false,
-        "uniqueId": "uNsw1vWtAssZo4Bz"
       },
       "type": "equippableItem"
     },
@@ -3466,6 +3016,7 @@
           "damage_bonus": "",
           "defense_target_type": "def",
           "description": "<p>When another creature you can see loses Hit Points while in \n<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span>, if they are not <strong>undead</strong>, you gain <strong>1 Grave Point</strong>. You may never have more than <strong>[SL + 1]</strong> <strong>Grave Points</strong>.</p>\n\n<p>When you are reduced to <strong>0 Hit Points</strong>, you <strong>lose all Grave Points</strong>; then, if you lost at least <strong>1 Grave Point</strong> this way and this is the first time you are reduced to <strong>0 HP</strong> during this scene, you do not <strong>Surrender</strong> nor <strong>Sacrifice</strong> yourself; instead, you recover an amount of <strong>HP</strong> equal to <strong>[SL, multiplied by the amount of Grave Points you lost this way]</strong>.</p>\n",
+          "details_roller": "Show",
           "duration": "",
           "effect_table": {
             "0": {
@@ -3546,14 +3097,16 @@
           "gadget_infusion_tier": "",
           "gadget_magitech_tier": "",
           "heroic_requirement": "",
+          "id": "fFHKCwDndsOmUg0q",
           "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/Shadowed_Vigil.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
           "isReaction": true,
           "isZeroPower": false,
-          "level": "2",
+          "level": "3",
           "max_level": "5",
           "name": "Beyond the Realms of Death",
           "on_activate_effect_ref": "",
@@ -3572,9 +3125,11 @@
               "reaction_debuff_count_target": "",
               "reaction_effect_ref": "bortd_gain",
               "reaction_isPassive": false,
+              "reaction_max_per_round": "",
               "reaction_origin_filter": "",
               "reaction_passive_mode": "force",
               "reaction_passive_target": "self",
+              "reaction_requires_weapon_used": false,
               "reaction_resource_filter": "hp",
               "reaction_responder": "",
               "reaction_source": "all",
@@ -3593,9 +3148,11 @@
               "reaction_debuff_count_target": "",
               "reaction_effect_ref": "bortd_seed",
               "reaction_isPassive": false,
+              "reaction_max_per_round": "",
               "reaction_origin_filter": "",
               "reaction_passive_mode": "force",
               "reaction_passive_target": "self",
+              "reaction_requires_weapon_used": false,
               "reaction_resource_filter": "",
               "reaction_responder": "",
               "reaction_source": "",
@@ -3611,16 +3168,74 @@
           "skill_animation_mode": "default",
           "skill_information": "<table style=\"width:100%; text-align:center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>Max Grave Points</strong></p></td><td><p><strong>Max Heal on first time you hit 0 HP in a scene</strong></p></td></tr><tr><td><p>1</p></td><td><p>2</p></td><td><p>2</p></td></tr><tr><td><p>2</p></td><td><p>3</p></td><td><p>6</p></td></tr><tr><td><p>3</p></td><td><p>4</p></td><td><p>12</p></td></tr><tr><td><p>4</p></td><td><p>5</p></td><td><p>20</p></td></tr><tr><td><p>5</p></td><td><p>6</p></td><td><p>30</p></td></tr></tbody></table><p style=\"font-size: 12px; margin-top: 4px; text-align: center\">(Heal = <em>SL × Grave Points lost</em>; values above assume you lost all Grave Points.)</p>",
           "skill_range": "",
+          "skill_tags": "",
           "skill_target": "",
           "skill_type": "Passive",
           "target_eligibility": "",
+          "type_damage": "",
+          "use_optional_params": false,
+          "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.fFHKCwDndsOmUg0q"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "qdGOPTKJQ2YI6LUl"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "fjrhRNjINs8xk7Lp",
+      "_stats": {
+        "compendiumSource": "Item.1eFbdLi3qXUczO6Z",
+        "coreVersion": "12.343",
+        "createdTime": 1783192560736,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215133.445.png",
+      "name": "Birth of the Cruel",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "check_bonus": "0",
+          "class": "Necromancer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When a non-Villain NPC you can see that belongs to the <strong>beast</strong>, <strong>humanoid</strong>, <strong>monster</strong>, or <strong>plant</strong> Species dies, you may spend <strong>2 Grave Points</strong> and <strong>reduce your maximum HP and MP</strong> by an amount equal to that NPC’s <strong>level</strong>. If you do, their corpse becomes a <strong>Minion</strong> who obeys your telepathic commands:</p>\n<ul>\n  <li>Its Species becomes <strong>undead</strong> and it receives all undead rules. The new Affinities to \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span>, \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(202, 189, 154) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></span>, and \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span> damage overwrite any preexisting Affinity, but the original Species’ rules are otherwise maintained.</li>\n  <li>Its <strong>Rank</strong> becomes <strong>soldier</strong>; if the original creature was an <strong>elite</strong> or <strong>champion</strong>, the GM must reduce the Minion’s HP and MP accordingly (<strong>Skills are maintained</strong>).</li>\n  <li>The newly created Minion is a completely new creature and has <strong>full HP</strong>, <strong>full MP</strong>, and <strong>no status effects</strong>. It retains the original creature’s <strong>equipment</strong>.</li>\n  <li>Your Minion takes its own turn during conflicts, and the GM must count it as an <strong>additional Player Character</strong> when designing a conflict.</li>\n  <li>When you <strong>rest</strong>, your Minion also gains the full benefits of resting.</li>\n  <li>If your Minion is reduced to <strong>0 HP</strong>, if you are <strong>more than 1 travel day</strong> away from it, or if you <strong>die</strong> or <strong>fall unconscious</strong>, your Minion is immediately <strong>destroyed</strong>.</li>\n  <li>You may also destroy your Minion <strong>at any time</strong>; if you want to create a new Minion, you must first destroy the current one.</li>\n  <li>If your Minion is destroyed, your <strong>maximum HP and MP</strong> scores <strong>return to normal</strong>.</li>\n</ul>\n",
+          "duration": "",
+          "heroic_requirement": "you must have mastered the Necromancer Class.",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Birth of the Cruel",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
           "type_damage": "",
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
-        "uniqueId": "qdGOPTKJQ2YI6LUl"
+        "uniqueId": "1eFbdLi3qXUczO6Z"
       },
       "type": "equippableItem"
     },
@@ -3657,59 +3272,101 @@
           "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<p>When you deal damage to a creature with a 【📕Spell】, if that spell only deals damage to that creature, you may spend <strong>1 Grave Point</strong>. If you do, <strong>Choose one option:</strong></p>\n<ul>\n  <li>If that creature is suffering from one or more status effects, the spell deals extra damage equal to <strong>[(SL × 2) + the number of status effects on that creature]</strong>;</li>\n  <li>or, if that creature is suffering from no status effects, they suffer \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span></span>.\n  </li>\n</ul>\n",
+          "details_roller": "Show",
           "duration": "",
           "effect_table": {
             "0": {
+              "allowed_types": "",
+              "check_bonus_formula": "",
+              "consume_self": false,
+              "damage_bonus_formula": "",
               "effect_kind": "open_action_menu",
               "effect_label": "fwtbt_offer",
+              "free_hr_as_zero": false,
+              "free_mode": false,
+              "free_of_cost": false,
+              "from_resource": "",
+              "max_mp_cost": "",
+              "menu_label": "",
+              "menu_option_colors": "",
               "menu_option_descriptions": "Extra damage = (SL × 2) + number of statuses on the target|Inflict Shaken — disabled if the target is already Shaken",
+              "menu_option_icons": "",
               "menu_option_labels": "Deal extra damage|Apply Shaken",
               "menu_option_refs": "fwtbt_dmg_opt,fwtbt_shaken_opt",
               "menu_pick_count": "1",
               "menu_subtitle": "Spend 1 Grave Point:",
-              "menu_title": "For Whom the Bell Tolls"
+              "menu_title": "For Whom the Bell Tolls",
+              "target_ref": "",
+              "to_resource": ""
             },
             "1": {
               "chain_steps": "fwtbt_cost, fwtbt_dmg",
+              "consume_self": false,
               "effect_kind": "chain",
               "effect_label": "fwtbt_dmg_opt",
-              "menu_label": "Deal extra damage"
+              "from_resource": "",
+              "menu_label": "Deal extra damage",
+              "to_resource": ""
             },
             "2": {
               "chain_steps": "fwtbt_cost, fwtbt_shaken",
               "condition_formula": "TARGET_AE_COUNT_SHAKEN == 0",
+              "consume_self": false,
               "disable_ui_type": "disabled",
               "disabled_reason": "Already Shaken",
               "effect_kind": "chain",
               "effect_label": "fwtbt_shaken_opt",
-              "menu_label": "Apply Shaken"
+              "from_resource": "",
+              "menu_label": "Apply Shaken",
+              "to_resource": ""
             },
             "3": {
               "charge_ae_name": "Grave Points",
               "charge_amount": "1",
+              "charge_max": "",
               "charge_operation": "subtract",
+              "consume_self": false,
               "effect_kind": "adjust_charges",
               "effect_label": "fwtbt_cost",
-              "target_ref": "self"
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "self",
+              "to_resource": ""
             },
             "4": {
+              "consume_self": false,
               "damage_amount": "SL * 2 + TARGET_STATUS_COUNT",
               "damage_operation": "add",
               "damage_stage": "outgoing",
               "effect_kind": "adjust_damage",
               "effect_label": "fwtbt_dmg",
-              "target_ref": "trigger_subject"
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "trigger_subject",
+              "to_resource": ""
             },
             "5": {
               "ae_duplicate_mode": "replace_same_status",
+              "ae_family": "",
+              "ae_initial_charges": "",
+              "ae_initial_charges_max": "",
               "ae_template_ref": "Shaken",
+              "consume_self": false,
               "effect_kind": "apply_ae",
               "effect_label": "fwtbt_shaken",
-              "target_ref": "trigger_subject"
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "trigger_subject",
+              "to_resource": ""
             }
           },
+          "gadget_alchemy_tier": "",
+          "gadget_infusion_tier": "",
+          "gadget_magitech_tier": "",
           "heroic_requirement": "",
+          "id": "fjThxMdxufSrumbB",
           "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/blackblood.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
@@ -3721,24 +3378,38 @@
           "name": "For Whom the Bell Tolls",
           "on_activate_effect_ref": "",
           "optional_params": {},
+          "pre_activate_effect_ref": "",
           "reaction_config_table": {
             "0": {
               "condition_formula": "ACTION_IS_SPELL == 1 && SINGLE_TARGET_ATTACK && AE_CHARGES_GRAVE_POINTS >= 1",
+              "reaction_action_kind": "",
               "reaction_action_target": "enemy",
+              "reaction_cause_filter": "",
               "reaction_effect_ref": "fwtbt_offer",
+              "reaction_max_per_round": "",
+              "reaction_origin_filter": "",
               "reaction_passive_mode": "ask",
+              "reaction_requires_weapon_used": false,
+              "reaction_resource_filter": "",
+              "reaction_responder": "",
               "reaction_source": "self",
-              "reaction_trigger": "creature_will_deal_damage"
+              "reaction_source_skill": "",
+              "reaction_status_filter": "",
+              "reaction_trigger": "creature_will_deal_damage",
+              "requires_skill": ""
             }
           },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_information": "<p>When you deal damage to a creature with a spell, if that spell only deals damage to that creature, you may spend 1 Grave Point. If you do, choose one option: if that creature is suffering from one or more status effects, the spell deals extra damage equal to (SL × 2) + the number of status effects on that creature; or if that creature is suffering from no status effects, they suffer <strong>shaken</strong>.</p>",
           "skill_range": "",
+          "skill_tags": "",
           "skill_target": "",
           "skill_type": "Passive",
+          "target_eligibility": "",
           "type_damage": "",
-          "use_optional_params": false
+          "use_optional_params": false,
+          "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.fjThxMdxufSrumbB"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -5021,6 +4692,158 @@
       "type": "equippableItem"
     },
     {
+      "_id": "l7hj0bWidYxltnI6",
+      "_stats": {
+        "compendiumSource": "Item.G6zwbm2sfECSKpDM",
+        "coreVersion": "12.343",
+        "createdTime": 1783192012967,
+        "duplicateSource": "Item.14ni8QTjG5uq5whY",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/03_DRK/stalwart_soul.png",
+      "name": "Children of the Grave",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "check_bonus": "0",
+          "class": "Necromancer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>You can always communicate verbally with <strong>undead</strong> creatures. <strong>Once per scene</strong>, you may ask an <strong>undead</strong> a single question; they are compelled to answer truthfully.</p>\n",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Children of the Grave",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "G6zwbm2sfECSKpDM"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "Ld4P1df4SK5zvtq6",
+      "_stats": {
+        "compendiumSource": "Item.3PPbTNuD6rPBkICm",
+        "coreVersion": "12.343",
+        "createdTime": 1783193418679,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1139.gif",
+      "name": "Psychic Dagger",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Dagger",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "5",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>This weapon gain bonus <strong>Accuracy</strong> equal to <strong>【1 x</strong> <strong>the number of filled sections in your Brainwave Clock</strong>】</p></li><li><p>This weapon deals bonus damage equal to <strong>【2 x</strong> <strong>the number of filled sections in your Brainwave Clock</strong>】</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "3PPbTNuD6rPBkICm",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1139.gif",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": true,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "2600",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Rare",
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Psychic Dagger",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "WLP",
+          "set_name": "<Set Name>",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Dark",
+          "undead_ef": "100",
+          "uuid": "Item.3PPbTNuD6rPBkICm",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "3PPbTNuD6rPBkICm"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "LwbHBK0twVXmekz0",
       "_stats": {
         "compendiumSource": "Item.zbulFnM318NgBgh5",
@@ -5830,119 +5653,6 @@
       "type": "equippableItem"
     },
     {
-      "_id": "vYbUJ2PfG3lQDDcn",
-      "_stats": {
-        "compendiumSource": "Item.Hwc20u1gKTj1foQz",
-        "coreVersion": "12.343",
-        "createdTime": 1783148628740,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.8.5"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Raven/Weaponbreaker.png",
-      "name": "Weapon Break",
-      "ownership": {
-        "2vy7wrEUqBy0kzsU": 3,
-        "6DmgigM5jq76r0Gd": 3,
-        "7hKw8KGsimboeDif": 3,
-        "9sFgrDy4MvAgoCmQ": 3,
-        "Am7qxPOavfKeDGPd": 3,
-        "JQGNzKpDPHJmcUIW": 3,
-        "JvF9tXvr7aaiS06m": 3,
-        "KD5d0efqHETPpIux": 3,
-        "LT3Z8EnRdMVk5ncQ": 3,
-        "MwTL6zXFCEpVBTpI": 3,
-        "NozW36XIGEGx7oVH": 3,
-        "NpGkA7uxaarkPiwS": 3,
-        "ULBTZPjtza939Mvy": 3,
-        "WQGFvLStTZeWGpak": 3,
-        "default": 3,
-        "eGu3tuw7HwJd2bpx": 3,
-        "iLeUVmwqnze8ulOI": 3,
-        "mE5aEkDlrQJIYyhG": 3,
-        "nSGZ1sz1rdKao0kz": 3,
-        "nXC7OD7u5Zw5UDDU": 3,
-        "t41knaXNbgCEygM5": 3,
-        "tz9BP9MKfNGf2P3n": 3,
-        "wNzPmItLYCKE1I8t": 3,
-        "yL2PQxh3R9ddt0te": 3,
-        "yUfwoVmEPVdFG3AY": 3
-      },
-      "sort": 0,
-      "system": {
-        "container": "8TY9aPKKOzBSFkvv",
-        "props": {
-          "active_effect_config_table": {
-            "0": {
-              "$deleted": false,
-              "active_effect_application": "add",
-              "active_effect_apply_mode": "percentage",
-              "active_effect_dice_1": "",
-              "active_effect_dice_2": "",
-              "active_effect_dl": "0",
-              "active_effect_id": "oxdUhOMQzOpthbHK",
-              "active_effect_percent": "100",
-              "active_effect_target": "enemy",
-              "active_effect_trigger": "on_hit"
-            }
-          },
-          "animation_damage_timing_offset": "0",
-          "animation_damage_timing_options": "default",
-          "check_bonus": "0",
-          "class": "NPC",
-          "cost": "10 MP",
-          "damage_bonus": "",
-          "defense_target_type": "def",
-          "description": "<p>On <strong>hit, </strong>Inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.SNK1IJTKfxjAy2NS\" data-id=\"SNK1IJTKfxjAy2NS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bane</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>to the target</p>",
-          "duration": "3 Rounds",
-          "effect_table": {
-            "0": {
-              "$deleted": false,
-              "ae_template_ref": "Bane",
-              "effect_kind": "apply_ae",
-              "effect_label": "wb_bane",
-              "target_ref": "hit_action_targets"
-            }
-          },
-          "heroic_requirement": "",
-          "ignore_hr": false,
-          "isCheck": true,
-          "isFacet": false,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
-          "isReaction": false,
-          "isZeroPower": false,
-          "level": "1",
-          "max_level": "1",
-          "name": "Weapon Break",
-          "on_activate_effect_ref": "wb_bane",
-          "optional_params": {},
-          "reaction_config_table": {},
-          "rolled_atr1": "DEX",
-          "rolled_atr2": "MIG",
-          "skill_animation_default": "",
-          "skill_animation_mode": "default",
-          "skill_information": "",
-          "skill_range": "Melee",
-          "skill_target": "One Creature",
-          "skill_type": "Active",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2666163373,
-        "unique": false,
-        "uniqueId": "vYbUJ2PfG3lQDDcn"
-      },
-      "type": "equippableItem"
-    },
-    {
       "_id": "YIUYJEg53a76vGbH",
       "_stats": {
         "compendiumSource": "Item.VXzpUvjAr9Z5wfBA",
@@ -6683,7 +6393,7 @@
           "$deleted": false,
           "benefit": "mp",
           "class_name": "Necromancer",
-          "level": "8"
+          "level": "10"
         }
       },
       "clock_adoration": "0",
@@ -6773,9 +6483,9 @@
       "critical_damage_bonus": 0,
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
-      "current_hp": "89",
+      "current_hp": "91",
       "current_ip": "8",
-      "current_mp": "86",
+      "current_mp": "106",
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/Keren_Cut-in002.png",
       "cut_in_fumble": "",
@@ -6825,7 +6535,7 @@
       "emotion_3_1": "admiration",
       "emotion_3_2": "",
       "emotion_3_3": "affection",
-      "emotion_4_1": "",
+      "emotion_4_1": "inferiority",
       "emotion_4_2": "loyalty",
       "emotion_4_3": "affection",
       "emotion_5_1": "",
@@ -6841,11 +6551,11 @@
       "enraged_status": 0,
       "entropism": false,
       "envenomed_status": 0,
-      "exp_meter": "1.73",
-      "experience": "1.73",
+      "exp_meter": "6.01",
+      "experience": "6.01",
       "experience_ui": "0",
       "extra_damage_mod_air": 0,
-      "extra_damage_mod_all": 1,
+      "extra_damage_mod_all": 0,
       "extra_damage_mod_arcane": 0,
       "extra_damage_mod_bolt": 0,
       "extra_damage_mod_bow": 0,
@@ -6868,7 +6578,7 @@
       "extra_damage_mod_spell": 0,
       "extra_damage_mod_sword": 0,
       "extra_damage_mod_thrown": 0,
-      "fabula_point": "1",
+      "fabula_point": "2",
       "fatigue_status": 0,
       "firearm_ef": "100",
       "flail_ef": "100",
@@ -7079,21 +6789,21 @@
           "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.alJIkZKIha6tZRiL"
         }
       },
-      "level": "34",
+      "level": "36",
       "lifesteal_percentage": 0,
       "lifesteal_value": 0,
       "magic_defense": 13,
       "magic_defense_mod": "1",
       "main_attrib_1": "DEX",
-      "main_attrib_2": "INS",
-      "main_details": "<ul><li><p>When a creature 【⚔️Attack】you and <strong>missed, </strong>there's a chance to inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.SNK1IJTKfxjAy2NS\" data-id=\"SNK1IJTKfxjAy2NS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bane</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>to the attacker</p></li><li><p>You may perform the skill 【💥Weapon Break】</p></li></ul>",
-      "main_hand": "Swordbreaker",
+      "main_attrib_2": "WLP",
+      "main_details": "<ul><li><p>This weapon gain bonus <strong>Accuracy</strong> equal to <strong>【1 x</strong> <strong>the number of filled sections in your Brainwave Clock</strong>】</p></li><li><p>This weapon deals bonus damage equal to <strong>【2 x</strong> <strong>the number of filled sections in your Brainwave Clock</strong>】</p></li></ul>",
+      "main_hand": "Psychic Dagger",
       "main_hand_attack": "",
       "manadrain_percentage": 0,
       "manadrain_value": 0,
-      "max_hp": 89,
+      "max_hp": 91,
       "max_ip": 8,
-      "max_mp": 104,
+      "max_mp": 106,
       "memories_list": {},
       "memory": "Memories",
       "mig_base": "6",
@@ -7626,7 +7336,7 @@
           "active_cost": "",
           "active_description": "<p>When another creature you can see loses Hit Points while in \n<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span>, if they are not <strong>undead</strong>, you gain <strong>1 Grave Point</strong>. You may never have more than <strong>[SL + 1]</strong> <strong>Grave Points</strong>.</p>\n\n<p>When you are reduced to <strong>0 Hit Points</strong>, you <strong>lose all Grave Points</strong>; then, if you lost at least <strong>1 Grave Point</strong> this way and this is the first time you are reduced to <strong>0 HP</strong> during this scene, you do not <strong>Surrender</strong> nor <strong>Sacrifice</strong> yourself; instead, you recover an amount of <strong>HP</strong> equal to <strong>[SL, multiplied by the amount of Grave Points you lost this way]</strong>.</p>\n",
           "active_duration": "",
-          "active_level": 2,
+          "active_level": 3,
           "active_target": "",
           "id": "${item.id}",
           "name": "Beyond the Realms of Death",
@@ -7656,6 +7366,18 @@
           "name": "For Whom the Bell Tolls",
           "roll": "",
           "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.fjThxMdxufSrumbB"
+        },
+        "fjrhRNjINs8xk7Lp": {
+          "active_class": "Necromancer",
+          "active_cost": "",
+          "active_description": "<p>When a non-Villain NPC you can see that belongs to the <strong>beast</strong>, <strong>humanoid</strong>, <strong>monster</strong>, or <strong>plant</strong> Species dies, you may spend <strong>2 Grave Points</strong> and <strong>reduce your maximum HP and MP</strong> by an amount equal to that NPC’s <strong>level</strong>. If you do, their corpse becomes a <strong>Minion</strong> who obeys your telepathic commands:</p>\n<ul>\n  <li>Its Species becomes <strong>undead</strong> and it receives all undead rules. The new Affinities to \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span>, \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(202, 189, 154) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></span>, and \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span> damage overwrite any preexisting Affinity, but the original Species’ rules are otherwise maintained.</li>\n  <li>Its <strong>Rank</strong> becomes <strong>soldier</strong>; if the original creature was an <strong>elite</strong> or <strong>champion</strong>, the GM must reduce the Minion’s HP and MP accordingly (<strong>Skills are maintained</strong>).</li>\n  <li>The newly created Minion is a completely new creature and has <strong>full HP</strong>, <strong>full MP</strong>, and <strong>no status effects</strong>. It retains the original creature’s <strong>equipment</strong>.</li>\n  <li>Your Minion takes its own turn during conflicts, and the GM must count it as an <strong>additional Player Character</strong> when designing a conflict.</li>\n  <li>When you <strong>rest</strong>, your Minion also gains the full benefits of resting.</li>\n  <li>If your Minion is reduced to <strong>0 HP</strong>, if you are <strong>more than 1 travel day</strong> away from it, or if you <strong>die</strong> or <strong>fall unconscious</strong>, your Minion is immediately <strong>destroyed</strong>.</li>\n  <li>You may also destroy your Minion <strong>at any time</strong>; if you want to create a new Minion, you must first destroy the current one.</li>\n  <li>If your Minion is destroyed, your <strong>maximum HP and MP</strong> scores <strong>return to normal</strong>.</li>\n</ul>\n",
+          "active_duration": "",
+          "active_level": 1,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Birth of the Cruel",
+          "roll": "",
+          "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.fjrhRNjINs8xk7Lp"
         },
         "hM6v0QnLirXVKohD": {
           "active_class": "Rogue",
@@ -7704,6 +7426,18 @@
           "name": "Detonate Phantasm",
           "roll": "",
           "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.krHYhbzTN0Mh5kXE"
+        },
+        "l7hj0bWidYxltnI6": {
+          "active_class": "Necromancer",
+          "active_cost": "",
+          "active_description": "<p>You can always communicate verbally with <strong>undead</strong> creatures. <strong>Once per scene</strong>, you may ask an <strong>undead</strong> a single question; they are compelled to answer truthfully.</p>\n",
+          "active_duration": "",
+          "active_level": 1,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Children of the Grave",
+          "roll": "",
+          "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.l7hj0bWidYxltnI6"
         },
         "l8zhF2rGMjHMz2qD": {
           "active_class": "",
@@ -7823,7 +7557,7 @@
       "weapon1_base_damage": "5",
       "weapon1_base_mod": "0",
       "weapon1_damage": 5,
-      "weapon1_damagetype": "Physical",
+      "weapon1_damagetype": "Dark",
       "weapon1_mod": 0,
       "weapon2_damagetype": "-",
       "weapon_list": {
@@ -7887,6 +7621,18 @@
           "weapon_martial": "",
           "weapon_range": "Melee"
         },
+        "Ld4P1df4SK5zvtq6": {
+          "id": "${item.id}",
+          "name": "Psychic Dagger",
+          "quantity": "",
+          "roll": "",
+          "type": "Dagger",
+          "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.Ld4P1df4SK5zvtq6",
+          "weapon_description": "<p><ul><li><p>This weapon gain bonus <strong>Accuracy</strong> equal to <strong>【1 x</strong> <strong>the number of filled sections in your Brainwave Clock</strong>】</p></li><li><p>This weapon deals bonus damage equal to <strong>【2 x</strong> <strong>the number of filled sections in your Brainwave Clock</strong>】</p></li></ul></p>",
+          "weapon_hand": "One-handed",
+          "weapon_martial": "",
+          "weapon_range": "Melee"
+        },
         "P4Z2gsPlJ2JXRWR1": {
           "id": "${item.id}",
           "name": "Swordbreaker",
@@ -7931,6 +7677,18 @@
           "type": "Dagger",
           "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.Td1lP43aT6XoHOCD",
           "weapon_description": "<p><ul><li><p>No Quality.</p></li></ul></p>",
+          "weapon_hand": "One-handed",
+          "weapon_martial": "",
+          "weapon_range": "Melee"
+        },
+        "fBYGTBfwRmWubjnh": {
+          "id": "${item.id}",
+          "name": "Hornet",
+          "quantity": "",
+          "roll": "",
+          "type": "Dagger",
+          "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.fBYGTBfwRmWubjnh",
+          "weapon_description": "<p><ul><li><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Multi</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;3</span></strong></span></li></ul></p>",
           "weapon_hand": "One-handed",
           "weapon_martial": "",
           "weapon_range": "Melee"
@@ -8025,13 +7783,13 @@
       "wlp_base": "10",
       "wlp_current": 10,
       "your_class_name": "",
-      "zenit": "7259",
+      "zenit": "7503",
       "zero_label": "Zero Power",
       "zero_power_description": "<p>Shatter all phantom. Deal damage to all enemy equal to <strong>【(shattered phantom x 20) + 20】</strong> <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(226, 88, 34) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span> damage.</p>",
       "zero_power_macro": "",
       "zero_power_name": "Last Den of Cinders",
       "zero_power_showMacro": false,
-      "zero_power_value": "3",
+      "zero_power_value": "6",
       "zero_trigger_description": "<p>Every time a Phantasm shattered, gain 1 zero trigger</p>",
       "zero_trigger_label": "Trigger",
       "zombie_status": 0

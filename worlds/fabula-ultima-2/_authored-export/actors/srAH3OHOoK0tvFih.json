@@ -529,7 +529,7 @@
           "hand_slots": "Two-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "xFcOrEIikOsnOMne",
+          "id": "3cnqLWqSdV8YxBSH",
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Rope.gif",
           "insect_ef": "100",
           "ip_cost": "",
@@ -564,7 +564,7 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Item.xFcOrEIikOsnOMne",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.3cnqLWqSdV8YxBSH",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
@@ -572,6 +572,114 @@
         "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "xFcOrEIikOsnOMne"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "5pZrwswltGCOBfSc",
+      "_stats": {
+        "compendiumSource": "Item.jqykkhAB5m9durso",
+        "coreVersion": "12.343",
+        "createdTime": 1783189038211,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
+      "name": "Morrigan",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 2,
+        "yL2PQxh3R9ddt0te": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Spear",
+          "celestial_ef": "100",
+          "check_bonus": "1",
+          "construct_ef": "100",
+          "damage_bonus": "12",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul>\n<li>When you hit one or more creatures with this weapon, you may recover <strong>10</strong> Mind Points.</li>\n</ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "Two-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "1500",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_skill_passive": {
+            "ziGuceXkDrtTMBp9": {
+              "id": "${item.id}",
+              "name": "Morrigan (Passive)",
+              "skill_cost": "",
+              "skill_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.ziGuceXkDrtTMBp9"
+            }
+          },
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Morrigan",
+          "optional_params": {},
+          "plant_ef": "100",
+          "related_item_list": {
+            "ziGuceXkDrtTMBp9": {
+              "id": "${item.id}",
+              "name": "Morrigan (Passive)",
+              "related_item_description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.ziGuceXkDrtTMBp9"
+            }
+          },
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "MIG",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Dark",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "jqykkhAB5m9durso"
       },
       "type": "equippableItem"
     },
@@ -762,145 +870,6 @@
         "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "wWrePzzYfpE3bEVV"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "A9O675j1g4fI13x2",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1783148668138,
-        "duplicateSource": "Item.QvUsAoeaebjrKAHi",
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "3.2.4"
-        },
-        "fucompanion": {
-          "itemMigratorBackup": {
-            "detectedType": "accessory",
-            "fromTemplate": "r0yZpLPAK9VXhM2p",
-            "itemId": "QvUsAoeaebjrKAHi",
-            "itemName": "Amethyst Pendant",
-            "pickedOldProps": {
-              "cost": "350",
-              "def_bonus": "",
-              "defense": "0",
-              "defense_include_dex": false,
-              "initiative": "0",
-              "magic_defense": "0",
-              "magic_defense_include_ins": false,
-              "mdef_bonus": ""
-            },
-            "ts": 1769647435106
-          }
-        }
-      },
-      "folder": "5uQIy5BCy7UEVfcT",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/2640.gif",
-      "name": "Ring of Magma",
-      "ownership": {
-        "2vy7wrEUqBy0kzsU": 3,
-        "6DmgigM5jq76r0Gd": 3,
-        "7hKw8KGsimboeDif": 3,
-        "9sFgrDy4MvAgoCmQ": 3,
-        "Am7qxPOavfKeDGPd": 3,
-        "JQGNzKpDPHJmcUIW": 3,
-        "JvF9tXvr7aaiS06m": 3,
-        "KD5d0efqHETPpIux": 3,
-        "LT3Z8EnRdMVk5ncQ": 3,
-        "MwTL6zXFCEpVBTpI": 3,
-        "NozW36XIGEGx7oVH": 3,
-        "NpGkA7uxaarkPiwS": 3,
-        "ULBTZPjtza939Mvy": 3,
-        "WQGFvLStTZeWGpak": 3,
-        "default": 3,
-        "eGu3tuw7HwJd2bpx": 3,
-        "iLeUVmwqnze8ulOI": 3,
-        "mE5aEkDlrQJIYyhG": 3,
-        "nSGZ1sz1rdKao0kz": 3,
-        "nXC7OD7u5Zw5UDDU": 3,
-        "t41knaXNbgCEygM5": 3,
-        "tz9BP9MKfNGf2P3n": 3,
-        "wNzPmItLYCKE1I8t": 3,
-        "yL2PQxh3R9ddt0te": 3,
-        "yUfwoVmEPVdFG3AY": 3
-      },
-      "sort": 11450000,
-      "system": {
-        "container": null,
-        "props": {
-          "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "Arcane",
-          "celestial_ef": "100",
-          "check": "Check",
-          "check_bonus": "0",
-          "construct_ef": "100",
-          "damage_bonus": "0",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
-          "description": "<ul><li>You <strong>Absorb</strong> fire damage but have <strong>Vulnerability</strong> to ice damage.</li></ul>",
-          "dragon_ef": "100",
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flavor_text": "<p><em>A warm ember glows within the band, feeding on flame while cracking under killing frost.</em></p>",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "One-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "id": "PsBBWgj9RkzEIKtF",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/2640.gif",
-          "insect_ef": "100",
-          "ip_cost": "",
-          "isEquipped": false,
-          "isKey": false,
-          "isMartial": false,
-          "isModule": false,
-          "isRelatedItem": false,
-          "isSet": false,
-          "isUnique": false,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "2500",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": "1",
-          "item_rarity": "Uncommon",
-          "item_type": "accessory",
-          "mimic_ef": "100",
-          "monster_ef": "100",
-          "name": "Ring of Magma",
-          "optional_params": {},
-          "plant_ef": "100",
-          "refine_count": "0",
-          "refine_level": "0",
-          "reptilian_ef": "100",
-          "rolled_atr1": "DEX",
-          "rolled_atr2": "DEX",
-          "set_name": "",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "Physical",
-          "undead_ef": "100",
-          "uuid": "Item.PsBBWgj9RkzEIKtF",
-          "vehicle_ef": "100",
-          "weapon_range": "Melee"
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
-        "unique": false,
-        "uniqueId": "KoC4PHdQrp7r4rM9"
       },
       "type": "equippableItem"
     },
@@ -1217,6 +1186,163 @@
       "type": "equippableItem"
     },
     {
+      "_id": "eEtWzQ3OVDwYdOoe",
+      "_stats": {
+        "compendiumSource": "Item.Qex8FZz4dvDcBmlz",
+        "coreVersion": "12.343",
+        "createdTime": 1783189031189,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.Qex8FZz4dvDcBmlz"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "weapon",
+            "fromTemplate": "gIRU9XGqYeMBwBN9",
+            "itemId": "D32pUz6M6e1smWrB",
+            "itemName": "Dragontrap Bow",
+            "pickedOldProps": {
+              "cost": "1500",
+              "martial": true
+            },
+            "ts": 1769647000242
+          }
+        }
+      },
+      "folder": "gkxeb18rMnUvyuqk",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bow.png",
+      "name": "Dragontrap Bow",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 900000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Bow",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "12",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>When you hit a <strong>@UUID[JournalEntry.q6keqwDWUsEgSWDw]{Flying}</strong>&nbsp;target with this weapon, you may force that target to land immediately</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flavor_text": "",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "Two-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "bsG2aZEMX2Glb3pI",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/bow.png",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isIngredient": false,
+          "isKey": false,
+          "isMartial": true,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "1500",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Uncommon",
+          "item_skill_passive": {
+            "emTXtdbsz6owxFeI": {
+              "id": "${item.id}",
+              "name": "Dragontrap Bow (Passive)",
+              "skill_cost": "",
+              "skill_description": "<p>When you hit a Flying target with this weapon, you may force it to land until the end of the round.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.emTXtdbsz6owxFeI"
+            }
+          },
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Dragontrap Bow",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "related_item_list": {
+            "emTXtdbsz6owxFeI": {
+              "id": "${item.id}",
+              "name": "Dragontrap Bow (Passive)",
+              "related_item_description": "<p>When you hit a Flying target with this weapon, you may force it to land until the end of the round.</p>",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.emTXtdbsz6owxFeI"
+            }
+          },
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "skill_tags": "",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Earth",
+          "undead_ef": "100",
+          "uuid": "Actor.dafTLBUscCDNgq8H.Item.bsG2aZEMX2Glb3pI",
+          "vehicle_ef": "100",
+          "weapon_range": "Ranged"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "D32pUz6M6e1smWrB"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "exVAwWwaIvNcyuwc",
       "_stats": {
         "compendiumSource": "Item.QXgHt7VEXEaVdPz1",
@@ -1307,313 +1433,6 @@
         "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "QXgHt7VEXEaVdPz1"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "faml6MYwxqxBLrMh",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1783148668138,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "effects": [
-        {
-          "_id": "ioLV6MOkBlTSSRxq",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": null,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.8.5"
-          },
-          "changes": [
-            {
-              "key": "bonus_magic_defense",
-              "mode": 2,
-              "priority": 2,
-              "value": "${isEquipped ? (item_mdef_bonus * 1) : 0}$"
-            }
-          ],
-          "description": "",
-          "disabled": false,
-          "duration": {
-            "combat": null,
-            "rounds": null,
-            "seconds": null,
-            "startRound": null,
-            "startTime": 298800,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "core": {
-              "overlay": false
-            },
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "originalId": "ioLV6MOkBlTSSRxq",
-              "originalParentId": "96gMkuCexILXHXyI",
-              "originalUuid": "Item.96gMkuCexILXHXyI.ActiveEffect.ioLV6MOkBlTSSRxq"
-            },
-            "dfreds-convenient-effects": {
-              "ceEffectId": "ce-mdef-up",
-              "isBackup": false,
-              "isConvenient": true,
-              "isDynamic": false,
-              "isTemporary": false,
-              "isViewable": true
-            },
-            "statuscounter": {
-              "config": {
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUpStack.webp",
-          "name": "MDEF UP",
-          "origin": null,
-          "sort": 0,
-          "statuses": [],
-          "system": {
-            "tags": []
-          },
-          "tint": "#ffffff",
-          "transfer": true,
-          "type": "base"
-        },
-        {
-          "_id": "SWtx6YHhbzEmHmVj",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": null,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.8.5"
-          },
-          "changes": [
-            {
-              "key": "bonus_defense",
-              "mode": 2,
-              "priority": 2,
-              "value": "${isEquipped ? (item_def_bonus * 1) : 0}$"
-            }
-          ],
-          "description": "",
-          "disabled": false,
-          "duration": {
-            "combat": null,
-            "rounds": null,
-            "seconds": null,
-            "startRound": null,
-            "startTime": 298800,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "core": {
-              "overlay": false
-            },
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "originalId": "SWtx6YHhbzEmHmVj",
-              "originalParentId": "96gMkuCexILXHXyI",
-              "originalUuid": "Item.96gMkuCexILXHXyI.ActiveEffect.SWtx6YHhbzEmHmVj"
-            },
-            "dfreds-convenient-effects": {
-              "ceEffectId": "def-up",
-              "isBackup": false,
-              "isConvenient": true,
-              "isDynamic": false,
-              "isTemporary": false,
-              "isViewable": true
-            },
-            "statuscounter": {
-              "config": {
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUp.webp",
-          "name": "DEF UP",
-          "origin": null,
-          "sort": 0,
-          "statuses": [],
-          "system": {
-            "tags": []
-          },
-          "tint": "#ffffff",
-          "transfer": true,
-          "type": "base"
-        }
-      ],
-      "flags": {
-        "custom-system-builder": {
-          "version": "3.2.4"
-        },
-        "fabula-ultima-companion": {
-          "defUpMdefUpHelperKeyPatchBackup_v1": {
-            "createdAt": 1777708856632,
-            "effects": [
-              {
-                "changes": [
-                  {
-                    "key": "defense",
-                    "mode": 2,
-                    "priority": 2,
-                    "value": "${isEquipped ? item_def_bonus : 0}$"
-                  }
-                ],
-                "id": "SWtx6YHhbzEmHmVj",
-                "name": "DEF UP"
-              },
-              {
-                "changes": [
-                  {
-                    "key": "magic_defense",
-                    "mode": 2,
-                    "priority": 2,
-                    "value": "${isEquipped ? item_mdef_bonus : 0}$"
-                  }
-                ],
-                "id": "ioLV6MOkBlTSSRxq",
-                "name": "MDEF UP"
-              }
-            ],
-            "itemId": "96gMkuCexILXHXyI",
-            "itemName": "Hekat Shield",
-            "itemType": "shield",
-            "itemUuid": "Item.96gMkuCexILXHXyI",
-            "owner": {
-              "actor": "",
-              "actorUuid": "",
-              "source": "World Item"
-            }
-          }
-        },
-        "fucompanion": {
-          "itemMigratorBackup": {
-            "detectedType": "shield",
-            "fromTemplate": "tJixj9vNEQd3F0IO",
-            "itemId": "96gMkuCexILXHXyI",
-            "itemName": "Hekat Shield",
-            "pickedOldProps": {
-              "cost": "2000",
-              "def_bonus": "+2",
-              "initiative": "0",
-              "martial": true,
-              "mdef_bonus": "+2"
-            },
-            "ts": 1769647435712
-          }
-        }
-      },
-      "folder": "y2rCDkOoxKBkdu0x",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/shield.png",
-      "name": "Hekat Shield",
-      "ownership": {
-        "2vy7wrEUqBy0kzsU": 3,
-        "6DmgigM5jq76r0Gd": 3,
-        "7hKw8KGsimboeDif": 3,
-        "9sFgrDy4MvAgoCmQ": 3,
-        "Am7qxPOavfKeDGPd": 3,
-        "JQGNzKpDPHJmcUIW": 3,
-        "JvF9tXvr7aaiS06m": 3,
-        "KD5d0efqHETPpIux": 3,
-        "LT3Z8EnRdMVk5ncQ": 3,
-        "MwTL6zXFCEpVBTpI": 3,
-        "NozW36XIGEGx7oVH": 3,
-        "NpGkA7uxaarkPiwS": 3,
-        "ULBTZPjtza939Mvy": 3,
-        "WQGFvLStTZeWGpak": 3,
-        "default": 3,
-        "eGu3tuw7HwJd2bpx": 3,
-        "iLeUVmwqnze8ulOI": 3,
-        "mE5aEkDlrQJIYyhG": 3,
-        "nSGZ1sz1rdKao0kz": 3,
-        "nXC7OD7u5Zw5UDDU": 3,
-        "t41knaXNbgCEygM5": 3,
-        "tz9BP9MKfNGf2P3n": 3,
-        "wNzPmItLYCKE1I8t": 3,
-        "yL2PQxh3R9ddt0te": 3,
-        "yUfwoVmEPVdFG3AY": 3
-      },
-      "sort": 800000,
-      "system": {
-        "container": null,
-        "props": {
-          "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "Arcane",
-          "celestial_ef": "100",
-          "check_bonus": "0",
-          "construct_ef": "100",
-          "damage_bonus": "0",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
-          "description": "<ul>\n<li>You have <strong>Resistance</strong> to damage dealt by spells. When a spell deals damage to<br>you, you recover <strong>5</strong> Mind Points.</li>\n</ul>",
-          "dragon_ef": "100",
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "One-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "insect_ef": "100",
-          "ip_cost": "",
-          "isEquipped": false,
-          "isKey": false,
-          "isMartial": true,
-          "isModule": false,
-          "isRelatedItem": false,
-          "isSet": false,
-          "isUnique": false,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "2000",
-          "item_def_bonus": "+2",
-          "item_mdef_bonus": "+2",
-          "item_quantity": "1",
-          "item_rarity": "Uncommon",
-          "item_type": "shield",
-          "mimic_ef": "100",
-          "monster_ef": "100",
-          "name": "Hekat Shield",
-          "optional_params": {},
-          "plant_ef": "100",
-          "reptilian_ef": "100",
-          "rolled_atr1": "DEX",
-          "rolled_atr2": "DEX",
-          "set_name": "",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "Physical",
-          "undead_ef": "100",
-          "vehicle_ef": "100",
-          "weapon_range": "Melee"
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
-        "unique": false,
-        "uniqueId": "96gMkuCexILXHXyI"
       },
       "type": "equippableItem"
     },
@@ -1762,6 +1581,69 @@
         "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "kMbhsJ2cDIFndrKy"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "GyEGnl58wJhwSwex",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783189038687,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
+      "name": "Morrigan (Passive)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "5pZrwswltGCOBfSc",
+        "props": {
+          "cost": "",
+          "description": "<p>When you hit one or more creatures with this weapon, you may recover 10 Mind Points.</p>",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "effect_kind": "grant",
+              "effect_label": "mor_recover",
+              "grant_amount": "10",
+              "grant_resource": "mp",
+              "target_ref": "self"
+            }
+          },
+          "isCheck": false,
+          "name": "Morrigan (Passive)",
+          "on_activate_effect_ref": "",
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "reaction_action_intent": "",
+              "reaction_effect_ref": "mor_recover",
+              "reaction_passive_mode": "force",
+              "reaction_requires_weapon_used": true,
+              "reaction_source": "self",
+              "reaction_trigger": "creature_completes_attack"
+            }
+          },
+          "skill_target": "Self",
+          "skill_type": "Passive",
+          "type_damage": ""
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "AQqb37jPpVi1h6j6"
       },
       "type": "equippableItem"
     },
@@ -2153,6 +2035,59 @@
       "type": "equippableItem"
     },
     {
+      "_id": "IkmKEw6srd1gQ79p",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783189041906,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/assize.png",
+      "name": "Heal",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "wKogg4SVIY63cqLh",
+        "props": {
+          "cost": "10 x T MP",
+          "description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points</strong>.</p><hr><p><strong>Skill Enhancement Lv. 20</strong> — The amount of Hit Points recovered increases to <strong>50</strong>.</p><p><strong>Skill Enhancement Lv. 40</strong> — The amount of Hit Points recovered increases to <strong>60</strong>.</p>",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "effect_kind": "grant",
+              "effect_label": "heal_hp",
+              "grant_amount": "40 + 10 * floor(min(CHAR_LEVEL, 40) / 20)",
+              "grant_resource": "hp",
+              "target_ref": "action_targets"
+            }
+          },
+          "isCheck": false,
+          "isOffensiveSpell": false,
+          "name": "Heal",
+          "on_activate_effect_ref": "heal_hp",
+          "skill_target": "Up to three creatures",
+          "skill_type": "Spell",
+          "type_damage": ""
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "oHXhszjXVKD0opBr"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "IrKN92jRRxDzdYzm",
       "_stats": {
         "compendiumSource": "Item.6f3U2Cz826kB5ZIp",
@@ -2424,132 +2359,6 @@
         "templateSystemUniqueVersion": 987283856,
         "unique": false,
         "uniqueId": "fXTiW1mHRFBGSGR8"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "K7ouFNu9tWlNiv6n",
-      "_stats": {
-        "compendiumSource": "Item.sHMfimeSyKQcj8bM",
-        "coreVersion": "12.343",
-        "createdTime": 1783148668138,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.8.5"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/2126.gif",
-      "name": "Shield of Rejuvenation",
-      "ownership": {
-        "2vy7wrEUqBy0kzsU": 3,
-        "6DmgigM5jq76r0Gd": 3,
-        "7hKw8KGsimboeDif": 3,
-        "9sFgrDy4MvAgoCmQ": 3,
-        "Am7qxPOavfKeDGPd": 3,
-        "JQGNzKpDPHJmcUIW": 3,
-        "JvF9tXvr7aaiS06m": 3,
-        "KD5d0efqHETPpIux": 3,
-        "LT3Z8EnRdMVk5ncQ": 3,
-        "MwTL6zXFCEpVBTpI": 3,
-        "NozW36XIGEGx7oVH": 3,
-        "NpGkA7uxaarkPiwS": 3,
-        "ULBTZPjtza939Mvy": 3,
-        "WQGFvLStTZeWGpak": 3,
-        "default": 3,
-        "eGu3tuw7HwJd2bpx": 3,
-        "iLeUVmwqnze8ulOI": 3,
-        "mE5aEkDlrQJIYyhG": 3,
-        "nSGZ1sz1rdKao0kz": 3,
-        "nXC7OD7u5Zw5UDDU": 3,
-        "t41knaXNbgCEygM5": 3,
-        "tz9BP9MKfNGf2P3n": 3,
-        "wNzPmItLYCKE1I8t": 3,
-        "yL2PQxh3R9ddt0te": 3,
-        "yUfwoVmEPVdFG3AY": 3
-      },
-      "sort": 0,
-      "system": {
-        "props": {
-          "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "Arcane",
-          "celestial_ef": "100",
-          "check": "Check",
-          "check_bonus": "0",
-          "construct_ef": "100",
-          "damage_bonus": "0",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
-          "description": "<ul><li><p>At the start of your turn, you recovers <strong>10%</strong> of your <strong>Max HP</strong></p></li></ul>",
-          "dragon_ef": "100",
-          "effect_table": {},
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "One-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "id": "sHMfimeSyKQcj8bM",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Armor/2126.gif",
-          "ingredient_taste": "",
-          "ingredient_taste2": "",
-          "insect_ef": "100",
-          "ip_cost": "",
-          "isEquipped": false,
-          "isIngredient": false,
-          "isKey": false,
-          "isMartial": false,
-          "isModule": false,
-          "isRelatedItem": false,
-          "isSet": false,
-          "isUnique": false,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "1700",
-          "item_def_bonus": "1",
-          "item_mdef_bonus": "0",
-          "item_quantity": "1",
-          "item_rarity": "Uncommon",
-          "item_type": "shield",
-          "mimic_ef": "100",
-          "monster_ef": "100",
-          "name": "Shield of Rejuvenation",
-          "optional_params": {},
-          "plant_ef": "100",
-          "reaction_config_table": {},
-          "recipe_dish_uuid": "",
-          "recipe_kind": "",
-          "refine_count": "0",
-          "refine_level": "0",
-          "reptilian_ef": "100",
-          "rolled_atr1": "DEX",
-          "rolled_atr2": "DEX",
-          "set_name": "<Set Name>",
-          "skill_target": "One Enemy",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "Physical",
-          "undead_ef": "100",
-          "uuid": "Item.sHMfimeSyKQcj8bM",
-          "vehicle_ef": "100",
-          "weapon_range": "Melee"
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
-        "unique": false,
-        "uniqueId": "sHMfimeSyKQcj8bM"
       },
       "type": "equippableItem"
     },
@@ -3771,6 +3580,99 @@
       "type": "equippableItem"
     },
     {
+      "_id": "q3NNHt8WIQVEcIEv",
+      "_stats": {
+        "compendiumSource": "Item.23dQXPmLWKFjpwNt",
+        "coreVersion": "12.343",
+        "createdTime": 1783189033807,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.23dQXPmLWKFjpwNt"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "icons/sundries/books/book-embossed-gold-green.webp",
+      "name": "Orb",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "6",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>&nbsp;No Quality.</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "Two-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "150",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Orb",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "INS",
+          "set_description": "<p><strong>【Set Bonus】</strong></p>",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 987283856,
+        "unique": false,
+        "uniqueId": "X9SaWakWp1Tl8xPA"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "rGzyWaaZtXCmUjxn",
       "_stats": {
         "compendiumSource": null,
@@ -4054,20 +3956,68 @@
       "system": {
         "container": null,
         "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
           "category": "Brawling",
+          "celestial_ef": "100",
+          "check": "Check",
           "check_bonus": "1",
+          "construct_ef": "100",
           "damage_bonus": "15",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
           "description": "<p>When the creature equipping this weapon receives <strong>Fire </strong>damage, they receives following benefits <strong>until the end of round</strong>:</p><ul><li><p>You may considers this weapon as <strong>Arcane</strong> weapon for the purpose of performing <strong>attacks</strong>, <strong>spells</strong> or <strong>skills</strong>.</p></li><li><p>Your attack deals <strong>5</strong> extra damage.</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
           "hand_slots": "Two-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "TFlkSWMWp59Nqh9h",
+          "img": "icons/magic/fire/flame-burning-fist-strike.webp",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
           "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
           "item_cost": "2550",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Rare",
           "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
           "name": "Heat HANDS Replica",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
           "rolled_atr1": "MIG",
           "rolled_atr2": "DEX",
           "set_name": "",
           "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
           "type_damage": "Fire",
+          "undead_ef": "100",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.TFlkSWMWp59Nqh9h",
+          "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
@@ -4381,291 +4331,86 @@
       "type": "equippableItem"
     },
     {
-      "_id": "xMMr0G3f1G0PIDOx",
+      "_id": "W9dHR4OQZIWNi3X8",
       "_stats": {
-        "compendiumSource": "Item.F5TmgNnJPkCyvrrL",
+        "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783148668138,
+        "createdTime": 1783189031920,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
-      "effects": [
-        {
-          "_id": "CPO7O8CrRcKS9E6d",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": null,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.8.5"
-          },
-          "changes": [
-            {
-              "key": "base_defense",
-              "mode": 4,
-              "priority": 1,
-              "value": "${isEquipped ? (isMartial ? (item_baseDef * 1) : 0) : 0}$"
-            },
-            {
-              "key": "bonus_defense",
-              "mode": 2,
-              "priority": 2,
-              "value": "${isEquipped ? (isMartial ? 0 : (item_def_bonus * 1)) : 0}$"
-            }
-          ],
-          "description": "",
-          "disabled": false,
-          "duration": {
-            "combat": null,
-            "rounds": null,
-            "seconds": null,
-            "startRound": null,
-            "startTime": 298800,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "core": {
-              "overlay": false
-            },
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "originalId": "CPO7O8CrRcKS9E6d",
-              "originalParentId": "F5TmgNnJPkCyvrrL",
-              "originalUuid": "Item.F5TmgNnJPkCyvrrL.ActiveEffect.CPO7O8CrRcKS9E6d"
-            },
-            "dfreds-convenient-effects": {
-              "ceEffectId": "ce-def-up",
-              "isBackup": false,
-              "isConvenient": true,
-              "isDynamic": false,
-              "isTemporary": false,
-              "isViewable": true
-            },
-            "statuscounter": {
-              "config": {
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUp.webp",
-          "name": "Armor DEF",
-          "origin": null,
-          "sort": 0,
-          "statuses": [],
-          "system": {
-            "tags": []
-          },
-          "tint": "#ffffff",
-          "transfer": true,
-          "type": "base"
-        },
-        {
-          "_id": "WTVrZFjtdThvzqik",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": null,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.8.5"
-          },
-          "changes": [
-            {
-              "key": "base_magic_defense",
-              "mode": 4,
-              "priority": 1,
-              "value": "${isEquipped ? (isMartial ? (item_baseMdef * 1) : 0) : 0}$"
-            },
-            {
-              "key": "bonus_magic_defense",
-              "mode": 2,
-              "priority": 2,
-              "value": "${isEquipped ? (isMartial ? 0 : (item_mdef_bonus * 1)) : 0}$"
-            }
-          ],
-          "description": "",
-          "disabled": false,
-          "duration": {
-            "combat": null,
-            "rounds": null,
-            "seconds": null,
-            "startRound": null,
-            "startTime": 298800,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "core": {
-              "overlay": false
-            },
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "originalId": "WTVrZFjtdThvzqik",
-              "originalParentId": "F5TmgNnJPkCyvrrL",
-              "originalUuid": "Item.F5TmgNnJPkCyvrrL.ActiveEffect.WTVrZFjtdThvzqik"
-            },
-            "dfreds-convenient-effects": {
-              "ceEffectId": "ce-mdef-up",
-              "isBackup": false,
-              "isConvenient": true,
-              "isDynamic": false,
-              "isTemporary": false,
-              "isViewable": true
-            },
-            "statuscounter": {
-              "config": {
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUpStack.webp",
-          "name": "Armor MDEF",
-          "origin": null,
-          "sort": 0,
-          "statuses": [],
-          "system": {
-            "tags": []
-          },
-          "tint": "#ffffff",
-          "transfer": true,
-          "type": "base"
-        }
-      ],
       "flags": {
         "custom-system-builder": {
-          "version": "3.2.4"
-        },
-        "fabula-ultima-companion": {
-          "armorDefMdefAeMassPatchBackup_v1": {
-            "createdAt": 1777705754833,
-            "effects": [
-              {
-                "changes": [
-                  {
-                    "key": "defense",
-                    "mode": 2,
-                    "priority": 1,
-                    "value": "${isEquipped ? (isMartial ? 0 : item_def_bonus) : 0}$"
-                  },
-                  {
-                    "key": "defense",
-                    "mode": 4,
-                    "priority": 2,
-                    "value": "${isEquipped ? (isMartial ? item_baseDef : 0) : 0}$"
-                  }
-                ],
-                "id": "CPO7O8CrRcKS9E6d",
-                "name": "Armor DEF"
-              },
-              {
-                "changes": [
-                  {
-                    "key": "magic_defense",
-                    "mode": 2,
-                    "priority": 1,
-                    "value": "${isEquipped ? (isMartial ? 0 : item_mdef_bonus) : 0}$"
-                  },
-                  {
-                    "key": "magic_defense",
-                    "mode": 4,
-                    "priority": 2,
-                    "value": "${isEquipped ? (isMartial ? item_baseMdef : 0) : 0}$"
-                  }
-                ],
-                "id": "WTVrZFjtdThvzqik",
-                "name": "Armor MDEF"
-              }
-            ],
-            "itemName": "Apothecary Robes",
-            "itemUuid": "Item.F5TmgNnJPkCyvrrL",
-            "parentName": "",
-            "parentType": "World"
-          },
-          "defMdefHelperKeyPatchBackup_v1": {
-            "createdAt": 1777708463492,
-            "effects": [
-              {
-                "changes": [
-                  {
-                    "key": "defense",
-                    "mode": 2,
-                    "priority": 1,
-                    "value": "${isEquipped ? (isMartial ? 0 : item_def_bonus) : 0}$"
-                  },
-                  {
-                    "key": "defense",
-                    "mode": 4,
-                    "priority": 2,
-                    "value": "${isEquipped ? (isMartial ? item_baseDef : 0) : 0}$"
-                  }
-                ],
-                "id": "CPO7O8CrRcKS9E6d",
-                "name": "Armor DEF"
-              },
-              {
-                "changes": [
-                  {
-                    "key": "magic_defense",
-                    "mode": 2,
-                    "priority": 1,
-                    "value": "${isEquipped ? (isMartial ? 0 : item_mdef_bonus) : 0}$"
-                  },
-                  {
-                    "key": "magic_defense",
-                    "mode": 4,
-                    "priority": 2,
-                    "value": "${isEquipped ? (isMartial ? item_baseMdef : 0) : 0}$"
-                  }
-                ],
-                "id": "WTVrZFjtdThvzqik",
-                "name": "Armor MDEF"
-              }
-            ],
-            "itemId": "F5TmgNnJPkCyvrrL",
-            "itemName": "Apothecary Robes",
-            "itemType": "armor",
-            "itemUuid": "Item.F5TmgNnJPkCyvrrL",
-            "owner": {
-              "actor": "",
-              "actorUuid": "",
-              "source": "World Item"
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/spear.png",
+      "name": "Dragontrap Bow (Passive)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "eEtWzQ3OVDwYdOoe",
+        "props": {
+          "cost": "",
+          "description": "<p>When you hit a Flying target with this weapon, you may force it to land until the end of the round.</p>",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "ae_template_ref": "Grounded",
+              "effect_kind": "apply_ae",
+              "effect_label": "dt_ground",
+              "target_ref": "trigger_subject"
             }
-          }
+          },
+          "isCheck": false,
+          "name": "Dragontrap Bow (Passive)",
+          "on_activate_effect_ref": "",
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "TARGET_IS_FLYING == 1",
+              "reaction_action_intent": "",
+              "reaction_effect_ref": "dt_ground",
+              "reaction_passive_mode": "ask",
+              "reaction_requires_weapon_used": true,
+              "reaction_source": "self",
+              "reaction_trigger": "creature_deals_damage"
+            }
+          },
+          "skill_target": "Self",
+          "skill_type": "Passive",
+          "type_damage": ""
         },
-        "fucompanion": {
-          "itemMigratorBackup": {
-            "detectedType": "armor",
-            "fromTemplate": "5Z0gKtN5R51ebJOa",
-            "itemId": "F5TmgNnJPkCyvrrL",
-            "itemName": "Apothecary Robes",
-            "pickedOldProps": {
-              "cost": "1800",
-              "def_bonus": "+1",
-              "defense": "0",
-              "defense_include_dex": true,
-              "initiative": "-2",
-              "magic_defense": "0",
-              "magic_defense_include_ins": true,
-              "martial": false,
-              "mdef_bonus": "+2",
-              "shield": false
-            },
-            "ts": 1769647435115
-          }
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2666163373,
+        "unique": false,
+        "uniqueId": "AQqb37jPpVi1h6j6"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "wKogg4SVIY63cqLh",
+      "_stats": {
+        "compendiumSource": "Item.Y2ItFIBB8PtKttz8",
+        "coreVersion": "12.343",
+        "createdTime": 1783189041328,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
         }
       },
       "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/dress.png",
-      "name": "Apothecary Robes",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Stave/Icon-Budding_Maple_Wand.webp",
+      "name": "Budding Maple Wand",
       "ownership": {
         "2vy7wrEUqBy0kzsU": 3,
         "6DmgigM5jq76r0Gd": 3,
@@ -4703,13 +4448,12 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
-          "damage_bonus": "0",
+          "damage_bonus": "3",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<ul>\n<li>When you use the <strong>Potion Rain</strong> Skill, the restoring effect is not halved.</li>\n</ul>",
+          "description": "<ul><li><p>You may cast the spell 【📕Heal】</p></li></ul>",
           "dragon_ef": "100",
           "elemental_ef": "100",
           "enforcer_ef": "100",
@@ -4718,51 +4462,76 @@
           "fungus_ef": "100",
           "golem_ef": "100",
           "gorger_ef": "100",
-          "hand_slots": "One-handed",
+          "hand_slots": "Two-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "F5TmgNnJPkCyvrrL",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/dress.png",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
           "isKey": false,
           "isMartial": false,
           "isModule": false,
-          "isRelatedItem": false,
+          "isRelatedItem": true,
           "isSet": false,
           "isUnique": false,
           "item_baseDef": "0",
           "item_baseMdef": "0",
-          "item_cost": "1800",
-          "item_def_bonus": "+1",
-          "item_mdef_bonus": "+2",
-          "item_quantity": "1",
+          "item_cost": "1500",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
           "item_rarity": "Uncommon",
-          "item_type": "armor",
+          "item_skill_active": {
+            "oHXhszjXVKD0opBr": {
+              "id": "${item.id}",
+              "name": "Heal",
+              "skill_cost": "10 x T MP",
+              "skill_description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points</strong>.</p><hr><p><strong>Skill Enhancement Lv. 20</strong> — The amount of Hit Points recovered increases to <strong>50</strong>.</p><p><strong>Skill Enhancement Lv. 40</strong> — The amount of Hit Points recovered increases to <strong>60</strong>.</p>",
+              "skill_maxLevel": "",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.oHXhszjXVKD0opBr"
+            }
+          },
+          "item_type": "weapon",
           "mimic_ef": "100",
           "monster_ef": "100",
-          "name": "Apothecary Robes",
+          "name": "Budding Maple Wand",
           "optional_params": {},
           "plant_ef": "100",
-          "refine_count": "0",
-          "refine_level": "0",
+          "related_item_list": {
+            "4Mt1v3OPCmwHrhuB": {
+              "id": "${item.id}",
+              "name": "Heal",
+              "related_item_description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points.</strong></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>The amount of Hit Points recovers increase to <strong>50</strong></p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>The amount of Hit Points recovers increase to <strong>60</strong></p>",
+              "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.4Mt1v3OPCmwHrhuB"
+            },
+            "iJXsSCRucVWJNRed": {
+              "id": "${item.id}",
+              "name": "Heal",
+              "related_item_description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points.</strong></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>The amount of Hit Points recovers increase to <strong>50</strong></p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>The amount of Hit Points recovers increase to <strong>60</strong></p>",
+              "uuid": "Item.iJXsSCRucVWJNRed"
+            },
+            "oHXhszjXVKD0opBr": {
+              "id": "${item.id}",
+              "name": "Heal",
+              "related_item_description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points</strong>.</p><hr><p><strong>Skill Enhancement Lv. 20</strong> — The amount of Hit Points recovered increases to <strong>50</strong>.</p><p><strong>Skill Enhancement Lv. 40</strong> — The amount of Hit Points recovered increases to <strong>60</strong>.</p>",
+              "uuid": "Actor.dafTLBUscCDNgq8H.Item.oHXhszjXVKD0opBr"
+            }
+          },
           "reptilian_ef": "100",
-          "rolled_atr1": "DEX",
-          "rolled_atr2": "DEX",
-          "set_name": "",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "set_name": "<Set Name>",
           "soldier_ef": "100",
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Item.F5TmgNnJPkCyvrrL",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
         "templateSystemUniqueVersion": 987283856,
         "unique": false,
-        "uniqueId": "F5TmgNnJPkCyvrrL"
+        "uniqueId": "Y2ItFIBB8PtKttz8"
       },
       "type": "equippableItem"
     },
@@ -4900,102 +4669,6 @@
       "type": "equippableItem"
     },
     {
-      "_id": "YBFhNsKLmy1QlkQ8",
-      "_stats": {
-        "compendiumSource": "Item.3PPbTNuD6rPBkICm",
-        "coreVersion": "12.343",
-        "createdTime": 1783148668138,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.8.5"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1139.gif",
-      "name": "Psychic Dagger",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
-      },
-      "sort": 0,
-      "system": {
-        "props": {
-          "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "Dagger",
-          "celestial_ef": "100",
-          "check": "Check",
-          "check_bonus": "0",
-          "construct_ef": "100",
-          "damage_bonus": "5",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
-          "description": "<ul><li><p>This weapon gain bonus <strong>Accuracy</strong> equal to <strong>【1 x</strong> <strong>the number of filled sections in your Brainwave Clock</strong>】</p></li><li><p>This weapon deals bonus damage equal to <strong>【2 x</strong> <strong>the number of filled sections in your Brainwave Clock</strong>】</p></li></ul>",
-          "dragon_ef": "100",
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "One-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "id": "3PPbTNuD6rPBkICm",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1139.gif",
-          "insect_ef": "100",
-          "ip_cost": "",
-          "isEquipped": false,
-          "isKey": false,
-          "isMartial": false,
-          "isModule": false,
-          "isRelatedItem": false,
-          "isSet": false,
-          "isUnique": false,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "2600",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": "1",
-          "item_rarity": "Rare",
-          "item_type": "weapon",
-          "mimic_ef": "100",
-          "monster_ef": "100",
-          "name": "Psychic Dagger",
-          "optional_params": {},
-          "plant_ef": "100",
-          "refine_count": "0",
-          "refine_level": "0",
-          "reptilian_ef": "100",
-          "rolled_atr1": "DEX",
-          "rolled_atr2": "WLP",
-          "set_name": "<Set Name>",
-          "skill_target": "One Enemy",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "Dark",
-          "undead_ef": "100",
-          "uuid": "Item.3PPbTNuD6rPBkICm",
-          "vehicle_ef": "100",
-          "weapon_range": "Melee"
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 987283856,
-        "unique": false,
-        "uniqueId": "3PPbTNuD6rPBkICm"
-      },
-      "type": "equippableItem"
-    },
-    {
       "_id": "ZgLGoh1jL1XqTxl2",
       "_stats": {
         "compendiumSource": "Item.ky7HMdQIZBJxlPqx",
@@ -5111,11 +4784,11 @@
   "name": "Hako",
   "ownership": {
     "2vy7wrEUqBy0kzsU": 0,
-    "7hKw8KGsimboeDif": 2,
+    "7hKw8KGsimboeDif": 0,
     "JQGNzKpDPHJmcUIW": 2,
     "WQGFvLStTZeWGpak": 2,
     "default": 2,
-    "iLeUVmwqnze8ulOI": 0,
+    "iLeUVmwqnze8ulOI": 2,
     "nSGZ1sz1rdKao0kz": 0,
     "yL2PQxh3R9ddt0te": 0
   },
@@ -6360,6 +6033,20 @@
           "weapon_range": "Melee",
           "weapon_set": ""
         },
+        "5pZrwswltGCOBfSc": {
+          "id": "${item.id}",
+          "name": "Morrigan",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.5pZrwswltGCOBfSc",
+          "weapon_buy": "",
+          "weapon_category": "Spear",
+          "weapon_cost": 1500,
+          "weapon_hand": "Two-handed",
+          "weapon_martial": "",
+          "weapon_quality": "<p><ul>\n<li>When you hit one or more creatures with this weapon, you may recover <strong>10</strong> Mind Points.</li>\n</ul></p>",
+          "weapon_quantity": 1,
+          "weapon_range": "Melee",
+          "weapon_set": ""
+        },
         "8hfLwGR8Nu5veqqD": {
           "id": "${item.id}",
           "name": "Blazing Sword",
@@ -6454,7 +6141,7 @@
           "weapon_hand": "Two-handed",
           "weapon_martial": "",
           "weapon_quality": "<p><p>When the creature equipping this weapon receives <strong>Fire </strong>damage, they receives following benefits <strong>until the end of round</strong>:</p><ul><li><p>You may considers this weapon as <strong>Arcane</strong> weapon for the purpose of performing <strong>attacks</strong>, <strong>spells</strong> or <strong>skills</strong>.</p></li><li><p>Your attack deals <strong>5</strong> extra damage.</p></li></ul></p>",
-          "weapon_quantity": "",
+          "weapon_quantity": 1,
           "weapon_range": "Melee",
           "weapon_set": ""
         },
@@ -6542,6 +6229,20 @@
           "weapon_range": "Melee",
           "weapon_set": "Talechaser"
         },
+        "eEtWzQ3OVDwYdOoe": {
+          "id": "${item.id}",
+          "name": "Dragontrap Bow",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.eEtWzQ3OVDwYdOoe",
+          "weapon_buy": "",
+          "weapon_category": "Bow",
+          "weapon_cost": 1500,
+          "weapon_hand": "Two-handed",
+          "weapon_martial": "♦️",
+          "weapon_quality": "<p><ul><li><p>When you hit a <strong>@UUID[JournalEntry.q6keqwDWUsEgSWDw]{Flying}</strong>&nbsp;target with this weapon, you may force that target to land immediately</p></li></ul></p>",
+          "weapon_quantity": 1,
+          "weapon_range": "Ranged",
+          "weapon_set": ""
+        },
         "gimaXA6ZE0qP43ax": {
           "id": "${item.id}",
           "name": "Mystic Mirror",
@@ -6612,6 +6313,20 @@
           "weapon_range": "Ranged",
           "weapon_set": ""
         },
+        "q3NNHt8WIQVEcIEv": {
+          "id": "${item.id}",
+          "name": "Orb",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.q3NNHt8WIQVEcIEv",
+          "weapon_buy": "",
+          "weapon_category": "Arcane",
+          "weapon_cost": 150,
+          "weapon_hand": "Two-handed",
+          "weapon_martial": "",
+          "weapon_quality": "<p><ul><li><p>&nbsp;No Quality.</p></li></ul></p>",
+          "weapon_quantity": 1,
+          "weapon_range": "Melee",
+          "weapon_set": ""
+        },
         "rGzyWaaZtXCmUjxn": {
           "id": "${item.id}",
           "name": "Shadow Grimoire",
@@ -6667,6 +6382,20 @@
           "weapon_quantity": 1,
           "weapon_range": "Ranged",
           "weapon_set": ""
+        },
+        "wKogg4SVIY63cqLh": {
+          "id": "${item.id}",
+          "name": "Budding Maple Wand",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.wKogg4SVIY63cqLh",
+          "weapon_buy": "",
+          "weapon_category": "Arcane",
+          "weapon_cost": 1500,
+          "weapon_hand": "Two-handed",
+          "weapon_martial": "",
+          "weapon_quality": "<p><ul><li><p>You may cast the spell 【📕Heal】</p></li></ul></p>",
+          "weapon_quantity": 1,
+          "weapon_range": "Melee",
+          "weapon_set": "<Set Name>"
         },
         "xwadCL7duTaCPxAW": {
           "id": "${item.id}",
@@ -6745,6 +6474,13 @@
           "name": "Seraph Shield",
           "roll": "",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.4pljMIVuyOsTP75b"
+        },
+        "5pZrwswltGCOBfSc": {
+          "id": "${item.id}",
+          "loot_description": "<ul>\n<li>When you hit one or more creatures with this weapon, you may recover <strong>10</strong> Mind Points.</li>\n</ul>",
+          "name": "Morrigan",
+          "roll": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.5pZrwswltGCOBfSc"
         },
         "6uriyBa4shhCfqzD": {
           "id": "${item.id}",
@@ -7026,6 +6762,13 @@
           "roll": "",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.c5UMCKLMcRC47hq0"
         },
+        "eEtWzQ3OVDwYdOoe": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><p>When you hit a <strong>@UUID[JournalEntry.q6keqwDWUsEgSWDw]{Flying}</strong>&nbsp;target with this weapon, you may force that target to land immediately</p></li></ul>",
+          "name": "Dragontrap Bow",
+          "roll": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.eEtWzQ3OVDwYdOoe"
+        },
         "eeqIeOAIbzID1ieS": {
           "id": "${item.id}",
           "loot_description": "<ul><li>When you are reduced to <strong>0 HP,&nbsp;</strong>you may immediately use this item, if you do, gain <strong>HP</strong> equal to your <strong>crisis</strong> score.</li><li>You may only hold 1 copy of this item in your inventory</li></ul>",
@@ -7159,6 +6902,13 @@
           "roll": "",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.pazMWuGTwddbTePc"
         },
+        "q3NNHt8WIQVEcIEv": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><p>&nbsp;No Quality.</p></li></ul>",
+          "name": "Orb",
+          "roll": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.q3NNHt8WIQVEcIEv"
+        },
         "rGzyWaaZtXCmUjxn": {
           "id": "${item.id}",
           "loot_description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.NI69hHt2XDbzuxGV\" data-id=\"NI69hHt2XDbzuxGV\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: justify; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Mana Burn</span></strong></a></span></span></p></li><li><p>Attacks with this weapon deals <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-type=\"JournalEntry\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(61, 166, 255) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Magic Damage</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span></p></li></ul>",
@@ -7207,6 +6957,13 @@
           "name": "RNGenerator",
           "roll": "",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.vWu4SxbltWBudDYh"
+        },
+        "wKogg4SVIY63cqLh": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><p>You may cast the spell 【📕Heal】</p></li></ul>",
+          "name": "Budding Maple Wand",
+          "roll": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.wKogg4SVIY63cqLh"
         },
         "x2lfDxjopOrwPKIA": {
           "id": "${item.id}",
@@ -7257,6 +7014,7 @@
       "uuid": "Actor.srAH3OHOoK0tvFih",
       "wlp_base": "8",
       "wlp_current": 8,
+      "zenit": 10600,
       "zenit_reward_max": "0",
       "zenit_reward_min": "0",
       "zero_power_value": "0"

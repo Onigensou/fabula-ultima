@@ -465,7 +465,7 @@
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
-              "ae_duplicate_mode": "stack",
+              "ae_duplicate_mode": "add_charges",
               "ae_initial_charges": "randint(1,10)",
               "ae_template_ref": "Burn",
               "effect_kind": "apply_ae",

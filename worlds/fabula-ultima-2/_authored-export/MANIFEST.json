@@ -14445,14 +14445,6 @@
             "name": "Air Pendant"
           },
           {
-            "id": "cKNDd37XpZaAs0tV",
-            "name": "Apple Juice"
-          },
-          {
-            "id": "pTq1DAhDavGLShsn",
-            "name": "Apple Juice"
-          },
-          {
             "id": "5eaTJGto8B0HIDhg",
             "name": "Black Belt"
           },
@@ -14501,14 +14493,6 @@
             "name": "Grace Under Pressure"
           },
           {
-            "id": "595pI45juUqHSTVP",
-            "name": "Grape Wine"
-          },
-          {
-            "id": "nGeG6LS11bTB9tVg",
-            "name": "Grape Wine"
-          },
-          {
             "id": "59DvOVZHpS5rVLjl",
             "name": "Heal"
           },
@@ -14517,12 +14501,20 @@
             "name": "Heal"
           },
           {
+            "id": "HZP2Hs14kB0EgMSD",
+            "name": "Hekat Shield"
+          },
+          {
             "id": "wecgr398559brY1I",
             "name": "Invocation"
           },
           {
             "id": "JT5pvl5buIjL9JHX",
             "name": "Matador Cape"
+          },
+          {
+            "id": "ya38b6iI7xoO4Jur",
+            "name": "Moonfish"
           },
           {
             "id": "F9KcVJMSMXOPrK05",
@@ -14547,6 +14539,18 @@
           {
             "id": "RRAnoXKVQih8U1WX",
             "name": "Resourceful"
+          },
+          {
+            "id": "TNcJSsr962JEcZBL",
+            "name": "Ring of the Pupil"
+          },
+          {
+            "id": "ZlQFTsfCPFJ7V1R7",
+            "name": "Ring of the Pupil"
+          },
+          {
+            "id": "Uq2ImnVoeNW4gt88",
+            "name": "Ripples"
           },
           {
             "id": "XrwiCo9dqjD1UGJi",
@@ -14589,7 +14593,7 @@
             "name": "Zero Trigger: Motivation"
           }
         ],
-        "effects": 2
+        "effects": 0
       },
       {
         "id": "UXagcMfhhqcSz7OZ",
@@ -16121,10 +16125,6 @@
             "name": "Apple o' Archer"
           },
           {
-            "id": "k8ZtjB1OJJ1AFYkU",
-            "name": "Arch Ice Wand"
-          },
-          {
             "id": "xCskLjO3pJWiKp5f",
             "name": "Bandit King"
           },
@@ -16189,14 +16189,6 @@
             "name": "Enchanted Delayed Blast Remote"
           },
           {
-            "id": "mOhAyd6CoAqe7YP5",
-            "name": "Glacies Finis"
-          },
-          {
-            "id": "9NaO4mJKNZjA0Uo4",
-            "name": "Glowstick"
-          },
-          {
             "id": "goV9gV4SZ232oKZ4",
             "name": "Golem Fragment"
           },
@@ -16215,6 +16207,10 @@
           {
             "id": "ZbLoXQrkbqZIJkzr",
             "name": "Heart Rocker"
+          },
+          {
+            "id": "xKB174OGzyfeque1",
+            "name": "Hornet"
           },
           {
             "id": "G0bzxh7zKGOsiHuI",
@@ -16277,6 +16273,18 @@
             "name": "Slimy Jacket"
           },
           {
+            "id": "Iu4LG8jvhKjhn9uU",
+            "name": "Swordbreaker"
+          },
+          {
+            "id": "iWLAwSkmTqf8Zro9",
+            "name": "The Tormentor"
+          },
+          {
+            "id": "MGaEsHxCdiE9FlIa",
+            "name": "The Tormentor (Passive)"
+          },
+          {
             "id": "rsQehCmVCCnx0J3G",
             "name": "Tonic"
           },
@@ -16291,6 +16299,10 @@
           {
             "id": "dcxsKeSOtqwxCZzY",
             "name": "Venom Claw"
+          },
+          {
+            "id": "JHpQYYXUNM3BHFmr",
+            "name": "Weapon Break"
           },
           {
             "id": "EWreH8iAt272MOZZ",
@@ -17355,10 +17367,6 @@
             "name": "5-Star Exchange Ticket"
           },
           {
-            "id": "xMMr0G3f1G0PIDOx",
-            "name": "Apothecary Robes"
-          },
-          {
             "id": "txMRFkA7TJ3FZBL2",
             "name": "Army Wrecker"
           },
@@ -17375,12 +17383,24 @@
             "name": "Brief Respite"
           },
           {
+            "id": "wKogg4SVIY63cqLh",
+            "name": "Budding Maple Wand"
+          },
+          {
             "id": "l7kMJfPCrp9mfxsL",
             "name": "Copycat"
           },
           {
             "id": "OHpfq3cznsoVXLh8",
             "name": "Curse Collector"
+          },
+          {
+            "id": "eEtWzQ3OVDwYdOoe",
+            "name": "Dragontrap Bow"
+          },
+          {
+            "id": "W9dHR4OQZIWNi3X8",
+            "name": "Dragontrap Bow (Passive)"
           },
           {
             "id": "c5UMCKLMcRC47hq0",
@@ -17407,12 +17427,12 @@
             "name": "Hako Coupon"
           },
           {
-            "id": "TFlkSWMWp59Nqh9h",
-            "name": "Heat HANDS Replica"
+            "id": "IkmKEw6srd1gQ79p",
+            "name": "Heal"
           },
           {
-            "id": "faml6MYwxqxBLrMh",
-            "name": "Hekat Shield"
+            "id": "TFlkSWMWp59Nqh9h",
+            "name": "Heat HANDS Replica"
           },
           {
             "id": "GlBKvz5lDwGextqo",
@@ -17423,8 +17443,20 @@
             "name": "Mega-Remedy"
           },
           {
+            "id": "5pZrwswltGCOBfSc",
+            "name": "Morrigan"
+          },
+          {
+            "id": "GyEGnl58wJhwSwex",
+            "name": "Morrigan (Passive)"
+          },
+          {
             "id": "XtpBgKfbKMR18UTT",
             "name": "Myth of Sisyphus"
+          },
+          {
+            "id": "q3NNHt8WIQVEcIEv",
+            "name": "Orb"
           },
           {
             "id": "exVAwWwaIvNcyuwc",
@@ -17443,24 +17475,12 @@
             "name": "Portable Cauldron"
           },
           {
-            "id": "YBFhNsKLmy1QlkQ8",
-            "name": "Psychic Dagger"
-          },
-          {
-            "id": "A9O675j1g4fI13x2",
-            "name": "Ring of Magma"
-          },
-          {
             "id": "PMxrhqZDiu4RoaW5",
             "name": "Ring of Onions"
           },
           {
             "id": "rGzyWaaZtXCmUjxn",
             "name": "Shadow Grimoire"
-          },
-          {
-            "id": "K7ouFNu9tWlNiv6n",
-            "name": "Shield of Rejuvenation"
           },
           {
             "id": "ZgLGoh1jL1XqTxl2",
@@ -17689,16 +17709,20 @@
             "name": "Arc Wand"
           },
           {
+            "id": "GjHWixk5ZMiE4jk8",
+            "name": "Arch Ice Wand"
+          },
+          {
+            "id": "uDik6IiSPpoJiNwF",
+            "name": "Arch Ice Wand"
+          },
+          {
             "id": "H0DADhpEoUIbwhex",
             "name": "Bimagus"
           },
           {
             "id": "Mav3EErTtfTiCLIM",
             "name": "Bind and Summon"
-          },
-          {
-            "id": "XVCbb7lj05eYPQ3f",
-            "name": "Budding Maple Wand"
           },
           {
             "id": "t9BfF2mxmREPRFuf",
@@ -17745,14 +17769,6 @@
             "name": "Dragonskull Helm"
           },
           {
-            "id": "bsG2aZEMX2Glb3pI",
-            "name": "Dragontrap Bow"
-          },
-          {
-            "id": "emTXtdbsz6owxFeI",
-            "name": "Dragontrap Bow (Passive)"
-          },
-          {
             "id": "jb0jobWNa9rlKKjN",
             "name": "Drain Spirit"
           },
@@ -17793,6 +17809,18 @@
             "name": "Glacies"
           },
           {
+            "id": "7vAXk1MSNgYfTjQx",
+            "name": "Glacies Finis"
+          },
+          {
+            "id": "C3K6l9Rih0rhVrrE",
+            "name": "Glacies Finis"
+          },
+          {
+            "id": "5S2EaoKlYMGW2WMw",
+            "name": "Glowstick"
+          },
+          {
             "id": "4GzzwpTJyf7iyOtq",
             "name": "Golden Apple"
           },
@@ -17805,12 +17833,12 @@
             "name": "Grape Juice"
           },
           {
-            "id": "oHXhszjXVKD0opBr",
+            "id": "Wtcdd42MQHwsOsSe",
             "name": "Heal"
           },
           {
-            "id": "Wtcdd42MQHwsOsSe",
-            "name": "Heal"
+            "id": "wQPUQTJDFJK8Jsm3",
+            "name": "Healing Power"
           },
           {
             "id": "EGYilCNAGvl2BldF",
@@ -17857,28 +17885,28 @@
             "name": "Mega-Remedy"
           },
           {
-            "id": "Pf1vhSjtOOTBXFkB",
-            "name": "Morrigan"
-          },
-          {
-            "id": "ziGuceXkDrtTMBp9",
-            "name": "Morrigan (Passive)"
-          },
-          {
-            "id": "qXvY2q2G2bjHFdu1",
-            "name": "Orb"
-          },
-          {
             "id": "V8AiiQ8vD4YIdMZY",
             "name": "Painful Lesson"
+          },
+          {
+            "id": "JKHCj8St8J207DMS",
+            "name": "Polymorph Potion: Scaldra"
           },
           {
             "id": "gm2w1NLdaEI7SzaQ",
             "name": "Prophetic Defender"
           },
           {
+            "id": "gMHVtSecAgiriC6S",
+            "name": "Ring of Magma"
+          },
+          {
             "id": "2QV4dfxKeibAejia",
             "name": "Ritual Entropism"
+          },
+          {
+            "id": "xt1W4okhrJZPPUlB",
+            "name": "Ritual Spiritism"
           },
           {
             "id": "SAMjPDBx3kmr7zU4",
@@ -17891,6 +17919,10 @@
           {
             "id": "wGMngSNcL0icOQiw",
             "name": "Scouter (Passive)"
+          },
+          {
+            "id": "9GquE1k7ZaVvMLfS",
+            "name": "Shield of Rejuvenation"
           },
           {
             "id": "KVCOLRQv6anedDGI",
@@ -17913,14 +17945,6 @@
             "name": "Symptom Shift"
           },
           {
-            "id": "YZIW3yUn3JoEyjZA",
-            "name": "The Tormentor"
-          },
-          {
-            "id": "YUYi5J6GgRHVbEtd",
-            "name": "The Tormentor (Passive)"
-          },
-          {
             "id": "720wa4E0ldJEqXG4",
             "name": "Windpiercer"
           },
@@ -17937,7 +17961,7 @@
             "name": "Zero Trigger: Foresight"
           }
         ],
-        "effects": 2
+        "effects": 1
       },
       {
         "id": "tzXbVfDYPgvu5wml",
@@ -18703,6 +18727,10 @@
             "name": "Beyond the Realms of Death"
           },
           {
+            "id": "fjrhRNjINs8xk7Lp",
+            "name": "Birth of the Cruel"
+          },
+          {
             "id": "yyaIgdJIFgxPgS4Z",
             "name": "Brainwave Discharge"
           },
@@ -18717,6 +18745,10 @@
           {
             "id": "rs7BtA731yHZPcDn",
             "name": "Charm"
+          },
+          {
+            "id": "l7hj0bWidYxltnI6",
+            "name": "Children of the Grave"
           },
           {
             "id": "HuvAVqZwbORQENz9",
@@ -18787,6 +18819,10 @@
             "name": "Phantasmal Echo"
           },
           {
+            "id": "Ld4P1df4SK5zvtq6",
+            "name": "Psychic Dagger"
+          },
+          {
             "id": "hZF1clWz4uuZixDS",
             "name": "Psychic Gifts"
           },
@@ -18815,16 +18851,8 @@
             "name": "Steel Dagger"
           },
           {
-            "id": "8TY9aPKKOzBSFkvv",
-            "name": "Swordbreaker"
-          },
-          {
             "id": "Iwt724pOxBNvcgrk",
             "name": "Thermokinesis"
-          },
-          {
-            "id": "vYbUJ2PfG3lQDDcn",
-            "name": "Weapon Break"
           },
           {
             "id": "OoQjrz63C5m8OOoc",
@@ -18835,7 +18863,7 @@
             "name": "Zero Trigger: Shattered Phantasm"
           }
         ],
-        "effects": 3
+        "effects": 1
       },
       {
         "id": "EHyFlGpLQLriK65C",
@@ -19642,6 +19670,10 @@
           },
           {
             "id": "yd15w1RY5KWvPSsk",
+            "name": "For Whom the Bell Tolls"
+          },
+          {
+            "id": "YFHQR4oWFNLTYWN4",
             "name": "For Whom the Bell Tolls"
           },
           {
@@ -22630,6 +22662,10 @@
             "name": "Animal Fang"
           },
           {
+            "id": "p2ZYcT97cqBChzJS",
+            "name": "Apothecary Robes"
+          },
+          {
             "id": "mv4dNcGM84BH46mZ",
             "name": "Barrage"
           },
@@ -22684,6 +22720,10 @@
           {
             "id": "H663NG14lmAbBtzp",
             "name": "Gadgets"
+          },
+          {
+            "id": "w8lI13Gc2aisTVes",
+            "name": "Golem Dance"
           },
           {
             "id": "32rYly1hH9JwHQrH",
@@ -22770,10 +22810,6 @@
             "name": "Ranged Weapon Mastery"
           },
           {
-            "id": "c7srJ8b37B3XEj9f",
-            "name": "Red Panty"
-          },
-          {
             "id": "n6K5lij1haM9QRsm",
             "name": "Secret Formula"
           },
@@ -22812,6 +22848,10 @@
           {
             "id": "VJP2hrigNNHF1M9E",
             "name": "Teddy Bear"
+          },
+          {
+            "id": "lpl9N7ToR7d52GZB",
+            "name": "Unicorn Dance"
           },
           {
             "id": "qSBSB4t6ozxwoTmR",
