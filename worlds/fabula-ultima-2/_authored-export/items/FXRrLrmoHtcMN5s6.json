@@ -1,0 +1,983 @@
+{
+  "_id": "FXRrLrmoHtcMN5s6",
+  "_stats": {
+    "compendiumSource": "Item.9MkxxTnQjRcFQ2IN",
+    "coreVersion": "12.343",
+    "createdTime": 1783165469326,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "JhmECgrOho82doV0",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.damage_taken_increased_bolt",
+          "mode": 2,
+          "priority": 20,
+          "value": "5"
+        },
+        {
+          "key": "flags.fabula-ultima-companion.damage_taken_increased_fire",
+          "mode": 2,
+          "priority": 20,
+          "value": "5"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 1,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "JhmECgrOho82doV0",
+          "originalParentId": "wecgr398559brY1I",
+          "originalUuid": "Actor.uJFaNQCSvwwsr2AW.Item.wecgr398559brY1I.ActiveEffect.JhmECgrOho82doV0"
+        },
+        "fabula-ultima-companion": {
+          "hexElements": [
+            "bolt",
+            "fire"
+          ],
+          "hexVulnerability": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/EMTrans1.png",
+      "name": "Aero Hex",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "kGe4l4dEwCHyRDiq",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.damage_taken_increased_earth",
+          "mode": 2,
+          "priority": 20,
+          "value": "5"
+        },
+        {
+          "key": "flags.fabula-ultima-companion.damage_taken_increased_ice",
+          "mode": 2,
+          "priority": 20,
+          "value": "5"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 1,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "kGe4l4dEwCHyRDiq",
+          "originalParentId": "wecgr398559brY1I",
+          "originalUuid": "Actor.uJFaNQCSvwwsr2AW.Item.wecgr398559brY1I.ActiveEffect.kGe4l4dEwCHyRDiq"
+        },
+        "fabula-ultima-companion": {
+          "hexElements": [
+            "earth",
+            "ice"
+          ],
+          "hexVulnerability": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/EMTrans1.png",
+      "name": "Pyro Hex",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "kPw8lrljW4uNbLO6",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.damage_taken_increased_air",
+          "mode": 2,
+          "priority": 20,
+          "value": "5"
+        },
+        {
+          "key": "flags.fabula-ultima-companion.damage_taken_increased_bolt",
+          "mode": 2,
+          "priority": 20,
+          "value": "5"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 1,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "kPw8lrljW4uNbLO6",
+          "originalParentId": "wecgr398559brY1I",
+          "originalUuid": "Actor.uJFaNQCSvwwsr2AW.Item.wecgr398559brY1I.ActiveEffect.kPw8lrljW4uNbLO6"
+        },
+        "fabula-ultima-companion": {
+          "hexElements": [
+            "air",
+            "bolt"
+          ],
+          "hexVulnerability": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/EMTrans1.png",
+      "name": "Hydro Hex",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "sjz68PnDGkyT9fzd",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.damage_taken_increased_earth",
+          "mode": 2,
+          "priority": 20,
+          "value": "5"
+        },
+        {
+          "key": "flags.fabula-ultima-companion.damage_taken_increased_fire",
+          "mode": 2,
+          "priority": 20,
+          "value": "5"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 1,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "sjz68PnDGkyT9fzd",
+          "originalParentId": "wecgr398559brY1I",
+          "originalUuid": "Actor.uJFaNQCSvwwsr2AW.Item.wecgr398559brY1I.ActiveEffect.sjz68PnDGkyT9fzd"
+        },
+        "fabula-ultima-companion": {
+          "hexElements": [
+            "earth",
+            "fire"
+          ],
+          "hexVulnerability": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/EMTrans1.png",
+      "name": "Electro Hex",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "uyajlXRQQSsyfBKo",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.damage_taken_increased_air",
+          "mode": 2,
+          "priority": 20,
+          "value": "5"
+        },
+        {
+          "key": "flags.fabula-ultima-companion.damage_taken_increased_ice",
+          "mode": 2,
+          "priority": 20,
+          "value": "5"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 1,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "uyajlXRQQSsyfBKo",
+          "originalParentId": "wecgr398559brY1I",
+          "originalUuid": "Actor.uJFaNQCSvwwsr2AW.Item.wecgr398559brY1I.ActiveEffect.uyajlXRQQSsyfBKo"
+        },
+        "fabula-ultima-companion": {
+          "hexElements": [
+            "air",
+            "ice"
+          ],
+          "hexVulnerability": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/EMTrans1.png",
+      "name": "Geo Hex",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    }
+  },
+  "folder": "OPmGhH0AVmmzKmnE",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/phantom_rush.png",
+  "name": "Invocation",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3,
+    "nSGZ1sz1rdKao0kz": 3
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "check_bonus": "0",
+      "class": "Invoker",
+      "cost": "5 MP",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>You may use an action and spend 5 Mind Points to perform an <strong>invocation</strong>, drawing energy from one of the <strong>wellsprings</strong> present on the scene (see <strong>Invoker's</strong> <strong>Unique Mechanic</strong>). Your <strong>【SL】</strong> in this Skill determines which invocations you have access to.</p>",
+      "duration": "",
+      "effect_table": {
+        "0": {
+          "allowed_types": "",
+          "check_bonus_formula": "",
+          "consume_self": false,
+          "damage_bonus_formula": "",
+          "effect_kind": "open_action_menu",
+          "effect_label": "inv_menu",
+          "free_hr_as_zero": false,
+          "free_mode": false,
+          "free_of_cost": false,
+          "from_resource": "",
+          "max_mp_cost": "",
+          "menu_hide_disabled": true,
+          "menu_label": "",
+          "menu_option_colors": "",
+          "menu_option_descriptions": "",
+          "menu_option_icons": "",
+          "menu_option_labels": "",
+          "menu_option_refs": "aero_blast, aero_hex, breeze, twister, geo_blast, geo_hex, growth, quicksand, pyro_blast, pyro_hex, burst, smoke, electro_blast, electro_hex, static, thunder, hydro_blast, hydro_hex, chill, frostbite",
+          "menu_pick_count": "",
+          "menu_subtitle": "Draw energy from a wellspring present on the scene.",
+          "menu_title": "Invocation",
+          "target_ref": "",
+          "to_resource": ""
+        },
+        "1": {
+          "condition_formula": "SL >= 1 && WELLSPRING_AIR_AVAILABLE",
+          "consume_self": false,
+          "damage_amount": "20 + 5*(CASTER_LEVEL>=20) + 5*(CASTER_LEVEL>=40)",
+          "damage_cause": "damage",
+          "damage_element": "air",
+          "damage_ignore_affinity": false,
+          "damage_resource": "hp",
+          "effect_kind": "deal_damage",
+          "effect_label": "aero_blast",
+          "emit_status": "",
+          "emit_trigger": "",
+          "from_resource": "",
+          "menu_color": "#5fd3c6",
+          "menu_description": "Deal ${20 + 5*(CHAR_LEVEL>=20) + 5*(CHAR_LEVEL>=40)} air damage.",
+          "menu_label": "Aero Blast",
+          "target_ref": "action_targets",
+          "to_resource": ""
+        },
+        "2": {
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_family": "",
+          "ae_initial_charges": "",
+          "ae_initial_charges_max": "",
+          "ae_template_ref": "Aero Hex",
+          "condition_formula": "SL >= 2 && WELLSPRING_AIR_AVAILABLE",
+          "consume_self": false,
+          "effect_kind": "apply_ae",
+          "effect_label": "aero_hex",
+          "from_resource": "",
+          "menu_color": "#5fd3c6",
+          "menu_description": "Target takes +5 damage from bolt & fire until the start of your next turn.",
+          "menu_label": "Aero Hex",
+          "target_ref": "action_targets",
+          "to_resource": ""
+        },
+        "3": {
+          "condition_formula": "SL >= 3 && WELLSPRING_AIR_AVAILABLE",
+          "consume_self": false,
+          "effect_kind": "grant",
+          "effect_label": "breeze",
+          "from_resource": "",
+          "grant_amount": "30 + 10*(CASTER_LEVEL>=20) + 10*(CASTER_LEVEL>=40)",
+          "grant_operation": "",
+          "grant_resource": "hp",
+          "grant_round": "",
+          "menu_color": "#5fd3c6",
+          "menu_description": "Target recovers ${30 + 10*(CHAR_LEVEL>=20) + 10*(CHAR_LEVEL>=40)} HP.",
+          "menu_label": "Breeze",
+          "target_ref": "action_targets",
+          "to_resource": ""
+        },
+        "4": {
+          "chain_steps": "twister_dmg, twister_status",
+          "condition_formula": "SL >= 3 && WELLSPRING_AIR_AVAILABLE",
+          "consume_self": false,
+          "effect_kind": "chain",
+          "effect_label": "twister",
+          "from_resource": "",
+          "menu_color": "#5fd3c6",
+          "menu_description": "Deal ${10 + 5*(CHAR_LEVEL>=20) + 5*(CHAR_LEVEL>=40)} air damage; target is Dazed.",
+          "menu_label": "Twister",
+          "to_resource": ""
+        },
+        "5": {
+          "consume_self": false,
+          "damage_amount": "10 + 5*(CASTER_LEVEL>=20) + 5*(CASTER_LEVEL>=40)",
+          "damage_cause": "damage",
+          "damage_element": "air",
+          "damage_ignore_affinity": false,
+          "damage_resource": "hp",
+          "effect_kind": "deal_damage",
+          "effect_label": "twister_dmg",
+          "emit_status": "",
+          "emit_trigger": "",
+          "from_resource": "",
+          "menu_label": "",
+          "target_ref": "action_targets",
+          "to_resource": ""
+        },
+        "6": {
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_family": "",
+          "ae_initial_charges": "",
+          "ae_initial_charges_max": "",
+          "ae_template_ref": "Dazed",
+          "consume_self": false,
+          "effect_kind": "apply_ae",
+          "effect_label": "twister_status",
+          "from_resource": "",
+          "menu_label": "",
+          "target_ref": "action_targets",
+          "to_resource": ""
+        },
+        "7": {
+          "condition_formula": "SL >= 1 && WELLSPRING_EARTH_AVAILABLE",
+          "consume_self": false,
+          "damage_amount": "20 + 5*(CASTER_LEVEL>=20) + 5*(CASTER_LEVEL>=40)",
+          "damage_cause": "damage",
+          "damage_element": "earth",
+          "damage_ignore_affinity": false,
+          "damage_resource": "hp",
+          "effect_kind": "deal_damage",
+          "effect_label": "geo_blast",
+          "emit_status": "",
+          "emit_trigger": "",
+          "from_resource": "",
+          "menu_color": "#c19a6b",
+          "menu_description": "Deal ${20 + 5*(CHAR_LEVEL>=20) + 5*(CHAR_LEVEL>=40)} earth damage.",
+          "menu_label": "Geo Blast",
+          "target_ref": "action_targets",
+          "to_resource": ""
+        },
+        "8": {
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_family": "",
+          "ae_initial_charges": "",
+          "ae_initial_charges_max": "",
+          "ae_template_ref": "Geo Hex",
+          "condition_formula": "SL >= 2 && WELLSPRING_EARTH_AVAILABLE",
+          "consume_self": false,
+          "effect_kind": "apply_ae",
+          "effect_label": "geo_hex",
+          "from_resource": "",
+          "menu_color": "#c19a6b",
+          "menu_description": "Target takes +5 damage from air & ice until the start of your next turn.",
+          "menu_label": "Geo Hex",
+          "target_ref": "action_targets",
+          "to_resource": ""
+        },
+        "9": {
+          "condition_formula": "SL >= 3 && WELLSPRING_EARTH_AVAILABLE",
+          "consume_self": false,
+          "effect_kind": "grant",
+          "effect_label": "growth",
+          "from_resource": "",
+          "grant_amount": "30 + 10*(CASTER_LEVEL>=20) + 10*(CASTER_LEVEL>=40)",
+          "grant_operation": "",
+          "grant_resource": "hp",
+          "grant_round": "",
+          "menu_color": "#c19a6b",
+          "menu_description": "Target recovers ${30 + 10*(CHAR_LEVEL>=20) + 10*(CHAR_LEVEL>=40)} HP.",
+          "menu_label": "Growth",
+          "target_ref": "action_targets",
+          "to_resource": ""
+        },
+        "10": {
+          "chain_steps": "quicksand_dmg, quicksand_status",
+          "condition_formula": "SL >= 3 && WELLSPRING_EARTH_AVAILABLE",
+          "consume_self": false,
+          "effect_kind": "chain",
+          "effect_label": "quicksand",
+          "from_resource": "",
+          "menu_color": "#c19a6b",
+          "menu_description": "Deal ${10 + 5*(CHAR_LEVEL>=20) + 5*(CHAR_LEVEL>=40)} earth damage; target is Slow.",
+          "menu_label": "Quicksand",
+          "to_resource": ""
+        },
+        "11": {
+          "consume_self": false,
+          "damage_amount": "10 + 5*(CASTER_LEVEL>=20) + 5*(CASTER_LEVEL>=40)",
+          "damage_cause": "damage",
+          "damage_element": "earth",
+          "damage_ignore_affinity": false,
+          "damage_resource": "hp",
+          "effect_kind": "deal_damage",
+          "effect_label": "quicksand_dmg",
+          "emit_status": "",
+          "emit_trigger": "",
+          "from_resource": "",
+          "menu_label": "",
+          "target_ref": "action_targets",
+          "to_resource": ""
+        },
+        "12": {
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_family": "",
+          "ae_initial_charges": "",
+          "ae_initial_charges_max": "",
+          "ae_template_ref": "Slow",
+          "consume_self": false,
+          "effect_kind": "apply_ae",
+          "effect_label": "quicksand_status",
+          "from_resource": "",
+          "menu_label": "",
+          "target_ref": "action_targets",
+          "to_resource": ""
+        },
+        "13": {
+          "condition_formula": "SL >= 1 && WELLSPRING_FIRE_AVAILABLE",
+          "consume_self": false,
+          "damage_amount": "20 + 5*(CASTER_LEVEL>=20) + 5*(CASTER_LEVEL>=40)",
+          "damage_cause": "damage",
+          "damage_element": "fire",
+          "damage_ignore_affinity": false,
+          "damage_resource": "hp",
+          "effect_kind": "deal_damage",
+          "effect_label": "pyro_blast",
+          "emit_status": "",
+          "emit_trigger": "",
+          "from_resource": "",
+          "menu_color": "#e8603c",
+          "menu_description": "Deal ${20 + 5*(CHAR_LEVEL>=20) + 5*(CHAR_LEVEL>=40)} fire damage.",
+          "menu_label": "Pyro Blast",
+          "target_ref": "action_targets",
+          "to_resource": ""
+        },
+        "14": {
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_family": "",
+          "ae_initial_charges": "",
+          "ae_initial_charges_max": "",
+          "ae_template_ref": "Pyro Hex",
+          "condition_formula": "SL >= 2 && WELLSPRING_FIRE_AVAILABLE",
+          "consume_self": false,
+          "effect_kind": "apply_ae",
+          "effect_label": "pyro_hex",
+          "from_resource": "",
+          "menu_color": "#e8603c",
+          "menu_description": "Target takes +5 damage from earth & ice until the start of your next turn.",
+          "menu_label": "Pyro Hex",
+          "target_ref": "action_targets",
+          "to_resource": ""
+        },
+        "15": {
+          "chain_steps": "burst_dmg, burst_status",
+          "condition_formula": "SL >= 3 && WELLSPRING_FIRE_AVAILABLE",
+          "consume_self": false,
+          "effect_kind": "chain",
+          "effect_label": "burst",
+          "from_resource": "",
+          "menu_color": "#e8603c",
+          "menu_description": "Deal ${10 + 5*(CHAR_LEVEL>=20) + 5*(CHAR_LEVEL>=40)} fire damage; target is Shaken.",
+          "menu_label": "Burst",
+          "to_resource": ""
+        },
+        "16": {
+          "consume_self": false,
+          "damage_amount": "10 + 5*(CASTER_LEVEL>=20) + 5*(CASTER_LEVEL>=40)",
+          "damage_cause": "damage",
+          "damage_element": "fire",
+          "damage_ignore_affinity": false,
+          "damage_resource": "hp",
+          "effect_kind": "deal_damage",
+          "effect_label": "burst_dmg",
+          "emit_status": "",
+          "emit_trigger": "",
+          "from_resource": "",
+          "menu_label": "",
+          "target_ref": "action_targets",
+          "to_resource": ""
+        },
+        "17": {
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_family": "",
+          "ae_initial_charges": "",
+          "ae_initial_charges_max": "",
+          "ae_template_ref": "Shaken",
+          "consume_self": false,
+          "effect_kind": "apply_ae",
+          "effect_label": "burst_status",
+          "from_resource": "",
+          "menu_label": "",
+          "target_ref": "action_targets",
+          "to_resource": ""
+        },
+        "18": {
+          "chain_steps": "smoke_drain, smoke_status",
+          "condition_formula": "SL >= 3 && WELLSPRING_FIRE_AVAILABLE",
+          "consume_self": false,
+          "effect_kind": "chain",
+          "effect_label": "smoke",
+          "from_resource": "",
+          "menu_color": "#e8603c",
+          "menu_description": "Target loses ${20 + 10*(CHAR_LEVEL>=20) + 10*(CHAR_LEVEL>=40)} MP and is Weak.",
+          "menu_label": "Smoke",
+          "to_resource": ""
+        },
+        "19": {
+          "consume_self": false,
+          "effect_kind": "grant",
+          "effect_label": "smoke_drain",
+          "from_resource": "",
+          "grant_amount": "-1 * (20 + 10*(CASTER_LEVEL>=20) + 10*(CASTER_LEVEL>=40))",
+          "grant_operation": "",
+          "grant_resource": "mp",
+          "grant_round": "",
+          "menu_label": "",
+          "target_ref": "action_targets",
+          "to_resource": ""
+        },
+        "20": {
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_family": "",
+          "ae_initial_charges": "",
+          "ae_initial_charges_max": "",
+          "ae_template_ref": "Weak",
+          "consume_self": false,
+          "effect_kind": "apply_ae",
+          "effect_label": "smoke_status",
+          "from_resource": "",
+          "menu_label": "",
+          "target_ref": "action_targets",
+          "to_resource": ""
+        },
+        "21": {
+          "condition_formula": "SL >= 1 && WELLSPRING_BOLT_AVAILABLE",
+          "consume_self": false,
+          "damage_amount": "20 + 5*(CASTER_LEVEL>=20) + 5*(CASTER_LEVEL>=40)",
+          "damage_cause": "damage",
+          "damage_element": "bolt",
+          "damage_ignore_affinity": false,
+          "damage_resource": "hp",
+          "effect_kind": "deal_damage",
+          "effect_label": "electro_blast",
+          "emit_status": "",
+          "emit_trigger": "",
+          "from_resource": "",
+          "menu_color": "#e8c93c",
+          "menu_description": "Deal ${20 + 5*(CHAR_LEVEL>=20) + 5*(CHAR_LEVEL>=40)} bolt damage.",
+          "menu_label": "Electro Blast",
+          "target_ref": "action_targets",
+          "to_resource": ""
+        },
+        "22": {
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_family": "",
+          "ae_initial_charges": "",
+          "ae_initial_charges_max": "",
+          "ae_template_ref": "Electro Hex",
+          "condition_formula": "SL >= 2 && WELLSPRING_BOLT_AVAILABLE",
+          "consume_self": false,
+          "effect_kind": "apply_ae",
+          "effect_label": "electro_hex",
+          "from_resource": "",
+          "menu_color": "#e8c93c",
+          "menu_description": "Target takes +5 damage from earth & fire until the start of your next turn.",
+          "menu_label": "Electro Hex",
+          "target_ref": "action_targets",
+          "to_resource": ""
+        },
+        "23": {
+          "chain_steps": "static_dmg, static_status",
+          "condition_formula": "SL >= 3 && WELLSPRING_BOLT_AVAILABLE",
+          "consume_self": false,
+          "effect_kind": "chain",
+          "effect_label": "static",
+          "from_resource": "",
+          "menu_color": "#e8c93c",
+          "menu_description": "Deal ${10 + 5*(CHAR_LEVEL>=20) + 5*(CHAR_LEVEL>=40)} bolt damage; target is Slow.",
+          "menu_label": "Static",
+          "to_resource": ""
+        },
+        "24": {
+          "consume_self": false,
+          "damage_amount": "10 + 5*(CASTER_LEVEL>=20) + 5*(CASTER_LEVEL>=40)",
+          "damage_cause": "damage",
+          "damage_element": "bolt",
+          "damage_ignore_affinity": false,
+          "damage_resource": "hp",
+          "effect_kind": "deal_damage",
+          "effect_label": "static_dmg",
+          "emit_status": "",
+          "emit_trigger": "",
+          "from_resource": "",
+          "menu_label": "",
+          "target_ref": "action_targets",
+          "to_resource": ""
+        },
+        "25": {
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_family": "",
+          "ae_initial_charges": "",
+          "ae_initial_charges_max": "",
+          "ae_template_ref": "Slow",
+          "consume_self": false,
+          "effect_kind": "apply_ae",
+          "effect_label": "static_status",
+          "from_resource": "",
+          "menu_label": "",
+          "target_ref": "action_targets",
+          "to_resource": ""
+        },
+        "26": {
+          "chain_steps": "thunder_drain, thunder_status",
+          "condition_formula": "SL >= 3 && WELLSPRING_BOLT_AVAILABLE",
+          "consume_self": false,
+          "effect_kind": "chain",
+          "effect_label": "thunder",
+          "from_resource": "",
+          "menu_color": "#e8c93c",
+          "menu_description": "Target loses ${20 + 10*(CHAR_LEVEL>=20) + 10*(CHAR_LEVEL>=40)} MP and is Dazed.",
+          "menu_label": "Thunder",
+          "to_resource": ""
+        },
+        "27": {
+          "consume_self": false,
+          "effect_kind": "grant",
+          "effect_label": "thunder_drain",
+          "from_resource": "",
+          "grant_amount": "-1 * (20 + 10*(CASTER_LEVEL>=20) + 10*(CASTER_LEVEL>=40))",
+          "grant_operation": "",
+          "grant_resource": "mp",
+          "grant_round": "",
+          "menu_label": "",
+          "target_ref": "action_targets",
+          "to_resource": ""
+        },
+        "28": {
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_family": "",
+          "ae_initial_charges": "",
+          "ae_initial_charges_max": "",
+          "ae_template_ref": "Dazed",
+          "consume_self": false,
+          "effect_kind": "apply_ae",
+          "effect_label": "thunder_status",
+          "from_resource": "",
+          "menu_label": "",
+          "target_ref": "action_targets",
+          "to_resource": ""
+        },
+        "29": {
+          "condition_formula": "SL >= 1 && WELLSPRING_ICE_AVAILABLE",
+          "consume_self": false,
+          "damage_amount": "20 + 5*(CASTER_LEVEL>=20) + 5*(CASTER_LEVEL>=40)",
+          "damage_cause": "damage",
+          "damage_element": "ice",
+          "damage_ignore_affinity": false,
+          "damage_resource": "hp",
+          "effect_kind": "deal_damage",
+          "effect_label": "hydro_blast",
+          "emit_status": "",
+          "emit_trigger": "",
+          "from_resource": "",
+          "menu_color": "#6fb7e8",
+          "menu_description": "Deal ${20 + 5*(CHAR_LEVEL>=20) + 5*(CHAR_LEVEL>=40)} ice damage.",
+          "menu_label": "Hydro Blast",
+          "target_ref": "action_targets",
+          "to_resource": ""
+        },
+        "30": {
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_family": "",
+          "ae_initial_charges": "",
+          "ae_initial_charges_max": "",
+          "ae_template_ref": "Hydro Hex",
+          "condition_formula": "SL >= 2 && WELLSPRING_ICE_AVAILABLE",
+          "consume_self": false,
+          "effect_kind": "apply_ae",
+          "effect_label": "hydro_hex",
+          "from_resource": "",
+          "menu_color": "#6fb7e8",
+          "menu_description": "Target takes +5 damage from air & bolt until the start of your next turn.",
+          "menu_label": "Hydro Hex",
+          "target_ref": "action_targets",
+          "to_resource": ""
+        },
+        "31": {
+          "chain_steps": "chill_drain, chill_status",
+          "condition_formula": "SL >= 3 && WELLSPRING_ICE_AVAILABLE",
+          "consume_self": false,
+          "effect_kind": "chain",
+          "effect_label": "chill",
+          "from_resource": "",
+          "menu_color": "#6fb7e8",
+          "menu_description": "Target loses ${20 + 10*(CHAR_LEVEL>=20) + 10*(CHAR_LEVEL>=40)} MP and is Shaken.",
+          "menu_label": "Chill",
+          "to_resource": ""
+        },
+        "32": {
+          "consume_self": false,
+          "effect_kind": "grant",
+          "effect_label": "chill_drain",
+          "from_resource": "",
+          "grant_amount": "-1 * (20 + 10*(CASTER_LEVEL>=20) + 10*(CASTER_LEVEL>=40))",
+          "grant_operation": "",
+          "grant_resource": "mp",
+          "grant_round": "",
+          "menu_label": "",
+          "target_ref": "action_targets",
+          "to_resource": ""
+        },
+        "33": {
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_family": "",
+          "ae_initial_charges": "",
+          "ae_initial_charges_max": "",
+          "ae_template_ref": "Shaken",
+          "consume_self": false,
+          "effect_kind": "apply_ae",
+          "effect_label": "chill_status",
+          "from_resource": "",
+          "menu_label": "",
+          "target_ref": "action_targets",
+          "to_resource": ""
+        },
+        "34": {
+          "chain_steps": "frostbite_dmg, frostbite_status",
+          "condition_formula": "SL >= 3 && WELLSPRING_ICE_AVAILABLE",
+          "consume_self": false,
+          "effect_kind": "chain",
+          "effect_label": "frostbite",
+          "from_resource": "",
+          "menu_color": "#6fb7e8",
+          "menu_description": "Deal ${10 + 5*(CHAR_LEVEL>=20) + 5*(CHAR_LEVEL>=40)} ice damage; target is Weak.",
+          "menu_label": "Frostbite",
+          "to_resource": ""
+        },
+        "35": {
+          "consume_self": false,
+          "damage_amount": "10 + 5*(CASTER_LEVEL>=20) + 5*(CASTER_LEVEL>=40)",
+          "damage_cause": "damage",
+          "damage_element": "ice",
+          "damage_ignore_affinity": false,
+          "damage_resource": "hp",
+          "effect_kind": "deal_damage",
+          "effect_label": "frostbite_dmg",
+          "emit_status": "",
+          "emit_trigger": "",
+          "from_resource": "",
+          "menu_label": "",
+          "target_ref": "action_targets",
+          "to_resource": ""
+        },
+        "36": {
+          "ae_duplicate_mode": "replace_per_caster",
+          "ae_family": "",
+          "ae_initial_charges": "",
+          "ae_initial_charges_max": "",
+          "ae_template_ref": "Weak",
+          "consume_self": false,
+          "effect_kind": "apply_ae",
+          "effect_label": "frostbite_status",
+          "from_resource": "",
+          "menu_label": "",
+          "target_ref": "action_targets",
+          "to_resource": ""
+        }
+      },
+      "gadget_alchemy_tier": "",
+      "gadget_infusion_tier": "",
+      "gadget_magitech_tier": "",
+      "heroic_requirement": "",
+      "ignore_hr": false,
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "isZeroPower": false,
+      "level": "3",
+      "max_level": "3",
+      "name": "Invocation",
+      "on_activate_effect_ref": "inv_menu",
+      "optional_params": {},
+      "pre_activate_effect_ref": "inv_menu",
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "",
+      "skill_tags": "invocation",
+      "skill_target": "One creature",
+      "skill_type": "Active",
+      "target_eligibility": "",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2666163373,
+    "unique": false,
+    "uniqueId": "FXRrLrmoHtcMN5s6"
+  },
+  "type": "equippableItem"
+}

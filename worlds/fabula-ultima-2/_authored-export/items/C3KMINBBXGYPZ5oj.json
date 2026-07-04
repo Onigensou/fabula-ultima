@@ -29,12 +29,13 @@
       "description": "<p>You strengthen and purify the soul energy coursing through your companions. Each target <strong>recovers from 1 debuff</strong> of your choice <em>(any active effect tagged as a debuff)</em>.</p>",
       "effect_table": {
         "0": {
-          "count": 1,
+          "$deleted": false,
+          "count": "1",
           "effect_kind": "remove_tagged_ae",
           "effect_label": "cleanse_pick",
           "filter_tag": "debuff",
-          "menu_subtitle": "Removes 1 debuff",
-          "menu_title": "Cleanse: choose a debuff to remove",
+          "menu_subtitle": "Recover from one status effect",
+          "menu_title": "Cleanse — Remove a Status",
           "target_ref": "action_targets"
         }
       },
@@ -42,6 +43,7 @@
       "isOffensiveSpell": false,
       "name": "Cleanse",
       "on_activate_effect_ref": "cleanse_pick",
+      "pre_activate_effect_ref": "cleanse_pick",
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_range": "Range",

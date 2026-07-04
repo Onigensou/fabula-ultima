@@ -27,7 +27,7 @@
         "rounds": null,
         "seconds": null,
         "startRound": null,
-        "startTime": 298800,
+        "startTime": null,
         "startTurn": null,
         "turns": null
       },
@@ -2294,7 +2294,7 @@
             "rounds": null,
             "seconds": null,
             "startRound": null,
-            "startTime": 298800,
+            "startTime": null,
             "startTurn": null,
             "turns": null
           },
@@ -2486,7 +2486,7 @@
             "rounds": null,
             "seconds": null,
             "startRound": null,
-            "startTime": 298800,
+            "startTime": null,
             "startTurn": null,
             "turns": null
           },
@@ -5465,7 +5465,7 @@
                 "reaction_config_table": {
                   "0": {
                     "$deleted": false,
-                    "condition_formula": "HAS_STATUS_NINJA_LOG_SPENT == 0",
+                    "condition_formula": "HAS_STATUS_NINJA_LOG_SPENT == 0 && INCOMING_DAMAGE > 0",
                     "reaction_effect_ref": "ninjalog_nullify",
                     "reaction_passive_mode": "force",
                     "reaction_source": "self",
@@ -5831,7 +5831,7 @@
             "rounds": null,
             "seconds": null,
             "startRound": null,
-            "startTime": 298800,
+            "startTime": null,
             "startTurn": null,
             "turns": null
           },
@@ -6086,7 +6086,6 @@
           "beast_ef": "100",
           "category": "Bow",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "1",
           "construct_ef": "100",
           "custom_logic_action": "",
@@ -6107,8 +6106,6 @@
           "hand_slots": "Two-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "xEHcsYyJhPaTCGcJ",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/Genshin/The_Viridescent_Hunt.webp",
           "ingredient_taste": "",
           "ingredient_taste2": "",
           "insect_ef": "100",
@@ -6148,7 +6145,6 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.xEHcsYyJhPaTCGcJ",
           "vehicle_ef": "100",
           "weapon_range": "Ranged"
         },
