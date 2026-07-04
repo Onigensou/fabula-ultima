@@ -66,6 +66,7 @@ import { defeatReactor } from "./defeat-reactor.js";
 import { initDirectorUiSfx } from "./director-ui-sfx.js";
 import { initKeywordSuggest } from "./keyword-suggest.js";
 import { initDevToolsMenu } from "./dev-tools-menu.js";
+import { registerAutopilotSetting, registerAutopilotDevTool } from "./enemy-autopilot.js";
 import { initDirectorSurfaces, getActiveSurfaces, hasSurface, countSurfaces, clearAllSurfaces } from "./director-surfaces.js";
 import { sweepTransientAEsAtSceneEnd, firePassiveTriggers, installRiderAeLinkage } from "./skill-effects.js";
 import { LEGACY_BRIDGED_TRIGGERS } from "./director-triggers.js";
@@ -862,6 +863,10 @@ Hooks.once("init", () => {
   game.settings.register("fabula-ultima-companion", "bdCarriedRewards", {
     scope: "world", config: false, default: null, type: Object,
   });
+  // Enemy Autopilot toggle (Director drives enemy turns via Action Patterns up
+  // to the action card). Registered here so get/set are live before "ready".
+  // See [[project_action_pattern_ai]].
+  try { registerAutopilotSetting(); } catch (e) { warn("registerAutopilotSetting threw", e); }
 });
 
 // Register the public API on ready. The `FUCompanion.api` root is set up by
@@ -1384,6 +1389,10 @@ Hooks.once("ready", () => {
   // list) that bundles the dev tools below; each registers itself into it.
   try { initDevToolsMenu(); }
   catch (e) { warn("initDevToolsMenu on ready threw", e); }
+
+  // Enemy Autopilot toggle button (registers into the Developer Tools launcher).
+  try { registerAutopilotDevTool(); }
+  catch (e) { warn("registerAutopilotDevTool on ready threw", e); }
 
   // SFX audition tool — registers into the Developer Tools launcher.
   try { initSfxAudition(); }
