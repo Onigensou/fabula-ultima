@@ -54,6 +54,10 @@
   const SPAWN_POINT_KEY         = "spawnPoint";           // { x, y } — manual spawn for scene travel
   const NAV_NAME_KEY            = "navigationName";       // string: display name in Travel dialog
   const DISABLE_TRANSITION_KEY  = "disableTransition";    // boolean: skip screen-fade when entering this scene
+  // Invoker wellsprings present on this scene. Per-element boolean under general
+  // (`wellspring_<elem>`); UNSET/true → available, false → absent. Read by the
+  // WELLSPRING_<ELEM>_AVAILABLE formula identifier (Invocation menu gating).
+  const WELLSPRING_ELEMS = ["air", "earth", "fire", "bolt", "ice"];
 
   // Main (parent) tab in Scene Config
   const FABULA_TAB_ID     = "oni-fabula-config";
@@ -192,6 +196,44 @@
         align-items: center;
         gap: 8px;
       }
+
+      /* Invoker wellspring toggle chips */
+      .oni-wellspring-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        width: 100%;
+        justify-content: flex-start;
+      }
+      /* Deselected = readable colored OUTLINE on a dark fill (full contrast, no
+         whole-chip opacity). Selected = SOLID element-color fill + dark text + glow. */
+      .oni-wellspring-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 6px 14px 6px 11px;
+        border-radius: 999px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 12px;
+        letter-spacing: .02em;
+        line-height: 1;
+        color: var(--ec, #ccc);
+        border: 1.5px solid var(--ec, #ccc);
+        background: rgba(0,0,0,0.35);
+        transition: background .12s ease, color .12s ease, box-shadow .12s ease;
+        user-select: none;
+      }
+      .oni-wellspring-chip input { display: none; }
+      .oni-wellspring-chip i { font-size: 12px; width: 13px; text-align: center; opacity: .9; }
+      .oni-wellspring-chip:hover { filter: brightness(1.12); }
+      .oni-wellspring-chip:has(input:checked) {
+        color: #14110c;
+        background: var(--ec, #ccc);
+        border-color: var(--ec, #ccc);
+        box-shadow: 0 0 9px -1px var(--ec, #ccc);
+      }
+      .oni-wellspring-chip:has(input:checked) i { opacity: 1; }
     `;
     document.head.appendChild(style);
   }
@@ -627,6 +669,22 @@
             <p class="notes">Auto-set when the scene is first activated. Toggle to manually include or exclude this scene from Travel destinations.</p>
           </div>
 
+          <h3 style="margin:12px 0 6px;"><i class="fas fa-water"></i> Invoker Wellsprings</h3>
+          <p class="notes" style="margin:0 0 8px;">Which elemental wellsprings are present on this scene. An Invoker can only draw the invocations of wellsprings available here. All are available by default — deselect the ones that are absent (RAW: usually two per scene).</p>
+          <div class="oni-wellspring-row">
+            ${[
+              { el: "air",   color: "#5fd3c6", icon: "fa-wind" },
+              { el: "earth", color: "#c19a6b", icon: "fa-mountain" },
+              { el: "fire",  color: "#e8603c", icon: "fa-fire" },
+              { el: "bolt",  color: "#e8c93c", icon: "fa-bolt" },
+              { el: "ice",   color: "#6fb7e8", icon: "fa-snowflake" },
+            ].map(({ el, color, icon }) => `
+              <label class="oni-wellspring-chip" style="--ec:${color};">
+                <input type="checkbox" name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.wellspring_${el}" data-dtype="Boolean" />
+                <i class="fas ${icon}"></i>${el.charAt(0).toUpperCase() + el.slice(1)}
+              </label>`).join("")}
+          </div>
+
           <div class="oni-dp-reset-section" style="display:none; margin-top:12px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.15);">
             <h3 style="margin:0 0 6px;">Dungeon Management</h3>
             <div class="form-group" style="align-items:center;">
@@ -851,6 +909,15 @@
       const visitedCb = generalPanel?.querySelector(`input[name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${SCENE_VISITED_KEY}"]`);
       if (visitedCb) {
         visitedCb.checked = normalizeBoolean(safeGet(fabulaData, `${GENERAL_KEY}.${SCENE_VISITED_KEY}`, false), false);
+      }
+
+      // Invoker wellsprings prefill — default CHECKED (available) unless explicitly false.
+      for (const el of WELLSPRING_ELEMS) {
+        const cb = generalPanel?.querySelector(`input[name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.wellspring_${el}"]`);
+        if (cb) {
+          const raw = safeGet(fabulaData, `${GENERAL_KEY}.wellspring_${el}`, null);
+          cb.checked = (raw === null) ? true : normalizeBoolean(raw, true);
+        }
       }
 
       // Spawnpoint status display

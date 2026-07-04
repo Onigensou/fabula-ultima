@@ -924,69 +924,69 @@
     "system": {
       "templateSystemUniqueVersion": null,
       "props": {
-        "skill_type": "Active",
-        "level": "1",
-        "max_level": "1",
-        "description": "<p>You immediately recover from a single status effect of your choice.</p>\n",
+        "availability_formula": "HAS_MARTIAL_ARMOR == 0",
+        "availability_reason": "No martial armor allowed",
         "cost": "",
-        "skill_target": "Self",
+        "description": "<p>You immediately recover from a single status effect of your choice.</p>\n",
         "duration": "instantaneous",
-        "skill_tags": "dance",
-        "uniqueId": "MEdEKpPNgKTtkE7Z",
-        "reaction_config_table": {},
         "effect_table": {
           "0": {
-            "effect_label": "d_self",
+            "candidate_source": "self",
             "effect_kind": "targeting",
-            "candidate_source": "self"
+            "effect_label": "d_self"
           },
           "1": {
-            "effect_label": "d_root",
+            "chain_steps": "d_cost, d_untoken, d_mark_gen, d_mark_self, lion_cleanse",
             "effect_kind": "chain",
-            "chain_steps": "d_cost, d_untoken, d_mark_gen, d_mark_self, lion_cleanse"
+            "effect_label": "d_root"
           },
           "2": {
-            "effect_label": "d_cost",
-            "effect_kind": "consume_resource",
-            "consume_resource": "mp",
             "consume_amount": "10 - 5 * (AE_COUNT_DANCING > 0) * (AE_COUNT_DANCING_LION_DANCE == 0)",
-            "target_ref": "self",
-            "on_empty": "abort"
+            "consume_resource": "mp",
+            "effect_kind": "consume_resource",
+            "effect_label": "d_cost",
+            "on_empty": "abort",
+            "target_ref": "self"
           },
           "3": {
-            "effect_label": "d_untoken",
-            "effect_kind": "remove_tagged_ae",
-            "filter_tag": "dance-token",
             "count": "all",
+            "effect_kind": "remove_tagged_ae",
+            "effect_label": "d_untoken",
+            "filter_tag": "dance-token",
             "target_ref": "self"
           },
           "4": {
-            "effect_label": "d_mark_gen",
-            "effect_kind": "apply_ae",
+            "ae_duplicate_mode": "replace",
             "ae_template_ref": "Dancing",
-            "target_ref": "d_self",
-            "ae_duplicate_mode": "replace"
+            "effect_kind": "apply_ae",
+            "effect_label": "d_mark_gen",
+            "target_ref": "d_self"
           },
           "5": {
-            "effect_label": "d_mark_self",
-            "effect_kind": "apply_ae",
+            "ae_duplicate_mode": "replace",
             "ae_template_ref": "Dancing Lion Dance",
-            "target_ref": "d_self",
-            "ae_duplicate_mode": "replace"
+            "effect_kind": "apply_ae",
+            "effect_label": "d_mark_self",
+            "target_ref": "d_self"
           },
           "6": {
-            "effect_label": "lion_cleanse",
-            "effect_kind": "remove_tagged_ae",
-            "filter_tag": "debuff",
             "count": 1,
-            "target_ref": "self",
+            "effect_kind": "remove_tagged_ae",
+            "effect_label": "lion_cleanse",
+            "filter_tag": "debuff",
+            "menu_subtitle": "Recover from one status effect.",
             "menu_title": "Lion Dance",
-            "menu_subtitle": "Recover from one status effect."
+            "target_ref": "self"
           }
         },
+        "level": "1",
+        "max_level": "1",
         "on_activate_effect_ref": "d_root",
-        "availability_formula": "HAS_MARTIAL_ARMOR == 0",
-        "availability_reason": "No martial armor allowed"
+        "reaction_config_table": {},
+        "skill_tags": "dance",
+        "skill_target": "Self",
+        "skill_type": "Active",
+        "uniqueId": "MEdEKpPNgKTtkE7Z"
       },
       "unique": false,
       "uniqueId": "MEdEKpPNgKTtkE7Z"
@@ -998,25 +998,28 @@
     },
     "effects": [
       {
-        "name": "Dancing Lion Dance",
-        "transfer": false,
-        "statuses": [],
-        "system": {
-          "tags": []
-        },
+        "changes": [],
+        "description": "",
+        "disabled": false,
         "duration": {
-          "rounds": 2,
-          "startTime": null,
-          "seconds": null,
           "combat": null,
-          "turns": null,
+          "rounds": 2,
+          "seconds": null,
           "startRound": null,
-          "startTurn": null
+          "startTime": null,
+          "startTurn": null,
+          "turns": null
         },
         "flags": {
+          "custom-system-builder": {
+            "isFromTemplate": false,
+            "originalId": "A5bqABLKrPtqXZz8",
+            "originalParentId": "MEdEKpPNgKTtkE7Z",
+            "originalUuid": "Item.MEdEKpPNgKTtkE7Z.ActiveEffect.A5bqABLKrPtqXZz8"
+          },
           "fabula-ultima-companion": {
-            "lifetimeMode": "target_turn_end",
-            "category": "Other"
+            "category": "Other",
+            "lifetimeMode": "target_turn_end"
           },
           "statuscounter": {
             "config": {
@@ -1025,42 +1028,42 @@
             },
             "value": 1,
             "visible": false
-          },
-          "custom-system-builder": {
-            "originalParentId": "MEdEKpPNgKTtkE7Z",
-            "originalId": "A5bqABLKrPtqXZz8",
-            "originalUuid": "Item.MEdEKpPNgKTtkE7Z.ActiveEffect.A5bqABLKrPtqXZz8",
-            "isFromTemplate": false
           }
         },
         "img": "icons/svg/upgrade.svg",
-        "type": "base",
-        "changes": [],
-        "disabled": false,
-        "description": "",
+        "name": "Dancing Lion Dance",
         "origin": null,
-        "tint": "#ffffff"
+        "statuses": [],
+        "system": {
+          "tags": []
+        },
+        "tint": "#ffffff",
+        "transfer": false,
+        "type": "base"
       },
       {
-        "name": "Dancing",
-        "transfer": false,
-        "statuses": [],
-        "system": {
-          "tags": []
-        },
+        "changes": [],
+        "description": "",
+        "disabled": false,
         "duration": {
-          "rounds": 2,
-          "startTime": null,
-          "seconds": null,
           "combat": null,
-          "turns": null,
+          "rounds": 2,
+          "seconds": null,
           "startRound": null,
-          "startTurn": null
+          "startTime": null,
+          "startTurn": null,
+          "turns": null
         },
         "flags": {
+          "custom-system-builder": {
+            "isFromTemplate": false,
+            "originalId": "Th5PekSE1nFdUUhi",
+            "originalParentId": "MEdEKpPNgKTtkE7Z",
+            "originalUuid": "Item.MEdEKpPNgKTtkE7Z.ActiveEffect.Th5PekSE1nFdUUhi"
+          },
           "fabula-ultima-companion": {
-            "lifetimeMode": "target_turn_end",
-            "category": "Other"
+            "category": "Other",
+            "lifetimeMode": "target_turn_end"
           },
           "statuscounter": {
             "config": {
@@ -1069,21 +1072,18 @@
             },
             "value": 1,
             "visible": false
-          },
-          "custom-system-builder": {
-            "originalParentId": "MEdEKpPNgKTtkE7Z",
-            "originalId": "Th5PekSE1nFdUUhi",
-            "originalUuid": "Item.MEdEKpPNgKTtkE7Z.ActiveEffect.Th5PekSE1nFdUUhi",
-            "isFromTemplate": false
           }
         },
         "img": "icons/svg/upgrade.svg",
-        "type": "base",
-        "changes": [],
-        "disabled": false,
-        "description": "",
+        "name": "Dancing",
         "origin": null,
-        "tint": "#ffffff"
+        "statuses": [],
+        "system": {
+          "tags": []
+        },
+        "tint": "#ffffff",
+        "transfer": false,
+        "type": "base"
       }
     ]
   },
@@ -1099,65 +1099,65 @@
     "system": {
       "templateSystemUniqueVersion": null,
       "props": {
-        "skill_type": "Active",
-        "level": "1",
-        "max_level": "1",
-        "description": "<p>Choose one ally you can see who has yet to take a turn during this round. That ally may take their turn immediately after yours during this round.</p>\n",
-        "cost": "",
-        "skill_target": "One ally",
-        "duration": "Instantaneous",
-        "skill_tags": "dance",
-        "uniqueId": "eAUaGhDdy3uogln7",
-        "reaction_config_table": {},
-        "on_activate_effect_ref": "d_root",
         "availability_formula": "HAS_MARTIAL_ARMOR == 0",
         "availability_reason": "No martial armor allowed",
+        "cost": "",
+        "description": "<p>Choose one ally you can see who has yet to take a turn during this round. That ally may take their turn immediately after yours during this round.</p>\n",
+        "duration": "Instantaneous",
         "effect_table": {
           "0": {
-            "effect_label": "d_self",
+            "candidate_source": "self",
             "effect_kind": "targeting",
-            "candidate_source": "self"
+            "effect_label": "d_self"
           },
           "1": {
-            "effect_label": "d_root",
+            "chain_steps": "d_cost, d_untoken, d_mark_gen, d_mark_self, ouro_turn",
             "effect_kind": "chain",
-            "chain_steps": "d_cost, d_untoken, d_mark_gen, d_mark_self, ouro_turn"
+            "effect_label": "d_root"
           },
           "2": {
-            "effect_label": "d_cost",
-            "effect_kind": "consume_resource",
-            "consume_resource": "mp",
             "consume_amount": "10 - 5 * (AE_COUNT_DANCING > 0) * (AE_COUNT_DANCING_OUROBOROS_DANCE == 0)",
-            "target_ref": "self",
-            "on_empty": "abort"
+            "consume_resource": "mp",
+            "effect_kind": "consume_resource",
+            "effect_label": "d_cost",
+            "on_empty": "abort",
+            "target_ref": "self"
           },
           "3": {
-            "effect_label": "d_untoken",
-            "effect_kind": "remove_tagged_ae",
-            "filter_tag": "dance-token",
             "count": "all",
+            "effect_kind": "remove_tagged_ae",
+            "effect_label": "d_untoken",
+            "filter_tag": "dance-token",
             "target_ref": "self"
           },
           "4": {
-            "effect_label": "d_mark_gen",
-            "effect_kind": "apply_ae",
+            "ae_duplicate_mode": "replace",
             "ae_template_ref": "Dancing",
-            "target_ref": "d_self",
-            "ae_duplicate_mode": "replace"
+            "effect_kind": "apply_ae",
+            "effect_label": "d_mark_gen",
+            "target_ref": "d_self"
           },
           "5": {
-            "effect_label": "d_mark_self",
-            "effect_kind": "apply_ae",
+            "ae_duplicate_mode": "replace",
             "ae_template_ref": "Dancing Ouroboros Dance",
-            "target_ref": "d_self",
-            "ae_duplicate_mode": "replace"
+            "effect_kind": "apply_ae",
+            "effect_label": "d_mark_self",
+            "target_ref": "d_self"
           },
           "7": {
-            "effect_label": "ouro_turn",
             "effect_kind": "take_turn_next",
+            "effect_label": "ouro_turn",
             "target_ref": "action_targets"
           }
-        }
+        },
+        "level": "1",
+        "max_level": "1",
+        "on_activate_effect_ref": "d_root",
+        "reaction_config_table": {},
+        "skill_tags": "dance",
+        "skill_target": "One ally",
+        "skill_type": "Active",
+        "uniqueId": "eAUaGhDdy3uogln7"
       },
       "unique": false,
       "uniqueId": "eAUaGhDdy3uogln7"
@@ -1169,25 +1169,28 @@
     },
     "effects": [
       {
-        "name": "Dancing",
-        "transfer": false,
-        "statuses": [],
-        "system": {
-          "tags": []
-        },
+        "changes": [],
+        "description": "",
+        "disabled": false,
         "duration": {
-          "rounds": 2,
-          "startTime": null,
-          "seconds": null,
           "combat": null,
-          "turns": null,
+          "rounds": 2,
+          "seconds": null,
           "startRound": null,
-          "startTurn": null
+          "startTime": null,
+          "startTurn": null,
+          "turns": null
         },
         "flags": {
+          "custom-system-builder": {
+            "isFromTemplate": false,
+            "originalId": "GwrycLOSNJ4EAog2",
+            "originalParentId": "eAUaGhDdy3uogln7",
+            "originalUuid": "Item.eAUaGhDdy3uogln7.ActiveEffect.GwrycLOSNJ4EAog2"
+          },
           "fabula-ultima-companion": {
-            "lifetimeMode": "target_turn_end",
-            "category": "Other"
+            "category": "Other",
+            "lifetimeMode": "target_turn_end"
           },
           "statuscounter": {
             "config": {
@@ -1196,42 +1199,42 @@
             },
             "value": 1,
             "visible": false
-          },
-          "custom-system-builder": {
-            "originalParentId": "eAUaGhDdy3uogln7",
-            "originalId": "X0JJtVvBjfSJ3Cjg",
-            "originalUuid": "Item.eAUaGhDdy3uogln7.ActiveEffect.X0JJtVvBjfSJ3Cjg",
-            "isFromTemplate": false
           }
         },
         "img": "icons/svg/upgrade.svg",
-        "type": "base",
-        "changes": [],
-        "disabled": false,
-        "description": "",
+        "name": "Dancing Ouroboros Dance",
         "origin": null,
-        "tint": "#ffffff"
+        "statuses": [],
+        "system": {
+          "tags": []
+        },
+        "tint": "#ffffff",
+        "transfer": false,
+        "type": "base"
       },
       {
-        "name": "Dancing Ouroboros Dance",
-        "transfer": false,
-        "statuses": [],
-        "system": {
-          "tags": []
-        },
+        "changes": [],
+        "description": "",
+        "disabled": false,
         "duration": {
-          "rounds": 2,
-          "startTime": null,
-          "seconds": null,
           "combat": null,
-          "turns": null,
+          "rounds": 2,
+          "seconds": null,
           "startRound": null,
-          "startTurn": null
+          "startTime": null,
+          "startTurn": null,
+          "turns": null
         },
         "flags": {
+          "custom-system-builder": {
+            "isFromTemplate": false,
+            "originalId": "X0JJtVvBjfSJ3Cjg",
+            "originalParentId": "eAUaGhDdy3uogln7",
+            "originalUuid": "Item.eAUaGhDdy3uogln7.ActiveEffect.X0JJtVvBjfSJ3Cjg"
+          },
           "fabula-ultima-companion": {
-            "lifetimeMode": "target_turn_end",
-            "category": "Other"
+            "category": "Other",
+            "lifetimeMode": "target_turn_end"
           },
           "statuscounter": {
             "config": {
@@ -1240,21 +1243,18 @@
             },
             "value": 1,
             "visible": false
-          },
-          "custom-system-builder": {
-            "originalParentId": "eAUaGhDdy3uogln7",
-            "originalId": "GwrycLOSNJ4EAog2",
-            "originalUuid": "Item.eAUaGhDdy3uogln7.ActiveEffect.GwrycLOSNJ4EAog2",
-            "isFromTemplate": false
           }
         },
         "img": "icons/svg/upgrade.svg",
-        "type": "base",
-        "changes": [],
-        "disabled": false,
-        "description": "",
+        "name": "Dancing",
         "origin": null,
-        "tint": "#ffffff"
+        "statuses": [],
+        "system": {
+          "tags": []
+        },
+        "tint": "#ffffff",
+        "transfer": false,
+        "type": "base"
       }
     ]
   },
@@ -1270,56 +1270,56 @@
     "system": {
       "templateSystemUniqueVersion": null,
       "props": {
-        "skill_type": "Other",
-        "level": "1",
-        "max_level": "10",
-        "description": "<p>Each time you take this Skill, you learn a <strong>dance</strong> (see Facet).</p><p>On your turn during a conflict scene, if you have no martial armor equipped, you may spend 10 Mind Points to perform a <strong>dance</strong> you have learned. This doesn’t require an action, but it can only be done before or after an action, and only once per turn. If you already performed a different dance during your previous turn in this scene, the cost of the new dance is reduced to 5 Mind Points.</p><p>Some dances are instantaneous and resolve immediately, while others have effects that last until the start of your next turn.</p>",
         "cost": "",
-        "skill_target": "",
+        "description": "<p>Each time you take this Skill, you learn a <strong>dance</strong> (see Facet).</p><p>On your turn during a conflict scene, if you have no martial armor equipped, you may spend 10 Mind Points to perform a <strong>dance</strong> you have learned. This doesn’t require an action, but it can only be done before or after an action, and only once per turn. If you already performed a different dance during your previous turn in this scene, the cost of the new dance is reduced to 5 Mind Points.</p><p>Some dances are instantaneous and resolve immediately, while others have effects that last until the start of your next turn.</p>",
         "duration": "",
-        "uniqueId": "8lF3aCEt5wsYxleL",
-        "reaction_config_table": {
-          "0": {
-            "reaction_trigger": "turn_start",
-            "reaction_source": "self",
-            "reaction_passive_mode": "force",
-            "reaction_effect_ref": "dance_apply"
-          },
-          "1": {
-            "reaction_trigger": "turn_start",
-            "reaction_source": "self",
-            "reaction_passive_mode": "ask",
-            "reaction_effect_ref": "dance_free",
-            "condition_formula": "AE_COUNT_DANCE > 0 && HAS_MARTIAL_ARMOR == 0"
-          },
-          "2": {
-            "reaction_trigger": "turn_end",
-            "reaction_source": "self",
-            "reaction_passive_mode": "ask",
-            "reaction_effect_ref": "dance_free",
-            "condition_formula": "AE_COUNT_DANCE > 0 && HAS_MARTIAL_ARMOR == 0"
-          }
-        },
         "effect_table": {
           "0": {
-            "effect_label": "dance_self",
+            "candidate_source": "self",
             "effect_kind": "targeting",
-            "candidate_source": "self"
+            "effect_label": "dance_self"
           },
           "1": {
-            "effect_label": "dance_apply",
-            "effect_kind": "apply_ae",
+            "ae_duplicate_mode": "replace",
             "ae_template_ref": "Dance",
-            "target_ref": "dance_self",
-            "ae_duplicate_mode": "replace"
+            "effect_kind": "apply_ae",
+            "effect_label": "dance_apply",
+            "target_ref": "dance_self"
           },
           "2": {
-            "effect_label": "dance_free",
-            "effect_kind": "free_action",
             "action_ref": "Skill",
-            "allowed_skill_refs": "tag:dance"
+            "allowed_skill_refs": "tag:dance",
+            "effect_kind": "free_action",
+            "effect_label": "dance_free"
           }
-        }
+        },
+        "level": "1",
+        "max_level": "10",
+        "reaction_config_table": {
+          "0": {
+            "reaction_effect_ref": "dance_apply",
+            "reaction_passive_mode": "force",
+            "reaction_source": "self",
+            "reaction_trigger": "turn_start"
+          },
+          "1": {
+            "condition_formula": "AE_COUNT_DANCE > 0 && HAS_MARTIAL_ARMOR == 0",
+            "reaction_effect_ref": "dance_free",
+            "reaction_passive_mode": "ask",
+            "reaction_source": "self",
+            "reaction_trigger": "turn_start"
+          },
+          "2": {
+            "condition_formula": "AE_COUNT_DANCE > 0 && HAS_MARTIAL_ARMOR == 0",
+            "reaction_effect_ref": "dance_free",
+            "reaction_passive_mode": "ask",
+            "reaction_source": "self",
+            "reaction_trigger": "turn_end"
+          }
+        },
+        "skill_target": "",
+        "skill_type": "Other",
+        "uniqueId": "8lF3aCEt5wsYxleL"
       },
       "unique": false,
       "uniqueId": "8lF3aCEt5wsYxleL"
@@ -1331,27 +1331,28 @@
     },
     "effects": [
       {
-        "name": "Dance",
-        "transfer": false,
-        "statuses": [],
+        "changes": [],
+        "description": "",
+        "disabled": false,
         "duration": {
-          "startTime": null,
-          "seconds": null,
           "combat": null,
           "rounds": null,
-          "turns": null,
+          "seconds": null,
           "startRound": null,
-          "startTurn": null
-        },
-        "system": {
-          "tags": [
-            "dance-token"
-          ]
+          "startTime": null,
+          "startTurn": null,
+          "turns": null
         },
         "flags": {
+          "custom-system-builder": {
+            "isFromTemplate": false,
+            "originalId": "bvcEIFX8gLRDL1aq",
+            "originalParentId": "8lF3aCEt5wsYxleL",
+            "originalUuid": "Item.8lF3aCEt5wsYxleL.ActiveEffect.bvcEIFX8gLRDL1aq"
+          },
           "fabula-ultima-companion": {
-            "directorPermanent": true,
-            "category": "Other"
+            "category": "Other",
+            "directorPermanent": true
           },
           "statuscounter": {
             "config": {
@@ -1360,21 +1361,20 @@
             },
             "value": 1,
             "visible": false
-          },
-          "custom-system-builder": {
-            "originalParentId": "8lF3aCEt5wsYxleL",
-            "originalId": "bvcEIFX8gLRDL1aq",
-            "originalUuid": "Item.8lF3aCEt5wsYxleL.ActiveEffect.bvcEIFX8gLRDL1aq",
-            "isFromTemplate": false
           }
         },
         "img": "icons/svg/upgrade.svg",
-        "type": "base",
-        "changes": [],
-        "disabled": false,
-        "description": "",
+        "name": "Dance",
         "origin": null,
-        "tint": "#ffffff"
+        "statuses": [],
+        "system": {
+          "tags": [
+            "dance-token"
+          ]
+        },
+        "tint": "#ffffff",
+        "transfer": false,
+        "type": "base"
       }
     ]
   },
@@ -1390,31 +1390,31 @@
     "system": {
       "templateSystemUniqueVersion": null,
       "props": {
-        "skill_type": "Passive",
-        "level": "1",
-        "max_level": "1",
-        "description": "<p>After you perform a <strong>dance</strong>, you may perform the Equipment action for free.</p>\n",
         "cost": "",
-        "skill_target": "",
+        "description": "<p>After you perform a <strong>dance</strong>, you may perform the Equipment action for free.</p>\n",
         "duration": "",
-        "isReaction": true,
-        "uniqueId": "hEOGl2wmtgjJX8jt",
-        "reaction_config_table": {
-          "0": {
-            "reaction_trigger": "creature_performs_action",
-            "reaction_source": "self",
-            "reaction_passive_mode": "ask",
-            "reaction_effect_ref": "qc_free",
-            "condition_formula": "SKILL_HAS_TAG_DANCE == 1"
-          }
-        },
         "effect_table": {
           "0": {
-            "effect_label": "qc_free",
+            "action_ref": "Equipment",
             "effect_kind": "free_action",
-            "action_ref": "Equipment"
+            "effect_label": "qc_free"
           }
-        }
+        },
+        "isReaction": true,
+        "level": "1",
+        "max_level": "1",
+        "reaction_config_table": {
+          "0": {
+            "condition_formula": "SKILL_HAS_TAG_DANCE == 1",
+            "reaction_effect_ref": "qc_free",
+            "reaction_passive_mode": "ask",
+            "reaction_source": "self",
+            "reaction_trigger": "creature_performs_action"
+          }
+        },
+        "skill_target": "",
+        "skill_type": "Passive",
+        "uniqueId": "hEOGl2wmtgjJX8jt"
       },
       "unique": false,
       "uniqueId": "hEOGl2wmtgjJX8jt"
@@ -6434,6 +6434,83 @@
     ]
   },
   {
+    "name": "Symptom Shift",
+    "type": "equippableItem",
+    "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/MagicalRangedRollAction/drain.png",
+    "folderPath": [
+      "Battle Director",
+      "Hexer",
+      "Spell"
+    ],
+    "system": {
+      "template": "j0F5Msw5RZ8aIB3j",
+      "templateSystemUniqueVersion": 2666163373,
+      "props": {
+        "active_effect_config_table": {},
+        "check_bonus": "0",
+        "class": "Hexer",
+        "cost": "10 MP",
+        "damage_bonus": "0",
+        "defense_target_type": "def",
+        "description": "<p>You draw sickness away from an ally and pass it onto your enemy. The target recovers from <strong>all status effects</strong>. Then choose one of the status effects the target recovered from and another creature you can see. The chosen creature suffers the chosen status effect.</p>\n",
+        "duration": "Instantaneous",
+        "effect_table": {
+          "0": {
+            "$deleted": false,
+            "candidate_source": "combat",
+            "count": 1,
+            "effect_kind": "targeting",
+            "effect_label": "ss_dest",
+            "menu_subtitle": "Choose another creature you can see",
+            "menu_title": "Symptom Shift — pass the sickness to?",
+            "mode": "exact"
+          },
+          "1": {
+            "$deleted": false,
+            "count": "all",
+            "effect_kind": "transfer_ae",
+            "effect_label": "ss_move",
+            "filter_tag": "debuff",
+            "from_ref": "action_targets",
+            "menu_subtitle": "These status effects move to the chosen creature",
+            "menu_title": "Symptom Shift — passing these on",
+            "target_ref": "ss_dest"
+          }
+        },
+        "heroic_requirement": "",
+        "isCheck": false,
+        "isFacet": true,
+        "isHeroic": false,
+        "isOffensiveSpell": false,
+        "isReaction": false,
+        "level": "1",
+        "max_level": "1",
+        "name": "Symptom Shift",
+        "on_activate_effect_ref": "ss_move",
+        "optional_params": {},
+        "pre_activate_effect_ref": "ss_dest",
+        "rolled_atr1": "-",
+        "rolled_atr2": "-",
+        "skill_animation_default": "",
+        "skill_animation_mode": "default",
+        "skill_information": "",
+        "skill_range": "Range",
+        "skill_target": "One creature",
+        "skill_type": "Spell",
+        "type_damage": "",
+        "use_optional_params": false
+      },
+      "unique": false,
+      "uniqueId": "LsQkDSEbvQ7S0b3L"
+    },
+    "flags": {
+      "custom-system-builder": {
+        "version": "4.6.4"
+      }
+    },
+    "effects": []
+  },
+  {
     "name": "Double Arrow",
     "type": "equippableItem",
     "img": "icons/weapons/ranged/bow-recurve-yellow.webp",
@@ -7735,6 +7812,1010 @@
       }
     },
     "effects": []
+  },
+  {
+    "name": "Elemental Harmony",
+    "type": "equippableItem",
+    "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/EMTrans1.png",
+    "folderPath": [
+      "Battle Director",
+      "Invoker",
+      "Skill"
+    ],
+    "system": {
+      "template": "j0F5Msw5RZ8aIB3j",
+      "templateSystemUniqueVersion": 2666163373,
+      "props": {
+        "active_effect_config_table": {},
+        "check_bonus": "0",
+        "class": "Invoker",
+        "cost": "",
+        "damage_bonus": "0",
+        "defense_target_type": "def",
+        "description": "<p>You may verbally communicate with creatures of the <strong>elemental</strong> Species.</p>\n<p>When you restore a creature’s Hit Points with an <strong>invocation</strong> or spell, if an <strong>elemental</strong> is present on the scene, the restored amount is increased by <strong>[SL × 5]</strong>.</p>\n",
+        "duration": "",
+        "effect_table": {
+          "0": {
+            "$deleted": false,
+            "effect_kind": "adjust_grant",
+            "effect_label": "eh_boost",
+            "grant_amount": "SL * 5",
+            "grant_operation": "add",
+            "grant_resource": "hp",
+            "grant_scope": "per_action"
+          }
+        },
+        "heroic_requirement": "",
+        "ignore_hr": false,
+        "isCheck": false,
+        "isFacet": false,
+        "isHeroic": false,
+        "isOffensiveSpell": false,
+        "isReaction": false,
+        "isZeroPower": false,
+        "level": "1",
+        "max_level": "1",
+        "name": "Elemental Harmony",
+        "on_activate_effect_ref": "",
+        "optional_params": {},
+        "reaction_config_table": {
+          "0": {
+            "$deleted": false,
+            "condition_formula": "CREATURE_ELEMENTAL_PRESENT == 1",
+            "reaction_action_kind": "Spell",
+            "reaction_effect_ref": "eh_boost",
+            "reaction_passive_mode": "force",
+            "reaction_source": "self",
+            "reaction_trigger": "creature_performs_action"
+          },
+          "1": {
+            "$deleted": false,
+            "condition_formula": "SKILL_HAS_TAG_INVOCATION == 1 && CREATURE_ELEMENTAL_PRESENT == 1",
+            "reaction_effect_ref": "eh_boost",
+            "reaction_passive_mode": "force",
+            "reaction_source": "self",
+            "reaction_trigger": "creature_performs_action"
+          }
+        },
+        "rolled_atr1": "-",
+        "rolled_atr2": "-",
+        "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>Bonus HP Restored</strong></p></td></tr><tr><td><p>1</p></td><td><p>5</p></td></tr><tr><td><p>2</p></td><td><p>10</p></td></tr></tbody></table>",
+        "skill_range": "",
+        "skill_target": "",
+        "skill_type": "Passive",
+        "type_damage": "",
+        "use_optional_params": false
+      },
+      "unique": false,
+      "uniqueId": "YEjcdTSeCrkWI9jl"
+    },
+    "flags": {
+      "custom-system-builder": {
+        "version": "4.6.4"
+      }
+    },
+    "effects": []
+  },
+  {
+    "name": "Invocation",
+    "type": "equippableItem",
+    "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/phantom_rush.png",
+    "folderPath": [
+      "Battle Director",
+      "Invoker",
+      "Skill"
+    ],
+    "system": {
+      "template": "j0F5Msw5RZ8aIB3j",
+      "templateSystemUniqueVersion": 2666163373,
+      "props": {
+        "active_effect_config_table": {},
+        "animation_damage_timing_offset": "0",
+        "animation_damage_timing_options": "default",
+        "check_bonus": "0",
+        "class": "Invoker",
+        "cost": "5 MP",
+        "damage_bonus": "0",
+        "defense_target_type": "def",
+        "description": "<p>You may use an action and spend 5 Mind Points to perform an <strong>invocation</strong>, drawing energy from one of the <strong>wellsprings</strong> present on the scene (see <strong>Invoker's</strong> <strong>Unique Mechanic</strong>). Your <strong>【SL】</strong> in this Skill determines which invocations you have access to.</p>",
+        "duration": "",
+        "effect_table": {
+          "0": {
+            "allowed_types": "",
+            "check_bonus_formula": "",
+            "consume_self": false,
+            "damage_bonus_formula": "",
+            "effect_kind": "open_action_menu",
+            "effect_label": "inv_menu",
+            "free_hr_as_zero": false,
+            "free_mode": false,
+            "free_of_cost": false,
+            "from_resource": "",
+            "max_mp_cost": "",
+            "menu_hide_disabled": true,
+            "menu_label": "",
+            "menu_option_colors": "",
+            "menu_option_descriptions": "",
+            "menu_option_icons": "",
+            "menu_option_labels": "",
+            "menu_option_refs": "aero_blast, aero_hex, breeze, twister, geo_blast, geo_hex, growth, quicksand, pyro_blast, pyro_hex, burst, smoke, electro_blast, electro_hex, static, thunder, hydro_blast, hydro_hex, chill, frostbite",
+            "menu_pick_count": "",
+            "menu_subtitle": "Draw energy from a wellspring present on the scene.",
+            "menu_title": "Invocation",
+            "target_ref": "",
+            "to_resource": ""
+          },
+          "1": {
+            "condition_formula": "SL >= 1 && WELLSPRING_AIR_AVAILABLE",
+            "consume_self": false,
+            "damage_amount": "20 + 5*(CASTER_LEVEL>=20) + 5*(CASTER_LEVEL>=40)",
+            "damage_cause": "damage",
+            "damage_element": "air",
+            "damage_ignore_affinity": false,
+            "damage_resource": "hp",
+            "effect_kind": "deal_damage",
+            "effect_label": "aero_blast",
+            "emit_status": "",
+            "emit_trigger": "",
+            "from_resource": "",
+            "menu_color": "#5fd3c6",
+            "menu_description": "Deal ${20 + 5*(CHAR_LEVEL>=20) + 5*(CHAR_LEVEL>=40)} air damage.",
+            "menu_label": "Aero Blast",
+            "target_ref": "action_targets",
+            "to_resource": ""
+          },
+          "2": {
+            "ae_duplicate_mode": "replace_per_caster",
+            "ae_family": "",
+            "ae_initial_charges": "",
+            "ae_initial_charges_max": "",
+            "ae_template_ref": "Aero Hex",
+            "condition_formula": "SL >= 2 && WELLSPRING_AIR_AVAILABLE",
+            "consume_self": false,
+            "effect_kind": "apply_ae",
+            "effect_label": "aero_hex",
+            "from_resource": "",
+            "menu_color": "#5fd3c6",
+            "menu_description": "Target takes +5 damage from bolt & fire until the start of your next turn.",
+            "menu_label": "Aero Hex",
+            "target_ref": "action_targets",
+            "to_resource": ""
+          },
+          "3": {
+            "condition_formula": "SL >= 3 && WELLSPRING_AIR_AVAILABLE",
+            "consume_self": false,
+            "effect_kind": "grant",
+            "effect_label": "breeze",
+            "from_resource": "",
+            "grant_amount": "30 + 10*(CASTER_LEVEL>=20) + 10*(CASTER_LEVEL>=40)",
+            "grant_operation": "",
+            "grant_resource": "hp",
+            "grant_round": "",
+            "menu_color": "#5fd3c6",
+            "menu_description": "Target recovers ${30 + 10*(CHAR_LEVEL>=20) + 10*(CHAR_LEVEL>=40)} HP.",
+            "menu_label": "Breeze",
+            "target_ref": "action_targets",
+            "to_resource": ""
+          },
+          "4": {
+            "chain_steps": "twister_dmg, twister_status",
+            "condition_formula": "SL >= 3 && WELLSPRING_AIR_AVAILABLE",
+            "consume_self": false,
+            "effect_kind": "chain",
+            "effect_label": "twister",
+            "from_resource": "",
+            "menu_color": "#5fd3c6",
+            "menu_description": "Deal ${10 + 5*(CHAR_LEVEL>=20) + 5*(CHAR_LEVEL>=40)} air damage; target is Dazed.",
+            "menu_label": "Twister",
+            "to_resource": ""
+          },
+          "5": {
+            "consume_self": false,
+            "damage_amount": "10 + 5*(CASTER_LEVEL>=20) + 5*(CASTER_LEVEL>=40)",
+            "damage_cause": "damage",
+            "damage_element": "air",
+            "damage_ignore_affinity": false,
+            "damage_resource": "hp",
+            "effect_kind": "deal_damage",
+            "effect_label": "twister_dmg",
+            "emit_status": "",
+            "emit_trigger": "",
+            "from_resource": "",
+            "menu_label": "",
+            "target_ref": "action_targets",
+            "to_resource": ""
+          },
+          "6": {
+            "ae_duplicate_mode": "replace_per_caster",
+            "ae_family": "",
+            "ae_initial_charges": "",
+            "ae_initial_charges_max": "",
+            "ae_template_ref": "Dazed",
+            "consume_self": false,
+            "effect_kind": "apply_ae",
+            "effect_label": "twister_status",
+            "from_resource": "",
+            "menu_label": "",
+            "target_ref": "action_targets",
+            "to_resource": ""
+          },
+          "7": {
+            "condition_formula": "SL >= 1 && WELLSPRING_EARTH_AVAILABLE",
+            "consume_self": false,
+            "damage_amount": "20 + 5*(CASTER_LEVEL>=20) + 5*(CASTER_LEVEL>=40)",
+            "damage_cause": "damage",
+            "damage_element": "earth",
+            "damage_ignore_affinity": false,
+            "damage_resource": "hp",
+            "effect_kind": "deal_damage",
+            "effect_label": "geo_blast",
+            "emit_status": "",
+            "emit_trigger": "",
+            "from_resource": "",
+            "menu_color": "#c19a6b",
+            "menu_description": "Deal ${20 + 5*(CHAR_LEVEL>=20) + 5*(CHAR_LEVEL>=40)} earth damage.",
+            "menu_label": "Geo Blast",
+            "target_ref": "action_targets",
+            "to_resource": ""
+          },
+          "8": {
+            "ae_duplicate_mode": "replace_per_caster",
+            "ae_family": "",
+            "ae_initial_charges": "",
+            "ae_initial_charges_max": "",
+            "ae_template_ref": "Geo Hex",
+            "condition_formula": "SL >= 2 && WELLSPRING_EARTH_AVAILABLE",
+            "consume_self": false,
+            "effect_kind": "apply_ae",
+            "effect_label": "geo_hex",
+            "from_resource": "",
+            "menu_color": "#c19a6b",
+            "menu_description": "Target takes +5 damage from air & ice until the start of your next turn.",
+            "menu_label": "Geo Hex",
+            "target_ref": "action_targets",
+            "to_resource": ""
+          },
+          "9": {
+            "condition_formula": "SL >= 3 && WELLSPRING_EARTH_AVAILABLE",
+            "consume_self": false,
+            "effect_kind": "grant",
+            "effect_label": "growth",
+            "from_resource": "",
+            "grant_amount": "30 + 10*(CASTER_LEVEL>=20) + 10*(CASTER_LEVEL>=40)",
+            "grant_operation": "",
+            "grant_resource": "hp",
+            "grant_round": "",
+            "menu_color": "#c19a6b",
+            "menu_description": "Target recovers ${30 + 10*(CHAR_LEVEL>=20) + 10*(CHAR_LEVEL>=40)} HP.",
+            "menu_label": "Growth",
+            "target_ref": "action_targets",
+            "to_resource": ""
+          },
+          "10": {
+            "chain_steps": "quicksand_dmg, quicksand_status",
+            "condition_formula": "SL >= 3 && WELLSPRING_EARTH_AVAILABLE",
+            "consume_self": false,
+            "effect_kind": "chain",
+            "effect_label": "quicksand",
+            "from_resource": "",
+            "menu_color": "#c19a6b",
+            "menu_description": "Deal ${10 + 5*(CHAR_LEVEL>=20) + 5*(CHAR_LEVEL>=40)} earth damage; target is Slow.",
+            "menu_label": "Quicksand",
+            "to_resource": ""
+          },
+          "11": {
+            "consume_self": false,
+            "damage_amount": "10 + 5*(CASTER_LEVEL>=20) + 5*(CASTER_LEVEL>=40)",
+            "damage_cause": "damage",
+            "damage_element": "earth",
+            "damage_ignore_affinity": false,
+            "damage_resource": "hp",
+            "effect_kind": "deal_damage",
+            "effect_label": "quicksand_dmg",
+            "emit_status": "",
+            "emit_trigger": "",
+            "from_resource": "",
+            "menu_label": "",
+            "target_ref": "action_targets",
+            "to_resource": ""
+          },
+          "12": {
+            "ae_duplicate_mode": "replace_per_caster",
+            "ae_family": "",
+            "ae_initial_charges": "",
+            "ae_initial_charges_max": "",
+            "ae_template_ref": "Slow",
+            "consume_self": false,
+            "effect_kind": "apply_ae",
+            "effect_label": "quicksand_status",
+            "from_resource": "",
+            "menu_label": "",
+            "target_ref": "action_targets",
+            "to_resource": ""
+          },
+          "13": {
+            "condition_formula": "SL >= 1 && WELLSPRING_FIRE_AVAILABLE",
+            "consume_self": false,
+            "damage_amount": "20 + 5*(CASTER_LEVEL>=20) + 5*(CASTER_LEVEL>=40)",
+            "damage_cause": "damage",
+            "damage_element": "fire",
+            "damage_ignore_affinity": false,
+            "damage_resource": "hp",
+            "effect_kind": "deal_damage",
+            "effect_label": "pyro_blast",
+            "emit_status": "",
+            "emit_trigger": "",
+            "from_resource": "",
+            "menu_color": "#e8603c",
+            "menu_description": "Deal ${20 + 5*(CHAR_LEVEL>=20) + 5*(CHAR_LEVEL>=40)} fire damage.",
+            "menu_label": "Pyro Blast",
+            "target_ref": "action_targets",
+            "to_resource": ""
+          },
+          "14": {
+            "ae_duplicate_mode": "replace_per_caster",
+            "ae_family": "",
+            "ae_initial_charges": "",
+            "ae_initial_charges_max": "",
+            "ae_template_ref": "Pyro Hex",
+            "condition_formula": "SL >= 2 && WELLSPRING_FIRE_AVAILABLE",
+            "consume_self": false,
+            "effect_kind": "apply_ae",
+            "effect_label": "pyro_hex",
+            "from_resource": "",
+            "menu_color": "#e8603c",
+            "menu_description": "Target takes +5 damage from earth & ice until the start of your next turn.",
+            "menu_label": "Pyro Hex",
+            "target_ref": "action_targets",
+            "to_resource": ""
+          },
+          "15": {
+            "chain_steps": "burst_dmg, burst_status",
+            "condition_formula": "SL >= 3 && WELLSPRING_FIRE_AVAILABLE",
+            "consume_self": false,
+            "effect_kind": "chain",
+            "effect_label": "burst",
+            "from_resource": "",
+            "menu_color": "#e8603c",
+            "menu_description": "Deal ${10 + 5*(CHAR_LEVEL>=20) + 5*(CHAR_LEVEL>=40)} fire damage; target is Shaken.",
+            "menu_label": "Burst",
+            "to_resource": ""
+          },
+          "16": {
+            "consume_self": false,
+            "damage_amount": "10 + 5*(CASTER_LEVEL>=20) + 5*(CASTER_LEVEL>=40)",
+            "damage_cause": "damage",
+            "damage_element": "fire",
+            "damage_ignore_affinity": false,
+            "damage_resource": "hp",
+            "effect_kind": "deal_damage",
+            "effect_label": "burst_dmg",
+            "emit_status": "",
+            "emit_trigger": "",
+            "from_resource": "",
+            "menu_label": "",
+            "target_ref": "action_targets",
+            "to_resource": ""
+          },
+          "17": {
+            "ae_duplicate_mode": "replace_per_caster",
+            "ae_family": "",
+            "ae_initial_charges": "",
+            "ae_initial_charges_max": "",
+            "ae_template_ref": "Shaken",
+            "consume_self": false,
+            "effect_kind": "apply_ae",
+            "effect_label": "burst_status",
+            "from_resource": "",
+            "menu_label": "",
+            "target_ref": "action_targets",
+            "to_resource": ""
+          },
+          "18": {
+            "chain_steps": "smoke_drain, smoke_status",
+            "condition_formula": "SL >= 3 && WELLSPRING_FIRE_AVAILABLE",
+            "consume_self": false,
+            "effect_kind": "chain",
+            "effect_label": "smoke",
+            "from_resource": "",
+            "menu_color": "#e8603c",
+            "menu_description": "Target loses ${20 + 10*(CHAR_LEVEL>=20) + 10*(CHAR_LEVEL>=40)} MP and is Weak.",
+            "menu_label": "Smoke",
+            "to_resource": ""
+          },
+          "19": {
+            "consume_self": false,
+            "effect_kind": "grant",
+            "effect_label": "smoke_drain",
+            "from_resource": "",
+            "grant_amount": "-1 * (20 + 10*(CASTER_LEVEL>=20) + 10*(CASTER_LEVEL>=40))",
+            "grant_operation": "",
+            "grant_resource": "mp",
+            "grant_round": "",
+            "menu_label": "",
+            "target_ref": "action_targets",
+            "to_resource": ""
+          },
+          "20": {
+            "ae_duplicate_mode": "replace_per_caster",
+            "ae_family": "",
+            "ae_initial_charges": "",
+            "ae_initial_charges_max": "",
+            "ae_template_ref": "Weak",
+            "consume_self": false,
+            "effect_kind": "apply_ae",
+            "effect_label": "smoke_status",
+            "from_resource": "",
+            "menu_label": "",
+            "target_ref": "action_targets",
+            "to_resource": ""
+          },
+          "21": {
+            "condition_formula": "SL >= 1 && WELLSPRING_BOLT_AVAILABLE",
+            "consume_self": false,
+            "damage_amount": "20 + 5*(CASTER_LEVEL>=20) + 5*(CASTER_LEVEL>=40)",
+            "damage_cause": "damage",
+            "damage_element": "bolt",
+            "damage_ignore_affinity": false,
+            "damage_resource": "hp",
+            "effect_kind": "deal_damage",
+            "effect_label": "electro_blast",
+            "emit_status": "",
+            "emit_trigger": "",
+            "from_resource": "",
+            "menu_color": "#e8c93c",
+            "menu_description": "Deal ${20 + 5*(CHAR_LEVEL>=20) + 5*(CHAR_LEVEL>=40)} bolt damage.",
+            "menu_label": "Electro Blast",
+            "target_ref": "action_targets",
+            "to_resource": ""
+          },
+          "22": {
+            "ae_duplicate_mode": "replace_per_caster",
+            "ae_family": "",
+            "ae_initial_charges": "",
+            "ae_initial_charges_max": "",
+            "ae_template_ref": "Electro Hex",
+            "condition_formula": "SL >= 2 && WELLSPRING_BOLT_AVAILABLE",
+            "consume_self": false,
+            "effect_kind": "apply_ae",
+            "effect_label": "electro_hex",
+            "from_resource": "",
+            "menu_color": "#e8c93c",
+            "menu_description": "Target takes +5 damage from earth & fire until the start of your next turn.",
+            "menu_label": "Electro Hex",
+            "target_ref": "action_targets",
+            "to_resource": ""
+          },
+          "23": {
+            "chain_steps": "static_dmg, static_status",
+            "condition_formula": "SL >= 3 && WELLSPRING_BOLT_AVAILABLE",
+            "consume_self": false,
+            "effect_kind": "chain",
+            "effect_label": "static",
+            "from_resource": "",
+            "menu_color": "#e8c93c",
+            "menu_description": "Deal ${10 + 5*(CHAR_LEVEL>=20) + 5*(CHAR_LEVEL>=40)} bolt damage; target is Slow.",
+            "menu_label": "Static",
+            "to_resource": ""
+          },
+          "24": {
+            "consume_self": false,
+            "damage_amount": "10 + 5*(CASTER_LEVEL>=20) + 5*(CASTER_LEVEL>=40)",
+            "damage_cause": "damage",
+            "damage_element": "bolt",
+            "damage_ignore_affinity": false,
+            "damage_resource": "hp",
+            "effect_kind": "deal_damage",
+            "effect_label": "static_dmg",
+            "emit_status": "",
+            "emit_trigger": "",
+            "from_resource": "",
+            "menu_label": "",
+            "target_ref": "action_targets",
+            "to_resource": ""
+          },
+          "25": {
+            "ae_duplicate_mode": "replace_per_caster",
+            "ae_family": "",
+            "ae_initial_charges": "",
+            "ae_initial_charges_max": "",
+            "ae_template_ref": "Slow",
+            "consume_self": false,
+            "effect_kind": "apply_ae",
+            "effect_label": "static_status",
+            "from_resource": "",
+            "menu_label": "",
+            "target_ref": "action_targets",
+            "to_resource": ""
+          },
+          "26": {
+            "chain_steps": "thunder_drain, thunder_status",
+            "condition_formula": "SL >= 3 && WELLSPRING_BOLT_AVAILABLE",
+            "consume_self": false,
+            "effect_kind": "chain",
+            "effect_label": "thunder",
+            "from_resource": "",
+            "menu_color": "#e8c93c",
+            "menu_description": "Target loses ${20 + 10*(CHAR_LEVEL>=20) + 10*(CHAR_LEVEL>=40)} MP and is Dazed.",
+            "menu_label": "Thunder",
+            "to_resource": ""
+          },
+          "27": {
+            "consume_self": false,
+            "effect_kind": "grant",
+            "effect_label": "thunder_drain",
+            "from_resource": "",
+            "grant_amount": "-1 * (20 + 10*(CASTER_LEVEL>=20) + 10*(CASTER_LEVEL>=40))",
+            "grant_operation": "",
+            "grant_resource": "mp",
+            "grant_round": "",
+            "menu_label": "",
+            "target_ref": "action_targets",
+            "to_resource": ""
+          },
+          "28": {
+            "ae_duplicate_mode": "replace_per_caster",
+            "ae_family": "",
+            "ae_initial_charges": "",
+            "ae_initial_charges_max": "",
+            "ae_template_ref": "Dazed",
+            "consume_self": false,
+            "effect_kind": "apply_ae",
+            "effect_label": "thunder_status",
+            "from_resource": "",
+            "menu_label": "",
+            "target_ref": "action_targets",
+            "to_resource": ""
+          },
+          "29": {
+            "condition_formula": "SL >= 1 && WELLSPRING_ICE_AVAILABLE",
+            "consume_self": false,
+            "damage_amount": "20 + 5*(CASTER_LEVEL>=20) + 5*(CASTER_LEVEL>=40)",
+            "damage_cause": "damage",
+            "damage_element": "ice",
+            "damage_ignore_affinity": false,
+            "damage_resource": "hp",
+            "effect_kind": "deal_damage",
+            "effect_label": "hydro_blast",
+            "emit_status": "",
+            "emit_trigger": "",
+            "from_resource": "",
+            "menu_color": "#6fb7e8",
+            "menu_description": "Deal ${20 + 5*(CHAR_LEVEL>=20) + 5*(CHAR_LEVEL>=40)} ice damage.",
+            "menu_label": "Hydro Blast",
+            "target_ref": "action_targets",
+            "to_resource": ""
+          },
+          "30": {
+            "ae_duplicate_mode": "replace_per_caster",
+            "ae_family": "",
+            "ae_initial_charges": "",
+            "ae_initial_charges_max": "",
+            "ae_template_ref": "Hydro Hex",
+            "condition_formula": "SL >= 2 && WELLSPRING_ICE_AVAILABLE",
+            "consume_self": false,
+            "effect_kind": "apply_ae",
+            "effect_label": "hydro_hex",
+            "from_resource": "",
+            "menu_color": "#6fb7e8",
+            "menu_description": "Target takes +5 damage from air & bolt until the start of your next turn.",
+            "menu_label": "Hydro Hex",
+            "target_ref": "action_targets",
+            "to_resource": ""
+          },
+          "31": {
+            "chain_steps": "chill_drain, chill_status",
+            "condition_formula": "SL >= 3 && WELLSPRING_ICE_AVAILABLE",
+            "consume_self": false,
+            "effect_kind": "chain",
+            "effect_label": "chill",
+            "from_resource": "",
+            "menu_color": "#6fb7e8",
+            "menu_description": "Target loses ${20 + 10*(CHAR_LEVEL>=20) + 10*(CHAR_LEVEL>=40)} MP and is Shaken.",
+            "menu_label": "Chill",
+            "to_resource": ""
+          },
+          "32": {
+            "consume_self": false,
+            "effect_kind": "grant",
+            "effect_label": "chill_drain",
+            "from_resource": "",
+            "grant_amount": "-1 * (20 + 10*(CASTER_LEVEL>=20) + 10*(CASTER_LEVEL>=40))",
+            "grant_operation": "",
+            "grant_resource": "mp",
+            "grant_round": "",
+            "menu_label": "",
+            "target_ref": "action_targets",
+            "to_resource": ""
+          },
+          "33": {
+            "ae_duplicate_mode": "replace_per_caster",
+            "ae_family": "",
+            "ae_initial_charges": "",
+            "ae_initial_charges_max": "",
+            "ae_template_ref": "Shaken",
+            "consume_self": false,
+            "effect_kind": "apply_ae",
+            "effect_label": "chill_status",
+            "from_resource": "",
+            "menu_label": "",
+            "target_ref": "action_targets",
+            "to_resource": ""
+          },
+          "34": {
+            "chain_steps": "frostbite_dmg, frostbite_status",
+            "condition_formula": "SL >= 3 && WELLSPRING_ICE_AVAILABLE",
+            "consume_self": false,
+            "effect_kind": "chain",
+            "effect_label": "frostbite",
+            "from_resource": "",
+            "menu_color": "#6fb7e8",
+            "menu_description": "Deal ${10 + 5*(CHAR_LEVEL>=20) + 5*(CHAR_LEVEL>=40)} ice damage; target is Weak.",
+            "menu_label": "Frostbite",
+            "to_resource": ""
+          },
+          "35": {
+            "consume_self": false,
+            "damage_amount": "10 + 5*(CASTER_LEVEL>=20) + 5*(CASTER_LEVEL>=40)",
+            "damage_cause": "damage",
+            "damage_element": "ice",
+            "damage_ignore_affinity": false,
+            "damage_resource": "hp",
+            "effect_kind": "deal_damage",
+            "effect_label": "frostbite_dmg",
+            "emit_status": "",
+            "emit_trigger": "",
+            "from_resource": "",
+            "menu_label": "",
+            "target_ref": "action_targets",
+            "to_resource": ""
+          },
+          "36": {
+            "ae_duplicate_mode": "replace_per_caster",
+            "ae_family": "",
+            "ae_initial_charges": "",
+            "ae_initial_charges_max": "",
+            "ae_template_ref": "Weak",
+            "consume_self": false,
+            "effect_kind": "apply_ae",
+            "effect_label": "frostbite_status",
+            "from_resource": "",
+            "menu_label": "",
+            "target_ref": "action_targets",
+            "to_resource": ""
+          }
+        },
+        "gadget_alchemy_tier": "",
+        "gadget_infusion_tier": "",
+        "gadget_magitech_tier": "",
+        "heroic_requirement": "",
+        "ignore_hr": false,
+        "isCheck": false,
+        "isFacet": false,
+        "isHeroic": false,
+        "isOffensiveSpell": false,
+        "isReaction": false,
+        "isZeroPower": false,
+        "level": "3",
+        "max_level": "3",
+        "name": "Invocation",
+        "on_activate_effect_ref": "inv_menu",
+        "optional_params": {},
+        "pre_activate_effect_ref": "inv_menu",
+        "reaction_config_table": {},
+        "rolled_atr1": "-",
+        "rolled_atr2": "-",
+        "skill_animation_default": "",
+        "skill_animation_mode": "default",
+        "skill_information": "",
+        "skill_range": "",
+        "skill_tags": "invocation",
+        "skill_target": "One creature",
+        "skill_type": "Active",
+        "target_eligibility": "",
+        "type_damage": "",
+        "use_optional_params": false
+      },
+      "unique": false,
+      "uniqueId": "FXRrLrmoHtcMN5s6"
+    },
+    "flags": {
+      "custom-system-builder": {
+        "version": "4.6.4"
+      }
+    },
+    "effects": [
+      {
+        "changes": [
+          {
+            "key": "flags.fabula-ultima-companion.damage_taken_increased_bolt",
+            "mode": 2,
+            "priority": 20,
+            "value": "5"
+          },
+          {
+            "key": "flags.fabula-ultima-companion.damage_taken_increased_fire",
+            "mode": 2,
+            "priority": 20,
+            "value": "5"
+          }
+        ],
+        "description": "",
+        "disabled": false,
+        "duration": {
+          "combat": null,
+          "rounds": 1,
+          "seconds": null,
+          "startRound": null,
+          "startTime": null,
+          "startTurn": null,
+          "turns": null
+        },
+        "flags": {
+          "custom-system-builder": {
+            "isFromTemplate": false,
+            "originalId": "JhmECgrOho82doV0",
+            "originalParentId": "wecgr398559brY1I",
+            "originalUuid": "Actor.uJFaNQCSvwwsr2AW.Item.wecgr398559brY1I.ActiveEffect.JhmECgrOho82doV0"
+          },
+          "fabula-ultima-companion": {
+            "hexElements": [
+              "bolt",
+              "fire"
+            ],
+            "hexVulnerability": true
+          },
+          "statuscounter": {
+            "config": {
+              "multiplyEffect": true,
+              "type": "default"
+            },
+            "value": 1,
+            "visible": false
+          }
+        },
+        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/EMTrans1.png",
+        "name": "Aero Hex",
+        "origin": null,
+        "statuses": [],
+        "system": {},
+        "tint": "#ffffff",
+        "transfer": false,
+        "type": "base"
+      },
+      {
+        "changes": [
+          {
+            "key": "flags.fabula-ultima-companion.damage_taken_increased_earth",
+            "mode": 2,
+            "priority": 20,
+            "value": "5"
+          },
+          {
+            "key": "flags.fabula-ultima-companion.damage_taken_increased_ice",
+            "mode": 2,
+            "priority": 20,
+            "value": "5"
+          }
+        ],
+        "description": "",
+        "disabled": false,
+        "duration": {
+          "combat": null,
+          "rounds": 1,
+          "seconds": null,
+          "startRound": null,
+          "startTime": null,
+          "startTurn": null,
+          "turns": null
+        },
+        "flags": {
+          "custom-system-builder": {
+            "isFromTemplate": false,
+            "originalId": "kGe4l4dEwCHyRDiq",
+            "originalParentId": "wecgr398559brY1I",
+            "originalUuid": "Actor.uJFaNQCSvwwsr2AW.Item.wecgr398559brY1I.ActiveEffect.kGe4l4dEwCHyRDiq"
+          },
+          "fabula-ultima-companion": {
+            "hexElements": [
+              "earth",
+              "ice"
+            ],
+            "hexVulnerability": true
+          },
+          "statuscounter": {
+            "config": {
+              "multiplyEffect": true,
+              "type": "default"
+            },
+            "value": 1,
+            "visible": false
+          }
+        },
+        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/EMTrans1.png",
+        "name": "Pyro Hex",
+        "origin": null,
+        "statuses": [],
+        "system": {},
+        "tint": "#ffffff",
+        "transfer": false,
+        "type": "base"
+      },
+      {
+        "changes": [
+          {
+            "key": "flags.fabula-ultima-companion.damage_taken_increased_air",
+            "mode": 2,
+            "priority": 20,
+            "value": "5"
+          },
+          {
+            "key": "flags.fabula-ultima-companion.damage_taken_increased_bolt",
+            "mode": 2,
+            "priority": 20,
+            "value": "5"
+          }
+        ],
+        "description": "",
+        "disabled": false,
+        "duration": {
+          "combat": null,
+          "rounds": 1,
+          "seconds": null,
+          "startRound": null,
+          "startTime": null,
+          "startTurn": null,
+          "turns": null
+        },
+        "flags": {
+          "custom-system-builder": {
+            "isFromTemplate": false,
+            "originalId": "kPw8lrljW4uNbLO6",
+            "originalParentId": "wecgr398559brY1I",
+            "originalUuid": "Actor.uJFaNQCSvwwsr2AW.Item.wecgr398559brY1I.ActiveEffect.kPw8lrljW4uNbLO6"
+          },
+          "fabula-ultima-companion": {
+            "hexElements": [
+              "air",
+              "bolt"
+            ],
+            "hexVulnerability": true
+          },
+          "statuscounter": {
+            "config": {
+              "multiplyEffect": true,
+              "type": "default"
+            },
+            "value": 1,
+            "visible": false
+          }
+        },
+        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/EMTrans1.png",
+        "name": "Hydro Hex",
+        "origin": null,
+        "statuses": [],
+        "system": {},
+        "tint": "#ffffff",
+        "transfer": false,
+        "type": "base"
+      },
+      {
+        "changes": [
+          {
+            "key": "flags.fabula-ultima-companion.damage_taken_increased_earth",
+            "mode": 2,
+            "priority": 20,
+            "value": "5"
+          },
+          {
+            "key": "flags.fabula-ultima-companion.damage_taken_increased_fire",
+            "mode": 2,
+            "priority": 20,
+            "value": "5"
+          }
+        ],
+        "description": "",
+        "disabled": false,
+        "duration": {
+          "combat": null,
+          "rounds": 1,
+          "seconds": null,
+          "startRound": null,
+          "startTime": null,
+          "startTurn": null,
+          "turns": null
+        },
+        "flags": {
+          "custom-system-builder": {
+            "isFromTemplate": false,
+            "originalId": "sjz68PnDGkyT9fzd",
+            "originalParentId": "wecgr398559brY1I",
+            "originalUuid": "Actor.uJFaNQCSvwwsr2AW.Item.wecgr398559brY1I.ActiveEffect.sjz68PnDGkyT9fzd"
+          },
+          "fabula-ultima-companion": {
+            "hexElements": [
+              "earth",
+              "fire"
+            ],
+            "hexVulnerability": true
+          },
+          "statuscounter": {
+            "config": {
+              "multiplyEffect": true,
+              "type": "default"
+            },
+            "value": 1,
+            "visible": false
+          }
+        },
+        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/EMTrans1.png",
+        "name": "Electro Hex",
+        "origin": null,
+        "statuses": [],
+        "system": {},
+        "tint": "#ffffff",
+        "transfer": false,
+        "type": "base"
+      },
+      {
+        "changes": [
+          {
+            "key": "flags.fabula-ultima-companion.damage_taken_increased_air",
+            "mode": 2,
+            "priority": 20,
+            "value": "5"
+          },
+          {
+            "key": "flags.fabula-ultima-companion.damage_taken_increased_ice",
+            "mode": 2,
+            "priority": 20,
+            "value": "5"
+          }
+        ],
+        "description": "",
+        "disabled": false,
+        "duration": {
+          "combat": null,
+          "rounds": 1,
+          "seconds": null,
+          "startRound": null,
+          "startTime": null,
+          "startTurn": null,
+          "turns": null
+        },
+        "flags": {
+          "custom-system-builder": {
+            "isFromTemplate": false,
+            "originalId": "uyajlXRQQSsyfBKo",
+            "originalParentId": "wecgr398559brY1I",
+            "originalUuid": "Actor.uJFaNQCSvwwsr2AW.Item.wecgr398559brY1I.ActiveEffect.uyajlXRQQSsyfBKo"
+          },
+          "fabula-ultima-companion": {
+            "hexElements": [
+              "air",
+              "ice"
+            ],
+            "hexVulnerability": true
+          },
+          "statuscounter": {
+            "config": {
+              "multiplyEffect": true,
+              "type": "default"
+            },
+            "value": 1,
+            "visible": false
+          }
+        },
+        "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Aisha/EMTrans1.png",
+        "name": "Geo Hex",
+        "origin": null,
+        "statuses": [],
+        "system": {},
+        "tint": "#ffffff",
+        "transfer": false,
+        "type": "base"
+      }
+    ]
   },
   {
     "name": "Elemental Shard",
@@ -9599,19 +10680,53 @@
                 "2": {
                   "effect_label": "bortd_cap",
                   "effect_kind": "adjust_damage",
+                  "grant_resource": "hp",
+                  "grant_amount": "SL * AE_CHARGES_GRAVE_POINTS",
+                  "target_ref": "bortd_self",
+                  "consume_self": true,
+                  "damage_amount": "CUR_HP - 1",
+                  "damage_operation": "cap",
+                  "damage_stage": "incoming"
+                },
+                "3": {
+                  "effect_label": "bortd_heal",
+                  "effect_kind": "grant",
+                  "charge_ae_name": "Grave Points",
+                  "charge_operation": "set",
+                  "charge_amount": "0",
+                  "target_ref": "self",
+                  "grant_amount": "SL_BEYOND_THE_REALMS_OF_DEATH * AE_CHARGES_GRAVE_POINTS - 1",
+                  "grant_resource": "hp"
+                },
+                "4": {
+                  "charge_ae_name": "Grave Points",
+                  "charge_amount": "0",
+                  "charge_operation": "set",
+                  "effect_kind": "adjust_charges",
+                  "effect_label": "bortd_zero",
+                  "target_ref": "self"
+                },
+                "bortd_death": {
+                  "effect_label": "bortd_death",
+                  "effect_kind": "chain",
+                  "chain_steps": "bortd_cap, bortd_heal, bortd_zero"
+                },
+                "bortd_cap": {
+                  "effect_label": "bortd_cap",
+                  "effect_kind": "adjust_damage",
                   "damage_stage": "incoming",
                   "damage_operation": "cap",
                   "damage_amount": "CUR_HP - 1",
                   "consume_self": true
                 },
-                "3": {
+                "bortd_heal": {
                   "effect_label": "bortd_heal",
                   "effect_kind": "grant",
                   "grant_resource": "hp",
                   "grant_amount": "SL_BEYOND_THE_REALMS_OF_DEATH * AE_CHARGES_GRAVE_POINTS - 1",
                   "target_ref": "self"
                 },
-                "4": {
+                "bortd_zero": {
                   "effect_label": "bortd_zero",
                   "effect_kind": "adjust_charges",
                   "charge_ae_name": "Grave Points",
@@ -9827,72 +10942,72 @@
     "system": {
       "templateSystemUniqueVersion": null,
       "props": {
-        "skill_type": "Passive",
-        "isReaction": true,
-        "level": "1",
-        "max_level": "3",
-        "skill_information": "<p>When you deal damage to a creature with a spell, if that spell only deals damage to that creature, you may spend 1 Grave Point. If you do, choose one option: if that creature is suffering from one or more status effects, the spell deals extra damage equal to (SL × 2) + the number of status effects on that creature; or if that creature is suffering from no status effects, they suffer <strong>shaken</strong>.</p>",
-        "uniqueId": "sfB3APSyWP8Lf5LQ",
-        "reaction_config_table": {
-          "0": {
-            "reaction_trigger": "creature_will_deal_damage",
-            "reaction_source": "self",
-            "reaction_action_target": "enemy",
-            "reaction_passive_mode": "ask",
-            "reaction_effect_ref": "fwtbt_offer",
-            "condition_formula": "ACTION_IS_SPELL == 1 && SINGLE_TARGET_ATTACK && AE_CHARGES_GRAVE_POINTS >= 1"
-          }
-        },
         "effect_table": {
           "0": {
-            "effect_label": "fwtbt_offer",
             "effect_kind": "open_action_menu",
-            "menu_title": "For Whom the Bell Tolls",
-            "menu_subtitle": "Spend 1 Grave Point:",
-            "menu_pick_count": "1",
-            "menu_option_refs": "fwtbt_dmg_opt,fwtbt_shaken_opt",
+            "effect_label": "fwtbt_offer",
+            "menu_option_descriptions": "Extra damage = (SL × 2) + number of statuses on the target|Inflict Shaken — disabled if the target is already Shaken",
             "menu_option_labels": "Deal extra damage|Apply Shaken",
-            "menu_option_descriptions": "Extra damage = (SL × 2) + number of statuses on the target|Inflict Shaken — disabled if the target is already Shaken"
+            "menu_option_refs": "fwtbt_dmg_opt,fwtbt_shaken_opt",
+            "menu_pick_count": "1",
+            "menu_subtitle": "Spend 1 Grave Point:",
+            "menu_title": "For Whom the Bell Tolls"
           },
           "1": {
-            "effect_label": "fwtbt_dmg_opt",
-            "effect_kind": "chain",
             "chain_steps": "fwtbt_cost, fwtbt_dmg",
+            "effect_kind": "chain",
+            "effect_label": "fwtbt_dmg_opt",
             "menu_label": "Deal extra damage"
           },
           "2": {
-            "effect_label": "fwtbt_shaken_opt",
-            "effect_kind": "chain",
             "chain_steps": "fwtbt_cost, fwtbt_shaken",
-            "menu_label": "Apply Shaken",
             "condition_formula": "TARGET_AE_COUNT_SHAKEN == 0",
             "disable_ui_type": "disabled",
-            "disabled_reason": "Already Shaken"
+            "disabled_reason": "Already Shaken",
+            "effect_kind": "chain",
+            "effect_label": "fwtbt_shaken_opt",
+            "menu_label": "Apply Shaken"
           },
           "3": {
-            "effect_label": "fwtbt_cost",
-            "effect_kind": "adjust_charges",
             "charge_ae_name": "Grave Points",
-            "charge_operation": "subtract",
             "charge_amount": "1",
+            "charge_operation": "subtract",
+            "effect_kind": "adjust_charges",
+            "effect_label": "fwtbt_cost",
             "target_ref": "self"
           },
           "4": {
-            "effect_label": "fwtbt_dmg",
-            "effect_kind": "adjust_damage",
-            "target_ref": "trigger_subject",
             "damage_amount": "SL * 2 + TARGET_STATUS_COUNT",
             "damage_operation": "add",
-            "damage_stage": "outgoing"
+            "damage_stage": "outgoing",
+            "effect_kind": "adjust_damage",
+            "effect_label": "fwtbt_dmg",
+            "target_ref": "trigger_subject"
           },
           "5": {
-            "effect_label": "fwtbt_shaken",
-            "effect_kind": "apply_ae",
+            "ae_duplicate_mode": "replace_same_status",
             "ae_template_ref": "Shaken",
-            "target_ref": "trigger_subject",
-            "ae_duplicate_mode": "replace_same_status"
+            "effect_kind": "apply_ae",
+            "effect_label": "fwtbt_shaken",
+            "target_ref": "trigger_subject"
           }
-        }
+        },
+        "isReaction": true,
+        "level": "1",
+        "max_level": "3",
+        "reaction_config_table": {
+          "0": {
+            "condition_formula": "ACTION_IS_SPELL == 1 && SINGLE_TARGET_ATTACK && AE_CHARGES_GRAVE_POINTS >= 1",
+            "reaction_action_target": "enemy",
+            "reaction_effect_ref": "fwtbt_offer",
+            "reaction_passive_mode": "ask",
+            "reaction_source": "self",
+            "reaction_trigger": "creature_will_deal_damage"
+          }
+        },
+        "skill_information": "<p>When you deal damage to a creature with a spell, if that spell only deals damage to that creature, you may spend 1 Grave Point. If you do, choose one option: if that creature is suffering from one or more status effects, the spell deals extra damage equal to (SL × 2) + the number of status effects on that creature; or if that creature is suffering from no status effects, they suffer <strong>shaken</strong>.</p>",
+        "skill_type": "Passive",
+        "uniqueId": "sfB3APSyWP8Lf5LQ"
       },
       "unique": false,
       "uniqueId": "sfB3APSyWP8Lf5LQ"
@@ -12479,13 +13594,15 @@
             "effect_kind": "remove_tagged_ae",
             "target_ref": "action_targets",
             "filter_tag": "debuff",
-            "count": 1,
-            "menu_title": "Cleanse: choose a debuff to remove",
-            "menu_subtitle": "Removes 1 debuff"
+            "count": "1",
+            "menu_title": "Cleanse — Remove a Status",
+            "menu_subtitle": "Recover from one status effect",
+            "$deleted": false
           }
         },
         "on_activate_effect_ref": "cleanse_pick",
-        "class": "Spiritist"
+        "class": "Spiritist",
+        "pre_activate_effect_ref": "cleanse_pick"
       },
       "unique": true,
       "uniqueId": "C3KMINBBXGYPZ5oj"

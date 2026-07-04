@@ -28,6 +28,46 @@ import { previewEffectRow, resolveDamageElementOverride,
   computeSenderDamageBonuses, applyDamageOp, describeGrant,
   isTargetImmuneToStatuses } from "./skill-effects.js";
 
+// Resolve an open_action_menu (+ nested chains) down to the concrete leaf rows for
+// the player's CHOSEN option(s), matched by display label. Mirrors card-mutations'
+// expandEffectChainWithPicks (duplicated to avoid an import cycle). Used to build a
+// PREVIEW-ONLY effect_table so a menu skill's card preview reflects the picked option
+// (e.g. a Blast shows no heal) instead of a blind first-row walk. Used by both the
+// preview filter here and state-handlers' COMPUTE damage-lift.
+export function resolveChosenChainRows(effectTable, startLabel, picks) {
+  const byLabel = new Map();
+  for (const r of Object.values(effectTable ?? {})) {
+    if (!r || r.$deleted) continue;
+    const lbl = String(r.effect_label ?? "").trim();
+    if (lbl) byLabel.set(lbl, r);
+  }
+  const pickSet = (Array.isArray(picks) ? picks : []).map((p) => String(p).trim().toLowerCase());
+  const splitRefs = (raw) => String(raw ?? "").split(/[,\n]/).map((s) => s.trim()).filter(Boolean);
+  const out = [];
+  const seen = new Set();
+  (function walk(label) {
+    if (!label || seen.has(label)) return;
+    seen.add(label);
+    const row = byLabel.get(label);
+    if (!row) return;
+    const kind = String(row.effect_kind ?? "").trim().toLowerCase();
+    if (kind === "chain") { for (const s of splitRefs(row.chain_steps)) walk(s); return; }
+    if (kind === "open_action_menu" && pickSet.length) {
+      const optRefs = splitRefs(row.menu_option_refs);
+      const labelToRef = new Map();
+      for (const oref of optRefs) {
+        const orow = byLabel.get(oref);
+        const lbl = String(orow?.menu_label ?? orow?.effect_label ?? oref);
+        labelToRef.set(lbl.trim().toLowerCase(), oref);
+      }
+      for (const pk of pickSet) { const oref = labelToRef.get(pk); if (oref) walk(oref); }
+      return;
+    }
+    out.push(row);
+  })(startLabel);
+  return out;
+}
+
 // Status conditions that force Vulnerability to a specific element (mirrors the
 // Attack COMPUTE table in state-handlers.js — keep in sync).
 const FORCED_VU_BY_STATUS = {
@@ -170,7 +210,11 @@ function describePrimary({ view, ar, weapon, liveAttacker, resolver, grant = nul
   // rangeKind stays null: "Arcane" is the weapon TYPE, not a range — a spell is neither
   // melee nor ranged, so range-keyed incoming DR (resolveIncomingReduction) won't apply.
   const weaponKey = (isSpell && !isMpDamage) ? "arcane" : null;
-  const outgoingParts = isMpDamage ? [] : resolveOutgoingDamageParts({
+  // Lifted flat-damage (menu-picked invocation): the amount in damageBonus is the
+  // EXACT value (RAW flat + level scaling), so it must NOT pick up the caster's
+  // extra_damage_mod_* outgoing bonuses — those would inflate a "20 damage" invocation.
+  // Target affinity (VU/RS/IM) still applies downstream; only the outgoing add is skipped.
+  const outgoingParts = (isMpDamage || ar?._damageViaProfile) ? [] : resolveOutgoingDamageParts({
     actor: liveAttacker, props, kind: dmgKind, elementType: element, weaponKey,
   });
   return {
@@ -491,6 +535,23 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
         };
       }
 
+      // Additive per-element damage bump (Invoker "Hex" etc.) — the attack-path twin
+      // of the effect ruleset's step 1c. Added BEFORE affinity so VU/RS + class + mult
+      // scale it (RAW: the +N is part of the elemental damage). Keyed off the EFFECTIVE
+      // element actually being dealt (a reaction element override wins over the native
+      // element, mirroring the affinity resolution just below). The flag is already
+      // summed across all AEs by seedAeAccumulators + ADD-mode changes. Non-MP damage
+      // only (MP damage skips the incoming elemental layer). This is what makes an
+      // ally's weapon hit on a hexed enemy pick up the bonus (Ripples depends on it).
+      if (!primary.isMpDamage && liveTarget) {
+        const hexElement = reactionElement || primary.element;
+        const inc = Number(liveTarget?.flags?.["fabula-ultima-companion"]?.[`damage_taken_increased_${hexElement}`]) || 0;
+        if (inc > 0) {
+          rawDamage += inc;
+          damageModParts.push({ source: `Vulnerable +${inc} (${hexElement})`, amount: inc });
+        }
+      }
+
       // Affinity — a reaction element override wins (use its per-subject-resolved
       // affinity, falling back to the target snapshot's affinity for that element);
       // else the native element's affinity. A reaction pierce keyword ALSO
@@ -723,19 +784,53 @@ function gatherEffectPreviews({ view, resolver, targetResolver = null, chainVars
 // post-roll (finals). Reuses the exact COMPUTE helpers for parity.
 export async function computeActionProfile(input) {
   const {
-    view, ar = null, attacker, weapon = null, targets = [], dice = null, ctx = {},
+    view: _viewIn, ar = null, attacker, weapon = null, targets = [], dice = null, ctx = {},
     acceptedReactions = null, accuracyOverride = null,
   } = input;
+  let view = _viewIn;
   const kind = view?.kind ?? ar?.kind ?? "Skill";
 
   const liveAttacker = input.liveAttacker
     ?? (attacker?.actorUuid ? await fromUuid(attacker.actorUuid).catch(() => null) : null);
   const skill = (ar?.skillUuid && await fromUuid(ar.skillUuid).catch(() => null)) || view?.source || null;
+
+  // Menu-driven skills: once the player has pre-picked an open_action_menu option,
+  // scope the PREVIEW effect_table to just that option's chain so the card reflects
+  // the pick (a Blast shows no heal; a Heal shows its heal) instead of the blind
+  // first-grant walk in attachHealEffects. DISPLAY-ONLY — RESOLVE replays the full
+  // menu via on_activate, and this never sets hasDamage / never adds perTargetResults
+  // damage, so nothing extra is applied. Inert for every non-menu skill (no picks).
+  const _menuRef = String(view?.fire_points?.on_activate_effect_ref
+    ?? skill?.system?.props?.on_activate_effect_ref ?? "").trim();
+  const _menuPicks = _menuRef
+    ? (ctx?.menuPicks?.[_menuRef] ?? ar?.preActivateMenuPicks?.[_menuRef])
+    : null;
+  if (_menuRef && Array.isArray(_menuPicks) && _menuPicks.length && view?.effect_table) {
+    const menuRow = Object.values(view.effect_table).find((r) => r?.effect_label === _menuRef);
+    if (menuRow && String(menuRow.effect_kind ?? "").toLowerCase() === "open_action_menu") {
+      let chosen = resolveChosenChainRows(view.effect_table, _menuRef, _menuPicks);
+      // When the picked invocation's flat damage was LIFTED into the primary at
+      // COMPUTE (ar._damageViaProfile — state-handlers sets ar.damageType/damageBonus),
+      // drop the deal_damage rows from the preview so the damage isn't shown twice
+      // (once as the primary headline, once as an effect chip). Status/heal rows stay.
+      if (ar?._damageViaProfile) {
+        chosen = chosen.filter((r) => String(r.effect_kind ?? "").toLowerCase() !== "deal_damage");
+      }
+      const filtered = {};
+      chosen.forEach((r, i) => { filtered[String(i)] = r; });
+      view = { ...view, effect_table: filtered };
+    }
+  }
   // Thread the action's targets onto the resolver payload so damage/heal
   // formulas can read ACTION_TARGET_COUNT at compute time — e.g. an AoE that
   // splits a fixed pool across its targets (Ruinous Breath: "300 / ACTION_TARGET_COUNT").
+  // CASTER_LEVEL for preview formulas (heal/drain scaling) — the preview twin of the
+  // apply-side injection in skill-effects. Display-only; keeps the previewed heal
+  // amount in step with what the chain will grant.
+  const _casterLvl = Number(liveAttacker?.system?.props?.level ?? 0) || 0;
   const resolver = buildSkillResolver({
     actor: liveAttacker, payload: { targets, _chainVars: ctx?.chainVars ?? null }, skill, round: ctx?.round ?? 0,
+    vars: { CASTER_LEVEL: _casterLvl },
   });
 
   const studiedGate = makeStudiedGate(attacker);
