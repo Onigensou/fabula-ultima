@@ -32,6 +32,18 @@
       "defense_target_type": "def",
       "description": "<p>You strengthen and purify the soul energy coursing through your companions. Each target <strong>recovers</strong> from 1 status effects.</p>",
       "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "count": "1",
+          "effect_kind": "remove_tagged_ae",
+          "effect_label": "cleanse_cure",
+          "filter_tag": "debuff",
+          "menu_subtitle": "Recover from one status effect",
+          "menu_title": "Cleanse — Remove a Status",
+          "target_ref": "action_targets"
+        }
+      },
       "heroic_requirement": "",
       "isCheck": false,
       "isFacet": true,
@@ -41,7 +53,9 @@
       "level": "1",
       "max_level": "1",
       "name": "Cleanse",
+      "on_activate_effect_ref": "cleanse_cure",
       "optional_params": {},
+      "pre_activate_effect_ref": "cleanse_cure",
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_default": "",

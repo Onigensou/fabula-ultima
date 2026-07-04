@@ -1,13 +1,75 @@
 {
-  "_id": "WJnlTHuNJaILbnrc",
+  "_id": "UjhCpvsMnREAifEx",
   "_stats": {
     "compendiumSource": null,
     "coreVersion": "12.343",
-    "createdTime": 1782830524717,
+    "createdTime": 1783151219040,
     "duplicateSource": "Actor.ik2o2KAR2WZoDgrB",
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "EGOYL6aYubyTp1SS",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783151219215,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "activation",
+          "mode": 5,
+          "priority": 20,
+          "value": "0"
+        }
+      ],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "EGOYL6aYubyTp1SS",
+          "originalParentId": "UjhCpvsMnREAifEx",
+          "originalUuid": "Actor.UjhCpvsMnREAifEx.ActiveEffect.EGOYL6aYubyTp1SS"
+        },
+        "fabula-ultima-companion": {
+          "testBattleNoActions": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/svg/downgrade.svg",
+      "name": "No Actions",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-no-actions"
+      ],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.5.0"
@@ -19,15 +81,15 @@
       }
     }
   },
-  "folder": null,
+  "folder": "U3PwokzQp23peHuA",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Aero_Gorger_Standard.png",
-  "name": "Test Target Enemy",
+  "name": "BD Dummy Enemy",
   "ownership": {
     "JQGNzKpDPHJmcUIW": 3,
     "default": 0
   },
   "prototypeToken": {
-    "actorLink": true,
+    "actorLink": false,
     "alpha": 1,
     "appendNumber": false,
     "bar1": {
@@ -226,7 +288,7 @@
       "shadows": 0
     },
     "lockRotation": false,
-    "name": "Test Target Enemy",
+    "name": "BD Dummy Enemy",
     "occludable": {
       "radius": 0
     },
@@ -330,7 +392,7 @@
       "condition_wet": "NA",
       "condition_wither": "NA",
       "condition_zombie": "NA",
-      "current_hp": 9999,
+      "current_hp": 999999,
       "current_ip": "0",
       "current_mp": "60",
       "cut_in_critical": "",
@@ -374,7 +436,7 @@
       "isVillain": false,
       "isWeak": false,
       "level": "15",
-      "max_hp": 9999,
+      "max_hp": 999999,
       "max_ip": "0",
       "max_mp": "60",
       "max_zero": "0",
@@ -404,7 +466,7 @@
           "uuid": "Actor.9yadoDh5EhIWpevl.Item.xvg5HXcwBOWPWpyr"
         }
       },
-      "npc_rank": "",
+      "npc_rank": "soldier",
       "rare": false,
       "resource_maxValue_1": "0",
       "resource_maxValue_2": "0",
@@ -446,7 +508,7 @@
         }
       },
       "spear_ef": "100",
-      "species": "",
+      "species": "ELEMENTAL",
       "sprite_battle": "",
       "sprite_standard": "",
       "steal_percentage_table": {},

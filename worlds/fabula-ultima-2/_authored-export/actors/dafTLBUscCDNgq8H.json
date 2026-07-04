@@ -10,6 +10,175 @@
   },
   "effects": [
     {
+      "_id": "1oVy1KLH0QYzMSHE",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783151227220,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "bonus_mig",
+          "mode": 2,
+          "priority": 2,
+          "value": "-2"
+        }
+      ],
+      "description": "<p>Decrease <strong>【MIG】 </strong>by one stage</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "core": {
+          "overlay": false
+        },
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "62gUkhQExwD9DvaI",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.62gUkhQExwD9DvaI"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-weak",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "effectmacro": {
+          "onCreate": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isWeak\n(async () => {\n  const PATH = \"system.props.isWeak\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+          },
+          "onDelete": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isWeak\n(async () => {\n  const PATH = \"system.props.isWeak\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+          },
+          "onDisable": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isWeak\n(async () => {\n  const PATH = \"system.props.isWeak\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+          },
+          "onEnable": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isWeak\n(async () => {\n  const PATH = \"system.props.isWeak\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+          },
+          "onToggle": {
+            "script": "// Foundry VTT v12 — Effect-safe toggle for system.props.isWeak\n(async () => {\n  const PATH = \"system.props.isWeak\";\n  const effectActor = (typeof actor !== \"undefined\" && actor) ? actor : canvas.tokens.controlled[0]?.actor;\n  if (!effectActor) return;\n  const current = foundry.utils.getProperty(effectActor, PATH) ?? false;\n  await effectActor.update({ [PATH]: !current });\n})();\n"
+          }
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "weak",
+          "charges": 3,
+          "chargesMax": 3,
+          "lifetimeMode": "target_turn_end"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 8,
+          "visible": true
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/ATK%20DOWN.png",
+      "name": "Weak",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "1cksCQj3urJwddfg"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "jt6VzUnTQMj0Dn1i",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783151221736,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>A reserve of foresight Hina spends to take the place of all creatures threatened by a single danger.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "propheticPoint01",
+          "originalParentId": "Lmzs6VllFRo44jZq",
+          "originalUuid": "Item.Lmzs6VllFRo44jZq.ActiveEffect.propheticPoint01"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "chargeKey": "prophecy",
+          "charges": 2,
+          "chargesMax": 99,
+          "directorAppliedBy": {
+            "appliedAtRound": 0,
+            "effectLabel": "pds_gain",
+            "lifetimeMode": "persistent_counter",
+            "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.A1mPKxE1DTlIYGZx",
+            "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.gm2w1NLdaEI7SzaQ",
+            "turnsRemaining": null
+          },
+          "directorPermanent": false,
+          "hudResourceColor": "#a06bff",
+          "lifetimeMode": "persistent_counter"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/nocturnal_sect.png",
+      "name": "Prophecy Point",
+      "origin": "Actor.dafTLBUscCDNgq8H.Item.gm2w1NLdaEI7SzaQ",
+      "sort": 0,
+      "statuses": [
+        "fud-prophecy-point"
+      ],
+      "system": {
+        "tags": [
+          "resource",
+          "points"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
       "_id": "rdxrgvS1o4iqn9ej",
       "_stats": {
         "compendiumSource": null,
@@ -47,7 +216,7 @@
             "appliedAtRound": 0,
             "effectLabel": "hod_refresh",
             "reactorActorUuid": "Actor.dafTLBUscCDNgq8H",
-            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.43doUXTWsLFbtefF",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.A1mPKxE1DTlIYGZx",
             "skillUuid": "Actor.dafTLBUscCDNgq8H.Item.EGYilCNAGvl2BldF",
             "turnsRemaining": null
           },
@@ -6338,7 +6507,29 @@
           "defense_target_type": "def",
           "description": "<p>You draw sickness away from an ally and pass it onto your enemy. The target recovers from <strong>all status effects</strong>. Then choose one of the status effects the target recovered from and another creature you can see. The chosen creature suffers the chosen status effect.</p>\n",
           "duration": "Instantaneous",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "candidate_source": "combat",
+              "count": 1,
+              "effect_kind": "targeting",
+              "effect_label": "ss_dest",
+              "menu_subtitle": "Choose another creature you can see",
+              "menu_title": "Symptom Shift — pass the sickness to?",
+              "mode": "exact"
+            },
+            "1": {
+              "$deleted": false,
+              "count": "all",
+              "effect_kind": "transfer_ae",
+              "effect_label": "ss_move",
+              "filter_tag": "debuff",
+              "from_ref": "action_targets",
+              "menu_subtitle": "These status effects move to the chosen creature",
+              "menu_title": "Symptom Shift — passing these on",
+              "target_ref": "ss_dest"
+            }
+          },
           "heroic_requirement": "",
           "ignore_hr": false,
           "isCheck": false,
@@ -6350,8 +6541,9 @@
           "level": "1",
           "max_level": "1",
           "name": "Symptom Shift",
-          "on_activate_effect_ref": "",
+          "on_activate_effect_ref": "ss_move",
           "optional_params": {},
+          "pre_activate_effect_ref": "ss_dest",
           "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
@@ -6365,7 +6557,7 @@
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
-        "uniqueId": "wfvBxZq0qkwMMn1G"
+        "uniqueId": "LsQkDSEbvQ7S0b3L"
       },
       "type": "equippableItem"
     },
@@ -6920,7 +7112,18 @@
           "defense_target_type": "def",
           "description": "<p>You strengthen and purify the soul energy coursing through your companions. Each target <strong>recovers</strong> from 1 status effects.</p>",
           "duration": "Instantaneous",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "count": "1",
+              "effect_kind": "remove_tagged_ae",
+              "effect_label": "cleanse_pick",
+              "filter_tag": "debuff",
+              "menu_subtitle": "Recover from one status effect",
+              "menu_title": "Cleanse — Remove a Status",
+              "target_ref": "action_targets"
+            }
+          },
           "heroic_requirement": "",
           "ignore_hr": false,
           "isCheck": false,
@@ -6932,8 +7135,9 @@
           "level": "1",
           "max_level": "1",
           "name": "Cleanse",
-          "on_activate_effect_ref": "",
+          "on_activate_effect_ref": "cleanse_pick",
           "optional_params": {},
+          "pre_activate_effect_ref": "cleanse_pick",
           "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
@@ -6947,7 +7151,7 @@
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
         "unique": false,
-        "uniqueId": "u2lw7vPFH9QikB7X"
+        "uniqueId": "C3KMINBBXGYPZ5oj"
       },
       "type": "equippableItem"
     },
@@ -10207,7 +10411,7 @@
       "critical_dice_range": 0,
       "current_hp": "86",
       "current_ip": "6",
-      "current_mp": "80",
+      "current_mp": 80,
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/hina_Cut-in002.png",
       "cut_in_fumble": "",
@@ -10343,7 +10547,7 @@
       "isSlow": false,
       "isStrong": false,
       "isSwift": false,
-      "isWeak": false,
+      "isWeak": true,
       "is_martialarmor": true,
       "isolate_status": 0,
       "itemContainer2": {

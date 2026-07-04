@@ -10,6 +10,70 @@
   },
   "effects": [
     {
+      "_id": "15Ux04im73TjBik1",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783145266056,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "4VyOsFdW2Zf5kUKL",
+          "originalParentId": "B5EA1iq4j0wYzpo5",
+          "originalUuid": "Actor.Z4CFy505cD3nzl1W.Item.B5EA1iq4j0wYzpo5.ActiveEffect.4VyOsFdW2Zf5kUKL"
+        },
+        "fabula-ultima-companion": {
+          "category": "Other",
+          "directorAppliedBy": {
+            "appliedAtRound": 16,
+            "effectLabel": "dance_apply",
+            "reactorActorUuid": "Actor.Z4CFy505cD3nzl1W",
+            "reactorTokenUuid": "Scene.jvvy4FvYYmCJtLoz.Token.KGnmNuA7M2CT1OEP",
+            "skillUuid": "Actor.Z4CFy505cD3nzl1W.Item.B5EA1iq4j0wYzpo5",
+            "turnsRemaining": null
+          },
+          "directorPermanent": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/svg/upgrade.svg",
+      "name": "Dance",
+      "origin": "Actor.Z4CFy505cD3nzl1W.Item.B5EA1iq4j0wYzpo5",
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "dance-token"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
       "_id": "C6W09VGbiinxmUCZ",
       "_stats": {
         "compendiumSource": null,
@@ -5900,7 +5964,7 @@
                 "reaction_config_table": {
                   "0": {
                     "$deleted": false,
-                    "condition_formula": "HAS_STATUS_NINJA_LOG_SPENT == 0",
+                    "condition_formula": "HAS_STATUS_NINJA_LOG_SPENT == 0 && INCOMING_DAMAGE > 0",
                     "reaction_effect_ref": "ninjalog_nullify",
                     "reaction_passive_mode": "force",
                     "reaction_source": "self",
@@ -7599,8 +7663,8 @@
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
       "current_hp": "84",
-      "current_ip": "10",
-      "current_mp": 39,
+      "current_ip": 9,
+      "current_mp": "39",
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/Zarg_Cut-in002.png",
       "cut_in_fumble": "",

@@ -1101,6 +1101,12 @@
         "parent": "o9GnW8SK6lk2qkIs"
       },
       {
+        "id": "F7DacseQNZwn9FkF",
+        "name": "Hexer",
+        "type": "Item",
+        "parent": "341jxGTHbioINnUl"
+      },
+      {
         "id": "QfTUK4kRvO3ww1hK",
         "name": "Hexer",
         "type": "Item",
@@ -2107,6 +2113,12 @@
         "name": "Spell",
         "type": "Item",
         "parent": "dDUDRyua0YhbSGGC"
+      },
+      {
+        "id": "gqx98ag10NwXWzfG",
+        "name": "Spell",
+        "type": "Item",
+        "parent": "F7DacseQNZwn9FkF"
       },
       {
         "id": "w7ey5G3zPC78EXos",
@@ -11783,6 +11795,12 @@
         "effects": 0
       },
       {
+        "id": "LsQkDSEbvQ7S0b3L",
+        "name": "Symptom Shift",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "wfvBxZq0qkwMMn1G",
         "name": "Symptom Shift",
         "type": "equippableItem",
@@ -14328,6 +14346,13 @@
       {
         "id": "w2Ugj35nARiZpvV4",
         "name": "Battle Rank",
+        "type": "character",
+        "items": [],
+        "effects": 1
+      },
+      {
+        "id": "UjhCpvsMnREAifEx",
+        "name": "BD Dummy Enemy",
         "type": "character",
         "items": [],
         "effects": 1
@@ -17897,7 +17922,7 @@
             "name": "Zero Trigger: Foresight"
           }
         ],
-        "effects": 2
+        "effects": 4
       },
       {
         "id": "tzXbVfDYPgvu5wml",
@@ -22754,7 +22779,7 @@
             "name": "Zero Trigger: Strategy"
           }
         ],
-        "effects": 2
+        "effects": 3
       },
       {
         "id": "eovuAdwJdbtn8rOr",
