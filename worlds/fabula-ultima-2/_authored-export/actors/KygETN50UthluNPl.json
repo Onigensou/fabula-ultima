@@ -13,6 +13,10 @@
       "version": "4.8.5"
     },
     "fabula-ultima-companion": {
+      "damage_dealt_mult_all": 1,
+      "damage_dealt_mult_attack": 1,
+      "damage_dealt_mult_skill": 1,
+      "damage_dealt_mult_spell": 1,
       "damage_taken_mult": 1,
       "iconFocus": {
         "x": 50,
@@ -33,7 +37,7 @@
       "_stats": {
         "compendiumSource": "Item.vdEX0eAROfOYjHED",
         "coreVersion": "12.343",
-        "createdTime": 1782566247654,
+        "createdTime": 1783148674670,
         "duplicateSource": "Item.mJuSEmMc3A0HrqNO",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -181,7 +185,7 @@
       "_stats": {
         "compendiumSource": "Item.iFdNNGp4OVZVMEcB",
         "coreVersion": "12.343",
-        "createdTime": 1782566247654,
+        "createdTime": 1783148674670,
         "duplicateSource": "Item.iFdNNGp4OVZVMEcB",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -279,7 +283,7 @@
       "_stats": {
         "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
         "coreVersion": "12.343",
-        "createdTime": 1782566247654,
+        "createdTime": 1783148674670,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -366,7 +370,7 @@
       "_stats": {
         "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
         "coreVersion": "12.343",
-        "createdTime": 1782566247654,
+        "createdTime": 1783148674670,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -480,7 +484,7 @@
       "_stats": {
         "compendiumSource": "Item.37zrTkcEtdrwiIIF",
         "coreVersion": "12.343",
-        "createdTime": 1782566247654,
+        "createdTime": 1783148674670,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -606,7 +610,7 @@
       "_stats": {
         "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
         "coreVersion": "12.343",
-        "createdTime": 1782566247654,
+        "createdTime": 1783148674670,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -685,7 +689,7 @@
       "_stats": {
         "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
         "coreVersion": "12.343",
-        "createdTime": 1782566247654,
+        "createdTime": 1783148674670,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -709,26 +713,38 @@
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
           "animation_preload_urls": "modules/JB2A_DnD5e/Library/Generic/Template/Cone/Breath_Weapon/BreathWeapon_Fire01_Regular_Orange_30ft_Cone_Burst_600x600.webm",
-          "animation_script": "<p>// =============================================================================</p><p>// Wandering Flame - Flamethrower  (AoE cone, Tier 2 / medium, webm)</p><p>// =============================================================================</p><p>// Plays a JB2A fire cone-breath webm originating at the caster, rotated to point</p><p>// at the target (centroid for multi-target), scaled so the cone reaches them.</p><p>// doneHook fires at the cone's flame peak so BD applies damage there; the webm</p><p>// finishes as a cosmetic tail.</p><p>// -----------------------------------------------------------------------------</p><p>(async () =&gt; {</p><p></p><p>const TAG      = \"[ONI][Anim][WF][Flamethrower]\";</p><p>const ANIM_KEY = \"oni.wf.flamethrower\";</p><p></p><p>const CONE_URL = \"modules/JB2A_DnD5e/Library/Generic/Template/Cone/Breath_Weapon/BreathWeapon_Fire01_Regular_Orange_30ft_Cone_Burst_600x600.webm\";</p><p></p><p>const CFG = {</p><p>  // Caster dashes to mid-scene first so the cone actually reaches the party.</p><p>  midX:     0.5,    // dash-to point, screen fractions</p><p>  midY:     0.5,</p><p>  dashMs:   380,    // home -&gt; mid</p><p>  dashBackMs: 320,  // mid -&gt; home (cosmetic tail)</p><p>  anchorX:  0.02,   // fraction of frame width where the cone origin sits</p><p>  reach:    1.15,   // cone length as multiple of mid-&gt;target distance</p><p>  minLen:   0.30,   // clamp, screen-height fractions</p><p>  maxLen:   0.95,</p><p>  // Damage gates on the FULL animation: the webm runs ~8466ms, so doneHook is</p><p>  // fired when it 'ends' (failsafe just above its real length). Then the fade.</p><p>  maxMs:    9000,   // failsafe end if 'ended' never fires (webm is ~8466ms)</p><p>  fadeMs:   260,</p><p>  endPadMs: 120,</p><p>  totalTimeoutMs: 12000,</p><p>};</p><p></p><p>// -- Token resolution (BD payload / globals) --------------------------------</p><p>const P = globalThis.__PAYLOAD ?? payload ?? {};</p><p>function tokFromUuid(u) {</p><p>  try { const d = fromUuidSync?.(u); return d?.object ?? null; } catch (_) { return null; }</p><p>}</p><p>function resolveSource() {</p><p>  for (const c of [P?.casterTokenUuid, P?.sourceTokenUuid, P?.tokenUuid]) {</p><p>    const t = tokFromUuid(c); if (t) return t;</p><p>  }</p><p>  return canvas?.tokens?.controlled?.[0] ?? null;</p><p>}</p><p>function resolveTargets() {</p><p>  const out = [];</p><p>  const arg = Array.isArray(targets) ? targets : [];</p><p>  for (const t of arg) if (t?.center) out.push(t);</p><p>  if (!out.length &amp;&amp; Array.isArray(globalThis.__TARGETS))</p><p>    for (const t of globalThis.__TARGETS) if (t?.center) out.push(t);</p><p>  return out;</p><p>}</p><p>const sourceToken  = resolveSource();</p><p>const partyTargets = resolveTargets();</p><p></p><p>// -- Hook plumbing ----------------------------------------------------------</p><p>const doneHook = \"oni.anim.\" + ANIM_KEY + \".\" + (foundry?.utils?.randomID?.(8) ?? String(Date.now()));</p><p>function onceHook(name, timeoutMs) {</p><p>  return new Promise((resolve) =&gt; {</p><p>    let settled = false;</p><p>    const timer = setTimeout(() =&gt; { if (settled) return; settled = true; Hooks.off(name, h); resolve({ ok: false, timeout: true }); }, timeoutMs);</p><p>    const h = (d) =&gt; { if (settled) return; settled = true; clearTimeout(timer); Hooks.off(name, h); resolve(d ?? { ok: true }); };</p><p>    Hooks.on(name, h);</p><p>  });</p><p>}</p><p>function emitLocal(name, data) { try { Hooks.callAll(name, data); } catch (_) {} }</p><p></p><p>// -- Inner PIXI script (runs on EVERY client) -------------------------------</p><p>const scriptSource = String.raw`</p><p>const caster = ctx.casterToken;</p><p>const targetTokens = ctx.targetTokens || [];</p><p>const cfg = ctx.params.cfg;</p><p>const A = ctx.params.assets;</p><p></p><p>const stage = canvas.stage;</p><p>stage.sortableChildren = true;</p><p>const ticker = canvas.app.ticker;</p><p>const W = canvas.app.renderer.screen.width;</p><p>const H = canvas.app.renderer.screen.height;</p><p>const WT = stage.worldTransform.clone();</p><p>const ZOOM = Math.abs(stage.scale?.x || 1) || 1;</p><p>const S2W = (fx, fy) =&gt; WT.applyInverse(new PIXI.Point(fx * W, fy * H));</p><p>const wLen = (px) =&gt; px / ZOOM;</p><p>const hPx  = (frac) =&gt; wLen(frac * H);</p><p>const waitMs = (ms) =&gt; new Promise(r =&gt; setTimeout(r, Number(ms) || 0));</p><p></p><p>const spawned = [];</p><p>function destroyObj(o) { try { if (o &amp;&amp; !o._destroyed) { if (o.parent) o.parent.removeChild(o); o.destroy({ children: true }); } } catch (_) {} }</p><p>function cleanupAll() { for (const o of spawned.splice(0)) destroyObj(o); }</p><p></p><p>let doneFired = false;</p><p>function fireDone(res) { if (doneFired) return; doneFired = true; try { Hooks.callAll(ctx.params.doneHook, res || { ok: true }); } catch (_) {} }</p><p></p><p>const easeOutCubic = (t) =&gt; 1 - Math.pow(1 - t, 3);</p><p>const easeInOutCubic = (t) =&gt; t &lt; 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;</p><p>function tween(fn, dur, ease) {</p><p>  return new Promise((resolve) =&gt; {</p><p>    const t0 = performance.now();</p><p>    const step = () =&gt; {</p><p>      const raw = dur &gt; 0 ? Math.min(1, (performance.now() - t0) / dur) : 1;</p><p>      try { fn(ease ? ease(raw) : raw, raw); } catch (_) {}</p><p>      if (raw &gt;= 1) { ticker.remove(step); resolve(); }</p><p>    };</p><p>    ticker.add(step);</p><p>  });</p><p>}</p><p></p><p>// Token sprite-clone + hide-real-token machinery (the boss physically dashes).</p><p>const baseMesh = caster ? caster.mesh : null;</p><p>const baseSignX = Math.sign(baseMesh?.scale?.x ?? 1) || 1;</p><p>const baseSignY = Math.sign(baseMesh?.scale?.y ?? 1) || 1;</p><p>function makeCasterSprite(faceSign) {</p><p>  const sp = new PIXI.Sprite(baseMesh?.texture ?? PIXI.Texture.WHITE);</p><p>  sp.anchor.set(0.5, 0.5);</p><p>  sp.width  = Math.abs(baseMesh?.width  ?? (caster?.w ?? 100));</p><p>  sp.height = Math.abs(baseMesh?.height ?? (caster?.h ?? 100));</p><p>  sp.angle  = baseMesh?.angle ?? 0;</p><p>  sp.scale.x = Math.abs(sp.scale.x) * baseSignX * (faceSign || 1);</p><p>  sp.scale.y = Math.abs(sp.scale.y) * baseSignY;</p><p>  return sp;</p><p>}</p><p>let hiding = false, origTokR = true, origMeshR = true;</p><p>function hideGuard() { if (!caster) return; caster.renderable = false; if (baseMesh) baseMesh.renderable = false; }</p><p>function startHide() {</p><p>  if (!caster || hiding) return;</p><p>  hiding = true; origTokR = caster.renderable ?? true; origMeshR = baseMesh?.renderable ?? true;</p><p>  ticker.add(hideGuard);</p><p>}</p><p>function restoreCaster() {</p><p>  if (!caster || !hiding) return;</p><p>  ticker.remove(hideGuard);</p><p>  caster.renderable = origTokR; if (baseMesh) baseMesh.renderable = origMeshR;</p><p>  try { caster.renderFlags.set({ refreshVisibility: true, refreshMesh: true, refreshState: true }); } catch (_) {}</p><p>  hiding = false;</p><p>}</p><p></p><p>function centroid(toks, fx, fy) {</p><p>  if (toks &amp;&amp; toks.length) {</p><p>    let sx = 0, sy = 0;</p><p>    for (const t of toks) { sx += t.center.x; sy += t.center.y; }</p><p>    return { x: sx / toks.length, y: sy / toks.length };</p><p>  }</p><p>  const q = S2W(fx, fy); return { x: q.x, y: q.y };</p><p>}</p><p></p><p>// load a webm into a fresh video element (do not mutate any shared cache)</p><p>async function loadVideo(url) {</p><p>  const vid = document.createElement(\"video\");</p><p>  try { vid.crossOrigin = \"anonymous\"; } catch (_) {}</p><p>  vid.src = url; vid.muted = true; vid.loop = false; vid.playsInline = true; vid.preload = \"auto\";</p><p>  await new Promise((res) =&gt; {</p><p>    let done = false; const go = () =&gt; { if (done) return; done = true; res(); };</p><p>    vid.addEventListener(\"loadeddata\", go, { once: true });</p><p>    vid.addEventListener(\"error\", go, { once: true });</p><p>    setTimeout(go, 1500);</p><p>  });</p><p>  return vid;</p><p>}</p><p></p><p>try {</p><p>  const home = caster ? { x: caster.center.x, y: caster.center.y } : (function () { const q = S2W(0.3, 0.5); return { x: q.x, y: q.y }; })();</p><p>  const midP = S2W(cfg.midX, cfg.midY);</p><p>  const mid  = { x: midP.x, y: midP.y };</p><p>  const end  = centroid(targetTokens, 0.7, 0.5);</p><p></p><p>  // 1) Dash the boss from home to mid-scene (so the cone can reach the party).</p><p>  startHide();</p><p>  const clone = makeCasterSprite((mid.x &lt; home.x) ? -1 : 1);</p><p>  clone.x = home.x; clone.y = home.y; clone.zIndex = 9000;</p><p>  stage.addChild(clone); spawned.push(clone);</p><p>  await tween((p) =&gt; { clone.x = home.x + (mid.x - home.x) * p; clone.y = home.y + (mid.y - home.y) * p; }, cfg.dashMs, easeInOutCubic);</p><p>  clone.x = mid.x; clone.y = mid.y;</p><p>  // Face the party for the breath.</p><p>  clone.scale.x = Math.abs(clone.scale.x) * baseSignX * ((end.x &lt; mid.x) ? -1 : 1);</p><p></p><p>  // 2) Breathe fire from mid toward the party.</p><p>  const ang = Math.atan2(end.y - mid.y, end.x - mid.x);</p><p>  const dist = Math.hypot(end.x - mid.x, end.y - mid.y);</p><p>  const desiredLen = Math.max(hPx(cfg.minLen), Math.min(hPx(cfg.maxLen), dist * cfg.reach));</p><p></p><p>  const vid = await loadVideo(A.cone);</p><p>  const tex = PIXI.Texture.from(vid);</p><p>  const nativeW = tex.width || tex.orig?.width || 600;</p><p>  const spr = new PIXI.Sprite(tex);</p><p>  spr.anchor.set(cfg.anchorX, 0.5);</p><p>  spr.x = mid.x; spr.y = mid.y;</p><p>  spr.rotation = ang;</p><p>  spr.scale.set(desiredLen / nativeW);</p><p>  spr.zIndex = 8999;</p><p>  stage.addChild(spr); spawned.push(spr);</p><p></p><p>  try { vid.currentTime = 0; await vid.play(); } catch (_) {}</p><p></p><p>  // Let the whole cone-breath sequence play out BEFORE dealing damage.</p><p>  await new Promise((res) =&gt; {</p><p>    let done = false; const go = () =&gt; { if (done) return; done = true; res(); };</p><p>    vid.addEventListener(\"ended\", go, { once: true });</p><p>    setTimeout(go, cfg.maxMs);</p><p>  });</p><p></p><p>  fireDone({ ok: true });</p><p>  await tween((p) =&gt; { spr.alpha = 1 - p; }, cfg.fadeMs, easeOutCubic);</p><p>  destroyObj(spr);</p><p>  try { vid.pause(); vid.removeAttribute(\"src\"); vid.load(); } catch (_) {}</p><p></p><p>  // 3) Dash back home, then restore the real token (cosmetic tail).</p><p>  clone.scale.x = Math.abs(clone.scale.x) * baseSignX * ((home.x &lt; mid.x) ? -1 : 1);</p><p>  await tween((p) =&gt; { clone.x = mid.x + (home.x - mid.x) * p; clone.y = mid.y + (home.y - mid.y) * p; }, cfg.dashBackMs, easeInOutCubic);</p><p>  destroyObj(clone);</p><p>  restoreCaster();</p><p>  await waitMs(cfg.endPadMs);</p><p>  cleanupAll();</p><p>} catch (err) {</p><p>  console.error(\"[ONI][Pseudo][Flamethrower]\", err);</p><p>  fireDone({ ok: false, error: String(err &amp;&amp; err.message || err) });</p><p>} finally {</p><p>  restoreCaster();</p><p>  cleanupAll();</p><p>}</p><p>`;</p><p></p><p>// -- Orchestration (GM) -----------------------------------------------------</p><p>try {</p><p>  emitLocal(\"oni:animationStart\", { type: ANIM_KEY, sceneId: canvas.scene?.id ?? null });</p><p>  const waitDone = onceHook(doneHook, CFG.totalTimeoutMs);</p><p>  await game.ONI.pseudo.play({</p><p>    scriptId: ANIM_KEY,</p><p>    scriptSource,</p><p>    casterTokenUuid: sourceToken?.document?.uuid ?? null,</p><p>    targetTokenUuids: partyTargets.map(t =&gt; t.document.uuid),</p><p>    params: { doneHook, cfg: CFG, assets: { cone: CONE_URL } },</p><p>    meta: { source: \"Flamethrower\" },</p><p>  });</p><p>  const result = await waitDone;</p><p>  if (!result?.ok) console.warn(TAG, \"pseudo non-OK / timeout\", result);</p><p>} catch (err) {</p><p>  console.error(TAG, \"orchestration crashed\", err);</p><p>} finally {</p><p>  emitLocal(\"oni:animationEnd\", { type: ANIM_KEY, timestamp: Date.now() });</p><p>}</p><p></p><p>})();</p><p></p>",
+          "animation_script": "<p>// =============================================================================</p><p>// Flamethrower (generic) - AoE fire cone-breath webm, reused across monsters.</p><p>// Ported verbatim from Wandering Flame's Flamethrower. Caster dashes to mid-scene,</p><p>// breathes a JB2A fire cone rotated toward the target centroid; doneHook fires</p><p>// when the webm ends so BD applies damage on the flame; webm finishes as tail.</p><p>// =============================================================================</p><p>(async () =&gt; {</p><p></p><p>const TAG      = \"[ONI][Anim][Flamethrower]\";</p><p>const ANIM_KEY = \"oni.gen.flamethrower\";</p><p></p><p>const CONE_URL = \"modules/JB2A_DnD5e/Library/Generic/Template/Cone/Breath_Weapon/BreathWeapon_Fire01_Regular_Orange_30ft_Cone_Burst_600x600.webm\";</p><p></p><p>const CFG = {</p><p>  midX:     0.5,</p><p>  midY:     0.5,</p><p>  dashMs:   380,</p><p>  dashBackMs: 320,</p><p>  anchorX:  0.02,</p><p>  reach:    1.15,</p><p>  minLen:   0.30,</p><p>  maxLen:   0.95,</p><p>  maxMs:    9000,</p><p>  fadeMs:   260,</p><p>  endPadMs: 120,</p><p>  totalTimeoutMs: 12000,</p><p>  sfxBreath: \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fire1.ogg\",</p><p>  sfxBreathVol: 0.6,</p><p>};</p><p></p><p>const P = globalThis.__PAYLOAD ?? payload ?? {};</p><p>function tokFromUuid(u) {</p><p>  try { const d = fromUuidSync?.(u); return d?.object ?? null; } catch (_) { return null; }</p><p>}</p><p>function resolveSource() {</p><p>  for (const c of [P?.casterTokenUuid, P?.sourceTokenUuid, P?.tokenUuid]) {</p><p>    const t = tokFromUuid(c); if (t) return t;</p><p>  }</p><p>  return canvas?.tokens?.controlled?.[0] ?? null;</p><p>}</p><p>function resolveTargets() {</p><p>  const out = [];</p><p>  const arg = Array.isArray(targets) ? targets : [];</p><p>  for (const t of arg) if (t?.center) out.push(t);</p><p>  if (!out.length &amp;&amp; Array.isArray(globalThis.__TARGETS))</p><p>    for (const t of globalThis.__TARGETS) if (t?.center) out.push(t);</p><p>  return out;</p><p>}</p><p>const sourceToken  = resolveSource();</p><p>const partyTargets = resolveTargets();</p><p></p><p>const doneHook = \"oni.anim.\" + ANIM_KEY + \".\" + (foundry?.utils?.randomID?.(8) ?? String(Date.now()));</p><p>function onceHook(name, timeoutMs) {</p><p>  return new Promise((resolve) =&gt; {</p><p>    let settled = false;</p><p>    const timer = setTimeout(() =&gt; { if (settled) return; settled = true; Hooks.off(name, h); resolve({ ok: false, timeout: true }); }, timeoutMs);</p><p>    const h = (d) =&gt; { if (settled) return; settled = true; clearTimeout(timer); Hooks.off(name, h); resolve(d ?? { ok: true }); };</p><p>    Hooks.on(name, h);</p><p>  });</p><p>}</p><p>function emitLocal(name, data) { try { Hooks.callAll(name, data); } catch (_) {} }</p><p></p><p>const scriptSource = String.raw`</p><p>const caster = ctx.casterToken;</p><p>const targetTokens = ctx.targetTokens || [];</p><p>const cfg = ctx.params.cfg;</p><p>const A = ctx.params.assets;</p><p></p><p>const stage = canvas.stage;</p><p>stage.sortableChildren = true;</p><p>const ticker = canvas.app.ticker;</p><p>const W = canvas.app.renderer.screen.width;</p><p>const H = canvas.app.renderer.screen.height;</p><p>const WT = stage.worldTransform.clone();</p><p>const ZOOM = Math.abs(stage.scale?.x || 1) || 1;</p><p>const S2W = (fx, fy) =&gt; WT.applyInverse(new PIXI.Point(fx * W, fy * H));</p><p>const wLen = (px) =&gt; px / ZOOM;</p><p>const hPx  = (frac) =&gt; wLen(frac * H);</p><p>const waitMs = (ms) =&gt; new Promise(r =&gt; setTimeout(r, Number(ms) || 0));</p><p></p><p>const spawned = [];</p><p>function destroyObj(o) { try { if (o &amp;&amp; !o._destroyed) { if (o.parent) o.parent.removeChild(o); o.destroy({ children: true }); } } catch (_) {} }</p><p>function cleanupAll() { for (const o of spawned.splice(0)) destroyObj(o); }</p><p></p><p>let doneFired = false;</p><p>function fireDone(res) { if (doneFired) return; doneFired = true; try { Hooks.callAll(ctx.params.doneHook, res || { ok: true }); } catch (_) {} }</p><p></p><p>const easeOutCubic = (t) =&gt; 1 - Math.pow(1 - t, 3);</p><p>const easeInOutCubic = (t) =&gt; t &lt; 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;</p><p>function tween(fn, dur, ease) {</p><p>  return new Promise((resolve) =&gt; {</p><p>    const t0 = performance.now();</p><p>    const step = () =&gt; {</p><p>      const raw = dur &gt; 0 ? Math.min(1, (performance.now() - t0) / dur) : 1;</p><p>      try { fn(ease ? ease(raw) : raw, raw); } catch (_) {}</p><p>      if (raw &gt;= 1) { ticker.remove(step); resolve(); }</p><p>    };</p><p>    ticker.add(step);</p><p>  });</p><p>}</p><p></p><p>const baseMesh = caster ? caster.mesh : null;</p><p>const baseSignX = Math.sign(baseMesh?.scale?.x ?? 1) || 1;</p><p>const baseSignY = Math.sign(baseMesh?.scale?.y ?? 1) || 1;</p><p>function makeCasterSprite(faceSign) {</p><p>  const sp = new PIXI.Sprite(baseMesh?.texture ?? PIXI.Texture.WHITE);</p><p>  sp.anchor.set(0.5, 0.5);</p><p>  sp.width  = Math.abs(baseMesh?.width  ?? (caster?.w ?? 100));</p><p>  sp.height = Math.abs(baseMesh?.height ?? (caster?.h ?? 100));</p><p>  sp.angle  = baseMesh?.angle ?? 0;</p><p>  sp.scale.x = Math.abs(sp.scale.x) * baseSignX * (faceSign || 1);</p><p>  sp.scale.y = Math.abs(sp.scale.y) * baseSignY;</p><p>  return sp;</p><p>}</p><p>let hiding = false, origTokR = true, origMeshR = true;</p><p>function hideGuard() { if (!caster) return; caster.renderable = false; if (baseMesh) baseMesh.renderable = false; }</p><p>function startHide() {</p><p>  if (!caster || hiding) return;</p><p>  hiding = true; origTokR = caster.renderable ?? true; origMeshR = baseMesh?.renderable ?? true;</p><p>  ticker.add(hideGuard);</p><p>}</p><p>function restoreCaster() {</p><p>  if (!caster || !hiding) return;</p><p>  ticker.remove(hideGuard);</p><p>  caster.renderable = origTokR; if (baseMesh) baseMesh.renderable = origMeshR;</p><p>  try { caster.renderFlags.set({ refreshVisibility: true, refreshMesh: true, refreshState: true }); } catch (_) {}</p><p>  hiding = false;</p><p>}</p><p></p><p>function centroid(toks, fx, fy) {</p><p>  if (toks &amp;&amp; toks.length) {</p><p>    let sx = 0, sy = 0;</p><p>    for (const t of toks) { sx += t.center.x; sy += t.center.y; }</p><p>    return { x: sx / toks.length, y: sy / toks.length };</p><p>  }</p><p>  const q = S2W(fx, fy); return { x: q.x, y: q.y };</p><p>}</p><p></p><p>async function loadVideo(url) {</p><p>  const vid = document.createElement(\"video\");</p><p>  try { vid.crossOrigin = \"anonymous\"; } catch (_) {}</p><p>  vid.src = url; vid.muted = true; vid.loop = false; vid.playsInline = true; vid.preload = \"auto\";</p><p>  await new Promise((res) =&gt; {</p><p>    let done = false; const go = () =&gt; { if (done) return; done = true; res(); };</p><p>    vid.addEventListener(\"loadeddata\", go, { once: true });</p><p>    vid.addEventListener(\"error\", go, { once: true });</p><p>    setTimeout(go, 1500);</p><p>  });</p><p>  return vid;</p><p>}</p><p>function playSfx(url, vol) {</p><p>  if (!url) return;</p><p>  try { const a = new Audio(url); a.volume = (vol == null ? 0.6 : vol); a.play().catch(() =&gt; {}); } catch (_) {}</p><p>}</p><p></p><p>try {</p><p>  const home = caster ? { x: caster.center.x, y: caster.center.y } : (function () { const q = S2W(0.3, 0.5); return { x: q.x, y: q.y }; })();</p><p>  const midP = S2W(cfg.midX, cfg.midY);</p><p>  const mid  = { x: midP.x, y: midP.y };</p><p>  const end  = centroid(targetTokens, 0.7, 0.5);</p><p></p><p>  startHide();</p><p>  const clone = makeCasterSprite((mid.x &lt; home.x) ? -1 : 1);</p><p>  clone.x = home.x; clone.y = home.y; clone.zIndex = 9000;</p><p>  stage.addChild(clone); spawned.push(clone);</p><p>  await tween((p) =&gt; { clone.x = home.x + (mid.x - home.x) * p; clone.y = home.y + (mid.y - home.y) * p; }, cfg.dashMs, easeInOutCubic);</p><p>  clone.x = mid.x; clone.y = mid.y;</p><p>  clone.scale.x = Math.abs(clone.scale.x) * baseSignX * ((end.x &lt; mid.x) ? -1 : 1);</p><p></p><p>  const ang = Math.atan2(end.y - mid.y, end.x - mid.x);</p><p>  const dist = Math.hypot(end.x - mid.x, end.y - mid.y);</p><p>  const desiredLen = Math.max(hPx(cfg.minLen), Math.min(hPx(cfg.maxLen), dist * cfg.reach));</p><p></p><p>  const vid = await loadVideo(A.cone);</p><p>  const tex = PIXI.Texture.from(vid);</p><p>  const nativeW = tex.width || tex.orig?.width || 600;</p><p>  const spr = new PIXI.Sprite(tex);</p><p>  spr.anchor.set(cfg.anchorX, 0.5);</p><p>  spr.x = mid.x; spr.y = mid.y;</p><p>  spr.rotation = ang;</p><p>  spr.scale.set(desiredLen / nativeW);</p><p>  spr.zIndex = 8999;</p><p>  stage.addChild(spr); spawned.push(spr);</p><p></p><p>  try { vid.currentTime = 0; await vid.play(); } catch (_) {}</p><p>  playSfx(cfg.sfxBreath, cfg.sfxBreathVol);   // fire whoosh as the cone breathes</p><p></p><p>  await new Promise((res) =&gt; {</p><p>    let done = false; const go = () =&gt; { if (done) return; done = true; res(); };</p><p>    vid.addEventListener(\"ended\", go, { once: true });</p><p>    setTimeout(go, cfg.maxMs);</p><p>  });</p><p></p><p>  fireDone({ ok: true });</p><p>  await tween((p) =&gt; { spr.alpha = 1 - p; }, cfg.fadeMs, easeOutCubic);</p><p>  destroyObj(spr);</p><p>  try { vid.pause(); vid.removeAttribute(\"src\"); vid.load(); } catch (_) {}</p><p></p><p>  clone.scale.x = Math.abs(clone.scale.x) * baseSignX * ((home.x &lt; mid.x) ? -1 : 1);</p><p>  await tween((p) =&gt; { clone.x = mid.x + (home.x - mid.x) * p; clone.y = mid.y + (home.y - mid.y) * p; }, cfg.dashBackMs, easeInOutCubic);</p><p>  destroyObj(clone);</p><p>  restoreCaster();</p><p>  await waitMs(cfg.endPadMs);</p><p>  cleanupAll();</p><p>} catch (err) {</p><p>  console.error(\"[ONI][Pseudo][Flamethrower]\", err);</p><p>  fireDone({ ok: false, error: String(err &amp;&amp; err.message || err) });</p><p>} finally {</p><p>  restoreCaster();</p><p>  cleanupAll();</p><p>}</p><p>`;</p><p></p><p>try {</p><p>  emitLocal(\"oni:animationStart\", { type: ANIM_KEY, sceneId: canvas.scene?.id ?? null });</p><p>  const waitDone = onceHook(doneHook, CFG.totalTimeoutMs);</p><p>  await game.ONI.pseudo.play({</p><p>    scriptId: ANIM_KEY,</p><p>    scriptSource,</p><p>    casterTokenUuid: sourceToken?.document?.uuid ?? null,</p><p>    targetTokenUuids: partyTargets.map(t =&gt; t.document.uuid),</p><p>    params: { doneHook, cfg: CFG, assets: { cone: CONE_URL } },</p><p>    meta: { source: \"Flamethrower\" },</p><p>  });</p><p>  const result = await waitDone;</p><p>  if (!result?.ok) console.warn(TAG, \"pseudo non-OK / timeout\", result);</p><p>} catch (err) {</p><p>  console.error(TAG, \"orchestration crashed\", err);</p><p>} finally {</p><p>  emitLocal(\"oni:animationEnd\", { type: ANIM_KEY, timestamp: Date.now() });</p><p>}</p><p></p><p>})();</p><p></p>",
           "check_bonus": "4",
           "class": "NPC",
           "cost": "30 MP",
           "damage_bonus": "20",
           "defense_target_type": "mdef",
           "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Multi</a>&nbsp;<strong>3</strong></p></li></ul><p>On <strong>hit, </strong>inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Burn</a>&nbsp;to the target, if the target is already inflicted with <a class=\"content-link\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Burn</a>&nbsp;increase their stack by 3 instead</p>",
+          "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
               "ae_duplicate_mode": "add_charges",
+              "ae_family": "",
               "ae_initial_charges": "3",
+              "ae_initial_charges_max": "",
               "ae_template_ref": "Burn",
+              "consume_self": false,
               "effect_kind": "apply_ae",
               "effect_label": "apply_burn",
-              "target_ref": "hit_action_targets"
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "hit_action_targets",
+              "to_resource": ""
             }
           },
+          "gadget_alchemy_tier": "",
+          "gadget_infusion_tier": "",
+          "gadget_magitech_tier": "",
           "heroic_requirement": "",
+          "id": "Q0jlnWDfOkBD8dcR",
           "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215350.578.png",
           "isCheck": true,
           "isFacet": false,
           "isHeroic": false,
@@ -740,14 +756,28 @@
           "name": "Flamethrower",
           "on_activate_effect_ref": "",
           "optional_params": {},
+          "pre_activate_effect_ref": "",
           "reaction_config_table": {
             "0": {
               "condition_formula": "TRIGGER_IS_SELF == 1",
+              "reaction_action_intent": "",
+              "reaction_action_kind": "",
+              "reaction_action_target": "",
+              "reaction_cause_filter": "",
+              "reaction_damage_amount": "",
+              "reaction_damage_source": "",
+              "reaction_damage_type": "",
               "reaction_effect_ref": "apply_burn",
+              "reaction_ownership": "",
               "reaction_passive_mode": "on",
+              "reaction_resource_filter": "",
+              "reaction_responder": "",
               "reaction_source": "self",
               "reaction_source_skill": "Flamethrower",
-              "reaction_trigger": "creature_deals_damage"
+              "reaction_status_filter": "",
+              "reaction_subject_kind": "",
+              "reaction_trigger": "creature_deals_damage",
+              "requires_skill": ""
             }
           },
           "rolled_atr1": "DEX",
@@ -758,8 +788,10 @@
           "skill_range": "Range",
           "skill_target": "Up to three creature",
           "skill_type": "Active",
+          "target_eligibility": "",
           "type_damage": "Fire",
-          "use_optional_params": false
+          "use_optional_params": false,
+          "uuid": "Actor.KygETN50UthluNPl.Item.Q0jlnWDfOkBD8dcR"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -773,7 +805,7 @@
       "_stats": {
         "compendiumSource": "Item.A87i0WJvlVD1w3E7",
         "coreVersion": "12.343",
-        "createdTime": 1782566247654,
+        "createdTime": 1783148674670,
         "duplicateSource": "Item.yWlkWZC2vLf4J5Pv",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -859,7 +891,7 @@
       "_stats": {
         "compendiumSource": "Item.iFdNNGp4OVZVMEcB",
         "coreVersion": "12.343",
-        "createdTime": 1782566247654,
+        "createdTime": 1783148674670,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -973,7 +1005,7 @@
       "_stats": {
         "compendiumSource": "Item.iFdNNGp4OVZVMEcB",
         "coreVersion": "12.343",
-        "createdTime": 1782566247654,
+        "createdTime": 1783148674670,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1377,7 +1409,7 @@
           "action_pattern_value_2": "40"
         }
       },
-      "activation": "2",
+      "activation": "4",
       "affinity_1": "NA",
       "affinity_2": "NA",
       "affinity_3": "NA",
@@ -1478,7 +1510,7 @@
       "cut_in_fumble": "",
       "cut_in_offset_y": "",
       "cut_in_zero_power": "",
-      "dagger_ef": "175",
+      "dagger_ef": "200",
       "damage_receiving_mod_air": 0,
       "damage_receiving_mod_all": 0,
       "damage_receiving_mod_bolt": 0,
@@ -1723,7 +1755,7 @@
       "study_text": "<p><em data-start=\"22\" data-end=\"312\">An undead spirit formed from countless vengeful anima, bound together by a flame that refuses to die. Extinguish its flames quickly—or the battlefield will become your funeral pyre</em></p>",
       "subtype": "Sub-Type",
       "subtype_list": "SPIRIT",
-      "sword_ef": "175",
+      "sword_ef": "200",
       "tactic_notes": "",
       "thrown_ef": "100",
       "token_option_persist": false,

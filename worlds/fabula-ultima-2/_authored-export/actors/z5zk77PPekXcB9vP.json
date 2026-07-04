@@ -13,6 +13,10 @@
       "version": "4.8.5"
     },
     "fabula-ultima-companion": {
+      "damage_dealt_mult_all": 1,
+      "damage_dealt_mult_attack": 1,
+      "damage_dealt_mult_skill": 1,
+      "damage_dealt_mult_spell": 1,
       "damage_taken_mult": 1,
       "idleAnimation": {
         "bounce": false,

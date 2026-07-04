@@ -13,6 +13,10 @@
       "version": "4.8.4"
     },
     "fabula-ultima-companion": {
+      "damage_dealt_mult_all": 1,
+      "damage_dealt_mult_attack": 1,
+      "damage_dealt_mult_skill": 1,
+      "damage_dealt_mult_spell": 1,
       "damage_taken_mult": 1,
       "idleAnimation": {
         "bounce": false,
@@ -38,7 +42,7 @@
       "_stats": {
         "compendiumSource": "Item.VKB7qLNF1XBdN7yX",
         "coreVersion": "12.343",
-        "createdTime": 1782566143384,
+        "createdTime": 1783148578466,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -378,7 +382,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782566143384,
+        "createdTime": 1783148578466,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -482,7 +486,7 @@
       "_stats": {
         "compendiumSource": "Item.BykEf2Th3dTmg02o",
         "coreVersion": "12.343",
-        "createdTime": 1782566143384,
+        "createdTime": 1783148578466,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -585,7 +589,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782566143384,
+        "createdTime": 1783148578466,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -717,7 +721,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782566143384,
+        "createdTime": 1783148578466,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -844,7 +848,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782566143384,
+        "createdTime": 1783148578466,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -930,7 +934,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782566143384,
+        "createdTime": 1783148578466,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1038,7 +1042,7 @@
       "_stats": {
         "compendiumSource": "Item.P2ZlEmmK2DUhao0y",
         "coreVersion": "12.343",
-        "createdTime": 1782566143384,
+        "createdTime": 1783148578466,
         "duplicateSource": "Item.cneU6dfTzI13k0U2",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1115,7 +1119,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782566143384,
+        "createdTime": 1783148578466,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1206,7 +1210,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782566143384,
+        "createdTime": 1783148578466,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1332,7 +1336,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782566143384,
+        "createdTime": 1783148578466,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1422,7 +1426,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782566143384,
+        "createdTime": 1783148578466,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1530,7 +1534,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782566143384,
+        "createdTime": 1783148578466,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1640,7 +1644,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782566143384,
+        "createdTime": 1783148578466,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1754,7 +1758,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782566143384,
+        "createdTime": 1783148578466,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1840,7 +1844,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782566143384,
+        "createdTime": 1783148578466,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1930,7 +1934,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782566143384,
+        "createdTime": 1783148578466,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2061,7 +2065,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782566143384,
+        "createdTime": 1783148578466,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2185,7 +2189,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782566143384,
+        "createdTime": 1783148578466,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2317,7 +2321,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782566143384,
+        "createdTime": 1783148578466,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2407,7 +2411,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782566143384,
+        "createdTime": 1783148578466,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2497,7 +2501,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782566143384,
+        "createdTime": 1783148578466,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2610,7 +2614,7 @@
       "_stats": {
         "compendiumSource": "Item.2dTUIP5vUweRF9ir",
         "coreVersion": "12.343",
-        "createdTime": 1782566143384,
+        "createdTime": 1783148578466,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2763,7 +2767,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782577782356,
+        "createdTime": 1783148578466,
         "duplicateSource": "Item.a7ZGvZGyPR5NZXOK",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2922,7 +2926,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782624787307,
+        "createdTime": 1783148578466,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2985,7 +2989,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783107818485,
+        "createdTime": 1783148578466,
         "duplicateSource": "Item.MWH6Za46Bjii884i",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3115,7 +3119,7 @@
       "_stats": {
         "compendiumSource": "Item.a9elI6g2FZ6qPY51",
         "coreVersion": "12.343",
-        "createdTime": 1782566143384,
+        "createdTime": 1783148578466,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3204,7 +3208,7 @@
       "_stats": {
         "compendiumSource": "Item.yVFJkol5V9OWvceZ",
         "coreVersion": "12.343",
-        "createdTime": 1782566143384,
+        "createdTime": 1783148578466,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3293,7 +3297,7 @@
       "_stats": {
         "compendiumSource": "Item.P2ZlEmmK2DUhao0y",
         "coreVersion": "12.343",
-        "createdTime": 1782566143384,
+        "createdTime": 1783148578466,
         "duplicateSource": "Item.cneU6dfTzI13k0U2",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3370,7 +3374,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782566143384,
+        "createdTime": 1783148578466,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3462,7 +3466,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782566143384,
+        "createdTime": 1783148578466,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3844,7 +3848,7 @@
       "_stats": {
         "compendiumSource": "Actor.gdJZ1L1kv5mjTTMr.Item.BCi3qBRNrg0GWQf6",
         "coreVersion": "12.343",
-        "createdTime": 1782566143384,
+        "createdTime": 1783148578466,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3948,7 +3952,7 @@
       "_stats": {
         "compendiumSource": "Item.Qex8FZz4dvDcBmlz",
         "coreVersion": "12.343",
-        "createdTime": 1782566143384,
+        "createdTime": 1783148578466,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4077,7 +4081,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782566143384,
+        "createdTime": 1783148578466,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4187,7 +4191,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782566143384,
+        "createdTime": 1783148578466,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4277,7 +4281,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782566143384,
+        "createdTime": 1783148578466,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4349,7 +4353,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782566143384,
+        "createdTime": 1783148578466,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4440,7 +4444,7 @@
       "_stats": {
         "compendiumSource": "Item.P2ZlEmmK2DUhao0y",
         "coreVersion": "12.343",
-        "createdTime": 1782566143384,
+        "createdTime": 1783148578466,
         "duplicateSource": "Item.cneU6dfTzI13k0U2",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4520,7 +4524,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782566143384,
+        "createdTime": 1783148578466,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4592,7 +4596,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782566143384,
+        "createdTime": 1783148578466,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4724,7 +4728,7 @@
       "_stats": {
         "compendiumSource": "Item.P2ZlEmmK2DUhao0y",
         "coreVersion": "12.343",
-        "createdTime": 1782566143384,
+        "createdTime": 1783148578466,
         "duplicateSource": "Item.cneU6dfTzI13k0U2",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4801,7 +4805,7 @@
       "_stats": {
         "compendiumSource": "Item.4qXalxoKZVy8h2wD",
         "coreVersion": "12.343",
-        "createdTime": 1782566143384,
+        "createdTime": 1783148578466,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4904,7 +4908,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782566143384,
+        "createdTime": 1783148578466,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4994,7 +4998,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782571421011,
+        "createdTime": 1783148578466,
         "duplicateSource": "Item.QvUsAoeaebjrKAHi",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5129,7 +5133,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782581537004,
+        "createdTime": 1783148578466,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5251,7 +5255,7 @@
       "_stats": {
         "compendiumSource": "Item.clx7re0RW1nsaQN0",
         "coreVersion": "12.343",
-        "createdTime": 1782566143384,
+        "createdTime": 1783148578466,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5409,7 +5413,7 @@
       "_stats": {
         "compendiumSource": "Item.lqIjqJNa8wCrWW0p",
         "coreVersion": "12.343",
-        "createdTime": 1782566143384,
+        "createdTime": 1783148578466,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5524,7 +5528,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782566143384,
+        "createdTime": 1783148578466,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5769,210 +5773,90 @@
       "away_name_3": "",
       "away_name_4": "",
       "battle_bgm": "Fabula Battle Theme",
-      "battle_log": "[\n  {\n    \"ts\": \"2026-07-03T18:49:48.319Z\",\n    \"accuracy\": \"14\",\n    \"dealer\": {\n      \"name\": \"Inferex\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Skill\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Chimerist\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"Fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 40,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 109,\n        \"to\": 69\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Inferex deals 40 Fire damage to BD Test — Chimerist [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-03T18:49:51.145Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Salamander\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"effect\"\n    },\n    \"target\": {\n      \"name\": \"Salamander\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 4,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 61,\n        \"to\": 57\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Salamander deals 4 Fire damage to Salamander [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-03T18:49:55.957Z\",\n    \"accuracy\": \"12\",\n    \"dealer\": {\n      \"name\": \"Salamander\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Chimerist\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"Fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 42,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 69,\n        \"to\": 27\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Salamander deals 42 Fire damage to BD Test — Chimerist [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-03T18:50:11.167Z\",\n    \"accuracy\": \"21\",\n    \"dealer\": {\n      \"name\": \"Inferex\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Range\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Chimerist\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 48,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 77,\n        \"to\": 29\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Inferex deals 48 Null damage to BD Test — Chimerist [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-03T18:50:19.389Z\",\n    \"accuracy\": \"14\",\n    \"dealer\": {\n      \"name\": \"Salamander\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Range\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Chimerist\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 44,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 29,\n        \"to\": 0\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Salamander deals 44 Null damage to BD Test — Chimerist [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-03T18:50:33.542Z\",\n    \"accuracy\": \"18\",\n    \"dealer\": {\n      \"name\": \"Inferex\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Melee\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"Salamander\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"\",\n      \"isCrit\": true\n    },\n    \"computed\": {\n      \"finalValue\": 51,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 57,\n        \"to\": 6\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Inferex deals 51 Null damage to Salamander [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-03T18:50:54.131Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Inferex\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"effect\"\n    },\n    \"target\": {\n      \"name\": \"Inferex\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": true,\n      \"element\": \"fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 18,\n      \"effectiveness\": \"Absorbed\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 178,\n        \"to\": 178\n      },\n      \"mp\": null,\n      \"shield\": null,\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Inferex heals Inferex for 18 HP\"\n  },\n  {\n    \"ts\": \"2026-07-03T18:51:44.943Z\",\n    \"accuracy\": \"11\",\n    \"dealer\": {\n      \"name\": \"Inferex\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Range\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Chimerist\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 22,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 109,\n        \"to\": 87\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Inferex deals 22 Null damage to BD Test — Chimerist [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-03T18:52:00.647Z\",\n    \"accuracy\": \"9\",\n    \"dealer\": {\n      \"name\": \"Salamander\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Chimerist\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"Fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 12,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 87,\n        \"to\": 75\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Salamander deals 12 Fire damage to BD Test — Chimerist [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-03T18:52:00.648Z\",\n    \"accuracy\": \"9\",\n    \"dealer\": {\n      \"name\": \"Salamander\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"Fire\",\n      \"weaponType\": null\n    },\n    \"miss\": true,\n    \"summary\": \"Salamander misses BD Dummy Enemy\"\n  },\n  {\n    \"ts\": \"2026-07-03T18:52:08.660Z\",\n    \"accuracy\": \"9\",\n    \"dealer\": {\n      \"name\": \"Salamander\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Chimerist\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"Fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 12,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 75,\n        \"to\": 63\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Salamander deals 12 Fire damage to BD Test — Chimerist [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-03T18:52:08.661Z\",\n    \"accuracy\": \"9\",\n    \"dealer\": {\n      \"name\": \"Salamander\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"Fire\",\n      \"weaponType\": null\n    },\n    \"miss\": true,\n    \"summary\": \"Salamander misses BD Dummy Enemy\"\n  },\n  {\n    \"ts\": \"2026-07-03T18:52:26.575Z\",\n    \"accuracy\": \"19\",\n    \"dealer\": {\n      \"name\": \"Inferex\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Range\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 24,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999999,\n        \"to\": 999975\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Inferex deals 24 Null damage to BD Dummy Enemy [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-03T18:54:01.576Z\",\n    \"accuracy\": \"15\",\n    \"dealer\": {\n      \"name\": \"Salamander\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Range\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 23,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999975,\n        \"to\": 999952\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Salamander deals 23 Null damage to BD Dummy Enemy [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-03T18:54:08.156Z\",\n    \"accuracy\": \"10\",\n    \"dealer\": {\n      \"name\": \"Salamander\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Range\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 21,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999952,\n        \"to\": 999931\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Salamander deals 21 Null damage to BD Dummy Enemy [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-03T18:54:30.421Z\",\n    \"accuracy\": \"11\",\n    \"dealer\": {\n      \"name\": \"Inferex\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Melee\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"Salamander\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 49,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 65,\n        \"to\": 16\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Inferex deals 49 Null damage to Salamander [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-03T18:54:47.661Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Salamander\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"effect\"\n    },\n    \"target\": {\n      \"name\": \"Salamander\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 4,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 65,\n        \"to\": 61\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Salamander deals 4 Fire damage to Salamander [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-03T18:55:16.080Z\",\n    \"accuracy\": \"18\",\n    \"dealer\": {\n      \"name\": \"Salamander\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Chimerist\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"Fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 18,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 109,\n        \"to\": 91\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Salamander deals 18 Fire damage to BD Test — Chimerist [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-03T18:55:16.136Z\",\n    \"accuracy\": \"18\",\n    \"dealer\": {\n      \"name\": \"Salamander\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"Fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 18,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999931,\n        \"to\": 999913\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Salamander deals 18 Fire damage to BD Dummy Enemy [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-03T18:55:53.197Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Inferex\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"effect\"\n    },\n    \"target\": {\n      \"name\": \"Inferex\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": true,\n      \"element\": \"fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 18,\n      \"effectiveness\": \"Absorbed\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 178,\n        \"to\": 178\n      },\n      \"mp\": null,\n      \"shield\": null,\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Inferex heals Inferex for 18 HP\"\n  },\n  {\n    \"ts\": \"2026-07-03T18:56:02.512Z\",\n    \"accuracy\": \"13\",\n    \"dealer\": {\n      \"name\": \"Inferex\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Range\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Chimerist\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 33,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 91,\n        \"to\": 58\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Inferex deals 33 Null damage to BD Test — Chimerist [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-03T18:56:22.251Z\",\n    \"accuracy\": \"15\",\n    \"dealer\": {\n      \"name\": \"Salamander\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Range\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Chimerist\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 23,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 58,\n        \"to\": 35\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Salamander deals 23 Null damage to BD Test — Chimerist [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-03T18:56:32.199Z\",\n    \"accuracy\": \"14\",\n    \"dealer\": {\n      \"name\": \"Salamander\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Range\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Chimerist\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 23,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 35,\n        \"to\": 12\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Salamander deals 23 Null damage to BD Test — Chimerist [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-03T18:56:50.558Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Inferex\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"effect\"\n    },\n    \"target\": {\n      \"name\": \"Inferex\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": true,\n      \"element\": \"fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 18,\n      \"effectiveness\": \"Absorbed\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 178,\n        \"to\": 178\n      },\n      \"mp\": null,\n      \"shield\": null,\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Inferex heals Inferex for 18 HP\"\n  },\n  {\n    \"ts\": \"2026-07-03T18:57:06.899Z\",\n    \"accuracy\": \"13\",\n    \"dealer\": {\n      \"name\": \"Inferex\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Skill\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Chimerist\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"Fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 52,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 62,\n        \"to\": 10\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Inferex deals 52 Fire damage to BD Test — Chimerist [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-03T18:57:06.927Z\",\n    \"accuracy\": \"13\",\n    \"dealer\": {\n      \"name\": \"Inferex\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Skill\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"Fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 26,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999913,\n        \"to\": 999887\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Inferex deals 26 Fire damage to BD Dummy Enemy [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-03T18:57:33.561Z\",\n    \"accuracy\": \"8\",\n    \"dealer\": {\n      \"name\": \"Inferex\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Skill\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Chimerist\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"Fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 47,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 10,\n        \"to\": 0\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Inferex deals 47 Fire damage to BD Test — Chimerist [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-03T18:57:33.563Z\",\n    \"accuracy\": \"8\",\n    \"dealer\": {\n      \"name\": \"Inferex\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Skill\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"Fire\",\n      \"weaponType\": null\n    },\n    \"miss\": true,\n    \"summary\": \"Inferex misses BD Dummy Enemy\"\n  },\n  {\n    \"ts\": \"2026-07-03T19:33:41.690Z\",\n    \"accuracy\": \"18\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"ice\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 44,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999999,\n        \"to\": 999955\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 44 Ice damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-03T19:33:59.866Z\",\n    \"accuracy\": \"17\",\n    \"dealer\": {\n      \"name\": \"Hina\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"Ice\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 25,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999955,\n        \"to\": 999930\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Hina deals 25 Ice damage to BD Dummy Enemy [Normal]\"\n  }\n]",
-      "battle_log_table": {
-        "0": {
-          "$deleted": false,
-          "accuracy": "14",
-          "affinity": "Normal",
-          "apply_mode": "Damage",
-          "attack_target": "BD Test — Chimerist",
-          "attacker": "Inferex",
-          "damage_type": "Fire",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "Skill",
-          "value": "40",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        "1": {
-          "$deleted": false,
-          "accuracy": "-",
-          "affinity": "Resisted",
-          "apply_mode": "Damage",
-          "attack_target": "Salamander",
-          "attacker": "Salamander",
-          "damage_type": "Fire",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "effect",
-          "value": "4",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        "2": {
-          "$deleted": false,
-          "accuracy": "12",
-          "affinity": "Normal",
-          "apply_mode": "Damage",
-          "attack_target": "BD Test — Chimerist",
-          "attacker": "Salamander",
-          "damage_type": "Fire",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "Spell",
-          "value": "42",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        "3": {
-          "$deleted": false,
-          "accuracy": "21",
-          "affinity": "Normal",
-          "apply_mode": "Damage",
-          "attack_target": "BD Test — Chimerist",
-          "attacker": "Inferex",
-          "damage_type": "Elementless",
-          "efficiency": "100%",
-          "range": "Range",
-          "source_type": "Attack",
-          "value": "48",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        "4": {
-          "$deleted": false,
-          "accuracy": "14",
-          "affinity": "Normal",
-          "apply_mode": "Damage",
-          "attack_target": "BD Test — Chimerist",
-          "attacker": "Salamander",
-          "damage_type": "Elementless",
-          "efficiency": "100%",
-          "range": "Range",
-          "source_type": "Attack",
-          "value": "44",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        "5": {
-          "$deleted": false,
-          "accuracy": "18",
-          "affinity": "Normal",
-          "apply_mode": "Damage",
-          "attack_target": "Salamander",
-          "attacker": "Inferex",
-          "damage_type": "Elementless",
-          "efficiency": "100%",
-          "range": "Melee",
-          "source_type": "Attack",
-          "value": "51",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        "6": {
-          "$deleted": false,
-          "accuracy": "-",
-          "affinity": "Absorbed",
-          "apply_mode": "Healing",
-          "attack_target": "Inferex",
-          "attacker": "Inferex",
-          "damage_type": "Fire",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "effect",
-          "value": "18",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        "7": {
-          "$deleted": false,
-          "accuracy": "11",
-          "affinity": "Resisted",
-          "apply_mode": "Damage",
-          "attack_target": "BD Test — Chimerist",
-          "attacker": "Inferex",
-          "damage_type": "Elementless",
-          "efficiency": "100%",
-          "range": "Range",
-          "source_type": "Attack",
-          "value": "22",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        "8": {
-          "$deleted": false,
-          "accuracy": "9",
-          "affinity": "Resisted",
-          "apply_mode": "Damage",
-          "attack_target": "BD Test — Chimerist",
-          "attacker": "Salamander",
-          "damage_type": "Fire",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "Spell",
-          "value": "12",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        "9": {
-          "$deleted": false,
-          "accuracy": "9",
-          "affinity": "—",
-          "apply_mode": "Miss",
-          "attack_target": "BD Dummy Enemy",
-          "attacker": "Salamander",
-          "damage_type": "Fire",
-          "efficiency": "—",
-          "range": "None",
-          "source_type": "Spell",
-          "value": "—",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        "10": {
-          "$deleted": false,
-          "accuracy": "9",
-          "affinity": "Resisted",
-          "apply_mode": "Damage",
-          "attack_target": "BD Test — Chimerist",
-          "attacker": "Salamander",
-          "damage_type": "Fire",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "Spell",
-          "value": "12",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        "11": {
-          "$deleted": false,
-          "accuracy": "9",
-          "affinity": "—",
-          "apply_mode": "Miss",
-          "attack_target": "BD Dummy Enemy",
-          "attacker": "Salamander",
-          "damage_type": "Fire",
-          "efficiency": "—",
-          "range": "None",
-          "source_type": "Spell",
-          "value": "—",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        "12": {
+      "battle_log": "[\n  {\n    \"ts\": \"2026-07-04T06:36:36.928Z\",\n    \"accuracy\": \"19\",\n    \"dealer\": {\n      \"name\": \"Dryad\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Chimerist\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 27,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 109,\n        \"to\": 82\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Dryad deals 27 Fire damage to BD Test — Chimerist [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-04T06:36:36.957Z\",\n    \"accuracy\": \"19\",\n    \"dealer\": {\n      \"name\": \"Dryad\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 53,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999999,\n        \"to\": 999946\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Dryad deals 53 Fire damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-04T06:36:56.736Z\",\n    \"accuracy\": \"20\",\n    \"dealer\": {\n      \"name\": \"Inferex\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Melee\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"Dryad\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 55,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 65,\n        \"to\": 10\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Inferex deals 55 Null damage to Dryad [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-04T06:37:25.147Z\",\n    \"accuracy\": \"16\",\n    \"dealer\": {\n      \"name\": \"Salamander\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Chimerist\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"Fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 13,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 82,\n        \"to\": 69\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Salamander deals 13 Fire damage to BD Test — Chimerist [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-04T06:37:25.185Z\",\n    \"accuracy\": \"16\",\n    \"dealer\": {\n      \"name\": \"Salamander\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"Fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 13,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999946,\n        \"to\": 999933\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Salamander deals 13 Fire damage to BD Dummy Enemy [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-04T06:37:32.029Z\",\n    \"accuracy\": \"16\",\n    \"dealer\": {\n      \"name\": \"Marigold\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Range\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 23,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999933,\n        \"to\": 999910\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Marigold deals 23 Null damage to BD Dummy Enemy [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-04T06:39:05.409Z\",\n    \"accuracy\": \"13\",\n    \"dealer\": {\n      \"name\": \"Inferex\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Melee\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"Salamander\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 64,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 65,\n        \"to\": 1\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Inferex deals 64 Null damage to Salamander [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-04T06:39:08.069Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Salamander\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"effect\"\n    },\n    \"target\": {\n      \"name\": \"Salamander\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 4,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 1,\n        \"to\": 0\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Salamander deals 4 Fire damage to Salamander [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-04T07:15:06.502Z\",\n    \"accuracy\": \"13\",\n    \"dealer\": {\n      \"name\": \"Dryad\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Spell\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Chimerist\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 25,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 109,\n        \"to\": 84\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Dryad deals 25 Fire damage to BD Test — Chimerist [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-04T11:14:43.255Z\",\n    \"accuracy\": \"17\",\n    \"dealer\": {\n      \"name\": \"Inferex\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Melee\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"Salamander\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 69,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 65,\n        \"to\": 0\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Inferex deals 69 Null damage to Salamander [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-04T11:14:52.094Z\",\n    \"accuracy\": \"19\",\n    \"dealer\": {\n      \"name\": \"Inferex\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Melee\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 70,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999999,\n        \"to\": 999929\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Inferex deals 70 Null damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-04T11:15:16.528Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Centuaros\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Skill\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Chimerist\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"Fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 5,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 109,\n        \"to\": 104\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Centuaros deals 5 Fire damage to BD Test — Chimerist [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-04T11:15:16.559Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Centuaros\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Skill\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"Fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 5,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999929,\n        \"to\": 999924\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Centuaros deals 5 Fire damage to BD Dummy Enemy [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-04T11:15:16.586Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Centuaros\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Skill\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"Fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 10,\n      \"effectiveness\": \"Normal\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999999,\n        \"to\": 999989\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Centuaros deals 10 Fire damage to BD Dummy Enemy [Normal]\"\n  },\n  {\n    \"ts\": \"2026-07-04T11:15:43.674Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Centuaros\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Skill\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Chimerist\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"Fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 5,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 104,\n        \"to\": 99\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Centuaros deals 5 Fire damage to BD Test — Chimerist [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-04T11:15:43.703Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Centuaros\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Skill\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"Fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 5,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999924,\n        \"to\": 999919\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Centuaros deals 5 Fire damage to BD Dummy Enemy [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-04T11:15:43.739Z\",\n    \"accuracy\": \"-\",\n    \"dealer\": {\n      \"name\": \"Centuaros\",\n      \"disposition\": \"neutral\",\n      \"range\": \"None\",\n      \"sourceType\": \"Skill\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"Fire\",\n      \"valueType\": \"hp\",\n      \"weaponType\": null,\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 5,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999989,\n        \"to\": 999984\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Centuaros deals 5 Fire damage to BD Dummy Enemy [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-04T11:16:00.189Z\",\n    \"accuracy\": \"15\",\n    \"dealer\": {\n      \"name\": \"Inferex\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Melee\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 34,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999984,\n        \"to\": 999950\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Inferex deals 34 Null damage to BD Dummy Enemy [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-04T11:16:30.185Z\",\n    \"accuracy\": \"20\",\n    \"dealer\": {\n      \"name\": \"Centuaros\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Melee\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Chimerist\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 24,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 99,\n        \"to\": 75\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Centuaros deals 24 Null damage to BD Test — Chimerist [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-04T11:16:30.219Z\",\n    \"accuracy\": \"20\",\n    \"dealer\": {\n      \"name\": \"Centuaros\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Melee\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 24,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999919,\n        \"to\": 999895\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Centuaros deals 24 Null damage to BD Dummy Enemy [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-04T11:16:30.261Z\",\n    \"accuracy\": \"20\",\n    \"dealer\": {\n      \"name\": \"Centuaros\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Melee\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 24,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999950,\n        \"to\": 999926\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Centuaros deals 24 Null damage to BD Dummy Enemy [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-04T11:16:35.218Z\",\n    \"accuracy\": \"26\",\n    \"dealer\": {\n      \"name\": \"Centuaros\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Melee\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Chimerist\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 16,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 75,\n        \"to\": 59\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Centuaros deals 16 Null damage to BD Test — Chimerist [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-04T11:16:35.276Z\",\n    \"accuracy\": \"26\",\n    \"dealer\": {\n      \"name\": \"Centuaros\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Melee\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 16,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999895,\n        \"to\": 999879\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Centuaros deals 16 Null damage to BD Dummy Enemy [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-04T11:16:35.318Z\",\n    \"accuracy\": \"26\",\n    \"dealer\": {\n      \"name\": \"Centuaros\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Melee\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 16,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999926,\n        \"to\": 999910\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Centuaros deals 16 Null damage to BD Dummy Enemy [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-04T11:16:39.489Z\",\n    \"accuracy\": \"10\",\n    \"dealer\": {\n      \"name\": \"Centuaros\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Melee\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Chimerist\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 8,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 59,\n        \"to\": 51\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Centuaros deals 8 Null damage to BD Test — Chimerist [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-04T11:16:39.524Z\",\n    \"accuracy\": \"10\",\n    \"dealer\": {\n      \"name\": \"Centuaros\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Melee\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 8,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999879,\n        \"to\": 999871\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Centuaros deals 8 Null damage to BD Dummy Enemy [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-04T11:16:39.567Z\",\n    \"accuracy\": \"10\",\n    \"dealer\": {\n      \"name\": \"Centuaros\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Melee\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"isRecovery\": false,\n      \"element\": \"elementless\",\n      \"valueType\": \"hp\",\n      \"weaponType\": \"\",\n      \"isCrit\": false\n    },\n    \"computed\": {\n      \"finalValue\": 8,\n      \"effectiveness\": \"Resisted\"\n    },\n    \"result\": {\n      \"hp\": {\n        \"from\": 999910,\n        \"to\": 999902\n      },\n      \"mp\": null,\n      \"shield\": {\n        \"from\": 0,\n        \"to\": 0\n      },\n      \"affected\": true,\n      \"noEffectReason\": null\n    },\n    \"summary\": \"Centuaros deals 8 Null damage to BD Dummy Enemy [Resisted]\"\n  },\n  {\n    \"ts\": \"2026-07-04T11:16:43.435Z\",\n    \"accuracy\": \"7\",\n    \"dealer\": {\n      \"name\": \"Centuaros\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Melee\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Test — Chimerist\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"elementless\",\n      \"weaponType\": \"\"\n    },\n    \"miss\": true,\n    \"summary\": \"Centuaros misses BD Test — Chimerist\"\n  },\n  {\n    \"ts\": \"2026-07-04T11:16:43.437Z\",\n    \"accuracy\": \"7\",\n    \"dealer\": {\n      \"name\": \"Centuaros\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Melee\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"elementless\",\n      \"weaponType\": \"\"\n    },\n    \"miss\": true,\n    \"summary\": \"Centuaros misses BD Dummy Enemy\"\n  },\n  {\n    \"ts\": \"2026-07-04T11:16:43.438Z\",\n    \"accuracy\": \"7\",\n    \"dealer\": {\n      \"name\": \"Centuaros\",\n      \"disposition\": \"neutral\",\n      \"range\": \"Melee\",\n      \"sourceType\": \"Attack\"\n    },\n    \"target\": {\n      \"name\": \"BD Dummy Enemy\",\n      \"disposition\": \"neutral\"\n    },\n    \"inputs\": {\n      \"element\": \"elementless\",\n      \"weaponType\": \"\"\n    },\n    \"miss\": true,\n    \"summary\": \"Centuaros misses BD Dummy Enemy\"\n  }\n]",
+      "battle_log_table": [
+        {
           "$deleted": false,
           "accuracy": "19",
           "affinity": "Resisted",
           "apply_mode": "Damage",
-          "attack_target": "BD Dummy Enemy",
-          "attacker": "Inferex",
-          "damage_type": "Elementless",
+          "attack_target": "BD Test — Chimerist",
+          "attacker": "Dryad",
+          "damage_type": "Fire",
           "efficiency": "100%",
-          "range": "Range",
-          "source_type": "Attack",
-          "value": "24",
+          "range": "None",
+          "source_type": "Spell",
+          "value": "27",
           "value_type": "HP",
           "weapon_type": "—"
         },
-        "13": {
+        {
           "$deleted": false,
-          "accuracy": "15",
+          "accuracy": "19",
+          "affinity": "Normal",
+          "apply_mode": "Damage",
+          "attack_target": "BD Dummy Enemy",
+          "attacker": "Dryad",
+          "damage_type": "Fire",
+          "efficiency": "100%",
+          "range": "None",
+          "source_type": "Spell",
+          "value": "53",
+          "value_type": "HP",
+          "weapon_type": "—"
+        },
+        {
+          "$deleted": false,
+          "accuracy": "20",
+          "affinity": "Normal",
+          "apply_mode": "Damage",
+          "attack_target": "Dryad",
+          "attacker": "Inferex",
+          "damage_type": "Elementless",
+          "efficiency": "100%",
+          "range": "Melee",
+          "source_type": "Attack",
+          "value": "55",
+          "value_type": "HP",
+          "weapon_type": "—"
+        },
+        {
+          "$deleted": false,
+          "accuracy": "16",
+          "affinity": "Resisted",
+          "apply_mode": "Damage",
+          "attack_target": "BD Test — Chimerist",
+          "attacker": "Salamander",
+          "damage_type": "Fire",
+          "efficiency": "100%",
+          "range": "None",
+          "source_type": "Spell",
+          "value": "13",
+          "value_type": "HP",
+          "weapon_type": "—"
+        },
+        {
+          "$deleted": false,
+          "accuracy": "16",
           "affinity": "Resisted",
           "apply_mode": "Damage",
           "attack_target": "BD Dummy Enemy",
           "attacker": "Salamander",
+          "damage_type": "Fire",
+          "efficiency": "100%",
+          "range": "None",
+          "source_type": "Spell",
+          "value": "13",
+          "value_type": "HP",
+          "weapon_type": "—"
+        },
+        {
+          "$deleted": false,
+          "accuracy": "16",
+          "affinity": "Resisted",
+          "apply_mode": "Damage",
+          "attack_target": "BD Dummy Enemy",
+          "attacker": "Marigold",
           "damage_type": "Elementless",
           "efficiency": "100%",
           "range": "Range",
@@ -5981,24 +5865,9 @@
           "value_type": "HP",
           "weapon_type": "—"
         },
-        "14": {
+        {
           "$deleted": false,
-          "accuracy": "10",
-          "affinity": "Resisted",
-          "apply_mode": "Damage",
-          "attack_target": "BD Dummy Enemy",
-          "attacker": "Salamander",
-          "damage_type": "Elementless",
-          "efficiency": "100%",
-          "range": "Range",
-          "source_type": "Attack",
-          "value": "21",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        "15": {
-          "$deleted": false,
-          "accuracy": "11",
+          "accuracy": "13",
           "affinity": "Normal",
           "apply_mode": "Damage",
           "attack_target": "Salamander",
@@ -6007,11 +5876,11 @@
           "efficiency": "100%",
           "range": "Melee",
           "source_type": "Attack",
-          "value": "49",
+          "value": "64",
           "value_type": "HP",
           "weapon_type": "—"
         },
-        "16": {
+        {
           "$deleted": false,
           "accuracy": "-",
           "affinity": "Resisted",
@@ -6026,202 +5895,337 @@
           "value_type": "HP",
           "weapon_type": "—"
         },
-        "17": {
-          "$deleted": false,
-          "accuracy": "18",
-          "affinity": "Resisted",
-          "apply_mode": "Damage",
-          "attack_target": "BD Test — Chimerist",
-          "attacker": "Salamander",
-          "damage_type": "Fire",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "Spell",
-          "value": "18",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        "18": {
-          "$deleted": false,
-          "accuracy": "18",
-          "affinity": "Resisted",
-          "apply_mode": "Damage",
-          "attack_target": "BD Dummy Enemy",
-          "attacker": "Salamander",
-          "damage_type": "Fire",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "Spell",
-          "value": "18",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        "19": {
-          "$deleted": false,
-          "accuracy": "-",
-          "affinity": "Absorbed",
-          "apply_mode": "Healing",
-          "attack_target": "Inferex",
-          "attacker": "Inferex",
-          "damage_type": "Fire",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "effect",
-          "value": "18",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        "20": {
+        {
           "$deleted": false,
           "accuracy": "13",
           "affinity": "Resisted",
           "apply_mode": "Damage",
           "attack_target": "BD Test — Chimerist",
-          "attacker": "Inferex",
-          "damage_type": "Elementless",
-          "efficiency": "100%",
-          "range": "Range",
-          "source_type": "Attack",
-          "value": "33",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        "21": {
-          "$deleted": false,
-          "accuracy": "15",
-          "affinity": "Resisted",
-          "apply_mode": "Damage",
-          "attack_target": "BD Test — Chimerist",
-          "attacker": "Salamander",
-          "damage_type": "Elementless",
-          "efficiency": "100%",
-          "range": "Range",
-          "source_type": "Attack",
-          "value": "23",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        "22": {
-          "$deleted": false,
-          "accuracy": "14",
-          "affinity": "Resisted",
-          "apply_mode": "Damage",
-          "attack_target": "BD Test — Chimerist",
-          "attacker": "Salamander",
-          "damage_type": "Elementless",
-          "efficiency": "100%",
-          "range": "Range",
-          "source_type": "Attack",
-          "value": "23",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        "23": {
-          "$deleted": false,
-          "accuracy": "-",
-          "affinity": "Absorbed",
-          "apply_mode": "Healing",
-          "attack_target": "Inferex",
-          "attacker": "Inferex",
+          "attacker": "Dryad",
           "damage_type": "Fire",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "effect",
-          "value": "18",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        "24": {
-          "$deleted": false,
-          "accuracy": "13",
-          "affinity": "Normal",
-          "apply_mode": "Damage",
-          "attack_target": "BD Test — Chimerist",
-          "attacker": "Inferex",
-          "damage_type": "Fire",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "Skill",
-          "value": "52",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        "25": {
-          "$deleted": false,
-          "accuracy": "13",
-          "affinity": "Resisted",
-          "apply_mode": "Damage",
-          "attack_target": "BD Dummy Enemy",
-          "attacker": "Inferex",
-          "damage_type": "Fire",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "Skill",
-          "value": "26",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        "26": {
-          "$deleted": false,
-          "accuracy": "8",
-          "affinity": "Normal",
-          "apply_mode": "Damage",
-          "attack_target": "BD Test — Chimerist",
-          "attacker": "Inferex",
-          "damage_type": "Fire",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "Skill",
-          "value": "47",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        "27": {
-          "$deleted": false,
-          "accuracy": "8",
-          "affinity": "—",
-          "apply_mode": "Miss",
-          "attack_target": "BD Dummy Enemy",
-          "attacker": "Inferex",
-          "damage_type": "Fire",
-          "efficiency": "—",
-          "range": "None",
-          "source_type": "Skill",
-          "value": "—",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        "28": {
-          "$deleted": false,
-          "accuracy": "18",
-          "affinity": "Normal",
-          "apply_mode": "Damage",
-          "attack_target": "BD Dummy Enemy",
-          "attacker": "Hina",
-          "damage_type": "Ice",
-          "efficiency": "100%",
-          "range": "None",
-          "source_type": "Spell",
-          "value": "44",
-          "value_type": "HP",
-          "weapon_type": "—"
-        },
-        "29": {
-          "$deleted": false,
-          "accuracy": "17",
-          "affinity": "Normal",
-          "apply_mode": "Damage",
-          "attack_target": "BD Dummy Enemy",
-          "attacker": "Hina",
-          "damage_type": "Ice",
           "efficiency": "100%",
           "range": "None",
           "source_type": "Spell",
           "value": "25",
           "value_type": "HP",
           "weapon_type": "—"
+        },
+        {
+          "$deleted": false,
+          "accuracy": "17",
+          "affinity": "Normal",
+          "apply_mode": "Damage",
+          "attack_target": "Salamander",
+          "attacker": "Inferex",
+          "damage_type": "Elementless",
+          "efficiency": "100%",
+          "range": "Melee",
+          "source_type": "Attack",
+          "value": "69",
+          "value_type": "HP",
+          "weapon_type": "—"
+        },
+        {
+          "$deleted": false,
+          "accuracy": "19",
+          "affinity": "Normal",
+          "apply_mode": "Damage",
+          "attack_target": "BD Dummy Enemy",
+          "attacker": "Inferex",
+          "damage_type": "Elementless",
+          "efficiency": "100%",
+          "range": "Melee",
+          "source_type": "Attack",
+          "value": "70",
+          "value_type": "HP",
+          "weapon_type": "—"
+        },
+        {
+          "$deleted": false,
+          "accuracy": "-",
+          "affinity": "Resisted",
+          "apply_mode": "Damage",
+          "attack_target": "BD Test — Chimerist",
+          "attacker": "Centuaros",
+          "damage_type": "Fire",
+          "efficiency": "100%",
+          "range": "None",
+          "source_type": "Skill",
+          "value": "5",
+          "value_type": "HP",
+          "weapon_type": "—"
+        },
+        {
+          "$deleted": false,
+          "accuracy": "-",
+          "affinity": "Resisted",
+          "apply_mode": "Damage",
+          "attack_target": "BD Dummy Enemy",
+          "attacker": "Centuaros",
+          "damage_type": "Fire",
+          "efficiency": "100%",
+          "range": "None",
+          "source_type": "Skill",
+          "value": "5",
+          "value_type": "HP",
+          "weapon_type": "—"
+        },
+        {
+          "$deleted": false,
+          "accuracy": "-",
+          "affinity": "Normal",
+          "apply_mode": "Damage",
+          "attack_target": "BD Dummy Enemy",
+          "attacker": "Centuaros",
+          "damage_type": "Fire",
+          "efficiency": "100%",
+          "range": "None",
+          "source_type": "Skill",
+          "value": "10",
+          "value_type": "HP",
+          "weapon_type": "—"
+        },
+        {
+          "$deleted": false,
+          "accuracy": "-",
+          "affinity": "Resisted",
+          "apply_mode": "Damage",
+          "attack_target": "BD Test — Chimerist",
+          "attacker": "Centuaros",
+          "damage_type": "Fire",
+          "efficiency": "100%",
+          "range": "None",
+          "source_type": "Skill",
+          "value": "5",
+          "value_type": "HP",
+          "weapon_type": "—"
+        },
+        {
+          "$deleted": false,
+          "accuracy": "-",
+          "affinity": "Resisted",
+          "apply_mode": "Damage",
+          "attack_target": "BD Dummy Enemy",
+          "attacker": "Centuaros",
+          "damage_type": "Fire",
+          "efficiency": "100%",
+          "range": "None",
+          "source_type": "Skill",
+          "value": "5",
+          "value_type": "HP",
+          "weapon_type": "—"
+        },
+        {
+          "$deleted": false,
+          "accuracy": "-",
+          "affinity": "Resisted",
+          "apply_mode": "Damage",
+          "attack_target": "BD Dummy Enemy",
+          "attacker": "Centuaros",
+          "damage_type": "Fire",
+          "efficiency": "100%",
+          "range": "None",
+          "source_type": "Skill",
+          "value": "5",
+          "value_type": "HP",
+          "weapon_type": "—"
+        },
+        {
+          "$deleted": false,
+          "accuracy": "15",
+          "affinity": "Resisted",
+          "apply_mode": "Damage",
+          "attack_target": "BD Dummy Enemy",
+          "attacker": "Inferex",
+          "damage_type": "Elementless",
+          "efficiency": "100%",
+          "range": "Melee",
+          "source_type": "Attack",
+          "value": "34",
+          "value_type": "HP",
+          "weapon_type": "—"
+        },
+        {
+          "$deleted": false,
+          "accuracy": "20",
+          "affinity": "Resisted",
+          "apply_mode": "Damage",
+          "attack_target": "BD Test — Chimerist",
+          "attacker": "Centuaros",
+          "damage_type": "Elementless",
+          "efficiency": "100%",
+          "range": "Melee",
+          "source_type": "Attack",
+          "value": "24",
+          "value_type": "HP",
+          "weapon_type": "—"
+        },
+        {
+          "$deleted": false,
+          "accuracy": "20",
+          "affinity": "Resisted",
+          "apply_mode": "Damage",
+          "attack_target": "BD Dummy Enemy",
+          "attacker": "Centuaros",
+          "damage_type": "Elementless",
+          "efficiency": "100%",
+          "range": "Melee",
+          "source_type": "Attack",
+          "value": "24",
+          "value_type": "HP",
+          "weapon_type": "—"
+        },
+        {
+          "$deleted": false,
+          "accuracy": "20",
+          "affinity": "Resisted",
+          "apply_mode": "Damage",
+          "attack_target": "BD Dummy Enemy",
+          "attacker": "Centuaros",
+          "damage_type": "Elementless",
+          "efficiency": "100%",
+          "range": "Melee",
+          "source_type": "Attack",
+          "value": "24",
+          "value_type": "HP",
+          "weapon_type": "—"
+        },
+        {
+          "$deleted": false,
+          "accuracy": "26",
+          "affinity": "Resisted",
+          "apply_mode": "Damage",
+          "attack_target": "BD Test — Chimerist",
+          "attacker": "Centuaros",
+          "damage_type": "Elementless",
+          "efficiency": "100%",
+          "range": "Melee",
+          "source_type": "Attack",
+          "value": "16",
+          "value_type": "HP",
+          "weapon_type": "—"
+        },
+        {
+          "$deleted": false,
+          "accuracy": "26",
+          "affinity": "Resisted",
+          "apply_mode": "Damage",
+          "attack_target": "BD Dummy Enemy",
+          "attacker": "Centuaros",
+          "damage_type": "Elementless",
+          "efficiency": "100%",
+          "range": "Melee",
+          "source_type": "Attack",
+          "value": "16",
+          "value_type": "HP",
+          "weapon_type": "—"
+        },
+        {
+          "$deleted": false,
+          "accuracy": "26",
+          "affinity": "Resisted",
+          "apply_mode": "Damage",
+          "attack_target": "BD Dummy Enemy",
+          "attacker": "Centuaros",
+          "damage_type": "Elementless",
+          "efficiency": "100%",
+          "range": "Melee",
+          "source_type": "Attack",
+          "value": "16",
+          "value_type": "HP",
+          "weapon_type": "—"
+        },
+        {
+          "$deleted": false,
+          "accuracy": "10",
+          "affinity": "Resisted",
+          "apply_mode": "Damage",
+          "attack_target": "BD Test — Chimerist",
+          "attacker": "Centuaros",
+          "damage_type": "Elementless",
+          "efficiency": "100%",
+          "range": "Melee",
+          "source_type": "Attack",
+          "value": "8",
+          "value_type": "HP",
+          "weapon_type": "—"
+        },
+        {
+          "$deleted": false,
+          "accuracy": "10",
+          "affinity": "Resisted",
+          "apply_mode": "Damage",
+          "attack_target": "BD Dummy Enemy",
+          "attacker": "Centuaros",
+          "damage_type": "Elementless",
+          "efficiency": "100%",
+          "range": "Melee",
+          "source_type": "Attack",
+          "value": "8",
+          "value_type": "HP",
+          "weapon_type": "—"
+        },
+        {
+          "$deleted": false,
+          "accuracy": "10",
+          "affinity": "Resisted",
+          "apply_mode": "Damage",
+          "attack_target": "BD Dummy Enemy",
+          "attacker": "Centuaros",
+          "damage_type": "Elementless",
+          "efficiency": "100%",
+          "range": "Melee",
+          "source_type": "Attack",
+          "value": "8",
+          "value_type": "HP",
+          "weapon_type": "—"
+        },
+        {
+          "$deleted": false,
+          "accuracy": "7",
+          "affinity": "—",
+          "apply_mode": "Miss",
+          "attack_target": "BD Test — Chimerist",
+          "attacker": "Centuaros",
+          "damage_type": "Elementless",
+          "efficiency": "—",
+          "range": "Melee",
+          "source_type": "Attack",
+          "value": "—",
+          "value_type": "HP",
+          "weapon_type": "—"
+        },
+        {
+          "$deleted": false,
+          "accuracy": "7",
+          "affinity": "—",
+          "apply_mode": "Miss",
+          "attack_target": "BD Dummy Enemy",
+          "attacker": "Centuaros",
+          "damage_type": "Elementless",
+          "efficiency": "—",
+          "range": "Melee",
+          "source_type": "Attack",
+          "value": "—",
+          "value_type": "HP",
+          "weapon_type": "—"
+        },
+        {
+          "$deleted": false,
+          "accuracy": "7",
+          "affinity": "—",
+          "apply_mode": "Miss",
+          "attack_target": "BD Dummy Enemy",
+          "attacker": "Centuaros",
+          "damage_type": "Elementless",
+          "efficiency": "—",
+          "range": "Melee",
+          "source_type": "Attack",
+          "value": "—",
+          "value_type": "HP",
+          "weapon_type": "—"
         }
-      },
+      ],
       "battle_tile_percentage": "0",
       "bench_currenthp_1": "0",
       "bench_currenthp_2": "0",

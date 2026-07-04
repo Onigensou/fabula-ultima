@@ -14,7 +14,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782752502642,
+        "createdTime": 1783148630844,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -111,7 +111,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782583515350,
+        "createdTime": 1783148630844,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -176,6 +176,103 @@
       "tint": "#ffffff",
       "transfer": false,
       "type": "base"
+    },
+    {
+      "_id": "PKrtetot3TbnSvZG",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1783148630327,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_3",
+          "mode": 0,
+          "priority": 1,
+          "value": "VU"
+        },
+        {
+          "key": "wet_status",
+          "mode": 5,
+          "priority": 1,
+          "value": "true"
+        }
+      ],
+      "description": "<p>Gain <strong>Bolt </strong>vulnerability</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "sKaI09DfDAMkJkyy",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.sKaI09DfDAMkJkyy"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-wet",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "fabula-ultima-companion": {
+          "crossScene": true,
+          "directorPermanent": true,
+          "setBonus": "Swift Swimmers:2:ae",
+          "setBonusSig": "{\"n\":\"Wet\",\"s\":[\"5FFBDg2y54bpqgat\"],\"c\":[{\"k\":\"affinity_3\",\"m\":0,\"v\":\"VU\"},{\"k\":\"wet_status\",\"m\":5,\"v\":\"true\"}],\"di\":false,\"du\":{},\"dp\":true,\"cs\":true}",
+          "wetStatusBooleanPatchBackup_v1": {
+            "changes": [
+              {
+                "key": "affinity_3",
+                "mode": 0,
+                "priority": 1,
+                "value": "VU"
+              }
+            ],
+            "createdAt": 1777713393201,
+            "effectName": "Wet",
+            "effectUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.sKaI09DfDAMkJkyy",
+            "parentName": "Debuff",
+            "parentType": "Item"
+          }
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/flying_sardine.png",
+      "name": "Wet",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "5FFBDg2y54bpqgat"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
     }
   ],
   "flags": {
@@ -183,6 +280,10 @@
       "version": "4.8.4"
     },
     "fabula-ultima-companion": {
+      "damage_dealt_mult_all": 1,
+      "damage_dealt_mult_attack": 1,
+      "damage_dealt_mult_skill": 1,
+      "damage_dealt_mult_spell": 1,
       "damage_taken_mult": 1,
       "iconFocus": {
         "x": 48,
@@ -330,7 +431,7 @@
       "_stats": {
         "compendiumSource": "Item.YNRwUI8yD6PLZo5U",
         "coreVersion": "12.343",
-        "createdTime": 1782566182098,
+        "createdTime": 1783148628740,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -437,7 +538,7 @@
       "_stats": {
         "compendiumSource": "Item.TpHy6WcxSkQRhgtS",
         "coreVersion": "12.343",
-        "createdTime": 1782566182098,
+        "createdTime": 1783148628740,
         "duplicateSource": "Item.OsIQ6VBzU7XklPUQ",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -561,7 +662,7 @@
       "_stats": {
         "compendiumSource": "Item.k7gaSnhF7IynAnfG",
         "coreVersion": "12.343",
-        "createdTime": 1782566182098,
+        "createdTime": 1783148628740,
         "duplicateSource": "Item.TpHy6WcxSkQRhgtS",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -663,7 +764,7 @@
       "_stats": {
         "compendiumSource": "Item.CnueY54QHD80cmph",
         "coreVersion": "12.343",
-        "createdTime": 1782742271224,
+        "createdTime": 1783148628740,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -855,7 +956,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782566182098,
+        "createdTime": 1783148628740,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1060,7 +1161,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1782572855702,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -1080,7 +1181,7 @@
             "rounds": null,
             "seconds": null,
             "startRound": null,
-            "startTime": null,
+            "startTime": 298800,
             "startTurn": null,
             "turns": null
           },
@@ -1118,7 +1219,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1782572856794,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -1138,7 +1239,7 @@
             "rounds": null,
             "seconds": null,
             "startRound": null,
-            "startTime": null,
+            "startTime": 298800,
             "startTurn": null,
             "turns": null
           },
@@ -1345,7 +1446,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782624786853,
+        "createdTime": 1783148628740,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1401,7 +1502,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782566182098,
+        "createdTime": 1783148628740,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1474,7 +1575,7 @@
       "_stats": {
         "compendiumSource": "Item.uNsw1vWtAssZo4Bz",
         "coreVersion": "12.343",
-        "createdTime": 1782566182098,
+        "createdTime": 1783148628740,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1485,7 +1586,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1782834503222,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -1498,7 +1599,7 @@
             "rounds": null,
             "seconds": null,
             "startRound": null,
-            "startTime": null,
+            "startTime": 298800,
             "startTurn": null,
             "turns": null
           },
@@ -1756,7 +1857,7 @@
       "_stats": {
         "compendiumSource": "Item.iSDT72qWfpPtIczE",
         "coreVersion": "12.343",
-        "createdTime": 1782566182098,
+        "createdTime": 1783148628740,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1844,7 +1945,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782566182098,
+        "createdTime": 1783148628740,
         "duplicateSource": "Item.Vj0Vth8l3zMAUOoh",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -1935,7 +2036,7 @@
       "_stats": {
         "compendiumSource": "Item.FsAN2KEgFrmQnp0g",
         "coreVersion": "12.343",
-        "createdTime": 1782566182098,
+        "createdTime": 1783148628740,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2042,7 +2143,7 @@
       "_stats": {
         "compendiumSource": "Item.lRk4pXxACoezIlOD",
         "coreVersion": "12.343",
-        "createdTime": 1782566182098,
+        "createdTime": 1783148628740,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2419,7 +2520,7 @@
       "_stats": {
         "compendiumSource": "Item.pN90SZleopmB3PM1",
         "coreVersion": "12.343",
-        "createdTime": 1782566182098,
+        "createdTime": 1783148628740,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2507,7 +2608,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782566182098,
+        "createdTime": 1783148628740,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2867,7 +2968,7 @@
       "_stats": {
         "compendiumSource": "Item.tE8pb6Spf4UoFo55",
         "coreVersion": "12.343",
-        "createdTime": 1782566182098,
+        "createdTime": 1783148628740,
         "duplicateSource": "Item.G6zwbm2sfECSKpDM",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3059,7 +3160,7 @@
       "_stats": {
         "compendiumSource": "Item.ivCSQcT8cuj07ELa",
         "coreVersion": "12.343",
-        "createdTime": 1782566182098,
+        "createdTime": 1783148628740,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3126,7 +3227,7 @@
       "_stats": {
         "compendiumSource": "Item.14ni8QTjG5uq5whY",
         "coreVersion": "12.343",
-        "createdTime": 1782566182098,
+        "createdTime": 1783148628740,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3528,7 +3629,7 @@
       "_stats": {
         "compendiumSource": "Item.43HnRNN8cWeAgSmr",
         "coreVersion": "12.343",
-        "createdTime": 1782584777153,
+        "createdTime": 1783148628740,
         "duplicateSource": "Item.tE8pb6Spf4UoFo55",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3651,7 +3752,7 @@
       "_stats": {
         "compendiumSource": "Item.Yt8dPWkIZtissH3m",
         "coreVersion": "12.343",
-        "createdTime": 1782566182098,
+        "createdTime": 1783148628740,
         "duplicateSource": "Item.qTU1jyH5qDXfr1MU",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3681,30 +3782,54 @@
           "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<ul><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Trigger</span></strong></a></span></span> When you cause one or more enemies to lose Hit Points</li></ul><p><strong>Choose yourself </strong>or an<strong> ally</strong> who is your <strong>focus</strong>: if the chosen creature is in <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span>, they recover an amount of <strong>Hit Points</strong> equal to <strong>[5 + (the number of filled sections in your Brainwave Clock, multiplied by 5)]</strong>.</p>",
+          "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
               "$deleted": false,
-              "auto_target": "confirm",
+              "allow_empty": false,
+              "auto_confirm_when_obvious": true,
+              "auto_target": true,
               "candidate_source": "self_or_my_focus",
+              "category": "",
+              "consume_self": false,
               "count": "1",
               "effect_kind": "targeting",
               "effect_label": "lt_pick",
+              "exclude": "",
+              "exclude_action_targets": false,
+              "exclude_self": false,
+              "from_resource": "",
+              "iteration_mode": "together",
+              "menu_label": "",
               "mode": "exact",
               "skip_when_passive": false,
-              "target_filter": "HAS_STATUS_CRISIS"
+              "target_filter": "HAS_STATUS_CRISIS",
+              "target_prompt": "",
+              "to_resource": ""
             },
             "1": {
               "$deleted": false,
+              "consume_self": false,
               "effect_kind": "grant",
               "effect_label": "lt_heal",
+              "from_resource": "",
               "grant_amount": "5 + AE_CHARGES_BRAINWAVE_CLOCK * 5",
+              "grant_operation": "",
               "grant_resource": "hp",
-              "target_ref": "lt_pick"
+              "grant_round": "",
+              "menu_label": "",
+              "target_ref": "lt_pick",
+              "to_resource": ""
             }
           },
+          "gadget_alchemy_tier": "",
+          "gadget_infusion_tier": "",
+          "gadget_magitech_tier": "",
           "heroic_requirement": "",
+          "id": "fWSnV0BKWLOPGZnq",
           "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Add/MastermindSkill2.png",
           "isCheck": false,
           "isFacet": true,
           "isHeroic": false,
@@ -3714,19 +3839,31 @@
           "level": "1",
           "max_level": "1",
           "name": "Life Transference",
+          "on_activate_effect_ref": "",
           "optional_params": {},
           "passive_logic_action": "",
+          "pre_activate_effect_ref": "",
           "reaction_config_table": {
             "0": {
               "$deleted": false,
               "condition_formula": "HAS_STATUS_CRISIS == 1 || MY_FOCUS_IN_CRISIS == 1",
+              "reaction_action_kind": "",
+              "reaction_cause_filter": "",
               "reaction_damage_amount": "",
               "reaction_damage_type": "",
               "reaction_effect_ref": "lt_heal",
+              "reaction_max_per_round": "",
+              "reaction_origin_filter": "",
               "reaction_passive_mode": "ask",
               "reaction_passive_target": "",
+              "reaction_requires_weapon_used": false,
+              "reaction_resource_filter": "",
+              "reaction_responder": "",
               "reaction_source": "self",
-              "reaction_trigger": "creature_completes_action"
+              "reaction_source_skill": "",
+              "reaction_status_filter": "",
+              "reaction_trigger": "creature_completes_action",
+              "requires_skill": ""
             }
           },
           "rolled_atr1": "-",
@@ -3735,10 +3872,13 @@
           "skill_animation_mode": "default",
           "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Filled Sections</strong></p></td><td><p><strong>MP Cost to Use Gift</strong></p></td><td><p><strong>HP Recovered</strong></p></td></tr><tr><td><p>0</p></td><td><p>5</p></td><td><p>5</p></td></tr><tr><td><p>1</p></td><td><p>5</p></td><td><p>10</p></td></tr><tr><td><p>2</p></td><td><p>10</p></td><td><p>15</p></td></tr><tr><td><p>3</p></td><td><p>15</p></td><td><p>20</p></td></tr><tr><td><p>4</p></td><td><p>20</p></td><td><p>25</p></td></tr></tbody></table>",
           "skill_range": "Any",
+          "skill_tags": "",
           "skill_target": "One ally",
           "skill_type": "Active",
+          "target_eligibility": "",
           "type_damage": "heal",
-          "use_optional_params": false
+          "use_optional_params": false,
+          "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.fWSnV0BKWLOPGZnq"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2666163373,
@@ -3752,7 +3892,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782624786853,
+        "createdTime": 1783148628740,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -3808,7 +3948,7 @@
       "_stats": {
         "compendiumSource": "Item.0Up4BNAxtoUC23jq",
         "coreVersion": "12.343",
-        "createdTime": 1782566182098,
+        "createdTime": 1783148628740,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4013,7 +4153,7 @@
       "_stats": {
         "compendiumSource": "Item.tW8QuBva77z4HwZY",
         "coreVersion": "12.343",
-        "createdTime": 1782566182098,
+        "createdTime": 1783148628740,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4177,7 +4317,7 @@
       "_stats": {
         "compendiumSource": "Item.j9ve2lwzoHiOo6bM",
         "coreVersion": "12.343",
-        "createdTime": 1782566182098,
+        "createdTime": 1783148628740,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4282,7 +4422,7 @@
       "_stats": {
         "compendiumSource": "Item.39Y43bBRXTeu4SNo",
         "coreVersion": "12.343",
-        "createdTime": 1782566182098,
+        "createdTime": 1783148628740,
         "duplicateSource": "Item.xsFQ7dGyfH0X3i2t",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4619,7 +4759,7 @@
       "_stats": {
         "compendiumSource": "Item.ZRTMm0aLWKq2UHeR",
         "coreVersion": "12.343",
-        "createdTime": 1782566182098,
+        "createdTime": 1783148628740,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4718,7 +4858,7 @@
       "_stats": {
         "compendiumSource": "Item.NNTvabK5vy807Mvt",
         "coreVersion": "12.343",
-        "createdTime": 1782566182098,
+        "createdTime": 1783148628740,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4729,7 +4869,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1782826964207,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -4749,7 +4889,7 @@
             "rounds": null,
             "seconds": null,
             "startRound": null,
-            "startTime": null,
+            "startTime": 298800,
             "startTurn": null,
             "turns": null
           },
@@ -4885,7 +5025,7 @@
       "_stats": {
         "compendiumSource": "Item.zbulFnM318NgBgh5",
         "coreVersion": "12.343",
-        "createdTime": 1782566182098,
+        "createdTime": 1783148628740,
         "duplicateSource": "Item.bbEv9kibtZscX9eJ",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5147,7 +5287,7 @@
       "_stats": {
         "compendiumSource": "Item.b8PD9B8tWQ60BEFG",
         "coreVersion": "12.343",
-        "createdTime": 1782566182098,
+        "createdTime": 1783148628740,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5269,7 +5409,7 @@
       "_stats": {
         "compendiumSource": "Item.ewCSpkXC8Awo7b0k",
         "coreVersion": "12.343",
-        "createdTime": 1782566182098,
+        "createdTime": 1783148628740,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5372,7 +5512,7 @@
       "_stats": {
         "compendiumSource": "Item.YDzMWktTnD9J9Jun",
         "coreVersion": "12.343",
-        "createdTime": 1782566182098,
+        "createdTime": 1783148628740,
         "duplicateSource": "Item.ivCSQcT8cuj07ELa",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5466,7 +5606,7 @@
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1782829655290,
+        "createdTime": 1783148628740,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5477,7 +5617,7 @@
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1782830374686,
+            "createdTime": null,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -5604,7 +5744,7 @@
       "_stats": {
         "compendiumSource": "Item.ZXaslUkB4sJRWJn3",
         "coreVersion": "12.343",
-        "createdTime": 1782566182098,
+        "createdTime": 1783148628740,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5694,7 +5834,7 @@
       "_stats": {
         "compendiumSource": "Item.Hwc20u1gKTj1foQz",
         "coreVersion": "12.343",
-        "createdTime": 1782833392874,
+        "createdTime": 1783148628740,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5807,7 +5947,7 @@
       "_stats": {
         "compendiumSource": "Item.VXzpUvjAr9Z5wfBA",
         "coreVersion": "12.343",
-        "createdTime": 1782566182098,
+        "createdTime": 1783148628740,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -5965,7 +6105,7 @@
       "_stats": {
         "compendiumSource": "Item.N2IgLImJ07QLdBVT",
         "coreVersion": "12.343",
-        "createdTime": 1782566182098,
+        "createdTime": 1783148628740,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -6121,7 +6261,7 @@
       "_stats": {
         "compendiumSource": "Item.8g79dzk64n7b0kIb",
         "coreVersion": "12.343",
-        "createdTime": 1782566182098,
+        "createdTime": 1783148628740,
         "duplicateSource": "Item.QJw9MuxrOXtRVOxx",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -6635,7 +6775,7 @@
       "critical_dice_range": 0,
       "current_hp": "89",
       "current_ip": "8",
-      "current_mp": 86,
+      "current_mp": "86",
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/Keren_Cut-in002.png",
       "cut_in_fumble": "",
@@ -7662,7 +7802,7 @@
           "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.zBJhr4X59vKtQlsh"
         }
       },
-      "skill_class_filter": "Necromancer",
+      "skill_class_filter": "",
       "skill_hideEffect": false,
       "skill_type_filter": "All",
       "slow_status": 0,

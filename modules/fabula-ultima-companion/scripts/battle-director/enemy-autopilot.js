@@ -375,12 +375,16 @@ export async function autopilotDecideAction(director, snap) {
     }
     const bundle = mapped.bundle;
 
-    // Action-gating backstop: if the chosen command is blocked (Frightened bars
-    // Attack, etc.), don't force a refusal at DECLARE — hand back to the manual
-    // menu, which greys the blocked action so the GM picks a legal one.
+    // Action-gating backstop (defense-in-depth). ActionReader now filters
+    // debuff-blocked action types out of the candidate pool itself
+    // (matchAndPickAction #5 → actorData.blockedActionLabels), so a blocked
+    // command should essentially never reach here. This stays as a cheap last
+    // resort (e.g. an ActionReader run that skipped BuildContext): if the chosen
+    // command is still blocked, hand back to the manual menu — which greys the
+    // blocked action so the GM picks a legal one — rather than forcing a refusal.
     const blocked = (snap.blockedActions ?? []).find((b) => b?.label === bundle.command);
     if (blocked) {
-      log(`autopilot: ${snap.name} → command "${bundle.command}" blocked by ${blocked.reason} — manual fallback`);
+      warn(`autopilot: ${snap.name} → command "${bundle.command}" reached backstop still blocked by ${blocked.reason} (ActionReader gating should have caught this) — manual fallback`);
       return null;
     }
 

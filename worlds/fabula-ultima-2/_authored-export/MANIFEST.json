@@ -3233,6 +3233,12 @@
         "effects": 0
       },
       {
+        "id": "QeylCRYlLepwPTaJ",
+        "name": "Ash",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "m8kOI8j6mhWVSQtR",
         "name": "Assassin's Blade",
         "type": "equippableItem",
@@ -18787,7 +18793,7 @@
             "name": "Zero Trigger: Shattered Phantasm"
           }
         ],
-        "effects": 2
+        "effects": 3
       },
       {
         "id": "EHyFlGpLQLriK65C",
@@ -20008,6 +20014,42 @@
         "name": "Princess Hilde",
         "type": "character",
         "items": [],
+        "effects": 0
+      },
+      {
+        "id": "6b49UGpZQSWh3LAI",
+        "name": "Pyrefly",
+        "type": "character",
+        "items": [
+          {
+            "id": "zMvB9AR9sgq9k5zp",
+            "name": "(Empty)"
+          },
+          {
+            "id": "lqMX5FTXLDCuCRxY",
+            "name": "Ash"
+          },
+          {
+            "id": "znZIOnlq1xyvx6hE",
+            "name": "Flying"
+          },
+          {
+            "id": "H7lsdmdWxOAmJpFO",
+            "name": "Funeral Pyre"
+          },
+          {
+            "id": "kvoDYORGnIy5JnIV",
+            "name": "Gentle Blaze"
+          },
+          {
+            "id": "2cH8i5pnW7uXCV5m",
+            "name": "Seance Beads"
+          },
+          {
+            "id": "F4Iy3N5tOcoJuuWt",
+            "name": "Spicy Powder"
+          }
+        ],
         "effects": 0
       },
       {

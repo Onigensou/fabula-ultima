@@ -136,6 +136,37 @@ function isCandidateFree(candidate) {
   return Boolean(cost.free);
 }
 
+/* -------------------------------------------------------------------------- */
+/* Action-gating (#5): don't pick an action type barred by a debuff.          */
+/* -------------------------------------------------------------------------- */
+
+// Map a matched candidate to the canonical turn-action LABEL used by the
+// action-gating debuffs (Frightened bars "Attack", Silence bars "Spell", …).
+// MUST stay in lockstep with enemy-autopilot.js `toBundle`: the AI only ever
+// composes Attack / Spell / Skill, so those are the only labels a candidate can
+// carry — a blocked "Objective"/"Equipment" simply matches nothing here.
+function candidateActionLabel(candidate) {
+  const raw = candidate?.skillType ?? getCandidateProps(candidate)?.[AR.keys.skillType] ?? "";
+  const st = AR.toString(raw, "").trim().toLowerCase();
+  if (st === "attack") return "Attack";
+  if (st === "spell") return "Spell";
+  return "Skill"; // "active" / "skill" / blank → treated as a Skill (mirrors toBundle)
+}
+
+// The Set<label> of turn actions the performer may NOT use this turn, sourced by
+// BuildContext from snapshot.getBlockedActionLabels (honours Domination). Absent
+// on standalone runs that skipped BuildContext → nothing is blocked (fail-open,
+// same philosophy as the feasibility filter).
+function getBlockedLabels(context) {
+  const set = context?.actorData?.blockedActionLabels;
+  return set instanceof Set ? set : new Set();
+}
+
+function isCandidateActionBlocked(candidate, blockedLabels) {
+  if (!blockedLabels?.size) return false;
+  return blockedLabels.has(candidateActionLabel(candidate));
+}
+
 /*
  * Returns { feasible, reasons[] }. Checks:
  *   - resource cost (MP/IP) vs the performer's current pools
@@ -515,9 +546,39 @@ export async function matchAndPickActionReaderAction(context, options = {}) {
       .filter(result => result?.matched)
       .map(result => result.candidate);
 
+    // --- Action-gating hard filter (#5) --------------------------------- //
+    // Remove action types a debuff bars (Frightened→Attack, Silence→Spell,
+    // Berserk→everything-but-Attack). This runs BEFORE feasibility so the whole
+    // downstream (priority window, weighted pick, anti-repeat, targeting) — and
+    // the feasibility graceful-fallback — only ever sees LEGAL actions. That is
+    // what makes the AI route to its "next best" legal action instead of the
+    // autopilot backstop dumping the turn to the manual menu. If every matched
+    // action is blocked, legalCandidates is empty → chosenAction stays null →
+    // caller falls to manual (the enemy genuinely has nothing legal to do).
+    const blockedLabels = getBlockedLabels(context);
+    const legalCandidates = [];
+    let blockedCandidateCount = 0;
+    for (const candidate of matchedCandidates) {
+      if (isCandidateActionBlocked(candidate, blockedLabels)) {
+        candidate.actionBlocked = true;
+        candidate.actionBlockedLabel = candidateActionLabel(candidate);
+        blockedCandidateCount++;
+      } else {
+        candidate.actionBlocked = false;
+        legalCandidates.push(candidate);
+      }
+    }
+    if (blockedCandidateCount) {
+      ARD.addWarning(context, stage, "Some matched actions are barred by an action-gating debuff.", {
+        blockedCandidates: blockedCandidateCount,
+        blockedLabels: Array.from(blockedLabels),
+        legalCandidates: legalCandidates.length
+      });
+    }
+
     // --- Feasibility filter (#1) ---------------------------------------- //
     const feasibility = new Map();
-    const feasibleCandidates = matchedCandidates.filter(candidate => {
+    const feasibleCandidates = legalCandidates.filter(candidate => {
       const result = assessCandidateFeasibility(candidate, context);
       feasibility.set(candidate, result);
       candidate.feasible = result.feasible;
@@ -528,15 +589,16 @@ export async function matchAndPickActionReaderAction(context, options = {}) {
     let workingCandidates = feasibleCandidates;
     let feasibilityFallbackUsed = false;
 
-    if (!workingCandidates.length && matchedCandidates.length) {
+    if (!workingCandidates.length && legalCandidates.length) {
       // Graceful fallback: prefer no-cost actions so the actor still does
-      // *something* (e.g. a basic attack) instead of erroring out.
-      const freeCandidates = matchedCandidates.filter(isCandidateFree);
-      workingCandidates = freeCandidates.length ? freeCandidates : matchedCandidates;
+      // *something* (e.g. a basic attack) instead of erroring out. NOTE: draws
+      // from legalCandidates ONLY — never resurrect a debuff-blocked action.
+      const freeCandidates = legalCandidates.filter(isCandidateFree);
+      workingCandidates = freeCandidates.length ? freeCandidates : legalCandidates;
       feasibilityFallbackUsed = true;
 
       ARD.addWarning(context, stage, "No fully-feasible action; using graceful fallback.", {
-        matchedCandidates: matchedCandidates.length,
+        legalCandidates: legalCandidates.length,
         freeFallbackCount: freeCandidates.length
       });
     }
@@ -580,7 +642,10 @@ export async function matchAndPickActionReaderAction(context, options = {}) {
       topPriority
     );
     context.actionMatchMeta.feasibleCandidates = feasibleCandidates.length;
-    context.actionMatchMeta.infeasibleCandidates = matchedCandidates.length - feasibleCandidates.length;
+    context.actionMatchMeta.legalCandidates = legalCandidates.length;
+    context.actionMatchMeta.blockedCandidates = blockedCandidateCount;
+    context.actionMatchMeta.blockedLabels = Array.from(blockedLabels);
+    context.actionMatchMeta.infeasibleCandidates = legalCandidates.length - feasibleCandidates.length;
     context.actionMatchMeta.feasibilityFallbackUsed = feasibilityFallbackUsed;
     context.actionMatchMeta.antiRepeatLastAction = antiRepeat.memory.lastActionName || null;
     context.actionMatchMeta.antiRepeatFallbackUsed = antiRepeat.fallback;
@@ -599,6 +664,8 @@ export async function matchAndPickActionReaderAction(context, options = {}) {
             priority: row.priority,
             matched: Boolean(result.matched),
             blockedByPassive: Boolean(result.blockedByPassive),
+            actionBlocked: Boolean(result?.candidate?.actionBlocked),
+            actionBlockedLabel: result?.candidate?.actionBlockedLabel ?? "",
             matchSource: result?.candidate?.matchSource ?? result?.matchSource ?? "",
             itemName: result?.candidate?.itemName ?? "",
             reason: result?.candidate?.matchReason ?? result?.reason ?? ""
@@ -638,9 +705,14 @@ export async function matchAndPickActionReaderAction(context, options = {}) {
     }
 
     if (!retained.length || !chosenCandidate) {
-      ARD.addError(context, stage, "No action could be selected after applying the priority window.", {
+      const allBlocked = matchedCandidates.length > 0 && legalCandidates.length === 0;
+      ARD.addError(context, stage, allBlocked
+        ? "Every matched action is barred by an action-gating debuff; no legal action to select."
+        : "No action could be selected after applying the priority window.", {
         actorName: context?.actorData?.identity?.actorName ?? null,
         matchedCandidates: matchedCandidates.length,
+        legalCandidates: legalCandidates.length,
+        blockedCandidates: blockedCandidateCount,
         topPriority
       });
       ARD.endStage(context, stage, {

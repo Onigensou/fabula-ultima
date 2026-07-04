@@ -13,6 +13,10 @@
       "version": "4.8.4"
     },
     "fabula-ultima-companion": {
+      "damage_dealt_mult_all": 1,
+      "damage_dealt_mult_attack": 1,
+      "damage_dealt_mult_skill": 1,
+      "damage_dealt_mult_spell": 1,
       "damage_taken_mult": 1
     },
     "theatre": {
@@ -151,7 +155,7 @@
       "_stats": {
         "compendiumSource": "Item.Zw14b4NHt6geS7nE",
         "coreVersion": "12.343",
-        "createdTime": 1782566229004,
+        "createdTime": 1783148659416,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -312,7 +316,7 @@
       "_stats": {
         "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
         "coreVersion": "12.343",
-        "createdTime": 1782566229004,
+        "createdTime": 1783148659416,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -377,7 +381,7 @@
       "_stats": {
         "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
         "coreVersion": "12.343",
-        "createdTime": 1782566229004,
+        "createdTime": 1783148659416,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -441,7 +445,7 @@
       "_stats": {
         "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
         "coreVersion": "12.343",
-        "createdTime": 1782566229004,
+        "createdTime": 1783148659416,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -571,7 +575,7 @@
       "_stats": {
         "compendiumSource": "Item.iFdNNGp4OVZVMEcB",
         "coreVersion": "12.343",
-        "createdTime": 1782566229004,
+        "createdTime": 1783148659416,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -636,7 +640,7 @@
       "_stats": {
         "compendiumSource": "Item.wh14ZZz56LQHyrvF",
         "coreVersion": "12.343",
-        "createdTime": 1782566229004,
+        "createdTime": 1783148659416,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"

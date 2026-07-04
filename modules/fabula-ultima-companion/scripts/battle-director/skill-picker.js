@@ -94,16 +94,34 @@ function hasReactionRows(tbl) {
   );
 }
 
+// Usable (turn-action) skill_types — as opposed to "Passive"/"Other", which
+// only ever fire in response to a trigger.
+const ACTIVE_SKILL_TYPES = new Set(["attack", "active", "spell"]);
+
+// A sure-hit damaging/healing body: a no-Check active skill still delivers its
+// payload because the engine auto-hits when check_mode is "none" (see
+// action-profile `required` / `hit = !rolled`). Such skills often deliver via an
+// on-damage FOLD reaction (creature_will_deal_damage) rather than an
+// on_activate ref, so the ref checks below miss them. Scoped to usable
+// skill_types so a genuine Passive that carries a type_damage for its proc
+// (e.g. Wind Puff "Air", Absorb MP "MP") stays hidden.
+function hasSureHitDamageBody(p) {
+  const st = String(p?.skill_type ?? "").trim().toLowerCase();
+  if (!ACTIVE_SKILL_TYPES.has(st)) return false;
+  return !!String(p?.type_damage ?? "").trim();
+}
+
 // An "active body" is anything that makes the item performable as a turn-action:
-// an accuracy Check, an offensive spell, or an action-pipeline fire-point ref
-// (on_activate / pre_activate / post_damage). Kept deliberately permissive so a
-// real action is never hidden by mistake.
+// an accuracy Check, an offensive spell, an action-pipeline fire-point ref
+// (on_activate / pre_activate / post_damage), or a sure-hit damage/heal payload.
+// Kept deliberately permissive so a real action is never hidden by mistake.
 function hasActiveBody(p) {
   return !!p?.isCheck
     || !!p?.isOffensiveSpell
     || !!String(p?.on_activate_effect_ref ?? "").trim()
     || !!String(p?.pre_activate_effect_ref ?? "").trim()
-    || !!String(p?.post_damage_effect_ref ?? "").trim();
+    || !!String(p?.post_damage_effect_ref ?? "").trim()
+    || hasSureHitDamageBody(p);
 }
 
 // True when the item carries reaction rows but no active body → it only ever

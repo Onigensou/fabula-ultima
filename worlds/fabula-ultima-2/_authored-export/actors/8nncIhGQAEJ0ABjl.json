@@ -13,6 +13,10 @@
       "version": "4.8.5"
     },
     "fabula-ultima-companion": {
+      "damage_dealt_mult_all": 1,
+      "damage_dealt_mult_attack": 1,
+      "damage_dealt_mult_skill": 1,
+      "damage_dealt_mult_spell": 1,
       "damage_taken_mult": 1
     },
     "theatre": {
@@ -34,7 +38,7 @@
       "_stats": {
         "compendiumSource": "Item.CCgNOkaxbjVg55M9",
         "coreVersion": "12.343",
-        "createdTime": 1782566244605,
+        "createdTime": 1783148672541,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -127,7 +131,7 @@
       "_stats": {
         "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
         "coreVersion": "12.343",
-        "createdTime": 1782566244605,
+        "createdTime": 1783148672541,
         "duplicateSource": "Item.UKzHkmIJcjXZ4GFR",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -196,7 +200,7 @@
       "_stats": {
         "compendiumSource": "Item.A87i0WJvlVD1w3E7",
         "coreVersion": "12.343",
-        "createdTime": 1782566244605,
+        "createdTime": 1783148672541,
         "duplicateSource": "Item.yWlkWZC2vLf4J5Pv",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -265,7 +269,7 @@
       "_stats": {
         "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
         "coreVersion": "12.343",
-        "createdTime": 1782566244605,
+        "createdTime": 1783148672541,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -432,7 +436,7 @@
       "_stats": {
         "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
         "coreVersion": "12.343",
-        "createdTime": 1782566244605,
+        "createdTime": 1783148672541,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -500,7 +504,7 @@
               "reactionConfig": {
                 "effect_table": {
                   "0": {
-                    "damage_amount": "ceil(MAX_HP * 0.1)",
+                    "damage_amount": "ceil((MAX_HP * 0.1) * (1 - 0.5 * RANK_IS_CHAMPION))",
                     "damage_element": "fire",
                     "damage_verbosity": "full",
                     "effect_kind": "deal_damage",
@@ -622,7 +626,7 @@
       "_stats": {
         "compendiumSource": "Item.iFdNNGp4OVZVMEcB",
         "coreVersion": "12.343",
-        "createdTime": 1782566244605,
+        "createdTime": 1783148672541,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -689,7 +693,7 @@
       "_stats": {
         "compendiumSource": "Item.aGZAOUdRyopqoDyc",
         "coreVersion": "12.343",
-        "createdTime": 1782566244605,
+        "createdTime": 1783148672541,
         "duplicateSource": "Item.iFdNNGp4OVZVMEcB",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -776,7 +780,7 @@
       "_stats": {
         "compendiumSource": "Item.UKzHkmIJcjXZ4GFR",
         "coreVersion": "12.343",
-        "createdTime": 1782566244605,
+        "createdTime": 1783148672541,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"

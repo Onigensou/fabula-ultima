@@ -220,6 +220,16 @@ const FUNCTIONS = {
   // passive path). Math.random is fine in live play; only cron/workflow
   // contexts forbid it, and reactions never fire there.
   chance: (n) => (Math.random() * 100 < Number(n) ? 1 : 0),
+  // randint(a, b): inclusive random integer in [a, b] (order-agnostic). Same
+  // live-play-only caveat as chance() — uses Math.random, so never author it in
+  // a cron/workflow formula. Pyrefly's Gentle Blaze applies randint(1,10) Burn.
+  randint: (a, b) => {
+    let lo = Math.floor(Number(a)), hi = Math.floor(Number(b));
+    if (!Number.isFinite(lo)) lo = 0;
+    if (!Number.isFinite(hi)) hi = lo;
+    if (hi < lo) { const t = lo; lo = hi; hi = t; }
+    return lo + Math.floor(Math.random() * (hi - lo + 1));
+  },
 };
 
 // Surface unknown-identifier typos / wrong-evaluator mistakes instead of
@@ -1170,6 +1180,34 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
             .toLowerCase()
             .trim();
           return Number(skill?.system?.props?.[`gadget_${branch}_tier`] ?? 0) || 0;
+        }
+        // Dynamic COMBAT_MAX_AE_CHARGES_<NAME> — the HIGHEST charge total of the
+        // named status across ALL combatants in the current encounter (0 if no
+        // combat / nobody carries it). A field-wide scan (not reactor- or
+        // subject-scoped), for a lifecycle reaction that must gate on "does ANY
+        // creature carry N stacks?" — Pyrefly's Funeral Pyre fires at turn_end
+        // only when COMBAT_MAX_AE_CHARGES_BURN >= 10. Sync (combatants + their
+        // actors are in-memory). Must be tested before AE_CHARGES_ below, but the
+        // COMBAT_ prefix already disambiguates.
+        if (name.startsWith("COMBAT_MAX_AE_CHARGES_")) {
+          const needle = name
+            .slice("COMBAT_MAX_AE_CHARGES_".length)
+            .replace(/_/g, " ")
+            .toLowerCase()
+            .trim();
+          const combatants = game?.combat?.combatants?.contents
+            ?? Array.from(game?.combat?.combatants ?? []);
+          let best = 0;
+          for (const c of combatants) {
+            const a = c?.actor ?? c?.token?.actor ?? null;
+            if (!a) continue;
+            const effects = a?.effects?.contents ?? Array.from(a?.effects ?? []);
+            const total = effects
+              .filter((e) => !e.disabled && String(e?.name ?? "").trim().toLowerCase() === needle)
+              .reduce((sum, e) => sum + (Number(e?.flags?.["fabula-ultima-companion"]?.charges ?? 0) || 0), 0);
+            if (total > best) best = total;
+          }
+          return best;
         }
         // Dynamic AE_COUNT_<NAME> identifier — counts non-disabled AEs
         // with the given name on the reactor. Spaces → underscores,

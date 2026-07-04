@@ -599,6 +599,10 @@
     {
       "key": "2026-06-27-creeps-curse-author",
       "path": "data-migrations/2026-06-27-creeps-curse-author.js"
+    },
+    {
+      "key": "2026-07-04-burn-champion-halved",
+      "path": "data-migrations/2026-07-04-burn-champion-halved.js"
     }
   ]
 }

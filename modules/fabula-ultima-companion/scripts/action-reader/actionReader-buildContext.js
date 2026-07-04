@@ -26,6 +26,7 @@
 
 import { ActionReaderCore as AR } from "./actionReader-core.js";
 import { ActionReaderDebug as ARD } from "./actionReader-debug.js";
+import { getBlockedActionLabels } from "../battle-director/snapshot.js";
 
 export const ACTION_READER_BUILD_CONTEXT_VERSION = "1.0.0";
 export const ACTION_READER_BUILD_CONTEXT_STAGE = "BuildContext";
@@ -53,6 +54,21 @@ function getPerformerToken(context) {
 
 function getPerformerTokenDocument(context) {
   return context?.performer?.tokenDocument ?? AR.getTokenDocument(getPerformerToken(context)) ?? null;
+}
+
+// Canonical set of turn-action labels this actor may NOT use right now, from the
+// homebrew action-gating Advanced Debuffs (Frightened→Attack, Silence→Spell,
+// Berserk→enable-only-Attack, …). Reuses snapshot.getBlockedActionLabels — the
+// SAME reader the Octopath menu + autopilot backstop use — so the AI, the UI and
+// the backstop agree, and Domination's ignore_action_gating inertness is honoured
+// for free. Returns a Set<label> ("Attack" / "Spell" / "Skill" / …).
+function collectBlockedActionLabels(actor) {
+  try {
+    return new Set(getBlockedActionLabels(actor).keys());
+  } catch (e) {
+    console.warn("[ActionReader][BuildContext] getBlockedActionLabels threw; treating as none blocked.", e);
+    return new Set();
+  }
 }
 
 function collectEffectSnapshot(actor) {
@@ -188,6 +204,9 @@ function summarizeActorData(actorData) {
     },
     enmity: actorData?.enmity ?? null,
     effectCount: Array.isArray(actorData?.effects) ? actorData.effects.length : 0,
+    blockedActionLabels: actorData?.blockedActionLabels instanceof Set
+      ? Array.from(actorData.blockedActionLabels)
+      : [],
     itemCount: Array.isArray(actorData?.items) ? actorData.items.length : 0,
     actionListCount: Array.isArray(actorData?.actionLists) ? actorData.actionLists.length : 0,
     actionReferenceCount: Array.isArray(actorData?.actionReferences) ? actorData.actionReferences.length : 0,
@@ -225,6 +244,7 @@ export async function buildActionReaderContext(context, options = {}) {
     const resources = AR.getStandardResources(actor);
     const effects = collectEffectSnapshot(actor);
     const effectNames = effects.map(effect => effect.name);
+    const blockedActionLabels = collectBlockedActionLabels(actor);
 
     const rawActionPatternTable = AR.getActionPatternTable(actor);
     const actionPatternRowsRaw = AR.getActionPatternRows(actor).map(row => ({
@@ -250,6 +270,7 @@ export async function buildActionReaderContext(context, options = {}) {
       enmity: AR.getActorEnmity(actor, 100),
       effects,
       effectNames,
+      blockedActionLabels,
       combat: combatSnapshot,
       rawActionPatternTable: AR.duplicateSafe(rawActionPatternTable),
       actionPatternRowsRaw,
